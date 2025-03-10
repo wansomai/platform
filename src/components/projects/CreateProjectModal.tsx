@@ -3,34 +3,51 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import api from '@/lib/api'
+import { useProjectStore } from '@/store/project.store'
+import { useAuth } from '@/context/AuthContext'
+import { useNotifications } from '@/hooks/useNotifications'
+
 
 interface CreateProjectModalProps {
-  open: boolean
-  onClose: () => void
-  onSuccess: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
-export function CreateProjectModal({ open, onClose, onSuccess }: CreateProjectModalProps) {
+export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
     title: '',
     description: '',
   })
+  const {notify}=useNotifications()
+  
+  const { createProject } = useProjectStore()
+  const { user } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
+    if (!user?.organization?.id) {
+      setError('Organization ID not found')
+      setIsLoading(false)
+      return
+    }
+
     try {
-      await api.post('/projects', formData)
-      onSuccess()
+      await createProject({
+        ...formData,
+        organizationId: user.organization.id
+      })
+
+      notify.success('Project created successfully')
       onClose()
       setFormData({ title: '', description: '' })
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to create project')
+      notify.error('Failed to create project. Please try again.')
+      setError(error.message || 'Failed to create project. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -138,13 +155,13 @@ export function CreateProjectModal({ open, onClose, onSuccess }: CreateProjectMo
                         <button
                           type="submit"
                           disabled={isLoading || !formData.title.trim()}
-                          className="inline-flex w-full justify-center rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto disabled:opacity-50"
+                          className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 sm:ml-3 sm:w-auto disabled:opacity-50"
                         >
                           {isLoading ? 'Creating...' : 'Create Project'}
                         </button>
                         <button
                           type="button"
-                          className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 hover:bg-secondary-50 sm:mt-0 sm:w-auto"
+                          className="mt-3 inline-flex w-full justify-center bg-black rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-secondary-300 hover:bg-secondary-50 sm:mt-0 sm:w-auto bg-secondary-900"
                           onClick={onClose}
                         >
                           Cancel

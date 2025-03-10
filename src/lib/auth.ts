@@ -1,42 +1,64 @@
 // src/lib/auth.ts
 import jwt from 'jsonwebtoken'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
-import type { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
 
-const prisma = new PrismaClient()
+// Define the JWT secret here directly to ensure it's consistent
+// In production, this should be an environment variable
+export const JWT_SECRET = "23cc5f842ca52345400e310985223cbd92444fba095df1bb9cf0f94a3fb6f9acc7b178a9aa8743db278c5d049946941e33099a15663cd45186c38028c87ed227"
+export const JWT_EXPIRES_IN = '1h'
+export const JWT_REFRESH_SECRET = "23cc5f842ca52345400e310985223cbd92444fba095df1bb9cf0f94a3fb6f9acc7b178a9aa8743db278c5d049946941e33099a15663cd45186c38028c87ed227"
+export const JWT_REFRESH_EXPIRES_IN = '7d'
 
-// Environment variables (in a real app, these would be in .env file)
-const JWT_SECRET = process.env.JWT_SECRET
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET
-const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN
+// Types
+export interface TokenPayload {
+  userId: string
+  iat: number
+  exp: number
+}
 
-// Verify and decode JWT token
-export const verifyToken = (token: string) => {
+// Verify and decode JWT token - With improved error handling
+export const verifyToken = (token: string): TokenPayload => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET as jwt.Secret) as jwt.JwtPayload;
-    if (!decoded.userId) throw new Error('Invalid token');
-    return {
-      userId: decoded.userId as string,
-      iat: decoded.iat as number,
-      exp: decoded.exp as number
-    };
+    // Use the hard-coded secret for verification
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload
+    
+    // Log success for debugging
+    console.log(`Token verified successfully for user: ${decoded.userId}`)
+    
+    return decoded
   } catch (error) {
+    // Enhanced error logging
+    console.error('JWT verification error details:', error)
+    
+    if (error instanceof jwt.JsonWebTokenError) {
+      console.error('JWT verification failed:', error.message)
+    } else if (error instanceof jwt.TokenExpiredError) {
+      console.error('JWT token expired')
+    } else {
+      console.error('Unknown JWT error:', error)
+    }
+    
     throw new Error('Invalid token')
   }
 }
 
-// Generate access token
-export const generateAccessToken = (userId: string) => {
-  return jwt.sign({ userId,expiresIn: JWT_EXPIRES_IN }, JWT_SECRET as jwt.Secret)
+// Verify refresh token
+export const verifyRefreshToken = (token: string): TokenPayload => {
+  try {
+    return jwt.verify(token, JWT_REFRESH_SECRET) as TokenPayload
+  } catch (error) {
+    console.error('Refresh token verification failed:', error)
+    throw new Error('Invalid refresh token')
+  }
+}
+
+// Generate access token - Make sure we use the same secret for generation and verification
+export const generateAccessToken = (userId: string): string => {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 }
 
 // Generate refresh token
-export const generateRefreshToken = (userId: string) => {
-    return jwt.sign({ userId,expiresIn: JWT_REFRESH_EXPIRES_IN  }, JWT_REFRESH_SECRET as jwt.Secret)
+export const generateRefreshToken = (userId: string): string => {
+  return jwt.sign({ userId }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN })
 }
 
 // Generate both tokens
@@ -47,146 +69,36 @@ export const generateTokens = (userId: string) => {
   }
 }
 
-// NextAuth options
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
-  providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
-        
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password
-            })
-          })
-          
-          const data = await response.json()
-          
-          if (!response.ok) {
-            return null
-          }
-          
-          // Return the user and access token
-          return {
-            id: data.data.user.id,
-            email: data.data.user.email,
-            name: data.data.user.fullName,
-            role: data.data.user.role,
-            organization: data.data.user.organization,
-            access_token: data.data.access_token,
-            refresh_token: data.data.refresh_token
-          }
-        } catch (error) {
-          console.error('Login error:', error)
-          return null
-        }
-      }
-    }),
-    // Optionally enable OAuth providers
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
-          })
-        ]
-      : [])
-  ],
-  session: {
-    strategy: 'jwt'
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      // Initial sign in
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
-          role: (user as any).role,
-          organization: (user as any).organization,
-          access_token: (user as any).access_token,
-          refresh_token: (user as any).refresh_token
-        }
-      }
-      
-      // On subsequent calls, check if token needs refresh
-      const tokenExpiry = token.exp as number
-      const currentTime = Math.floor(Date.now() / 1000)
-      const timeToExpiry = tokenExpiry - currentTime
-      
-      // If token is about to expire (less than 5 minutes), refresh it
-      if (timeToExpiry < 300 && token.refresh_token) {
-        try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh-token`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              refresh_token: token.refresh_token
-            })
-          })
-          
-          const data = await response.json()
-          
-          if (!response.ok) {
-            // If refresh fails, return original token for graceful logout
-            return token
-          }
-          
-          // Return updated token
-          return {
-            ...token,
-            access_token: data.data.access_token,
-            refresh_token: data.data.refresh_token,
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 // 1 hour
-          }
-        } catch (error) {
-          console.error('Token refresh error:', error)
-          return token
-        }
-      }
-      
-      return token
-    },
-    
-    async session({ session, token }) {
-      if (token) {
-        return {
-          ...session,
-          user: {
-            ...session.user,
-            id: token.id as string,
-            role: token.role as string,
-            organization: token.organization as {
-              id: string
-              name: string
-            },
-            access_token: token.access_token as string,
-            refresh_token: token.refresh_token as string
-          },
-          expires: new Date(token.exp as number * 1000).toISOString()
-        }
-      }
-      
-      return session
-    }
-  },
-  pages: {
-    signIn: '/login',
-    signOut: '/logout',
-    error: '/error',
-    newUser: '/register'
-  },
-  secret: JWT_SECRET
+// Get token expiration in seconds
+export const getTokenExpiration = (token: string): number => {
+  try {
+    const decoded = jwt.decode(token) as { exp: number }
+    return decoded.exp
+  } catch (error) {
+    return 0
+  }
+}
+
+// Check if token is about to expire (within 5 minutes)
+export const isTokenExpiringSoon = (token: string): boolean => {
+  try {
+    const exp = getTokenExpiration(token)
+    const now = Math.floor(Date.now() / 1000)
+    // Return true if token expires in less than 5 minutes
+    return exp - now < 300
+  } catch (error) {
+    return true
+  }
+}
+
+// Function to manually decode a token without verification (for debugging)
+export const decodeToken = (token: string): any => {
+  try {
+    // Just decode without verification
+    const decoded = jwt.decode(token)
+    return decoded
+  } catch (error) {
+    console.error('Error decoding token:', error)
+    return null
+  }
 }

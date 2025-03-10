@@ -22,7 +22,6 @@ export function ChatInterface() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   
   // Get state from stores
-  const { user } = useAuthStore()
   const { addToast } = useUIStore()
   const { 
     currentConversation, 
@@ -32,6 +31,7 @@ export function ChatInterface() {
     isLoading, 
     error 
   } = useChatStore()
+  const {user} = useAuthStore()
   
   // Set up conversation when component mounts
   useEffect(() => {
@@ -83,7 +83,7 @@ export function ChatInterface() {
     
     try {
       setIsSubmitting(true)
-      await sendMessage(projectId, currentConversation.id, input)
+      await sendMessage(projectId, currentConversation.id, input, user?.id)
       setInput("")
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -125,14 +125,6 @@ export function ChatInterface() {
   
   return (
     <div className="flex flex-col h-full bg-white">
-      <div className="flex-none p-4 border-b">
-        <h1 className="text-lg font-semibold">AI Assistant</h1>
-        {currentConversation && (
-          <p className="text-sm text-secondary-500">
-            {currentConversation.title}
-          </p>
-        )}
-      </div>
 
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
         <div className="space-y-6">
@@ -210,7 +202,7 @@ function ChatMessageItem({
           
           <div
             className={`rounded-lg px-4 py-2 ${
-              isUser ? "bg-primary-600 text-white" : "bg-secondary-100"
+              isUser ? "bg-green-600 text-white" : "bg-secondary-100"
             }`}
           >
             {message.isLoading ? (
@@ -228,12 +220,7 @@ function ChatMessageItem({
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ThumbsUp className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ThumbsDown className="h-4 w-4" />
-              </Button>
+             
             </div>
           )}
           

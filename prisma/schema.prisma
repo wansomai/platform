@@ -9,132 +9,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id             String          @id @default(cuid())
-  email          String          @unique
-  password       String
-  fullName       String
-  role           String          @default("user")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  organization   Organization    @relation(fields: [organizationId], references: [id])
-  organizationId String
-  projects       ProjectMember[]
-  messages       Message[]
-  Account        Account[]
-  Session        Session[]
-}
-
-model Organization {
-  id        String    @id @default(cuid())
-  name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  users     User[]
-  projects  Project[]
-}
-
-model Project {
-  id             String          @id @default(cuid())
-  title          String
-  description    String?
-  status         String          @default("active")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  organization   Organization    @relation(fields: [organizationId], references: [id])
-  organizationId String
-  members        ProjectMember[]
-  documents      Document[]
-  events         Event[]
-  conversations  Conversation[]
-  knowledgeBase  KnowledgeBase?
-}
-
-model ProjectMember {
-  id        String   @id @default(cuid())
-  role      String   @default("member") // "owner", "admin", "member", "viewer"
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  project   Project  @relation(fields: [projectId], references: [id])
-  projectId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, projectId])
-}
-
-model Document {
-  id         String      @id @default(cuid())
-  name       String
-  fileUrl    String
-  fileType   String
-  fileSize   Int
-  section    String      @default("documents") // "evidence", "pleadings", "correspondence", etc.
-  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId  String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  content    String?     @db.Text // Extracted text content for search
-  embeddings Embedding[]
-}
-
-model Embedding {
-  id         String   @id @default(cuid())
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  documentId String
-  vector     String   @db.Text // Stored as a serialized vector or external reference
-  chunkText  String   @db.Text // The text chunk this embedding represents
-  chunkIndex Int // Position of this chunk in the document
-  createdAt  DateTime @default(now())
-}
-
-model Event {
-  id          String   @id @default(cuid())
-  title       String
-  date        DateTime
-  type        String // "meeting", "deadline", "court"
-  description String?
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Conversation {
-  id        String    @id @default(cuid())
-  title     String
-  isPinned  Boolean   @default(false)
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String
-  messages  Message[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Message {
-  id             String       @id @default(cuid())
-  content        String       @db.Text
-  role           String // "user", "assistant", "system"
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  conversationId String
-  user           User?        @relation(fields: [userId], references: [id])
-  userId         String?
-  metadata       Json? // For citations, references, etc.
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-}
-
-model KnowledgeBase {
-  id           String   @id @default(cuid())
-  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId    String   @unique
-  teamInfo     Json? // Structured JSON for team info
-  clientInfo   Json? // Structured JSON for client info
-  instructions String?  @db.Text
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
 // For NextAuth.js integration
 model Account {
   id                String  @id @default(cuid())
@@ -169,4 +43,187 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  fullName       String?
+  password       String
+  role           String    @default("user")
+  organizationId String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  projectMembers ProjectMember[]
+  documents      Document[]
+  messages       Message[]
+  accounts       Account[]
+  sessions       Session[]
+  sentInvitations Invitation[] @relation("InvitedBy")
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  users       User[]
+  projects    Project[]
+  documents   Document[]
+  invitations Invitation[]
+}
+
+model Project {
+  id             String    @id @default(cuid())
+  title          String
+  description    String?
+  status         String    @default("active")
+  organizationId String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  members        ProjectMember[]
+  documents      Document[]
+  conversations  Conversation[]
+  events         Event[]
+  knowledgeBase  KnowledgeBase?
+  invitations   Invitation[]
+}
+
+model ProjectMember {
+  userId    String
+  projectId String
+  role      String   @default("member")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User    @relation(fields: [userId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@id([userId, projectId])
+}
+
+model Document {
+  id                String    @id @default(cuid())
+  project_id        String    @map("projectId")
+  organization_id   String    @map("organizationId")
+  title             String
+  description       Json?
+  file_url          String    @map("fileUrl")
+  file_type         String    @map("fileType")
+  file_size         Int       @map("fileSize")
+  status            String    @default("active")
+  section           String    @default("general")
+  created_by        String    @map("createdBy")
+  metadata          Json?
+  content_extracted Json?     @map("contentExtracted")
+  created_at        DateTime  @default(now()) @map("createdAt")
+  updated_at        DateTime  @updatedAt @map("updatedAt")
+
+  project           Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  organization      Organization @relation(fields: [organization_id], references: [id])
+  createdByUser     User      @relation(fields: [created_by], references: [id])
+  content           DocumentContent?
+  messageReferences MessageReference[]
+  embeddings        Embedding[]
+}
+
+model DocumentContent {
+  documentId String   @id
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model Embedding {
+  id         String   @id @default(cuid())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId String
+  vector     String   @db.Text // Stored as a serialized vector or external reference
+  chunkText  String   @db.Text // The text chunk this embedding represents
+  chunkIndex Int      // Position of this chunk in the document
+  createdAt  DateTime @default(now())
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  title     String
+  projectId String
+  isPinned  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages  Message[]
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  conversationId String
+  content        String    @db.Text
+  role           String    @default("user")
+  createdAt      DateTime  @default(now())
+  userId         String?
+
+  conversation   Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User?           @relation(fields: [userId], references: [id])
+  references     MessageReference[]
+}
+
+model MessageReference {
+  id         String   @id @default(cuid())
+  messageId  String
+  documentId String
+  text       String   @db.Text
+  page       Int?
+  createdAt  DateTime @default(now())
+
+  message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  date        DateTime
+  type        String   @default("meeting")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model KnowledgeBase {
+  id             String   @id @default(cuid())
+  projectId      String   @unique
+  clientInfo     Json?
+  instructions   String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Invitation {
+  id            String      @id @default(uuid())
+  email         String
+  role          String
+  token         String      @unique
+  expiresAt     DateTime
+  project       Project     @relation(fields: [projectId], references: [id])
+  projectId     String
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  invitedBy     User        @relation("InvitedBy", fields: [invitedById], references: [id])
+  invitedById   String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }

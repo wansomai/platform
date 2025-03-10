@@ -52,7 +52,7 @@ interface ChatState {
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string, conversationId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
-  sendMessage: (projectId: string, conversationId: string, content: string) => Promise<Message | null>;
+  sendMessage: (projectId: string, conversationId: string, content: string,userId:string|undefined) => Promise<Message | null>;
   togglePinConversation: (projectId: string, conversationId: string) => Promise<boolean>;
 
   // State management

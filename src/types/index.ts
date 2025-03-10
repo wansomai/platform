@@ -24,3 +24,16 @@ export interface TabComponentProps {
     onClose: () => void
     projectId: string
   }
+
+
+  export interface Project {
+    id: string;
+    title: string;
+    description: string | null;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+    documents_count: number;
+    team_count: number;
+    last_activity: string;
+  }

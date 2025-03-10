@@ -1,95 +1,87 @@
-"use client"
+// app/dashboard/page.tsx
+"use client";
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useProjectStore } from "@/store/project.store"
-import { useAuthStore } from "@/store/auth.store"
-import { 
-  FolderPlus, 
-  Clock, 
-  BarChart3, 
-  Briefcase, 
-  FileText, 
-  Users, 
-  CalendarDays, 
-  Folder, 
-  ArrowRight, 
-  Loader2 
-} from "lucide-react"
+import { Folder, FolderPlus, ArrowRight, FileText, Clock, Briefcase } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton";
+import CreateProjectModal from "@/components/projects/CreateProjectModal";
+import { useRouter } from "next/navigation";
+import { Project } from "@/types";
+// Project type definition
 
+interface CreateProjectData {
+  title: string;
+  description: string;
+}
 export default function DashboardPage() {
-  const router = useRouter()
-  
-  const { user, isAuthenticated, isLoading: authLoading } = useAuthStore()
-  const { projects, fetchProjects, createProject, isLoading: projectsLoading } = useProjectStore()
-  
-  // Fetch projects on component mount
+  const { user, logout } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false)
+  const router = useRouter();
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchProjects()
-    }
-  }, [isAuthenticated, fetchProjects])
-  
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login')
-    }
-  }, [authLoading, isAuthenticated, router])
-  
-  // Handle new project creation
-  const handleCreateProject = async () => {
-    const project = await createProject({
-      title: "New Project",
-      description: "A new legal project"
-    })
-    
-    if (project) {
-      router.push(`/projects/${project.id}`)
-    }
-  }
-  
-  const isLoading = authLoading || projectsLoading
-  
-  // Show loading state
-  if (isLoading) {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/api/projects");
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        
+        const data = await response.json();
+        setProjects(data);
+      } catch (err) {
+        setError("Error loading projects");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // This should be handled by middleware, but we'll add this check as a fallback
+  if (!user) {
     return (
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-10 w-32" />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Skeleton className="h-40" />
-          <Skeleton className="h-40" />
-          <Skeleton className="h-40" />
-        </div>
-        
-        <Skeleton className="h-64" />
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-10 w-32" />
       </div>
-    )
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Skeleton className="h-40" />
+        <Skeleton className="h-40" />
+        <Skeleton className="h-40" />
+      </div>
+      
+      <Skeleton className="h-64" />
+    </div>
+    );
   }
-  
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+    
+
+      <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 space-y-3">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Welcome, {user?.fullName || 'User'}</h1>
+          <h1 className="text-2xl font-bold">Welcome, {user?.name || 'User'}</h1>
           <p className="text-gray-500">{user?.organization?.name || 'Your Organization'}</p>
         </div>
         
-        <Button onClick={handleCreateProject}>
+        <Button onClick={()=>setOpen(true)}>
           <FolderPlus className="mr-2 h-4 w-4" />
-          New Project
+          New File
         </Button>
       </div>
-      
-      {/* Quick stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
@@ -135,26 +127,25 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
-      {/* Recent projects */}
+          {/* Recent projects */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Projects</CardTitle>
+          <CardTitle>Recent Files</CardTitle>
           <CardDescription>
-            Your most recently updated projects
+            Your most recently updated Files
           </CardDescription>
         </CardHeader>
         <CardContent>
           {projects.length === 0 ? (
             <div className="text-center py-8">
               <Folder className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No projects yet</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No Files yet</h3>
               <p className="text-sm text-gray-500 mb-4">
-                Create your first project to get started
+                Create your first file to get started
               </p>
-              <Button onClick={handleCreateProject}>
+              <Button onClick={()=>setOpen(true)}>
                 <FolderPlus className="mr-2 h-4 w-4" />
-                Create Project
+                Create File
               </Button>
             </div>
           ) : (
@@ -197,6 +188,15 @@ export default function DashboardPage() {
           )}
         </CardContent>
       </Card>
+      </main>
+         {/* Create Project Modal Component - you'll need to create this */}
+         {open && (
+        <CreateProjectModal 
+          open={open} 
+          onClose={() => setOpen(false)} 
+         
+        />
+      )}
     </div>
-  )
+  );
 }

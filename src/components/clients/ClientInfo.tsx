@@ -216,7 +216,7 @@ export function ClientInfo() {
           </CardFooter>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex flex-wrap gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Company Details</CardTitle>

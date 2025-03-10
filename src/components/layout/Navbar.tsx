@@ -1,57 +1,202 @@
-import { useAuthStore } from "@/store/auth.store"
+'use client'
 
-  // src/components/layout/Navbar.tsx
-  export const Navbar = () => {
-    const user = useAuthStore((state) => state.user)
-  
-    return (
-      <nav className="bg-white border-b border-secondary-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <img className="h-8 w-auto" src="/logo.svg" alt="WakiliChat" />
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <a
-                  href="/dashboard"
-                  className="border-primary-500 text-secondary-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Dashboard
-                </a>
-                <a
-                  href="/projects"
-                  className="border-transparent text-secondary-500 hover:border-secondary-300 hover:text-secondary-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Projects
-                </a>
-              </div>
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Sparkles, Menu, X, ChevronDown, ChevronRight } from 'lucide-react'
+
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [lawFirmDropdownOpen, setLawFirmDropdownOpen] = useState(false)
+  const router = useRouter()
+
+  // Handle navbar transparency on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close mobile menu when resizing to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  return (
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+      isScrolled || isOpen ? 'bg-white shadow-sm' : 'bg-transparent'
+    }`}>
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <Link href="/">
+          <Image src="/images/logo.png" alt="wakilichat" width={140} height={52} />
+        </Link>
+
+        {/* Mobile menu button */}
+        <button 
+          className="md:hidden z-50 text-gray-800 focus:outline-none"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center justify-between flex-grow ml-10">
+          <nav className="flex space-x-6">
+            <div className="relative group">
+              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+                Platform
+              </Link>
             </div>
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <button
-                  type="button"
-                  className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                >
-                  New Project
-                </button>
-              </div>
-              <div className="ml-4 flex items-center md:ml-6">
-                <div className="ml-3 relative">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-secondary-700">{user?.fullName}</span>
-                    <button
-                      onClick={() => useAuthStore.getState().logout()}
-                      className="text-secondary-600 hover:text-secondary-900"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div className="relative group">
+              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+                AI Assistant
+                <Sparkles className="ml-1 w-4 h-4" />
+              </Link>
             </div>
+            <div className="relative group">
+              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+                For Law Firms
+                <ChevronDown className="ml-1 w-4 h-4" />
+              </Link>
+            </div>
+            <Link href="/hire-a-lawyer" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center border-b-solid border-b-2 border-yellow-400">
+              Hire A Lawyer
+            </Link>
+            <Link href="/login" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              Pricing
+            </Link>
+          </nav>
+
+          <div className="flex items-center space-x-4">
+            <Link href="/login" className="font-medium text-gray-800 hover:text-green-600 border border-gray-300 rounded-md py-2 px-4">
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              className="font-medium text-white bg-[#005c4d] hover:bg-gray-800 rounded-md py-2 px-4"
+            >
+              Get a demo
+            </Link>
           </div>
         </div>
-      </nav>
-    )
-  }
+
+        {/* Mobile Menu */}
+        <div
+          className={`fixed inset-0 bg-white z-40 transform transition-transform duration-300 ease-in-out ${
+            isOpen ? 'translate-x-0' : 'translate-x-full'
+          } md:hidden`}
+        >
+          <div className="container mx-auto px-4 pt-20 pb-6 h-full overflow-y-auto">
+            <nav className="flex flex-col space-y-6">
+              <Link
+                href="/register"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
+                onClick={() => setIsOpen(false)}
+              >
+                Platform
+              </Link>
+              <Link
+                href="/register"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 flex items-center border-b border-gray-100"
+                onClick={() => setIsOpen(false)}
+              >
+                AI Assistant
+                <Sparkles className="ml-2 w-4 h-4" />
+              </Link>
+              
+              <div>
+                <button
+                  className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 w-full flex items-center justify-between border-b border-gray-100"
+                  onClick={() => setLawFirmDropdownOpen(!lawFirmDropdownOpen)}
+                >
+                  For Law Firms
+                  {lawFirmDropdownOpen ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+                
+                {lawFirmDropdownOpen && (
+                  <div className="pl-4 py-2 space-y-3 bg-gray-50 rounded-md mt-1">
+                    <Link
+                      href="/for-law-firms/solution-1"
+                      className="block font-medium text-gray-700 hover:text-green-600"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Solution 1
+                    </Link>
+                    <Link
+                      href="/for-law-firms/solution-2"
+                      className="block font-medium text-gray-700 hover:text-green-600"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Solution 2
+                    </Link>
+                    <Link
+                      href="/for-law-firms/solution-3"
+                      className="block font-medium text-gray-700 hover:text-green-600"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Solution 3
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
+              <Link
+                href="/hire-a-lawyer"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2  border-gray-100 border-b-yellow-400 border-b-2"
+                onClick={() => setIsOpen(false)}
+              >
+                Hire A Lawyer
+              </Link>
+              <Link
+                href="/login"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
+                onClick={() => setIsOpen(false)}
+              >
+                Pricing
+              </Link>
+
+              <div className="pt-6 flex flex-col space-y-4">
+                <Link
+                  href="/login"
+                  className="font-medium text-gray-800 hover:text-green-600 border border-gray-300 rounded-md py-3 px-4 text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/register"
+                  className="font-medium text-white bg-[#005c4d] hover:bg-gray-800 rounded-md py-3 px-4 text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Get a demo
+                </Link>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+export default Navbar

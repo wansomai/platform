@@ -28,7 +28,7 @@ const tabs = [
   { id: "documents", label: "Documents", icon: FileText },
   { id: "client", label: "Client", icon: Briefcase },
   { id: "team", label: "Team", icon: Users },
-  { id: "schedule", label: "Schedule", icon: Calendar },
+  // { id: "schedule", label: "Schedule", icon: Calendar },
   { id: "settings", label: "Settings", icon: Cog },
 ];
 
@@ -61,15 +61,16 @@ export function WorkspaceLayout({
   }, [projectId, currentProject, fetchProjectById]);
 
   return (
-    <div className="flex h-screen lg:pl-64">
+    <div className="flex h-screen">
       {/* Left Sidebar for Project Navigation */}
-      <div className="hidden fixed inset-y-0 left-0 w-64 lg:flex lg:flex-col bg-white border-r border-gray-200">
+      <div className=" w-64 hidden lg:flex lg:flex-col bg-white border-r border-gray-200 z-10">
+    
         <div className="flex h-16 items-center justify-between px-4 border-b">
           <h2 className="text-lg font-semibold truncate">
             {isLoading ? "Loading..." : currentProject?.title || "Project"}
           </h2>
         </div>
-        
+       
         <ScrollArea className="flex-1">
           <nav className="flex flex-col gap-1 p-2">
             {tabs.map((tab) => (
@@ -89,28 +90,47 @@ export function WorkspaceLayout({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile tabs */}
-        <div className="block lg:hidden border-b">
-          <ScrollArea orientation="horizontal" className="w-full">
-            <div className="flex p-2">
-              {tabs.map((tab) => (
-                <Button
-                  key={tab.id}
-                  variant={activeWorkspaceTab === tab.id ? "default" : "ghost"}
-                  size="sm"
-                  className="mr-1"
-                  onClick={() => setActiveWorkspaceTab(tab.id)}
-                >
-                  <tab.icon className="mr-1 h-4 w-4" />
-                  {tab.label}
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
+        {/* Tabs for both mobile and desktop */}
+        <div className="border-b bg-white">
+          {/* Mobile tabs (horizontal scroll) */}
+          <div className="block lg:hidden">
+            <ScrollArea className="w-full">
+              <div className="flex p-2">
+                {tabs.map((tab) => (
+                  <Button
+                    key={tab.id}
+                    variant={activeWorkspaceTab === tab.id ? "default" : "ghost"}
+                    size="sm"
+                    className="mr-1"
+                    onClick={() => setActiveWorkspaceTab(tab.id)}
+                  >
+                    <tab.icon className="mr-1 h-4 w-4" />
+                    {tab.label}
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+          
+          {/* Desktop header/title bar (only showing project title/info) */}
+          <div className="hidden lg:flex items-center h-16 px-6 justify-between">
+            <h1 className="text-xl font-semibold">
+              {activeWorkspaceTab.charAt(0).toUpperCase() + activeWorkspaceTab.slice(1)}
+            </h1>
+            {currentProject && (
+              <div className="flex items-center">
+                <span className="text-sm text-gray-500">
+                  Project: {currentProject.title}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Main content */}
-        {children}
+        <div className="flex-1 overflow-auto">
+          {children}
+        </div>
       </div>
 
       {/* Right Sidebar - Context Panel */}

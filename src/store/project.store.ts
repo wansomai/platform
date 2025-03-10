@@ -1,6 +1,7 @@
 // src/store/project.store.ts
 import { create } from 'zustand'
 import { apiClient } from '@/lib/api'
+import { useAuth } from '@/context/AuthContext'
 
 export interface ProjectDetails {
   id: string
@@ -70,6 +71,13 @@ export interface EventInfo {
   created_at: string
 }
 
+interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+  error?: boolean;
+}
+
 interface ProjectState {
   projects: ProjectListItem[]
   currentProject: ProjectDetails | null
@@ -88,16 +96,16 @@ interface ProjectState {
   // API operations
   fetchProjects: () => Promise<ProjectListItem[]>
   fetchProjectById: (projectId: string) => Promise<ProjectDetails | null>
-  createProject: (data: {title: string, description?: string}) => Promise<ProjectListItem | null>
+  createProject: (data: {title: string, description?: string, organizationId: string}) => Promise<ProjectListItem | null>
   updateProjectDetails: (projectId: string, data: {title: string, description?: string, status?: string}) => Promise<ProjectListItem | null>
   removeProject: (projectId: string) => Promise<boolean>
   
   // Team management
-  addTeamMember: (projectId: string, data: {email: string, role: string}) => Promise<TeamMember | null>
+  addTeamMember: (projectId: string, data: {email: string, role: string, userId: string|undefined}) => Promise<TeamMember | null>
   removeTeamMember: (projectId: string, userId: string) => Promise<boolean>
   
   // Document management
-  uploadDocument: (projectId: string, file: File, category: string, onProgress?: (progress: number) => void) => Promise<DocumentInfo | null>
+  uploadDocument: (projectId: string, file: File, category: string, userId: string, onProgress?: (progress: number) => void) => Promise<DocumentInfo | null>
   deleteDocument: (projectId: string, documentId: string) => Promise<boolean>
   
   // Event management
@@ -138,26 +146,48 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   fetchProjects: async () => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<{ data: ProjectListItem[] }>('/projects');
-      set({ projects: response.data, isLoading: false });
-      return response.data;
+      const response = await apiClient.get<ApiResponse<ProjectListItem[]>>('/projects');
+      
+      const projects = response.data || response.data || [];
+      set({ projects, isLoading: false });
+      return projects;
+      
     } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to fetch projects', 
-        isLoading: false 
-      });
+      console.error('Error fetching projects:', error);
+      set({ error: error.message || 'Failed to fetch projects', isLoading: false });
       return [];
     }
   },
   
   fetchProjectById: async (projectId: string) => {
+    const state = get();
+    
+    // If we're already loading this project, don't make another request
+    if (state.isLoading) {
+      return state.currentProject;
+    }
+    
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<{ data: ProjectDetails }>(`/projects/${projectId}`);
-      const project = response.data;
-      set({ currentProject: project, isLoading: false });
-      return project;
+      const response = await apiClient.get<ApiResponse<ProjectDetails>>(`/projects/${projectId}`);
+      
+      // Get the project data from the response
+      const projectData = response.data || null;
+      
+      // Ensure the knowledge base structure exists
+      if (projectData && !projectData.knowledge_base) {
+        projectData.knowledge_base = {
+          team: [],
+          client: {} as ClientInfo,
+          documents: [],
+          events: []
+        };
+      }
+      
+      set({ currentProject: projectData, isLoading: false });
+      return projectData;
     } catch (error: any) {
+      console.error('Error fetching project:', error);
       set({ 
         error: error.message || 'Failed to fetch project details', 
         isLoading: false 
@@ -169,14 +199,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   createProject: async (data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<{ data: ProjectListItem }>('/projects', data);
-      const newProject = response.data;
-      set((state) => ({ 
-        projects: [...state.projects, newProject],
-        isLoading: false
-      }));
-      return newProject;
+      const response = await apiClient.post<ApiResponse<ProjectListItem>>('/projects', data);
+      
+      if (response.data) {
+        const project = response.data;
+        set((state) => ({ 
+          projects: [...state.projects, project],
+          isLoading: false 
+        }));
+        
+        return project;
+      }
+      return null;
     } catch (error: any) {
+      console.error('Error creating project:', error);
       set({ 
         error: error.message || 'Failed to create project', 
         isLoading: false 
@@ -188,8 +224,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateProjectDetails: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.put<{ data: ProjectListItem }>(`/projects/${projectId}`, data);
-      const updatedProject = response.data;
+      const response = await apiClient.put<ApiResponse<ProjectListItem>>(`/projects/${projectId}`, data);
+      const updatedProject = response.data || response.data;
       
       set((state) => ({
         projects: state.projects.map((p) => 
@@ -203,6 +239,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return updatedProject;
     } catch (error: any) {
+      console.error('Error updating project:', error);
       set({ 
         error: error.message || 'Failed to update project', 
         isLoading: false 
@@ -226,6 +263,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return true;
     } catch (error: any) {
+      console.error('Error deleting project:', error);
       set({ 
         error: error.message || 'Failed to delete project', 
         isLoading: false 
@@ -238,8 +276,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addTeamMember: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<{ data: TeamMember }>(`/projects/${projectId}/team`, data);
-      const newMember = response.data;
+      const response = await apiClient.post<ApiResponse<TeamMember>>(`/projects/${projectId}/team`, data);
+      const newMember = response.data || response.data;
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -260,6 +298,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return newMember;
     } catch (error: any) {
+      console.error('Error adding team member:', error);
       set({ 
         error: error.message || 'Failed to add team member', 
         isLoading: false 
@@ -294,6 +333,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return true;
     } catch (error: any) {
+      console.error('Error removing team member:', error);
       set({ 
         error: error.message || 'Failed to remove team member', 
         isLoading: false 
@@ -303,7 +343,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
   
   // Document management
-  uploadDocument: async (projectId, file, category, onProgress) => {
+  uploadDocument: async (projectId: string, file: File, category: string, userId: string, onProgress?: (progress: number) => void) => {
     try {
       set({ isLoading: true, error: null });
       
@@ -311,11 +351,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       formData.append('file', file);
       formData.append('category', category);
       
-      const response = await apiClient.upload<{ data: DocumentInfo }>(
+      const response = await apiClient.post<{ data: DocumentInfo }>(
         `/projects/${projectId}/documents`,
-        file,
-        onProgress,
-        { category }
+        formData,
+        {
+          onProgress,
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+            'x-user-id': userId
+          },
+          data: { category }
+        }
       );
       
       const newDocument = response.data;
@@ -342,6 +388,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return newDocument;
     } catch (error: any) {
+      console.error('Error uploading document:', error);
       set({ 
         error: error.message || 'Failed to upload document', 
         isLoading: false 
@@ -376,6 +423,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return true;
     } catch (error: any) {
+      console.error('Error deleting document:', error);
       set({ 
         error: error.message || 'Failed to delete document', 
         isLoading: false 
@@ -388,8 +436,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addEvent: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<{ data: EventInfo }>(`/projects/${projectId}/events`, data);
-      const newEvent = response.data;
+      const response = await apiClient.post<ApiResponse<EventInfo>>(`/projects/${projectId}/events`, data);
+      const newEvent = response.data || response.data;
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -409,6 +457,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return newEvent;
     } catch (error: any) {
+      console.error('Error adding event:', error);
       set({ 
         error: error.message || 'Failed to add event', 
         isLoading: false 
@@ -420,11 +469,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateEvent: async (projectId, eventId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.put<{ data: EventInfo }>(
+      const response = await apiClient.put<ApiResponse<EventInfo>>(
         `/projects/${projectId}/events/${eventId}`,
         data
       );
-      const updatedEvent = response.data;
+      const updatedEvent = response.data || response.data;
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -446,6 +495,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return updatedEvent;
     } catch (error: any) {
+      console.error('Error updating event:', error);
       set({ 
         error: error.message || 'Failed to update event', 
         isLoading: false 
@@ -479,6 +529,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return true;
     } catch (error: any) {
+      console.error('Error removing event:', error);
       set({ 
         error: error.message || 'Failed to remove event', 
         isLoading: false 
@@ -491,11 +542,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateClientInfo: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.put<{ data: ClientInfo }>(
+      const response = await apiClient.put<ApiResponse<ClientInfo>>(
         `/projects/${projectId}/client`,
         data
       );
-      const updatedClientInfo = response.data;
+      const updatedClientInfo = response.data || response.data;
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -515,6 +566,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       return updatedClientInfo;
     } catch (error: any) {
+      console.error('Error updating client information:', error);
       set({ 
         error: error.message || 'Failed to update client information', 
         isLoading: false 

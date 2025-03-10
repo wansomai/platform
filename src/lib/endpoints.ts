@@ -8,7 +8,6 @@ export const apiEndpoints = {
     resetPasswordRequest: '/auth/reset-password-request',
     resetPassword: '/auth/reset-password',
   },
-  
   projects: {
     list: '/projects',
     create: '/projects',

@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { 
   Card, 
@@ -24,103 +23,110 @@ import {
   AlertCircle,
   ArrowUpRight,
   Briefcase,
-  Edit
+  Edit,
+  Loader2
 } from "lucide-react"
-import { useProjectStore } from "@/store/project.store"
+import { useProjectStore, ProjectDetails } from "@/store/project.store"
 import { useChatStore } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { formatDistanceToNow, format, differenceInDays } from 'date-fns'
+import { useState } from "react"
+import { EditProjectModal } from "@/components/projects/EditProjectModal"
+interface ProjectOverviewProps {
+  project: ProjectDetails;
+}
 
-export function ProjectOverview() {
-  const params = useParams()
-  const projectId = params.id as string
-  
-  const { currentProject, isLoading: projectLoading } = useProjectStore()
+export function ProjectOverview({ project }: ProjectOverviewProps) {
   const { setActiveWorkspaceTab } = useUIStore()
+  const [isEditing, setIsEditing] = useState(false);  
   
   // Calculate progress based on documents, team members, events
   const calculateProgress = () => {
-    if (!currentProject) return 0
+    if (!project) return 0;
     
-    let score = 0
-    const maxScore = 5
+    let score = 0;
+    const maxScore = 5;
+    
+    // Handle potential undefined values safely
+    const knowledge_base = project.knowledge_base || {};
     
     // Has client information
-    if (currentProject.knowledge_base.client && 
-        Object.keys(currentProject.knowledge_base.client).length > 0) {
-      score += 1
+    if (knowledge_base.client && 
+        Object.keys(knowledge_base.client).length > 0 &&
+        knowledge_base.client.name) {
+      score += 1;
     }
     
     // Has team members
-    if (currentProject.knowledge_base.team && 
-        currentProject.knowledge_base.team.length > 0) {
-      score += 1
+    if (knowledge_base.team && 
+        Array.isArray(knowledge_base.team) &&
+        knowledge_base.team.length > 0) {
+      score += 1;
     }
     
     // Has documents
-    if (currentProject.knowledge_base.documents && 
-        currentProject.knowledge_base.documents.length > 0) {
-      score += 1
+    if (knowledge_base.documents && 
+        Array.isArray(knowledge_base.documents) &&
+        knowledge_base.documents.length > 0) {
+      score += 1;
     }
     
     // Has events
-    if (currentProject.knowledge_base.events && 
-        currentProject.knowledge_base.events.length > 0) {
-      score += 1
+    if (knowledge_base.events && 
+        Array.isArray(knowledge_base.events) &&
+        knowledge_base.events.length > 0) {
+      score += 1;
     }
     
     // Has AI interactions
-    if (currentProject.messages_count > 0) {
-      score += 1
+    if (project.messages_count > 0) {
+      score += 1;
     }
     
-    return (score / maxScore) * 100
+    return (score / maxScore) * 100;
   }
   
   // Get status badge color
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'active':
-        return 'bg-green-100 text-green-800 hover:bg-green-200'
+        return 'bg-green-100 text-green-800 hover:bg-green-200';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
       case 'on hold':
-        return 'bg-orange-100 text-orange-800 hover:bg-orange-200'
+        return 'bg-orange-100 text-orange-800 hover:bg-orange-200';
       case 'archived':
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
       default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
     }
   }
   
-  if (projectLoading || !currentProject) {
-    return (
-      <div className="p-6 space-y-6">
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-        </div>
-      </div>
-    )
-  }
+  // Safe access function for nested properties
+  const safeGet = (obj: any, path: string, defaultValue: any = null) => {
+    const keys = path.split('.');
+    return keys.reduce((o, key) => (o && o[key] !== undefined ? o[key] : defaultValue), obj);
+  };
   
-  const progress = calculateProgress()
+  const progress = calculateProgress();
+  const knowledge_base = project.knowledge_base || {};
   
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">{currentProject.title}</h1>
+          <h1 className="text-3xl font-bold">{project.title || "Untitled Project"}</h1>
           <p className="text-gray-500">
-            Created {formatDistanceToNow(new Date(currentProject.created_at), { addSuffix: true })}
+            Created {project.created_at ? formatDistanceToNow(new Date(project.created_at), { addSuffix: true }) : "recently"}
           </p>
         </div>
         <div className="flex gap-3">
-          <Badge className={getStatusColor(currentProject.status)}>
-            {currentProject.status}
+          <Badge className={getStatusColor(project.status)}>
+            {project.status || "Active"}
           </Badge>
-          <Button size="sm" variant="outline">
+          <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
             <Edit className="mr-2 h-4 w-4" />
             Edit Project
           </Button>
@@ -143,8 +149,9 @@ export function ProjectOverview() {
             <Progress value={progress} className="h-2" />
             
             <div className="grid gap-3 pt-2">
-              {!currentProject.knowledge_base.client || 
-               Object.keys(currentProject.knowledge_base.client).length === 0 ? (
+              {(!knowledge_base.client || 
+                !Object.keys(knowledge_base.client).length || 
+                !knowledge_base.client.name) ? (
                 <Button 
                   variant="ghost" 
                   className="justify-start text-sm h-auto py-2"
@@ -168,13 +175,12 @@ export function ProjectOverview() {
                   </div>
                   <div className="text-left">
                     <p className="font-medium text-sm">Client information added</p>
-                    <p className="text-gray-500 text-xs">{currentProject.knowledge_base.client.name}</p>
+                    <p className="text-gray-500 text-xs">{knowledge_base.client?.name || "Client"}</p>
                   </div>
                 </div>
               )}
               
-              {!currentProject.knowledge_base.team || 
-               currentProject.knowledge_base.team.length === 0 ? (
+              {!safeGet(knowledge_base, 'team.length', 0) ? (
                 <Button 
                   variant="ghost" 
                   className="justify-start text-sm h-auto py-2"
@@ -199,14 +205,13 @@ export function ProjectOverview() {
                   <div className="text-left">
                     <p className="font-medium text-sm">Team members added</p>
                     <p className="text-gray-500 text-xs">
-                      {currentProject.knowledge_base.team.length} member{currentProject.knowledge_base.team.length > 1 ? 's' : ''}
+                      {safeGet(knowledge_base, 'team.length', 0)} member{safeGet(knowledge_base, 'team.length', 0) > 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
               )}
               
-              {!currentProject.knowledge_base.documents || 
-               currentProject.knowledge_base.documents.length === 0 ? (
+              {!safeGet(knowledge_base, 'documents.length', 0) ? (
                 <Button 
                   variant="ghost" 
                   className="justify-start text-sm h-auto py-2"
@@ -231,14 +236,13 @@ export function ProjectOverview() {
                   <div className="text-left">
                     <p className="font-medium text-sm">Documents uploaded</p>
                     <p className="text-gray-500 text-xs">
-                      {currentProject.knowledge_base.documents.length} document{currentProject.knowledge_base.documents.length > 1 ? 's' : ''}
+                      {safeGet(knowledge_base, 'documents.length', 0)} document{safeGet(knowledge_base, 'documents.length', 0) > 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
               )}
               
-              {!currentProject.knowledge_base.events || 
-               currentProject.knowledge_base.events.length === 0 ? (
+              {!safeGet(knowledge_base, 'events.length', 0) ? (
                 <Button 
                   variant="ghost" 
                   className="justify-start text-sm h-auto py-2"
@@ -263,13 +267,13 @@ export function ProjectOverview() {
                   <div className="text-left">
                     <p className="font-medium text-sm">Events scheduled</p>
                     <p className="text-gray-500 text-xs">
-                      {currentProject.knowledge_base.events.length} event{currentProject.knowledge_base.events.length > 1 ? 's' : ''}
+                      {safeGet(knowledge_base, 'events.length', 0)} event{safeGet(knowledge_base, 'events.length', 0) > 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
               )}
               
-              {currentProject.messages_count === 0 ? (
+              {!project.messages_count ? (
                 <Button 
                   variant="ghost" 
                   className="justify-start text-sm h-auto py-2"
@@ -294,7 +298,7 @@ export function ProjectOverview() {
                   <div className="text-left">
                     <p className="font-medium text-sm">AI conversations started</p>
                     <p className="text-gray-500 text-xs">
-                      {currentProject.messages_count} message{currentProject.messages_count > 1 ? 's' : ''}
+                      {project.messages_count} message{project.messages_count > 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
@@ -305,12 +309,12 @@ export function ProjectOverview() {
       </Card>
       
       {/* Project stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="flex flex-wrap gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Team Members</CardDescription>
             <CardTitle className="text-2xl">
-              {currentProject.team_count}
+              {project.team_count || 0}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -330,7 +334,7 @@ export function ProjectOverview() {
           <CardHeader className="pb-2">
             <CardDescription>Documents</CardDescription>
             <CardTitle className="text-2xl">
-              {currentProject.documents_count}
+              {project.documents_count || 0}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -350,7 +354,7 @@ export function ProjectOverview() {
           <CardHeader className="pb-2">
             <CardDescription>AI Assistant Usage</CardDescription>
             <CardTitle className="text-2xl">
-              {currentProject.messages_count}
+              {project.messages_count || 0}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -370,7 +374,9 @@ export function ProjectOverview() {
           <CardHeader className="pb-2">
             <CardDescription>Last Activity</CardDescription>
             <CardTitle className="text-2xl">
-              {currentProject.last_activity}
+              {project.last_activity && project.last_activity !== 'Recent' 
+                ? formatDistanceToNow(new Date(project.last_activity), { addSuffix: true })
+                : "Recent"}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -388,7 +394,7 @@ export function ProjectOverview() {
         </CardHeader>
         <CardContent>
           <p className="text-sm">
-            {currentProject.description || 'No description provided.'}
+            {project.description || 'No description provided.'}
           </p>
         </CardContent>
       </Card>
@@ -400,10 +406,11 @@ export function ProjectOverview() {
             <CardTitle>Upcoming Events</CardTitle>
           </CardHeader>
           <CardContent>
-            {currentProject.knowledge_base.events && 
-             currentProject.knowledge_base.events.length > 0 ? (
+            {knowledge_base.events && 
+             Array.isArray(knowledge_base.events) &&
+             knowledge_base.events.length > 0 ? (
               <div className="space-y-4">
-                {currentProject.knowledge_base.events
+                {knowledge_base.events
                   .slice(0, 3)
                   .map((event: any) => (
                     <div key={event.id} className="flex items-start">
@@ -446,10 +453,11 @@ export function ProjectOverview() {
             <CardTitle>Recent Documents</CardTitle>
           </CardHeader>
           <CardContent>
-            {currentProject.knowledge_base.documents && 
-             currentProject.knowledge_base.documents.length > 0 ? (
+            {knowledge_base.documents && 
+             Array.isArray(knowledge_base.documents) &&
+             knowledge_base.documents.length > 0 ? (
               <div className="space-y-4">
-                {currentProject.knowledge_base.documents
+                {knowledge_base.documents
                   .slice(0, 3)
                   .map((doc: any) => (
                     <div key={doc.id} className="flex items-start">
@@ -488,7 +496,14 @@ export function ProjectOverview() {
             )}
           </CardContent>
         </Card>
+        <EditProjectModal
+          project={project}
+          open={isEditing}
+          onClose={() => setIsEditing(false)}
+          onSuccess={() => {
+            setIsEditing(false);
+          }}
+        />
       </div>
     </div>
-  )
-}
+  )}

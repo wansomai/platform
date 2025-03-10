@@ -10,26 +10,6 @@ const updateTeamMemberSchema = z.object({
   role: z.enum(['admin', 'member', 'viewer'])
 })
 
-// Helper function to check project access
-async function checkProjectAccess(projectId: string, userId: string) {
-  const projectMember = await prisma.projectMember.findUnique({
-    where: {
-      userId_projectId: {
-        userId,
-        projectId
-      }
-    },
-    select: { role: true }
-  })
-  
-  // Only admins and owners can manage team
-  if (!projectMember || (projectMember.role !== 'owner' && projectMember.role !== 'admin')) {
-    return false
-  }
-  
-  return true
-}
-
 // PUT handler - Update team member role
 export async function PUT(
   request: NextRequest,
@@ -37,32 +17,6 @@ export async function PUT(
 ) {
   try {
     const { id: projectId, userId: teamMemberId } = params
-    
-    // Get user ID from request headers (set by middleware)
-    const userId = request.headers.get('x-user-id')
-    
-    if (!userId) {
-      return NextResponse.json(
-        { 
-          status: 401,
-          message: 'Unauthorized' 
-        },
-        { status: 401 }
-      )
-    }
-    
-    // Check if user has admin access to this project
-    const hasAccess = await checkProjectAccess(projectId, userId)
-    
-    if (!hasAccess) {
-      return NextResponse.json(
-        { 
-          status: 403,
-          message: 'Forbidden' 
-        },
-        { status: 403 }
-      )
-    }
     
     // Parse and validate request body
     const body = await request.json()
@@ -175,32 +129,6 @@ export async function DELETE(
 ) {
   try {
     const { id: projectId, userId: teamMemberId } = params
-    
-    // Get user ID from request headers (set by middleware)
-    const userId = request.headers.get('x-user-id')
-    
-    if (!userId) {
-      return NextResponse.json(
-        { 
-          status: 401,
-          message: 'Unauthorized' 
-        },
-        { status: 401 }
-      )
-    }
-    
-    // Check if user has admin access to this project
-    const hasAccess = await checkProjectAccess(projectId, userId)
-    
-    if (!hasAccess) {
-      return NextResponse.json(
-        { 
-          status: 403,
-          message: 'Forbidden' 
-        },
-        { status: 403 }
-      )
-    }
     
     // Check if team member exists
     const teamMember = await prisma.projectMember.findUnique({

@@ -1,11 +1,10 @@
-"use client"
+// app/login/page.tsx
+'use client'
 
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { useAuth } from "@/context/AuthContext"
 
 import {
   Form,
@@ -19,7 +18,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
-import { useAuthStore } from "@/store/auth.store"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 // Form validation schema
 const formSchema = z.object({
@@ -31,29 +32,51 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, isLoading, error, setError } = useAuthStore()
+  const { login } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loginStatus, setLoginStatus] = useState<'idle' | 'success' | 'error'>('idle')
   
   // Initialize form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: "",
+      password: ""
     },
   })
   
   // Handle form submission
   const onSubmit = async (values: FormValues) => {
-    // Clear any previous errors
-    setError(null)
-    
-    // Attempt login
-    const success = await login(values.email, values.password)
-    
-    if (success) {
-      // Redirect to dashboard on successful login
-      router.push("/dashboard")
+    try {
+      // Clear any previous errors
+      setError(null)
+      setLoginStatus('idle')
+      setIsLoading(true)
+      
+      console.log('Attempting login with:', values.email)
+      
+      // Attempt login
+      const result = await login(values.email, values.password)
+      
+      if (result.success) {
+        setLoginStatus('success')
+        
+        // Redirect to dashboard on successful login
+        setTimeout(() => {
+          router.push("/dashboard")
+        }, 100)
+      } else {
+        setLoginStatus('error')
+        setError(result.error || 'Invalid credentials. Please try again.')
+      }
+    } catch (err: any) {
+      setLoginStatus('error')
+      setError(err.message || 'Login failed. Please try again.')
+      console.error('Login error:', err)
+    } finally {
+      setIsLoading(false)
     }
   }
   
@@ -67,9 +90,17 @@ export default function LoginPage() {
           </p>
         </div>
         
-        {error && (
+        {/* Success message */}
+        {loginStatus === 'success' && (
+          <Alert className="bg-green-50 border-green-200 text-green-800">
+            <AlertDescription>Login successful! Redirecting you to the dashboard...</AlertDescription>
+          </Alert>
+        )}
+        
+        {/* Error message */}
+        {(error || loginStatus === 'error') && (
           <Alert variant="destructive" className="mt-4">
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{error || 'Login failed. Please try again.'}</AlertDescription>
           </Alert>
         )}
         

@@ -59,8 +59,10 @@ import {
 import { useProjectStore, DocumentInfo } from "@/store/project.store"
 import { useUIStore } from "@/store/ui.store"
 import { formatDistanceToNow, format } from 'date-fns'
+import { ProjectComponentProps } from "@/types/project"
+import { useAuth } from '@/context/AuthContext'
 
-export function Documents() {
+export function Documents({ project }: ProjectComponentProps) {
   const params = useParams()
   const projectId = params.id as string
   
@@ -75,13 +77,14 @@ export function Documents() {
   
   const { currentProject, uploadDocument, deleteDocument, isLoading } = useProjectStore()
   const { addToast } = useUIStore()
+  const { user } = useAuth()
   
   // Get documents from current project
   const documents = currentProject?.knowledge_base?.documents || []
   
   // Filter documents based on search term and active tab
   const filteredDocuments = documents.filter((doc) => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = doc?.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = activeTab === "all" || doc.category === activeTab
     return matchesSearch && matchesCategory
   })
@@ -89,14 +92,14 @@ export function Documents() {
   // Handle file upload
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (!files || files.length === 0) return
+    if (!files || files.length === 0 || !user?.id) return
     
     const file = files[0]
     setUploading(true)
     setUploadProgress(0)
     
     try {
-      await uploadDocument(projectId, file, category, (progress) => {
+      await uploadDocument(projectId, file, category, user.id, (progress) => {
         setUploadProgress(progress)
       })
       
