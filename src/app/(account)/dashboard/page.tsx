@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { useRouter } from "next/navigation";
 import { Project } from "@/types";
+import { useProjectStore } from "@/store/project.store";
 // Project type definition
 
 interface CreateProjectData {
@@ -19,30 +20,12 @@ interface CreateProjectData {
 }
 export default function DashboardPage() {
   const { user, logout } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false)
   const router = useRouter();
+  const { fetchProjects,projects } = useProjectStore();
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await fetch("/api/projects");
-        
-        if (!response.ok) {
-          throw new Error("Failed to fetch projects");
-        }
-        
-        const data = await response.json();
-        setProjects(data);
-      } catch (err) {
-        setError("Error loading projects");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProjects();
   }, []);
 
@@ -79,7 +62,7 @@ export default function DashboardPage() {
         
         <Button onClick={()=>setOpen(true)}>
           <FolderPlus className="mr-2 h-4 w-4" />
-          New File
+          New Project
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -130,22 +113,22 @@ export default function DashboardPage() {
           {/* Recent projects */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Files</CardTitle>
+          <CardTitle>Recent Projects</CardTitle>
           <CardDescription>
-            Your most recently updated Files
+            Your most recently updated Projects
           </CardDescription>
         </CardHeader>
         <CardContent>
           {projects.length === 0 ? (
             <div className="text-center py-8">
               <Folder className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No Files yet</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No Projects yet</h3>
               <p className="text-sm text-gray-500 mb-4">
-                Create your first file to get started
+                Create your first project to get started
               </p>
               <Button onClick={()=>setOpen(true)}>
                 <FolderPlus className="mr-2 h-4 w-4" />
-                Create File
+                Create Project
               </Button>
             </div>
           ) : (

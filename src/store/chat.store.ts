@@ -127,7 +127,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   fetchConversations: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<{ data: Conversation[] }>(`/projects/${projectId}/conversations`);
+      const response = await apiClient.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
       set({ conversations: response.data, isLoading: false });
       return response.data;
     } catch (error: any) {
@@ -143,7 +143,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const response = await apiClient.get<{ data: Conversation }>(
-        `/projects/${projectId}/conversations/${conversationId}`
+        `/api/projects/${projectId}/conversations/${conversationId}`
       );
       const conversation = response.data;
       set({ currentConversation: conversation, isLoading: false });
@@ -161,7 +161,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const response = await apiClient.post<{ data: Conversation }>(
-        `/projects/${projectId}/conversations`,
+        `/api/projects/${projectId}/conversations`,
         { title: title || 'New Conversation' }
       );
       const newConversation = response.data;
@@ -209,7 +209,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       set({ error: null });
       const response = await apiClient.post<{ data: Message }>(
-        `/projects/${projectId}/conversations/${conversationId}/messages`,
+        `/api/projects/${projectId}/conversations/${conversationId}/messages`,
         { content }
       );
       
@@ -256,7 +256,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     
     try {
       await apiClient.put(
-        `/projects/${projectId}/conversations/${conversationId}/pin`,
+        `/api/projects/${projectId}/conversations/${conversationId}/pin`,
         { isPinned: newPinState }
       );
       

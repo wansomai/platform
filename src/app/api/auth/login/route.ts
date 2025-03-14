@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { message: "Email and password are required", error: true },
         { status: 400 }
       );
     }
@@ -25,30 +26,28 @@ export async function POST(request: NextRequest) {
         organization: true,
       },
     });
-
+    
     if (!user) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { message: "Invalid credentials", error: true },
         { status: 401 }
       );
     }
 
     // Compare passwords
-    // In a real app, you'd use a proper password hashing library like bcrypt
-    // For this example, we'll assume the password is stored as plain text
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { message: "Invalid credentials", error: true },
         { status: 401 }
       );
     }
 
-    // Create a session token
-    const token = jwt.sign(
+    // Create tokens
+    const access_token = jwt.sign(
       {
-        id: user.id,
+        userId: user.id,
         email: user.email,
         name: user.fullName,
         role: user.role,
@@ -58,39 +57,57 @@ export async function POST(request: NextRequest) {
           name: user.organization.name,
         },
       },
-      process.env.JWT_SECRET || "your-fallback-secret",
-      { expiresIn: "1d" }
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+    
+    const refresh_token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        name: user.fullName,
+        role: user.role,
+        organizationId: user.organizationId,
+        organization: {
+          id: user.organization.id,
+          name: user.organization.name,
+        },
+      },
+      JWT_REFRESH_SECRET,
+      { expiresIn: JWT_REFRESH_EXPIRES_IN }
     );
 
-    // Set the token as a cookie and return response
-    const response = NextResponse.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.fullName,
-        role: user.role,
-        organizationId: user.organizationId,
-        organization: {
-          id: user.organization.id,
-          name: user.organization.name,
-        },
-      },
-    });
+    // Prepare user data for response
+    const userData = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role,
+      organization: {
+        id: user.organization.id,
+        name: user.organization.name,
+      }
+    };
 
-    response.cookies.set({
-      name: "auth-token",
-      value: token,
-      httpOnly: true,
-      path: "/",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 1 day
+    // Create the response with the exact structure expected by the client
+    return NextResponse.json({
+      status: 200,
+      message: "Login successful",
+      data: {
+        access_token,
+        refresh_token,
+        user: userData
+      }
+    }, {
+      status: 200,
+      headers: {
+        'Set-Cookie': `auth-token=${access_token}; Path=/; HttpOnly; Max-Age=3600; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}, refresh-token=${refresh_token}; Path=/; HttpOnly; Max-Age=604800; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`
+      }
     });
-
-    return response;
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { error: "An error occurred during login" },
+      { message: "An error occurred during login", error: true },
       { status: 500 }
     );
   }

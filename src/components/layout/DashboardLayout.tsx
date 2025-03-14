@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
-import Image from "next/image";
+
 
 export default function DashboardLayoutComponent({ children }: { children: ReactNode }) {
 

@@ -16,6 +16,7 @@ export const useUIStore = create<UIState>((set,get) => ({
   activeModal: null,
   modalData: null,
   openModal: (modalId, data = null) => set({ activeModal: modalId, modalData: data }),
+  openUploadModal: () => set({ activeModal: 'upload' }),
   closeModal: () => set({ activeModal: null, modalData: null }),
   
   // Workspace layout
@@ -24,7 +25,7 @@ export const useUIStore = create<UIState>((set,get) => ({
   setRightSidebarCollapsed: (collapsed) => set({ rightSidebarCollapsed: collapsed }),
   
   // Active tab in workspace - set default to 'overview'
-  activeWorkspaceTab: 'overview',
+  activeWorkspaceTab: 'chat',
   setActiveWorkspaceTab: (tab) => {
     console.log(`Switching to tab: ${tab}`);
     set({ activeWorkspaceTab: tab });

@@ -53,7 +53,7 @@ export function DocumentUploadModal() {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleUpload} disabled={!file}>
+          <Button type="submit" onClick={handleUpload} disabled={!file} className="text-white color-green-500">
             Upload
           </Button>
         </DialogFooter>

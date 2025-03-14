@@ -1,4 +1,4 @@
-// src/store/auth.store.ts
+// src/store/auth.store.ts - Fixed version
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import api from '@/lib/api'
@@ -27,12 +27,45 @@ interface AuthState {
   setToken: (token: string | null) => void
   setRefreshToken: (token: string | null) => void
   setUser: (user: User | null) => void
-  login: (email: string, password: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<{ success: boolean, user?: User, error?: string }>
   register: (email: string, password: string, fullName: string, organizationName: string) => Promise<boolean>
   logout: () => void
   refreshAccessToken: () => Promise<boolean>
   setError: (error: string | null) => void
 }
+
+// Safe localStorage functions
+const safeStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      if (typeof window === 'undefined') return null;
+      return localStorage.getItem(key);
+    } catch (e) {
+      console.error('Error retrieving from localStorage:', e);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): boolean => {
+    try {
+      if (typeof window === 'undefined') return false;
+      localStorage.setItem(key, value);
+      return true;
+    } catch (e) {
+      console.error('Error saving to localStorage:', e);
+      return false;
+    }
+  },
+  removeItem: (key: string): boolean => {
+    try {
+      if (typeof window === 'undefined') return false;
+      localStorage.removeItem(key);
+      return true;
+    } catch (e) {
+      console.error('Error removing from localStorage:', e);
+      return false;
+    }
+  }
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -48,69 +81,76 @@ export const useAuthStore = create<AuthState>()(
         set({ 
           token,
           isAuthenticated: !!token
-        })
+        });
         
         // Debug logging to track token status
-        console.log('Token set in auth store:', !!token)
+        console.log('Token set in auth store:', !!token);
       },
       
       setRefreshToken: (refreshToken) => {
-        set({ refreshToken })
+        set({ refreshToken });
       },
       
-      setUser: (user) => set({ user }),
+      setUser: (user) => {
+        set({ user });
+        
+        // Also save to localStorage directly for redundancy
+        if (user) {
+          safeStorage.setItem('current-user', JSON.stringify(user));
+        }
+      },
       
       login: async (email, password) => {
         try {
-          set({ isLoading: true, error: null })
-          
+          set({ isLoading: true, error: null });
           const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
-          })
+          });
           
-          const data = await response.json()
+          const responseData = await response.json();
           
           if (!response.ok) {
-            throw new Error(data.message || 'Login failed')
+            throw new Error(responseData.message || 'Login failed');
           }
           
-          // Set token and user data
-          const token = data.data.access_token
-          const refreshToken = data.data.refresh_token
-          const user = data.data.user
+          // Check if responseData has the expected structure
+          if (!responseData.data) {
+            throw new Error('Unexpected response format from server');
+          }
           
-          // First set the tokens so they're available for subsequent requests
+          // Extract the data from response
+          const { access_token, refresh_token, user } = responseData.data;
+          
+          if (!access_token || !user) {
+            throw new Error('Missing authentication data in server response');
+          }
+          
+          // Save token and user directly to localStorage first
+          safeStorage.setItem('auth-token', access_token);
+          safeStorage.setItem('refresh_token', refresh_token);
+          safeStorage.setItem('current-user', JSON.stringify(user));
+          
+          // Then update the state
           set({
-            token,
-            refreshToken,
+            token: access_token,
+            refreshToken: refresh_token,
             user,
             isAuthenticated: true,
             isLoading: false
-          })
-          
-          // Store tokens in localStorage for recovery if needed
-          localStorage.setItem('refresh_token', refreshToken)
-          
-          // Debug logging
-          console.log('Login successful. Token saved:', !!token)
-          console.log('Auth state after login:', { 
-            isAuthenticated: true,
-            hasToken: !!token,
-            hasUser: !!user
-          })
-          
-          return true
+          });
+          return { success: true, user }; 
         } catch (error: any) {
+          console.error('Login error:', error);
+          
           set({ 
             error: error.message || 'Login failed', 
             isLoading: false,
             isAuthenticated: false
-          })
+          });
           
-          console.error('Login error:', error)
-          return false
+          return { success: false, error: error.message || 'Login failed' }; 
         }
       },
       
@@ -122,16 +162,19 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isAuthenticated: false,
           error: null
-        })
+        });
         
         // Clear tokens from localStorage
-        localStorage.removeItem('refresh_token')
+        safeStorage.removeItem('auth-token');
+        safeStorage.removeItem('refresh_token');
+        safeStorage.removeItem('current-user');
         
         // Clear cookies
-        document.cookie = `auth-token=; path=/; max-age=0; SameSite=Strict`
+        document.cookie = `auth-token=; path=/; max-age=0; SameSite=Strict`;
         
-        console.log('User logged out, auth state cleared')
+        console.log('User logged out, auth state cleared');
       },
+      
       register: async (email, password, fullName, organizationName) => {
         try {
           set({ isLoading: true, error: null });
@@ -148,18 +191,21 @@ export const useAuthStore = create<AuthState>()(
             throw new Error(data.message || 'Registration failed');
           }
           
-          const token = data.data.access_token
-          const refreshToken = data.data.refresh_token
-          const user = data.data.user
+          const { access_token, refresh_token, user } = data.data;
           
-          // First set the tokens so they're available for subsequent requests
+          // Save directly to localStorage
+          safeStorage.setItem('auth-token', access_token);
+          safeStorage.setItem('refresh_token', refresh_token);
+          safeStorage.setItem('current-user', JSON.stringify(user));
+          
+          // Update state
           set({
-            token,
-            refreshToken,
+            token: access_token,
+            refreshToken: refresh_token,
             user,
             isAuthenticated: true,
             isLoading: false
-          })
+          });
           
           return true;
         } catch (error: any) {
@@ -172,43 +218,43 @@ export const useAuthStore = create<AuthState>()(
       },
       
       refreshAccessToken: async () => {
-        const currentRefreshToken = get().refreshToken
+        const currentRefreshToken = get().refreshToken || safeStorage.getItem('refresh_token');
         
         if (!currentRefreshToken) {
-          console.error('No refresh token available')
-          return false
+          console.error('No refresh token available');
+          return false;
         }
         
         try {
-          set({ isLoading: true })
+          set({ isLoading: true });
           
           const response = await api.post('/api/auth/refresh-token', {
             refresh_token: currentRefreshToken
-          })
+          });
           
-          if (response.data && response.data.data.access_token) {
-            const newToken = response.data.data.access_token
-            const newRefreshToken = response.data.data.refresh_token || currentRefreshToken
+          if (response.data && response.data.data && response.data.data.access_token) {
+            const newToken = response.data.data.access_token;
+            const newRefreshToken = response.data.data.refresh_token || currentRefreshToken;
+            
+            safeStorage.setItem('auth-token', newToken);
+            safeStorage.setItem('refresh_token', newRefreshToken);
             
             set({
               token: newToken,
               refreshToken: newRefreshToken,
               isAuthenticated: true,
               isLoading: false
-            })
+            });
             
-            // Update refresh token in localStorage
-            localStorage.setItem('refresh_token', newRefreshToken)
-            
-            console.log('Token refreshed successfully')
-            return true
+            console.log('Token refreshed successfully');
+            return true;
           }
           
-          return false
+          return false;
         } catch (error) {
-          console.error('Failed to refresh token:', error)
-          set({ isLoading: false })
-          return false
+          console.error('Failed to refresh token:', error);
+          set({ isLoading: false });
+          return false;
         }
       },
       
@@ -219,36 +265,39 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => ({
         getItem: (name) => {
           try {
-            // Try to get from localStorage first (more reliable for web apps)
-            const value = localStorage.getItem(name)
-            if (value) return value
+            if (typeof window === 'undefined') return null;
+            
+            const value = localStorage.getItem(name);
+            if (value) return value;
             
             // Fall back to cookies if necessary
             const cookie = document.cookie
               .split('; ')
-              .find((row) => row.startsWith(`${name}=`))
+              .find((row) => row.startsWith(`${name}=`));
             
-            return cookie ? cookie.split('=')[1] : null
+            return cookie ? cookie.split('=')[1] : null;
           } catch (e) {
-            console.error('Error retrieving auth data:', e)
-            return null
+            console.error('Error retrieving auth data:', e);
+            return null;
           }
         },
         setItem: (name, value) => {
           try {
-            // Store in both localStorage and cookies for redundancy
-            localStorage.setItem(name, value)
-            document.cookie = `${name}=${value}; path=/; max-age=2592000; SameSite=Strict` // 30 days
+            if (typeof window === 'undefined') return;
+            
+            localStorage.setItem(name, value);
+            console.log(`Stored ${name} in localStorage`);
           } catch (e) {
-            console.error('Error storing auth data:', e)
+            console.error('Error storing auth data:', e);
           }
         },
         removeItem: (name) => {
           try {
-            localStorage.removeItem(name)
-            document.cookie = `${name}=; path=/; max-age=0; SameSite=Strict`
+            if (typeof window === 'undefined') return;
+            
+            localStorage.removeItem(name);
           } catch (e) {
-            console.error('Error removing auth data:', e)
+            console.error('Error removing auth data:', e);
           }
         },
       })),
@@ -260,9 +309,59 @@ export const useAuthStore = create<AuthState>()(
       }),
     }
   )
-)
+);
 
-// Export a helper function to get the current token outside of React components
-export const getAuthToken = (): string | null => {
-  return useAuthStore.getState().token
+// Initialize auth from localStorage on client-side
+if (typeof window !== 'undefined') {
+  // Try to recover user from localStorage
+  try {
+    const savedUser = localStorage.getItem('current-user');
+    const refreshToken = localStorage.getItem('refresh_token');
+    
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        useAuthStore.getState().setUser(user);
+        console.log('Recovered user from localStorage:', user);
+        
+        if (refreshToken) {
+          useAuthStore.getState().setRefreshToken(refreshToken);
+          // Trigger a token refresh
+          setTimeout(() => {
+            useAuthStore.getState().refreshAccessToken();
+          }, 100);
+        }
+      } catch (e) {
+        console.error('Error parsing saved user:', e);
+      }
+    }
+  } catch (e) {
+    console.error('Error initializing auth from localStorage:', e);
+  }
 }
+
+// Export helper functions
+export const getAuthToken = (): string | null => {
+  return useAuthStore.getState().token || safeStorage.getItem('auth-token');
+};
+
+export const isAuthenticated = (): boolean => {
+  return !!useAuthStore.getState().token || !!safeStorage.getItem('auth-token');
+};
+
+export const getCurrentUser = (): User | null => {
+  const storeUser = useAuthStore.getState().user;
+  if (storeUser) return storeUser;
+  
+  // Try to get from localStorage if not in store
+  try {
+    const savedUser = safeStorage.getItem('current-user');
+    if (savedUser) {
+      return JSON.parse(savedUser);
+    }
+  } catch (e) {
+    console.error('Error getting user from localStorage:', e);
+  }
+  
+  return null;
+};

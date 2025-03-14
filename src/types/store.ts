@@ -1,6 +1,3 @@
-
-
-
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 export interface Toast {
   id: string;
@@ -25,6 +22,7 @@ export interface UIState {
   modalData: any;
   openModal: (modalId: string, data?: any) => void;
   closeModal: () => void;
+  openUploadModal: () => void;
   
   // Workspace layout
   rightSidebarCollapsed: boolean;

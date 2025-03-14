@@ -146,9 +146,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   fetchProjects: async () => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<ApiResponse<ProjectListItem[]>>('/projects');
+      const response = await fetch('/api/projects');
       
-      const projects = response.data || response.data || [];
+      const projects = await response.json();
       set({ projects, isLoading: false });
       return projects;
       
@@ -169,8 +169,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<ApiResponse<ProjectDetails>>(`/projects/${projectId}`);
+      const response = await apiClient.get<ApiResponse<ProjectDetails>>(`/api/projects/${projectId}`);
       
+      console.log(response.data,"fetched project details");
       // Get the project data from the response
       const projectData = response.data || null;
       
@@ -199,7 +200,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   createProject: async (data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<ApiResponse<ProjectListItem>>('/projects', data);
+      const response = await apiClient.post<ApiResponse<ProjectListItem>>('/api/projects', data);
       
       if (response.data) {
         const project = response.data;
@@ -224,7 +225,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateProjectDetails: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.put<ApiResponse<ProjectListItem>>(`/projects/${projectId}`, data);
+      const response = await apiClient.put<ApiResponse<ProjectListItem>>(`/api/projects/${projectId}`, data);
       const updatedProject = response.data || response.data;
       
       set((state) => ({
@@ -251,7 +252,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeProject: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
-      await apiClient.delete(`/projects/${projectId}`);
+      await apiClient.delete(`/api/projects/${projectId}`);
       
       set((state) => ({
         projects: state.projects.filter((p) => p.id !== projectId),
@@ -276,7 +277,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addTeamMember: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<ApiResponse<TeamMember>>(`/projects/${projectId}/team`, data);
+      const response = await apiClient.post<ApiResponse<TeamMember>>(`/api/projects/${projectId}/team`, data);
       const newMember = response.data || response.data;
       
       set((state) => {
@@ -310,7 +311,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeTeamMember: async (projectId, userId) => {
     try {
       set({ isLoading: true, error: null });
-      await apiClient.delete(`/projects/${projectId}/team/${userId}`);
+      await apiClient.delete(`/api/projects/${projectId}/team/${userId}`);
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -352,7 +353,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       formData.append('category', category);
       
       const response = await apiClient.post<{ data: DocumentInfo }>(
-        `/projects/${projectId}/documents`,
+        `/api/projects/${projectId}/documents`,
         formData,
         {
           onProgress,
@@ -400,7 +401,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   deleteDocument: async (projectId, documentId) => {
     try {
       set({ isLoading: true, error: null });
-      await apiClient.delete(`/projects/${projectId}/documents/${documentId}`);
+      await apiClient.delete(`/api/projects/${projectId}/documents/${documentId}`);
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -436,7 +437,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addEvent: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<ApiResponse<EventInfo>>(`/projects/${projectId}/events`, data);
+      const response = await apiClient.post<ApiResponse<EventInfo>>(`/api/projects/${projectId}/events`, data);
       const newEvent = response.data || response.data;
       
       set((state) => {
@@ -470,7 +471,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const response = await apiClient.put<ApiResponse<EventInfo>>(
-        `/projects/${projectId}/events/${eventId}`,
+        `/api/projects/${projectId}/events/${eventId}`,
         data
       );
       const updatedEvent = response.data || response.data;
@@ -507,7 +508,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   removeEvent: async (projectId, eventId) => {
     try {
       set({ isLoading: true, error: null });
-      await apiClient.delete(`/projects/${projectId}/events/${eventId}`);
+      await apiClient.delete(`/api/projects/${projectId}/events/${eventId}`);
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -543,7 +544,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const response = await apiClient.put<ApiResponse<ClientInfo>>(
-        `/projects/${projectId}/client`,
+        `/api/projects/${projectId}/client`,
         data
       );
       const updatedClientInfo = response.data || response.data;

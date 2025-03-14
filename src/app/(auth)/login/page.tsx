@@ -21,6 +21,7 @@ import { Loader2 } from "lucide-react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useAuthStore } from "@/store/auth.store"
 
 // Form validation schema
 const formSchema = z.object({
@@ -32,7 +33,7 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuth()
+  const { login } = useAuthStore()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -55,14 +56,13 @@ export default function LoginPage() {
       setLoginStatus('idle')
       setIsLoading(true)
       
-      console.log('Attempting login with:', values.email)
-      
       // Attempt login
       const result = await login(values.email, values.password)
       
       if (result.success) {
         setLoginStatus('success')
-        
+        // Set user data in local storage
+        localStorage.setItem('user', JSON.stringify(result.user));
         // Redirect to dashboard on successful login
         setTimeout(() => {
           router.push("/dashboard")

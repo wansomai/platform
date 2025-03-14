@@ -1,19 +1,15 @@
+import { verifyRefreshToken, generateTokens } from "@/lib/auth";
+import { PrismaClient } from "@prisma/client";
 import { NextRequest,NextResponse } from "next/server"
 
+
+const prisma = new PrismaClient();
 // src/app/api/auth/refresh-token/route.ts
 export async function POST(request: NextRequest) {
     try {
       // Get the refresh token from cookies first, then from request body
-      const refreshToken = request.cookies.get('refresh_token')?.value
-      
-      // If no refresh token in cookies, try to get it from the request body
-      let tokenFromBody = null
-      if (!refreshToken) {
-        const body = await request.json()
-        tokenFromBody = body.refresh_token
-      }
-      
-      const token = refreshToken || tokenFromBody
+      const refreshToken = request.cookies.get('refresh-token')?.value
+      const token = refreshToken 
       
       if (!token) {
         return NextResponse.json(
@@ -29,14 +25,17 @@ export async function POST(request: NextRequest) {
       
       try {
         // Verify the refresh token
-        const decoded = verifyRefreshToken(token)
+        const decoded = verifyRefreshToken(token) 
         
         // Generate new tokens
         const { access_token, refresh_token } = generateTokens(decoded.userId)
-        
         // Find the user (in a real app, this would query your database)
-        const user = testUsers.find((u) => u.id === decoded.userId)
-        
+        const user = await prisma.user.findUnique({
+          where: { id: decoded.userId },
+          include: {
+            organization: true
+          }
+        })
         if (!user) {
           return NextResponse.json(
             { 
