@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
+import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization'
 
 const prisma = new PrismaClient()
 
@@ -17,6 +18,32 @@ export async function GET(
 ) {
   try {
     const projectId = params.id
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to access conversations for this project' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Check if project exists
     const project = await prisma.project.findUnique({
@@ -91,6 +118,32 @@ export async function POST(
 ) {
   try {
     const projectId = params.id
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to create conversations in this project' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Check if project exists
     const project = await prisma.project.findUnique({

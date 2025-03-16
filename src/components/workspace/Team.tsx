@@ -48,7 +48,7 @@ import {
 } from "lucide-react"
 import { useProjectStore, TeamMember } from "@/store/project.store"
 import { useUIStore } from "@/store/ui.store"
-import { useAuthStore } from "@/store/auth.store"
+import { useSession } from "next-auth/react"
 export function Team() {
   const params = useParams()
   const projectId = params.id as string
@@ -60,7 +60,7 @@ export function Team() {
   
   const { currentProject, addTeamMember, removeTeamMember, isLoading } = useProjectStore()
   const { addToast } = useUIStore()
-  const { user } = useAuthStore()
+  const { data: session } = useSession()
   
   // Get team members from current project
   const teamMembers = currentProject?.knowledge_base?.team || []
@@ -72,7 +72,7 @@ export function Team() {
     setIsSubmitting(true)
     
     try {
-      await addTeamMember(projectId, { email, role, userId: user?.id })
+      await addTeamMember(projectId, { email, role, userId: session?.user?.id })
       
       addToast({
         message: `Invitation sent to ${email}`,

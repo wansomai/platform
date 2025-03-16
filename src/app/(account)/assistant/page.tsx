@@ -8,9 +8,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { formatDistanceToNow } from 'date-fns';
-import { useAuthStore } from '@/store/auth.store';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useSession } from 'next-auth/react';
 
 interface Message {
   id: string;
@@ -28,7 +28,7 @@ export default function AssistantPage() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { notify } = useNotifications();
-  const { user } = useAuthStore();
+  const { data: session } = useSession();
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -189,12 +189,12 @@ export default function AssistantPage() {
                   >
                     <Avatar className="h-8 w-8 mt-1">
                       {message.role === 'user' ? (
-                        <AvatarImage src={user?.avatar || "/avatars/user-avatar.png"} alt="You" />
+                        <AvatarImage src={session?.user?.image || "/avatars/user-avatar.png"} alt="You" />
                       ) : (
                         <AvatarImage src="/avatars/ai-avatar.png" alt="AI" />
                       )}
                       <AvatarFallback>
-                        {message.role === 'user' ? (user?.fullName?.charAt(0) || 'U') : 'AI'}
+                        {message.role === 'user' ? (session?.user?.name?.charAt(0) || 'U') : 'AI'}
                       </AvatarFallback>
                     </Avatar>
                     

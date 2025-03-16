@@ -1,242 +1,158 @@
-"use client"
+// src/components/auth/RegisterForm.tsx
+'use client';
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2 } from "lucide-react"
-import { useAuthStore } from "@/store/auth.store"
+interface RegisterFormData {
+  email: string;
+  password: string;
+  fullName: string;
+  organizationName: string;
+}
 
-// Form validation schema
-const formSchema = z.object({
-  fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  organizationName: z.string().min(2, { message: "Organization name must be at least 2 characters" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  confirmPassword: z.string().min(1, { message: "Please confirm your password" }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-})
-
-type FormValues = z.infer<typeof formSchema>
-
-export default function RegisterPage() {
-  const router = useRouter()
-  const { register, isLoading, error, setError } = useAuthStore()
-  const [showPassword, setShowPassword] = useState(false)
+export default function RegisterForm() {
+  const router = useRouter();
+  const [formData, setFormData] = useState<RegisterFormData>({
+    email: '',
+    password: '',
+    fullName: '',
+    organizationName: '',
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
-  // Initialize form
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      organizationName: "",
-      password: "",
-      confirmPassword: "",
-    },
-  })
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
   
-  // Handle form submission
-  const onSubmit = async (values: FormValues) => {
-    // Clear any previous errors
-    setError(null)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
     
-    // Attempt registration
-    const success = await register(
-      values.email, 
-      values.password, 
-      values.fullName, 
-      values.organizationName
-    )
-    
-    if (success) {
-      // Redirect to dashboard on successful registration
-      router.push("/login")
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+      
+      // Registration successful, redirect to login
+      router.push('/login?registered=true');
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError(error instanceof Error ? error.message : 'Registration failed');
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
   
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Create Your Account</h1>
-        
-        </div>
-        
-        {error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        <div className="mt-8">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="John Doe" 
-                        autoComplete="name"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="you@example.com" 
-                        type="email" 
-                        autoComplete="email"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="organizationName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Organization Name</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Acme Law Firm" 
-                        autoComplete="organization"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="••••••••" 
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="new-password"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="••••••••" 
-                        type={showPassword ? "text" : "password"}
-                        autoComplete="new-password"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="flex items-center">
-                <input
-                  id="show-password"
-                  name="show-password"
-                  type="checkbox"
-                  checked={showPassword}
-                  onChange={() => setShowPassword(!showPassword)}
-                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <label htmlFor="show-password" className="ml-2 block text-sm text-gray-900">
-                  Show password
-                </label>
-              </div>
-              
-              <div className="text-sm text-gray-600">
-                By signing up, you agree to our{" "}
-                <Link href="/terms" className="font-medium text-primary-600 hover:text-primary-500">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="font-medium text-primary-600 hover:text-primary-500">
-                  Privacy Policy
-                </Link>
-                .
-              </div>
-              
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
-                  </>
-                ) : (
-                  "Create account"
-                )}
-              </Button>
-            </form>
-          </Form>
-          
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-medium text-primary-600 hover:text-primary-500"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
+    <div className='flex min-h-screen flex-col items-center justify-center py-12'>
+    <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+      <div className="text-center">
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
       </div>
+      
+      {error && (
+        <div className="p-3 text-sm text-red-600 bg-red-100 rounded">
+          {error}
+        </div>
+      )}
+      
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <div className="space-y-4 rounded-md shadow-sm">
+          <div>
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
+            <input
+              id="fullName"
+              name="fullName"
+              type="text"
+              autoComplete="name"
+              required
+              className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              placeholder="John Doe"
+              value={formData.fullName}
+              onChange={handleChange}
+              disabled={isLoading}
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
+              Organization Name
+            </label>
+            <input
+              id="organizationName"
+              name="organizationName"
+              type="text"
+              required
+              className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+              placeholder="Your Company"
+              value={formData.organizationName}
+              onChange={handleChange}
+              disabled={isLoading}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              className="block w-full px-3 py-2 mt-1 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+              placeholder="Password (min 8 characters)"
+              minLength={8}
+              value={formData.password}
+              onChange={handleChange}
+              disabled={isLoading}
+            />
+          </div>
+          
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md group hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            {isLoading ? 'Creating account...' : 'Create account'}
+          </button>
+        </div>
+      </form>
     </div>
-  )
+    </div>
+  );
 }

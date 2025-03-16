@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
+import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization'
 
 const prisma = new PrismaClient()
 
@@ -21,7 +22,32 @@ export async function GET(
     // Make sure to await params if needed, but in this case we just need to use it directly
     const { id } = await context.params
     const projectId = id
-    console.log("Fetching project with ID:", projectId)
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to access this project' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Get project
     const project = await prisma.project.findUnique({
@@ -127,8 +153,6 @@ export async function GET(
       last_activity: project.updatedAt?.toISOString() || new Date().toISOString()
     }
     
-    console.log("Successfully formatted project data")
-    
     return NextResponse.json({
       status: 200,
       message: 'Project retrieved successfully',
@@ -154,6 +178,32 @@ export async function PUT(
 ) {
   try {
     const projectId = params.id
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to update this project' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Parse and validate request body
     const body = await request.json()
@@ -241,6 +291,40 @@ export async function DELETE(
 ) {
   try {
     const projectId = params.id
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // For deletion, we need to check if the user has admin rights
+    const projectMember = await prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId
+        }
+      }
+    });
+    
+    // Only allow deletion if user is an admin
+    if (!projectMember || projectMember.role !== 'admin') {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to delete this project' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Delete project (with cascading deletes for related entities)
     await prisma.project.delete({

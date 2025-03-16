@@ -1,0 +1,129 @@
+// src/lib/auth/token-service.ts
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN } from './constants';
+
+export interface User {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  organizationId: string;
+  organization: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface TokenPayload {
+  userId: string;
+  email: string;
+  name: string;
+  role: string;
+  organizationId: string;
+  organization: {
+    id: string;
+    name: string;
+  };
+  iat?: number;
+  exp?: number;
+}
+
+/**
+ * Generate a JWT access token with consistent user data structure
+ */
+export const generateAccessToken = (user: User): string => {
+  const payload: TokenPayload = {
+    userId: user.id,
+    email: user.email,
+    name: user.fullName,
+    role: user.role,
+    organizationId: user.organizationId,
+    organization: {
+      id: user.organization.id,
+      name: user.organization.name,
+    }
+  };
+  
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+};
+
+/**
+ * Generate a JWT refresh token with consistent user data structure
+ */
+export const generateRefreshToken = (user: User): string => {
+  const payload: TokenPayload = {
+    userId: user.id,
+    email: user.email,
+    name: user.fullName,
+    role: user.role,
+    organizationId: user.organizationId,
+    organization: {
+      id: user.organization.id,
+      name: user.organization.name,
+    }
+  };
+  
+  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });
+};
+
+/**
+ * Generate both tokens with a consistent structure
+ */
+export const generateTokens = (user: User) => {
+  return {
+    access_token: generateAccessToken(user),
+    refresh_token: generateRefreshToken(user)
+  };
+};
+
+/**
+ * Verify and decode an access token
+ */
+export const verifyAccessToken = (token: string): TokenPayload => {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    return decoded;
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    throw new Error('Invalid token');
+  }
+};
+
+/**
+ * Verify and decode a refresh token
+ */
+export const verifyRefreshToken = (token: string): TokenPayload => {
+  try {
+    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as TokenPayload;
+    return decoded;
+  } catch (error) {
+    console.error('Refresh token verification failed:', error);
+    throw new Error('Invalid refresh token');
+  }
+};
+
+/**
+ * Get token expiration in seconds
+ */
+export const getTokenExpiration = (token: string): number => {
+  try {
+    const decoded = jwt.decode(token) as { exp: number };
+    return decoded.exp;
+  } catch (error) {
+    return 0;
+  }
+};
+
+/**
+ * Check if token is about to expire (within 5 minutes)
+ */
+export const isTokenExpiringSoon = (token: string): boolean => {
+  try {
+    const exp = getTokenExpiration(token);
+    const now = Math.floor(Date.now() / 1000);
+    // Return true if token expires in less than 5 minutes
+    return exp - now < 300;
+  } catch (error) {
+    return true;
+  }
+};

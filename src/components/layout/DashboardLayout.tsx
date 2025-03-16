@@ -11,27 +11,27 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/context/AuthContext";
-
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 export default function DashboardLayoutComponent({ children }: { children: ReactNode }) {
 
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { data: session, status } = useSession();
   
 
   
   // Handle logout
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
     router.push('/login');
   };
   
   // Get user initials for avatar
   const getUserInitials = () => {
-    if (!user?.name) return 'U';
+    if (!session?.user?.name) return 'U';
     
-    const nameParts = user.name.split(' ');
+    const nameParts = session.user.name.split(' ');
     if (nameParts.length === 1) return nameParts[0][0].toUpperCase();
     return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
   };
@@ -76,10 +76,10 @@ export default function DashboardLayoutComponent({ children }: { children: React
               <div className="relative group">
                 <Button variant="ghost" className="flex items-center space-x-2 " size="sm">
                   <Avatar className="h-6 w-6 bg-green-100">
-                    <AvatarImage src={undefined} alt={user?.name || "User"} />
+                    <AvatarImage src={undefined} alt={session?.user?.name || "User"} />
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                   </Avatar>
-                  <span className="hidden md:inline-block">{user?.name}</span>
+                  <span className="hidden md:inline-block">{session?.user?.name}</span>
                 </Button>
                 
                 <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden group-hover:block">

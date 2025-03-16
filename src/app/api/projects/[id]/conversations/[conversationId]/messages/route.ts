@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
+import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization';
 
 // Updated LangChain imports - fixing the compatibility issue
 import { ChatOpenAI } from "@langchain/openai";
@@ -249,6 +250,32 @@ export async function GET(
     const projectId = params.id;
     const conversationId = params.conversationId;
    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to access messages in this conversation' 
+        },
+        { status: 403 }
+      );
+    }
+    
     // Check if conversation exists and belongs to the project
     const conversation = await prisma.conversation.findFirst({
       where: {
@@ -326,6 +353,32 @@ export async function POST(
   try {
     const { id, conversationId } = params;
     
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(id, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to send messages in this conversation' 
+        },
+        { status: 403 }
+      );
+    }
+    
     // Parse the request body
     const body = await request.json();
     const { content } = createMessageSchema.parse(body);
@@ -353,7 +406,8 @@ export async function POST(
       data: {
         content,
         role: 'user',
-        conversationId
+        conversationId,
+        userId // Track which user sent the message
       }
     });
     

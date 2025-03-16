@@ -1,6 +1,6 @@
 // src/store/chat.store.ts
 import { create } from 'zustand'
-import { apiClient } from '@/lib/api'
+import {  apiService } from '@/lib/api'
 
 export interface Message {
   id: string;
@@ -127,7 +127,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   fetchConversations: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
+      const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
       set({ conversations: response.data, isLoading: false });
       return response.data;
     } catch (error: any) {
@@ -142,7 +142,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   fetchConversation: async (projectId, conversationId) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.get<{ data: Conversation }>(
+      const response = await apiService.get<{ data: Conversation }>(
         `/api/projects/${projectId}/conversations/${conversationId}`
       );
       const conversation = response.data;
@@ -160,7 +160,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   createConversation: async (projectId, title) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiClient.post<{ data: Conversation }>(
+      const response = await apiService.post<{ data: Conversation }>(
         `/api/projects/${projectId}/conversations`,
         { title: title || 'New Conversation' }
       );
@@ -208,7 +208,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     
     try {
       set({ error: null });
-      const response = await apiClient.post<{ data: Message }>(
+      const response = await apiService.post<{ data: Message }>(
         `/api/projects/${projectId}/conversations/${conversationId}/messages`,
         { content }
       );
@@ -255,7 +255,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const newPinState = !conversation.isPinned;
     
     try {
-      await apiClient.put(
+      await apiService.put(
         `/api/projects/${projectId}/conversations/${conversationId}/pin`,
         { isPinned: newPinState }
       );

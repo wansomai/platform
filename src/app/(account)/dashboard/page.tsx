@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Folder, FolderPlus, ArrowRight, FileText, Clock, Briefcase } from "lucide-react"
@@ -12,25 +11,19 @@ import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { useRouter } from "next/navigation";
 import { Project } from "@/types";
 import { useProjectStore } from "@/store/project.store";
+import { useSession } from "next-auth/react";
 // Project type definition
 
-interface CreateProjectData {
-  title: string;
-  description: string;
-}
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: session, status } = useSession();
   const [open, setOpen] = useState(false)
-  const router = useRouter();
-  const { fetchProjects,projects } = useProjectStore();
+  const { fetchProjects,projects,isLoading } = useProjectStore();
   useEffect(() => {
     fetchProjects();
   }, []);
 
   // This should be handled by middleware, but we'll add this check as a fallback
-  if (!user) {
+  if (!session?.user) {
     return (
       <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -56,8 +49,8 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8 space-y-3">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Welcome, {user?.name || 'User'}</h1>
-          <p className="text-gray-500">{user?.organization?.name || 'Your Organization'}</p>
+          <h1 className="text-2xl font-bold">Welcome, {session?.user?.name || 'User'}</h1>
+          <p className="text-gray-500">{session?.user?.organization?.name || 'Your Organization'}</p>
         </div>
         
         <Button onClick={()=>setOpen(true)}>
@@ -73,7 +66,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="text-2xl font-bold">
-                {projects.filter(p => p.status === 'active').length}
+                {projects?.filter(p => p.status === 'active').length || 0}
               </div>
               <Briefcase className="h-8 w-8 text-primary-600" />
             </div>
@@ -88,7 +81,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div className="text-2xl font-bold">
                 {/* In a real app, this would show the count of recent activities */}
-                {Math.min(projects.length * 2, 10)}
+                {Math.min(projects?.length * 2, 10) || 0}
               </div>
               <Clock className="h-8 w-8 text-primary-600" />
             </div>
@@ -103,7 +96,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div className="text-2xl font-bold">
                 {/* Sum the document counts from all projects */}
-                {projects.reduce((total, project) => total + project.documents_count, 0)}
+                {projects?.reduce((total, project) => total + project.documents_count, 0) || 0}
               </div>
               <FileText className="h-8 w-8 text-primary-600" />
             </div>
@@ -119,55 +112,58 @@ export default function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {projects.length === 0 ? (
-            <div className="text-center py-8">
-              <Folder className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No Projects yet</h3>
-              <p className="text-sm text-gray-500 mb-4">
-                Create your first project to get started
-              </p>
-              <Button onClick={()=>setOpen(true)}>
-                <FolderPlus className="mr-2 h-4 w-4" />
-                Create Project
-              </Button>
-            </div>
+          {isLoading ? (
+       <div className="p-6 space-y-6">
+       <div className="flex items-center justify-between">
+         <Skeleton className="h-10 w-48" />
+         <Skeleton className="h-10 w-32" />
+       </div>
+       
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <Skeleton className="h-40" />
+         <Skeleton className="h-40" />
+         <Skeleton className="h-40" />
+       </div>
+       
+       <Skeleton className="h-64" />
+     </div>
           ) : (
             <div className="space-y-2">
-              {projects.slice(0, 5).map((project) => (
-                <Link 
-                  key={project.id} 
-                  href={`/projects/${project.id}`} 
-                  className="block"
-                >
-                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-gray-900 truncate">
-                        {project.title}
-                      </h3>
-                      <p className="text-xs text-gray-500">
-                        {project.documents_count} documents • {project.team_count} team members
-                      </p>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-xs text-gray-500 mr-2">
-                        {project.last_activity}
-                      </span>
-                      <ArrowRight className="h-4 w-4 text-gray-400" />
-                    </div>
+            {projects?.slice(0, 5).map((project) => (
+              <Link 
+                key={project.id} 
+                href={`/projects/${project.id}`} 
+                className="block"
+              >
+                <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 truncate">
+                      {project.title}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      {project.documents_count} documents • {project.team_count} team members
+                    </p>
                   </div>
-                </Link>
-              ))}
-              
-              {projects.length > 5 && (
-                <Link href="/projects" className="block">
-                  <div className="text-center p-2">
-                    <span className="text-sm text-primary-600 font-medium">
-                      View all projects
+                  <div className="flex items-center">
+                    <span className="text-xs text-gray-500 mr-2">
+                      {project.last_activity}
                     </span>
+                    <ArrowRight className="h-4 w-4 text-gray-400" />
                   </div>
-                </Link>
-              )}
-            </div>
+                </div>
+              </Link>
+            ))}
+            
+            {projects?.length > 5 && (
+              <Link href="/projects" className="block">
+                <div className="text-center p-2">
+                  <span className="text-sm text-primary-600 font-medium">
+                    View all projects
+                  </span>
+                </div>
+              </Link>
+            )}
+          </div>
           )}
         </CardContent>
       </Card>

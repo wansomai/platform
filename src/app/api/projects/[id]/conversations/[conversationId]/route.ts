@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
+import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization'
 
 const prisma = new PrismaClient()
 
@@ -19,6 +20,32 @@ export async function GET(
   try {
     const { id: projectId, conversationId } = params
     
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to access this conversation' 
+        },
+        { status: 403 }
+      );
+    }
+    
     // Check if conversation exists and belongs to the project
     const conversation = await prisma.conversation.findFirst({
       where: {
@@ -27,7 +54,19 @@ export async function GET(
       },
       include: {
         messages: {
-          orderBy: { createdAt: 'asc' }
+          orderBy: { createdAt: 'asc' },
+          include: {
+            references: {
+              include: {
+                document: {
+                  select: {
+                    id: true,
+                    title: true
+                  }
+                }
+              }
+            }
+          }
         }
       }
     })
@@ -48,7 +87,13 @@ export async function GET(
       content: message.content,
       role: message.role,
       timestamp: message.createdAt.toISOString(),
-      references: [], // In a real app, you would include citation references
+      references: message.references.map(ref => ({
+        id: ref.id,
+        documentId: ref.documentId,
+        documentName: ref.document?.title || 'Unknown Document',
+        text: ref.text,
+        page: ref.page
+      }))
     }))
     
     // Format conversation
@@ -87,6 +132,32 @@ export async function PUT(
 ) {
   try {
     const { id: projectId, conversationId } = params
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to update this conversation' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Check if conversation exists and belongs to the project
     const conversation = await prisma.conversation.findFirst({
@@ -163,6 +234,32 @@ export async function DELETE(
 ) {
   try {
     const { id: projectId, conversationId } = params
+    
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 401,
+          message: 'Authentication required' 
+        },
+        { status: 401 }
+      );
+    }
+    
+    // Check if user has access to this project
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    
+    if (!hasAccess) {
+      return NextResponse.json(
+        { 
+          status: 403,
+          message: 'You do not have permission to delete this conversation' 
+        },
+        { status: 403 }
+      );
+    }
     
     // Check if conversation exists and belongs to the project
     const conversation = await prisma.conversation.findFirst({

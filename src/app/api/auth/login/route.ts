@@ -2,15 +2,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN } from "@/lib/auth";
+import { COOKIE_OPTIONS } from "@/lib/auth/constants";
+import { generateTokens } from "@/lib/auth/token-service";
+import { z } from "zod";
 
 const prisma = new PrismaClient();
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  rememberMe: z.boolean().optional()
+});
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { email, password, rememberMe } = loginSchema.parse(body);
 
     if (!email || !password) {
       return NextResponse.json(
@@ -44,49 +51,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create tokens
-    const access_token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        name: user.fullName,
-        role: user.role,
-        organizationId: user.organizationId,
-        organization: {
-          id: user.organization.id,
-          name: user.organization.name,
-        },
-      },
-      JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
-    
-    const refresh_token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        name: user.fullName,
-        role: user.role,
-        organizationId: user.organizationId,
-        organization: {
-          id: user.organization.id,
-          name: user.organization.name,
-        },
-      },
-      JWT_REFRESH_SECRET,
-      { expiresIn: JWT_REFRESH_EXPIRES_IN }
-    );
+    // Prepare the user object for token generation
+    const userForToken = {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName || '',
+      role: user.role,
+      organizationId: user.organizationId,
+      organization: {
+        id: user.organization.id,
+        name: user.organization.name,
+      }
+    };
 
-    // Prepare user data for response
+    // Generate tokens using our centralized service
+    const { access_token, refresh_token } = generateTokens(userForToken);
+
+    // Prepare user data for response (without sensitive data)
     const userData = {
       id: user.id,
       email: user.email,
-      fullName: user.fullName,
+      fullName: user.fullName || '',
       role: user.role,
       organization: {
         id: user.organization.id,
         name: user.organization.name,
       }
+    };
+
+    // Set cookies
+    const cookieOptions = {
+      ...COOKIE_OPTIONS,
+      maxAge: rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60 // 7 days or 1 day
     };
 
     // Create the response with the exact structure expected by the client

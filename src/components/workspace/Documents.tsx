@@ -60,7 +60,7 @@ import { useProjectStore, DocumentInfo } from "@/store/project.store"
 import { useUIStore } from "@/store/ui.store"
 import { formatDistanceToNow, format } from 'date-fns'
 import { ProjectComponentProps } from "@/types/project"
-import { useAuth } from '@/context/AuthContext'
+import { useSession } from 'next-auth/react'
 
 export function Documents({ project }: ProjectComponentProps) {
   const params = useParams()
@@ -77,7 +77,7 @@ export function Documents({ project }: ProjectComponentProps) {
   
   const { currentProject, uploadDocument, deleteDocument, isLoading } = useProjectStore()
   const { addToast } = useUIStore()
-  const { user } = useAuth()
+  const { data: session } = useSession()
   
   // Get documents from current project
   const documents = currentProject?.knowledge_base?.documents || []
@@ -92,14 +92,14 @@ export function Documents({ project }: ProjectComponentProps) {
   // Handle file upload
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (!files || files.length === 0 || !user?.id) return
+    if (!files || files.length === 0 || !session?.user?.id) return
     
     const file = files[0]
     setUploading(true)
     setUploadProgress(0)
     
     try {
-      await uploadDocument(projectId, file, category, user.id, (progress) => {
+      await uploadDocument(projectId, file, category, session.user.id, (progress) => {
         setUploadProgress(progress)
       })
       

@@ -4,7 +4,7 @@ import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useProjectStore } from '@/store/project.store'
-import { useAuth } from '@/context/AuthContext'
+import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
 
 
@@ -23,14 +23,14 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const {notify}=useNotifications()
   
   const { createProject } = useProjectStore()
-  const { user } = useAuth()
+  const {  data: session } = useSession()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
-    if (!user?.organization?.id) {
+    if (!session?.user?.organization?.id) {
       setError('Organization ID not found')
       setIsLoading(false)
       return
@@ -39,7 +39,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     try {
       await createProject({
         ...formData,
-        organizationId: user.organization.id
+        organizationId: session?.user?.organization?.id
       })
 
       notify.success('Project created successfully')

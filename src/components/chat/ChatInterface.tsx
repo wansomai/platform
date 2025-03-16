@@ -9,8 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Copy, Download, ThumbsUp, ThumbsDown, Send, Loader2 } from "lucide-react"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
-import { useAuthStore } from "@/store/auth.store"
 import { formatDistanceToNow } from 'date-fns'
+import { useSession } from "next-auth/react"
 
 export function ChatInterface() {
   const params = useParams()
@@ -31,7 +31,7 @@ export function ChatInterface() {
     isLoading, 
     error 
   } = useChatStore()
-  const {user} = useAuthStore()
+  const {data: session} = useSession()
   
   // Set up conversation when component mounts
   useEffect(() => {
@@ -83,7 +83,7 @@ export function ChatInterface() {
     
     try {
       setIsSubmitting(true)
-      await sendMessage(projectId, currentConversation.id, input, user?.id)
+      await sendMessage(projectId, currentConversation.id, input, session?.user?.id)
       setInput("")
     } catch (error) {
       console.error('Failed to send message:', error)
@@ -132,7 +132,7 @@ export function ChatInterface() {
             <ChatMessageItem 
               key={message.id} 
               message={message} 
-              user={user} 
+              user={session?.user} 
               onCopy={() => copyMessageToClipboard(message.content)}
             />
           ))}

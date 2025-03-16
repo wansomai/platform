@@ -1,14 +1,31 @@
 // app/api/projects/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { getUserIdFromRequest, getAccessibleProjectIds } from "@/lib/auth/authorization";
 
 const prisma = new PrismaClient();
 
-// Get all projects
+// Get all projects (filtered by user access)
 export async function GET(request: NextRequest) {
   try {
-    // Fetch all projects
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Authentication required" },
+        { status: 401 }
+      );
+    }
+    
+    // Get projects that the user has access to
+    const accessibleProjectIds = await getAccessibleProjectIds(userId);
+ 
+    // Fetch only accessible projects
     const projects = await prisma.project.findMany({
+      where: {
+        id: { in: accessibleProjectIds }
+      },
       select: {
         id: true,
         title: true,
@@ -28,6 +45,7 @@ export async function GET(request: NextRequest) {
       },
     });
 
+
     // Transform the projects to include document and member counts
     const transformedProjects = projects.map((project) => ({
       id: project.id,
@@ -40,8 +58,11 @@ export async function GET(request: NextRequest) {
       team_count: project._count.members,
       last_activity: new Date(project.updatedAt).toLocaleDateString()
     }));
-
-    return NextResponse.json(transformedProjects);
+    return NextResponse.json({
+      status: 200,
+      message: "Projects fetched successfully",
+      data: transformedProjects
+    });
   } catch (error) {
     console.error("Error fetching projects:", error);
     return NextResponse.json(
@@ -54,6 +75,16 @@ export async function GET(request: NextRequest) {
 // Create a new project
 export async function POST(request: NextRequest) {
   try {
+    // Get user ID from request headers
+    const userId = getUserIdFromRequest(request);
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Authentication required" },
+        { status: 401 }
+      );
+    }
+    
     // Get project data from request body
     const body = await request.json();
     console.log("Request body:", body);
@@ -86,6 +117,19 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    // Verify user belongs to the organization
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true }
+    });
+    
+    if (!user || user.organizationId !== organizationId) {
+      return NextResponse.json(
+        { status: 403, message: "You don't have permission to create projects in this organization" },
+        { status: 403 }
+      );
+    }
 
     // Create new project
     const project = await prisma.project.create({
@@ -93,10 +137,15 @@ export async function POST(request: NextRequest) {
         title,
         description,
         status: 'active',
-        organizationId: organizationId
-        
+        organizationId: organizationId,
+        // Add the creating user as a project member with admin role
+        members: {
+          create: {
+            userId: userId,
+            role: 'admin'
+          }
+        }
       },
-
       include: {
         _count: {
           select: {

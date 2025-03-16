@@ -1,111 +1,99 @@
-import { verifyRefreshToken, generateTokens } from "@/lib/auth";
-import { PrismaClient } from "@prisma/client";
-import { NextRequest,NextResponse } from "next/server"
-
+// app/api/auth/register/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { hash } from 'bcrypt';
+import { PrismaClient } from '@prisma/client';
+import { z } from 'zod';
 
 const prisma = new PrismaClient();
-// src/app/api/auth/refresh-token/route.ts
+
+// Schema validation
+const registerSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  fullName: z.string().min(2, 'Name must be at least 2 characters'),
+  organizationName: z.string().min(2, 'Organization name must be at least 2 characters')
+});
+
 export async function POST(request: NextRequest) {
-    try {
-      // Get the refresh token from cookies first, then from request body
-      const refreshToken = request.cookies.get('refresh-token')?.value
-      const token = refreshToken 
-      
-      if (!token) {
-        return NextResponse.json(
-          { 
-            status: 400,
-            code: 'VALIDATION_ERROR',
-            message: 'Refresh token is required',
-            data: null 
-          },
-          { status: 400 }
-        )
-      }
-      
-      try {
-        // Verify the refresh token
-        const decoded = verifyRefreshToken(token) 
-        
-        // Generate new tokens
-        const { access_token, refresh_token } = generateTokens(decoded.userId)
-        // Find the user (in a real app, this would query your database)
-        const user = await prisma.user.findUnique({
-          where: { id: decoded.userId },
-          include: {
-            organization: true
-          }
-        })
-        if (!user) {
-          return NextResponse.json(
-            { 
-              status: 404,
-              code: 'NOT_FOUND',
-              message: 'User not found',
-              data: null 
-            },
-            { status: 404 }
-          )
-        }
-        
-        // User data to return (excluding password)
-        const userData = {
-          id: user.id,
-          email: user.email,
-          fullName: user.fullName,
-          role: user.role,
-          organization: user.organization
-        }
-        
-        // Set the refresh token in a HTTP-only cookie
-        const response = NextResponse.json(
-          {
-            status: 200,
-            code: 'SUCCESS',
-            message: 'Token refreshed successfully',
-            data: {
-              access_token,
-              refresh_token,
-              user: userData
-            }
-          },
-          { status: 200 }
-        )
-        
-        // Set the refresh token in a cookie
-        response.cookies.set({
-          name: 'refresh_token',
-          value: refresh_token,
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 7, // 7 days
-          path: '/'
-        })
-        
-        return response
-      } catch (error) {
-        return NextResponse.json(
-          { 
-            status: 401,
-            code: 'UNAUTHORIZED',
-            message: 'Invalid refresh token',
-            data: null 
-          },
-          { status: 401 }
-        )
-      }
-    } catch (error) {
-      console.error('Refresh token error:', error)
-      
+  try {
+    const body = await request.json();
+    const { email, password, fullName, organizationName } = registerSchema.parse(body);
+    
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+    
+    if (existingUser) {
       return NextResponse.json(
         { 
-          status: 500,
-          code: 'SERVER_ERROR',
-          message: 'Server error',
-          data: null 
+          status: 400,
+          message: 'User with this email already exists' 
         },
-        { status: 500 }
-      )
+        { status: 400 }
+      );
     }
+    
+    // Hash password
+    const hashedPassword = await hash(password, 10);
+    
+    // Create organization first
+    const organization = await prisma.organization.create({
+      data: {
+        name: organizationName
+      }
+    });
+    
+    // Create user
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        fullName,
+        role: 'admin', // First user is admin
+        organizationId: organization.id
+      },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        role: true,
+        organization: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    });
+    
+    return NextResponse.json({
+      status: 201,
+      message: 'User registered successfully',
+      data: {
+        user
+      }
+    }, { status: 201 });
+  } catch (error) {
+    console.error('Registration error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { 
+          status: 400,
+          message: 'Validation failed', 
+          errors: error.errors 
+        },
+        { status: 400 }
+      );
+    }
+    
+    return NextResponse.json(
+      { 
+        status: 500,
+        message: 'Internal server error' 
+      },
+      { status: 500 }
+    );
   }
+}

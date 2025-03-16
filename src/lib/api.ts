@@ -1,98 +1,80 @@
-// src/lib/api.ts (modified)
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+// src/lib/api.ts
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { getSession, signOut } from 'next-auth/react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
-
-// Safe storage access
-export const safeStorage = {
-  getItem: (key: string): string | null => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(key)
-    }
-    return null
-  },
-  setItem: (key: string, value: string): void => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(key, value)
-    }
-  },
-  removeItem: (key: string): void => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(key)
-    }
-  }
-}
-
-// Create a custom Axios instance with default config
-const api: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 60000,
+// Create a custom axios instance
+const apiClient: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '',
   headers: {
     'Content-Type': 'application/json',
   },
-})
+  withCredentials: true, // Important for cookies
+});
 
-// Request interceptor - removed auth token logic
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    // Debug info for request
-    if (config.url) {
-      console.log(`API Request to: ${config.url}`)
+// Request interceptor to add auth token
+apiClient.interceptors.request.use(
+  async (config) => {
+    // Get the session which contains the token
+    const session = await getSession();
+    
+    if (session?.accessToken) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
     
-    return config
+    return config;
   },
-  (error: AxiosError) => {
-    console.error('Request interceptor error:', error.message)
-    return Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
   }
-)
+);
 
-// Response interceptor for handling API responses and errors
-api.interceptors.response.use(
-  (response: AxiosResponse) => {
-    // Handle successful responses
-    if (response.config.url) {
-      console.log(`API Response from ${response.config.url}: Status ${response.status}`)
-    }
-    return response
-  },
+// Response interceptor to handle errors
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    // Enhanced error logging
-    console.error('API Error:', error.message)
-    
-    if (error.response) {
-      console.error('Status:', error.response.status)
-      console.error('Data:', error.response.data)
-    } else if (error.request) {
-      console.error('No response received:', error.request)
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401) {
+      console.error('Authentication error:', error.response?.data);
+      
+      try {
+        // Sign out the user and redirect to login
+        await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
+      } catch (signOutError) {
+        console.error('Error signing out:', signOutError);
+        
+        // Fallback redirect
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login?session=expired';
+        }
+      }
     }
     
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-// Helper methods with improved type safety
-export const apiClient: {
-  get: <T>(url: string, config?: object) => Promise<T>;
-  post: <T>(url: string, data?: object, config?: object) => Promise<T>;
-  put: <T>(url: string, data?: object, config?: object) => Promise<T>;
-  delete: <T>(url: string, config?: object) => Promise<T>;
-  upload: <T>(url: string, file: File, onProgress?: ((progress: number) => void) | null, additionalData?: object) => Promise<T>;
-} = {
-  get: <T>(url: string, config = {}) => 
-    api.get<T>(url, config).then(response => response.data),
-    
-  post: <T>(url: string, data = {}, config = {}) => 
-    api.post<T>(url, data, config).then(response => response.data),
-    
-  put: <T>(url: string, data = {}, config = {}) => 
-    api.put<T>(url, data, config).then(response => response.data),
-    
-  delete: <T>(url: string, config = {}) => 
-    api.delete<T>(url, config).then(response => response.data),
+// Helper for common request patterns
+export const apiService = {
+  get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.get<T>(url, config);
+    return response.data;
+  },
   
-  // Improved file upload with better error handling
+  post: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.post<T>(url, data, config);
+    return response.data;
+  },
+  
+  put: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.put<T>(url, data, config);
+    return response.data;
+  },
+  
+  delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.delete<T>(url, config);
+    return response.data;
+  },
+
   upload: <T>(url: string, file: File, onProgress: ((progress: number) => void) | null = null, additionalData = {}) => {
     const formData = new FormData()
     formData.append('file', file)
@@ -104,22 +86,26 @@ export const apiClient: {
       })
     }
     
-    // Configure the request
-    return api.post<T>(url, formData, {
+    const response = apiClient.post<T>(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        ...apiClient.defaults.headers.common
       },
-      onUploadProgress: onProgress 
-        ? (progressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-              onProgress(percentCompleted)
-            }
-          } 
-        : undefined,
-    }).then(response => response.data)
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onProgress(percentCompleted);
+        }
+      }
+    })
+    
+    return response
+  },
+  
+  patch: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.patch<T>(url, data, config);
+    return response.data;
   }
-}
+};
 
-// Export the base axios instance as well
-export default api
+export default apiClient;

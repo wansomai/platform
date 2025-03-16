@@ -5,7 +5,6 @@ import { useParams } from "next/navigation"
 import { ProjectOverview } from "@/components/workspace/ProjectOverview"
 import { Documents } from "@/components/workspace/Documents"
 import { Team } from "@/components/workspace/Team"
-import { Schedule } from "@/components/workspace/Schedule"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { ClientInfo } from "@/components/clients/ClientInfo"
 import { useUIStore } from "@/store/ui.store"
@@ -51,7 +50,6 @@ export default function ProjectPage() {
       {activeWorkspaceTab === "overview" && <ProjectOverview project={currentProject} />}
       {activeWorkspaceTab === "documents" && <Documents project={currentProject} />}
       {activeWorkspaceTab === "team" && <Team project={currentProject} />}
-      {activeWorkspaceTab === "schedule" && <Schedule project={currentProject} />}
       {activeWorkspaceTab === "chat" && <ChatInterface project={currentProject} />}
       {activeWorkspaceTab === "client" && <ClientInfo project={currentProject} />}
       {activeWorkspaceTab === "settings" && <Integrations project={currentProject} />}
