@@ -75,18 +75,8 @@ export const apiService = {
     return response.data;
   },
 
-  upload: <T>(url: string, file: File, onProgress: ((progress: number) => void) | null = null, additionalData = {}) => {
-    const formData = new FormData()
-    formData.append('file', file)
-    
-    // Add any additional data to the form
-    if (additionalData) {
-      Object.entries(additionalData).forEach(([key, value]) => {
-        formData.append(key, String(value))
-      })
-    }
-    
-    const response = apiClient.post<T>(url, formData, {
+  upload: <T>(url: string, formData: FormData, onProgress: ((progress: number) => void) | null = null) => {
+    return apiClient.post<T>(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         ...apiClient.defaults.headers.common
@@ -97,9 +87,7 @@ export const apiService = {
           onProgress(percentCompleted);
         }
       }
-    })
-    
-    return response
+    });
   },
   
   patch: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {

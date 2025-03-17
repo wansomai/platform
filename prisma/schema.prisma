@@ -46,30 +46,32 @@ model VerificationToken {
 }
 
 model User {
-  id             String    @id @default(cuid())
-  email          String    @unique
+  id             String   @id @default(cuid())
+  email          String   @unique
   fullName       String?
   password       String
-  role           String    @default("user")
+  role           String   @default("user")
   organizationId String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  projectMembers ProjectMember[]
-  documents      Document[]
-  messages       Message[]
-  accounts       Account[]
-  sessions       Session[]
-  sentInvitations Invitation[] @relation("InvitedBy")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization          Organization           @relation(fields: [organizationId], references: [id])
+  projectMembers        ProjectMember[]
+  documents             Document[]
+  messages              Message[]
+  accounts              Account[]
+  sessions              Session[]
+  sentInvitations       Invitation[]           @relation("InvitedBy")
+  projectDocuments      ProjectDocument[] // Added relation
+  conversationDocuments ConversationDocument[] // Added relation
 }
 
 model Organization {
-  id          String   @id @default(cuid())
-  name        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   users       User[]
   projects    Project[]
   documents   Document[]
@@ -77,21 +79,22 @@ model Organization {
 }
 
 model Project {
-  id             String    @id @default(cuid())
+  id             String   @id @default(cuid())
   title          String
   description    String?
-  status         String    @default("active")
+  status         String   @default("active")
   organizationId String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  organization   Organization    @relation(fields: [organizationId], references: [id])
-  members        ProjectMember[]
-  documents      Document[]
-  conversations  Conversation[]
-  events         Event[]
-  knowledgeBase  KnowledgeBase?
-  invitations   Invitation[]
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  members          ProjectMember[]
+  documents        Document[]
+  conversations    Conversation[]
+  events           Event[]
+  knowledgeBase    KnowledgeBase?
+  invitations      Invitation[]
+  projectDocuments ProjectDocument[] // Added relation
 }
 
 model ProjectMember {
@@ -101,35 +104,65 @@ model ProjectMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User    @relation(fields: [userId], references: [id])
-  project   Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
 
   @@id([userId, projectId])
 }
 
 model Document {
-  id                String    @id @default(cuid())
-  project_id        String    @map("projectId")
-  organization_id   String    @map("organizationId")
+  id                String   @id @default(cuid())
+  project_id        String?  @map("projectId") // Made nullable
+  organization_id   String   @map("organizationId")
   title             String
   description       Json?
-  file_url          String    @map("fileUrl")
-  file_type         String    @map("fileType")
-  file_size         Int       @map("fileSize")
-  status            String    @default("active")
-  section           String    @default("general")
-  created_by        String    @map("createdBy")
+  file_url          String   @map("fileUrl")
+  file_type         String   @map("fileType")
+  file_size         Int      @map("fileSize")
+  status            String   @default("active")
+  section           String   @default("general")
+  created_by        String   @map("createdBy")
   metadata          Json?
-  content_extracted Json?     @map("contentExtracted")
-  created_at        DateTime  @default(now()) @map("createdAt")
-  updated_at        DateTime  @updatedAt @map("updatedAt")
+  content_extracted Json?    @map("contentExtracted")
+  created_at        DateTime @default(now()) @map("createdAt")
+  updated_at        DateTime @updatedAt @map("updatedAt")
 
-  project           Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  organization      Organization @relation(fields: [organization_id], references: [id])
-  createdByUser     User      @relation(fields: [created_by], references: [id])
-  content           DocumentContent?
-  messageReferences MessageReference[]
-  embeddings        Embedding[]
+  project                Project?               @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  organization           Organization           @relation(fields: [organization_id], references: [id])
+  createdByUser          User                   @relation(fields: [created_by], references: [id])
+  content                DocumentContent?
+  messageReferences      MessageReference[]
+  embeddings             Embedding[]
+  conversationReferences ConversationDocument[]
+  projectReferences      ProjectDocument[]
+
+  @@index([organization_id])
+}
+
+model ProjectDocument {
+  project_id  String   @map("projectId")
+  document_id String   @map("documentId")
+  added_at    DateTime @default(now()) @map("addedAt")
+  added_by    String   @map("addedBy")
+
+  project  Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [added_by], references: [id])
+
+  @@id([project_id, document_id])
+}
+
+model ConversationDocument {
+  conversation_id String   @map("conversationId")
+  document_id     String   @map("documentId")
+  added_at        DateTime @default(now()) @map("addedAt")
+  added_by        String   @map("addedBy")
+
+  conversation Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  document     Document     @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [added_by], references: [id])
+
+  @@id([conversation_id, document_id])
 }
 
 model DocumentContent {
@@ -138,7 +171,7 @@ model DocumentContent {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 }
 
 model Embedding {
@@ -147,33 +180,34 @@ model Embedding {
   documentId String
   vector     String   @db.Text // Stored as a serialized vector or external reference
   chunkText  String   @db.Text // The text chunk this embedding represents
-  chunkIndex Int      // Position of this chunk in the document
+  chunkIndex Int // Position of this chunk in the document
   createdAt  DateTime @default(now())
 }
 
 model Conversation {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   title     String
   projectId String
-  isPinned  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  messages  Message[]
+  project            Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages           Message[]
+  documentReferences ConversationDocument[] // Added relation
 }
 
 model Message {
-  id             String    @id @default(cuid())
+  id             String   @id @default(cuid())
   conversationId String
-  content        String    @db.Text
-  role           String    @default("user")
-  createdAt      DateTime  @default(now())
+  content        String   @db.Text
+  role           String   @default("user")
+  createdAt      DateTime @default(now())
   userId         String?
 
-  conversation   Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user           User?           @relation(fields: [userId], references: [id])
-  references     MessageReference[]
+  conversation Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User?              @relation(fields: [userId], references: [id])
+  references   MessageReference[]
 }
 
 model MessageReference {
@@ -184,8 +218,8 @@ model MessageReference {
   page       Int?
   createdAt  DateTime @default(now())
 
-  message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  message  Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 }
 
 model Event {
@@ -198,32 +232,32 @@ model Event {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model KnowledgeBase {
-  id             String   @id @default(cuid())
-  projectId      String   @unique
-  clientInfo     Json?
-  instructions   String?  @db.Text
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(cuid())
+  projectId    String   @unique
+  clientInfo   Json?
+  instructions String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Invitation {
-  id            String      @id @default(uuid())
-  email         String
-  role          String
-  token         String      @unique
-  expiresAt     DateTime
-  project       Project     @relation(fields: [projectId], references: [id])
-  projectId     String
-  organization  Organization @relation(fields: [organizationId], references: [id])
+  id             String       @id @default(uuid())
+  email          String
+  role           String
+  token          String       @unique
+  expiresAt      DateTime
+  project        Project      @relation(fields: [projectId], references: [id])
+  projectId      String
+  organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
-  invitedBy     User        @relation("InvitedBy", fields: [invitedById], references: [id])
-  invitedById   String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  invitedBy      User         @relation("InvitedBy", fields: [invitedById], references: [id])
+  invitedById    String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }

@@ -346,14 +346,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       
-      const response = await apiService.upload<{ data: DocumentInfo }>(
+      const { data: document } = await apiService.upload<DocumentInfo>(
         `/api/projects/${projectId}/documents`,
         file,
         onProgress,
-        { category }
+        { 
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          params: { category }
+        }
       );
-      
-      const newDocument = response.data;
       
       set((state) => {
         if (state.currentProject && state.currentProject.id === projectId) {
@@ -362,12 +365,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
               ...state.currentProject,
               knowledge_base: {
                 ...state.currentProject.knowledge_base,
-                documents: [
-                  ...state.currentProject.knowledge_base.documents,
-                  newDocument
-                ],
+                documents: [document, ...state.currentProject.knowledge_base.documents]
               },
-              documents_count: state.currentProject.documents_count + 1,
+              documents_count: state.currentProject.documents_count + 1
             },
             isLoading: false
           };
@@ -375,7 +375,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         return { isLoading: false };
       });
       
-      return newDocument;
+      return document;
     } catch (error: any) {
       console.error('Error uploading document:', error);
       set({ 

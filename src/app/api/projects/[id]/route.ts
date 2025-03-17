@@ -115,25 +115,6 @@ export async function GET(
       uploaded_by: "User" // In a real app, you would track who uploaded each document
     })) || []
     
-    // Get events related to the project
-    const events = await prisma.event.findMany({
-      where: { projectId },
-      orderBy: { date: 'asc' }
-    })
-    
-    // Format events
-    const formattedEvents = events?.map((event: any) => ({
-      id: event.id || 'unknown',
-      title: event.title || 'Untitled Event',
-      date: event.date?.toISOString() || new Date().toISOString(),
-      type: event.type || 'other',
-      description: event.description || '',
-      created_at: event.createdAt?.toISOString() || new Date().toISOString()
-    })) || []
-    
-    // Get client info from knowledge base or initialize empty object
-    const clientInfo = project.knowledgeBase?.clientInfo || {}
-    
     // Format the full project details
     const formattedProject = {
       id: project.id,
@@ -143,9 +124,7 @@ export async function GET(
       created_at: project.createdAt.toISOString(),
       knowledge_base: {
         team: teamMembers,
-        client: clientInfo,
-        documents: documents,
-        events: formattedEvents
+        documents: documents
       },
       team_count: project._count?.members || 0,
       documents_count: project._count?.documents || 0,

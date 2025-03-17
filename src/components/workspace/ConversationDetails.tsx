@@ -151,12 +151,10 @@ export function ConversationDetails() {
   return (
     <div className="flex flex-col h-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="flex justify-start border-b rounded-none px-1">
+        <TabsList className="flex justify-center border-b rounded-none px-1">
           <TabsTrigger value="context">Context</TabsTrigger>
-          <TabsTrigger value="library">Library</TabsTrigger>
-          
+          <TabsTrigger value="library">Documents</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
         </TabsList>
         
@@ -266,13 +264,16 @@ export function ConversationDetails() {
           {/* Team Tab */}
           <TabsContent value="team" className="p-4 m-0 h-full">
             <div className="space-y-4">
-            {currentProject&&currentProject?.knowledge_base?.team?.length > 0 &&( 
+         
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-medium text-sm mb-2">Team Members</h3>
+              {currentProject&&currentProject?.knowledge_base?.team?.length > 0 &&( 
               <Button onClick={() => setActiveModal("invite")} className="flex items-center" variant="outline" size="sm">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Invite Member
               </Button>
             )}
-              <h3 className="font-medium text-sm mb-2">Team Members</h3>
+            </div>
               <div className="space-y-2">
                 {currentProject&&currentProject?.knowledge_base?.team?.length > 0 ? (
                   <div className="space-y-2">
@@ -458,84 +459,7 @@ export function ConversationDetails() {
             </div>
             </div>
           </TabsContent>
-          
-          {/* Integrations Tab */}
-          <TabsContent value="integrations" className="p-4 m-0">
-            <h3 className="font-medium mb-4">Available Integrations</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <Mail className="h-4 w-4 mr-2 text-blue-600" />
-                  <span className="text-sm">Gmail</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <CalendarIcon className="h-4 w-4 mr-2 text-green-600" />
-                  <span className="text-sm">Calendar</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <SlackIcon className="h-4 w-4 mr-2 text-purple-600" />
-                  <span className="text-sm">Slack</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <DropboxIcon className="h-4 w-4 mr-2 text-blue-500" />
-                  <span className="text-sm">Dropbox</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <ZoomIcon className="h-4 w-4 mr-2 text-blue-700" />
-                  <span className="text-sm">Zoom</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <Github className="h-4 w-4 mr-2 text-gray-800" />
-                  <span className="text-sm">GitHub</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <ExcelIcon className="h-4 w-4 mr-2 text-green-700" />
-                  <span className="text-sm">Excel Online</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <SqlIcon className="h-4 w-4 mr-2 text-orange-600" />
-                  <span className="text-sm">SQL Database</span>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between p-2 border rounded-md">
-                <div className="flex items-center">
-                  <ApiIcon className="h-4 w-4 mr-2 text-indigo-600" />
-                  <span className="text-sm">Custom API</span>
-                </div>
-                <Switch />
-              </div>
-            </div>
-          </TabsContent>
+
         </ScrollArea>
       </Tabs>
       
