@@ -119,7 +119,7 @@ export function ProjectOverview({ project }: ProjectOverviewProps) {
         <div>
           <h1 className="text-3xl font-bold">{project.title || "Untitled Project"}</h1>
           <p className="text-gray-500">
-            Created {project.created_at ? formatDistanceToNow(new Date(project.created_at), { addSuffix: true }) : "recently"}
+            Created {project.createdAt ? formatDistanceToNow(new Date(project.createdAt), { addSuffix: true }) : "recently"}
           </p>
         </div>
         <div className="flex gap-3">

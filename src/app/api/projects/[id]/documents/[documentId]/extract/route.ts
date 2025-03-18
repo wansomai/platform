@@ -47,11 +47,11 @@ async function checkProjectAccess(projectId: string, userId: string) {
 // POST handler - Extract content from a document
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');

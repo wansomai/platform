@@ -13,10 +13,10 @@ const updateTeamMemberSchema = z.object({
 // PUT handler - Update team member role
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string, userId: string } }
+  { params }: { params: Promise<{ id: string, userId: string }> }
 ) {
   try {
-    const { id: projectId, userId: teamMemberId } = params
+    const { id: projectId, userId: teamMemberId } = await params
     
     // Parse and validate request body
     const body = await request.json()
@@ -125,10 +125,10 @@ export async function PUT(
 // DELETE handler - Remove team member
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string, userId: string } }
+  { params }: { params: Promise<{ id: string, userId: string }> }
 ) {
   try {
-    const { id: projectId, userId: teamMemberId } = params
+    const { id: projectId, userId: teamMemberId } = await params
     
     // Check if team member exists
     const teamMember = await prisma.projectMember.findUnique({

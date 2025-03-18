@@ -13,10 +13,10 @@ const pinConversationSchema = z.object({
 // PUT handler - Pin or unpin a conversation
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string, conversationId: string } }
+  { params }: { params: Promise<{ id: string, conversationId: string }> }
 ) {
   try {
-    const { id: projectId, conversationId } = params
+    const { id: projectId, conversationId } = (await params)
     
     // Check if conversation exists and belongs to the project
     const conversation = await prisma.conversation.findFirst({

@@ -16,10 +16,10 @@ const createEventSchema = z.object({
 // GET handler - List events
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Get query parameters
     const searchParams = request.nextUrl.searchParams
@@ -83,10 +83,10 @@ export async function GET(
 // POST handler - Create event
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Parse and validate request body
     const body = await request.json()

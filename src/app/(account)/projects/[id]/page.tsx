@@ -42,17 +42,9 @@ export default function ProjectPage() {
       </div>
     )
   }
-  
-  // Render the appropriate component based on the active tab
-  // Pass the project data as props to each component
   return (
     <div className="h-full">
-      {activeWorkspaceTab === "overview" && <ProjectOverview project={currentProject} />}
-      {activeWorkspaceTab === "documents" && <Documents project={currentProject} />}
-      {activeWorkspaceTab === "team" && <Team project={currentProject} />}
-      {activeWorkspaceTab === "chat" && <ChatInterface project={currentProject} />}
-      {activeWorkspaceTab === "client" && <ClientInfo project={currentProject} />}
-      {activeWorkspaceTab === "settings" && <Integrations project={currentProject} />}
+      {activeWorkspaceTab === "chat" && <ChatInterface/>}
     </div>
   )
 }

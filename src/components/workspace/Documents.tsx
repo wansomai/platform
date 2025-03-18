@@ -61,6 +61,7 @@ import { useUIStore } from "@/store/ui.store"
 import { formatDistanceToNow, format } from 'date-fns'
 import { ProjectComponentProps } from "@/types/project"
 import { useSession } from 'next-auth/react'
+import { useDocumentsStore } from "@/store/documents.store"
 
 export function Documents({ project }: ProjectComponentProps) {
   const params = useParams()
@@ -75,7 +76,8 @@ export function Documents({ project }: ProjectComponentProps) {
   
   const fileInputRef = useRef<HTMLInputElement>(null)
   
-  const { currentProject, uploadDocument, deleteDocument, isLoading } = useProjectStore()
+  const { currentProject,deleteDocument, isLoading } = useProjectStore()
+  const { uploadDocument } = useDocumentsStore()
   const { addToast } = useUIStore()
   const { data: session } = useSession()
   
@@ -97,11 +99,10 @@ export function Documents({ project }: ProjectComponentProps) {
     const file = files[0]
     setUploading(true)
     setUploadProgress(0)
-    
+    const formData = new FormData();
+    formData.append('file', file);
     try {
-      await uploadDocument(projectId, file, category, session.user.id, (progress) => {
-        setUploadProgress(progress)
-      })
+      await uploadDocument(formData)
       
       addToast({
         message: `${file.name} uploaded successfully`,

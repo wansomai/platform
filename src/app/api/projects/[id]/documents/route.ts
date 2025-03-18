@@ -68,10 +68,10 @@ async function checkProjectAccess(projectId: string, userId: string) {
 // GET handler - List all documents for a project
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id;
+    const projectId = (await params).id;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');
@@ -167,10 +167,10 @@ export async function GET(
 // POST handler - Upload a new document
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id;
+    const projectId = (await params).id;
     
     // Get user ID from request headers
     const userId = request.headers.get('x-user-id');

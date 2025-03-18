@@ -6,10 +6,10 @@ import { getUserIdFromRequest } from '@/lib/auth/authorization';
 // Get documents attached to a conversation
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+    {params}: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId = params.id;
+    const conversationId =  (await params).id
     
     // Get user ID from token
     const userId = getUserIdFromRequest(request);
@@ -106,10 +106,10 @@ export async function GET(
 // Add documents to a conversation
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  {params}: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId = params.id;
+    const conversationId =  (await params).id;
     
     // Get user ID from token
     const userId = getUserIdFromRequest(request);

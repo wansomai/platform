@@ -97,10 +97,10 @@ The Team`,
 // GET handler - List team members for a project
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id;
+    const projectId = (await params).id;
     
     // Check if project exists
     const project = await prisma.project.findUnique({
@@ -160,11 +160,11 @@ export async function GET(
 // POST handler - Add a team member
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string, userId: string } }
+  { params }: { params: Promise<{ id: string, userId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const userId = params.userId;
+    const projectId = (await params).id;
+    const userId = (await params).userId;
     
     
     // Get project to verify it exists and get details for the invitation

@@ -18,10 +18,10 @@ const clientInfoSchema = z.object({
 // GET handler - Get client information
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Get project knowledge base
     const knowledgeBase = await prisma.knowledgeBase.findUnique({
@@ -62,10 +62,10 @@ export async function GET(
 // PUT handler - Update client information
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Parse and validate request body
     const body = await request.json()

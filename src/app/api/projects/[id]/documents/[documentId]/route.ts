@@ -51,11 +51,11 @@ async function checkProjectAccess(projectId: string, userId: string) {
 // GET handler - Get a specific document
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
 
     
     // Get document
@@ -155,11 +155,11 @@ export async function GET(
 // PUT handler - Update a document
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');
@@ -295,11 +295,11 @@ export async function PUT(
 // DELETE handler - Delete a document
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');

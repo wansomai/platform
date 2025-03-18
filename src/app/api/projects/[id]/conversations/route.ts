@@ -14,10 +14,10 @@ const createConversationSchema = z.object({
 // GET handler - List all conversations for a project
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
@@ -114,10 +114,10 @@ export async function GET(
 // POST handler - Create a new conversation
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);

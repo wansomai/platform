@@ -244,11 +244,11 @@ function safelyFormatJson(jsonObj: any): string {
 // GET handler - Get messages in a conversation
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string, conversationId: string } }
+  { params }: { params: Promise<{ id: string, conversationId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const conversationId = params.conversationId;
+    const projectId = (await params).id;
+    const conversationId = (await params).conversationId;
    
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
@@ -348,10 +348,10 @@ export async function GET(
 // POST handler - Send a message to the conversation
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string, conversationId: string } }
+  { params }: { params: Promise<{ id: string, conversationId: string }> }
 ) {
   try {
-    const { id, conversationId } = params;
+    const { id, conversationId } = (await params);
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);

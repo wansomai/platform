@@ -15,10 +15,10 @@ const updateConversationSchema = z.object({
 // GET handler - Get conversation by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string, conversationId: string } }
+  { params }: { params: Promise<{ id: string, conversationId: string }> }
 ) {
   try {
-    const { id: projectId, conversationId } = params
+    const { id: projectId, conversationId } = (await params)
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
@@ -128,10 +128,10 @@ export async function GET(
 // PUT handler - Update conversation
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string, conversationId: string } }
+  { params }: { params: Promise<{ id: string, conversationId: string }> }
 ) {
   try {
-    const { id: projectId, conversationId } = params
+    const { id: projectId, conversationId } = (await params)
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
@@ -230,10 +230,10 @@ export async function PUT(
 // DELETE handler - Delete conversation
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string, conversationId: string } }
+  { params }: { params: Promise<{ id: string, conversationId: string }> }
 ) {
   try {
-    const { id: projectId, conversationId } = params
+    const { id: projectId, conversationId } = (await params)
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);

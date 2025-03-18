@@ -47,11 +47,11 @@ async function checkProjectAccess(projectId: string, userId: string) {
 // POST handler - Generate embeddings for a document
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');
@@ -204,11 +204,11 @@ export async function POST(
 // GET handler - Get document embeddings info
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');
@@ -279,11 +279,11 @@ export async function GET(
 // DELETE handler - Delete document embeddings
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string, documentId: string } }
+  { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = params.id;
-    const documentId = params.documentId;
+    const projectId = (await params).id;
+    const documentId = (await params).documentId;
     
     // Get user ID from request headers (set by middleware)
     const userId = request.headers.get('x-user-id');

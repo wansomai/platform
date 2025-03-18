@@ -44,6 +44,11 @@ interface DocumentsState {
   unselectDocument: (id: string) => void;
   toggleDocumentSelection: (id: string) => void;
   clearSelectedDocuments: () => void;
+  setDocuments: (documents: Document[]) => void;
+  addDocument: (document: Document) => void;
+  removeDocument: (id: string) => void;
+  setLoading: (isLoading: boolean) => void;
+  setError: (error: string | null) => void;
 }
 
 export const useDocumentsStore = create<DocumentsState>((set, get) => ({
@@ -169,5 +174,11 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
   
   clearSelectedDocuments: () => {
     set({ selectedDocuments: [] });
-  }
+  },
+  
+  setDocuments: (documents) => set({ documents }),
+  addDocument: (document) => set((state) => ({ documents: [...state.documents, document] })),
+  removeDocument: (id) => set((state) => ({ documents: state.documents.filter(d => d.id !== id) })),
+  setLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
 }));

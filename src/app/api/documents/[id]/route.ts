@@ -7,10 +7,10 @@ import { blobStorageService } from '@/lib/storage';
 // Get document details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> } 
 ) {
   try {
-    const documentId = params.id;
+    const documentId = (await params).id;
     
     // Get user ID and organization from token
     const userId = getUserIdFromRequest(request);
@@ -100,10 +100,10 @@ export async function GET(
 // Delete document
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const documentId = params.id;
+    const documentId = (await params).id;
     
     // Get user ID and organization from token
     const userId = getUserIdFromRequest(request);

@@ -16,7 +16,7 @@ const updateProjectSchema = z.object({
 // GET handler - Get project by ID
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Make sure to await params if needed, but in this case we just need to use it directly
@@ -153,10 +153,10 @@ export async function GET(
 // PUT handler - Update project
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
@@ -266,10 +266,10 @@ export async function PUT(
 // DELETE handler - Delete project
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = params.id
+    const projectId = (await params).id
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
