@@ -201,11 +201,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       
       if (response.status === 201) {
         const project = response.data;
-        set((state) => ({ 
-          fetchProjects: state.fetchProjects,
-          isLoading: false
-        }));
-        
+        set({ isLoading: false });
+        get().fetchProjects();
         return project;
       }
       return null;

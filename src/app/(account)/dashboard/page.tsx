@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { 
@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useProjectStore } from "@/store/project.store"
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
-
+import { useDocumentsStore } from "@/store/documents.store";
 // Quick Action Card Component
 interface QuickActionProps {
   icon: React.ElementType;
@@ -78,11 +78,13 @@ export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { fetchProjects, projects, isLoading } = useProjectStore();
+  const {documents, fetchDocuments} = useDocumentsStore();
   const [activeTab, setActiveTab] = useState("overview");
   const [showProjectModal, setShowProjectModal] = useState(false);
   useEffect(() => {
     fetchProjects();
-  }, [fetchProjects]);
+    fetchDocuments();
+  }, [fetchProjects, fetchDocuments]);
 
   // Mock data for activities
   const recentActivities = [
@@ -119,7 +121,7 @@ export default function DashboardPage() {
   // Stats for the overview
   const stats = [
     { label: "Active Projects", value: projects?.filter(p => p.status === "active").length || 0, icon: Briefcase },
-    { label: "Documents", value: projects?.reduce((acc, project) => acc + project.documents_count, 0) || 0, icon: FileText },
+    { label: "Documents", value: documents?.length || 0, icon: FileText },
     { label: "Recent Activity", value: recentActivities.length, icon: Clock },
   ];
 
@@ -144,8 +146,8 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline" className="text-white border-white hover:bg-primary-700 bg-green-500" onClick={() => setShowProjectModal(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" />
+            <Button variant="outline" className="text-white  hover:bg-primary-700 bg-green-600" onClick={() => setShowProjectModal(true)}>
+              <FolderPlus className="mr-2 h-4 w-4" />
               New Project
             </Button>
             <Button variant="outline" className="text-white border-white bg-black" onClick={() => router.push("/assistant")}>
@@ -225,7 +227,7 @@ export default function DashboardPage() {
                   <Briefcase className="h-10 w-10 text-gray-300 mx-auto mb-2" />
                   <h3 className="text-lg font-medium">No projects yet</h3>
                   <p className="text-sm text-gray-500 mb-4">Create your first project to get started</p>
-                  <Button onClick={() => router.push('/projects/new')}>
+                  <Button onClick={() => setShowProjectModal(true)}>
                     <FolderPlus className="mr-2 h-4 w-4" />
                     Create Project
                   </Button>
