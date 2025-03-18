@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -31,8 +31,10 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export default function ResetPasswordPage() {
+// Content component that uses useSearchParams
+function ResetPasswordContent() {
   const router = useRouter()
+  const { useSearchParams } = require('next/navigation')
   const searchParams = useSearchParams()
   const token = searchParams.get('token')
   
@@ -86,7 +88,7 @@ export default function ResetPasswordPage() {
     }
   }
   
-  // If no token was provided, show an error
+  // If no token found, show error
   if (!token) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
@@ -229,5 +231,22 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </div>
+  )
+}
+
+// Main component that wraps content in Suspense
+export default function ResetPasswordPage() {
+  // Loading fallback for when useSearchParams is fetching data
+  const fallback = (
+    <div className="flex min-h-screen flex-col items-center justify-center py-12">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <p className="mt-2">Loading...</p>
+    </div>
+  )
+
+  return (
+    <Suspense fallback={fallback}>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }
