@@ -7,7 +7,7 @@ export interface ProjectDetails {
   title: string
   description: string
   status: string
-  created_at: string
+  createdAt: string
   knowledge_base: {
     team: TeamMember[]
     client: ClientInfo
@@ -25,7 +25,7 @@ export interface ProjectListItem {
   title: string
   description: string
   status: string
-  created_at: string
+  createdAt: string
   team_count: number
   messages_count: number
   documents_count: number
@@ -67,7 +67,7 @@ export interface EventInfo {
   date: string
   type: string
   description?: string
-  created_at: string
+  createdAt: string
 }
 
 interface ApiResponse<T> {

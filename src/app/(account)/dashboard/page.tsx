@@ -187,28 +187,28 @@ export default function DashboardPage() {
               icon={FileUp} 
               title="Upload Document" 
               description="Add contracts, pleadings, or evidence to your vault" 
-              href="/dashboard/vault?action=upload" 
+              href="/vault" 
               color="text-blue-600"
             />
             <QuickActionCard 
               icon={Briefcase} 
               title="Create Project" 
               description="Start a new legal project and organize documents" 
-              href="/projects/new" 
+              href="/projects" 
               color="text-purple-600"
             />
             <QuickActionCard 
               icon={MessageSquare} 
               title="AI Assistant" 
               description="Get help with legal research and document analysis" 
-              href="/dashboard/assistant" 
+              href="/assistant" 
               color="text-green-600"
             />
             <QuickActionCard 
               icon={Zap} 
               title="Start Workflow" 
               description="Begin a predefined legal process with templates" 
-              href="/dashboard/workflows" 
+              href="/workflows" 
               color="text-amber-600"
             />
           </div>

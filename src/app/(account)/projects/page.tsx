@@ -106,7 +106,7 @@ export default function ProjectsPage() {
         result = new Date(b.last_activity).getTime() - new Date(a.last_activity).getTime();
         break;
       case "created":
-        result = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        result = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         break;
       case "activity":
         result = b.messages_count - a.messages_count;
@@ -420,7 +420,7 @@ export default function ProjectsPage() {
                     <TableCell>{getStatusBadge(project.status)}</TableCell>
                     <TableCell>{project.documents_count}</TableCell>
                     <TableCell>{project.team_count}</TableCell>
-                    <TableCell>{format(new Date(project.created_at), 'MMM d, yyyy')}</TableCell>
+                    <TableCell>{format(new Date(project.createdAt), 'MMM d, yyyy')}</TableCell>
                     <TableCell>{project.last_activity ? project.last_activity : "None"}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
