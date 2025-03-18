@@ -89,6 +89,14 @@ export const apiService = {
       }
     });
   },
+  postMultipart: async <T>(url: string, formData: FormData): Promise<T> => {
+    const response = await apiClient.post<T>(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
   
   patch: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
     const response = await apiClient.patch<T>(url, data, config);
