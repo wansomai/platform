@@ -22,56 +22,77 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+    
     // Handle multipart form data (with files) or regular JSON
     const contentType = request.headers.get('content-type') || '';
     let message = '';
     let fileIds: string[] = [];
-     console.log(request.body,'request body')
-
-      const formData = await request.formData();
-      message = formData.get('message')?.toString() || '';    
-      // Process files
-      const files = formData.getAll('files');
-      // Upload each file to OpenAI and get file IDs
-      for (const fileItem of files) {
-        if (fileItem instanceof File) {
-          const file = fileItem;
-          
-          // Convert File to Buffer
-          const arrayBuffer = await file.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-          
-          // Upload file to OpenAI
-          const uploadedFile = await openai.files.create({
-            file: new File([buffer], file.name, { type: file.type }),
-            purpose: 'assistants',
-          });
-          
-          fileIds.push(uploadedFile.id);
-        }
+    let threadId: string | null = null;
+    
+    const formData = await request.formData();
+    message = formData.get('message')?.toString() || '';
+    threadId = formData.get('threadId')?.toString() || null;
+    
+    // Process files
+    const files = formData.getAll('files');
+    // Upload each file to OpenAI and get file IDs
+    for (const fileItem of files) {
+      if (fileItem instanceof File) {
+        const file = fileItem;
+        
+        // Convert File to Buffer
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        
+        // Upload file to OpenAI
+        const uploadedFile = await openai.files.create({
+          file: new File([buffer], file.name, { type: file.type }),
+          purpose: 'assistants',
+        });
+        
+        fileIds.push(uploadedFile.id);
       }
+    }
     
     if (!message) {
       return NextResponse.json(
-        { message: 'No message or files provided' },
+        { message: 'No message provided' },
         { status: 400 }
       );
     }
     
-    // Create a thread
-    const thread = await openai.beta.threads.create();
+    let thread;
+    
+    // Use existing thread if provided, otherwise create a new one
+    if (threadId) {
+      try {
+        // Verify the thread exists
+        thread = await openai.beta.threads.retrieve(threadId);
+      } catch (error) {
+        console.warn(`Thread ${threadId} not found, creating a new one:`, error);
+        thread = await openai.beta.threads.create();
+      }
+    } else {
+      // Create a new thread
+      thread = await openai.beta.threads.create();
+    }
+    
     // Add user message to thread
-    if(fileIds.length>0){
+    if (fileIds.length > 0) {
       await openai.beta.threads.messages.create(thread.id, {
         role: 'user',
         content: message,
-        attachments: [{ file_id: fileIds[0], tools: [{ type: "file_search" }] }],
+        attachments: fileIds.map(fileId => ({ 
+          file_id: fileId, 
+          tools: [{ type: "file_search" }] 
+        })),
+      });
+    } else {
+      await openai.beta.threads.messages.create(thread.id, {
+        role: 'user',
+        content: message,
       });
     }
-    await openai.beta.threads.messages.create(thread.id, {
-      role: 'user',
-      content: message,
-    });
     
     // Run the assistant on the thread
     const run = await openai.beta.threads.runs.create(thread.id, {
@@ -137,21 +158,25 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Clean up files after use
-    // Note: In production, you might want to keep files for a certain period
-    // or implement a cleanup job instead of deleting immediately
-    for (const fileId of fileIds) {
-      try {
-        await openai.files.del(fileId);
-      } catch (error) {
-        console.error(`Error deleting file ${fileId}:`, error);
+    // In a production environment, consider keeping files associated with the thread
+    // instead of deleting them immediately - especially for ongoing conversations
+    if (!threadId) {  // Only delete files for one-off conversations
+      for (const fileId of fileIds) {
+        try {
+          await openai.files.del(fileId);
+        } catch (error) {
+          console.error(`Error deleting file ${fileId}:`, error);
+        }
       }
     }
     
+    // Return the response along with the threadId for continuity
     return NextResponse.json({
       content: responseContent,
       timestamp: new Date().toISOString(),
-      threadId: thread.id // You might want to save this to continue the conversation
+      threadId: thread.id, // Client should store and pass this for conversation continuity
+      messageId: latestMessage.id, // Helpful for message tracking
+      messageHistory: messages.data.length // Provide context on conversation length
     });
     
   } catch (error) {
