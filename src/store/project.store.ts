@@ -104,7 +104,6 @@ interface ProjectState {
   removeTeamMember: (projectId: string, userId: string) => Promise<boolean>
   
   // Document management
-  uploadDocument: (projectId: string, file: File, category: string, userId: string, onProgress?: (progress: number) => void) => Promise<DocumentInfo | null>
   deleteDocument: (projectId: string, documentId: string) => Promise<boolean>
   
   // Event management
@@ -340,52 +339,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return false;
     }
   },
-  
-  // Document management
-  uploadDocument: async (projectId: string, file: File, category: string, userId: string, onProgress?: (progress: number) => void) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const { data: document } = await apiService.upload<DocumentInfo>(
-        `/api/projects/${projectId}/documents`,
-        file,
-        onProgress,
-        { 
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-          params: { category }
-        }
-      );
-      
-      set((state) => {
-        if (state.currentProject && state.currentProject.id === projectId) {
-          return {
-            currentProject: {
-              ...state.currentProject,
-              knowledge_base: {
-                ...state.currentProject.knowledge_base,
-                documents: [document, ...state.currentProject.knowledge_base.documents]
-              },
-              documents_count: state.currentProject.documents_count + 1
-            },
-            isLoading: false
-          };
-        }
-        return { isLoading: false };
-      });
-      
-      return document;
-    } catch (error: any) {
-      console.error('Error uploading document:', error);
-      set({ 
-        error: error.message || 'Failed to upload document', 
-        isLoading: false 
-      });
-      return null;
-    }
-  },
-  
   deleteDocument: async (projectId, documentId) => {
     try {
       set({ isLoading: true, error: null });

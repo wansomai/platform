@@ -110,10 +110,9 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       const { data: document } = await apiService.upload<Document>('/api/documents', fileData);
       
       set((state) => ({
-        documents: [document, ...state.documents],
         isLoading: false
       }));
-      
+      await get().fetchDocuments();
       return document;
     } catch (error: any) {
       set({ 

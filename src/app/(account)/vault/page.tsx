@@ -2,19 +2,22 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Search,
   FileText,
@@ -33,11 +36,18 @@ import {
   ChevronDown,
   Plus,
   RefreshCw,
-  Tag
+  ListFilter,
+  SlidersHorizontal,
+  Grid,
+  List,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  HelpCircle
 } from "lucide-react";
-import { useProjectStore } from "@/store/project.store";
+import { useDocumentsStore } from "@/store/documents.store";
 import { useUIStore } from "@/store/ui.store";
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 // Document Type Icons
 const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
@@ -56,104 +66,105 @@ const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
   }
 };
 
-// Format File Size
-const formatFileSize = (sizeInBytes: number) => {
-  if (!sizeInBytes) return "Unknown";
-  
-  const kb = sizeInBytes / 1024;
-  if (kb < 1024) {
-    return `${kb.toFixed(1)} KB`;
-  }
-  const mb = kb / 1024;
-  return `${mb.toFixed(1)} MB`;
-};
-
+// Main component
 export default function VaultPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { data: session } = useSession();
-  
-  // Get the action from search params (if any)
-  const action = searchParams.get("action");
-  
-  // State
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [showUploadDialog, setShowUploadDialog] = useState(action === "upload");
-  const [uploadCategory, setUploadCategory] = useState("general");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState("latest");
-  
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // Get project state
-  const { currentProject, fetchProjectById, uploadDocument, deleteDocument, isLoading } = useProjectStore();
+  // Get state from stores
+  const { 
+    documents, 
+    isLoading, 
+    error, 
+    pagination, 
+    fetchDocuments, 
+    uploadDocument, 
+    deleteDocument,
+    selectedDocuments,
+    toggleDocumentSelection,
+    clearSelectedDocuments
+  } = useDocumentsStore();
+  
   const { addToast } = useUIStore();
   
-  // Mock project ID for now - in a real app, you would get this from the current context
-  const projectId = "project-123";
+  // Local state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [fileType, setFileType] = useState<string | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [fileDescription, setFileDescription] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   
-  // Fetch project data on mount
+  // Fetch documents on mount and when filters change
   useEffect(() => {
-    if (!currentProject) {
-      fetchProjectById(projectId);
+    fetchDocuments({
+      search: searchTerm || undefined,
+      type: fileType,
+      sort: sortBy,
+      page: currentPage,
+      limit: 20
+    });
+  }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage]);
+  
+  // Error handling
+  useEffect(() => {
+    if (error) {
+      addToast({
+        message: error,
+        type: "error"
+      });
     }
-  }, [currentProject, fetchProjectById, projectId]);
+  }, [error, addToast]);
   
-  // Get documents from the current project
-  const allDocuments = currentProject?.knowledge_base?.documents || [];
-  
-  // Filter and sort documents
-  const filteredDocuments = allDocuments.filter((doc) => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || doc.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-  
-  // Sort documents
-  const sortedDocuments = [...filteredDocuments].sort((a, b) => {
-    if (sortBy === "latest") {
-      return new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime();
-    } else if (sortBy === "oldest") {
-      return new Date(a.uploaded_at).getTime() - new Date(b.uploaded_at).getTime();
-    } else if (sortBy === "name") {
-      return a.name.localeCompare(b.name);
-    } else if (sortBy === "size") {
-      return b.file_size - a.file_size;
-    }
-    return 0;
-  });
+  // Clear selected documents when view changes
+  useEffect(() => {
+    clearSelectedDocuments();
+  }, [viewMode, clearSelectedDocuments]);
   
   // Handle file upload
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0 || !session?.user?.id) return;
+    if (!files || files.length === 0) return;
     
     const file = files[0];
     setUploading(true);
     setUploadProgress(0);
     
     try {
-      await uploadDocument(projectId, file, uploadCategory, session.user.id, (progress) => {
-        setUploadProgress(progress);
-      });
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', file);
       
-      addToast({
-        message: `${file.name} uploaded successfully`,
-        type: "success"
-      });
-      setShowUploadDialog(false);
+      if (fileDescription) {
+        formData.append('description', fileDescription);
+      }
+      
+      // Upload the file with progress tracking
+      const document = await uploadDocument(formData);
+      
+      if (document) {
+        addToast({
+          message: `${file.name} has been uploaded successfully.`,
+          type: "success"
+        });
+        setShowUploadDialog(false);
+        setFileDescription("");
+      }
     } catch (error) {
       addToast({
-        message: `Failed to upload ${file.name}`,
+        message: "Upload Failed",
         type: "error"
       });
     } finally {
       setUploading(false);
       setUploadProgress(0);
+      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -161,113 +172,164 @@ export default function VaultPage() {
   };
   
   // Handle document deletion
-  const handleDeleteDocument = async (documentId: string) => {
+  const handleDeleteDocument = async (id: string) => {
     try {
-      await deleteDocument(projectId, documentId);
-      addToast({
-        message: "Document deleted successfully",
-        type: "success"
-      });
+      const success = await deleteDocument(id);
       
-      // Clear selection if the deleted document was selected
-      if (selectedDocs.includes(documentId)) {
-        setSelectedDocs(selectedDocs.filter(id => id !== documentId));
+      if (success) {
+        addToast({
+          message: "Document Deleted",
+          type: "success"
+        });
+        setShowDeleteConfirm(false);
+        setDocumentToDelete(null);
       }
     } catch (error) {
       addToast({
-        message: "Failed to delete document",
+        message: "Deletion Failed",
         type: "error"
       });
     }
   };
   
-  // Toggle document selection
-  const toggleDocSelection = (docId: string) => {
-    if (selectedDocs.includes(docId)) {
-      setSelectedDocs(selectedDocs.filter(id => id !== docId));
-    } else {
-      setSelectedDocs([...selectedDocs, docId]);
-    }
-  };
-  
-  // Bulk actions
+  // Handle bulk document deletion
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedDocs.map(id => deleteDocument(projectId, id)));
-      addToast({
-        message: `${selectedDocs.length} documents deleted successfully`,
-        type: "success"
-      });
-      setSelectedDocs([]);
+      // Process each selected document sequentially
+      let successCount = 0;
+      
+      for (const docId of selectedDocuments) {
+        const success = await deleteDocument(docId);
+        if (success) successCount++;
+      }
+      
+      if (successCount > 0) {
+        addToast({
+          message: `${successCount} documents have been deleted successfully.`,
+          type: "success"
+        });
+        clearSelectedDocuments();
+      }
     } catch (error) {
       addToast({
-        message: "Failed to delete some documents",
+        message: "Deletion Failed",
         type: "error"
       });
     }
   };
   
-  // Document categories
-  const categories = [
-    { id: "all", label: "All Documents" },
-    { id: "general", label: "General" },
-    { id: "evidence", label: "Evidence" },
-    { id: "pleadings", label: "Pleadings" },
-    { id: "correspondence", label: "Correspondence" },
-    { id: "contracts", label: "Contracts" },
-    { id: "research", label: "Research" },
+  // Handle file download
+  const handleDownloadDocument = (document: any) => {
+    // Create a temporary anchor element
+    const link = document.createElement('a');
+    link.href = document.fileUrl;
+    link.download = document.title;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  // File type options
+  const fileTypeOptions = [
+    { value: "all", label: "All Types" },
+    { value: "pdf", label: "PDF Documents" },
+    { value: "doc", label: "Word Documents" },
+    { value: "xls", label: "Excel Spreadsheets" },
+    { value: "csv", label: "CSV Files" },
+    { value: "jpg", label: "Images" }
   ];
+  
+  // Sort options
+  const sortOptions = [
+    { value: "recent", label: "Most Recent" },
+    { value: "oldest", label: "Oldest First" },
+    { value: "name", label: "Name (A-Z)" },
+    { value: "size", label: "Size (Largest)" }
+  ];
+  
+  // Format date
+  const formatDate = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    } catch (error) {
+      return dateString;
+    }
+  };
   
   // Render grid view
   const renderGridView = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {sortedDocuments.map((doc) => (
-        <Card key={doc.id} className={`overflow-hidden hover:shadow-md transition-shadow ${selectedDocs.includes(doc.id) ? 'ring-2 ring-primary-500' : ''}`}>
-          <div className="p-4 flex items-center justify-between">
-            <div className="p-2 bg-gray-100 rounded">
-              <DocumentTypeIcon fileType={doc.file_type} />
-            </div>
-            <DropdownMenu>
+      {documents.map((document) => (
+        <Card 
+          key={document.id} 
+          className={`overflow-hidden hover:shadow-md transition-all ${
+            selectedDocuments.includes(document.id) ? "ring-2 ring-primary-500" : ""
+          }`}
+        >
+          <CardHeader className="pb-3">
+            <div className="flex items-start space-x-2">
+              <div className="flex-shrink-0 mt-1">
+                <DocumentTypeIcon fileType={document.fileType || ""} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-base truncate">{document.title}</CardTitle>
+                  <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => window.open(doc.file_url, '_blank')}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  <span>View</span>
+                <DropdownMenuItem onClick={() => window.open(document.fileUrl, '_blank')}>
+                  <Eye className="h-4 w-4 mr-2" />
+                  View
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Download</span>
+                <DropdownMenuItem onClick={() => handleDownloadDocument(document)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteDocument(doc.id)}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
+                <DropdownMenuItem 
+                  className="text-red-600"
+                  onClick={() => {
+                    setDocumentToDelete(document.id);
+                    setShowDeleteConfirm(true);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-          <CardContent className="p-4 pt-0">
-            <h3 className="font-medium truncate" title={doc.name}>{doc.name}</h3>
-            <div className="flex items-center text-xs text-gray-500 mt-1">
-              <Badge variant="outline" className="mr-2">{doc.category}</Badge>
-              <span>{formatFileSize(doc.file_size)}</span>
+                </div>
+                {/* <CardDescription className="text-xs truncate">
+                  {document.description || "No description"}
+                </CardDescription> */}
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="pb-3">
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span className="text-gray-500">Type:</span>{" "}
+                <Badge variant="outline" className="ml-1">{document.fileType}</Badge>
+              </div>
+              <div>
+                <span className="text-gray-500">Size:</span>{" "}
+                <span>{formatBytes(document.fileSize)}</span>
+              </div>
+              <div className="col-span-2">
+                <span className="text-gray-500">Uploaded:</span>{" "}
+                <span>{formatDate(document.createdAt)}</span>
+              </div>
+              <div className="col-span-2">
+                <span className="text-gray-500">By:</span>{" "}
+                <span>{document.createdBy}</span>
+              </div>
             </div>
           </CardContent>
-          <CardFooter className="p-4 pt-0 flex justify-between items-center">
-            <div className="text-xs text-gray-500">
-              {formatDistanceToNow(new Date(doc.uploaded_at), { addSuffix: true })}
-            </div>
-            <input 
-              type="checkbox" 
-              checked={selectedDocs.includes(doc.id)} 
-              onChange={() => toggleDocSelection(doc.id)}
-              className="h-4 w-4"
-            />
-          </CardFooter>
         </Card>
       ))}
     </div>
@@ -277,90 +339,97 @@ export default function VaultPage() {
   const renderListView = () => (
     <Card>
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 border-b">
-                <th className="py-3 px-4 text-left w-10">
-                  <input 
-                    type="checkbox" 
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedDocs(sortedDocuments.map(d => d.id));
-                      } else {
-                        setSelectedDocs([]);
-                      }
-                    }}
-                    checked={selectedDocs.length === sortedDocuments.length && sortedDocuments.length > 0}
-                    className="h-4 w-4"
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {/* <TableHead className="w-[30px]">
+                <Checkbox
+                  checked={selectedDocuments.length > 0 && selectedDocuments.length === documents.length}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      // Select all documents
+                      const allIds = documents.map(doc => doc.id);
+                      clearSelectedDocuments();
+                      allIds.forEach(id => toggleDocumentSelection(id));
+                    } else {
+                      // Deselect all
+                      clearSelectedDocuments();
+                    }
+                  }}
+                />
+              </TableHead> */}
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Size</TableHead>
+              <TableHead>Uploaded</TableHead>
+              <TableHead>By</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {documents.map((document) => (
+              <TableRow 
+                key={document.id}
+                className={selectedDocuments.includes(document.id) ? "bg-primary-50" : ""}
+              >
+                {/* <TableCell>
+                  <Checkbox
+                    checked={selectedDocuments.includes(document.id)}
+                    onCheckedChange={() => toggleDocumentSelection(document.id)}
                   />
-                </th>
-                <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Category</th>
-                <th className="py-3 px-4 text-left">Size</th>
-                <th className="py-3 px-4 text-left">Uploaded</th>
-                <th className="py-3 px-4 text-left">By</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {sortedDocuments.map((doc) => (
-                <tr key={doc.id} className={`hover:bg-gray-50 ${selectedDocs.includes(doc.id) ? 'bg-blue-50' : ''}`}>
-                  <td className="py-3 px-4">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedDocs.includes(doc.id)} 
-                      onChange={() => toggleDocSelection(doc.id)}
-                      className="h-4 w-4"
-                    />
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center">
-                      <DocumentTypeIcon fileType={doc.file_type} />
-                      <span className="ml-2 truncate max-w-[200px]" title={doc.name}>{doc.name}</span>
+                </TableCell> */}
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <DocumentTypeIcon fileType={document.fileType || ""} />
+                    <div className="flex flex-col">
+                      <span className="font-medium truncate max-w-[200px]">{document.title}</span>
+                      {/* <span className="text-xs text-gray-500 truncate max-w-[200px]">
+                        {document.description || "No description"}
+                      </span> */}
                     </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant="outline">{doc.category}</Badge>
-                  </td>
-                  <td className="py-3 px-4 text-gray-500">{formatFileSize(doc.file_size)}</td>
-                  <td className="py-3 px-4 text-gray-500">
-                    {formatDistanceToNow(new Date(doc.uploaded_at), { addSuffix: true })}
-                  </td>
-                  <td className="py-3 px-4 text-gray-500">{doc.uploaded_by}</td>
-                  <td className="py-3 px-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => window.open(doc.file_url, '_blank')}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          <span>View</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Download className="mr-2 h-4 w-4" />
-                          <span>Download</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          <span>Rename</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteDocument(doc.id)}>
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">{document.fileType}</Badge>
+                </TableCell>
+                <TableCell>{formatBytes(document.fileSize)}</TableCell>
+                <TableCell>{formatDate(document.createdAt)}</TableCell>
+                <TableCell>{document.createdBy}</TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end space-x-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={() => window.open(document.fileUrl, '_blank')}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={() => handleDownloadDocument(document)}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-red-600"
+                      onClick={() => {
+                        setDocumentToDelete(document.id);
+                        setShowDeleteConfirm(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
@@ -371,22 +440,22 @@ export default function VaultPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Document Vault</h1>
-          <p className="text-gray-500">Manage all your legal documents in one place</p>
+          <p className="text-gray-500">Manage your organization's document library</p>
         </div>
         
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}>
             {viewMode === "grid" ? (
-              <FileText className="h-4 w-4 mr-2" />
+              <>
+                <List className="h-4 w-4 mr-2" />
+                List View
+              </>
             ) : (
-              <div className="grid grid-cols-2 gap-1 mr-2">
-                <div className="h-1.5 w-1.5 bg-current rounded"></div>
-                <div className="h-1.5 w-1.5 bg-current rounded"></div>
-                <div className="h-1.5 w-1.5 bg-current rounded"></div>
-                <div className="h-1.5 w-1.5 bg-current rounded"></div>
-              </div>
+              <>
+                <Grid className="h-4 w-4 mr-2" />
+                Grid View
+              </>
             )}
-            {viewMode === "grid" ? "List View" : "Grid View"}
           </Button>
           
           <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
@@ -400,38 +469,21 @@ export default function VaultPage() {
               <DialogHeader>
                 <DialogTitle>Upload Document</DialogTitle>
                 <DialogDescription>
-                  Add a new document to your vault. We support PDF, Word, Excel, and image files.
+                  Upload a document to your organization's vault.
                 </DialogDescription>
               </DialogHeader>
+              
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="category" className="text-right">
-                    Category
-                  </Label>
-                  <Select value={uploadCategory} onValueChange={setUploadCategory}>
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="general">General</SelectItem>
-                      <SelectItem value="evidence">Evidence</SelectItem>
-                      <SelectItem value="pleadings">Pleadings</SelectItem>
-                      <SelectItem value="correspondence">Correspondence</SelectItem>
-                      <SelectItem value="contracts">Contracts</SelectItem>
-                      <SelectItem value="research">Research</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="file" className="text-right">
                     File
                   </Label>
                   <div className="col-span-3">
-                    <Input
-                      id="file"
-                      type="file"
+                    <Input 
+                      id="file" 
+                      type="file" 
                       ref={fileInputRef}
-                      onChange={handleFileChange}
+                      onChange={handleFileUpload}
                       disabled={uploading}
                     />
                     {uploading && (
@@ -442,10 +494,46 @@ export default function VaultPage() {
                     )}
                   </div>
                 </div>
+                
+                {/* <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-right">
+                    Description
+                  </Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Enter a description (optional)"
+                    className="col-span-3"
+                    value={fileDescription}
+                    onChange={(e) => setFileDescription(e.target.value)}
+                    disabled={uploading}
+                  />
+                </div> */}
               </div>
+              
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowUploadDialog(false)} disabled={uploading}>
                   Cancel
+                </Button>
+                <Button 
+                  type="button"
+                  onClick={() => {
+                    if (fileInputRef.current?.files?.length) {
+                      handleFileUpload({ target: { files: fileInputRef.current.files } } as React.ChangeEvent<HTMLInputElement>);
+                    }
+                  }}
+                  disabled={uploading || (fileInputRef.current ? !fileInputRef.current.files?.length : true)}
+                >
+                  {uploading ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="mr-2 h-4 w-4" />
+                      Upload
+                    </>
+                  )}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -465,75 +553,77 @@ export default function VaultPage() {
           />
         </div>
         
-        <Select value={sortBy} onValueChange={setSortBy}>
+        <Select 
+          value={fileType || "all"} 
+          onValueChange={(value) => setFileType(value as string | undefined)}
+        >
           <SelectTrigger className="w-[180px]">
-            <Clock className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Sort by" />
+            <SelectValue placeholder="Filter by type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="latest">Latest First</SelectItem>
-            <SelectItem value="oldest">Oldest First</SelectItem>
-            <SelectItem value="name">Name (A-Z)</SelectItem>
-            <SelectItem value="size">Size (Largest)</SelectItem>
+            {fileTypeOptions.map((option) => (
+              <SelectItem key={option.label} value={option.value || ""}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         
-        <Button variant="outline" className="flex items-center gap-2">
-          <Filter className="h-4 w-4" />
-          <span>Filters</span>
-          <ChevronDown className="h-4 w-4" />
-        </Button>
+        <Select 
+          value={sortBy} 
+          onValueChange={(value) => setSortBy(value as 'recent' | 'oldest' | 'name' | 'size')}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            {sortOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       
       {/* Selected Documents Actions */}
-      {selectedDocs.length > 0 && (
+      {selectedDocuments.length > 0 && (
         <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg">
           <div className="flex items-center">
-            <span className="font-medium">{selectedDocs.length} documents selected</span>
+            <span className="font-medium">{selectedDocuments.length} documents selected</span>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setSelectedDocs([])}>
+            <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
               Cancel
             </Button>
             <Button variant="outline" size="sm">
               <Download className="mr-2 h-4 w-4" />
               Download
             </Button>
-            <Button variant="outline" size="sm">
-              <Tag className="mr-2 h-4 w-4" />
-              Categorize
-            </Button>
             <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              Delete Selected
             </Button>
           </div>
         </div>
       )}
       
-      {/* Document Categories */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-        <TabsList className="mb-4">
-          {categories.map((category) => (
-            <TabsTrigger key={category.id} value={category.id}>{category.label}</TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-      
       {/* Documents Display */}
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-2"></div>
-          <p className="text-gray-500">Loading documents...</p>
+          <div className="flex flex-col items-center space-y-2">
+            <RefreshCw className="h-8 w-8 animate-spin text-primary-600" />
+            <p className="text-gray-500">Loading documents...</p>
+          </div>
         </div>
-      ) : sortedDocuments.length === 0 ? (
+      ) : documents.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
           <div className="p-4 bg-gray-100 rounded-full mb-4">
             <FileText className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium">No documents found</h3>
           <p className="text-gray-500 mb-4">
-            {searchTerm ? `No documents match "${searchTerm}"` : "Upload a document to get started"}
+            {searchTerm || fileType ? 'No documents match your search criteria' : 'Upload your first document to get started'}
           </p>
           <Button onClick={() => setShowUploadDialog(true)}>
             <UploadCloud className="mr-2 h-4 w-4" />
@@ -544,16 +634,91 @@ export default function VaultPage() {
         viewMode === "grid" ? renderGridView() : renderListView()
       )}
       
-      {/* Pagination (when needed) */}
-      {sortedDocuments.length > 20 && (
+      {/* Pagination */}
+      {pagination && pagination.pages > 1 && (
         <div className="flex justify-center mt-6">
-          <Button variant="outline" size="sm" className="mx-1">1</Button>
-          <Button variant="outline" size="sm" className="mx-1">2</Button>
-          <Button variant="outline" size="sm" className="mx-1">3</Button>
-          <span className="mx-1 flex items-center text-gray-500">...</span>
-          <Button variant="outline" size="sm" className="mx-1">10</Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            
+            {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+              // Calculate page numbers to show based on current page
+              let pageNum;
+              if (pagination.pages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= pagination.pages - 2) {
+                pageNum = pagination.pages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <Button
+                  key={i}
+                  variant={pageNum === currentPage ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(pageNum)}
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(p => Math.min(p + 1, pagination.pages))}
+              disabled={currentPage === pagination.pages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this document? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => documentToDelete && handleDeleteDocument(documentToDelete)}
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
+}
+
+// Helper function for formatting bytes
+function formatBytes(bytes: number, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
