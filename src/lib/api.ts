@@ -4,7 +4,7 @@ import { getSession, signOut } from 'next-auth/react';
 
 // Create a custom axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || '',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://wakili.chat',
   headers: {
     'Content-Type': 'application/json',
   },
