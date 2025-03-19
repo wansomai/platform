@@ -483,12 +483,6 @@ export default function VaultPage() {
                       onChange={handleFileUpload}
                       disabled={uploading}
                     />
-                    {uploading && (
-                      <div className="mt-2">
-                        <Progress value={uploadProgress} className="h-2" />
-                        <p className="text-xs text-center mt-1">{uploadProgress}%</p>
-                      </div>
-                    )}
                   </div>
                 </div>
                 

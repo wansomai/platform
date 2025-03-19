@@ -8,19 +8,19 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { 
-  FileText, 
-  FolderPlus, 
-  ArrowRight, 
-  MessageSquare, 
-  Clock, 
-  Briefcase, 
-  Upload, 
-  PlusCircle, 
-  FileUp, 
-  Calendar, 
-  Zap, 
-  BarChart3 
+import {
+  FileText,
+  FolderPlus,
+  ArrowRight,
+  MessageSquare,
+  Clock,
+  Briefcase,
+  Upload,
+  PlusCircle,
+  FileUp,
+  Calendar,
+  Zap,
+  BarChart3
 } from "lucide-react";
 import { useProjectStore } from "@/store/project.store"
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
@@ -78,7 +78,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { fetchProjects, projects, isLoading } = useProjectStore();
-  const {documents, fetchDocuments} = useDocumentsStore();
+  const { documents, fetchDocuments } = useDocumentsStore();
   const [activeTab, setActiveTab] = useState("overview");
   const [showProjectModal, setShowProjectModal] = useState(false);
   useEffect(() => {
@@ -88,33 +88,33 @@ export default function DashboardPage() {
 
   // Mock data for activities
   const recentActivities = [
-    { 
-      icon: FileText, 
-      title: "Contract uploaded", 
-      timestamp: "30m ago", 
-      description: "Johnson Service Agreement was added to Project Alpha", 
-      color: "text-blue-600" 
+    {
+      icon: FileText,
+      title: "Contract uploaded",
+      timestamp: "30m ago",
+      description: "Johnson Service Agreement was added to Project Alpha",
+      color: "text-blue-600"
     },
-    { 
-      icon: MessageSquare, 
-      title: "New assistant conversation", 
-      timestamp: "2h ago", 
-      description: "You started a new conversation about contract review", 
-      color: "text-green-600" 
+    {
+      icon: MessageSquare,
+      title: "New assistant conversation",
+      timestamp: "2h ago",
+      description: "You started a new conversation about contract review",
+      color: "text-green-600"
     },
-    { 
-      icon: Briefcase, 
-      title: "Project created", 
-      timestamp: "5h ago", 
-      description: "You created Project Beta", 
-      color: "text-purple-600" 
+    {
+      icon: Briefcase,
+      title: "Project created",
+      timestamp: "5h ago",
+      description: "You created Project Beta",
+      color: "text-purple-600"
     },
-    { 
-      icon: Calendar, 
-      title: "Deadline approaching", 
-      timestamp: "1d ago", 
-      description: "Contract review deadline for Project Alpha is in 2 days", 
-      color: "text-red-600" 
+    {
+      icon: Calendar,
+      title: "Deadline approaching",
+      timestamp: "1d ago",
+      description: "Contract review deadline for Project Alpha is in 2 days",
+      color: "text-red-600"
     },
   ];
 
@@ -176,96 +176,35 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           <h2 className="text-xl font-semibold">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <QuickActionCard 
-              icon={FileUp} 
-              title="Upload Document" 
-              description="Add contracts, pleadings, or evidence to your vault" 
-              href="/vault" 
+            <QuickActionCard
+              icon={FileUp}
+              title="Upload Document"
+              description="Add contracts, pleadings, or evidence to your vault"
+              href="/vault"
               color="text-blue-600"
             />
-            <QuickActionCard 
-              icon={Briefcase} 
-              title="Create Project" 
-              description="Start a new legal project and organize documents" 
-              href="/projects" 
+            <QuickActionCard
+              icon={Briefcase}
+              title="Create Project"
+              description="Start a new legal project and organize documents"
+              href="/projects"
               color="text-purple-600"
             />
-            <QuickActionCard 
-              icon={MessageSquare} 
-              title="AI Assistant" 
-              description="Get help with legal research and document analysis" 
-              href="/assistant" 
+            <QuickActionCard
+              icon={MessageSquare}
+              title="AI Assistant"
+              description="Get help with legal research and document analysis"
+              href="/assistant"
               color="text-green-600"
             />
-            <QuickActionCard 
-              icon={Zap} 
-              title="Start Workflow" 
-              description="Begin a predefined legal process with templates" 
-              href="/workflows" 
+            <QuickActionCard
+              icon={Zap}
+              title="Start Workflow"
+              description="Begin a predefined legal process with templates"
+              href="/workflows"
               color="text-amber-600"
             />
           </div>
-
-          {/* Recent Projects */}
-          <h2 className="text-xl font-semibold pt-4">Active Projects</h2>
-          <Card>
-            <CardContent className="p-0">
-              {isLoading ? (
-                <div className="p-6 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-                  <p className="text-sm text-gray-500 mt-2">Loading projects...</p>
-                </div>
-              ) : projects?.length === 0 ? (
-                <div className="text-center p-6">
-                  <Briefcase className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                  <h3 className="text-lg font-medium">No projects yet</h3>
-                  <p className="text-sm text-gray-500 mb-4">Create your first project to get started</p>
-                  <Button onClick={() => setShowProjectModal(true)}>
-                    <FolderPlus className="mr-2 h-4 w-4" />
-                    Create Project
-                  </Button>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {projects?.slice(0, 3).map((project) => (
-                    <Link 
-                      key={project.id} 
-                      href={`/projects/${project.id}`} 
-                      className="block"
-                    >
-                      <div className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-gray-100 rounded-full">
-                            <Briefcase className="h-5 w-5 text-gray-500" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium">{project.title}</h3>
-                            <p className="text-xs text-gray-500">
-                              {project.documents_count} documents • {project.team_count} team members
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="text-xs text-gray-500 mr-2">
-                            {project.last_activity}
-                          </span>
-                          <ArrowRight className="h-4 w-4 text-gray-400" />
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                  {projects && projects.length > 3 && (
-                    <div className="p-3 text-center">
-                      <Button variant="ghost" onClick={() => router.push('/projects')}>
-                        View all projects
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
         {/* Activity Feed & Assistant */}
@@ -273,70 +212,100 @@ export default function DashboardPage() {
           <h2 className="text-xl font-semibold">Recent Activity</h2>
           <Card className="h-[400px] flex flex-col">
             <CardContent className="p-0 overflow-hidden flex-1">
-              <Tabs defaultValue="all" className="h-full flex flex-col">
+              <Tabs defaultValue="projects" className="h-full flex flex-col">
                 <div className="px-4 pt-4">
                   <TabsList className="w-full">
-                    <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
+                  <TabsTrigger value="projects" className="flex-1">Projects</TabsTrigger>
                     <TabsTrigger value="documents" className="flex-1">Documents</TabsTrigger>
-                    <TabsTrigger value="projects" className="flex-1">Projects</TabsTrigger>
+                   
                   </TabsList>
                 </div>
-                <TabsContent value="all" className="flex-1 overflow-auto p-0 m-0">
-                  <div className="pt-2 divide-y divide-gray-100">
-                    {recentActivities.map((activity, i) => (
-                      <ActivityItem 
-                        key={i} 
-                        icon={activity.icon} 
-                        title={activity.title} 
-                        timestamp={activity.timestamp} 
-                        description={activity.description} 
-                        color={activity.color} 
-                      />
-                    ))}
-                  </div>
-                </TabsContent>
                 <TabsContent value="documents" className="flex-1 overflow-auto p-0 m-0">
                   <div className="pt-2 divide-y divide-gray-100">
                     {documents
                       .map((a, i) => (
-                       
-                          <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                            <div className={`rounded-full p-2 text-blue/10 mt-1`}>
-                              <FileText className={`h-4 w-4 text-blue-100`} />
-                            </div>
-                            <div className="space-y-1 flex-1">
-                              <div className="flex justify-between">
-                                <h4 className="text-sm font-medium">{a.title}</h4>
-                                
-                              </div>
-                              
-                            </div>
+
+                        <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-wrap overflow-hidden" key={i}>
+                          <div className={`rounded-full p-2 bg-blue-100 mt-1`}>
+                            <FileText className={`h-4 w-4 text-blue-500`} />
                           </div>
-                        
+                          <div className="space-y-1 flex-1">
+                            <div className="flex justify-between">
+                              <h4 className="text-sm font-medium">{a.title}</h4>
+
+                            </div>
+
+                          </div>
+                        </div>
+
                       ))}
                   </div>
                 </TabsContent>
                 <TabsContent value="projects" className="flex-1 overflow-auto p-0 m-0">
+
                   <div className="pt-2 divide-y divide-gray-100">
-                    {recentActivities
-                      .filter(a => a.icon === Briefcase || a.title.includes('project'))
-                      .map((activity, i) => (
-                        <ActivityItem 
-                          key={i} 
-                          icon={activity.icon} 
-                          title={activity.title} 
-                          timestamp={activity.timestamp} 
-                          description={activity.description} 
-                          color={activity.color} 
-                        />
-                      ))}
+                    {isLoading ? (
+                      <div className="p-6 text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                        <p className="text-sm text-gray-500 mt-2">Loading projects...</p>
+                      </div>
+                    ) : projects?.length === 0 ? (
+                      <div className="text-center p-6">
+                        <Briefcase className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                        <h3 className="text-lg font-medium">No projects yet</h3>
+                        <p className="text-sm text-gray-500 mb-4">Create your first project to get started</p>
+                        <Button onClick={() => setShowProjectModal(true)}>
+                          <FolderPlus className="mr-2 h-4 w-4" />
+                          Create Project
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {projects?.slice(0, 3).map((project) => (
+                          <Link
+                            key={project.id}
+                            href={`/projects/${project.id}`}
+                            className="block"
+                          >
+                            <div className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
+                              <div className="flex items-center space-x-3">
+                                <div className="p-2 bg-gray-100 rounded-full">
+                                  <Briefcase className="h-5 w-5 text-gray-500" />
+                                </div>
+                                <div>
+                                  <h3 className="font-medium">{project.title}</h3>
+                                  <p className="text-xs text-gray-500">
+                                    {project.documents_count} documents • {project.team_count} team members
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center">
+                                <span className="text-xs text-gray-500 mr-2">
+                                  {project.last_activity}
+                                </span>
+                                <ArrowRight className="h-4 w-4 text-gray-400" />
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                        {projects && projects.length > 3 && (
+                          <div className="p-3 text-center">
+                            <Button variant="ghost" onClick={() => router.push('/projects')}>
+                              View all projects
+                              <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
+
                 </TabsContent>
               </Tabs>
             </CardContent>
             <CardFooter className="border-t p-3 bg-gray-50">
-              <Button variant="ghost" size="sm" className="w-full" onClick={() => router.push('/activity')}>
-                View all activity
+              <Button variant="ghost" size="sm" className="w-full" onClick={() => router.push('/projects')}>
+                View all Projects
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
