@@ -125,13 +125,6 @@ export default function DashboardPage() {
     { label: "Recent Activity", value: recentActivities.length, icon: Clock },
   ];
 
-  // Workflow metrics for visualization
-  const workflowMetrics = [
-    { name: "Contract Reviews", completed: 8, total: 12, color: "bg-blue-500" },
-    { name: "Due Diligence", completed: 3, total: 5, color: "bg-green-500" },
-    { name: "Compliance Checks", completed: 6, total: 10, color: "bg-purple-500" },
-  ];
-
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Welcome Banner */}
@@ -304,17 +297,22 @@ export default function DashboardPage() {
                 </TabsContent>
                 <TabsContent value="documents" className="flex-1 overflow-auto p-0 m-0">
                   <div className="pt-2 divide-y divide-gray-100">
-                    {recentActivities
-                      .filter(a => a.icon === FileText || a.title.includes('document') || a.title.includes('contract'))
-                      .map((activity, i) => (
-                        <ActivityItem 
-                          key={i} 
-                          icon={activity.icon} 
-                          title={activity.title} 
-                          timestamp={activity.timestamp} 
-                          description={activity.description} 
-                          color={activity.color} 
-                        />
+                    {documents
+                      .map((a, i) => (
+                       
+                          <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                            <div className={`rounded-full p-2 text-blue/10 mt-1`}>
+                              <FileText className={`h-4 w-4 text-blue-100`} />
+                            </div>
+                            <div className="space-y-1 flex-1">
+                              <div className="flex justify-between">
+                                <h4 className="text-sm font-medium">{a.title}</h4>
+                                
+                              </div>
+                              
+                            </div>
+                          </div>
+                        
                       ))}
                   </div>
                 </TabsContent>

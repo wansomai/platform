@@ -158,7 +158,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 icon={Database}
                 label="Vault"
                 active={pathname === '/vault'}
-                badge={2}
+               
               />
               <SidebarLink
                 href="/assistant"
