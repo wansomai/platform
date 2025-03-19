@@ -1,424 +1,195 @@
-"use client"
-
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { 
   FileText, 
-  Bot, 
-  Settings, 
   Search, 
   Plus, 
-  Link as LinkIcon,
-  FileQuestion,
-  BookOpen,
-  Save,
   Upload,
-  Mail,
-  Calendar as CalendarIcon, 
-  MessageSquare as SlackIcon, 
-  FolderOpen as DropboxIcon, 
-  Video as ZoomIcon,
-  Github,
-  FileSpreadsheet as ExcelIcon,
-  Database as SqlIcon,
-  PanelRight as ApiIcon,
   MoreVertical,
   Download,
   PenTool,
   Trash2,
   Eye,
-  UserPlus,
-  Users,
-  Star,
-  Shield,
-  UserCircle,
-  X,
-  Send
-} from "lucide-react"
+  Save,
+  BookOpen,
+  FileQuestion,
+  Sparkles,
+  Loader2
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Switch } from '@/components/ui/switch';
-import { useChatStore } from "@/store/chat.store"
-import { useProjectStore } from "@/store/project.store"
-import { useUIStore } from "@/store/ui.store"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+} from "@/components/ui/dropdown-menu";
+
+import { useChatStore } from "@/store/chat.store";
+import { useProjectStore } from "@/store/project.store";
+import { useUIStore } from "@/store/ui.store";
+import { useDocumentsStore } from "@/store/documents.store";
+import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
+import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export function ConversationDetails() {
-  const params = useParams()
-  const projectId = params.id as string
+  const params = useParams();
+  const projectId = params.id as string;
   
-  const [activeTab, setActiveTab] = useState("context")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [instructions, setInstructions] = useState("")
-  const [isEditingInstructions, setIsEditingInstructions] = useState(false)
-  const [activeModal, setActiveModal] = useState<string | null>(null)
-  const [inviteEmail, setInviteEmail] = useState("")
-  const [selectedRole, setSelectedRole] = useState("member")
+  const [activeTab, setActiveTab] = useState("context");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isEditingInstructions, setIsEditingInstructions] = useState(false);
   
-  const { currentProject } = useProjectStore()
-  const { addToast, openUploadModal } = useUIStore()
+  // Use the instructions store
+  const { 
+    instructions, 
+    fetchInstructions, 
+    saveInstructions, 
+    setInstructions,
+    isLoading: isLoadingInstructions 
+  } = useConversationInstructionsStore();
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
+  const [selectedDocumentsToAdd, setSelectedDocumentsToAdd] = useState<string[]>([]);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Hooks
+  const { currentProject } = useProjectStore();
+  const { currentConversation } = useChatStore();
+  const { addToast } = useUIStore();
+  const { documents, fetchDocuments, isLoading: isLoadingDocuments } = useDocumentsStore();
+  const { 
+    documents: conversationDocuments, 
+    fetchConversationDocuments, 
+    attachDocumentsToConversation,
+    removeDocumentFromConversation,
+    isLoading: isLoadingConversationDocuments
+  } = useConversationDocumentsStore();
+  const { notify } = useNotifications();
+  
+  // Fetch conversation documents and instructions when conversation changes
+  useEffect(() => {
+    if (currentConversation?.id) {
+      fetchConversationDocuments(currentConversation.id);
+      fetchInstructions(currentConversation.id);
+    }
+  }, [currentConversation?.id, fetchConversationDocuments, fetchInstructions]);
   
   // Filter documents based on search term
-  const filteredDocuments = currentProject?.knowledge_base?.documents?.filter(
-    doc => doc.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || []
+  const filteredDocuments = conversationDocuments?.filter(
+    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+  
+  // Available documents for selection (excluding already attached ones)
+  const availableDocuments = documents.filter(doc => 
+    !conversationDocuments.some(convDoc => convDoc.id === doc.id)
+  );
+  
+  // Filter available documents based on search
+  const filteredAvailableDocuments = availableDocuments.filter(
+    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   
   // Handlers for instructions
-  const saveInstructions = () => {
-    // In a real implementation, this would save to the API
-    setIsEditingInstructions(false)
-    addToast({
-      message: "Instructions saved successfully",
-      type: "success"
-    })
-  }
-  
-  const handleUpload = () => {
-    // In a real implementation, this would handle the upload
-    setActiveModal(null)
-    addToast({
-      message: "Document uploaded successfully",
-      type: "success"
-    })
-  }
-  
-  const handleViewDocument = (docId: string) => {
-    // In a real implementation, this would open the document
-    addToast({
-      message: "Viewing document",
-      type: "info"
-    })
-  }
-  
-  const handleDownloadDocument = (docId: string) => {
-    // In a real implementation, this would download the document
-    addToast({
-      message: "Document download started",
-      type: "info"
-    })
-  }
-  
-  const handleRenameDocument = (docId: string) => {
-    // In a real implementation, this would show a rename dialog
-    addToast({
-      message: "Document renamed",
-      type: "success"
-    })
-  }
-  
-  const handleDeleteDocument = (docId: string) => {
-    // In a real implementation, this would show a confirmation dialog
-    addToast({
-      message: "Document deleted",
-      type: "success"
-    })
-  }
-  
-  const handleInviteMember = () => {
-    // In a real implementation, this would send an invite
-    if (!inviteEmail) return
+  const handleSaveInstructions = async () => {
+    if (!currentConversation) return;
     
-    setActiveModal(null)
-    setInviteEmail("")
+    try {
+      const success = await saveInstructions(currentConversation.id, instructions);
+      
+      if (success) {
+        setIsEditingInstructions(false);
+        notify.success("Instructions saved successfully");
+      }
+    } catch (error) {
+      notify.error("Failed to save instructions");
+      console.error("Error saving instructions:", error);
+    }
+  };
+  
+  // Handle document selection
+  const toggleDocumentSelection = (documentId: string) => {
+    setSelectedDocumentsToAdd(prev => 
+      prev.includes(documentId)
+        ? prev.filter(id => id !== documentId)
+        : [...prev, documentId]
+    );
+  };
+  
+  // Handle adding selected documents to conversation
+  const handleAddSelectedDocuments = async () => {
+    if (!currentConversation?.id || selectedDocumentsToAdd.length === 0) return;
     
-    addToast({
-      message: `Invitation sent to ${inviteEmail}`,
-      type: "success"
-    })
-  }
+    try {
+      const success = await attachDocumentsToConversation(
+        currentConversation.id, 
+        selectedDocumentsToAdd
+      );
+      
+      if (success) {
+        notify.success("Documents added to conversation");
+        setSelectedDocumentsToAdd([]);
+        setShowDocumentSelectionDialog(false);
+      }
+    } catch (error) {
+      notify.error("Failed to add documents");
+      console.error("Error adding documents:", error);
+    }
+  };
   
-  const handleRemoveMember = (memberId: string) => {
-    // In a real implementation, this would remove the member
-    addToast({
-      message: "Team member removed",
-      type: "success"
-    })
-  }
+  // Handle document removal from conversation
+  const handleRemoveDocument = async () => {
+    if (!currentConversation?.id || !documentToDelete) return;
+    
+    try {
+      const success = await removeDocumentFromConversation(
+        currentConversation.id, 
+        documentToDelete
+      );
+      
+      if (success) {
+        notify.success("Document removed from conversation");
+        setDocumentToDelete(null);
+        setShowDeleteConfirm(false);
+      }
+    } catch (error) {
+      notify.error("Failed to remove document");
+      console.error("Error removing document:", error);
+    }
+  };
   
-
+  // Load all documents when opening the document selection dialog
+  const handleOpenDocumentSelection = () => {
+    fetchDocuments();
+    setShowDocumentSelectionDialog(true);
+  };
+  
   return (
     <div className="flex flex-col h-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
         <TabsList className="flex justify-center border-b rounded-none px-1">
           <TabsTrigger value="context">Context</TabsTrigger>
-          <TabsTrigger value="library">Documents</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
-          <TabsTrigger value="team">Team</TabsTrigger>
         </TabsList>
         
         <ScrollArea className="flex-1">
           {/* Context Tab */}
           <TabsContent value="context" className="p-4 m-0 h-full">
             <div className="space-y-4">
-      
-              
-              {/* Instructions */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-sm">Instructions</h3>
-                  {isEditingInstructions ? (
-                    <Button variant="outline" size="sm" onClick={saveInstructions}>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save
-                    </Button>
-                  ) : (
-                    <Button variant="outline" size="sm" onClick={() => setIsEditingInstructions(true)}>
-                      Edit
-                    </Button>
-                  )}
-                </div>
-                
-                {isEditingInstructions ? (
-                  <Textarea 
-                    value={instructions} 
-                    onChange={(e) => setInstructions(e.target.value)} 
-                    placeholder="Add specific instructions for the AI assistant..."
-                    className="min-h-[120px]"
-                  />
-                ) : (
-                  <div className="rounded-md border p-3 text-sm">
-                    {instructions ? (
-                      <p>{instructions}</p>
-                    ) : (
-                      <p className="text-muted-foreground">
-                        No special instructions. Click 'Edit' to add specific guidance for the AI assistant.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-          
-          {/* Library Tab */}
-          <TabsContent value="library" className="p-4 m-0 h-full">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium text-sm">Documents</h3>
-                <Button onClick={() => setActiveModal("upload")} className="flex items-center" variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Add Document
-                </Button>
-              </div>
+              {/* AI Settings */}
               <div className="space-y-2">
-                {filteredDocuments.length > 0 ? (
-                  filteredDocuments.map((doc) => (
-                    <div key={doc.id} className="flex items-center justify-between p-2 rounded-md hover:bg-secondary-50">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <FileText className="h-4 w-4 text-primary-600 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-sm">
-                            {doc.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{doc.category}</p>
-                        </div>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Eye className="h-4 w-4 mr-2" />
-                            View
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <PenTool className="h-4 w-4 mr-2" />
-                            Rename
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    {searchTerm ? "No documents match your search" : "No documents available"}
-                  </p>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-          
-          {/* Team Tab */}
-          <TabsContent value="team" className="p-4 m-0 h-full">
-            <div className="space-y-4">
-         
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium text-sm mb-2">Team Members</h3>
-              {currentProject&&currentProject?.knowledge_base?.team?.length > 0 &&( 
-              <Button onClick={() => setActiveModal("invite")} className="flex items-center" variant="outline" size="sm">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Invite Member
-              </Button>
-            )}
-            </div>
-              <div className="space-y-2">
-                {currentProject&&currentProject?.knowledge_base?.team?.length > 0 ? (
-                  <div className="space-y-2">
-                    {currentProject?.knowledge_base?.team?.map((member) => (
-                      <div key={member.id} className="flex items-center justify-between p-2 rounded-md hover:bg-secondary-50">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0 text-primary-700 font-medium text-sm">
-                            {member.name.split(' ').map(name => name[0]).join('').toUpperCase().substring(0, 2)}
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">
-                          {member.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{member.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-1 rounded-full bg-secondary flex items-center">
-                        {member.role === "admin" && <Shield className="h-3 w-3 mr-1 text-primary-600" />}
-                        {member.role === "member" && <Users className="h-3 w-3 mr-1 text-blue-600" />}
-                        {member.role === "viewer" && <Eye className="h-3 w-3 mr-1 text-green-600" />}
-                        {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Shield className="h-4 w-4 mr-2" />
-                            Make Admin
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Users className="h-4 w-4 mr-2" />
-                            Make Member
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Eye className="h-4 w-4 mr-2" />
-                            Make Viewer
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600" onClick={() => handleRemoveMember(member.id)}>
-                            <X className="h-4 w-4 mr-2" />
-                            Remove
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                ))}</div>
-                ): (
-                  <div className="text-center p-8 border border-dashed rounded-md">
-                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                    <h3 className="text-base font-medium text-gray-900 mb-1">No team members yet</h3>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Invite team members to collaborate on this project
-                    </p>
-                    <Button onClick={() => setActiveModal("invite")} variant="outline" size="sm">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Invite Members
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-          
-          {/* Actions Tab */}
-          <TabsContent value="actions" className="p-4 m-0">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium">Available Actions</h3>
-                {/* <Button variant="outline" size="icon">
-                  <Plus className="h-4 w-4" />
-                </Button> */}
-              </div>
-              
-              <div className="space-y-2">
-                <Card>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-primary-600" />
-                      Generate Document
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <CardDescription className="text-xs">
-                      Generate a document based on the conversation.
-                    </CardDescription>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      Use Action
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm flex items-center">
-                      <FileQuestion className="h-4 w-4 mr-2 text-primary-600" />
-                      Research Question
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <CardDescription className="text-xs">
-                      Research a legal question using external sources.
-                    </CardDescription>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      Use Action
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm flex items-center">
-                      <BookOpen className="h-4 w-4 mr-2 text-primary-600" />
-                      Summarize Document
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <CardDescription className="text-xs">
-                      Create a summary of uploaded documents.
-                    </CardDescription>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      Use Action
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-              <div className="space-y-4">
-              <h3 className="font-medium">Assistant Settings</h3>
-              
-              <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <Checkbox id="use-all-docs" />
-                  <div>
-                    <Label htmlFor="use-all-docs" className="font-medium text-sm">
-                      Include all documents
-                    </Label>
-                    <p className="text-xs text-muted-foreground">
-                      The assistant will consider all project documents for context.
-                    </p>
-                  </div>
-                </div>
+                <h3 className="font-medium text-sm">AI Assistant Settings</h3>
                 
                 <div className="flex items-start gap-2">
                   <Checkbox id="cite-sources" defaultChecked />
@@ -456,112 +227,316 @@ export function ConversationDetails() {
                   </div>
                 </div>
               </div>
-            </div>
+              
+              {/* Instructions */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium text-sm">Custom Instructions</h3>
+                  {isEditingInstructions ? (
+                    <Button variant="outline" size="sm" onClick={handleSaveInstructions} disabled={isLoadingInstructions}>
+                      {isLoadingInstructions ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-2" />
+                          Save
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button variant="outline" size="sm" onClick={() => setIsEditingInstructions(true)}>
+                      Edit
+                    </Button>
+                  )}
+                </div>
+                
+                {isEditingInstructions ? (
+                  <Textarea 
+                    value={instructions} 
+                    onChange={(e) => setInstructions(e.target.value)} 
+                    placeholder="Add specific instructions for the AI assistant..."
+                    className="min-h-[120px]"
+                  />
+                ) : (
+                  <div className="rounded-md border p-3 text-sm">
+                    {instructions ? (
+                      <p>{instructions}</p>
+                    ) : (
+                      <p className="text-muted-foreground">
+                        No special instructions. Click 'Edit' to add specific guidance for the AI assistant.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
-
+          
+          {/* Documents Tab */}
+          <TabsContent value="documents" className="p-4 m-0 h-full">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium text-sm">Active Documents</h3>
+                <div className="flex space-x-2">
+                  <Button 
+                    onClick={handleOpenDocumentSelection} 
+                    className="flex items-center" 
+                    variant="outline" 
+                    size="sm"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Documents
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Search Box */}
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search documents..." 
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              
+              {/* Document List */}
+              <div className="space-y-2">
+                {isLoadingConversationDocuments ? (
+                  <p className="text-sm text-center py-4 text-muted-foreground">Loading documents...</p>
+                ) : filteredDocuments.length > 0 ? (
+                  filteredDocuments.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between p-2 rounded-md hover:bg-secondary-50">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <FileText className="h-4 w-4 text-primary-600 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm truncate max-w-[200px]">
+                            {doc.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {doc.fileType.toUpperCase()} · {formatBytes(doc.fileSize)}
+                          </p>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => window.open(doc.fileUrl, '_blank')}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Download className="h-4 w-4 mr-2" />
+                            Download
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600" onClick={() => {
+                            setDocumentToDelete(doc.id);
+                            setShowDeleteConfirm(true);
+                          }}>
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove from Context
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm font-medium">No documents in this conversation</p>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      {searchTerm ? "No documents match your search" : "Add documents to enhance the AI's responses"}
+                    </p>
+                    <Button variant="outline" size="sm" onClick={handleOpenDocumentSelection}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Documents
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </TabsContent>
+          
+          {/* Actions Tab */}
+          <TabsContent value="actions" className="p-4 m-0">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium">Available Actions</h3>
+              </div>
+              
+              <div className="space-y-2">
+                <Card>
+                  <CardHeader className="p-3">
+                    <CardTitle className="text-sm flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-primary-600" />
+                      Generate Document
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0">
+                    <p className="text-xs text-muted-foreground">
+                      Generate a document based on the conversation.
+                    </p>
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      Use Action
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="p-3">
+                    <CardTitle className="text-sm flex items-center">
+                      <FileQuestion className="h-4 w-4 mr-2 text-primary-600" />
+                      Research Question
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0">
+                    <p className="text-xs text-muted-foreground">
+                      Research a legal question using external sources.
+                    </p>
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      Use Action
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="p-3">
+                    <CardTitle className="text-sm flex items-center">
+                      <BookOpen className="h-4 w-4 mr-2 text-primary-600" />
+                      Summarize Document
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0">
+                    <p className="text-xs text-muted-foreground">
+                      Create a summary of uploaded documents.
+                    </p>
+                    <Button variant="outline" size="sm" className="w-full mt-2">
+                      Use Action
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
         </ScrollArea>
       </Tabs>
       
-      {/* Upload Document Dialog */}
-      <Dialog open={activeModal === "upload"} onOpenChange={(open) => !open && setActiveModal(null)}>
-        <DialogContent>
+      {/* Document Selection Dialog */}
+      <Dialog open={showDocumentSelectionDialog} onOpenChange={setShowDocumentSelectionDialog}>
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Upload Document</DialogTitle>
+            <DialogTitle>Add Documents to Conversation</DialogTitle>
             <DialogDescription>
-              Upload a document to add to the project library.
+              Select documents from your vault to provide context to the AI assistant.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="file">File</Label>
-              <Input id="file" type="file" />
+          
+          <div className="py-4 overflow-x-hidden">
+            <div className="relative mb-4">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search documents..." 
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="category">Category</Label>
-              <Input id="category" placeholder="e.g., Contracts, Research, Notes" />
+            
+            <div className="h-[300px] overflow-y-auto  border rounded-md">
+              {isLoadingDocuments ? (
+                <p className="text-sm text-center py-4 text-muted-foreground">Loading documents...</p>
+              ) : filteredAvailableDocuments.length > 0 ? (
+                <div className="divide-y">
+                  {filteredAvailableDocuments.map((doc) => (
+                    <div 
+                      key={doc.id} 
+                      className={`flex items-center p-3 hover:bg-secondary-50 cursor-pointer ${
+                        selectedDocumentsToAdd.includes(doc.id) ? "bg-secondary-100" : ""
+                      }`}
+                      onClick={() => toggleDocumentSelection(doc.id)}
+                    >
+                      <Checkbox 
+                        checked={selectedDocumentsToAdd.includes(doc.id)}
+                        className="mr-3"
+                        onCheckedChange={() => toggleDocumentSelection(doc.id)}
+                      />
+                      <FileText className="h-4 w-4 mr-3 text-primary-600" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{doc.title}</p>
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
+                          <span>{formatBytes(doc.fileSize)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-center py-4 text-muted-foreground">
+                  {searchTerm ? "No documents match your search" : "No documents available"}
+                </p>
+              )}
             </div>
           </div>
+          
           <DialogFooter>
-            <Button variant="outline" onClick={() => setActiveModal(null)}>
+            <Button variant="outline" onClick={() => setShowDocumentSelectionDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleUpload}>
-              Upload
+            <Button 
+              onClick={handleAddSelectedDocuments}
+              disabled={selectedDocumentsToAdd.length === 0}
+            >
+              Add Selected ({selectedDocumentsToAdd.length})
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       
-      {/* Invite Team Member Dialog */}
-      <Dialog open={activeModal === "invite"} onOpenChange={(open) => !open && setActiveModal(null)}>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Invite Team Member</DialogTitle>
+            <DialogTitle>Remove Document</DialogTitle>
             <DialogDescription>
-              Send an invitation to collaborate on this project.
+              Are you sure you want to remove this document from the conversation context?
+              The document will still be available in your vault.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="colleague@example.com" 
-                value={inviteEmail} 
-                onChange={(e) => setInviteEmail(e.target.value)} 
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="role">Role</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <div
-                  className={`border rounded-md p-3 cursor-pointer transition-colors flex flex-col items-center ${
-                    selectedRole === "admin" ? "border-primary bg-primary-50" : "hover:border-primary"
-                  }`}
-                  onClick={() => setSelectedRole("admin")}
-                >
-                  <Shield className="h-5 w-5 mb-1 text-primary-600" />
-                  <span className="text-sm">Admin</span>
-                </div>
-                <div
-                  className={`border rounded-md p-3 cursor-pointer transition-colors flex flex-col items-center ${
-                    selectedRole === "member" ? "border-primary bg-primary-50" : "hover:border-primary"
-                  }`}
-                  onClick={() => setSelectedRole("member")}
-                >
-                  <Users className="h-5 w-5 mb-1 text-blue-600" />
-                  <span className="text-sm">Member</span>
-                </div>
-                <div
-                  className={`border rounded-md p-3 cursor-pointer transition-colors flex flex-col items-center ${
-                    selectedRole === "viewer" ? "border-primary bg-primary-50" : "hover:border-primary"
-                  }`}
-                  onClick={() => setSelectedRole("viewer")}
-                >
-                  <Eye className="h-5 w-5 mb-1 text-green-600" />
-                  <span className="text-sm">Viewer</span>
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {selectedRole === "admin" && "Can manage team, edit all content, and change settings."}
-                {selectedRole === "member" && "Can add and edit content, but can't manage team or settings."}
-                {selectedRole === "viewer" && "Can only view content, but not edit or change anything."}
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setActiveModal(null)}>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
               Cancel
             </Button>
-            <Button onClick={handleInviteMember} disabled={!inviteEmail}>
-              <Send className="h-4 w-4 mr-2" />
-              Send Invitation
+            <Button 
+              variant="destructive" 
+              onClick={handleRemoveDocument}
+            >
+              Remove
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
+}
+
+// Utility function to format bytes to human-readable format
+function formatBytes(bytes: number, decimals: number = 1): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }

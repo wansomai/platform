@@ -6,11 +6,26 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Copy, Download, ThumbsUp, ThumbsDown, Send, Loader2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { 
+  Copy, 
+  Download, 
+  ThumbsUp, 
+  ThumbsDown, 
+  Send, 
+  Loader2, 
+  FileText,
+  Sparkles,
+} from "lucide-react"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
+import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from "next-auth/react"
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import MessageDisplay from "./MessageDisplay"
 
 export function ChatInterface() {
   const params = useParams()
@@ -18,8 +33,10 @@ export function ChatInterface() {
   
   const [input, setInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // Removed file upload states
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  // Removed file input ref
   
   // Get state from stores
   const { addToast } = useUIStore()
@@ -31,6 +48,7 @@ export function ChatInterface() {
     isLoading, 
     error 
   } = useChatStore()
+  const { documents: conversationDocuments } = useConversationDocumentsStore()
   const {data: session} = useSession()
   
   // Set up conversation when component mounts
@@ -114,6 +132,8 @@ export function ChatInterface() {
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
   
+  // Removed file upload handler
+  
   if (isLoading && !currentConversation) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -125,6 +145,23 @@ export function ChatInterface() {
   
   return (
     <div className="flex flex-col h-full bg-white">
+      {/* Conversation Header */}
+      <div className="border-b px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center">
+          <Sparkles className="h-4 w-4 text-primary-600 mr-2" />
+          <h3 className="font-medium text-sm">
+            {currentConversation?.title || "New Conversation"}
+          </h3>
+        </div>
+        <div className="flex items-center space-x-2">
+          {conversationDocuments.length > 0 && (
+            <div className="flex items-center">
+              <FileText className="h-4 w-4 text-muted-foreground mr-1" />
+              <span className="text-xs text-muted-foreground">{conversationDocuments.length} documents</span>
+            </div>
+          )}
+        </div>
+      </div>
 
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
         <div className="space-y-6">
@@ -164,13 +201,18 @@ export function ChatInterface() {
             )}
             <span className="sr-only">Send message</span>
           </Button>
+          </div>
         </div>
       </div>
-    </div>
+    
   )
 }
+// Simple function to remove system prefix
+function formatMessageContent(content: string): string {
+  // Remove "System:" prefix if it exists at the beginning
+  return content.replace(/^System:\s*/i, '');
+}
 
-// Message component
 function ChatMessageItem({ 
   message, 
   user,
@@ -180,7 +222,10 @@ function ChatMessageItem({
   user: any,
   onCopy: () => void
 }) {
-  const isUser = message.role === 'user'
+  const isUser = message.role === 'user';
+  
+  // Format the message content
+  const formattedContent = formatMessageContent(message.content);
   
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -201,7 +246,7 @@ function ChatMessageItem({
           </div>
           
           <div
-            className={`rounded-lg px-4 py-2 ${
+            className={`rounded-lg px-4 py-3 ${
               isUser ? "bg-green-600 text-white" : "bg-secondary-100"
             }`}
           >
@@ -211,7 +256,10 @@ function ChatMessageItem({
                 <span>Thinking...</span>
               </div>
             ) : (
-              message.content
+              <MessageDisplay 
+                content={formattedContent} 
+                className={isUser ? "text-white" : ""} 
+              />
             )}
           </div>
           
@@ -220,7 +268,6 @@ function ChatMessageItem({
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
                 <Copy className="h-4 w-4" />
               </Button>
-             
             </div>
           )}
           
@@ -239,5 +286,5 @@ function ChatMessageItem({
         </div>
       </div>
     </div>
-  )
+  );
 }

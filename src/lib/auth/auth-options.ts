@@ -119,9 +119,9 @@ export const authOptions: NextAuthOptions = {
       
       // Initial sign in
       if (user) {
-        console.log("JWT Callback - Adding user data to token");
+       
         
-        // Generate an access token for API requests
+   // Generate an access token for API requests
         const accessToken = await generateAccessToken(user as CustomUser);
         
         const updatedToken = {

@@ -5,32 +5,15 @@ import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConversationDetails } from "@/components/workspace/ConversationDetails";
 import {
-  FileText,
-  Users,
-  Calendar,
-  MessagesSquare,
-  Info,
   ChevronRight,
   ChevronLeft,
   Briefcase,
-  Cog,
 } from "lucide-react";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
-
-// Define the tabs with their icons and labels
-const tabs = [
-  { id: "overview", label: "Overview", icon: Info },
-  { id: "chat", label: "Assistant", icon: MessagesSquare },
-  { id: "documents", label: "Documents", icon: FileText },
-  { id: "client", label: "Client", icon: Briefcase },
-  { id: "team", label: "Team", icon: Users },
-  // { id: "schedule", label: "Schedule", icon: Calendar },
-  { id: "settings", label: "Settings", icon: Cog },
-];
+import { ChatInterface } from "@/components/chat/ChatInterface";
 
 export function WorkspaceLayout({
   children,
@@ -42,8 +25,6 @@ export function WorkspaceLayout({
   
   // Get state from stores
   const { 
-    activeWorkspaceTab, 
-    setActiveWorkspaceTab,
     rightSidebarCollapsed, 
     setRightSidebarCollapsed 
   } = useUIStore();
@@ -55,72 +36,27 @@ export function WorkspaceLayout({
 
   // Fetch project data when the component mounts
   useEffect(() => {
-    if (projectId && !currentProject) {
-      fetchProjectById(projectId);
-    }
-  }, [projectId, currentProject, fetchProjectById]);
+    fetchProjectById(projectId);
+  }, [fetchProjectById, projectId]);
 
   return (
     <div className="flex h-screen">
-      {/* Left Sidebar for Project Navigation */}
-      {/* <div className=" w-64 hidden lg:flex lg:flex-col bg-white border-r border-gray-200 z-10">
-    
-        <div className="flex h-16 items-center justify-between px-4 border-b">
-          <h2 className="text-lg font-semibold truncate">
-            {isLoading ? "Loading..." : currentProject?.title || "Project"}
-          </h2>
-        </div>
-       
-        <ScrollArea className="flex-1">
-          <nav className="flex flex-col gap-1 p-2">
-            {tabs.map((tab) => (
-              <Button
-                key={tab.id}
-                variant={activeWorkspaceTab === tab.id ? "default" : "ghost"}
-                className="justify-start"
-                onClick={() => setActiveWorkspaceTab(tab.id)}
-              >
-                <tab.icon className="mr-2 h-5 w-5" />
-                {tab.label}
-              </Button>
-            ))}
-          </nav>
-        </ScrollArea>
-      </div> */}
-
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Tabs for both mobile and desktop */}
         <div className="border-b bg-white">
-          {/* Mobile tabs (horizontal scroll) */}
-          <div className="block lg:hidden">
-            <ScrollArea className="w-full">
-              <div className="flex p-2">
-                {tabs.map((tab) => (
-                  <Button
-                    key={tab.id}
-                    variant={activeWorkspaceTab === tab.id ? "default" : "ghost"}
-                    size="sm"
-                    className="mr-1"
-                    onClick={() => setActiveWorkspaceTab(tab.id)}
-                  >
-                    <tab.icon className="mr-1 h-4 w-4" />
-                    {tab.label}
-                  </Button>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-          
           {/* Desktop header/title bar (only showing project title/info) */}
           <div className="hidden lg:flex items-center h-16 px-6 justify-between">
-            <h1 className="text-xl font-semibold">
-              {activeWorkspaceTab.charAt(0).toUpperCase() + activeWorkspaceTab.slice(1)}
-            </h1>
+            <div className="flex items-center">
+              <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+              <h1 className="text-xl font-semibold">
+                {currentProject?.title || "Project Workspace"}
+              </h1>
+            </div>
             {currentProject && (
               <div className="flex items-center">
                 <span className="text-sm text-gray-500">
-                  Project: {currentProject.title}
+                  {currentProject.status}
                 </span>
               </div>
             )}
@@ -129,7 +65,7 @@ export function WorkspaceLayout({
         
         {/* Main content */}
         <div className="flex-1 overflow-auto">
-          {children}
+          <ChatInterface />
         </div>
       </div>
 
@@ -163,9 +99,7 @@ export function WorkspaceLayout({
         
         {!rightSidebarCollapsed && (
           <ScrollArea className="flex-1">
-            {/* The content here will change based on the active tab */}
-            {activeWorkspaceTab === "chat" && <ConversationDetails />}
-            {/* Other tab-specific context panels will be rendered here */}
+            <ConversationDetails />
           </ScrollArea>
         )}
       </div>

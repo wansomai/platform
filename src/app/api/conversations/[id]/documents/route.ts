@@ -2,14 +2,105 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
+import { extractTextFromFile } from '@/lib/documentParser';
+import { blobStorageService } from '@/lib/storage';
+
+// Maximum duration for document processing
+export const maxDuration = 60;
+
+/**
+ * Robustly extracts content from a document and stores it
+ * @param documentId Document ID to extract
+ * @returns Promise resolving to true on success, false on failure
+ */
+async function extractDocumentContent(documentId: string): Promise<boolean> {
+  try {
+    // Check if document content already exists
+    const existingContent = await prisma.documentContent.findUnique({
+      where: { documentId }
+    });
+    
+    if (existingContent) {
+      return true; // Content already exists
+    }
+    
+    // Get document details
+    const document = await prisma.document.findUnique({
+      where: { id: documentId }
+    });
+    
+    if (!document) {
+      console.error(`Document ${documentId} not found for extraction`);
+      return false;
+    }
+    
+    // Download file from storage
+    const fileBuffer = await blobStorageService.downloadFile(document.file_url);
+    
+    // Determine the MIME type
+    let mimeType = 'application/octet-stream';
+    
+    if (document.metadata) {
+      try {
+        const metadata = JSON.parse(document.metadata.toString());
+        mimeType = metadata.mimeType || mimeType;
+      } catch (error) {
+        console.warn(`Could not parse metadata for document ${documentId}:`, error);
+      }
+    }
+    
+    // If no mime type in metadata, infer from file extension
+    if (mimeType === 'application/octet-stream') {
+      const fileExt = document.file_type.toLowerCase();
+      switch (fileExt) {
+        case 'pdf': mimeType = 'application/pdf'; break;
+        case 'docx': mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'; break;
+        case 'doc': mimeType = 'application/msword'; break;
+        case 'xlsx': mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; break;
+        case 'xls': mimeType = 'application/vnd.ms-excel'; break;
+        case 'csv': mimeType = 'text/csv'; break;
+        case 'txt': mimeType = 'text/plain'; break;
+        case 'jpg': case 'jpeg': mimeType = 'image/jpeg'; break;
+        case 'png': mimeType = 'image/png'; break;
+      }
+    }
+    
+    // Extract text content from file
+    const extractedText = await extractTextFromFile(fileBuffer, mimeType);
+    
+    // Store the extracted content
+    await prisma.documentContent.create({
+      data: {
+        documentId,
+        content: extractedText
+      }
+    });
+    
+    // Update document extraction status
+    await prisma.document.update({
+      where: { id: documentId },
+      data: {
+        content_extracted: {
+          Bool: true,
+          Valid: true
+        }
+      }
+    });
+    
+    return true;
+  } catch (error) {
+    console.error(`Error extracting content for document ${documentId}:`, error);
+    return false;
+  }
+}
 
 // Get documents attached to a conversation
 export async function GET(
   request: NextRequest,
-    {params}: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId =  (await params).id
+    const conversationId = (await params).id;
     
     // Get user ID from token
     const userId = getUserIdFromRequest(request);
@@ -59,20 +150,11 @@ export async function GET(
       );
     }
     
-    // Get attached documents
+    // Get attached documents with extraction status
     const conversationDocuments = await prisma.conversationDocument.findMany({
       where: { conversation_id: conversationId },
       include: {
-        document: {
-          include: {
-            createdByUser: {
-              select: {
-                id: true,
-                fullName: true
-              }
-            }
-          }
-        }
+        document: true // Ensure the document relation is included
       }
     });
     
@@ -84,9 +166,16 @@ export async function GET(
       fileUrl: cd.document.file_url,
       fileType: cd.document.file_type,
       fileSize: cd.document.file_size,
-      createdBy: cd.document.createdByUser?.fullName || 'Unknown',
+      createdBy: cd.document.created_by || 'Unknown',
       createdAt: cd.document.created_at.toISOString(),
-      addedAt: cd.added_at.toISOString()
+      addedAt: cd.added_at.toISOString(),
+      contentExtracted: Boolean(cd.document.content_extracted), // True if content extraction status is valid and true
+      processingStatus: cd.document.content_extracted ? 'complete' : (
+        cd.document.content_extracted && 
+        typeof cd.document.content_extracted === 'object' && 
+        'Bool' in cd.document.content_extracted && 
+        (cd.document.content_extracted as any).Bool ? 'processing' : 'pending'
+      )
     }));
     
     return NextResponse.json({
@@ -106,10 +195,10 @@ export async function GET(
 // Add documents to a conversation
 export async function POST(
   request: NextRequest,
-  {params}: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId =  (await params).id;
+    const conversationId = (await params).id;
     
     // Get user ID from token
     const userId = getUserIdFromRequest(request);
@@ -207,10 +296,56 @@ export async function POST(
       )
     );
     
+    // Start content extraction process in the background
+    // Extract content for all newly attached documents
+    const extractionPromises = documentIds.map(async (docId) => {
+      try {
+        // First check if content already exists
+        const documentContent = await prisma.documentContent.findUnique({
+          where: { documentId: docId }
+        });
+        
+        if (!documentContent) {
+          // Only extract if content doesn't exist
+          // Update the document status to indicate processing
+          await prisma.document.update({
+            where: { id: docId },
+            data: {
+              content_extracted: {
+                Bool: false,
+                Valid: true
+              }
+            }
+          });
+          
+          // Schedule extraction (don't wait for it to complete)
+          extractDocumentContent(docId).catch(err => {
+            console.error(`Background extraction failed for document ${docId}:`, err);
+          });
+          
+          return false; // Content not yet available
+        }
+        
+        return true; // Content already available
+      } catch (error) {
+        console.error(`Error checking content for document ${docId}:`, error);
+        return false;
+      }
+    });
+    
+    // Check current content status but don't wait for extraction to complete
+    const contentStatus = await Promise.all(extractionPromises);
+    const availableCount = contentStatus.filter(Boolean).length;
+    const processingCount = documentIds.length - availableCount;
+    
     return NextResponse.json({
       status: 200,
       message: 'Documents attached to conversation successfully',
-      data: { attached: documentIds.length }
+      data: { 
+        attached: documentIds.length,
+        content_available: availableCount,
+        content_processing: processingCount
+      }
     });
   } catch (error) {
     console.error('Error attaching documents to conversation:', error);

@@ -286,7 +286,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               
               <Button 
                 variant="outline" 
-                onClick={() => router.push('/dashboard/assistant')}
+                onClick={() => router.push('/assistant')}
                 className="hidden sm:flex"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
