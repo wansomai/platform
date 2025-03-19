@@ -274,7 +274,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </h1> */}
             </div>
             <div className="flex items-center space-x-4">
-              <Button 
+              {/* <Button 
                 variant="ghost" 
                 size="icon" 
                 className="relative"
@@ -282,7 +282,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               >
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary-600"></span>
                 <Bell className="h-5 w-5" />
-              </Button>
+              </Button> */}
               
               <Button 
                 variant="outline" 
