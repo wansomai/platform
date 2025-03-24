@@ -8,38 +8,34 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
 import {
   Search,
   Plus,
   Calendar,
   FileText,
   Settings,
-  Server,
   Database,
   Webhook,
   Link,
-  ExternalLink,
   Folder,
   Lock,
   RefreshCw,
   Trash2,
   Cog,
   Filter,
-  Code,
   Cloud,
   Check,
   AlertTriangle,
-  HelpCircle,
   Mail,
   BookOpen,
-  Globe
+  Globe,
+  Crown
 } from "lucide-react";
+import ProAccessModal from "@/components/modals/ProAccess";
 
 // Integration category type
 type IntegrationCategory = "all" | "storage" | "calendar" | "communication" | "legal" | "auth";
@@ -66,7 +62,66 @@ interface Integration {
   }
 }
 
-// Mock integrations data
+// Custom icon components
+function MessageSquare(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function User(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+  );
+}
+
+function Key(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+    </svg>
+  );
+}
+
+// Mock integrations data - all set to disconnected or pending by default
 const mockIntegrations: Integration[] = [
   {
     id: "int1",
@@ -74,8 +129,8 @@ const mockIntegrations: Integration[] = [
     description: "Connect your Dropbox account to access and store documents",
     category: "storage",
     icon: Folder,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-15T14:30:00",
     connectionDetails: {
       username: "legal@example.com",
@@ -88,8 +143,8 @@ const mockIntegrations: Integration[] = [
     description: "Store and access documents from your Google Drive",
     category: "storage",
     icon: Cloud,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-15T10:15:00",
     connectionDetails: {
       username: "legal@example.com",
@@ -111,8 +166,8 @@ const mockIntegrations: Integration[] = [
     description: "Connect to SQL or NoSQL databases for document storage",
     category: "storage",
     icon: Database,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-16T08:45:00",
     connectionDetails: {
       username: "dbadmin",
@@ -125,8 +180,8 @@ const mockIntegrations: Integration[] = [
     description: "Sync legal deadlines and appointments",
     category: "calendar",
     icon: Calendar,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-14T16:45:00",
     connectionDetails: {
       username: "legal@example.com",
@@ -139,8 +194,8 @@ const mockIntegrations: Integration[] = [
     description: "Get notifications and share documents via Slack",
     category: "communication",
     icon: MessageSquare,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-15T09:30:00",
     connectionDetails: {
       username: "Legal Department",
@@ -153,8 +208,8 @@ const mockIntegrations: Integration[] = [
     description: "Send and receive case updates and documents via email",
     category: "communication",
     icon: Mail,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-17T09:15:00",
     connectionDetails: {
       username: "legal@example.com",
@@ -179,8 +234,8 @@ const mockIntegrations: Integration[] = [
     description: "Send and receive legally binding signatures",
     category: "legal",
     icon: FileText,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-12T11:20:00",
     apiKey: "****-****-****-7890"
   },
@@ -190,8 +245,8 @@ const mockIntegrations: Integration[] = [
     description: "Access Kenyan legal resources and case law database",
     category: "legal",
     icon: BookOpen,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-16T14:20:00",
     connectionDetails: {
       username: "kenyalaw_user",
@@ -204,8 +259,8 @@ const mockIntegrations: Integration[] = [
     description: "Public web portal for client access to case information",
     category: "legal",
     icon: Globe,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-17T11:30:00",
     connectionDetails: {
       url: "https://client-portal.example.com",
@@ -218,8 +273,8 @@ const mockIntegrations: Integration[] = [
     description: "User authentication and access control",
     category: "auth",
     icon: Lock,
-    status: "connected",
-    isActive: true,
+    status: "disconnected", // Changed to disconnected
+    isActive: false, // Deactivated by default
     lastSync: "2025-03-15T08:00:00",
     connectionDetails: {
       username: "admin@legalai.com"
@@ -283,25 +338,6 @@ const categories = [
   { id: "auth", label: "Authentication", icon: Lock }
 ];
 
-function MessageSquare(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-    </svg>
-  );
-}
-
 export default function IntegrationsPage() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<IntegrationCategory>("all");
@@ -310,6 +346,10 @@ export default function IntegrationsPage() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
   const [currentIntegration, setCurrentIntegration] = useState<Integration | null>(null);
+  
+  // Pro access modal states
+  const [showProModal, setShowProModal] = useState(false);
+  const [isRequestingPro, setIsRequestingPro] = useState(false);
   
   // Filter integrations based on category and search term
   const filteredIntegrations = integrations.filter((integration) => {
@@ -321,37 +361,34 @@ export default function IntegrationsPage() {
     return matchesCategory && matchesSearch;
   });
   
-  // Toggle integration active status
+  // All integration interactions now simply show the Pro modal
   const toggleIntegration = (id: string) => {
-    setIntegrations((prevIntegrations) =>
-      prevIntegrations.map((integration) =>
-        integration.id === id ? { ...integration, isActive: !integration.isActive } : integration
-      )
-    );
+    setShowProModal(true);
   };
   
-  // Handle adding a new integration
+  // Handle adding a new integration - now always shows Pro modal
   const handleAddIntegration = (integrationId: string) => {
-    const integrationToAdd = availableIntegrations.find(i => i.id === integrationId);
-    if (!integrationToAdd) return;
-    
-    const newIntegration: Integration = {
-      ...integrationToAdd,
-      id: `int-${Date.now()}`,
-      status: "pending",
-      isActive: false
-    };
-    
-    setIntegrations([...integrations, newIntegration]);
-    setShowAddDialog(false);
-    
-    // In a real app, you would initiate the OAuth flow or API key entry here
+    setShowProModal(true);
+    setShowAddDialog(false); // Close the add dialog
   };
   
-  // Open configuration dialog for an integration
+  // Handle Pro access request
+  const handleRequestProAccess = () => {
+    setIsRequestingPro(true);
+    
+    // Simulate API call to request pro access
+    setTimeout(() => {
+      setIsRequestingPro(false);
+      setShowProModal(false);
+      
+      // Show a success message or redirect to subscription page
+      alert("Pro access request has been submitted. Our team will contact you shortly.");
+    }, 2000);
+  };
+  
+  // Open configuration dialog - now always shows Pro modal
   const openConfigDialog = (integration: Integration) => {
-    setCurrentIntegration(integration);
-    setShowConfigDialog(true);
+    setShowProModal(true);
   };
   
   // Get status badge
@@ -368,6 +405,11 @@ export default function IntegrationsPage() {
     }
   };
   
+  // Handle add integration button click - now always shows Pro modal
+  const handleAddIntegrationClick = () => {
+    setShowProModal(true);
+  };
+  
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Header with title and actions */}
@@ -378,102 +420,66 @@ export default function IntegrationsPage() {
         </div>
         
         <div className="flex gap-2">
-          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Integration
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>Add Integration</DialogTitle>
-                <DialogDescription>
-                  Connect your workspace with other services to extend functionality.
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid gap-6 py-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search available integrations..."
-                    className="pl-10"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {availableIntegrations.map((integration) => (
-                    <Card key={integration.id} className="hover:shadow-md transition-all cursor-pointer">
-                      <CardContent className="p-4">
-                        <div className="flex items-start space-x-4">
-                          <div className="rounded-full p-2 bg-gray-100">
-                            <integration.icon className="h-6 w-6 text-gray-600" />
-                          </div>
-                          <div className="space-y-1 flex-1">
-                            <h3 className="font-medium">{integration.name}</h3>
-                            <p className="text-sm text-gray-500">{integration.description}</p>
-                            <Button 
-                              size="sm" 
-                              className="mt-2"
-                              onClick={() => handleAddIntegration(integration.id)}
-                            >
-                              <Plus className="mr-2 h-3 w-3" />
-                              Connect
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowAddDialog(false)}>
-                  Cancel
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={handleAddIntegrationClick}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Integration
+          </Button>
         </div>
       </div>
       
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search integrations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+      {/* "Pro Feature" Banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="bg-amber-100 p-2 rounded-full">
+            <Crown className="h-5 w-5 text-amber-600" />
+          </div>
+          <div>
+            <h3 className="font-medium">Pro Feature</h3>
+            <p className="text-sm text-gray-600">Integrations are available as part of our Pro plan</p>
+          </div>
         </div>
-        
-        <Select 
-          value={activeCategory} 
-          onValueChange={(value) => setActiveCategory(value as IntegrationCategory)}
+        <Button 
+          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+          onClick={() => setShowProModal(true)}
         >
-          <SelectTrigger className="w-[200px]">
-            <Filter className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Filter by category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                <div className="flex items-center">
-                  <category.icon className="mr-2 h-4 w-4" />
-                  <span>{category.label}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Crown className="mr-2 h-4 w-4" />
+          Upgrade to Pro
+        </Button>
       </div>
-      
-      {/* Integrations Categories */}
-      <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as IntegrationCategory)}>
+      {/* Search and Filter Bar */}
+<div className="flex flex-col sm:flex-row gap-4">
+  <div className="relative flex-1">
+    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+    <Input
+      placeholder="Search integrations..."
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="pl-10"
+    />
+  </div>
+  
+  <Select 
+    value={activeCategory} 
+    onValueChange={(value) => setActiveCategory(value as IntegrationCategory)}
+  >
+    <SelectTrigger className="w-[200px]">
+      <Filter className="mr-2 h-4 w-4" />
+      <SelectValue placeholder="Filter by category" />
+    </SelectTrigger>
+    <SelectContent>
+      {categories.map((category) => (
+        <SelectItem key={category.id} value={category.id}>
+          <div className="flex items-center">
+            <category.icon className="mr-2 h-4 w-4" />
+            <span>{category.label}</span>
+          </div>
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
+           {/* Integrations Categories */}
+           <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as IntegrationCategory)}>
         <TabsList className="mb-4">
           {categories.map((category) => (
             <TabsTrigger key={category.id} value={category.id} className="flex items-center">
@@ -484,9 +490,9 @@ export default function IntegrationsPage() {
           ))}
         </TabsList>
       </Tabs>
-      
-      {/* Integrations Display */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {/* Integrations Display */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredIntegrations.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
             <div className="p-4 bg-gray-100 rounded-full mb-4">
@@ -496,7 +502,7 @@ export default function IntegrationsPage() {
             <p className="text-sm text-gray-500 mb-4">
               {searchTerm ? `No integrations match "${searchTerm}"` : "Add integrations to extend functionality"}
             </p>
-            <Button onClick={() => setShowAddDialog(true)}>
+            <Button onClick={handleAddIntegrationClick}>
               <Plus className="mr-2 h-4 w-4" />
               Add Integration
             </Button>
@@ -559,37 +565,116 @@ export default function IntegrationsPage() {
                   </div>
                 )}
                 
-                {integration.status === "disconnected" && (
+                {/* {integration.status === "disconnected" && (
                   <div className="flex flex-col items-center justify-center py-4">
                     <AlertTriangle className="h-8 w-8 text-yellow-500 mb-2" />
                     <p className="text-sm text-gray-600 mb-4">This integration is disconnected</p>
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => toggleIntegration(integration.id)}>
                       <Link className="mr-2 h-3.5 w-3.5" />
-                      Reconnect
+                      Connect
                     </Button>
                   </div>
-                )}
+                )} */}
                 
-                {integration.status === "pending" && (
+                {/* {integration.status === "pending" && (
                   <div className="flex flex-col items-center justify-center py-4">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mb-2"></div>
                     <p className="text-sm text-gray-600 mb-2">Connection in progress</p>
                     <p className="text-xs text-gray-500">This may take a few moments</p>
                   </div>
-                )}
+                )} */}
               </CardContent>
               
               <CardFooter className="border-t p-4 flex justify-end">
-                <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+              <Button size="sm" onClick={() => toggleIntegration(integration.id)}>
+                      <Link className="mr-2 h-3.5 w-3.5" />
+                      Connect
+            {/* <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => setShowProModal(true)}
+                >
                   <Trash2 className="mr-2 h-3.5 w-3.5" />
                   Remove
-                </Button>
+                </Button>      */}
+                     </Button>
+                {/* <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => setShowProModal(true)}
+                >
+                  <Trash2 className="mr-2 h-3.5 w-3.5" />
+                  Remove
+                </Button> */}
               </CardFooter>
             </Card>
           ))
         )}
       </div>
-      
+
+            {/* Add Integration Dialog */}
+            <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add Integration</DialogTitle>
+            <DialogDescription>
+              Connect your workspace with other services to extend functionality.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-6 py-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search available integrations..."
+                className="pl-10"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {availableIntegrations.map((integration) => (
+                <Card key={integration.id} className="hover:shadow-md transition-all cursor-pointer">
+                  <CardContent className="p-4">
+                    <div className="flex items-start space-x-4">
+                      <div className="rounded-full p-2 bg-gray-100">
+                        <integration.icon className="h-6 w-6 text-gray-600" />
+                      </div>
+                      <div className="space-y-1 flex-1">
+                        <h3 className="font-medium">{integration.name}</h3>
+                        <p className="text-sm text-gray-500">{integration.description}</p>
+                        <Button 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={() => handleAddIntegration(integration.id)}
+                        >
+                          <Plus className="mr-2 h-3 w-3" />
+                          Connect
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pro Access Request Modal */}
+      <ProAccessModal 
+        isOpen={showProModal}
+        onClose={() => setShowProModal(false)}
+        onRequestAccess={handleRequestProAccess}
+        isLoading={isRequestingPro}
+      />     
       {/* Integration Configuration Dialog */}
       <Dialog open={showConfigDialog} onOpenChange={setShowConfigDialog}>
         {currentIntegration && (
@@ -619,7 +704,7 @@ export default function IntegrationsPage() {
                      currentIntegration.status === "pending" ? "Connection Pending" : "Disconnected"}
                   </span>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => setShowProModal(true)}>
                   {currentIntegration.status === "connected" ? "Reconnect" : "Connect"}
                 </Button>
               </div>
@@ -659,7 +744,7 @@ export default function IntegrationsPage() {
                   <h3 className="font-medium mb-2">API Key</h3>
                   <div className="flex gap-2">
                     <Input value={currentIntegration.apiKey} className="font-mono" readOnly />
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => setShowProModal(true)}>
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Rotate
                     </Button>
@@ -689,7 +774,7 @@ export default function IntegrationsPage() {
                         Automatically sync data with this integration
                       </p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch defaultChecked onClick={() => setShowProModal(true)} />
                   </div>
                   
                   <div className="flex items-center justify-between">
@@ -699,7 +784,7 @@ export default function IntegrationsPage() {
                         How often to sync data with this integration
                       </p>
                     </div>
-                    <Select defaultValue="60">
+                    <Select defaultValue="60" onValueChange={() => setShowProModal(true)}>
                       <SelectTrigger className="w-[120px]">
                         <SelectValue />
                       </SelectTrigger>
@@ -723,65 +808,20 @@ export default function IntegrationsPage() {
                   These actions cannot be undone. Please be certain.
                 </p>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => setShowProModal(true)}
+                  >
                     <Trash2 className="mr-2 h-3.5 w-3.5" />
                     Delete Integration
                   </Button>
                 </div>
               </div>
             </div>
-            
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowConfigDialog(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setShowConfigDialog(false)}>
-                Save Changes
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
-    </div>
-  );
-}
-
-// Additional icon components to avoid errors
-function User(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-      <circle cx="12" cy="7" r="4"></circle>
-    </svg>
-  );
-}
-
-function Key(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
-    </svg>
-  );
-}
+            </DialogContent>
+            )}
+            </Dialog>
+            </div>
+          )}

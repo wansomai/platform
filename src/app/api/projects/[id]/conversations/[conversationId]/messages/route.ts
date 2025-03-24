@@ -19,7 +19,7 @@ import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-
+import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
 // Set a longer timeout for complex operations with document processing
 export const maxDuration = 60;
 
@@ -35,6 +35,14 @@ const prisma = new PrismaClient({
       ? ["query", "error", "warn"]
       : ["error"],
 });
+// Default settings if none exist
+const DEFAULT_SETTINGS = {
+  citeSources: true,
+  suggestActions: true,
+  webSearch: false,
+  model: 'gpt-3.5-turbo',
+  temperature: 0.7
+};
 
 // Initialize the chat model with OpenAI API key
 const chatModel = new ChatOpenAI({
@@ -422,8 +430,8 @@ export async function POST(
       },
     });
 
-    // Fetch project details and message history in parallel
-    const [project, messageHistory, conversationDocuments] = await Promise.all([
+    // Fetch project details, message history, conversation documents, and settings in parallel
+    const [project, messageHistory, conversationDocuments, conversationMeta] = await Promise.all([
       prisma.project.findUnique({
         where: { id },
         select: {
@@ -434,7 +442,7 @@ export async function POST(
               instructions: true,
             },
           },
-        },
+        }
       }),
       prisma.message.findMany({
         where: { conversationId },
@@ -443,7 +451,7 @@ export async function POST(
         select: {
           role: true,
           content: true,
-        },
+        }
       }),
       // Fetch documents attached to this conversation
       prisma.conversationDocument.findMany({
@@ -452,13 +460,29 @@ export async function POST(
           document: {
             include: {
               content: true,
-            },
-          },
-        },
+            }
+          }
+        }
       }),
+      // Get conversation metadata for settings and instructions
+      prisma.conversationMeta.findUnique({
+        where: { conversationId }
+      })
     ]);
 
     try {
+      // Parse settings from conversation meta
+      let settings = DEFAULT_SETTINGS;
+      if (conversationMeta?.settings) {
+        try {
+          settings = typeof conversationMeta.settings === 'string' 
+            ? JSON.parse(conversationMeta.settings) 
+            : conversationMeta.settings as any;
+        } catch (error) {
+          console.error('Error parsing settings:', error);
+        }
+      }
+
       // Create document objects from conversation documents
       const documentObjects: Document[] = [];
       const documentExtractionPromises: Promise<void>[] = [];
@@ -517,6 +541,11 @@ export async function POST(
 
       if (documentObjects.length > 0) {
         try {
+          // Use settings to configure the embeddings
+          const embeddings = new OpenAIEmbeddings({
+            openAIApiKey: process.env.OPENAI_API_KEY,
+          });
+
           // Initialize vector store and add documents
           vectorStore = await MemoryVectorStore.fromDocuments(
             documentObjects,
@@ -576,6 +605,19 @@ export async function POST(
         );
       }
 
+      // If web search is enabled, perform a web search for relevant information
+      let webSearchResults = "";
+      if (settings.webSearch && !isSimpleGreeting(content) && isWebSearchConfigured()) {
+        try {
+          // Use the LangChain-based web search implementation
+          webSearchResults = await performWebSearch(content);
+          console.log('Web search results obtained:', webSearchResults.substring(0, 100) + '...');
+        } catch (searchError) {
+          console.error('Error performing web search:', searchError);
+          // Continue without web search results
+        }
+      }
+
       // Format message history for AI
       const aiMessages = messageHistory.map((msg) => ({
         role: msg.role as "user" | "assistant" | "system",
@@ -585,18 +627,20 @@ export async function POST(
       // Check if this is a simple greeting or conversation starter
       const isSimpleMessage = isSimpleGreeting(content);
 
-      // Get any custom instructions for this conversation
-      const conversationMeta = await prisma.conversationMeta.findUnique({
-        where: { conversationId },
-      });
-
       // Use conversation-specific instructions if available, otherwise fall back to project instructions
       const customInstructions =
         conversationMeta?.instructions ||
         project?.knowledgeBase?.instructions ||
         "";
 
-      // Create an appropriate system message based on message complexity
+      // Use settings to configure the model
+      const chatModel = new ChatOpenAI({
+        openAIApiKey: process.env.OPENAI_API_KEY,
+        modelName: settings.model || process.env.OPENAI_MODEL || "gpt-3.5-turbo",
+        temperature: settings.temperature || 0.7,
+      });
+
+      // Create an appropriate system message based on message complexity and settings
       let systemMessage;
 
       if (isSimpleMessage) {
@@ -605,44 +649,56 @@ export async function POST(
           project?.title || "Project"
         }".
           Provide helpful, accurate, and concise responses.
-          ${
-            customInstructions
-              ? `Special instructions: ${customInstructions}`
-              : ""
-          }`;
+          ${customInstructions ? `Special instructions: ${customInstructions}` : ""}`;
       } else {
         // Full context for substantive questions
-        systemMessage = `You are a helpful AI legl assistant for professionals working on a project titled "${
+        systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
           project?.title || "Project"
         }".
-          ${
-            project?.description
-              ? `Project description: ${project.description}`
-              : ""
-          }
-          ${
-            customInstructions
-              ? `Special instructions: ${customInstructions}`
-              : ""
-          }
+          ${project?.description ? `Project description: ${project.description}` : ""}
+          ${customInstructions ? `Special instructions: ${customInstructions}` : ""}
           
-          ${
-            documentObjects.length > 0
-              ? `
-          IMPORTANT: I'm providing you with documents that are relevant to this conversation.
-          ALWAYS use information from these documents to answer questions when possible.
-          ALWAYS cite document names when you reference information from them.
+          ${documentObjects.length > 0 ?
+            `
+          ${settings.citeSources ? 
+            "IMPORTANT: I'm providing you with documents that are relevant to this conversation. " +
+            "ALWAYS use information from these documents to answer questions when possible. " +
+            "ALWAYS cite document names when you reference information from them."
+            : 
+            "I'm providing you with documents that are relevant to this conversation. " +
+            "Use information from these documents to answer questions when possible."
+          }
           
           Here are the documents provided for context:
           ${relevantContent}
           
-          Remember to actively search through these documents for relevant information before responding.
-          If you find information in the documents, tell the user which document it came from.
+          ${settings.citeSources ? 
+            "Remember to actively search through these documents for relevant information before responding. " +
+            "If you find information in the documents, tell the user which document it came from."
+            : 
+            "Remember to actively search through these documents for relevant information before responding."
+          }
           If you don't find relevant information in the documents, let the user know you don't have that specific information.
           `
-              : conversationDocuments.length > 0
-              ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but their content is still being processed and will be available for future messages.`
-              : "No documents are currently attached to this conversation."
+          : 
+          conversationDocuments.length > 0
+            ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but their content is still being processed and will be available for future messages.`
+            : "No documents are currently attached to this conversation."
+          }
+          
+          ${webSearchResults ? 
+            `I've also searched the web for relevant information and found the following: 
+            ${webSearchResults}
+            
+            Use this information if it's relevant to the query.`
+            : 
+            ""
+          }
+          
+          ${settings.suggestActions ? 
+            "If appropriate, suggest actions the user might want to take based on their query, such as creating a document, summarizing information, or conducting research."
+            : 
+            ""
           }`;
       }
 
@@ -672,8 +728,8 @@ export async function POST(
         },
       });
 
-      // Extract and store document references
-      if (documentObjects.length > 0) {
+      // Extract and store document references if citation is enabled
+      if (settings.citeSources && documentObjects.length > 0) {
         // List of possible reference patterns the AI might use
         const referencePatterns = [
           // Standard format: "According to [Document Name]", "As stated in [Document Name]", etc.

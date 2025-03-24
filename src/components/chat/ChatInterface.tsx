@@ -146,22 +146,7 @@ export function ChatInterface() {
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Conversation Header */}
-      <div className="border-b px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center">
-          <Sparkles className="h-4 w-4 text-primary-600 mr-2" />
-          <h3 className="font-medium text-sm">
-            {currentConversation?.title || "New Conversation"}
-          </h3>
-        </div>
-        <div className="flex items-center space-x-2">
-          {conversationDocuments.length > 0 && (
-            <div className="flex items-center">
-              <FileText className="h-4 w-4 text-muted-foreground mr-1" />
-              <span className="text-xs text-muted-foreground">{conversationDocuments.length} documents</span>
-            </div>
-          )}
-        </div>
-      </div>
+    
 
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
         <div className="space-y-6">
@@ -231,11 +216,7 @@ function ChatMessageItem({
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-3 max-w-[80%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
         <Avatar className="h-8 w-8 mt-1">
-          {isUser ? (
-            <AvatarImage src={user?.avatar || "/avatars/user-avatar.png"} alt="You" />
-          ) : (
-            <AvatarImage src="/avatars/ai-avatar.png" alt="AI" />
-          )}
+        
           <AvatarFallback>{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
         </Avatar>
         

@@ -40,6 +40,7 @@ import { useDocumentsStore } from "@/store/documents.store";
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
 import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useConversationSettingsStore } from "@/store/conversation-settings.store";
 
 export function ConversationDetails() {
   const params = useParams();
@@ -48,6 +49,7 @@ export function ConversationDetails() {
   const [activeTab, setActiveTab] = useState("context");
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditingInstructions, setIsEditingInstructions] = useState(false);
+  const [isSettingChanged, setIsSettingChanged] = useState(false);
   
   // Use the instructions store
   const { 
@@ -57,6 +59,15 @@ export function ConversationDetails() {
     setInstructions,
     isLoading: isLoadingInstructions 
   } = useConversationInstructionsStore();
+
+  // Use the settings store
+  const {
+    settings,
+    fetchSettings,
+    updateSetting,
+    isLoading: isLoadingSettings
+  } = useConversationSettingsStore();
+  
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
   const [selectedDocumentsToAdd, setSelectedDocumentsToAdd] = useState<string[]>([]);
@@ -64,9 +75,7 @@ export function ConversationDetails() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // Hooks
-  const { currentProject } = useProjectStore();
   const { currentConversation } = useChatStore();
-  const { addToast } = useUIStore();
   const { documents, fetchDocuments, isLoading: isLoadingDocuments } = useDocumentsStore();
   const { 
     documents: conversationDocuments, 
@@ -77,13 +86,14 @@ export function ConversationDetails() {
   } = useConversationDocumentsStore();
   const { notify } = useNotifications();
   
-  // Fetch conversation documents and instructions when conversation changes
+  // Fetch conversation documents, instructions and settings when conversation changes
   useEffect(() => {
     if (currentConversation?.id) {
       fetchConversationDocuments(currentConversation.id);
       fetchInstructions(currentConversation.id);
+      fetchSettings(currentConversation.id);
     }
-  }, [currentConversation?.id, fetchConversationDocuments, fetchInstructions]);
+  }, [currentConversation?.id, fetchConversationDocuments, fetchInstructions, fetchSettings]);
   
   // Filter documents based on search term
   const filteredDocuments = conversationDocuments?.filter(
@@ -116,7 +126,29 @@ export function ConversationDetails() {
       console.error("Error saving instructions:", error);
     }
   };
-  
+    // Handler for settings changes
+    const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
+      if (!currentConversation) return;
+      
+      try {
+        // Optimistically update the UI
+        setIsSettingChanged(true);
+        
+        // Update the setting in the database
+        const success = await updateSetting(currentConversation.id, settingKey, value);
+        
+        if (success) {
+          notify.success(`${settingKey} setting updated`);
+        } else {
+          notify.error(`Failed to update ${settingKey} setting`);
+        }
+      } catch (error) {
+        notify.error("Failed to save setting");
+        console.error("Error saving setting:", error);
+      } finally {
+        setIsSettingChanged(false);
+      }
+    };
   // Handle document selection
   const toggleDocumentSelection = (documentId: string) => {
     setSelectedDocumentsToAdd(prev => 
@@ -189,10 +221,22 @@ export function ConversationDetails() {
             <div className="space-y-4">
               {/* AI Settings */}
               <div className="space-y-2">
-                <h3 className="font-medium text-sm">AI Assistant Settings</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium text-sm">AI Assistant Settings</h3>
+                  {isSettingChanged && (
+                    <span className="text-xs text-muted-foreground">Saving...</span>
+                  )}
+                </div>
                 
                 <div className="flex items-start gap-2">
-                  <Checkbox id="cite-sources" defaultChecked />
+                  <Checkbox 
+                    id="cite-sources" 
+                    checked={settings.citeSources}
+                    disabled={isLoadingSettings || isSettingChanged}
+                    onCheckedChange={(checked) => {
+                      handleSettingChange('citeSources', checked === true);
+                    }}
+                  />
                   <div>
                     <Label htmlFor="cite-sources" className="font-medium text-sm">
                       Cite sources
@@ -204,7 +248,14 @@ export function ConversationDetails() {
                 </div>
                 
                 <div className="flex items-start gap-2">
-                  <Checkbox id="suggest-actions" defaultChecked />
+                  <Checkbox 
+                    id="suggest-actions" 
+                    checked={settings.suggestActions}
+                    disabled={isLoadingSettings || isSettingChanged}
+                    onCheckedChange={(checked) => {
+                      handleSettingChange('suggestActions', checked === true);
+                    }}
+                  />
                   <div>
                     <Label htmlFor="suggest-actions" className="font-medium text-sm">
                       Suggest actions
@@ -216,7 +267,14 @@ export function ConversationDetails() {
                 </div>
                 
                 <div className="flex items-start gap-2">
-                  <Checkbox id="web-search" />
+                  <Checkbox 
+                    id="web-search" 
+                    checked={settings.webSearch}
+                    disabled={isLoadingSettings || isSettingChanged}
+                    onCheckedChange={(checked) => {
+                      handleSettingChange('webSearch', checked === true);
+                    }}
+                  />
                   <div>
                     <Label htmlFor="web-search" className="font-medium text-sm">
                       Enable web search
