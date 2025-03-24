@@ -59,20 +59,6 @@ interface ActivityItemProps {
   color?: string;
 }
 
-const ActivityItem = ({ icon: Icon, title, timestamp, description, color = "text-gray-500" }: ActivityItemProps) => (
-  <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-    <div className={`rounded-full p-2 ${color.replace('text', 'bg')}/10 mt-1`}>
-      <Icon className={`h-4 w-4 ${color}`} />
-    </div>
-    <div className="space-y-1 flex-1">
-      <div className="flex justify-between">
-        <h4 className="text-sm font-medium">{title}</h4>
-        <span className="text-xs text-gray-500">{timestamp}</span>
-      </div>
-      <p className="text-xs text-gray-500">{description}</p>
-    </div>
-  </div>
-);
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -141,7 +127,7 @@ export default function DashboardPage() {
           <div className="hidden md:flex items-center space-x-3">
             <Button variant="outline" className="text-white  hover:bg-primary-700 bg-green-600" onClick={() => setShowProjectModal(true)}>
               <FolderPlus className="mr-2 h-4 w-4" />
-              New Project
+              New Workspace
             </Button>
             <Button variant="outline" className="text-white border-white bg-black" onClick={() => router.push("/assistant")}>
               <MessageSquare className="mr-2 h-4 w-4" />
@@ -185,7 +171,7 @@ export default function DashboardPage() {
             />
             <QuickActionCard
               icon={Briefcase}
-              title="Create Project"
+              title="Create Workspace"
               description="Start a new legal project and organize documents"
               href="/projects"
               color="text-purple-600"
@@ -215,7 +201,7 @@ export default function DashboardPage() {
               <Tabs defaultValue="projects" className="h-full flex flex-col">
                 <div className="px-4 pt-4">
                   <TabsList className="w-full">
-                  <TabsTrigger value="projects" className="flex-1">Projects</TabsTrigger>
+                  <TabsTrigger value="projects" className="flex-1">Workspaces</TabsTrigger>
                     <TabsTrigger value="documents" className="flex-1">Documents</TabsTrigger>
                    
                   </TabsList>
@@ -252,11 +238,11 @@ export default function DashboardPage() {
                     ) : projects?.length === 0 ? (
                       <div className="text-center p-6">
                         <Briefcase className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                        <h3 className="text-lg font-medium">No projects yet</h3>
-                        <p className="text-sm text-gray-500 mb-4">Create your first project to get started</p>
+                        <h3 className="text-lg font-medium">No workspaces yet</h3>
+                        <p className="text-sm text-gray-500 mb-4">Create your first workspace to get started</p>
                         <Button onClick={() => setShowProjectModal(true)}>
                           <FolderPlus className="mr-2 h-4 w-4" />
-                          Create Project
+                          Create Workspace
                         </Button>
                       </div>
                     ) : (
@@ -291,7 +277,7 @@ export default function DashboardPage() {
                         {projects && projects.length > 3 && (
                           <div className="p-3 text-center">
                             <Button variant="ghost" onClick={() => router.push('/projects')}>
-                              View all projects
+                              View all workspaces
                               <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                           </div>
@@ -305,7 +291,7 @@ export default function DashboardPage() {
             </CardContent>
             <CardFooter className="border-t p-3 bg-gray-50">
               <Button variant="ghost" size="sm" className="w-full" onClick={() => router.push('/projects')}>
-                View all Projects
+                View all Workspaces
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>

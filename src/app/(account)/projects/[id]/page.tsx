@@ -2,15 +2,11 @@
 
 import { useEffect } from "react"
 import { useParams } from "next/navigation"
-import { ProjectOverview } from "@/components/workspace/ProjectOverview"
-import { Documents } from "@/components/workspace/Documents"
-import { Team } from "@/components/workspace/Team"
 import { ChatInterface } from "@/components/chat/ChatInterface"
-import { ClientInfo } from "@/components/clients/ClientInfo"
 import { useUIStore } from "@/store/ui.store"
 import { useProjectStore } from "@/store/project.store"
 import { Loader2 } from "lucide-react"
-import { Integrations } from "@/components/workspace/Integrations"
+
 
 export default function ProjectPage() {
   const params = useParams()

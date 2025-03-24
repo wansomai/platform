@@ -192,6 +192,7 @@ model Message {
   role           String             @default("user")
   createdAt      DateTime           @default(now())
   userId         String?
+  metadata       Json?
   conversation   Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User?              @relation(fields: [userId], references: [id])
   references     MessageReference[]

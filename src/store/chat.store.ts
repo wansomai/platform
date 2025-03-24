@@ -8,9 +8,9 @@ export interface Message {
   role: 'user' | 'assistant' | 'system';
   timestamp: string;
   references?: Reference[];
+  webSearchResults?: string; 
   isLoading?: boolean;
 }
-
 export interface Reference {
   id: string;
   documentId: string;

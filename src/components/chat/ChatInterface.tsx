@@ -16,6 +16,7 @@ import {
   Loader2, 
   FileText,
   Sparkles,
+  Search,
 } from "lucide-react"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
@@ -216,7 +217,6 @@ function ChatMessageItem({
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-3 max-w-[80%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
         <Avatar className="h-8 w-8 mt-1">
-        
           <AvatarFallback>{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
         </Avatar>
         
@@ -243,6 +243,22 @@ function ChatMessageItem({
               />
             )}
           </div>
+          
+          {/* Display web search results if available */}
+          {!isUser && message.webSearchResults && (
+            <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
+              <div className="flex items-center mb-2 text-blue-700">
+                <Search className="h-4 w-4 mr-2" />
+                <span className="font-medium">Web Search Results</span>
+              </div>
+              <div className="max-h-60 overflow-y-auto">
+                <MessageDisplay 
+                  content={message.webSearchResults} 
+                  className="text-gray-700 text-xs" 
+                />
+              </div>
+            </div>
+          )}
           
           {!isUser && !message.isLoading && (
             <div className="flex gap-1 mt-2">

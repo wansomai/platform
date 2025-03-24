@@ -53,7 +53,6 @@ const getStatusBadge = (status: string) => {
 
 export default function ProjectsPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const { projects, fetchProjects, isLoading } = useProjectStore();
   
   // State
@@ -141,7 +140,7 @@ export default function ProjectsPage() {
       {/* Header with title and actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">All Projects</h1>
+          <h1 className="text-2xl font-bold">All Workspaces</h1>
           <p className="text-gray-500">Manage your legal projects and client matters</p>
         </div>
         
@@ -153,7 +152,7 @@ export default function ProjectsPage() {
           
           <Button onClick={handleCreateProject}>
             <FolderPlus className="mr-2 h-4 w-4" />
-            Create Project
+            Create Workspace
           </Button>
         </div>
       </div>
@@ -163,7 +162,7 @@ export default function ProjectsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search projects..."
+            placeholder="Search workspaces..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -230,7 +229,7 @@ export default function ProjectsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Total Projects</p>
+                <p className="text-sm font-medium text-gray-500">Total Workspaces</p>
                 <h3 className="text-2xl font-bold mt-1">{projects?.length || 0}</h3>
               </div>
               <div className="p-3 bg-blue-100 rounded-full">
@@ -244,7 +243,7 @@ export default function ProjectsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Active Projects</p>
+                <p className="text-sm font-medium text-gray-500">Active Workspaces</p>
                 <h3 className="text-2xl font-bold mt-1">
                   {projects?.filter(p => p.status.toLowerCase() === "active").length || 0}
                 </h3>
@@ -293,22 +292,22 @@ export default function ProjectsPage() {
       {isLoading ? (
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-2"></div>
-          <p className="text-gray-500">Loading projects...</p>
+          <p className="text-gray-500">Loading workspaces...</p>
         </div>
       ) : sortedProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
           <div className="p-4 bg-gray-100 rounded-full mb-4">
             <Briefcase className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium">No projects found</h3>
+          <h3 className="text-lg font-medium">No workspaces found</h3>
           <p className="text-gray-500 mb-4">
             {searchTerm || statusFilter !== "all"
               ? "Try adjusting your search or filters"
-              : "Create your first project to get started"}
+              : "Create your first workspace to get started"}
           </p>
           <Button onClick={handleCreateProject}>
             <FolderPlus className="mr-2 h-4 w-4" />
-            Create Project
+            Create Workspace
           </Button>
         </div>
       ) : viewMode === "grid" ? (
@@ -361,7 +360,7 @@ export default function ProjectsPage() {
               
               <CardFooter className="border-t pt-4">
                 <Button variant="ghost" size="sm" className="ml-auto">
-                  View Project
+                  View Workspace
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardFooter>
@@ -378,7 +377,7 @@ export default function ProjectsPage() {
                   <TableHead className="w-[40px]">
                     <span className="sr-only">Favorite</span>
                   </TableHead>
-                  <TableHead>Project</TableHead>
+                  <TableHead>Workspace</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Documents</TableHead>
                   <TableHead>Team</TableHead>

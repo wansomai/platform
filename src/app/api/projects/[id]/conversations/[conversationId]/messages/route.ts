@@ -16,7 +16,6 @@ import {
   SystemMessagePromptTemplate,
 } from "@langchain/core/prompts";
 import { Document } from "@langchain/core/documents";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
@@ -610,8 +609,12 @@ export async function POST(
       if (settings.webSearch && !isSimpleGreeting(content) && isWebSearchConfigured()) {
         try {
           // Use the LangChain-based web search implementation
-          webSearchResults = await performWebSearch(content);
-          console.log('Web search results obtained:', webSearchResults.substring(0, 100) + '...');
+          const rawSearchResults = await performWebSearch(content);
+          
+          // Apply thorough sanitization to make it safe for the prompt
+          webSearchResults = sanitizeSearchResults(rawSearchResults);
+          
+          console.log('Web search results sanitized and processed.');
         } catch (searchError) {
           console.error('Error performing web search:', searchError);
           // Continue without web search results
@@ -725,9 +728,13 @@ export async function POST(
           content: formattedAiContent,
           role: "assistant",
           conversationId,
-        },
+          // Store web search results in metadata for display
+          metadata: webSearchResults ? 
+            JSON.stringify({ webSearchResults: true }) : 
+            undefined
+        }
       });
-
+      
       // Extract and store document references if citation is enabled
       if (settings.citeSources && documentObjects.length > 0) {
         // List of possible reference patterns the AI might use
@@ -824,6 +831,8 @@ export async function POST(
         content: completeMessage?.content,
         role: completeMessage?.role,
         timestamp: completeMessage?.createdAt.toISOString(),
+        // Include web search results if available
+        webSearchResults: webSearchResults && settings.webSearch ? webSearchResults : undefined,
         references:
           completeMessage?.references.map((ref) => ({
             id: ref.id,
@@ -833,6 +842,7 @@ export async function POST(
             page: ref.page,
           })) || [],
       };
+      
 
       return NextResponse.json(
         {
@@ -888,5 +898,54 @@ export async function POST(
       },
       { status: 500 }
     );
+  }
+}
+
+
+function sanitizeSearchResults(rawResults: any) {
+  try {
+    // First, clean any JSON brackets and syntax that might remain in the string
+    let cleanedResult = rawResults.replace(/\[\\\{/g, "");
+    cleanedResult = cleanedResult.replace(/\\\}\]/g, "");
+    cleanedResult = cleanedResult.replace(/\\"/g, '"');
+    
+    // Remove any remaining JSON object notations
+    cleanedResult = cleanedResult.replace(/{[^}]*}/g, "");
+    
+    // Replace any escape sequences with their actual characters
+    cleanedResult = cleanedResult.replace(/\\n/g, "\n");
+    cleanedResult = cleanedResult.replace(/\\t/g, "\t");
+    
+    // Format the results in a clean, readable way
+    // Extract actual content from the raw search results
+    let formattedResults = "Web Search Results:\n\n";
+    
+    // If we can parse out title/link/snippet patterns, do so
+    const titleMatches = cleanedResult.match(/"title":"([^"]+)"/g);
+    const linkMatches = cleanedResult.match(/"link":"([^"]+)"/g);
+    const snippetMatches = cleanedResult.match(/"snippet":"([^"]+)"/g);
+    
+    if (titleMatches && linkMatches && snippetMatches) {
+      // We can extract structured results
+      for (let i = 0; i < Math.min(titleMatches.length, linkMatches.length, snippetMatches.length); i++) {
+        const title = titleMatches[i].replace(/"title":"/, "").replace(/"$/, "");
+        const link = linkMatches[i].replace(/"link":"/, "").replace(/"$/, "");
+        const snippet = snippetMatches[i].replace(/"snippet":"/, "").replace(/"$/, "");
+        
+        formattedResults += `Result ${i+1}:\n`;
+        formattedResults += `Title: ${title}\n`;
+        formattedResults += `Link: ${link}\n`;
+        formattedResults += `Summary: ${snippet}\n\n`;
+      }
+    } else {
+      // Fall back to just using the cleaned text
+      formattedResults += cleanedResult;
+    }
+    
+    return formattedResults;
+  } catch (error) {
+    console.error("Error sanitizing search results:", error);
+    // If all else fails, return a generic message
+    return "Web search was performed but results could not be processed.";
   }
 }
