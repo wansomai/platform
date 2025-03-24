@@ -226,7 +226,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           collapsed ? "p-2" : "p-4"
         )}>
           <nav className="flex flex-col gap-1">
-            <SidebarLink
+            {/* <SidebarLink
               href="/profile"
               icon={User}
               label="Profile"
@@ -237,7 +237,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               icon={Settings}
               label="Settings"
               active={pathname === '/settings'}
-            />
+            /> */}
             <button
               onClick={handleLogout}
               className={cn(
