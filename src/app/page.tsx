@@ -44,16 +44,16 @@ export default function Home() {
           <h1 className="text-bold text-3xl md:text-6xl font-bold font-marcellus mb-4">AI Legal Worspace that Saves you time.</h1>
           <Sparkles className='w-10 h-10 text-green-600'/>
           <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 font-jost">
-          Wakilichat automates routine legal tasks, so you can focus on high-impact work.
+          We automate routine legal processes, so you can focus on high-impact work.
           </p>
-          <button className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-[#005c4d] hover:bg-gray-800 rounded-md py-3 px-6 mb-10" onClick={() => window.location.href = '/login'}>
-            Create a free account <Sparkles className='w-5 h-5 text-white'/>
+          <button className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-6 mb-10" onClick={() => window.location.href = '/login'}>
+            BOOK A DEMO <Sparkles className='w-5 h-5 text-white'/>
           </button>
           <div className="flex justify-center items-center mb-8">
             <div className="flex items-center">
             <span className="uppercase tracking-wide font-semibold mr-6 text-gray-800 font-jost">TRUSTED BY</span>
               <div className="flex text-green-800 font-jost font-bold">
-                +480 Law Firms 
+                +180 Law Firms 
               </div>
             </div>
             <div className="mx-6 h-6 border-r border-gray-300"></div>

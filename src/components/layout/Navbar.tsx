@@ -43,7 +43,7 @@ const Navbar = () => {
       isScrolled || isOpen ? 'bg-white shadow-sm' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/">
+        <Link href="/" className="md:hidden">
           <Image src="/images/logo.png" alt="wakilichat" width={140} height={52} />
         </Link>
 
@@ -56,13 +56,13 @@ const Navbar = () => {
         </button>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center justify-between flex-grow ml-10">
+        <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
+        <Link href="/">
+          <Image src="/images/logo.png" alt="wakilichat" width={140} height={52} />
+        </Link>
+
           <nav className="flex space-x-6">
-            <div className="relative group">
-              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
-                Platform
-              </Link>
-            </div>
+            
             <div className="relative group">
               <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
                 AI Assistant
@@ -71,14 +71,28 @@ const Navbar = () => {
             </div>
             <div className="relative group">
               <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
-                For Law Firms
-                <ChevronDown className="ml-1 w-4 h-4" />
+                Document Vault
+             
               </Link>
             </div>
-            <Link href="/hire-a-lawyer" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center border-b-solid border-b-2 border-yellow-400">
-              Hire A Lawyer
-            </Link>
-            <Link href="/login" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+            <div className="relative group">
+              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+                Workflows
+       
+              </Link>
+            </div>
+            <div className="relative group">
+              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+                Integrations
+                
+              </Link>
+            </div>
+            <div className="relative group">
+              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+                Security
+              </Link>
+            </div>
+            <Link href="/Pricing" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center border-b-solid border-b-2 border-yellow-400">
               Pricing
             </Link>
           </nav>
@@ -89,9 +103,9 @@ const Navbar = () => {
             </Link>
             <Link
               href="/register"
-              className="font-medium text-white bg-[#005c4d] hover:bg-gray-800 rounded-md py-2 px-4"
+              className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-2 px-4"
             >
-              Get a demo
+              Book A Demo
             </Link>
           </div>
         </div>
@@ -104,14 +118,7 @@ const Navbar = () => {
         >
           <div className="container mx-auto px-4 pt-20 pb-6 h-full overflow-y-auto">
             <nav className="flex flex-col space-y-6">
-              <Link
-                href="/register"
-                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
-                onClick={() => setIsOpen(false)}
-              >
-                Platform
-              </Link>
-              <Link
+            <Link
                 href="/register"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 flex items-center border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
@@ -119,61 +126,42 @@ const Navbar = () => {
                 AI Assistant
                 <Sparkles className="ml-2 w-4 h-4" />
               </Link>
-              
-              <div>
-                <button
-                  className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 w-full flex items-center justify-between border-b border-gray-100"
-                  onClick={() => setLawFirmDropdownOpen(!lawFirmDropdownOpen)}
-                >
-                  For Law Firms
-                  {lawFirmDropdownOpen ? (
-                    <ChevronDown className="w-4 h-4" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
-                </button>
-                
-                {lawFirmDropdownOpen && (
-                  <div className="pl-4 py-2 space-y-3 bg-gray-50 rounded-md mt-1">
-                    <Link
-                      href="/for-law-firms/solution-1"
-                      className="block font-medium text-gray-700 hover:text-green-600"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Solution 1
-                    </Link>
-                    <Link
-                      href="/for-law-firms/solution-2"
-                      className="block font-medium text-gray-700 hover:text-green-600"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Solution 2
-                    </Link>
-                    <Link
-                      href="/for-law-firms/solution-3"
-                      className="block font-medium text-gray-700 hover:text-green-600"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Solution 3
-                    </Link>
-                  </div>
-                )}
-              </div>
-              
               <Link
-                href="/hire-a-lawyer"
-                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2  border-gray-100 border-b-yellow-400 border-b-2"
+                href="/register"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
-                Hire A Lawyer
+                Document Vault
               </Link>
               <Link
-                href="/login"
+                href="/register"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
+                onClick={() => setIsOpen(false)}
+              >
+                Workflows
+              </Link>
+              <Link
+                href="/register"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
+                onClick={() => setIsOpen(false)}
+              >
+                Integrations
+              </Link>
+              <Link
+                href="/register"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
+                onClick={() => setIsOpen(false)}
+              >
+                Security
+              </Link>
+              <Link
+                href="/register"
+                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2  border-gray-100 border-b-yellow-400 border-b-2"
                 onClick={() => setIsOpen(false)}
               >
                 Pricing
               </Link>
+           
 
               <div className="pt-6 flex flex-col space-y-4">
                 <Link
@@ -185,10 +173,10 @@ const Navbar = () => {
                 </Link>
                 <Link
                   href="/register"
-                  className="font-medium text-white bg-[#005c4d] hover:bg-gray-800 rounded-md py-3 px-4 text-center"
+                  className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-4 text-center"
                   onClick={() => setIsOpen(false)}
                 >
-                  Get a demo
+                  Book a demo
                 </Link>
               </div>
             </nav>
