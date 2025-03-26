@@ -34,13 +34,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useChatStore } from "@/store/chat.store";
-import { useProjectStore } from "@/store/project.store";
-import { useUIStore } from "@/store/ui.store";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
 import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useConversationSettingsStore } from "@/store/conversation-settings.store";
+import { ActionSelector, ActionType } from "../actions/ActionHandler";
+import { ActionStarters } from "../actions/ActionStarters";
 
 export function ConversationDetails() {
   const params = useParams();
@@ -68,7 +68,8 @@ export function ConversationDetails() {
     isLoading: isLoadingSettings
   } = useConversationSettingsStore();
   
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
+ const [activeAction, setActiveAction] = useState<ActionType | null>(null);
+ const [showActionModal, setShowActionModal] = useState(false);
   const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
   const [selectedDocumentsToAdd, setSelectedDocumentsToAdd] = useState<string[]>([]);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
@@ -205,6 +206,20 @@ export function ConversationDetails() {
     fetchDocuments();
     setShowDocumentSelectionDialog(true);
   };
+  const handleActionPrompt = (promptTemplate: string, actionTitle: string) => {
+    // Find the ChatInterface component
+    const chatInterface = document.querySelector('.chat-interface-component') as any;
+    if (chatInterface && chatInterface.sendPromptDirectly) {
+      chatInterface.sendPromptDirectly(promptTemplate);
+    } else {
+      // Fallback: Emit a custom event that the ChatInterface can listen for
+      const actionEvent = new CustomEvent('action-prompt-send', { 
+        detail: { promptTemplate, actionTitle },
+        bubbles: true 
+      });
+      document.dispatchEvent(actionEvent);
+    }
+  };  
   
   return (
     <div className="flex flex-col h-full">
@@ -430,58 +445,11 @@ export function ConversationDetails() {
                 <h3 className="font-medium">Available Actions</h3>
               </div>
               
-              <div className="space-y-2">
-                <Card>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-primary-600" />
-                      Generate Document
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <p className="text-xs text-muted-foreground">
-                      Generate a document based on the conversation.
-                    </p>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      Use Action
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm flex items-center">
-                      <FileQuestion className="h-4 w-4 mr-2 text-primary-600" />
-                      Research Question
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <p className="text-xs text-muted-foreground">
-                      Research a legal question using external sources.
-                    </p>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      Use Action
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="p-3">
-                    <CardTitle className="text-sm flex items-center">
-                      <BookOpen className="h-4 w-4 mr-2 text-primary-600" />
-                      Summarize Document
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <p className="text-xs text-muted-foreground">
-                      Create a summary of uploaded documents.
-                    </p>
-                    <Button variant="outline" size="sm" className="w-full mt-2">
-                      Use Action
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+              <ActionStarters 
+                onSelect={(promptTemplate, actionTitle) => {
+                  handleActionPrompt(promptTemplate, actionTitle);
+                }}
+              />
             </div>
           </TabsContent>
         </ScrollArea>

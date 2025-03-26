@@ -51,6 +51,7 @@ model User {
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
   accounts              Account[]
+  actions               ConversationAction[]
   conversationDocuments ConversationDocument[]
   documents             Document[]
   sentInvitations       Invitation[]           @relation("InvitedBy")
@@ -180,6 +181,7 @@ model Conversation {
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
   project            Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actions            ConversationAction[]
   documentReferences ConversationDocument[]
   meta               ConversationMeta?
   messages           Message[]
@@ -254,4 +256,20 @@ model ConversationMeta {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model ConversationAction {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String?
+  actionType     String
+  title          String
+  parameters     String
+  status         String       @default("pending")
+  resultContent  String?
+  resultUrl      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id])
 }

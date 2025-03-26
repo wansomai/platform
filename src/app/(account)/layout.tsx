@@ -161,10 +161,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                
               />
               <SidebarLink
-                href="/assistant"
+                href="/projects"
                 icon={MessageSquare}
-                label="Assistant"
-                active={pathname === '/assistant'}
+                label="Workspaces"
+                active={pathname === '/projects'}
               />
               <SidebarLink
                 href="/workflows"

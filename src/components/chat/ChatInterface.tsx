@@ -1,3 +1,4 @@
+// src/components/chat/ChatInterface.tsx
 "use client"
 
 import { useRef, useState, useEffect } from "react"
@@ -5,28 +6,21 @@ import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { 
   Copy, 
-  Download, 
-  ThumbsUp, 
-  ThumbsDown, 
   Send, 
   Loader2, 
-  FileText,
-  Sparkles,
-  Search,
 } from "lucide-react"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from "next-auth/react"
-import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import MessageDisplay from "./MessageDisplay"
+import { ActionHandler, ActionType } from "@/components/actions/ActionHandler"
+import { useConversationActionsStore } from "@/store/conversation-actions.store"
+import { DocumentResult } from "./DocumentResult"
 
 export function ChatInterface() {
   const params = useParams()
@@ -34,10 +28,12 @@ export function ChatInterface() {
   
   const [input, setInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  // Removed file upload states
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  // Removed file input ref
+  
+  // Action state
+  const [activeAction, setActiveAction] = useState<ActionType | null>(null)
+  const [showActionDialog, setShowActionDialog] = useState(false)
   
   // Get state from stores
   const { addToast } = useUIStore()
@@ -50,6 +46,7 @@ export function ChatInterface() {
     error 
   } = useChatStore()
   const { documents: conversationDocuments } = useConversationDocumentsStore()
+  const { executeAction, isLoading: isActionLoading } = useConversationActionsStore()
   const {data: session} = useSession()
   
   // Set up conversation when component mounts
@@ -97,19 +94,109 @@ export function ChatInterface() {
     }
   }, [input])
   
-  const handleSend = async () => {
-    if (!input.trim() || isSubmitting || !currentConversation) return
+  // Listen for action selection events from the context panel
+  useEffect(() => {
+    const handleActionEvent = (event: any) => {
+      if (event.detail && event.detail.actionType) {
+        setActiveAction(event.detail.actionType);
+        setShowActionDialog(true);
+      }
+    };
     
-    try {
-      setIsSubmitting(true)
-      await sendMessage(projectId, currentConversation.id, input, session?.user?.id)
-      setInput("")
-    } catch (error) {
-      console.error('Failed to send message:', error)
-    } finally {
-      setIsSubmitting(false)
+    // Add event listener
+    document.addEventListener('action-selected', handleActionEvent);
+    
+    // Cleanup
+    return () => {
+      document.removeEventListener('action-selected', handleActionEvent);
+    };
+  }, []);
+  
+  // Make the action handler available to other components
+  useEffect(() => {
+    // Attach the action handler to the component element for external access
+    if (scrollAreaRef.current) {
+      (scrollAreaRef.current as any).handleActionSelect = handleActionSelect;
+      (scrollAreaRef.current as any).classList.add('chat-interface-component');
     }
+    
+    return () => {
+      if (scrollAreaRef.current) {
+        delete (scrollAreaRef.current as any).handleActionSelect;
+        (scrollAreaRef.current as any).classList.remove('chat-interface-component');
+      }
+    };
+  }, []);
+
+
+// Add this useEffect hook to handle direct prompt sending
+useEffect(() => {
+  const handlePromptSendEvent = (event: any) => {
+    if (event.detail && event.detail.promptTemplate) {
+      // Send the prompt directly
+      if (currentConversation) {
+        handleSend(event.detail.promptTemplate);
+      }
+    }
+  };
+  
+  // Add event listener
+  document.addEventListener('action-prompt-send', handlePromptSendEvent);
+  
+  // Cleanup
+  return () => {
+    document.removeEventListener('action-prompt-send', handlePromptSendEvent);
+  };
+}, [currentConversation]);
+
+// Add this method to send prompts directly
+const sendPromptDirectly = (prompt: string) => {
+  if (currentConversation) {
+    handleSend(prompt);
   }
+};
+
+// Add this useEffect to expose the direct send method
+useEffect(() => {
+  // Attach the direct send method to the component element for external access
+  if (scrollAreaRef.current) {
+    (scrollAreaRef.current as any).sendPromptDirectly = sendPromptDirectly;
+    (scrollAreaRef.current as any).classList.add('chat-interface-component');
+  }
+  
+  return () => {
+    if (scrollAreaRef.current) {
+      delete (scrollAreaRef.current as any).sendPromptDirectly;
+      (scrollAreaRef.current as any).classList.remove('chat-interface-component');
+    }
+  };
+}, [currentConversation]);
+
+// Update the handleSend method to accept a custom message
+const handleSend = async (customMessage?: string) => {
+  const messageToSend = customMessage || input;
+  if (!messageToSend.trim() || isSubmitting || !currentConversation) return;
+  
+  try {
+    setIsSubmitting(true);
+    await sendMessage(
+      projectId, 
+      currentConversation.id, 
+      messageToSend,
+      session?.user?.id,
+      ''
+    );
+    
+    // Only clear input if we're sending the user's typed input
+    if (!customMessage) {
+      setInput("");
+    }
+  } catch (error) {
+    console.error('Failed to send message:', error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -117,15 +204,7 @@ export function ChatInterface() {
       handleSend()
     }
   }
-  
-  const formatTime = (timestamp: string) => {
-    try {
-      const date = new Date(timestamp)
-      return formatDistanceToNow(date, { addSuffix: true })
-    } catch (error) {
-      return timestamp
-    }
-  }
+
   
   const copyMessageToClipboard = (content: string) => {
     navigator.clipboard.writeText(content)
@@ -133,7 +212,12 @@ export function ChatInterface() {
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
   
-  // Removed file upload handler
+  // Handle action selection from the sidebar
+  const handleActionSelect = (actionType: ActionType) => {
+    setActiveAction(actionType)
+    setShowActionDialog(true)
+  }
+  
   
   if (isLoading && !currentConversation) {
     return (
@@ -147,7 +231,6 @@ export function ChatInterface() {
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Conversation Header */}
-    
 
       <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
         <div className="space-y-6">
@@ -175,7 +258,7 @@ export function ChatInterface() {
             disabled={isSubmitting}
           />
           <Button 
-            onClick={handleSend} 
+            onClick={() => handleSend()} 
             size="icon" 
             className="h-[52px] w-[52px]" 
             disabled={!input.trim() || isSubmitting}
@@ -187,12 +270,12 @@ export function ChatInterface() {
             )}
             <span className="sr-only">Send message</span>
           </Button>
-          </div>
         </div>
       </div>
-    
+    </div>
   )
 }
+
 // Simple function to remove system prefix
 function formatMessageContent(content: string): string {
   // Remove "System:" prefix if it exists at the beginning
@@ -209,9 +292,70 @@ function ChatMessageItem({
   onCopy: () => void
 }) {
   const isUser = message.role === 'user';
+  function checkForDocumentContent(content: string): boolean {
+    // Check if this looks like a document - common patterns in document generation results
+    const documentPatterns = [
+      /AGREEMENT|CONTRACT|MEMORANDUM|LETTER OF INTENT/i,
+      /^[\s\n]*TITLE:[\s\n]*/im,
+      /PARTIES:[\s\n]*/i,
+      /WHEREAS|NOW, THEREFORE/i,
+      /IN WITNESS WHEREOF/i,
+      /^[\s\n]*ARTICLE [IVX]/im,
+      /^[\s\n]*SECTION \d+/im
+    ];
+    
+    return documentPatterns.some(pattern => pattern.test(content));
+  }
+  
+  function extractDocumentTitle(content: string): string {
+    // Try to extract a title from document-like content
+    const titleMatch = content.match(/TITLE:\s*([^\n]+)/i) || 
+                      content.match(/^[\s\n]*([A-Z][A-Z\s]+)[\s\n]*$/m) ||
+                      content.match(/^[\s\n]*#\s+([^\n]+)/m);
+    
+    if (titleMatch && titleMatch[1]) {
+      return titleMatch[1].trim();
+    }
+    
+    return "Generated Document";
+  }
+  
+  function extractDocumentContent(content: string): string {
+    // If the content starts with a message followed by document content,
+    // try to extract just the document part
+    
+    // Look for common separators between message and document
+    const separators = [
+      "Here's the document I've created:",
+      "Here's the generated document:",
+      "Here is the document based on our conversation:",
+      "Below is the document you requested:"
+    ];
+    
+    for (const separator of separators) {
+      if (content.includes(separator)) {
+        const parts = content.split(separator);
+        if (parts.length > 1) {
+          return parts[1].trim();
+        }
+      }
+    }
+    
+    // If no separator is found, return the full content
+    return content;
+  }
   
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
+  
+  // Check if this message might contain a document
+  const containsDocument = !isUser && !message.isLoading && checkForDocumentContent(message.content);
+  
+  // Extract document title if it appears to be a document
+  const documentTitle = containsDocument ? extractDocumentTitle(message.content) : null;
+  
+  // Extract just the document content if it's a document
+  const documentContent = containsDocument ? extractDocumentContent(message.content) : null;
   
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -226,6 +370,7 @@ function ChatMessageItem({
             <span className="text-muted-foreground text-xs">{message.timestamp ? formatDistanceToNow(new Date(message.timestamp), { addSuffix: true }) : ''}</span>
           </div>
           
+          {/* Regular message content */}
           <div
             className={`rounded-lg px-4 py-3 ${
               isUser ? "bg-green-600 text-white" : "bg-secondary-100"
@@ -244,20 +389,12 @@ function ChatMessageItem({
             )}
           </div>
           
-          {/* Display web search results if available */}
-          {!isUser && message.webSearchResults && (
-            <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
-              <div className="flex items-center mb-2 text-blue-700">
-                <Search className="h-4 w-4 mr-2" />
-                <span className="font-medium">Web Search Results</span>
-              </div>
-              <div className="max-h-60 overflow-y-auto">
-                <MessageDisplay 
-                  content={message.webSearchResults} 
-                  className="text-gray-700 text-xs" 
-                />
-              </div>
-            </div>
+          {/* Document result display (if applicable) */}
+          {containsDocument && documentContent && (
+            <DocumentResult 
+              content={documentContent} 
+              title={documentTitle || "Generated Document"} 
+            />
           )}
           
           {!isUser && !message.isLoading && (

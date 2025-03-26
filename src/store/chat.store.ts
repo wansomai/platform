@@ -9,7 +9,9 @@ export interface Message {
   timestamp: string;
   references?: Reference[];
   webSearchResults?: string; 
+  actionType?: string;
   isLoading?: boolean;
+  metadata?: any;
 }
 export interface Reference {
   id: string;
@@ -52,7 +54,7 @@ interface ChatState {
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string, conversationId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
-  sendMessage: (projectId: string, conversationId: string, content: string,userId:string|undefined) => Promise<Message | null>;
+  sendMessage: (projectId: string, conversationId: string, content: string,userId:string|undefined,metadata: any) => Promise<Message | null>;
   togglePinConversation: (projectId: string, conversationId: string) => Promise<boolean>;
 
   // State management
@@ -182,7 +184,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
   
-  sendMessage: async (projectId, conversationId, content) => {
+  sendMessage: async (projectId, conversationId, content, userId, metadata) => {
     // First add an optimistic user message
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {
@@ -210,7 +212,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set({ error: null });
       const response = await apiService.post<{ data: Message }>(
         `/api/projects/${projectId}/conversations/${conversationId}/messages`,
-        { content }
+        { 
+          content,
+          userId,
+          metadata // Include metadata in the request
+        }
       );
       
       // Replace loading message with actual response
