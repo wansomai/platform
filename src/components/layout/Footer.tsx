@@ -52,7 +52,7 @@ const Footer = () => {
             </ul>
         </div>
         <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-        <span className="block text-sm text-white text-center">© {new Date().getFullYear()} <a href="/" className="hover:underline" aria-label="visit our home page">WakiliChat</a>. All Rights Reserved.</span>
+        <span className="block text-sm text-white text-center">© {new Date().getFullYear()} <a href="/" className="hover:underline" aria-label="visit our home page">wansom</a>. All Rights Reserved.</span>
     </div>
 </footer>
      );

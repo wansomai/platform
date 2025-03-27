@@ -8,8 +8,8 @@ import AuthProvider from "@/providers/AuthProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WakiliChat",
-  description: "A legal case management platform",
+  title: "Wansom",
+  description: "Automate your legal processes with AI",
 };
 
 export default function RootLayout({
