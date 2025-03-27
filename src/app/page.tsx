@@ -13,7 +13,9 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-
+import HeroSection from '@/components/home/hero';
+import FeaturesSection from '@/components/home/features';
+import VaultSection from '@/components/home/vault';
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('case');
@@ -38,251 +40,12 @@ export default function Home() {
     <>
    
 <Navbar/>
-      {/* Hero Section */}
-      <section className="pt-40 pb-20 bg-green-50">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-bold text-3xl md:text-6xl font-bold font-marcellus mb-4">AI Legal Worspace that Saves you time.</h1>
-          <Sparkles className='w-10 h-10 text-green-600'/>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8 font-jost">
-          We automate routine legal processes, so you can focus on high-impact work.
-          </p>
-          <button className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-6 mb-10" onClick={() => window.location.href = '/login'}>
-            BOOK A DEMO <Sparkles className='w-5 h-5 text-white'/>
-          </button>
-          <div className="flex justify-center items-center mb-8">
-            <div className="flex items-center">
-            <span className="uppercase tracking-wide font-semibold mr-6 text-gray-800 font-jost">TRUSTED BY</span>
-              <div className="flex text-green-800 font-jost font-bold">
-                +180 Law Firms 
-              </div>
-            </div>
-            <div className="mx-6 h-6 border-r border-gray-300"></div>
-            <div className="flex items-center">
-              <span className="text-lg font-semibold mr-2">G2</span>
-              <span className="text-lg font-semibold mr-2">4.8</span>
-              <div className="flex text-yellow-400">
-                {'★★★★★'}
-              </div>
-            </div>
-          </div>
-          
-          {/* Contract Editor Preview */}
-          <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-       <img src='/images/dashboard.png'/>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center mb-12">
-          <h2 className="text-2xl md:text-5xl font-bold mb-4 font-marcellus max-w-6xl mx-auto">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal processes for teams</h2>
-        </div>
-        
-        <div className="container mx-auto px-4 max-w-8xl">
-          {/* features Tabs */}
-          <div className="flex  justify-center mb-12">
-            <div className="inline-flex flex-wrap space-x-4">
-              <button 
-                onClick={() => setActiveTab('case')}
-                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'case' ? 'border-b-2 border-green-600' : 'text-gray-600'}`}
-              >
-                <Briefcase className="w-5 h-5" />
-                Case Management
-              </button>
-              <button 
-                onClick={() => setActiveTab('research')}
-                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'research' ? 'border-b-2 border-green-600' : 'text-gray-600'}`}
-              >
-                <Search className="w-5 h-5" />
-                Legal Research
-              </button>
-              <button 
-                onClick={() => setActiveTab('documents')}
-                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'documents' ? 'border-b-2 border-green-600' : 'text-gray-600'}`}
-              >
-                <FileText className="w-5 h-5" />
-                Documents Drafting &amp; Review
-              </button>
-              <button 
-                onClick={() => setActiveTab('compliance')}
-                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'compliance' ? 'border-b-2 border-green-600' : 'text-gray-600'}`}
-              >
-                <ShieldCheck className="w-5 h-5" />
-                Compliance Management
-              </button>
-              <button 
-                onClick={() => setActiveTab('clients')}
-                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'clients' ? 'border-b-2 border-green-600' : 'text-gray-600'}`}
-              >
-                <Users className="w-5 h-5" />
-                Clients Management
-              </button>
-              <button 
-                onClick={() => setActiveTab('billing')}
-                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 ${activeTab === 'billing' ? 'border-b-2 border-green-600' : 'text-gray-600'}`}
-              >
-                <Clock className="w-5 h-5" />
-                Time &amp; Billing
-              </button>
-            </div>
-          </div>
-          
-          {/* Team Content */}
-          <div className="flex flex-col md:flex-row gap-12 items-center">
-            <div className="md:basis-2/3">
-              {activeTab === 'case' && (
-                <img src="/case-management.png" alt="Case Management" className='w-full h-full object-contain rounded-lg shadow-lg' />
-              )}
-              {activeTab === 'research' && (
-                <img src="/assistant.png" alt="Legal Research" className='w-full h-full object-contain rounded-lg shadow-lg' />
-              )}
-              {activeTab === 'documents' && (
-                <img src="/documents.png" alt="Documents Management" className='w-full h-full object-contain rounded-lg shadow-lg' />
-              )}
-              {activeTab === 'compliance' && (
-                <img src="/compliance-management.png" alt="Compliance Management" className='w-full h-full object-contain rounded-lg shadow-lg' />
-              )}
-              {activeTab === 'clients' && (
-                <img src="/clients-management.png" alt="Client Management" className='w-full h-full object-contain rounded-lg shadow-lg' />
-              )}
-              {activeTab === 'billing' && (
-                <img src="/time-billing.png" alt="Time and Billing" className='w-full h-full object-contain rounded-lg shadow-lg' />
-              )}
-            </div>
-            <div className="text-left order-1 md:order-2">
-              {activeTab === 'case' && (
-                <>
-                  <h3 className="text-2xl font-bold mb-4">Streamline Case Management</h3>
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Centralize case information, documents, and communications in one secure platform</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Track case progress, deadlines, and important milestones</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Automate routine tasks and workflows to save time</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-              
-              {activeTab === 'research' && (
-                <>
-                  <h3 className="text-2xl font-bold mb-4">AI-Powered Legal Research</h3>
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Access comprehensive legal databases and precedents</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Get AI-powered insights and recommendations</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Stay updated with real-time legal updates and changes</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-
-              {activeTab === 'documents' && (
-                <>
-                  <h3 className="text-2xl font-bold mb-4">Smart and secure Document Management</h3>
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Generate legal documents using AI-powered templates</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Collaborate on documents in real-time with team members</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Track document versions and maintain audit trails</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-
-              {activeTab === 'compliance' && (
-                <>
-                  <h3 className="text-2xl font-bold mb-4">Compliance Made Simple</h3>
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Stay compliant with automated regulatory updates</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Monitor and track compliance requirements</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Generate compliance reports with one click</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-
-              {activeTab === 'clients' && (
-                <>
-                  <h3 className="text-2xl font-bold mb-4">Enhanced Client Management</h3>
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Manage client information and communications in one place</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Track client interactions and engagement history</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Provide secure client portals for document sharing</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-
-              {activeTab === 'billing' && (
-                <>
-                  <h3 className="text-2xl font-bold mb-4">Efficient Time & Billing</h3>
-                  <ul className="space-y-4 mb-8">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Track billable hours with automated time tracking</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Generate professional invoices automatically</span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 mt-1 mr-3" />
-                      <span>Monitor financial performance with detailed reports</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-
-              <Link href="/learn-more" className="inline-flex items-center font-medium text-white bg-[#005c4d] hover:bg-green-900 rounded-md py-3 px-6">
-                Get Started
-                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+<HeroSection/>
+<FeaturesSection/>  
+<VaultSection/>
 
       {/* Integrations Section */}
-      <section className="py-20 bg-blue-50">
+      <section className="py-20 bg-gray-100" id="integrations">
         <div className="container mx-auto px-4 text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Bring Your Favorite Tools with you</h2>
           <p className="text-lg max-w-3xl mx-auto mb-8">
@@ -333,17 +96,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Demo Booking Section */}
-      <section className="py-20 bg-white">
+      {/* Security Section */}
+      <section className="py-20 bg-white" id="security">
         <div className="container mx-auto px-4 max-w-7xl">
-        <h2 className=" text-3xl md:text-5xl font-bold mb-4 font-mercellius text-center">What your firm does<br/> best, amplified.</h2>
+        <h2 className=" text-3xl md:text-4xl font-bold mb-4 font-mercellius text-center">What your firm does<br/> best, amplified.</h2>
           <div className="">
             
             
             <div className=" rounded-lg">
               <h3 className="text-xl font-normal mb-6 font-jost text-gray-600 text-center">  We Provide Enterprise level security to ensure your firm and
-                  Clients' data remain safe.On Premise installations are also
-                  possible</h3>
+                  Clients' data remain safe.We also offer on premise installations</h3>
               
               <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
               <div className="flex flex-col items-center gap-4 border-solid border-2 border-gray-200  rounded-lg p-10 ">
@@ -358,7 +120,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col items-center gap-4 border-solid border-2 border-gray-200  rounded-lg p-10 text-green-500">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-folder-lock"><rect width="8" height="5" x="14" y="17" rx="1"/><path d="M10 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v2.5"/><path d="M20 17v-2a2 2 0 1 0-4 0v2"/></svg>
-                <span className='text-gray-500 text-xl font-semibold text-center'>Encrypted in Transit and at rest</span>   
+                <span className='text-gray-500 text-xl font-semibold text-center'>Data Encrypted in Transit and at rest</span>   
 
               </div>
               <div className="flex flex-col items-center gap-4 border-solid border-2 border-gray-200  rounded-lg p-10 text-green-500">

@@ -47,7 +47,7 @@ const SidebarLink = ({ href, icon: Icon, label, active, badge }: SidebarLinkProp
       active ? "bg-gray-100 text-primary-600 font-medium" : "text-gray-600"
     )}
   >
-    <Icon className={cn("h-5 w-5", active ? "text-primary-600" : "text-gray-500")} />
+    <Icon className={cn("h-5 w-5 min-w-5", active ? "text-primary-600" : "text-gray-500")} />
     <span>{label}</span>
     {badge !== undefined && badge > 0 && (
       <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-xs font-medium text-primary-600">
@@ -186,7 +186,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <>
                 <div className="px-3 mb-2">
                   <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Recent Projects
+                    Recent Workspaces
                   </h3>
                 </div>
                 {recentProjects.length > 0 ? (
@@ -200,12 +200,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     />
                   ))
                 ) : (
-                  <p className="text-xs text-gray-500 px-3">No recent projects</p>
+                  <p className="text-xs text-gray-500 px-3">No recent workspaces</p>
                 )}
                 <div className="mt-2 px-3">
                   <Button variant="outline" size="sm" className="w-full justify-start" onClick={() => router.push('/projects')}>
                     <ChevronDown className="mr-2 h-4 w-4" />
-                    View All Projects
+                    View All Workspaces
                   </Button>
                 </div>
               </>
@@ -258,13 +258,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <header className="bg-white shadow-sm z-10">
           <div className="flex h-16 items-center justify-between px-4">
             <div className="flex-1 flex items-center">
-              <div className="relative max-w-md w-full mr-4 hidden md:block">
+              {/* <div className="relative max-w-md w-full mr-4 hidden md:block">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <Input 
                   placeholder="Search everything..." 
                   className="w-full pl-10 rounded-full border-gray-200"
                 />
-              </div>
+              </div> */}
               {/* <h1 className="text-xl font-semibold text-gray-800 hidden sm:block">
                 {pathname === '/dashboard' ? 'Dashboard' : 
                  pathname.includes('vault') ? 'Document Vault' :

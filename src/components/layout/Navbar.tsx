@@ -64,31 +64,31 @@ const Navbar = () => {
           <nav className="flex space-x-6">
             
             <div className="relative group">
-              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#ai-assistant" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
                 AI Assistant
                 <Sparkles className="ml-1 w-4 h-4" />
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#document-vault" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
                 Document Vault
              
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#workflows" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
                 Workflows
        
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#integrations" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
                 Integrations
                 
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/register" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#security" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
                 Security
               </Link>
             </div>
@@ -119,7 +119,7 @@ const Navbar = () => {
           <div className="container mx-auto px-4 pt-20 pb-6 h-full overflow-y-auto">
             <nav className="flex flex-col space-y-6">
             <Link
-                href="/register"
+                href="/#ai-assistant"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 flex items-center border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
@@ -127,28 +127,28 @@ const Navbar = () => {
                 <Sparkles className="ml-2 w-4 h-4" />
               </Link>
               <Link
-                href="/register"
+                href="/#document-vault"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
                 Document Vault
               </Link>
               <Link
-                href="/register"
+                href="/#workflows"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
                 Workflows
               </Link>
               <Link
-                href="/register"
+                href="/#integrations"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
                 Integrations
               </Link>
               <Link
-                href="/register"
+                href="/#security"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >

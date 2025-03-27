@@ -106,7 +106,7 @@ export default function DashboardPage() {
 
   // Stats for the overview
   const stats = [
-    { label: "Active Projects", value: projects?.filter(p => p.status === "active").length || 0, icon: Briefcase },
+    { label: "Active Workspaces", value: projects?.filter(p => p.status === "active").length || 0, icon: Briefcase },
     { label: "Documents", value: documents?.length || 0, icon: FileText },
     { label: "Recent Activity", value: recentActivities.length, icon: Clock },
   ];
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={Briefcase}
               title="Create Workspace"
-              description="Start a new legal project and organize documents"
+              description="Organize your deep work into dedicated spaces"
               href="/projects"
               color="text-purple-600"
             />
@@ -186,7 +186,7 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={Zap}
               title="Start Workflow"
-              description="Begin a predefined legal process with templates"
+              description="Automated predefined legal process with templates"
               href="/workflows"
               color="text-amber-600"
             />

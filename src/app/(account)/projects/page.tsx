@@ -145,11 +145,6 @@ export default function ProjectsPage() {
         </div>
         
         <div className="flex gap-2">
-          <Button variant="outline" className="hidden md:flex">
-            <SlidersHorizontal className="mr-2 h-4 w-4" />
-            View Options
-          </Button>
-          
           <Button onClick={handleCreateProject}>
             <FolderPlus className="mr-2 h-4 w-4" />
             Create Workspace
