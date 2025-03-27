@@ -50,7 +50,7 @@ export default function DashboardLayoutComponent({ children }: { children: React
               
               <Link href="/dashboard" className="flex items-center">
                 <img
-                  src="/logo-sm.png"
+                  src="/logo.png"
                   alt="Logo"
                  
                   className="h-8 w-auto object-contain"

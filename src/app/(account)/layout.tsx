@@ -109,9 +109,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {!collapsed && (
             <Link href="/dashboard" className="flex items-center">
               <img 
-                src="/logo-sm.png" 
+                src="/logo-lg.png" 
                 alt="Logo" 
-                className="h-8 w-auto object-contain" 
+                className="h-12 w-auto object-contain" 
               />
             </Link>
           )}

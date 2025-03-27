@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Sparkles, Menu, X, ChevronDown, ChevronRight } from 'lucide-react'
+import { Sparkles, Menu, X } from 'lucide-react'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [lawFirmDropdownOpen, setLawFirmDropdownOpen] = useState(false)
-  const router = useRouter()
 
   // Handle navbar transparency on scroll
   useEffect(() => {
@@ -44,7 +41,7 @@ const Navbar = () => {
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
-          <Image src="/images/logo.png" alt="wakilichat" width={140} height={52} />
+          <Image src="/logo-lg.png" alt="wakilichat" width={140} height={52} />
         </Link>
 
         {/* Mobile menu button */}
@@ -58,7 +55,7 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
         <Link href="/">
-          <Image src="/images/logo.png" alt="wakilichat" width={140} height={52} />
+          <Image src="/logo-lg.png" alt="wakilichat" width={140} height={52} />
         </Link>
 
           <nav className="flex space-x-6">
