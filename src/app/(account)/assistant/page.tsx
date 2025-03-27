@@ -638,7 +638,7 @@ export default function AssistantPage() {
               <HelpCircle className="h-3 w-3 mr-1" />
               <span>
                 Quick Assistant uses minimal context. For in-depth document analysis, 
-                use Project Conversations.
+                use workspace Conversations.
               </span>
             </div>
           </div>
