@@ -16,6 +16,7 @@ import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/home/hero';
 import FeaturesSection from '@/components/home/features';
 import VaultSection from '@/components/home/vault';
+import PricingSection from '@/components/home/pricing';
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState('case');
@@ -136,7 +137,7 @@ export default function Home() {
         </div>
       </section>
 
-
+<PricingSection/>
       {/* Footer */}
      <Footer/>  
     </>

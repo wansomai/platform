@@ -92,7 +92,7 @@ const Navbar = () => {
                 Security
               </Link>
             </div>
-            <Link href="/Pricing" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center border-b-solid border-b-2 border-yellow-400">
+            <Link href="/#pricing" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center border-b-solid border-b-2 border-yellow-400">
               Pricing
             </Link>
           </nav>
@@ -155,7 +155,7 @@ const Navbar = () => {
                 Security
               </Link>
               <Link
-                href="/register"
+                href="/#pricing"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2  border-gray-100 border-b-yellow-400 border-b-2"
                 onClick={() => setIsOpen(false)}
               >

@@ -27,6 +27,9 @@ const Footer = () => {
                     <a href="/#integrations" className="hover:underline  me-4 md:me-6" aria-label="contact our support team">Integrations</a>
                 </li>
                 <li>
+                    <a href="/#pricing" className="hover:underline  me-4 md:me-6" aria-label="contact our support team">Pricing</a>
+                </li>
+                <li>
                 <div className=" ml-2 flex items-center gap-2">
           <a href="https://www.linkedin.com/company/wakili-chat" target="blank" aria-label="visit our linkedin page">
           <svg className="w-6 h-6" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
