@@ -30,9 +30,11 @@ import {
   Clipboard,
   Filter,
   Pencil,
-  Crown
+  Crown,
+  Snowflake
 } from "lucide-react";
 import ProAccessModal from "@/components/modals/ProAccess";
+import { LightBulbIcon } from "@heroicons/react/24/outline";
 
 // Workflow type definition
 interface Workflow {
@@ -160,8 +162,35 @@ const workflowTemplates = [
     title: "Case Preparation",
     description: "Litigation case preparation workflow",
     category: "litigation",
+    icon: Snowflake,
+    color: "text-purple-600",
+    steps: 4
+  },
+  {
+    id: "template5",
+    title: "Tax Filings & Compliance",
+    description: "Streamline tax preparation, automate regulatory filings",
+    category: "compliance",
     icon: Calendar,
+    color: "text-red-600",
+    steps: 4
+  },
+  {
+    id: "template6",
+    title: "Intellectual Property Filings",
+    description: "Simplify trademark searches, patent applications, and IP portfolio management with automated workflows",
+    category: "ip",
+    icon: LightBulbIcon,
     color: "text-amber-600",
+    steps: 4
+  },
+  {
+    id: "template7",
+    title: "Legal Research",
+    description: "Conduct comprehensive legal research across statutes, case law, and regulations with AI-powered analysis and relevant citation finding",
+    category: "research",
+    icon: Calendar,
+    color: "text-green-600",
     steps: 4
   }
 ];
