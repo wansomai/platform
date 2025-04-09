@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Check, X, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation'
+import Link from 'next/link';
 
 const PricingSection: React.FC = () => {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annually'>('monthly');
@@ -178,9 +179,9 @@ const PricingSection: React.FC = () => {
             We offer tailored solutions for large organizations with unique legal requirements.
             Our team will work with you to create a custom plan.
           </p>
-          <button className="inline-flex items-center bg-[#005c4d] hover:bg-green-800 text-white py-3 px-6 rounded-md font-medium transition-colors">
+          <Link href="https://calendly.com/wansomco/30min" className="inline-flex items-center bg-[#005c4d] hover:bg-green-800 text-white py-3 px-6 rounded-md font-medium transition-colors">
             Contact Our Sales Team
-          </button>
+          </Link>
         </div>
       </div>
     </section>

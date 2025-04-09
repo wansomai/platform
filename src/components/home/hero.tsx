@@ -113,9 +113,9 @@ const HeroSection: React.FC = () => {
         
         <button 
           className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-6 mb-10"
-          onClick={() => window.location.href = '/login'}
+          onClick={() => window.location.href = '/register'}
         >
-          BOOK A DEMO <Sparkles className='w-5 h-5 text-white'/>
+          TRY FOR FREE <Sparkles className='w-5 h-5 text-white'/>
         </button>
         
         <div className="flex flex-col md:flex-row justify-center items-center mb-8">

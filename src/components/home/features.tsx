@@ -14,11 +14,7 @@ const FeaturesSection: React.FC = () => {
       description: "Automate contract reviews, extract key terms, identify risks, and manage renewal deadlines—saving you hours of manual work.",
       icon: FileText
     },
-    {
-      title: "Company Registration",
-      description: "Simplify business formation with automated registration processes, document preparation, and compliance tracking across multiple jurisdictions.",
-      icon: CheckCircle
-    },
+  
     {
       title: "Tax Filings & Compliance",
       description: "Streamline tax preparation, automate regulatory filings, and stay compliant with ever-changing legal requirements and deadlines.",
@@ -28,6 +24,11 @@ const FeaturesSection: React.FC = () => {
       title: "Legal Research",
       description: "Conduct comprehensive legal research across statutes, case law, and regulations with AI-powered analysis and relevant citation finding.",
       icon: BookOpen
+    },
+    {
+      title: "Company Registration",
+      description: "Simplify business formation with automated registration processes, document preparation, and compliance tracking across multiple jurisdictions.",
+      icon: CheckCircle
     },
     {
       title: "Due Diligence",

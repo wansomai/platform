@@ -99,7 +99,7 @@ const Navbar = () => {
               Sign in
             </Link>
             <Link
-              href="/register"
+              href="https://calendly.com/wansomco/30min"
               className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-2 px-4"
             >
               Book A Demo
@@ -169,7 +169,7 @@ const Navbar = () => {
                   Sign in
                 </Link>
                 <Link
-                  href="/register"
+                  href="https://calendly.com/wansomco/30min"
                   className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-4 text-center"
                   onClick={() => setIsOpen(false)}
                 >
