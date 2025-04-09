@@ -35,8 +35,8 @@ const PricingSection: React.FC = () => {
     {
       name: "Professional",
       description: "For legal professionals and small practices",
-      priceMonthly: "49",
-      priceAnnually: "39",
+      priceMonthly: "39",
+      priceAnnually: "29",
       features: [
         { name: "Access to Legal AI Assistant", included: true },
         { name: "Upto 5GB Document Vault Storage", included: true },

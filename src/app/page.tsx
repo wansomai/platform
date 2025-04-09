@@ -2,14 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
-  Briefcase, 
-  Search, 
-  FileText, 
   ShieldCheck, 
-  Users, 
-  Clock,
-  CheckCircle2,
-  Sparkles
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
