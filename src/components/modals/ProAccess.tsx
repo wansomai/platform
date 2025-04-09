@@ -26,9 +26,9 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <Crown className="h-6 w-6 text-amber-600" />
             </div>
             <div>
-              <DialogTitle>Pro Feature Available</DialogTitle>
+              <DialogTitle>Upgrade to wansom Pro</DialogTitle>
               <DialogDescription>
-                This feature requires a Pro account
+               Unlock advanced features and integrations to supercharge your workflow.
               </DialogDescription>
             </div>
           </div>
@@ -38,10 +38,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg">
             <h3 className="font-medium text-amber-800 mb-2 flex items-center">
               <AlertCircle className="h-4 w-4 mr-2" />
-              Upgrade to access integrations
+              Agent mode now in Pro
             </h3>
             <p className="text-sm text-amber-700">
-              Integrations allow you to connect with various services to enhance your workflow, including document storage, calendars, and legal services.
+            Our Agents can handle the most complex tasks with little supervision learning and correcting themselves to achieve the best outcome.
             </p>
           </div>
           
@@ -74,7 +74,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 <p className="text-sm text-gray-500">All features unlocked</p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-lg">$29.99 <span className="text-sm font-normal text-gray-500">/month</span></p>
+                <p className="font-bold text-lg">$39.00 <span className="text-sm font-normal text-gray-500">/month</span></p>
                 <p className="text-xs text-gray-500">Billed monthly</p>
               </div>
             </div>

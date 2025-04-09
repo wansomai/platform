@@ -15,13 +15,10 @@ import {
 } from "lucide-react"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
-import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import { ActionHandler, ActionType } from "@/components/actions/ActionHandler"
-import { useConversationActionsStore } from "@/store/conversation-actions.store"
-import { DocumentResult } from "./DocumentResult"
 
 export function ChatInterface() {
   const params = useParams()
@@ -46,8 +43,7 @@ export function ChatInterface() {
     isLoading, 
     error 
   } = useChatStore()
-  const { documents: conversationDocuments } = useConversationDocumentsStore()
-  const { executeAction, isLoading: isActionLoading } = useConversationActionsStore()
+
   const {data: session} = useSession()
   
   // Set up conversation when component mounts
@@ -323,7 +319,7 @@ function ChatMessageItem({
             ) : (
               <MessageDisplay 
                 content={formattedContent} 
-                className={isUser ? "text-white" : ""} 
+                className={isUser ? "text-white " : ""} 
               />
             )}
           </div>

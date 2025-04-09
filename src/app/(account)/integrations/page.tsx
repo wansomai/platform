@@ -381,8 +381,7 @@ export default function IntegrationsPage() {
       setIsRequestingPro(false);
       setShowProModal(false);
       
-      // Show a success message or redirect to subscription page
-      alert("Pro access request has been submitted. Our team will contact you shortly.");
+      window.open('https://calendly.com/wansomco/30min', '_blank');
     }, 2000);
   };
   
