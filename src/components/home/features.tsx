@@ -127,7 +127,7 @@ const FeaturesSection: React.FC = () => {
 
         {/* Everything You Need Section */}
         <div className="mb-10" id="workflows">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What You Can Automate with Wakilichat</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What You Can Automate with Wansom</h2>
           <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">
             Legal Processes can be tedious and time-consuming, We save you time by automating them.
           </p>
