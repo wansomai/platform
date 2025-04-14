@@ -70,7 +70,7 @@ const FeaturesSection: React.FC = () => {
           <div className="md:w-1/2">
             <div className="rounded-lg overflow-hidden">
               <Image 
-                src="/images/features-1.png" 
+                src="/images/features-2.png" 
                 alt="Legal Dashboard" 
                 width={600}
                 height={400}
