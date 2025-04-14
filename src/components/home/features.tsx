@@ -70,7 +70,7 @@ const FeaturesSection: React.FC = () => {
           <div className="md:w-1/2">
             <div className="rounded-lg overflow-hidden">
               <Image 
-                src="/images/features.png" 
+                src="/images/features-1.png" 
                 alt="Legal Dashboard" 
                 width={600}
                 height={400}
@@ -106,12 +106,20 @@ const FeaturesSection: React.FC = () => {
             </div>
             
             {/* Feature Item 3 */}
-            <div>
+            <div className='mb-8'>
               <div className="bg-gray-100 inline-block px-4 py-2 rounded-md mb-2">
                 <h4 className="text-xl font-medium text-green-700">Customizable Actions</h4>
               </div>
               <p className="text-gray-600">
                 Define custom actions and workflows to automate routine tasks and improve efficiency directly within your legal workspace.
+              </p>
+            </div>
+            <div>
+              <div className="bg-gray-100 inline-block px-4 py-2 rounded-md mb-2">
+                <h4 className="text-xl font-medium text-green-700">Document Drafting</h4>
+              </div>
+              <p className="text-gray-600">
+               Draft legal documents and contracts with ease using our AI-powered templates and suggestions. Save time and reduce errors in your legal drafting process.
               </p>
             </div>
           </div>
