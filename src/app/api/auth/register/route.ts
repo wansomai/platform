@@ -4,6 +4,7 @@ import { hash } from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { generateTokens } from '@/lib/auth/token-service';
+import { sendWelcomeEmail } from '@/lib/mail';
 
 const prisma = new PrismaClient();
 
@@ -60,6 +61,18 @@ export async function POST(request: NextRequest) {
         organization: true
       }
     });
+    
+    // Send welcome email
+    try {
+      await sendWelcomeEmail({
+        email: user.email,
+        fullName: user.fullName || 'User'
+      });
+      console.log(`Welcome email sent to ${user.email}`);
+    } catch (emailError) {
+      // Log the error but don't fail the registration process
+      console.error('Error sending welcome email:', emailError);
+    }
     
     // Prepare the user object for token generation
     const userForToken = {
