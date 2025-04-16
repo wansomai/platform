@@ -170,11 +170,11 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Check file size limit (e.g., 50MB)
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    // Check file size limit (5MB for Vercel free tier limit)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { message: 'File size exceeds the limit (50MB)', error: true },
+        { message: 'File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.', error: true },
         { status: 400 }
       );
     }

@@ -1,4 +1,4 @@
-// src/store/documents.store.ts
+// src/store/documents.store.ts - Modified with file size check
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
 
@@ -38,7 +38,7 @@ interface DocumentsState {
   
   // Methods
   fetchDocuments: (filters?: DocumentFilters) => Promise<Document[]>;
-  uploadDocument: (fileData: FormData, description?: string) => Promise<Document | null>;
+  uploadDocument: (fileData: FormData, onProgress?: ((progress: number) => void) | null) => Promise<Document | null>;
   deleteDocument: (id: string) => Promise<boolean>;
   selectDocument: (id: string) => void;
   unselectDocument: (id: string) => void;
@@ -108,23 +108,37 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     }
   },
   
-  uploadDocument: async (fileData: FormData, description?: string) => {
+  uploadDocument: async (fileData: FormData, onProgress: ((progress: number) => void) | null = null) => {
     try {
+      // Check file size before uploading (5MB limit for Vercel free tier)
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      const file = fileData.get('file') as File;
+      
+      if (file && file.size > MAX_FILE_SIZE) {
+        set({ 
+          error: 'File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.', 
+          isLoading: false 
+        });
+        throw new Error('File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.');
+      }
+      
       set({ isLoading: true, error: null });
       
-      const { data: document } = await apiService.upload<Document>('/api/documents', fileData);
+      // Use the upload method with progress tracking
+      const response = await apiService.upload<Document>('/api/documents', fileData, onProgress);
       
-      set((state) => ({
-        isLoading: false
-      }));
+      set({ isLoading: false });
+      
+      // Get updated documents list
       await get().fetchDocuments();
-      return document;
+      return response.data;
     } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to upload document';
       set({ 
-        error: error.message || 'Failed to upload document', 
+        error: errorMessage, 
         isLoading: false 
       });
-      return null;
+      throw error;
     }
   },
   

@@ -1,50 +1,36 @@
-// app/dashboard/vault/page.tsx
+// app/dashboard/vault/page.tsx - Updated to use DocumentUploadModal component
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Search,
   FileText,
   FileSpreadsheet,
   FileImage,
   File,
-  UploadCloud,
-  Filter,
-  Clock,
-  Calendar,
   MoreVertical,
   Download,
   Eye,
-  Pencil,
   Trash2,
-  ChevronDown,
-  Plus,
-  RefreshCw,
-  ListFilter,
-  SlidersHorizontal,
   Grid,
   List,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  HelpCircle
+  RefreshCw,
+  FileIcon
 } from "lucide-react";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useUIStore } from "@/store/ui.store";
 import { formatDistanceToNow } from "date-fns";
+import { DocumentUploadModal } from "@/components/workspace/DocumentUploadModal"; // Import our custom upload component
 
 // Document Type Icons
 const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
@@ -59,7 +45,7 @@ const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
   } else if (["doc", "docx"].includes(type)) {
     return <File className="h-5 w-5 text-blue-600" />;
   } else {
-    return <File className="h-5 w-5 text-gray-500" />;
+    return <FileIcon className="h-5 w-5 text-gray-500" />;
   }
 };
 
@@ -67,7 +53,6 @@ const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
 export default function VaultPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Get state from stores
   const { 
@@ -76,7 +61,6 @@ export default function VaultPage() {
     error, 
     pagination, 
     fetchDocuments, 
-    uploadDocument, 
     deleteDocument,
     selectedDocuments,
     toggleDocumentSelection,
@@ -91,10 +75,6 @@ export default function VaultPage() {
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploading, setUploading] = useState(false);
-  const [fileDescription, setFileDescription] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   
@@ -123,50 +103,6 @@ export default function VaultPage() {
   useEffect(() => {
     clearSelectedDocuments();
   }, [viewMode, clearSelectedDocuments]);
-  
-  // Handle file upload
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    
-    const file = files[0];
-    setUploading(true);
-    setUploadProgress(0);
-    
-    try {
-      // Create form data
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      if (fileDescription) {
-        formData.append('description', fileDescription);
-      }
-      
-      // Upload the file with progress tracking
-      const document = await uploadDocument(formData);
-      
-      if (document) {
-        addToast({
-          message: `${file.name} has been uploaded successfully.`,
-          type: "success"
-        });
-        setShowUploadDialog(false);
-        setFileDescription("");
-      }
-    } catch (error) {
-      addToast({
-        message: "Upload Failed",
-        type: "error"
-      });
-    } finally {
-      setUploading(false);
-      setUploadProgress(0);
-      // Reset file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
   
   // Handle document deletion
   const handleDeleteDocument = async (id: string) => {
@@ -253,6 +189,19 @@ export default function VaultPage() {
     }
   };
   
+  // Format file size
+  const formatBytes = (bytes: number, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+  
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
+  
   // Render grid view
   const renderGridView = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -272,37 +221,34 @@ export default function VaultPage() {
                 <div className="flex items-start justify-between">
                   <CardTitle className="text-base truncate">{document.title}</CardTitle>
                   <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => window.open(document.fileUrl, '_blank')}>
-                  <Eye className="h-4 w-4 mr-2" />
-                  View
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDownloadDocument(document)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  className="text-red-600"
-                  onClick={() => {
-                    setDocumentToDelete(document.id);
-                    setShowDeleteConfirm(true);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => window.open(document.fileUrl, '_blank')}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDownloadDocument(document)}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        className="text-red-600"
+                        onClick={() => {
+                          setDocumentToDelete(document.id);
+                          setShowDeleteConfirm(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                {/* <CardDescription className="text-xs truncate">
-                  {document.description || "No description"}
-                </CardDescription> */}
               </div>
             </div>
           </CardHeader>
@@ -339,22 +285,6 @@ export default function VaultPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              {/* <TableHead className="w-[30px]">
-                <Checkbox
-                  checked={selectedDocuments.length > 0 && selectedDocuments.length === documents.length}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      // Select all documents
-                      const allIds = documents.map(doc => doc.id);
-                      clearSelectedDocuments();
-                      allIds.forEach(id => toggleDocumentSelection(id));
-                    } else {
-                      // Deselect all
-                      clearSelectedDocuments();
-                    }
-                  }}
-                />
-              </TableHead> */}
               <TableHead>Name</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Size</TableHead>
@@ -369,20 +299,11 @@ export default function VaultPage() {
                 key={document.id}
                 className={selectedDocuments.includes(document.id) ? "bg-primary-50" : ""}
               >
-                {/* <TableCell>
-                  <Checkbox
-                    checked={selectedDocuments.includes(document.id)}
-                    onCheckedChange={() => toggleDocumentSelection(document.id)}
-                  />
-                </TableCell> */}
                 <TableCell>
                   <div className="flex items-center space-x-2">
                     <DocumentTypeIcon fileType={document.fileType || ""} />
                     <div className="flex flex-col">
                       <span className="font-medium truncate max-w-[200px]">{document.title}</span>
-                      {/* <span className="text-xs text-gray-500 truncate max-w-[200px]">
-                        {document.description || "No description"}
-                      </span> */}
                     </div>
                   </div>
                 </TableCell>
@@ -455,80 +376,8 @@ export default function VaultPage() {
             )}
           </Button>
           
-          <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-            <DialogTrigger asChild>
-              <Button>
-                <UploadCloud className="mr-2 h-4 w-4" />
-                Upload Document
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Upload Document</DialogTitle>
-                <DialogDescription>
-                  Upload a document to your organization's vault.
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="file" className="text-right">
-                    File
-                  </Label>
-                  <div className="col-span-3">
-                    <Input 
-                      id="file" 
-                      type="file" 
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      disabled={uploading}
-                    />
-                  </div>
-                </div>
-                
-                {/* <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="description" className="text-right">
-                    Description
-                  </Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Enter a description (optional)"
-                    className="col-span-3"
-                    value={fileDescription}
-                    onChange={(e) => setFileDescription(e.target.value)}
-                    disabled={uploading}
-                  />
-                </div> */}
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowUploadDialog(false)} disabled={uploading}>
-                  Cancel
-                </Button>
-                <Button 
-                  type="button"
-                  onClick={() => {
-                    if (fileInputRef.current?.files?.length) {
-                      handleFileUpload({ target: { files: fileInputRef.current.files } } as React.ChangeEvent<HTMLInputElement>);
-                    }
-                  }}
-                  disabled={uploading || (fileInputRef.current ? !fileInputRef.current.files?.length : true)}
-                >
-                  {uploading ? (
-                    <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <UploadCloud className="mr-2 h-4 w-4" />
-                      Upload
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {/* Using our DocumentUploadModal component instead of inline dialog */}
+          <DocumentUploadModal />
         </div>
       </div>
       
@@ -546,14 +395,14 @@ export default function VaultPage() {
         
         <Select 
           value={fileType || "all"} 
-          onValueChange={(value) => setFileType(value as string | undefined)}
+          onValueChange={(value) => setFileType(value === "all" ? undefined : value)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by type" />
           </SelectTrigger>
           <SelectContent>
             {fileTypeOptions.map((option) => (
-              <SelectItem key={option.label} value={option.value || ""}>
+              <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
@@ -616,10 +465,8 @@ export default function VaultPage() {
           <p className="text-gray-500 mb-4">
             {searchTerm || fileType ? 'No documents match your search criteria' : 'Upload your first document to get started'}
           </p>
-          <Button onClick={() => setShowUploadDialog(true)}>
-            <UploadCloud className="mr-2 h-4 w-4" />
-            Upload Document
-          </Button>
+          {/* Use DocumentUploadModal for empty state too */}
+          <DocumentUploadModal />
         </div>
       ) : (
         viewMode === "grid" ? renderGridView() : renderListView()
@@ -680,11 +527,9 @@ export default function VaultPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this document? This action cannot be undone.
-            </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end space-x-2 pt-4">
+          <p>Are you sure you want to delete this document? This action cannot be undone.</p>
+          <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
               Cancel
             </Button>
@@ -694,22 +539,9 @@ export default function VaultPage() {
             >
               Delete
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
   );
-}
-
-// Helper function for formatting bytes
-function formatBytes(bytes: number, decimals = 2) {
-  if (bytes === 0) return '0 Bytes';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
