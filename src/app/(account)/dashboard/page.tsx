@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -13,14 +13,9 @@ import {
   FolderPlus,
   ArrowRight,
   MessageSquare,
-  Clock,
   Briefcase,
-  Upload,
-  PlusCircle,
   FileUp,
-  Calendar,
   Zap,
-  BarChart3
 } from "lucide-react";
 import { useProjectStore } from "@/store/project.store"
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
@@ -50,14 +45,6 @@ const QuickActionCard = ({ icon: Icon, title, description, href, color = "text-p
   </Card>
 );
 
-// Activity Item Component
-interface ActivityItemProps {
-  icon: React.ElementType;
-  title: string;
-  timestamp: string;
-  description: string;
-  color?: string;
-}
 
 
 export default function DashboardPage() {
@@ -65,51 +52,12 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const { fetchProjects, projects, isLoading } = useProjectStore();
   const { documents, fetchDocuments } = useDocumentsStore();
-  const [activeTab, setActiveTab] = useState("overview");
   const [showProjectModal, setShowProjectModal] = useState(false);
   useEffect(() => {
     fetchProjects();
     fetchDocuments();
   }, [fetchProjects, fetchDocuments]);
 
-  // Mock data for activities
-  const recentActivities = [
-    {
-      icon: FileText,
-      title: "Contract uploaded",
-      timestamp: "30m ago",
-      description: "Johnson Service Agreement was added to Project Alpha",
-      color: "text-blue-600"
-    },
-    {
-      icon: MessageSquare,
-      title: "New assistant conversation",
-      timestamp: "2h ago",
-      description: "You started a new conversation about contract review",
-      color: "text-green-600"
-    },
-    {
-      icon: Briefcase,
-      title: "Project created",
-      timestamp: "5h ago",
-      description: "You created Project Beta",
-      color: "text-purple-600"
-    },
-    {
-      icon: Calendar,
-      title: "Deadline approaching",
-      timestamp: "1d ago",
-      description: "Contract review deadline for Project Alpha is in 2 days",
-      color: "text-red-600"
-    },
-  ];
-
-  // Stats for the overview
-  const stats = [
-    { label: "Active Workspaces", value: projects?.filter(p => p.status === "active").length || 0, icon: Briefcase },
-    { label: "Documents", value: documents?.length || 0, icon: FileText },
-    { label: "Recent Activity", value: recentActivities.length, icon: Clock },
-  ];
 
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
@@ -135,25 +83,6 @@ export default function DashboardPage() {
             </Button>
           </div>
         </div>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {stats.map((stat, i) => (
-          <Card key={i}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-                  <h3 className="text-3xl font-bold mt-1">{stat.value}</h3>
-                </div>
-                <div className="p-3 bg-primary-100 rounded-full">
-                  <stat.icon className="h-6 w-6 text-primary-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
       </div>
 
       {/* Quick Actions & Activity Feed */}
