@@ -7,9 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { 
   FileText, 
   Search, 
@@ -17,13 +16,9 @@ import {
   Upload,
   MoreVertical,
   Download,
-  PenTool,
-  Trash2,
   Eye,
   Save,
-  BookOpen,
-  FileQuestion,
-  Sparkles,
+  Trash2,
   Loader2
 } from "lucide-react";
 import {
@@ -39,8 +34,6 @@ import { useConversationDocumentsStore } from "@/store/conversation-documents.st
 import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useConversationSettingsStore } from "@/store/conversation-settings.store";
-import { ActionSelector, ActionType } from "../actions/ActionHandler";
-import { ActionStarters } from "../actions/ActionStarters";
 
 export function ConversationDetails() {
   const params = useParams();
@@ -68,8 +61,6 @@ export function ConversationDetails() {
     isLoading: isLoadingSettings
   } = useConversationSettingsStore();
   
- const [activeAction, setActiveAction] = useState<ActionType | null>(null);
- const [showActionModal, setShowActionModal] = useState(false);
   const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
   const [selectedDocumentsToAdd, setSelectedDocumentsToAdd] = useState<string[]>([]);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
@@ -127,29 +118,31 @@ export function ConversationDetails() {
       console.error("Error saving instructions:", error);
     }
   };
-    // Handler for settings changes
-    const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
-      if (!currentConversation) return;
+  
+  // Handler for settings changes
+  const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
+    if (!currentConversation) return;
+    
+    try {
+      // Optimistically update the UI
+      setIsSettingChanged(true);
       
-      try {
-        // Optimistically update the UI
-        setIsSettingChanged(true);
-        
-        // Update the setting in the database
-        const success = await updateSetting(currentConversation.id, settingKey, value);
-        
-        if (success) {
-          notify.success(`${settingKey} setting updated`);
-        } else {
-          notify.error(`Failed to update ${settingKey} setting`);
-        }
-      } catch (error) {
-        notify.error("Failed to save setting");
-        console.error("Error saving setting:", error);
-      } finally {
-        setIsSettingChanged(false);
+      // Update the setting in the database
+      const success = await updateSetting(currentConversation.id, settingKey, value);
+      
+      if (success) {
+        notify.success(`${settingKey} setting updated`);
+      } else {
+        notify.error(`Failed to update ${settingKey} setting`);
       }
-    };
+    } catch (error) {
+      notify.error("Failed to save setting");
+      console.error("Error saving setting:", error);
+    } finally {
+      setIsSettingChanged(false);
+    }
+  };
+  
   // Handle document selection
   const toggleDocumentSelection = (documentId: string) => {
     setSelectedDocumentsToAdd(prev => 
@@ -159,11 +152,15 @@ export function ConversationDetails() {
     );
   };
   
+  // Track loading state for document attachment
+  const [isAttachingDocuments, setIsAttachingDocuments] = useState(false);
+  
   // Handle adding selected documents to conversation
   const handleAddSelectedDocuments = async () => {
     if (!currentConversation?.id || selectedDocumentsToAdd.length === 0) return;
     
     try {
+      setIsAttachingDocuments(true);
       const success = await attachDocumentsToConversation(
         currentConversation.id, 
         selectedDocumentsToAdd
@@ -177,6 +174,8 @@ export function ConversationDetails() {
     } catch (error) {
       notify.error("Failed to add documents");
       console.error("Error adding documents:", error);
+    } finally {
+      setIsAttachingDocuments(false);
     }
   };
   
@@ -206,20 +205,6 @@ export function ConversationDetails() {
     fetchDocuments();
     setShowDocumentSelectionDialog(true);
   };
-  const handleActionPrompt = (promptTemplate: string, actionTitle: string) => {
-    // Find the ChatInterface component
-    const chatInterface = document.querySelector('.chat-interface-component') as any;
-    if (chatInterface && chatInterface.sendPromptDirectly) {
-      chatInterface.sendPromptDirectly(promptTemplate);
-    } else {
-      // Fallback: Emit a custom event that the ChatInterface can listen for
-      const actionEvent = new CustomEvent('action-prompt-send', { 
-        detail: { promptTemplate, actionTitle },
-        bubbles: true 
-      });
-      document.dispatchEvent(actionEvent);
-    }
-  };  
   
   return (
     <div className="flex flex-col h-full">
@@ -227,7 +212,6 @@ export function ConversationDetails() {
         <TabsList className="flex justify-center border-b rounded-none px-1">
           <TabsTrigger value="context">Context</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="actions">Actions</TabsTrigger>
         </TabsList>
         
         <ScrollArea className="flex-1">
@@ -437,21 +421,6 @@ export function ConversationDetails() {
               </div>
             </div>
           </TabsContent>
-          
-          {/* Actions Tab */}
-          <TabsContent value="actions" className="p-4 m-0">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium">Available Actions</h3>
-              </div>
-              
-              <ActionStarters 
-                onSelect={(promptTemplate, actionTitle) => {
-                  handleActionPrompt(promptTemplate, actionTitle);
-                }}
-              />
-            </div>
-          </TabsContent>
         </ScrollArea>
       </Tabs>
       
@@ -476,7 +445,7 @@ export function ConversationDetails() {
               />
             </div>
             
-            <div className="h-[300px] overflow-y-auto  border rounded-md">
+            <div className="h-[300px] overflow-y-auto border rounded-md">
               {isLoadingDocuments ? (
                 <p className="text-sm text-center py-4 text-muted-foreground">Loading documents...</p>
               ) : filteredAvailableDocuments.length > 0 ? (
@@ -489,11 +458,18 @@ export function ConversationDetails() {
                       }`}
                       onClick={() => toggleDocumentSelection(doc.id)}
                     >
-                      <Checkbox 
-                        checked={selectedDocumentsToAdd.includes(doc.id)}
-                        className="mr-3"
-                        onCheckedChange={() => toggleDocumentSelection(doc.id)}
-                      />
+                      <div onClick={(e) => {
+                          // Prevent the click from reaching the parent div
+                          e.stopPropagation();
+                        }}>
+                        <Checkbox 
+                          checked={selectedDocumentsToAdd.includes(doc.id)}
+                          className="mr-3"
+                          onCheckedChange={(checked) => {
+                            toggleDocumentSelection(doc.id);
+                          }}
+                        />
+                      </div>
                       <FileText className="h-4 w-4 mr-3 text-primary-600" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{doc.title}</p>
@@ -519,9 +495,16 @@ export function ConversationDetails() {
             </Button>
             <Button 
               onClick={handleAddSelectedDocuments}
-              disabled={selectedDocumentsToAdd.length === 0}
+              disabled={selectedDocumentsToAdd.length === 0 || isAttachingDocuments}
             >
-              Add Selected ({selectedDocumentsToAdd.length})
+              {isAttachingDocuments ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Adding...
+                </>
+              ) : (
+                <>Add Selected ({selectedDocumentsToAdd.length})</>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

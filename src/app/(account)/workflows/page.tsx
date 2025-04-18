@@ -78,6 +78,23 @@ const mockWorkflows: Workflow[] = [
     ]
   },
   {
+    id: "wf5",
+    title: "Document Drafting",
+    description: "Draft legal documents with templates and clauses",
+    category: "drafting",
+    status: "draft", // Changed to draft
+    progress: 0, // Changed to 0 progress
+    dueDate: "2025-03-25",
+    assignee: "John Doe",
+    createdAt: "2025-03-10",
+    steps: [
+      { id: "s1", title: "Initial document review", completed: false },
+      { id: "s2", title: "Legal team annotations", completed: false },
+      { id: "s3", title: "Client approval", completed: false },
+      { id: "s4", title: "Final signatures", completed: false }
+    ]
+  },
+  {
     id: "wf2",
     title: "Due Diligence",
     description: "M&A due diligence process with document collection and analysis",
@@ -135,6 +152,15 @@ const workflowTemplates = [
     title: "Contract Review",
     description: "Standard legal contract review and approval",
     category: "contracts",
+    icon: FileText,
+    color: "text-blue-600",
+    steps: 4
+  },
+  {
+    id: "template1",
+    title: "Document Drafting",
+    description: "Draft and review legal documents with templates and clauses",
+    category: "drafting",
     icon: FileText,
     color: "text-blue-600",
     steps: 4

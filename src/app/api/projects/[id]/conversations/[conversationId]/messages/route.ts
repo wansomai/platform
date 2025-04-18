@@ -43,18 +43,6 @@ const DEFAULT_SETTINGS = {
   temperature: 0.7
 };
 
-// Initialize the chat model with OpenAI API key
-const chatModel = new ChatOpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  modelName: process.env.OPENAI_MODEL || "gpt-3.5-turbo",
-  temperature: 0.7,
-});
-
-// Initialize embeddings for semantic search
-const embeddings = new OpenAIEmbeddings({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-});
-
 // Schema validation
 const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
@@ -113,8 +101,9 @@ function isSimpleGreeting(text: string): boolean {
 }
 
 /**
- * Extracts document content on the fly if not already extracted
- * Production implementation should extract content when documents are added, not during conversation
+ * Extracts document content if it doesn't already exist in the database
+ * @param documentId The ID of the document to extract content from
+ * @returns The extracted content or null if not found
  */
 async function extractDocumentContentIfNeeded(
   documentId: string
