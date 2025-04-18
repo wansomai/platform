@@ -124,20 +124,6 @@ function Key(props: React.SVGProps<SVGSVGElement>) {
 // Mock integrations data - all set to disconnected or pending by default
 const mockIntegrations: Integration[] = [
   {
-    id: "int1",
-    name: "Dropbox",
-    description: "Connect your Dropbox account to access and store documents",
-    category: "storage",
-    icon: Folder,
-    status: "disconnected", // Changed to disconnected
-    isActive: false, // Deactivated by default
-    lastSync: "2025-03-15T14:30:00",
-    connectionDetails: {
-      username: "legal@example.com",
-      scopes: ["files.read", "files.write"]
-    }
-  },
-  {
     id: "int2",
     name: "Google Drive",
     description: "Store and access documents from your Google Drive",
@@ -266,19 +252,6 @@ const mockIntegrations: Integration[] = [
       url: "https://client-portal.example.com",
       apiKey: "****-****-****-3456"
     }
-  },
-  {
-    id: "int12",
-    name: "Auth0",
-    description: "User authentication and access control",
-    category: "auth",
-    icon: Lock,
-    status: "disconnected", // Changed to disconnected
-    isActive: false, // Deactivated by default
-    lastSync: "2025-03-15T08:00:00",
-    connectionDetails: {
-      username: "admin@legalai.com"
-    }
   }
 ];
 
@@ -334,8 +307,7 @@ const categories = [
   { id: "storage", label: "Document Storage", icon: Folder },
   { id: "calendar", label: "Calendar", icon: Calendar },
   { id: "communication", label: "Communication", icon: MessageSquare },
-  { id: "legal", label: "Legal Services", icon: FileText },
-  { id: "auth", label: "Authentication", icon: Lock }
+  { id: "legal", label: "Legal Services", icon: FileText }
 ];
 
 export default function IntegrationsPage() {

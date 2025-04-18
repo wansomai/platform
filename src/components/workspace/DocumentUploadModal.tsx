@@ -8,7 +8,6 @@ import { AlertCircle, UploadCloud, RefreshCw } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -82,7 +81,6 @@ export function DocumentUploadModal() {
         // Reset form
         setShowUploadDialog(false);
         setFile(null);
-        
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
