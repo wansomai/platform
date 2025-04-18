@@ -179,11 +179,15 @@ export function ConversationDetails() {
     }
   };
   
+  // Track loading state for document removal
+  const [isRemovingDocument, setIsRemovingDocument] = useState(false);
+  
   // Handle document removal from conversation
   const handleRemoveDocument = async () => {
     if (!currentConversation?.id || !documentToDelete) return;
     
     try {
+      setIsRemovingDocument(true);
       const success = await removeDocumentFromConversation(
         currentConversation.id, 
         documentToDelete
@@ -197,6 +201,8 @@ export function ConversationDetails() {
     } catch (error) {
       notify.error("Failed to remove document");
       console.error("Error removing document:", error);
+    } finally {
+      setIsRemovingDocument(false);
     }
   };
   
@@ -521,14 +527,22 @@ export function ConversationDetails() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isRemovingDocument}>
               Cancel
             </Button>
             <Button 
               variant="destructive" 
               onClick={handleRemoveDocument}
+              disabled={isRemovingDocument}
             >
-              Remove
+              {isRemovingDocument ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Removing...
+                </>
+              ) : (
+                "Remove"
+              )}
             </Button>
           </div>
         </DialogContent>
