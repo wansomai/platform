@@ -1,7 +1,6 @@
 // app/sitemap.js
 
 export default async function sitemap() {
-  const slugs = await fetchBlogSlugs();
   const baseUrl = 'https://wansom.co';
 
   const staticRoutes = [
