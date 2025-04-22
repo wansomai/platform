@@ -68,7 +68,7 @@ const Navbar = () => {
             </div>
             <div className="relative group">
               <Link href="/#document-vault" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
-                Document Vault
+                Vault
              
               </Link>
             </div>
@@ -128,7 +128,7 @@ const Navbar = () => {
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
-                Document Vault
+               Vault
               </Link>
               <Link
                 href="/#workflows"
