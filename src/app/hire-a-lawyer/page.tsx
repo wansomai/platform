@@ -120,7 +120,7 @@ const Providers = () => {
                         id="firstName"
                         value={formData.firstName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     </div>
@@ -136,7 +136,7 @@ const Providers = () => {
                         id="lastName"
                         value={formData.lastName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     </div>
@@ -155,7 +155,7 @@ const Providers = () => {
                         id="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     </div>
@@ -171,7 +171,7 @@ const Providers = () => {
                         id="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         required
                       />
                     </div>
@@ -188,17 +188,17 @@ const Providers = () => {
                       id="message"
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                       required
                       rows={4}
-                      placeholder="Enter your legal or tax question here"
+                      placeholder="Enter your legal question here"
                     ></textarea>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full font-medium text-white bg-black hover:bg-gray-800 rounded-md py-3 px-4 transition-colors ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`w-full font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-4 transition-colors ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                   >
                     {isSubmitting ? 'Sending...' : 'Send Request'}
                   </button>
