@@ -1,8 +1,16 @@
 // app/sitemap.js
+import { createClient } from 'contentful';
 
 export default async function sitemap() {
   const baseUrl = 'https://wansom.co';
 
+  // Initialize Contentful client
+  const client = createClient({
+    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
+    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN || '',
+  });
+
+  // Static routes
   const staticRoutes = [
     {
       url: `${baseUrl}`,
@@ -76,8 +84,27 @@ export default async function sitemap() {
     },
   ];
 
+  // Get blog posts from Contentful
+  let blogRoutes = [];
+  try {
+    const response = await client.getEntries({
+      content_type: 'blogPost',
+      order: ['-sys.createdAt'],
+    });
 
-  const routes = [...staticRoutes];
+    // Map blog posts to sitemap format
+    blogRoutes = response.items.map(post => ({
+      url: `${baseUrl}/blogs/${post.sys.id}`,
+      lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
+  
+    }));
+  } catch (error) {
+    console.error('Error fetching blog posts for sitemap:', error);
+    // Continue with static routes if Contentful fetch fails
+  }
+
+  // Combine all routes
+  const routes = [...staticRoutes, ...blogRoutes];
 
   return routes;
 }
