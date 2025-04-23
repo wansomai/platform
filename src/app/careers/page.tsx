@@ -16,7 +16,7 @@ const CareersPage = () => {
       location: "Nairobi",
       department: "Marketing",
       date: "24th July, 2024",
-      description: "Wansom.ai is seeking a creative and data-driven Digital Marketer to join our growing team. The ideal candidate will help develop and implement innovative marketing strategies to increase brand awareness and drive customer acquisition for our AI-powered legal solutions.",
+      description: "We are seeking a creative and data-driven Digital Marketer to join our growing team. The ideal candidate will help develop and implement innovative marketing strategies to increase brand awareness and drive customer acquisition for our AI-powered legal solutions.",
     },
     {
       id: 2,
@@ -24,7 +24,7 @@ const CareersPage = () => {
       location: "Nairobi",
       department: "Technology",
       date: "24th July, 2024",
-      description: "Wansom.ai is looking for a talented Software Engineer to join our development team. You'll work on cutting-edge AI solutions for the legal industry, collaborating with a cross-functional team to build and maintain our core products and services.",
+      description: "We are looking for a talented Software Engineer to join our development team. You'll work on cutting-edge AI solutions for the legal industry, collaborating with a cross-functional team to build and maintain our core products and services.",
     }
   ]);
 
@@ -35,7 +35,7 @@ const CareersPage = () => {
                   href="https://x.com/wansom_ai"
                   className="text-slate-800 hover:text-slate-600 transition-colors"
                 >
-                  <div className="w-8 h-8 border rounded-full flex items-center justify-center ">
+                  <div className="w-8 h-8 border border-yellow-600 rounded-full flex items-center justify-center ">
                     <svg
                       className="w-6 h-6"
                       viewBox="0 0 48 48"
@@ -53,7 +53,7 @@ const CareersPage = () => {
                   href="https://www.linkedin.com/company/wansom-ai"
                   className="text-slate-800 hover:text-slate-600 transition-colors"
                 >
-                  <div className="w-8 h-8 border rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 border rounded-full border-yellow-600 flex items-center justify-center">
                     <Linkedin className="w-4 h-4" />
                   </div>
                 </a>

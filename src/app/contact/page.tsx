@@ -17,7 +17,7 @@ export default function ContactPage() {
           href="https://x.com/wansom_ai"
           className="text-slate-800 hover:text-slate-600 transition-colors"
         >
-          <div className="w-8 h-8 border rounded-full flex items-center justify-center ">
+          <div className="w-8 h-8 border rounded-full flex items-center justify-center border-yellow-600 ">
             <svg
               className="w-6 h-6"
               viewBox="0 0 48 48"
@@ -35,7 +35,7 @@ export default function ContactPage() {
           href="https://www.linkedin.com/company/wansom-ai"
           className="text-slate-800 hover:text-slate-600 transition-colors"
         >
-          <div className="w-8 h-8 border rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 border rounded-full border-yellow-600 flex items-center justify-center">
             <Linkedin className="w-4 h-4" />
           </div>
         </a>
