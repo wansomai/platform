@@ -28,7 +28,9 @@ import {
   HelpCircle,
   MessageSquare,
   Paperclip,
-  Save
+  Save,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useChatStore } from "@/store/chat.store";
@@ -100,6 +102,7 @@ export default function AssistantPage() {
   const [showConversationsDialog, setShowConversationsDialog] = useState(false);
   const [conversationTitle, setConversationTitle] = useState<string>("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   
   // Load saved conversations from local storage
   useEffect(() => {
@@ -398,11 +401,11 @@ export default function AssistantPage() {
   };
   
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <Card className="h-[calc(100vh-8rem)] flex flex-col">
+    <div className="container mx-auto p-2 sm:p-4 max-w-4xl h-full">
+      <Card className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-8rem)] flex flex-col">
         <CardContent className="flex-1 p-0 flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b flex items-center justify-between">
+          <div className="p-2 sm:p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary-600" />
               <h2 className="text-lg font-medium">
@@ -411,7 +414,7 @@ export default function AssistantPage() {
                   : "Quick Assistant"}
               </h2>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {/* Save conversation button */}
               {threadId && !activeConversation && (
                 <Button 
@@ -431,31 +434,33 @@ export default function AssistantPage() {
                 onClick={() => setShowConversationsDialog(true)}
               >
                 <MessageSquare className="h-4 w-4 mr-1" />
-                Conversations
+                <span className="hidden sm:inline">Conversations</span>
+                <span className="sm:hidden">Chats</span>
               </Button>
               
               {/* New chat button */}
               <Button variant="outline" size="sm" onClick={clearChat}>
                 <RefreshCw className="h-4 w-4 mr-1" />
-                New Chat
+                <span className="hidden sm:inline">New Chat</span>
+                <span className="sm:hidden">New</span>
               </Button>
             </div>
           </div>
           
           {/* Messages container */}
-          <ScrollArea className="flex-1 p-4 overflow-y-auto max-h-[calc(100vh-24rem)]">
-            <div className="space-y-6 ">
+          <ScrollArea className="flex-1 p-2 sm:p-4 overflow-y-auto max-h-[calc(100vh-24rem)] sm:max-h-[calc(100vh-16rem)]">
+            <div className="space-y-6">
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`flex gap-3 max-w-[85%] ${
+                    className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-[85%] ${
                       message.role === "user" ? "flex-row-reverse" : "flex-row"
                     }`}
                   >
-                    <Avatar className="h-8 w-8 mt-1">
+                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0">
                       {message.role === "user" ? (
                         <AvatarImage src={session?.user?.image || undefined} alt="You" />
                       ) : (
@@ -477,7 +482,7 @@ export default function AssistantPage() {
                       </div>
                       
                       <div
-                        className={`rounded-lg px-4 py-2 ${
+                        className={`rounded-lg px-3 sm:px-4 py-2 ${
                           message.role === "user"
                             ? "bg-green-600 text-white"
                             : "bg-gray-100"
@@ -489,7 +494,7 @@ export default function AssistantPage() {
                             <span>Thinking...</span>
                           </div>
                         ) : (
-                          <div className="whitespace-pre-wrap">{message.content}</div>
+                          <div className="whitespace-pre-wrap break-words">{message.content}</div>
                         )}
                       </div>
                       
@@ -523,13 +528,13 @@ export default function AssistantPage() {
           
           {/* Uploaded files display */}
           {uploadedFiles.length > 0 && (
-            <div className="px-4 py-2 border-t">
+            <div className="px-2 sm:px-4 py-2 border-t">
               <p className="text-sm text-gray-500 mb-2">Uploaded files:</p>
               <div className="flex flex-wrap gap-2">
                 {uploadedFiles.map((file, index) => (
                   <Badge variant="outline" key={index} className="flex items-center gap-1 pl-2 pr-1 py-1">
                     <FileText className="h-3 w-3 mr-1" />
-                    <span className="truncate max-w-[150px]">{file.name}</span>
+                    <span className="truncate max-w-[100px] sm:max-w-[150px]">{file.name}</span>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -545,26 +550,46 @@ export default function AssistantPage() {
           )}
           
           {/* Input area */}
-          <div className="p-4 border-t">
+          <div className="p-2 sm:p-4 border-t">
             {error && (
               <div className="mb-2 p-2 rounded-md bg-red-50 text-red-800 text-sm">
                 {error}
               </div>
             )}
             
-            {/* Suggestion chips */}
-            <div className="mb-3 flex flex-wrap gap-2">
-              {suggestionPrompts.map((suggestion, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                  className="cursor-pointer px-3 py-1 text-primary-600 bg-primary-50 hover:bg-primary-100"
-                  onClick={() => useSuggestion(suggestion.prompt)}
+            {/* Suggestion chips with toggle button */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center text-sm">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-0 h-6" 
+                  onClick={() => setShowSuggestions(!showSuggestions)}
                 >
-                  {suggestion.title}
-                </Badge>
-              ))}
+                  {showSuggestions ? (
+                    <ChevronDown className="h-4 w-4 mr-1 text-gray-500" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 mr-1 text-gray-500" />
+                  )}
+                  <span className="text-gray-500 text-xs">Suggestions</span>
+                </Button>
+              </div>
             </div>
+            
+            {showSuggestions && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {suggestionPrompts.map((suggestion, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="cursor-pointer px-2 sm:px-3 py-1 text-primary-600 bg-primary-50 hover:bg-primary-100 text-xs sm:text-sm"
+                    onClick={() => useSuggestion(suggestion.prompt)}
+                  >
+                    {suggestion.title}
+                  </Badge>
+                ))}
+              </div>
+            )}
             
             <div className="relative">
               <Textarea
@@ -681,7 +706,7 @@ export default function AssistantPage() {
       
       {/* Load Conversations Dialog */}
       <Dialog open={showConversationsDialog} onOpenChange={setShowConversationsDialog}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Your Conversations</DialogTitle>
             <DialogDescription>
@@ -703,8 +728,8 @@ export default function AssistantPage() {
                       className="flex items-center justify-between p-3 rounded-md border hover:bg-gray-50 cursor-pointer"
                       onClick={() => loadConversation(conversation.threadId)}
                     >
-                      <div className="flex flex-col">
-                        <span className="font-medium">{conversation.title}</span>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="font-medium truncate">{conversation.title}</span>
                         <span className="text-xs text-gray-500">
                           {formatDistanceToNow(conversation.lastUpdated, { addSuffix: true })} · 
                           {conversation.messages.length} messages
@@ -713,7 +738,7 @@ export default function AssistantPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-gray-500 hover:text-red-600"
+                        className="h-8 w-8 text-gray-500 hover:text-red-600 flex-shrink-0"
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteConversation(conversation.threadId);
