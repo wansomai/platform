@@ -197,62 +197,77 @@ const BlogDetailPage = () => {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-       
-
-          {/* Featured Image */}
-          {blog.image && (
-            <div className="mb-8">
-              <Image
-                src={blog.image}
-                alt={blog.title}
-                width={1200}
-                height={630}
-                className="rounded-lg w-full h-auto object-cover max-h-[500px]"
-              />
-            </div>
-          )}
-
-          {/* Blog Content - Using dangerouslySetInnerHTML for rich text */}
-          <div
-            className="blog-content mb-12"
-            dangerouslySetInnerHTML={{ __html: blog.contentHtml || "" }}
-          />
-
-          {/* Tags */}
-          {blog.tags && blog.tags.length > 0 && (
-            <div className="mb-12">
-              <h3 className="text-lg font-semibold mb-2">Related Topics</h3>
-              <div className="flex flex-wrap gap-2">
-                {blog.tags.map((tag: string) => (
-                  <Link
-                    key={tag}
-                    href={`/blogs?tag=${encodeURIComponent(tag)}`}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-teal-100 hover:text-teal-700"
-                  >
-                    {tag}
-                  </Link>
-                ))}
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="flex flex-col lg:flex-row gap-8">
+        {blog.image && (
+            <div className="blcok lg:hidden">
+              <div className="">
+                <img
+                  src={blog.image}
+                  alt={blog.title}
+                
+                  className="rounded-lg w-full h-auto object-cover"
+                />
               </div>
             </div>
           )}
+          {/* Main content column */}
+          <div className="w-full lg:w-7/12">
+            {/* Blog Content */}
+            <div
+              className="blog-content mb-12"
+              dangerouslySetInnerHTML={{ __html: blog.contentHtml || "" }}
+            />
 
-          {/* Related Posts */}
-          {relatedPosts.length > 0 && (
-            <div className="border-t border-gray-200 pt-8">
-              <h3 className="text-xl font-semibold mb-6">Related Articles</h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                {relatedPosts.map((post) => (
-                  <Link key={post.id} href={post.link} className="block group">
-                    <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <h4 className="font-semibold text-gray-800 mb-2 group-hover:text-teal-600">
-                        {post.title}
-                      </h4>
-                      <p className="text-sm text-gray-500">{post.date}</p>
-                    </div>
-                  </Link>
-                ))}
+            {/* Tags */}
+            {blog.tags && blog.tags.length > 0 && (
+              <div className="mb-12">
+                <h3 className="text-lg font-semibold mb-2">Related Topics</h3>
+                <div className="flex flex-wrap gap-2">
+                  {blog.tags.map((tag: string) => (
+                    <Link
+                      key={tag}
+                      href={`/blogs?tag=${encodeURIComponent(tag)}`}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-teal-100 hover:text-teal-700"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Related Posts */}
+            {relatedPosts.length > 0 && (
+              <div className="border-t border-gray-200 pt-8">
+                <h3 className="text-xl font-semibold mb-6">Related Articles</h3>
+                <div className="grid md:grid-cols-3 gap-6">
+                  {relatedPosts.map((post) => (
+                    <Link key={post.id} href={post.link} className="block group">
+                      <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <h4 className="font-semibold text-gray-800 mb-2 group-hover:text-teal-600">
+                          {post.title}
+                        </h4>
+                        <p className="text-sm text-gray-500">{post.date}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Fixed image column */}
+          {blog.image && (
+            <div className="hidden lg:block w-5/12">
+              <div className="sticky top-32">
+                <Image
+                  src={blog.image}
+                  alt={blog.title}
+                  width={1200}
+                  height={630}
+                  className="rounded-lg w-full h-auto object-cover max-h-[500px]"
+                />
               </div>
             </div>
           )}
