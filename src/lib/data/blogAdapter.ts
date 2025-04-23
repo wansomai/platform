@@ -50,7 +50,7 @@ export function adaptBlogPost(post: BlogPost) {
     : '';
   
   // Extract potential tags from metadata or use default ones
-  const tags = post.fields.tags || ['HR', 'Workplace', 'Legal'];
+  const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
   
   return {
     id: post.sys.id,
