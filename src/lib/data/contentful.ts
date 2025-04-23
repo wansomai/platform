@@ -55,6 +55,15 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   return response.items as unknown as BlogPost[];
 }
 
+export async function getAllDocuments(): Promise<BlogPost[]> {
+  const response = await client.getEntries({
+    content_type: 'documentTemplates',
+    order: ['-sys.createdAt'], // Get newest first
+  });
+  
+  return response.items as unknown as BlogPost[];
+}
+
 export async function getBlogPostById(id: string): Promise<BlogPost | null> {
   try {
     const response = await client.getEntry(id);
