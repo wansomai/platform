@@ -81,15 +81,15 @@ const Providers = () => {
   return (
     <div>
       <Navbar/>
-      <main className="min-h-screen flex-col items-center justify-between bg-green-50 max-w-8xl mx-auto px-5">
-        <section className="py-20">
+      <main className="min-h-screen flex-col items-center justify-between">
+        <section className="py-20 hero-bg">
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid md:grid-cols-2 gap-12 mt-10">
               <div className="text-left">
                 <img src="/hero.png" alt="Legal consultation" />
               </div>
 
-              <div className="bg-white-50 p-8 rounded-lg">
+              <div className="bg-white-50 p-8 rounded-lg bg-gray-300 shadow-sm">
                 <h3 className="text-xl font-bold mb-6">
                   Talk To A Lawyer
                 </h3>
@@ -208,10 +208,10 @@ const Providers = () => {
           </div>
         </section>
         <section className="py-10" id="about">
-          <h1 className="section-title text-dark mb-5 text-center lg:max-w-[80%] mx-auto">
+          <h1 className="section-title text-dark text-4xl mb-5 text-center lg:max-w-[80%] mx-auto">
             Get quick answers from real lawyers, easily.
           </h1>
-          <p className="font-jose text-secondary text-lg text-center">Ask any legal or tax question, or have a network attorney review your document.</p>
+          <p className="font-jose text-gray-700 text-lg text-center">Ask any legal or tax question, or have a network attorney review your document.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-10 py-10">
             <div className="flex flex-col items-center gap-4">
               <img src="/icons/5.svg" alt="Ask question icon" />
