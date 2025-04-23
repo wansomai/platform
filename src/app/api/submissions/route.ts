@@ -1,10 +1,13 @@
 
 import { NextResponse } from "next/server";
 import {transporter} from './utils'
-import { NextApiRequest } from "next";
+import { NextRequest } from "next/server";
 
-export async function POST(request:NextApiRequest) {
-  const payload = await request.body.json();
+export async function POST(request:NextRequest) {
+  if (!request.body) {
+    return NextResponse.json({ error: "Request body is empty" }, { status: 400 });
+  }
+  const payload = await request.json();
   // Convert payload object to a formatted string for the email
   const formattedPayload = Object.entries(payload)
     .map(([key, value]) => {
@@ -19,8 +22,8 @@ export async function POST(request:NextApiRequest) {
     .join("\n\n");
 
   const mailOptions = {
-    from: "engagement@ckccares.com",
-    to: ["engagement@ckccares.com"],
+    from: "info@wansom.co",
+    to: ["info@wansom.co"],
     subject: "New Form Submission",
     text: `You have received a new submission:\n\n${formattedPayload}`,
   };
