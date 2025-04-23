@@ -8,6 +8,12 @@
   background-size: cover;
   background-position: center;
 }
+.hero-bg{
+  background-image: url('../../public/hero-bg.png');
+  background-size: cover;
+  background-size: cover;
+  background-position: center;
+}
 
 
 

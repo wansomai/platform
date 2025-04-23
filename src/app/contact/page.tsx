@@ -2,11 +2,7 @@
 "use client";
 import Image from "next/image";
 import {
-  Instagram,
-  Facebook,
   Linkedin,
-  Twitter,
-  Youtube,
   X,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -46,7 +42,7 @@ export default function ContactPage() {
       </div>
 
       {/* Hero Section with Two Columns */}
-      <section className="">
+      <section className="hero-bg">
         <Navbar />
         <div className="container mx-auto px-6 md:pl-20 py-10 pt-32">
           <div className="grid lg:grid-cols-2 gap-12">
