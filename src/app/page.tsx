@@ -130,7 +130,7 @@ export default function Home() {
         </div>
       </section>
 
-<PricingSection/>
+{/* <PricingSection/> */}
       {/* Footer */}
      <Footer/>  
     </>
