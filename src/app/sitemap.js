@@ -53,12 +53,12 @@ export default async function sitemap() {
       },
     },
     {
-      url: `${baseUrl}/legal-templates`,
+      url: `${baseUrl}/legal-documents`,
       lastModified: new Date(),
       alternates: {
         languages: {
-          es: `${baseUrl}/legal-templates`,
-          de: `${baseUrl}/legal-templates`,
+          es: `${baseUrl}/legal-documents`,
+          de: `${baseUrl}/legal-documents`,
         },
       },
     },
