@@ -50,7 +50,7 @@ export default function InquiryForm (){
     };
   
     return (
-      <div className="bg-white">
+      <div className="bg-white p-6 rounded-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <input
