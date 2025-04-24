@@ -3,6 +3,17 @@ import { BlogPost } from './contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
 
+
+export function createSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Remove consecutive hyphens
+    .trim(); // Trim any leading/trailing spaces or hyphens
+}
+
+
 // HTML renderer options for Contentful Rich Text
 const htmlRenderOptions = {
   renderMark: {
@@ -49,7 +60,8 @@ export function adaptBlogPost(post: BlogPost) {
     ? documentToHtmlString(post.fields.content, htmlRenderOptions)
     : '';
   
-  // Extract potential tags from metadata or use default ones
+  // Generate slug from title
+  const slug = createSlug(post.fields.title || '');
   const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
   
   return {
@@ -66,7 +78,8 @@ export function adaptBlogPost(post: BlogPost) {
       month: 'long',
       day: 'numeric',
     }),
-    link: `/blogs/${post.sys.id}`,
+    link: `/blogs/${slug}`,
+    slug,
     tags,
   };
 }

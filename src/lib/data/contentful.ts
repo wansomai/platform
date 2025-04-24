@@ -1,5 +1,6 @@
 // lib/contentful.ts
 import { createClient } from 'contentful';
+import { createSlug } from './blogAdapter';
 
 // Initialize Contentful client
 const client = createClient({
@@ -55,21 +56,30 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   return response.items as unknown as BlogPost[];
 }
 
-export async function getAllDocuments(): Promise<BlogPost[]> {
-  const response = await client.getEntries({
-    content_type: 'documentTemplates',
-    order: ['-sys.createdAt'], // Get newest first
-  });
-  
-  return response.items as unknown as BlogPost[];
-}
-
 export async function getBlogPostById(id: string): Promise<BlogPost | null> {
   try {
     const response = await client.getEntry(id);
     return response as unknown as BlogPost;
   } catch (error) {
-    console.error('Error fetching blog post:', error);
+    console.error('Error fetching blog post by ID:', error);
+    return null;
+  }
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  try {
+    // Get all blog posts since Contentful doesn't support filtering by slug directly
+    const allPosts = await getAllBlogPosts();
+    
+    // Find the post with matching slug
+    const post = allPosts.find(post => {
+      const postSlug = createSlug(post.fields.title || '');
+      return postSlug === slug;
+    });
+    
+    return post || null;
+  } catch (error) {
+    console.error('Error fetching blog post by slug:', error);
     return null;
   }
 }
@@ -79,39 +89,37 @@ export async function getBlogPostsByTag(tag: string): Promise<BlogPost[]> {
   const response = await client.getEntries({
     content_type: 'blogPost',
     'fields.tags': tag,
-    order: ['-sys.createdAt'], // Get newest first
+    order: ['-sys.createdAt'],
   });
   
   return response.items as unknown as BlogPost[];
 }
 
 // Get related blog posts (excluding the current one)
-export async function getRelatedBlogPosts(
-  currentPostId: string, 
-  tags: string[] = [], 
-  limit: number = 3
-): Promise<BlogPost[]> {
-  try {
-    const queryParams = {
-      content_type: 'blogPost',
-      'sys.id[ne]': currentPostId,
-      order: '-sys.createdAt',
-      limit,
-      ...(tags.length && { 'fields.tags[in]': tags.join(',') })
-    };
-
-    const response = await client.getEntries(queryParams);
-    
-    if (!response.items) {
-      console.warn('No related posts found');
-      return [];
-    }
-
-    return response.items as unknown as BlogPost[];
-  } catch (error) {
-    console.error('Error fetching related blog posts:', error);
-    return [];
+export async function getRelatedBlogPosts(currentSlug: string, tags: string[] = [], limit: number = 3): Promise<BlogPost[]> {
+  // Get all blog posts
+  const allPosts = await getAllBlogPosts();
+  
+  // Filter out the current post
+  const otherPosts = allPosts.filter(post => {
+    const postSlug = createSlug(post.fields.title || '');
+    return postSlug !== currentSlug;
+  });
+  
+  // If there are tags, prioritize posts with matching tags
+  if (tags.length > 0) {
+    // Sort by matching tag count (posts with more matching tags come first)
+    return otherPosts
+      .sort((a, b) => {
+        const aTagMatches = a.fields.tags?.filter(tag => tags.includes(tag)).length || 0;
+        const bTagMatches = b.fields.tags?.filter(tag => tags.includes(tag)).length || 0;
+        return bTagMatches - aTagMatches;
+      })
+      .slice(0, limit);
   }
+  
+  // Otherwise just return the most recent posts
+  return otherPosts.slice(0, limit);
 }
 
 export default client;
