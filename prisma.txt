@@ -54,7 +54,6 @@ model User {
   actions               ConversationAction[]
   conversationDocuments ConversationDocument[]
   documents             Document[]
-  Folder                Folder[]
   sentInvitations       Invitation[]           @relation("InvitedBy")
   messages              Message[]
   projectDocuments      ProjectDocument[]
@@ -69,7 +68,6 @@ model Organization {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   documents   Document[]
-  Folder      Folder[]
   invitations Invitation[]
   projects    Project[]
   users       User[]
@@ -121,10 +119,8 @@ model Document {
   content_extracted      Json?                  @map("contentExtracted")
   created_at             DateTime               @default(now()) @map("createdAt")
   updated_at             DateTime               @updatedAt @map("updatedAt")
-  folderId               String?
   conversationReferences ConversationDocument[]
   createdByUser          User                   @relation(fields: [created_by], references: [id])
-  folder                 Folder?                @relation(fields: [folderId], references: [id])
   organization           Organization           @relation(fields: [organization_id], references: [id])
   project                Project?               @relation(fields: [project_id], references: [id])
   content                DocumentContent?
@@ -133,21 +129,6 @@ model Document {
   projectReferences      ProjectDocument[]
 
   @@index([organization_id])
-}
-
-model Folder {
-  id             String       @id @default(cuid())
-  name           String
-  organizationId String
-  parentId       String?
-  createdBy      String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  documents      Document[]
-  user           User         @relation(fields: [createdBy], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  parent         Folder?      @relation("FolderHierarchy", fields: [parentId], references: [id])
-  children       Folder[]     @relation("FolderHierarchy")
 }
 
 model ProjectDocument {

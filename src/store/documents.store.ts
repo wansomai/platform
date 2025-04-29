@@ -22,6 +22,7 @@ interface DocumentFilters {
   sort?: 'recent' | 'oldest' | 'name' | 'size';
   page?: number;
   limit?: number;
+  folder?: string | null;  // Add folder filter
 }
 
 interface DocumentsState {
@@ -51,6 +52,8 @@ interface DocumentsState {
   setError: (error: string | null) => void;
 }
 
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
 export const useDocumentsStore = create<DocumentsState>((set, get) => ({
   documents: [],
   selectedDocuments: [],
@@ -76,6 +79,7 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
         if (filters.sort) params.append('sort', filters.sort);
         if (filters.page) params.append('page', filters.page.toString());
         if (filters.limit) params.append('limit', filters.limit.toString());
+        if (filters.folder) params.append('folder', filters.folder); // Add folder param
         
         if (params.toString()) {
           url += `?${params.toString()}`;
@@ -110,16 +114,13 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
   
   uploadDocument: async (fileData: FormData, onProgress: ((progress: number) => void) | null = null) => {
     try {
-      // Check file size before uploading (5MB limit for Vercel free tier)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      // Check file size before uploading
       const file = fileData.get('file') as File;
       
       if (file && file.size > MAX_FILE_SIZE) {
-        set({ 
-          error: 'File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.', 
-          isLoading: false 
-        });
-        throw new Error('File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.');
+        const error = 'File size exceeds 5MB limit. Please upgrade your plan to upload larger files.';
+        set({ error, isLoading: false });
+        throw new Error(error);
       }
       
       set({ isLoading: true, error: null });

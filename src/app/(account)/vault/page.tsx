@@ -1,4 +1,4 @@
-// app/dashboard/vault/page.tsx - Updated to use DocumentUploadModal component
+// app/dashboard/vault/page.tsx - Complete enhanced version
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,14 +25,28 @@ import {
   Grid,
   List,
   RefreshCw,
-  FileIcon
+  FileIcon,
+  Folder,
+  FolderPlus,
+  Edit,
+  MoveRight,
+  ChevronRight,
+  Brain,
+  FolderSymlinkIcon,
+  SparklesIcon,
+  Sparkles
 } from "lucide-react";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useUIStore } from "@/store/ui.store";
+import { useFolderStore } from "@/store/folder.store";
 import { formatDistanceToNow } from "date-fns";
-import { DocumentUploadModal } from "@/components/workspace/DocumentUploadModal"; // Import our custom upload component
+import { DocumentUploadModal } from "@/components/workspace/DocumentUploadModal";
+import { FolderTree } from "@/components/documents/FolderTree";
+import { FolderModal } from "@/components/documents/FolderModal";
+import { DocumentPreview } from "@/components/documents/DocumentPreview";
+import { DocumentInsights } from "@/components/documents/DocumentInsights";
 
-// Document Type Icons
+// Document Type Icons component
 const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
   const type = fileType.toLowerCase();
   
@@ -51,8 +65,6 @@ const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
 
 // Main component
 export default function VaultPage() {
-  const router = useRouter();
-  const { data: session } = useSession();
   
   // Get state from stores
   const { 
@@ -67,6 +79,16 @@ export default function VaultPage() {
     clearSelectedDocuments
   } = useDocumentsStore();
   
+  const {
+    folders,
+    fetchFolders,
+    createFolder,
+    updateFolder,
+    deleteFolder,
+    moveDocumentsToFolder,
+    isLoading: foldersLoading
+  } = useFolderStore();
+  
   const { addToast } = useUIStore();
   
   // Local state
@@ -77,17 +99,45 @@ export default function VaultPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
+  const [documentToMove, setDocumentToMove] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
   
-  // Fetch documents on mount and when filters change
+  // Folder-related state
+  const [activeFolder, setActiveFolder] = useState<string | null>(null);
+  const [showFolderModal, setShowFolderModal] = useState(false);
+  const [editFolder, setEditFolder] = useState<{ id: string; name: string; parentId: string | null } | null>(null);
+  const [showMoveFolderDialog, setShowMoveFolderDialog] = useState(false);
+  const [targetFolder, setTargetFolder] = useState<string | null>(null);
+  
+  // Document preview state
+  const [previewDocument, setPreviewDocument] = useState<any | null>(null);
+  const [showInsights, setShowInsights] = useState(false);
+  const [insightDocument, setInsightDocument] = useState<string | null>(null);
+  const [downloadLoading, setDownloadLoading] = useState(false);
+  
+  // Fetch documents and folders on mount
   useEffect(() => {
-    fetchDocuments({
+    fetchFolders();
+  }, [fetchFolders]);
+  
+  // Fetch documents when filters change
+  useEffect(() => {
+    const params: any = {
       search: searchTerm || undefined,
       type: fileType,
       sort: sortBy,
       page: currentPage,
       limit: 20
-    });
-  }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage]);
+    };
+    
+    // Add folder filter
+    if (activeFolder) {
+      params.folder = activeFolder;
+    }
+    
+    fetchDocuments(params);
+  }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
   
   // Error handling
   useEffect(() => {
@@ -104,8 +154,20 @@ export default function VaultPage() {
     clearSelectedDocuments();
   }, [viewMode, clearSelectedDocuments]);
   
+  // Handle document preview
+  const handleDocumentPreview = (document: any) => {
+    setPreviewDocument(document);
+  };
+  
+  // Handle AI insights
+  const handleShowInsights = (documentId: string) => {
+    setInsightDocument(documentId);
+    setShowInsights(true);
+  };
+  
   // Handle document deletion
   const handleDeleteDocument = async (id: string) => {
+    setIsDeleting(true);
     try {
       const success = await deleteDocument(id);
       
@@ -122,11 +184,14 @@ export default function VaultPage() {
         message: "Deletion Failed",
         type: "error"
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
   
   // Handle bulk document deletion
   const handleBulkDelete = async () => {
+    setIsDeleting(true);
     try {
       // Process each selected document sequentially
       let successCount = 0;
@@ -142,24 +207,145 @@ export default function VaultPage() {
           type: "success"
         });
         clearSelectedDocuments();
+        setIsDeleting(false);
       }
     } catch (error) {
       addToast({
         message: "Deletion Failed",
         type: "error"
       });
+      setIsDeleting(false);
     }
   };
   
   // Handle file download
-  const handleDownloadDocument = (document: any) => {
-    // Create a temporary anchor element
-    const link = document.createElement('a');
-    link.href = document.fileUrl;
-    link.download = document.title;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadDocument =async (document: any) => {
+    try {
+      setDownloadLoading(true);
+      
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      if (document.fileSize && document.fileSize > MAX_FILE_SIZE) {
+        throw new Error('File size exceeds 5MB limit. Please upgrade your plan to download larger files.');
+      }
+
+      const response = await fetch(document.fileUrl);
+      if (!response.ok) throw new Error('Failed to download file');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = window.document.createElement('a');
+      link.href = url;
+      link.download = document.title;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download error:', error);
+      addToast({
+        message: "Download Failed",
+        type: "error"
+      });
+    } finally {
+      setDownloadLoading(false);
+    }
+  };
+  // Handle folder selection
+  const handleFolderSelect = (folderId: string | null) => {
+    setActiveFolder(folderId);
+    setCurrentPage(1);
+    clearSelectedDocuments();
+  };
+  
+  // Handle folder creation/update
+  const handleSaveFolder = async (name: string, parentId: string | null) => {
+    try {
+      if (editFolder) {
+        // Update existing folder
+        const updated = await updateFolder(editFolder.id, name, parentId);
+        if (updated) {
+          addToast({
+            message: "Folder updated successfully",
+            type: "success"
+          });
+        }
+      } else {
+        // Create new folder
+        const folder = await createFolder(name, parentId);
+        if (folder) {
+          addToast({
+            message: "Folder created successfully",
+            type: "success"
+          });
+        }
+      }
+    } catch (error) {
+      addToast({
+        message: "Failed to save folder",
+        type: "error"
+      });
+    }
+  };
+  
+  // Handle folder deletion
+  const handleDeleteFolder = async (id: string) => {
+    try {
+      const success = await deleteFolder(id);
+      if (success) {
+        addToast({
+          message: "Folder deleted successfully",
+          type: "success"
+        });
+        
+        // If deleting active folder, go back to root
+        if (activeFolder === id) {
+          setActiveFolder(null);
+        }
+      }
+    } catch (error) {
+      addToast({
+        message: "Failed to delete folder",
+        type: "error"
+      });
+    }
+  };
+  
+  // Handle moving documents to folder
+  const handleMoveToFolder = async () => {
+    const docsToMove = documentToMove ? [documentToMove] : selectedDocuments;
+    if (docsToMove.length === 0) return;
+    
+    setIsMoving(true);
+    try {
+      const success = await moveDocumentsToFolder(targetFolder, docsToMove);
+      if (success) {
+        addToast({
+          message: `${docsToMove.length} document(s) moved successfully`,
+          type: "success"
+        });
+        clearSelectedDocuments();
+        setDocumentToMove(null);
+        setShowMoveFolderDialog(false);
+        
+        // Refresh both folders and documents
+        await Promise.all([
+          fetchFolders(),
+          fetchDocuments({
+            search: searchTerm || undefined,
+            type: fileType,
+            sort: sortBy,
+            page: currentPage,
+            limit: 20,
+            folder: activeFolder || undefined
+          })
+        ]);
+      }
+    } catch (error) {
+      addToast({
+        message: "Failed to move documents",
+        type: "error"
+      });
+    } finally {
+      setIsMoving(false);
+    }
   };
   
   // File type options
@@ -211,6 +397,9 @@ export default function VaultPage() {
           className={`overflow-hidden hover:shadow-md transition-all ${
             selectedDocuments.includes(document.id) ? "ring-2 ring-primary-500" : ""
           }`}
+          onClick={(e) => {
+            toggleDocumentSelection(document.id);
+          }}
         >
           <CardHeader className="pb-3">
             <div className="flex items-start space-x-2">
@@ -222,23 +411,59 @@ export default function VaultPage() {
                   <CardTitle className="text-base truncate">{document.title}</CardTitle>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={(e) => e.stopPropagation()} // Prevent selection toggle
+                      >
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => window.open(document.fileUrl, '_blank')}>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent selection toggle
+                          window.open(document.fileUrl, '_blank');
+                        }}
+                      >
                         <Eye className="h-4 w-4 mr-2" />
                         View
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDownloadDocument(document)}>
+                     
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent selection toggle
+                          setDocumentToMove(document.id);
+                          setShowMoveFolderDialog(true);
+                        }}
+                      >
+                        <FolderSymlinkIcon className="h-4 w-4 mr-2" />
+                        Move
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent selection toggle
+                          handleShowInsights(document.id);
+                        }}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        AI Assistant
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent selection toggle
+                          handleDownloadDocument(document);
+                        }}
+                      >
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         className="text-red-600"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent selection toggle
                           setDocumentToDelete(document.id);
                           setShowDeleteConfirm(true);
                         }}
@@ -298,6 +523,9 @@ export default function VaultPage() {
               <TableRow 
                 key={document.id}
                 className={selectedDocuments.includes(document.id) ? "bg-primary-50" : ""}
+                onClick={(e) => {
+                  toggleDocumentSelection(document.id);
+                }}
               >
                 <TableCell>
                   <div className="flex items-center space-x-2">
@@ -319,7 +547,10 @@ export default function VaultPage() {
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8"
-                      onClick={() => window.open(document.fileUrl, '_blank')}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent selection toggle
+                        window.open(document.fileUrl, '_blank');
+                      }}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -327,15 +558,42 @@ export default function VaultPage() {
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8"
-                      onClick={() => handleDownloadDocument(document)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent selection toggle
+                        handleDownloadDocument(document);
+                      }}
                     >
                       <Download className="h-4 w-4" />
                     </Button>
                     <Button 
                       variant="ghost" 
                       size="icon" 
+                      className="h-8 w-8"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent selection toggle
+                        setDocumentToMove(document.id);
+                        setShowMoveFolderDialog(true);
+                      }}
+                    >
+                      <FolderSymlinkIcon className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent selection toggle
+                        handleShowInsights(document.id);
+                      }}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
                       className="h-8 w-8 text-red-600"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent selection toggle
                         setDocumentToDelete(document.id);
                         setShowDeleteConfirm(true);
                       }}
@@ -352,6 +610,12 @@ export default function VaultPage() {
     </Card>
   );
   
+  useEffect(() => {
+    if (!showMoveFolderDialog) {
+      setDocumentToMove(null);
+    }
+  }, [showMoveFolderDialog]);
+
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Header with title and actions */}
@@ -361,7 +625,7 @@ export default function VaultPage() {
           <p className="text-gray-500">Manage your organization's document library</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="outline" onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}>
             {viewMode === "grid" ? (
               <>
@@ -376,150 +640,281 @@ export default function VaultPage() {
             )}
           </Button>
           
-          {/* Using our DocumentUploadModal component instead of inline dialog */}
+          <Button variant="outline" onClick={() => {
+            setEditFolder(null);
+            setShowFolderModal(true);
+          }}>
+            <FolderPlus className="h-4 w-4 mr-2" />
+            New Folder
+          </Button>
+          
           <DocumentUploadModal />
         </div>
       </div>
       
-      {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search documents..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        
-        <Select 
-          value={fileType || "all"} 
-          onValueChange={(value) => setFileType(value === "all" ? undefined : value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            {fileTypeOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        
-        <Select 
-          value={sortBy} 
-          onValueChange={(value) => setSortBy(value as 'recent' | 'oldest' | 'name' | 'size')}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            {sortOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      {/* Selected Documents Actions */}
-      {selectedDocuments.length > 0 && (
-        <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg">
-          <div className="flex items-center">
-            <span className="font-medium">{selectedDocuments.length} documents selected</span>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
-              Cancel
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Download
-            </Button>
-            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Selected
-            </Button>
-          </div>
-        </div>
-      )}
-      
-      {/* Documents Display */}
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center space-y-2">
-            <RefreshCw className="h-8 w-8 animate-spin text-primary-600" />
-            <p className="text-gray-500">Loading documents...</p>
-          </div>
-        </div>
-      ) : documents.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
-          <div className="p-4 bg-gray-100 rounded-full mb-4">
-            <FileText className="h-8 w-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium">No documents found</h3>
-          <p className="text-gray-500 mb-4">
-            {searchTerm || fileType ? 'No documents match your search criteria' : 'Upload your first document to get started'}
-          </p>
-          {/* Use DocumentUploadModal for empty state too */}
-          <DocumentUploadModal />
-        </div>
-      ) : (
-        viewMode === "grid" ? renderGridView() : renderListView()
-      )}
-      
-      {/* Pagination */}
-      {pagination && pagination.pages > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
+      {/* Main content with sidebar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Folder sidebar */}
+        <div className="col-span-1 bg-white p-4 rounded-lg border">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium">Folders</h3>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => {
+                setEditFolder(null);
+                setShowFolderModal(true);
+              }}
             >
-              Previous
+              <FolderPlus className="h-4 w-4" />
             </Button>
-            
-            {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-              // Calculate page numbers to show based on current page
-              let pageNum;
-              if (pagination.pages <= 5) {
-                pageNum = i + 1;
-              } else if (currentPage <= 3) {
-                pageNum = i + 1;
-              } else if (currentPage >= pagination.pages - 2) {
-                pageNum = pagination.pages - 4 + i;
-              } else {
-                pageNum = currentPage - 2 + i;
-              }
+          </div>
+          
+          {foldersLoading ? (
+            <div className="flex items-center justify-center h-20">
+              <RefreshCw className="h-5 w-5 animate-spin text-gray-400" />
+            </div>
+          ) : (
+            <FolderTree 
+              folders={folders} 
+              activeFolder={activeFolder} 
+              onFolderSelect={handleFolderSelect} 
+            />
+          )}
+          
+          {/* Folder actions (visible when a folder is selected) */}
+          {activeFolder && activeFolder !== 'root' && (
+            <div className="mt-4 pt-4 border-t flex flex-col space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+                onClick={() => {
+                  const folder = folders.find(f => f.id === activeFolder);
+                  if (folder) {
+                    setEditFolder({
+                      id: folder.id,
+                      name: folder.name,
+                      parentId: folder.parentId
+                    });
+                    setShowFolderModal(true);
+                  }
+                }}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Folder
+              </Button>
               
-              return (
-                <Button
-                  key={i}
-                  variant={pageNum === currentPage ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCurrentPage(pageNum)}
-                >
-                  {pageNum}
-                </Button>
-              );
-            })}
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(p => Math.min(p + 1, pagination.pages))}
-              disabled={currentPage === pagination.pages}
-            >
-              Next
-            </Button>
-          </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start text-red-600"
+                onClick={() => handleDeleteFolder(activeFolder)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Folder
+              </Button>
+            </div>
+          )}
         </div>
+        
+        {/* Main document area */}
+        <div className="col-span-1 md:col-span-3 space-y-6">
+          {/* Search and Filter Bar */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search documents..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select 
+              value={fileType || "all"} 
+              onValueChange={(value) => setFileType(value === "all" ? undefined : value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                {fileTypeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select 
+              value={sortBy} 
+              onValueChange={(value) => setSortBy(value as 'recent' | 'oldest' | 'name' | 'size')}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Folder path breadcrumb */}
+          {activeFolder && (
+            <div className="flex items-center text-sm text-gray-500">
+              <span>Location:</span>
+              {activeFolder === 'root' ? (
+                <span className="ml-2 inline-flex items-center">
+                  <Folder className="h-4 w-4 mr-1" />
+                  Root
+                </span>
+              ) : (
+                <span className="ml-2 inline-flex items-center">
+                  <Folder className="h-4 w-4 mr-1" />
+                  {folders.find(f => f.id === activeFolder)?.name || 'Unknown Folder'}
+                </span>
+              )}
+            </div>
+          )}
+          
+          {/* Selected Documents Actions */}
+          {selectedDocuments.length > 0 && (
+            <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg">
+              <div className="flex items-center">
+                <span className="font-medium">{selectedDocuments.length} documents selected</span>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
+                  Cancel
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowMoveFolderDialog(true)}
+                >
+                  <FolderSymlinkIcon className="mr-2 h-4 w-4" />
+                  Move to Folder
+                </Button>
+                <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+                {isDeleting ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+               <div className="flex items-center">
+                 <Trash2 className="mr-2 h-4 w-4" />
+                 Delete Selected
+               </div>
+              )}
+                 
+                </Button>
+              </div>
+            </div>
+          )}
+          
+          {/* Documents Display */}
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="flex flex-col items-center space-y-2">
+                <RefreshCw className="h-8 w-8 animate-spin text-primary-600" />
+                <p className="text-gray-500">Loading documents...</p>
+              </div>
+            </div>
+          ) : documents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
+              <div className="p-4 bg-gray-100 rounded-full mb-4">
+                <FileText className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium">No documents found</h3>
+              <p className="text-gray-500 mb-4">
+                {searchTerm || fileType 
+                  ? 'No documents match your search criteria' 
+                  : activeFolder 
+                    ? 'This folder is empty' 
+                    : 'Upload your first document to get started'
+                }
+              </p>
+              <DocumentUploadModal />
+            </div>
+          ) : (
+            viewMode === "grid" ? renderGridView() : renderListView()
+          )}
+          
+          {/* Pagination */}
+          {pagination && pagination.pages > 1 && (
+            <div className="flex justify-center mt-6">
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                
+                {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                  // Calculate page numbers to show based on current page
+                  let pageNum;
+                  if (pagination.pages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= pagination.pages - 2) {
+                    pageNum = pagination.pages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <Button
+                      key={i}
+                      variant={pageNum === currentPage ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(p + 1, pagination.pages))}
+                  disabled={currentPage === pagination.pages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Document Preview */}
+      {previewDocument && (
+        <DocumentPreview
+          document={previewDocument}
+          open={!!previewDocument}
+          onClose={() => setPreviewDocument(null)}
+        />
+      )}
+      
+      {/* AI Insights Dialog */}
+      {insightDocument && (
+        <DocumentInsights
+          documentId={insightDocument}
+          open={showInsights}
+          onClose={() => setShowInsights(false)}
+        />
       )}
       
       {/* Delete Confirmation Dialog */}
@@ -530,14 +925,87 @@ export default function VaultPage() {
           </DialogHeader>
           <p>Are you sure you want to delete this document? This action cannot be undone.</p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={isDeleting}
+            >
               Cancel
             </Button>
             <Button 
               variant="destructive" 
               onClick={() => documentToDelete && handleDeleteDocument(documentToDelete)}
+              disabled={isDeleting}
             >
-              Delete
+              {isDeleting ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Folder Modal */}
+      <FolderModal
+        open={showFolderModal}
+        onOpenChange={setShowFolderModal}
+        onSave={handleSaveFolder}
+        folders={folders}
+        editFolder={editFolder}
+        title={editFolder ? 'Edit Folder' : 'Create New Folder'}
+      />
+      
+      {/* Move to Folder Dialog */}
+      <Dialog open={showMoveFolderDialog} onOpenChange={setShowMoveFolderDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Move to Folder</DialogTitle>
+          </DialogHeader>
+          <p>Select destination folder for {documentToMove ? '1' : selectedDocuments.length} document(s):</p>
+          
+          <Select
+            value={targetFolder || "root"}
+            onValueChange={(value) => setTargetFolder(value === "root" ? null : value)}
+            disabled={isMoving}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select destination folder" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="root">Root (No folder)</SelectItem>
+              {folders.map((folder) => (
+                <SelectItem key={folder.id} value={folder.id}>
+                  {folder.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowMoveFolderDialog(false)}
+              disabled={isMoving}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleMoveToFolder}
+              disabled={isMoving}
+            >
+              {isMoving ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Moving...
+                </>
+              ) : (
+                'Move Documents'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
