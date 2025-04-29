@@ -30,13 +30,14 @@ export async function GET(request: NextRequest) {
     }
     
     // Get query parameters
-    const searchParams = request.nextUrl.searchParams;
-    const searchTerm = searchParams.get('search') || undefined;
-    const fileType = searchParams.get('type') || undefined;
-    const sortBy = searchParams.get('sort') || 'recent';
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const page = parseInt(searchParams.get('page') || '1');
-    
+     // Get query parameters
+     const searchParams = request.nextUrl.searchParams;
+     const searchTerm = searchParams.get('search') || undefined;
+     const fileType = searchParams.get('type') || undefined;
+     const sortBy = searchParams.get('sort') || 'recent';
+     const folderId = searchParams.get('folder') || undefined;
+     const limit = parseInt(searchParams.get('limit') || '50');
+     const page = parseInt(searchParams.get('page') || '1');
     // Build query filters
     const where: any = {
       organization_id: user.organizationId,
@@ -52,6 +53,12 @@ export async function GET(request: NextRequest) {
     
     if (fileType) {
       where.file_type = fileType;
+    }
+    
+    if (folderId === 'root') {
+      where.folderId = null;
+    } else if (folderId) {
+      where.folderId = folderId;
     }
     
     // Determine sorting
@@ -161,6 +168,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const description = formData.get('description') as string || '';
+    const folderId = formData.get('folderId') as string || null;
     
     // Validate file
     if (!file) {
@@ -177,6 +185,22 @@ export async function POST(request: NextRequest) {
         { message: 'File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.', error: true },
         { status: 400 }
       );
+    }
+// If folderId is provided, verify it exists and belongs to the organization
+    if (folderId) {
+      const folder = await prisma.folder.findUnique({
+        where: { 
+          id: folderId,
+          organizationId: user.organizationId
+        }
+      });
+      
+      if (!folder) {
+        return NextResponse.json(
+          { message: 'Folder not found', error: true },
+          { status: 404 }
+        );
+      }
     }
     
     // Generate unique filename
@@ -207,6 +231,7 @@ export async function POST(request: NextRequest) {
         status: 'active',
         created_by: userId,
         organization_id: user.organizationId,
+        folderId: folderId || null,
         metadata: {
           RawMessage: JSON.stringify({
             originalName: file.name,

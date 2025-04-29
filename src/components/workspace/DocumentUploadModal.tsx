@@ -1,10 +1,11 @@
+// components/workspace/DocumentUploadModal.tsx - updated with folder selection
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, UploadCloud, RefreshCw } from "lucide-react";
+import { AlertCircle, UploadCloud, RefreshCw, Folder } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,8 +14,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useUIStore } from "@/store/ui.store";
+import { useFolderStore } from "@/store/folder.store"; // New store for folders
 
 export function DocumentUploadModal() {
   const [file, setFile] = useState<File | null>(null);
@@ -22,13 +31,22 @@ export function DocumentUploadModal() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadDocument } = useDocumentsStore();
   const { addToast } = useUIStore();
+  const { folders, fetchFolders } = useFolderStore();
 
   // File size limit: 5MB (Vercel free tier limit)
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+  // Fetch folders when dialog opens
+  useEffect(() => {
+    if (showUploadDialog) {
+      fetchFolders();
+    }
+  }, [showUploadDialog, fetchFolders]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -67,6 +85,11 @@ export function DocumentUploadModal() {
       const formData = new FormData();
       formData.append('file', file);
       
+      // Add folder ID if selected
+      if (selectedFolder) {
+        formData.append('folderId', selectedFolder);
+      }
+      
       // Upload the file
       const document = await uploadDocument(formData, (progress) => {
         setUploadProgress(progress);
@@ -81,6 +104,7 @@ export function DocumentUploadModal() {
         // Reset form
         setShowUploadDialog(false);
         setFile(null);
+        setSelectedFolder(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -103,11 +127,45 @@ export function DocumentUploadModal() {
     if (!showUploadDialog) {
       setSizeError(false);
       setFile(null);
+      setSelectedFolder(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
   }, [showUploadDialog]);
+
+  // Format folders for display in dropdown
+  const formatFoldersForSelect = () => {
+    // Create a recursive function to format folders with proper indentation
+    const formatFolder = (folder: any, depth = 0) => {
+      const indent = "—".repeat(depth);
+      return {
+        id: folder.id,
+        label: `${indent} ${indent ? ' ' : ''}${folder.name}`,
+      };
+    };
+
+    // Format all folders
+    const formattedFolders: Array<{ id: string; label: string }> = [];
+    
+    // Add root option
+    formattedFolders.push({ id: "root", label: "Root" });
+    
+    // Add all folders with proper indentation
+    const processFolder = (folder: any, depth = 0) => {
+      formattedFolders.push(formatFolder(folder, depth));
+      
+      if (folder.children && folder.children.length > 0) {
+        folder.children.forEach((child: any) => {
+          processFolder(child, depth + 1);
+        });
+      }
+    };
+    
+    folders.forEach(folder => processFolder(folder));
+    
+    return formattedFolders;
+  };
 
   return (
     <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
@@ -119,9 +177,6 @@ export function DocumentUploadModal() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Upload Document</DialogTitle>
-          {/* <DialogDescription>
-            Upload a new document to the project. Maximum file size: 5MB.
-          </DialogDescription> */}
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
@@ -151,6 +206,31 @@ export function DocumentUploadModal() {
                   Size: {formatFileSize(file.size)}
                 </p>
               )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="folder" className="text-right">
+              Folder
+            </Label>
+            <div className="col-span-3">
+              <Select
+                value={selectedFolder || "root"}
+                onValueChange={(value) => setSelectedFolder(value === "root" ? null : value)}
+                disabled={uploading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a folder" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="root">No folder (Root)</SelectItem>
+                  {formatFoldersForSelect().map((folder) => (
+                    <SelectItem key={folder.id} value={folder.id}>
+                      {folder.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           
