@@ -1,20 +1,27 @@
-// components/document/DocumentInsights.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Brain,
-  ListChecks,
-  UserRound,
-  Building,
-  Calendar,
-  MapPin,
-  X,
-  RefreshCw
-} from "lucide-react";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Brain, Send, RefreshCw, Copy, Loader2, ChevronDown, ChevronRight } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { useSession } from "next-auth/react";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
 
 interface DocumentInsightsProps {
   documentId: string;
@@ -22,212 +29,289 @@ interface DocumentInsightsProps {
   onClose: () => void;
 }
 
+// Add document-specific suggestion prompts
+const suggestionPrompts = [
+  {
+    title: "Summarize",
+    prompt: "Can you provide a brief summary of this document?"
+  },
+  {
+    title: "Key Points",
+    prompt: "What are the main key points or takeaways from this document?"
+  },
+  {
+    title: "Define Terms",
+    prompt: "Can you explain any complex terms or jargon used in this document?"
+  },
+  {
+    title: "Action Items",
+    prompt: "What are the action items or next steps mentioned in this document?"
+  }
+];
+
 export function DocumentInsights({ documentId, open, onClose }: DocumentInsightsProps) {
-  const [activeTab, setActiveTab] = useState<string>("summary");
+  const { data: session } = useSession();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [insights, setInsights] = useState<{
-    summary: string;
-    keyPoints: string[];
-    entities: {
-      people?: string[];
-      organizations?: string[];
-      dates?: string[];
-      locations?: string[];
-      [key: string]: string[] | undefined;
-    };
-  } | null>(null);
-  
-  // Load insights on open
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (open && documentId) {
-      fetchInsights();
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [open, documentId]);
-  
-  // Fetch document insights
-  const fetchInsights = async () => {
+  }, [messages]);
+
+  const sendMessage = async (content: string) => {
+    if (!content.trim()) return;
+
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: content.trim(),
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, newMessage]);
+    setInput('');
     setLoading(true);
-    setError(null);
-    
+
     try {
-      // Try to get existing analysis
-      const response = await fetch(`/api/documents/${documentId}/analyze`, {
-        method: 'POST'
+      const response = await fetch(`/api/documents/${documentId}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: content })
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to analyze document');
-      }
-      
+
+      if (!response.ok) throw new Error('Failed to get response');
+
       const data = await response.json();
       
-      if (data.data) {
-        setInsights({
-          summary: data.data.summary || 'No summary available',
-          keyPoints: data.data.keyPoints || [],
-          entities: data.data.entities || {}
-        });
-      } else {
-        throw new Error('Invalid response format');
-      }
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: data.message,
+        timestamp: new Date()
+      }]);
     } catch (error) {
-      console.error('Error fetching insights:', error);
-      setError('Failed to analyze document. Please try again.');
+      console.error('Error getting response:', error);
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: 'Sorry, I encountered an error processing your request.',
+        timestamp: new Date()
+      }]);
     } finally {
       setLoading(false);
     }
   };
-  
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  };
+
+  // Add copyToClipboard function
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  // Add suggestion handler
+  const useSuggestion = (prompt: string) => {
+    setInput(prompt);
+    if (document.querySelector('textarea')) {
+      (document.querySelector('textarea') as HTMLTextAreaElement).focus();
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Brain className="h-5 w-5 mr-2 text-primary-600" />
-              <span>Document Insights</span>
-            </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
-        </DialogHeader>
-        
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <RefreshCw className="h-8 w-8 animate-spin text-primary-600 mb-4" />
-            <p className="text-muted-foreground">Analyzing document...</p>
-          </div>
-        ) : error ? (
-          <div className="text-center py-8 text-red-500">
-            <p className="mb-4">{error}</p>
-            <Button onClick={fetchInsights}>Try Again</Button>
-          </div>
-        ) : insights ? (
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full">
-              <TabsTrigger value="summary">Summary</TabsTrigger>
-              <TabsTrigger value="keyPoints">Key Points</TabsTrigger>
-              <TabsTrigger value="entities">Entities</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="summary" className="py-4">
-              <Card className="p-4">
-                <p className="whitespace-pre-wrap">{insights.summary}</p>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="keyPoints" className="py-4">
-              <Card className="p-4">
-                <div className="flex items-center mb-4">
-                  <ListChecks className="h-5 w-5 mr-2 text-primary-600" />
-                  <h3 className="font-medium">Key Points</h3>
+    <Sheet open={open} onOpenChange={onClose}>
+      <SheetContent className="w-full sm:max-w-[600px] flex flex-col h-full p-0">
+        <SheetHeader className="px-6 py-4 border-b">
+          <SheetTitle className="flex items-center">
+            <Brain className="h-5 w-5 mr-2 text-primary-600" />
+            <span>Document Assistant</span>
+          </SheetTitle>
+        </SheetHeader>
+
+        <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+          <div className="space-y-6">
+            {messages.length === 0 ? (
+              <div className="flex justify-start">
+                <div className="flex gap-3 max-w-[85%]">
+                  <Avatar className="h-8 w-8 mt-1">
+                    <AvatarImage src="/avatars/ai-avatar.png" alt="AI" />
+                    <AvatarFallback>AI</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-1 text-sm">
+                      <span className="font-medium">Document Assistant</span>
+                      <span className="text-muted-foreground text-xs">
+                        {formatDistanceToNow(new Date(), { addSuffix: true })}
+                      </span>
+                    </div>
+                    <div className="rounded-lg px-4 py-2 bg-gray-100">
+                      Ask me anything about this document!
+                    </div>
+                  </div>
                 </div>
-                
-                <ul className="space-y-2">
-                  {insights.keyPoints.map((point, index) => (
-                    <li key={index} className="flex">
-                      <span className="mr-2">•</span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                {insights.keyPoints.length === 0 && (
-                  <p className="text-muted-foreground">No key points identified</p>
-                )}
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="entities" className="py-4">
-              <Card className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {insights.entities.people && insights.entities.people.length > 0 && (
-                    <div>
-                      <div className="flex items-center mb-2">
-                        <UserRound className="h-4 w-4 mr-2 text-blue-500" />
-                        <h3 className="font-medium">People</h3>
+              </div>
+            ) : (
+              messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`flex gap-3 max-w-[85%] ${
+                      message.role === "user" ? "flex-row-reverse" : "flex-row"
+                    }`}
+                  >
+                    <Avatar className="h-8 w-8 mt-1">
+                      {message.role === "user" ? (
+                        <AvatarImage src={session?.user?.image || undefined} alt="You" />
+                      ) : (
+                        <AvatarImage src="/avatars/ai-avatar.png" alt="AI" />
+                      )}
+                      <AvatarFallback>
+                        {message.role === "user" ? (session?.user?.name?.charAt(0) || "U") : "AI"}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 mb-1 text-sm">
+                        <span className="font-medium">
+                          {message.role === "user" ? "You" : "Document Assistant"}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {formatDistanceToNow(message.timestamp, { addSuffix: true })}
+                        </span>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {insights.entities.people.map((person, index) => (
-                          <Badge key={index} variant="outline">{person}</Badge>
-                        ))}
+                      
+                      <div
+                        className={`rounded-lg px-4 py-2 ${
+                          message.role === "user"
+                            ? "bg-green-600 text-white"
+                            : "bg-gray-100"
+                        }`}
+                      >
+                        <div className="whitespace-pre-wrap break-words">{message.content}</div>
                       </div>
-                    </div>
-                  )}
-                  
-                  {insights.entities.organizations && insights.entities.organizations.length > 0 && (
-                    <div>
-                      <div className="flex items-center mb-2">
-                        <Building className="h-4 w-4 mr-2 text-green-500" />
-                        <h3 className="font-medium">Organizations</h3>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {insights.entities.organizations.map((org, index) => (
-                          <Badge key={index} variant="outline">{org}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {insights.entities.dates && insights.entities.dates.length > 0 && (
-                    <div>
-                      <div className="flex items-center mb-2">
-                        <Calendar className="h-4 w-4 mr-2 text-amber-500" />
-                        <h3 className="font-medium">Dates</h3>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {insights.entities.dates.map((date, index) => (
-                          <Badge key={index} variant="outline">{date}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {insights.entities.locations && insights.entities.locations.length > 0 && (
-                    <div>
-                      <div className="flex items-center mb-2">
-                        <MapPin className="h-4 w-4 mr-2 text-red-500" />
-                        <h3 className="font-medium">Locations</h3>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {insights.entities.locations.map((location, index) => (
-                          <Badge key={index} variant="outline">{location}</Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Handle any other entity types dynamically */}
-                  {Object.entries(insights.entities)
-                    .filter(([key]) => !['people', 'organizations', 'dates', 'locations'].includes(key))
-                    .map(([key, values]) => values && values.length > 0 && (
-                      <div key={key}>
-                        <h3 className="font-medium mb-2 capitalize">{key}</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {values.map((value, index) => (
-                            <Badge key={index} variant="outline">{value}</Badge>
-                          ))}
+                      
+                      {message.role === "assistant" && (
+                        <div className="flex items-center gap-1 mt-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() => copyToClipboard(message.content)}
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Copy to clipboard</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
-                      </div>
-                    ))
-                  }
-                  
-                  {Object.keys(insights.entities).length === 0 && (
-                    <p className="text-muted-foreground col-span-2">No entities identified</p>
-                  )}
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">No insights available</p>
-            <Button onClick={fetchInsights}>Analyze Document</Button>
+              ))
+            )}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="flex gap-3 max-w-[85%]">
+                  <Avatar className="h-8 w-8 mt-1">
+                    <AvatarImage src="/avatars/ai-avatar.png" alt="AI" />
+                    <AvatarFallback>AI</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 mb-1 text-sm">
+                      <span className="font-medium">Document Assistant</span>
+                      <span className="text-muted-foreground text-xs">now</span>
+                    </div>
+                    <div className="rounded-lg px-4 py-2 bg-gray-100">
+                      <div className="flex items-center">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        <span>Thinking...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </DialogContent>
-    </Dialog>
+        </ScrollArea>
+
+        <div className="p-4 border-t">
+          {/* Add Suggestions UI */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center text-sm">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-0 h-6" 
+                onClick={() => setShowSuggestions(!showSuggestions)}
+              >
+                {showSuggestions ? (
+                  <ChevronDown className="h-4 w-4 mr-1 text-gray-500" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 mr-1 text-gray-500" />
+                )}
+                <span className="text-gray-500 text-xs">Quick Prompts</span>
+              </Button>
+            </div>
+          </div>
+
+          {showSuggestions && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {suggestionPrompts.map((suggestion, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="cursor-pointer px-2 sm:px-3 py-1 text-primary-600 bg-primary-50 hover:bg-primary-100 text-xs sm:text-sm"
+                  onClick={() => useSuggestion(suggestion.prompt)}
+                >
+                  {suggestion.title}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Existing textarea and send button */}
+          <div className="relative">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about the document..."
+              className="min-h-[60px] max-h-[180px] pr-12"
+              disabled={loading}
+            />
+            <div className="absolute right-2 bottom-2">
+              <Button 
+                onClick={() => sendMessage(input)}
+                size="icon"
+                className="h-8 w-8"
+                disabled={!input.trim() || loading}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
