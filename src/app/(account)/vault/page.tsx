@@ -441,7 +441,7 @@ export default function VaultPage() {
                         <FolderSymlinkIcon className="h-4 w-4 mr-2" />
                         Move
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      {/* <DropdownMenuItem 
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent selection toggle
                           handleShowInsights(document.id);
@@ -449,7 +449,7 @@ export default function VaultPage() {
                       >
                         <Sparkles className="h-4 w-4 mr-2" />
                         AI Assistant
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                       <DropdownMenuItem 
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent selection toggle
@@ -577,7 +577,7 @@ export default function VaultPage() {
                     >
                       <FolderSymlinkIcon className="h-4 w-4" />
                     </Button>
-                    <Button 
+                    {/* <Button 
                       variant="ghost" 
                       size="icon" 
                       className="h-8 w-8"
@@ -587,7 +587,7 @@ export default function VaultPage() {
                       }}
                     >
                       <Sparkles className="h-4 w-4" />
-                    </Button>
+                    </Button> */}
                     <Button 
                       variant="ghost" 
                       size="icon" 
