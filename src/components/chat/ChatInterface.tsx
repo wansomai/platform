@@ -296,7 +296,7 @@ function ChatMessageItem({
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-3 max-w-[80%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        <Avatar className="h-8 w-8 mt-1">
+        <Avatar className="h-8 w-8 mt-1 hidden lg:block">
           <AvatarFallback>{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
         </Avatar>
         

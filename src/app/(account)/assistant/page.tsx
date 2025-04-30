@@ -463,9 +463,9 @@ export default function AssistantPage() {
                   >
                     <Avatar className="h-8 w-8 mt-1 flex-shrink-0">
                       {message.role === "user" ? (
-                        <AvatarImage src={session?.user?.image || undefined} alt="You" />
+                        <AvatarImage src={session?.user?.image || undefined} alt="You" className="hidden lg:block"/>
                       ) : (
-                        <AvatarImage src="/avatars/ai-avatar.png" alt="AI" />
+                        <AvatarImage src="/avatars/ai-avatar.png" alt="AI" className="hidden lg:block" />
                       )}
                       <AvatarFallback>
                         {message.role === "user" ? (session?.user?.name?.charAt(0) || "U") : "AI"}
