@@ -457,15 +457,15 @@ export default function AssistantPage() {
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-[85%] ${
+                    className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-[90%] ${
                       message.role === "user" ? "flex-row-reverse" : "flex-row"
                     }`}
                   >
-                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0">
+                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0 hidden lg:block">
                       {message.role === "user" ? (
-                        <AvatarImage src={session?.user?.image || undefined} alt="You" className="hidden lg:block"/>
+                        <AvatarImage src={session?.user?.image || undefined} alt="You"/>
                       ) : (
-                        <AvatarImage src="/avatars/ai-avatar.png" alt="AI" className="hidden lg:block" />
+                        <AvatarImage src="/avatars/ai-avatar.png" alt="AI"  />
                       )}
                       <AvatarFallback>
                         {message.role === "user" ? (session?.user?.name?.charAt(0) || "U") : "AI"}
