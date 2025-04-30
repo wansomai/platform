@@ -403,7 +403,7 @@ export default function AssistantPage() {
   
   return (
     <div className="container mx-auto p-2 sm:p-4 max-w-4xl h-full">
-      <Card className="h-fit  flex flex-col">
+      <Card className="h-fit overflow-y-auto min-h-[calc(100vh-8rem)] flex flex-col">
         <CardContent className="flex-1 p-0 flex flex-col">
           {/* Header */}
           <div className="p-2 sm:p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
