@@ -205,7 +205,7 @@ const handleSend = async (customMessage?: string) => {
   
   const copyMessageToClipboard = (content: string) => {
     navigator.clipboard.writeText(content)
-      .then(() => addToast({ message: 'Copied to clipboard', type: 'success' }))
+      .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
   
