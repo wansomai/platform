@@ -35,6 +35,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { useChatStore } from "@/store/chat.store";
 import { apiService } from "@/lib/api";
+import MessageDisplay from "@/components/chat/MessageDisplay";
 
 // Define message types
 interface Message {
@@ -494,7 +495,10 @@ export default function AssistantPage() {
                             <span>Thinking...</span>
                           </div>
                         ) : (
-                          <div className="whitespace-pre-wrap break-words">{message.content}</div>
+                          <MessageDisplay 
+                            content={message.content}
+                            className={message.role === "user" ? "text-white" : ""}
+                          />
                         )}
                       </div>
                       
