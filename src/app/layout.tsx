@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Wansom",
-  description: "Wansom AI: AI assistant, free legal documents, contract reviews,company lawyer.",
+  description: "Wansom AI, AI assistant, free legal documents, contract reviews,company lawyer.",
 };
 
 export default function RootLayout({
