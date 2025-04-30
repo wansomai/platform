@@ -449,7 +449,7 @@ export default function AssistantPage() {
           </div>
           
           {/* Messages container */}
-          <ScrollArea className="flex-1 p-2 sm:p-4 overflow-y-auto max-h-[calc(100vh-24rem)] sm:max-h-[calc(100vh-16rem)]">
+          <ScrollArea className="flex-1 p-2 sm:p-4 overflow-y-auto max-h-[calc(100vh-26rem)] sm:max-h-[calc(100vh-8rem)]">
             <div className="space-y-6">
               {messages.map((message) => (
                 <div
