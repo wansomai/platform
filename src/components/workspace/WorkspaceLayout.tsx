@@ -57,15 +57,15 @@ export function WorkspaceLayout({
         {/* Header bar */}
         <div className="border-b bg-white">
           <div className="flex items-center h-16 px-4 justify-between">
-            <div className="flex items-center">
-              <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+            <div className="flex items-center max-w-[60%] sm:max-w-[70%]">
+              <Briefcase className="h-5 w-5 text-primary-600 mr-2 flex-shrink-0" />
               <h1 className="text-lg font-semibold truncate">
                 {currentProject?.title || "Project Workspace"}
               </h1>
             </div>
             
             {/* Show status and context button */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               {currentProject && (
                 <span className="text-sm text-gray-500 hidden sm:inline">
                   {currentProject.status}
