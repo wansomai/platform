@@ -23,9 +23,7 @@ export function WorkspaceLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header bar */}
-        {/* ... existing header code ... */}
-        
-        {/* Main content */}
+       {/* Main content */}
         <div className="flex-1 overflow-auto">
           {activeAssociate ? (
             <AssociateChat 

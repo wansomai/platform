@@ -130,21 +130,21 @@ export const authOptions: NextAuthOptions = {
             return true;
           } else {
             // Create new user and organization for first-time Google login
-            const organization = await prisma.organization.create({
-              data: {
-                name: `${user.name}'s Organization`,
-              }
-            });
-
-            await prisma.user.create({
+           await prisma.user.create({
               data: {
                 email: user.email!,
-                fullName: user.name!,
-                // Set a secure random password for OAuth users
                 password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-                role: 'user',
-                organizationId: organization.id,
+                fullName: user.name!,
+                role: 'USER',
+                organization: {
+                  create: {
+                    name: `${user.name}'s Organization`
+                  }
+                }
               },
+              include: {
+                organization: true
+              }
             });
 
             return true;
