@@ -7,7 +7,7 @@ import { ConversationDetails } from "@/components/workspace/ConversationDetails"
 import { AssociatesPanel } from "@/components/workspace/AssociatesPanel";
 import { AssociateChat } from "../associates/AssociateChat";
 
-export function WorkspaceLayout() {
+export function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const [activeTab, setActiveTab] = useState("context");
   const [activeAssociate, setActiveAssociate] = useState<{
     id: string;
