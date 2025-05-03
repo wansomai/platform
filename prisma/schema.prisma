@@ -381,7 +381,7 @@ model AIAssociate {
 model AssociateStep {
   id          String @id @default(cuid())
   associateId String
-  description Stringa
+  description String
   stepOrder   Int // To maintain the order of steps
 
   // Relations

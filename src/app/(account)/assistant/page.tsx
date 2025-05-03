@@ -33,7 +33,6 @@ import {
   ChevronRight
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useChatStore } from "@/store/chat.store";
 import { apiService } from "@/lib/api";
 import MessageDisplay from "@/components/chat/MessageDisplay";
 

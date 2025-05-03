@@ -1,40 +1,51 @@
 // app/dashboard/workflows/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 import {
   Search,
   Zap,
   Plus,
   Calendar,
-  BarChart,
   CheckCircle2,
   Clock,
-  AlertCircle,
   FileText,
-  ArrowRight,
-  ArrowUpRight,
   Clipboard,
-  Filter,
-  Pencil,
   Crown,
   Snowflake,
   Sparkles,
-  UserPlus
+  MessageSquare,
+  Info,
+  User,
+  FileSearch,
+  Globe,
+  UserPlus,
+  BarChart,
+  Pencil,
 } from "lucide-react";
 import ProAccessModal from "@/components/modals/ProAccess";
 import { LightBulbIcon } from "@heroicons/react/24/outline";
 import { CreateAssociateModal } from "@/components/associates/CreateAssociateModal";
+import { useAssociatesStore } from "@/store/associates.store";
 
 // Workflow type definition
 interface Workflow {
@@ -58,93 +69,6 @@ interface WorkflowStep {
   assignee?: string;
 }
 
-// Simulated workflow data - all set to draft or with low progress to indicate they need Pro access
-const mockWorkflows: Workflow[] = [
-  {
-    id: "wf1",
-    title: "Contract Review",
-    description: "Standard contract review workflow with annotations and approval process",
-    category: "contracts",
-    status: "draft", // Changed to draft
-    progress: 0, // Changed to 0 progress
-    dueDate: "2025-03-25",
-    assignee: "John Doe",
-    createdAt: "2025-03-10",
-    steps: [
-      { id: "s1", title: "Initial document review", completed: false },
-      { id: "s2", title: "Legal team annotations", completed: false },
-      { id: "s3", title: "Client approval", completed: false },
-      { id: "s4", title: "Final signatures", completed: false }
-    ]
-  },
-  {
-    id: "wf5",
-    title: "Document Drafting",
-    description: "Draft legal documents with templates and clauses",
-    category: "drafting",
-    status: "draft", // Changed to draft
-    progress: 0, // Changed to 0 progress
-    dueDate: "2025-03-25",
-    assignee: "John Doe",
-    createdAt: "2025-03-10",
-    steps: [
-      { id: "s1", title: "Initial document review", completed: false },
-      { id: "s2", title: "Legal team annotations", completed: false },
-      { id: "s3", title: "Client approval", completed: false },
-      { id: "s4", title: "Final signatures", completed: false }
-    ]
-  },
-  {
-    id: "wf2",
-    title: "Due Diligence",
-    description: "M&A due diligence process with document collection and analysis",
-    category: "corporate",
-    status: "draft", // Changed to draft
-    progress: 0, // Changed to 0 progress
-    dueDate: "2025-04-15",
-    assignee: "Sarah Johnson",
-    createdAt: "2025-03-05",
-    steps: [
-      { id: "s1", title: "Document collection", completed: false },
-      { id: "s2", title: "Document categorization", completed: false },
-      { id: "s3", title: "Legal analysis", completed: false },
-      { id: "s4", title: "Risk assessment", completed: false },
-      { id: "s5", title: "Final report", completed: false }
-    ]
-  },
-  {
-    id: "wf3",
-    title: "Compliance Check",
-    description: "Regulatory compliance verification process",
-    category: "compliance",
-    status: "draft", // Changed to draft
-    progress: 0, // Changed to 0 progress
-    assignee: "Michael Brown",
-    createdAt: "2025-02-20",
-    steps: [
-      { id: "s1", title: "Identify applicable regulations", completed: false },
-      { id: "s2", title: "Document current practices", completed: false },
-      { id: "s3", title: "Gap analysis", completed: false },
-      { id: "s4", title: "Implementation plan", completed: false }
-    ]
-  },
-  {
-    id: "wf4",
-    title: "Case Preparation",
-    description: "Litigation case preparation workflow",
-    category: "litigation",
-    status: "draft",
-    progress: 0,
-    createdAt: "2025-03-15",
-    steps: [
-      { id: "s1", title: "Evidence collection", completed: false },
-      { id: "s2", title: "Witness statements", completed: false },
-      { id: "s3", title: "Legal research", completed: false },
-      { id: "s4", title: "Document filing", completed: false }
-    ]
-  }
-];
-
 // Template workflow definitions
 const workflowTemplates = [
   {
@@ -154,16 +78,16 @@ const workflowTemplates = [
     category: "contracts",
     icon: FileText,
     color: "text-blue-600",
-    steps: 4
+    steps: 4,
   },
   {
-    id: "template1",
+    id: "template11",
     title: "Document Drafting",
     description: "Draft and review legal documents with templates and clauses",
     category: "drafting",
     icon: FileText,
     color: "text-blue-600",
-    steps: 4
+    steps: 4,
   },
   {
     id: "template2",
@@ -172,7 +96,7 @@ const workflowTemplates = [
     category: "corporate",
     icon: Clipboard,
     color: "text-purple-600",
-    steps: 5
+    steps: 5,
   },
   {
     id: "template3",
@@ -181,7 +105,7 @@ const workflowTemplates = [
     category: "compliance",
     icon: CheckCircle2,
     color: "text-green-600",
-    steps: 4
+    steps: 4,
   },
   {
     id: "template4",
@@ -190,7 +114,7 @@ const workflowTemplates = [
     category: "litigation",
     icon: Snowflake,
     color: "text-purple-600",
-    steps: 4
+    steps: 4,
   },
   {
     id: "template5",
@@ -199,110 +123,114 @@ const workflowTemplates = [
     category: "compliance",
     icon: Calendar,
     color: "text-red-600",
-    steps: 4
+    steps: 4,
   },
   {
     id: "template6",
     title: "Intellectual Property Filings",
-    description: "Simplify trademark searches, patent applications, and IP portfolio management with automated workflows",
+    description:
+      "Simplify trademark searches, patent applications, and IP portfolio management with automated workflows",
     category: "ip",
     icon: LightBulbIcon,
     color: "text-amber-600",
-    steps: 4
+    steps: 4,
   },
   {
     id: "template7",
     title: "Legal Research",
-    description: "Conduct comprehensive legal research across statutes, case law, and regulations with AI-powered analysis and relevant citation finding",
+    description:
+      "Conduct comprehensive legal research across statutes, case law, and regulations with AI-powered analysis and relevant citation finding",
     category: "research",
     icon: Sparkles,
     color: "text-green-600",
-    steps: 4
-  }
+    steps: 4,
+  },
 ];
 
 export default function WorkflowsPage() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("active"); // Changed default to "draft"
   const [searchTerm, setSearchTerm] = useState("");
-  const [showNewWorkflowDialog, setShowNewWorkflowDialog] = useState(false);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(
+    null
+  );
   const [showWorkflowDetails, setShowWorkflowDetails] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  
+
   // Pro access modal states
   const [showProModal, setShowProModal] = useState(false);
   const [isRequestingPro, setIsRequestingPro] = useState(false);
-  
-  // Filter workflows based on tab and search term
-  const filteredWorkflows = mockWorkflows.filter((workflow) => {
-    const matchesTab = 
-      (activeTab === "active" && workflow.status === "active") ||
-      (activeTab === "completed" && workflow.status === "completed") ||
-      (activeTab === "draft" && workflow.status === "draft") ||
-      (activeTab === "all");
-    
-    const matchesSearch = 
-      workflow.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      workflow.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      workflow.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesTab && matchesSearch;
-  });
-  
+
   // Get workflow status badge color
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+            Active
+          </Badge>
+        );
       case "completed":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Completed</Badge>;
+        return (
+          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+            Completed
+          </Badge>
+        );
       case "draft":
-        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Draft</Badge>;
+        return (
+          <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">
+            Draft
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
   };
-  
+
   // Format date
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { 
-      month: "short", 
-      day: "numeric", 
-      year: "numeric" 
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
-  
-  // All handlers now show Pro modal
-  const handleWorkflowClick = (workflow: Workflow) => {
-    setShowProModal(true);
-  };
-  
-  const handleStartWorkflow = () => {
-    setShowProModal(true);
-  };
-  
-  const handleCreateWorkflow = () => {
-    setShowProModal(true);
-    setShowNewWorkflowDialog(false);
-  };
-  
+
   // Handle Pro access request
   const handleRequestProAccess = () => {
     setIsRequestingPro(true);
-    
+
     // Simulate API call to request pro access
     setTimeout(() => {
       setIsRequestingPro(false);
       setShowProModal(false);
-      window.open('https://calendly.com/wansomco/30min', '_blank');
+      window.open("https://calendly.com/wansomco/30min", "_blank");
     }, 2000);
   };
-  
+
+  const { associates, fetchAllAssociates, isLoading } = useAssociatesStore();
+
+  // In a useEffect
+  useEffect(() => {
+    fetchAllAssociates();
+  }, [fetchAllAssociates, showCreateModal]); // Add showCreateModal as dependency
+
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
+
+  // Move filtering logic into useEffect
+  useEffect(() => {
+    const filtered = associates.filter((associate) => {
+      const matchesSearch =
+        associate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        associate.instructions.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    });
+    setFilteredResults(filtered);
+  }, [associates, searchTerm]); // Add dependencies
+
+  // Update the JSX to use filteredResults instead of filteredAssociates
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
- 
       {/* "Header */}
       <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4 flex flex-col md:flex-row  items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -311,12 +239,14 @@ export default function WorkflowsPage() {
           </div>
           <div>
             <h3 className="font-medium">What are AI Associates?</h3>
-            <p className="text-sm text-gray-600">AI Associates are specialized assistants that help with specific legal tasks. 
-            They can be configured with custom instructions and tools to assist with research, 
-            drafting, analysis, and more.</p>
+            <p className="text-sm text-gray-600">
+              AI Associates are specialized assistants that help with specific
+              legal tasks. They can be configured with custom instructions and
+              tools to assist with research, drafting, analysis, and more.
+            </p>
           </div>
         </div>
-        <Button 
+        <Button
           className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
           onClick={() => setShowCreateModal(true)}
         >
@@ -324,7 +254,7 @@ export default function WorkflowsPage() {
           New Associate
         </Button>
       </div>
-      
+
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
@@ -336,9 +266,8 @@ export default function WorkflowsPage() {
             className="pl-10"
           />
         </div>
-        
       </div>
-      
+
       {/* Template Showcase */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Associate Templates</h2>
@@ -347,98 +276,154 @@ export default function WorkflowsPage() {
             <Card key={template.id} className="hover:shadow-md transition-all">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
-                  <div className={`rounded-full p-3 ${template.color.replace('text', 'bg')}/10`}>
+                  <div
+                    className={`rounded-full p-3 ${template.color.replace(
+                      "text",
+                      "bg"
+                    )}/10`}
+                  >
                     <template.icon className={`h-6 w-6 ${template.color}`} />
                   </div>
                   <Badge variant="outline">{template.category}</Badge>
                 </div>
                 <h3 className="font-medium mt-4">{template.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{template.description}</p>
-                <p className="text-xs text-gray-400 mt-2">{template.steps} steps</p>
-                <Button 
-                  variant="ghost" 
+                <p className="text-sm text-gray-500 mt-1">
+                  {template.description}
+                </p>
+                <p className="text-xs text-gray-400 mt-2">
+                  {template.steps} steps
+                </p>
+                <Button
+                  variant="ghost"
                   className="w-full mt-4"
-                  onClick={() => handleStartWorkflow()}
+                  onClick={() => setShowProModal(true)}
                 >
                   <Zap className="mr-2 h-4 w-4" />
-                  View Template
+                  Use Template
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
       </div>
-      
+
       {/* Workflow Tabs and List */}
       <div>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Your Associates</h2>
-          
           </div>
-          
+
           <TabsContent value={activeTab} className="mt-0">
-            {filteredWorkflows.length === 0 ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
                 <div className="p-4 bg-gray-100 rounded-full mb-4">
                   <Zap className="h-8 w-8 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-medium">No Associates found</h3>
                 <p className="text-gray-500 mb-4">
-                  {searchTerm ? `No Associates match "${searchTerm}"` : "Create a new Associates to get more done."}
+                  {searchTerm
+                    ? `No Associates match "${searchTerm}"`
+                    : "Create a new Associates to get more done."}
                 </p>
-                <Button onClick={() => setShowProModal(true)}>
+                <Button onClick={() => setShowCreateModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   New Associate
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredWorkflows.map((workflow) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredResults.map((associate) => (
                   <Card
-                    key={workflow.id}
-                    className="hover:shadow-md transition-all cursor-pointer"
-                    onClick={() => handleWorkflowClick(workflow)}
+                    key={associate.id}
+                    className="overflow-hidden border-gray-200 hover:border-primary/50 hover:shadow-md transition-all"
                   >
-                    <CardContent className="p-4">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{workflow.title}</h3>
-                            {getStatusBadge(workflow.status)}
-                          </div>
-                          <p className="text-sm text-gray-500 mt-1">{workflow.description}</p>
-                          <div className="flex flex-wrap gap-4 mt-4">
-                            <div className="flex items-center text-xs text-gray-500">
-                              <Calendar className="h-3.5 w-3.5 mr-1" />
-                              {workflow.dueDate ? formatDate(workflow.dueDate) : "No due date"}
+                    <CardContent className="p-0 flex flex-col h-full">
+                      {/* Rest of the card content remains the same */}
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div className="bg-blue-100 p-2 rounded-full mr-3">
+                              <Sparkles className="h-5 w-5 text-blue-600" />
                             </div>
-                            {workflow.assignee && (
-                              <div className="flex items-center text-xs text-gray-500">
-                                <UserPlus className="h-3.5 w-3.5 mr-1" />
-                                {workflow.assignee}
-                              </div>
+                            <div>
+                              <h3 className="font-medium">{associate.name}</h3>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {associate.tools.includes("documentSearch") && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-white"
+                              >
+                                <FileSearch className="h-3 w-3 mr-1" />
+                                Docs
+                              </Badge>
+                            )}
+                            {associate.tools.includes("webSearch") && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-white"
+                              >
+                                <Globe className="h-3 w-3 mr-1" />
+                                Web
+                              </Badge>
                             )}
                           </div>
                         </div>
-                        
-                        <div className="flex flex-col items-end gap-2">
-                          <div className="text-xs text-gray-500 flex items-center">
-                            <Clock className="h-3.5 w-3.5 mr-1" />
-                            Created {formatDate(workflow.createdAt)}
+                      </div>
+
+                      {/* Card Body */}
+                      <div className="p-4">
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {associate.instructions.substring(0, 350)}...
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                  {associate.steps.length} steps
+                </p>
+                        <div className="flex items-center justify-between mt-4 text-xs text-gray-500">
+                          <div className="flex items-center">
+                            <Calendar className="h-3.5 w-3.5 mr-1" />
+                            Created{" "}
+                            {new Date(associate.createdAt).toLocaleDateString()}
                           </div>
-                          <div className="w-32">
-                            <div className="flex justify-between text-xs mb-1">
-                              <span>{workflow.progress}% complete</span>
-                              <span>{workflow.steps.filter(s => s.completed).length}/{workflow.steps.length} steps</span>
-                            </div>
-                            <Progress value={workflow.progress} className="h-2" />
+                          <div className="flex items-center">
+                            <User className="h-3.5 w-3.5 mr-1" />
+                            {associate.createdBy || "Unknown"}
                           </div>
-                          <Button variant="ghost" size="sm" className="mt-2">
-                            View Details
-                            <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                          </Button>
                         </div>
+                      </div>
+
+                      {/* Card Footer */}
+                      <div className="flex border-t mt-auto">
+                        {/* <Button
+                          variant="ghost"
+                          className="flex-1 rounded-none py-2 h-auto text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowWorkflowDetails(true);
+                          }}
+                        >
+                          <Info className="h-4 w-4 mr-1" />
+                          Details
+                        </Button> */}
+
+                        <div className="w-px bg-gray-200"></div>
+
+                        <Button
+                          variant="ghost"
+                          className="flex-1 rounded-none py-2 h-auto text-gray-600 hover:text-green-600 hover:bg-green-50"
+                          onClick={() => {
+                            setShowProModal(true)
+                          }}
+                        >
+                          <MessageSquare className="h-4 w-4 mr-1" />
+                          Use in Chat
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -448,7 +433,7 @@ export default function WorkflowsPage() {
           </TabsContent>
         </Tabs>
       </div>
-      
+
       {/* Workflow Details Dialog - This will never be actually shown as all clicks show Pro modal */}
       <Dialog open={showWorkflowDetails} onOpenChange={setShowWorkflowDetails}>
         <DialogContent className="sm:max-w-[700px]">
@@ -463,7 +448,7 @@ export default function WorkflowsPage() {
                   {selectedWorkflow.description}
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-4 py-4">
                 <div className="flex flex-wrap gap-4">
                   <div className="bg-gray-100 px-3 py-2 rounded-md text-sm flex items-center">
@@ -474,26 +459,33 @@ export default function WorkflowsPage() {
                       <>No due date</>
                     )}
                   </div>
-                  
+
                   {selectedWorkflow.assignee && (
                     <div className="bg-gray-100 px-3 py-2 rounded-md text-sm flex items-center">
                       <UserPlus className="h-4 w-4 mr-2 text-gray-500" />
                       Assigned to {selectedWorkflow.assignee}
                     </div>
                   )}
-                  
+
                   <div className="bg-gray-100 px-3 py-2 rounded-md text-sm flex items-center">
                     <BarChart className="h-4 w-4 mr-2 text-gray-500" />
                     Progress: {selectedWorkflow.progress}%
                   </div>
                 </div>
-                
+
                 <div className="mt-6">
                   <h3 className="text-lg font-medium mb-4">Workflow Steps</h3>
                   <div className="space-y-3">
                     {selectedWorkflow.steps.map((step, index) => (
-                      <div key={step.id} className="flex items-start gap-3 p-3 rounded-md bg-gray-50">
-                        <div className={`rounded-full p-1 ${step.completed ? 'bg-green-100' : 'bg-gray-200'}`}>
+                      <div
+                        key={step.id}
+                        className="flex items-start gap-3 p-3 rounded-md bg-gray-50"
+                      >
+                        <div
+                          className={`rounded-full p-1 ${
+                            step.completed ? "bg-green-100" : "bg-gray-200"
+                          }`}
+                        >
                           {step.completed ? (
                             <CheckCircle2 className="h-5 w-5 text-green-600" />
                           ) : (
@@ -518,8 +510,8 @@ export default function WorkflowsPage() {
                           )}
                         </div>
                         {!step.completed && (
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => setShowProModal(true)}
                           >
@@ -531,9 +523,12 @@ export default function WorkflowsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <DialogFooter>
-                <Button variant="outline" onClick={() => setShowWorkflowDetails(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowWorkflowDetails(false)}
+                >
                   Close
                 </Button>
                 <Button onClick={() => setShowProModal(true)}>
@@ -546,8 +541,8 @@ export default function WorkflowsPage() {
         </DialogContent>
       </Dialog>
 
-            {/* Modals */}
-        <CreateAssociateModal 
+      {/* Modals */}
+      <CreateAssociateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreatePro={() => {
@@ -555,7 +550,7 @@ export default function WorkflowsPage() {
           setShowProModal(true);
         }}
       />
-      <ProAccessModal 
+      <ProAccessModal
         isOpen={showProModal}
         onClose={() => setShowProModal(false)}
         onRequestAccess={handleRequestProAccess}

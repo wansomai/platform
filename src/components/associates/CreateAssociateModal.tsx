@@ -1,5 +1,7 @@
 // components/associates/CreateAssociateModal.tsx
-import React, { useState } from "react";
+'use client'
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
@@ -20,8 +22,11 @@ import {
   Plus,
   X,
   HelpCircle,
-  Info
+  Info,
+  Loader2
 } from "lucide-react";
+import { useAssociatesStore } from "@/store/associates.store";
+import { useNotifications } from "@/hooks/useNotifications";
 
 // Available tools definition
 const AVAILABLE_TOOLS = [
@@ -48,6 +53,11 @@ interface CreateAssociateModalProps {
 }
 
 export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAssociateModalProps) {
+  const params = useParams();
+  const projectId = params.id as string;
+  const { createAssociate, isLoading,fetchAllAssociates } = useAssociatesStore();
+  const { notify } = useNotifications();
+  
   // Form state
   const [associate, setAssociate] = useState({
     name: "",
@@ -59,6 +69,9 @@ export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAss
       { id: "step3", description: "Provide structured findings with recommendations" }
     ] as Array<{ id: string; description: string }>
   });
+  
+  // Link to current project option
+  const [linkToProject, setLinkToProject] = useState(true);
   
   // Reset form when modal is opened/closed
   React.useEffect(() => {
@@ -73,6 +86,7 @@ export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAss
           { id: "step3", description: "Provide structured findings with recommendations" }
         ]
       });
+      setLinkToProject(true);
     }
   }, [isOpen]);
   
@@ -123,13 +137,33 @@ export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAss
                       associate.steps.every(step => step.description.trim() !== "");
   
   // Handle create
-  const handleCreateAssociate = () => {
+  const handleCreateAssociate = async () => {
     if (!isFormValid) return;
     
-    // Here would be the API call to create the associate
-    console.log("Creating associate:", associate);
-    
-    onClose();
+    try {
+      const associateData = {
+        name: associate.name,
+        instructions: associate.instructions,
+        steps: associate.steps.map(step => ({
+          description: step.description
+        })),
+        tools: associate.tools
+      };
+      
+      const projectIds = linkToProject ? [projectId] : undefined;    
+      
+      // Create the associate
+      await createAssociate(associateData, projectIds);
+      
+      // Explicitly wait for the fetch to complete before closing
+      await fetchAllAssociates();
+      
+      notify.success(`${associate.name} created successfully`);
+      onClose();
+    } catch (error) {
+      console.error('Failed to create associate:', error);
+      notify.error('Failed to create associate');
+    }
   };
   
   return (
@@ -275,6 +309,27 @@ export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAss
               ))}
             </div>
           </div>
+
+          {/* Project Linking */}
+          {projectId && (
+            <div className="mt-4">
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="link-project"
+                  checked={linkToProject}
+                  onCheckedChange={(checked) => setLinkToProject(checked === true)}
+                />
+                <div>
+                  <Label htmlFor="link-project" className="font-medium text-sm">
+                    Link to current project
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Make this AI Associate available in the current project
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Guidance box */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -290,19 +345,26 @@ export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAss
               </div>
             </div>
           </div>
-          
-          <DialogFooter className="flex-shrink-0 border-t pt-4">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateAssociate}
-              disabled
-            >
-              Create Associate
-            </Button>
-          </DialogFooter>
         </div>
+          
+        <DialogFooter className="flex-shrink-0 border-t pt-4">
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleCreateAssociate}
+            disabled={!isFormValid || isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              'Create Associate'
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
