@@ -1,6 +1,7 @@
 // src/lib/auth-options.ts
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google"; 
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { User } from "next-auth";
@@ -43,6 +44,10 @@ const generateAccessToken = async (user: CustomUser) => {
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_Auth_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -111,6 +116,48 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        // Handle Google sign-in
+        try {
+          // Check if user already exists in database
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+          });
+
+          if (existingUser) {
+            // User exists - return true to allow sign in
+            return true;
+          } else {
+            // Create new user and organization for first-time Google login
+            const organization = await prisma.organization.create({
+              data: {
+                name: `${user.name}'s Organization`,
+              }
+            });
+
+            await prisma.user.create({
+              data: {
+                email: user.email!,
+                fullName: user.name!,
+                // Set a secure random password for OAuth users
+                password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
+                role: 'user',
+                organizationId: organization.id,
+              },
+            });
+
+            return true;
+          }
+        } catch (error) {
+          console.error("Google auth error:", error);
+          return false;
+        }
+      }
+      
+      // Default - allow sign in for credentials
+      return true;
+    },
     async jwt({ token, user }) {
       console.log("JWT Callback - Input:", { 
         tokenExists: !!token, 
