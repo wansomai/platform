@@ -118,35 +118,50 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === 'google') {
-        // Handle Google sign-in
         try {
           // Check if user already exists in database
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email! },
+            include: { organization: true } // Include organization data
           });
-
+    
           if (existingUser) {
-            // User exists - return true to allow sign in
+            // Update the user object with organizationId for the session
+            user.organizationId = existingUser.organizationId;
+            // Set the organization object for the session
+            user.organization = {
+              id: existingUser.organization.id,
+              name: existingUser.organization.name
+            };
             return true;
           } else {
-            // Create new user and organization for first-time Google login
-           await prisma.user.create({
+            // Create new organization for first-time Google login
+            const organization = await prisma.organization.create({
               data: {
-                email: user.email!,
-                password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
-                fullName: user.name!,
-                role: 'USER',
-                organization: {
-                  create: {
-                    name: `${user.name}'s Organization`
-                  }
-                }
-              },
-              include: {
-                organization: true
+                name: `${user.name}'s Organization`,
               }
             });
-
+    
+            // Create new user with organization reference
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                fullName: user.name!,
+                // Set a secure random password for OAuth users
+                password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
+                role: 'admin', // First user is admin as per your existing logic
+                organizationId: organization.id,
+              },
+              include: { organization: true }
+            });
+    
+            // Update the user object for the session
+            user.organizationId = newUser.organizationId;
+            user.organization = {
+              id: newUser.organization.id,
+              name: newUser.organization.name
+            };
+            
             return true;
           }
         } catch (error) {
