@@ -1,148 +1,70 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ConversationDetails } from "@/components/workspace/ConversationDetails";
-import {
-  ChevronRight,
-  ChevronLeft,
-  Briefcase,
-  Settings,
-  X,
-} from "lucide-react";
-import { useUIStore } from "@/store/ui.store";
-import { useProjectStore } from "@/store/project.store";
+// components/workspace/WorkspaceLayout.tsx
+'use client'
+import React, { useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChatInterface } from "@/components/chat/ChatInterface";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger, 
-  SheetClose 
-} from "@/components/ui/sheet";
+import { ConversationDetails } from "@/components/workspace/ConversationDetails";
+import { AssociatesPanel } from "@/components/workspace/AssociatesPanel";
+import { AssociateChat } from "../associates/AssociateChat";
 
-export function WorkspaceLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const params = useParams();
-  const projectId = params.id as string;
-  
-  // Local state for mobile sidebar
-  const [showMobileContext, setShowMobileContext] = useState(false);
-  
-  // Get state from stores
-  const { 
-    rightSidebarCollapsed, 
-    setRightSidebarCollapsed 
-  } = useUIStore();
-  const { 
-    currentProject, 
-    fetchProjectById, 
-    isLoading 
-  } = useProjectStore();
+export function WorkspaceLayout() {
+  const [activeTab, setActiveTab] = useState("context");
+  const [activeAssociate, setActiveAssociate] = useState<{
+    id: string;
+    name: string;
+    type: string;
+  } | null>(null);
 
-  // Fetch project data when the component mounts
-  useEffect(() => {
-    fetchProjectById(projectId);
-  }, [fetchProjectById, projectId]);
+  // Sample workspace ID
+  const workspaceId = "sample-workspace-id";
 
   return (
     <div className="flex h-screen">
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header bar */}
-        <div className="border-b bg-white">
-          <div className="flex items-center h-16 px-4 justify-between">
-            <div className="flex items-center max-w-[60%] sm:max-w-[70%]">
-              <Briefcase className="h-5 w-5 text-primary-600 mr-2 flex-shrink-0" />
-              <h1 className="text-lg font-semibold truncate">
-                {currentProject?.title || "Project Workspace"}
-              </h1>
-            </div>
-            
-            {/* Show status and context button */}
-            <div className="flex items-center space-x-2 flex-shrink-0">
-              {currentProject && (
-                <span className="text-sm text-gray-500 hidden sm:inline">
-                  {currentProject.status}
-                </span>
-              )}
-              
-              {/* Context panel button - only visible on mobile/tablet */}
-              <Sheet open={showMobileContext} onOpenChange={setShowMobileContext}>
-                <SheetTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="lg:hidden"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    <span>Context</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="p-0 w-[90%] max-w-md sm:max-w-lg lg:hidden">
-                  <div className="flex flex-col h-full">
-                    <div className="flex justify-between items-center h-16 px-4 border-b">
-                      <h3 className="font-medium">Context Panel</h3>
-                      <SheetClose asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </SheetClose>
-                    </div>
-                    <div className="flex-1 overflow-auto">
-                      <ConversationDetails />
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-        </div>
+        {/* ... existing header code ... */}
         
         {/* Main content */}
         <div className="flex-1 overflow-auto">
-          <ChatInterface />
+          {activeAssociate ? (
+            <AssociateChat 
+              associate={activeAssociate}
+              onBack={() => setActiveAssociate(null)}
+            />
+          ) : (
+            <ChatInterface />
+          )}
         </div>
       </div>
 
-      {/* Right Sidebar - Context Panel (Desktop only) */}
-      <div
-        className={cn(
-          "relative  border-l bg-white transition-all duration-300 hidden lg:flex lg:flex-col",
-          rightSidebarCollapsed ? "w-[60px]" : "w-80"
-        )}
-      >
-        {/* Toggle button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute -left-3 top-3 h-6 w-6 rounded-full border bg-white z-10"
-          onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
-        >
-          {rightSidebarCollapsed ? (
-            <ChevronLeft className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
+      {/* Right Sidebar - Context Panel */}
+      <div className="w-80 border-l bg-white flex flex-col">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="context">Context</TabsTrigger>
+            <TabsTrigger value="associates">Associates</TabsTrigger>
+          </TabsList>
+        </Tabs>
         
-        {/* Content - only show when expanded */}
-        <div className="flex h-16 items-center px-4 border-b">
-          {!rightSidebarCollapsed && (
-            <h3 className="text-sm font-medium">Context Panel</h3>
+        <div className="flex-1 overflow-auto">
+          {activeTab === "context" ? (
+            <ConversationDetails />
+          ) : (
+            <AssociatesPanel 
+              workspaceId={workspaceId}
+              onSelectAssociate={(associateId) => {
+                // In a real implementation, you would fetch the associate details
+                // For now, using mock data
+                setActiveAssociate({
+                  id: associateId,
+                  name: associateId === "assoc1" ? "Legal Researcher" : "General Assistant",
+                  type: associateId === "assoc1" ? "research" : "general"
+                });
+              }}
+            />
           )}
         </div>
-        
-        {!rightSidebarCollapsed && (
-          <ScrollArea className="flex-1">
-            <ConversationDetails />
-          </ScrollArea>
-        )}
       </div>
     </div>
   );

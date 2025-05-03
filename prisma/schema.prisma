@@ -42,55 +42,62 @@ model VerificationToken {
 }
 
 model User {
-  id                    String                 @id @default(cuid())
-  email                 String                 @unique
+  id                    String                  @id @default(cuid())
+  email                 String                  @unique
   fullName              String?
   password              String
-  role                  String                 @default("user")
+  role                  String                  @default("user")
   organizationId        String
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
   accounts              Account[]
   actions               ConversationAction[]
   conversationDocuments ConversationDocument[]
   documents             Document[]
   Folder                Folder[]
-  sentInvitations       Invitation[]           @relation("InvitedBy")
+  sentInvitations       Invitation[]            @relation("InvitedBy")
   messages              Message[]
   projectDocuments      ProjectDocument[]
   projectMembers        ProjectMember[]
   sessions              Session[]
-  organization          Organization           @relation(fields: [organizationId], references: [id])
+  SharedMessage         SharedMessage[]
+  SharedWorkspace       SharedWorkspace[]
+  SharedWorkspaceAccess SharedWorkspaceAccess[]
+  organization          Organization            @relation(fields: [organizationId], references: [id])
+  createdAIAssociates   AIAssociate[]
 }
 
 model Organization {
-  id          String       @id @default(cuid())
-  name        String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  documents   Document[]
-  Folder      Folder[]
-  invitations Invitation[]
-  projects    Project[]
-  users       User[]
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  documents    Document[]
+  Folder       Folder[]
+  invitations  Invitation[]
+  projects     Project[]
+  users        User[]
+  aiAssociates AIAssociate[]
 }
 
 model Project {
-  id               String            @id @default(cuid())
+  id               String             @id @default(cuid())
   title            String
   description      String?
-  status           String            @default("active")
+  status           String             @default("active")
   organizationId   String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   conversations    Conversation[]
   documents        Document[]
   events           Event[]
   invitations      Invitation[]
   knowledgeBase    KnowledgeBase?
-  organization     Organization      @relation(fields: [organizationId], references: [id])
+  organization     Organization       @relation(fields: [organizationId], references: [id])
   projectDocuments ProjectDocument[]
   members          ProjectMember[]
+  SharedWorkspace  SharedWorkspace[]
+  associates       ProjectAssociate[]
 }
 
 model ProjectMember {
@@ -106,31 +113,32 @@ model ProjectMember {
 }
 
 model Document {
-  id                     String                 @id @default(cuid())
-  project_id             String?                @map("projectId")
-  organization_id        String                 @map("organizationId")
+  id                     String                   @id @default(cuid())
+  project_id             String?                  @map("projectId")
+  organization_id        String                   @map("organizationId")
   title                  String
   description            Json?
-  file_url               String                 @map("fileUrl")
-  file_type              String                 @map("fileType")
-  file_size              Int                    @map("fileSize")
-  status                 String                 @default("active")
-  section                String                 @default("general")
-  created_by             String                 @map("createdBy")
+  file_url               String                   @map("fileUrl")
+  file_type              String                   @map("fileType")
+  file_size              Int                      @map("fileSize")
+  status                 String                   @default("active")
+  section                String                   @default("general")
+  created_by             String                   @map("createdBy")
   metadata               Json?
-  content_extracted      Json?                  @map("contentExtracted")
-  created_at             DateTime               @default(now()) @map("createdAt")
-  updated_at             DateTime               @updatedAt @map("updatedAt")
+  content_extracted      Json?                    @map("contentExtracted")
+  created_at             DateTime                 @default(now()) @map("createdAt")
+  updated_at             DateTime                 @updatedAt @map("updatedAt")
   folderId               String?
   conversationReferences ConversationDocument[]
-  createdByUser          User                   @relation(fields: [created_by], references: [id])
-  folder                 Folder?                @relation(fields: [folderId], references: [id])
-  organization           Organization           @relation(fields: [organization_id], references: [id])
-  project                Project?               @relation(fields: [project_id], references: [id])
+  createdByUser          User                     @relation(fields: [created_by], references: [id])
+  folder                 Folder?                  @relation(fields: [folderId], references: [id])
+  organization           Organization             @relation(fields: [organization_id], references: [id])
+  project                Project?                 @relation(fields: [project_id], references: [id])
   content                DocumentContent?
   embeddings             Embedding[]
   messageReferences      MessageReference[]
   projectReferences      ProjectDocument[]
+  SharedMessageReference SharedMessageReference[]
 
   @@index([organization_id])
 }
@@ -204,6 +212,9 @@ model Conversation {
   documentReferences ConversationDocument[]
   meta               ConversationMeta?
   messages           Message[]
+  SharedWorkspace    SharedWorkspace[]
+  aiAssociate        AIAssociate?           @relation(fields: [aiAssociateId], references: [id])
+  aiAssociateId      String?
 }
 
 model Message {
@@ -291,4 +302,109 @@ model ConversationAction {
   updatedAt      DateTime     @updatedAt
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User?        @relation(fields: [userId], references: [id])
+}
+
+model SharedMessage {
+  id                     String                   @id
+  sharedWorkspaceId      String
+  sessionId              String
+  content                String
+  role                   String                   @default("user")
+  userName               String
+  userId                 String?
+  createdAt              DateTime                 @default(now())
+  SharedWorkspace        SharedWorkspace          @relation(fields: [sharedWorkspaceId], references: [id], onDelete: Cascade)
+  User                   User?                    @relation(fields: [userId], references: [id])
+  SharedMessageReference SharedMessageReference[]
+}
+
+model SharedMessageReference {
+  id            String        @id
+  messageId     String
+  documentId    String
+  text          String
+  page          Int?
+  createdAt     DateTime      @default(now())
+  Document      Document      @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  SharedMessage SharedMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+model SharedWorkspace {
+  id                    String                  @id
+  projectId             String
+  conversationId        String
+  createdBy             String
+  title                 String
+  description           String?
+  accessMode            String                  @default("read_only")
+  isActive              Boolean                 @default(true)
+  expiresAt             DateTime?
+  passcode              String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  SharedMessage         SharedMessage[]
+  Conversation          Conversation            @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  User                  User                    @relation(fields: [createdBy], references: [id])
+  Project               Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  SharedWorkspaceAccess SharedWorkspaceAccess[]
+}
+
+model SharedWorkspaceAccess {
+  id                String          @id
+  sharedWorkspaceId String
+  userId            String?
+  userEmail         String?
+  userName          String
+  accessTime        DateTime        @default(now())
+  SharedWorkspace   SharedWorkspace @relation(fields: [sharedWorkspaceId], references: [id], onDelete: Cascade)
+  User              User?           @relation(fields: [userId], references: [id])
+}
+
+model AIAssociate {
+  id             String   @id @default(cuid())
+  name           String
+  instructions   String   @db.Text
+  organizationId String
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization  Organization       @relation(fields: [organizationId], references: [id])
+  createdBy     User               @relation(fields: [createdById], references: [id])
+  steps         AssociateStep[]
+  tools         AssociateTool[]
+  projects      ProjectAssociate[] // Many-to-many relation
+  conversations Conversation[]
+}
+
+model ProjectAssociate {
+  associateId String
+  projectId   String
+  addedAt     DateTime @default(now())
+
+  // Relations
+  associate AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([associateId, projectId])
+}
+
+model AssociateStep {
+  id          String @id @default(cuid())
+  associateId String
+  description String
+  stepOrder   Int // To maintain the order of steps
+
+  // Relations
+  associate AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+}
+
+model AssociateTool {
+  id          String @id @default(cuid())
+  associateId String
+  toolId      String // The ID of the tool (e.g., "documentSearch", "webSearch")
+
+  // Relations
+  associate AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
 }

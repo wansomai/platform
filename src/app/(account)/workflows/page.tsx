@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
@@ -17,13 +16,11 @@ import {
   Search,
   Zap,
   Plus,
-  ChevronRight,
   Calendar,
   BarChart,
   CheckCircle2,
   Clock,
   AlertCircle,
-  UserPlus,
   FileText,
   ArrowRight,
   ArrowUpRight,
@@ -31,10 +28,13 @@ import {
   Filter,
   Pencil,
   Crown,
-  Snowflake
+  Snowflake,
+  Sparkles,
+  UserPlus
 } from "lucide-react";
 import ProAccessModal from "@/components/modals/ProAccess";
 import { LightBulbIcon } from "@heroicons/react/24/outline";
+import { CreateAssociateModal } from "@/components/associates/CreateAssociateModal";
 
 // Workflow type definition
 interface Workflow {
@@ -215,7 +215,7 @@ const workflowTemplates = [
     title: "Legal Research",
     description: "Conduct comprehensive legal research across statutes, case law, and regulations with AI-powered analysis and relevant citation finding",
     category: "research",
-    icon: Calendar,
+    icon: Sparkles,
     color: "text-green-600",
     steps: 4
   }
@@ -228,10 +228,7 @@ export default function WorkflowsPage() {
   const [showNewWorkflowDialog, setShowNewWorkflowDialog] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
   const [showWorkflowDetails, setShowWorkflowDetails] = useState(false);
-  const [newWorkflowTemplate, setNewWorkflowTemplate] = useState("");
-  const [newWorkflowTitle, setNewWorkflowTitle] = useState("");
-  const [newWorkflowAssignee, setNewWorkflowAssignee] = useState("");
-  const [newWorkflowDueDate, setNewWorkflowDueDate] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
   
   // Pro access modal states
   const [showProModal, setShowProModal] = useState(false);
@@ -305,38 +302,26 @@ export default function WorkflowsPage() {
   
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
-      {/* Header with title and actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Workflows</h1>
-          <p className="text-gray-500">Manage your legal processes with predefined workflows</p>
-        </div>
-        
-        <div className="flex gap-2">
-          <Button onClick={() => setShowProModal(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Workflow
-          </Button>
-        </div>
-      </div>
-      
-      {/* "Pro Feature" Banner */}
-      <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4 flex items-center justify-between">
+ 
+      {/* "Header */}
+      <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4 flex flex-col md:flex-row  items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="bg-amber-100 p-2 rounded-full">
+          <div className="bg-amber-100 p-2 rounded-full hidden md:block">
             <Crown className="h-5 w-5 text-amber-600" />
           </div>
           <div>
-            <h3 className="font-medium">Pro Feature</h3>
-            <p className="text-sm text-gray-600">Workflows are available as part of our Pro plan</p>
+            <h3 className="font-medium">What are AI Associates?</h3>
+            <p className="text-sm text-gray-600">AI Associates are specialized assistants that help with specific legal tasks. 
+            They can be configured with custom instructions and tools to assist with research, 
+            drafting, analysis, and more.</p>
           </div>
         </div>
         <Button 
           className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-          onClick={() => setShowProModal(true)}
+          onClick={() => setShowCreateModal(true)}
         >
-          <Crown className="mr-2 h-4 w-4" />
-          Upgrade to Pro
+          <Plus className="mr-2 h-4 w-4" />
+          New Associate
         </Button>
       </div>
       
@@ -345,26 +330,18 @@ export default function WorkflowsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search workflows..."
+            placeholder="Search Associates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
         
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
-          onClick={() => setShowProModal(true)}
-        >
-          <Filter className="h-4 w-4" />
-          <span>Filters</span>
-        </Button>
       </div>
       
       {/* Template Showcase */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Workflow Templates</h2>
+        <h2 className="text-xl font-semibold mb-4">Associate Templates</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {workflowTemplates.map((template) => (
             <Card key={template.id} className="hover:shadow-md transition-all">
@@ -384,7 +361,7 @@ export default function WorkflowsPage() {
                   onClick={() => handleStartWorkflow()}
                 >
                   <Zap className="mr-2 h-4 w-4" />
-                  Start Workflow
+                  View Template
                 </Button>
               </CardContent>
             </Card>
@@ -396,13 +373,8 @@ export default function WorkflowsPage() {
       <div>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Your Workflows</h2>
-            <TabsList>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-              {/* <TabsTrigger value="draft">Drafts</TabsTrigger>
-              <TabsTrigger value="all">All</TabsTrigger> */}
-            </TabsList>
+            <h2 className="text-xl font-semibold">Your Associates</h2>
+          
           </div>
           
           <TabsContent value={activeTab} className="mt-0">
@@ -411,9 +383,9 @@ export default function WorkflowsPage() {
                 <div className="p-4 bg-gray-100 rounded-full mb-4">
                   <Zap className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium">No workflows found</h3>
+                <h3 className="text-lg font-medium">No Associates found</h3>
                 <p className="text-gray-500 mb-4">
-                  {searchTerm ? `No workflows match "${searchTerm}"` : "Start a new workflow to get organized"}
+                  {searchTerm ? `No Associates match "${searchTerm}"` : "Create a new Associates to get more done."}
                 </p>
                 <Button onClick={() => setShowProModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -573,96 +545,16 @@ export default function WorkflowsPage() {
           )}
         </DialogContent>
       </Dialog>
-      
-      {/* New Workflow Dialog - this will open but trying to create will show Pro modal */}
-      <Dialog open={showNewWorkflowDialog} onOpenChange={setShowNewWorkflowDialog}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Create New Workflow</DialogTitle>
-            <DialogDescription>
-              Start a new legal workflow based on a template or create a custom one.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-6 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="template" className="text-right">
-                Template
-              </Label>
-              <Select value={newWorkflowTemplate} onValueChange={setNewWorkflowTemplate}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select a workflow template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {workflowTemplates.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.title}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="custom">Custom Workflow</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
-              <Input
-                id="title"
-                value={newWorkflowTitle}
-                onChange={(e) => setNewWorkflowTitle(e.target.value)}
-                className="col-span-3"
-                placeholder="Enter workflow title"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="assignee" className="text-right">
-                Assignee
-              </Label>
-              <Select value={newWorkflowAssignee} onValueChange={setNewWorkflowAssignee}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Assign to team member" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="user1">John Doe</SelectItem>
-                  <SelectItem value="user2">Sarah Johnson</SelectItem>
-                  <SelectItem value="user3">Michael Brown</SelectItem>
-                  <SelectItem value="current">Assign to me</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="dueDate" className="text-right">
-                Due Date
-              </Label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={newWorkflowDueDate}
-                onChange={(e) => setNewWorkflowDueDate(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowNewWorkflowDialog(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleCreateWorkflow} 
-              disabled={!newWorkflowTitle || !newWorkflowTemplate}
-            >
-              Create Workflow
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Pro Access Request Modal */}
+
+            {/* Modals */}
+        <CreateAssociateModal 
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreatePro={() => {
+          setShowCreateModal(false);
+          setShowProModal(true);
+        }}
+      />
       <ProAccessModal 
         isOpen={showProModal}
         onClose={() => setShowProModal(false)}

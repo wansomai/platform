@@ -10,8 +10,6 @@ import {
   Home, 
   Database, 
   MessageSquare, 
-  FileText, 
-  Settings, 
   LogOut, 
   User, 
   ChevronDown, 
@@ -28,7 +26,6 @@ import {
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProjectStore } from "@/store/project.store";
 import { 
@@ -172,7 +169,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <SidebarLink
               href="/workflows"
               icon={Zap}
-              label="Workflows"
+              label="Associates"
               active={pathname === '/workflows'}
               badge={5}
               onClick={isMobile ? handleMobileNavigation : undefined}
@@ -339,7 +336,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 {pathname === '/dashboard' ? 'Dashboard' : 
                  pathname.includes('/vault') ? 'Document Vault' :
                  pathname.includes('/assistant') ? 'AI Assistant' :
-                 pathname.includes('/workflows') ? 'Workflows' :
+                 pathname.includes('/workflows') ? 'Asociates' :
                  pathname.includes('/integrations') ? 'Integrations' :
                  pathname.includes('/projects') ? 'Workspaces' : 'Legal AI'}
               </h1>
