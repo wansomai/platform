@@ -28,7 +28,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             <div>
               <DialogTitle>Upgrade to wansom Pro</DialogTitle>
               <DialogDescription>
-               Unlock advanced features and integrations to supercharge your workflow.
+               Unlock advanced AI features and integrations to supercharge your legal workflow.
               </DialogDescription>
             </div>
           </div>
@@ -38,10 +38,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg">
             <h3 className="font-medium text-amber-800 mb-2 flex items-center">
               <AlertCircle className="h-4 w-4 mr-2" />
-              Agent mode now in Pro
+              Associates are now in Pro
             </h3>
             <p className="text-sm text-amber-700">
-            Our Agents can handle the most complex tasks with little supervision learning and correcting themselves to achieve the best outcome.
+            Associates can handle the most complex tasks with little supervision learning and correcting themselves to achieve the best outcome.
             </p>
           </div>
           
@@ -54,15 +54,15 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Sync appointments and deadlines with your calendar</span>
+                <span>Create unlimited associates for your firm</span>
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Access legal research databases and services</span>
+                <span>Unlimited vault storage and document processing</span>
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Set up automated workflows and notifications</span>
+                <span>Set up automated workflows</span>
               </li>
             </ul>
           </div>
