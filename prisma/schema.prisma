@@ -64,37 +64,40 @@ model User {
   SharedWorkspace       SharedWorkspace[]
   SharedWorkspaceAccess SharedWorkspaceAccess[]
   organization          Organization            @relation(fields: [organizationId], references: [id])
+  createdAIAssociates   AIAssociate[]
 }
 
 model Organization {
-  id          String       @id @default(cuid())
-  name        String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  documents   Document[]
-  Folder      Folder[]
-  invitations Invitation[]
-  projects    Project[]
-  users       User[]
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  documents    Document[]
+  Folder       Folder[]
+  invitations  Invitation[]
+  projects     Project[]
+  users        User[]
+  aiAssociates AIAssociate[]
 }
 
 model Project {
-  id               String            @id @default(cuid())
+  id               String             @id @default(cuid())
   title            String
   description      String?
-  status           String            @default("active")
+  status           String             @default("active")
   organizationId   String
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
   conversations    Conversation[]
   documents        Document[]
   events           Event[]
   invitations      Invitation[]
   knowledgeBase    KnowledgeBase?
-  organization     Organization      @relation(fields: [organizationId], references: [id])
+  organization     Organization       @relation(fields: [organizationId], references: [id])
   projectDocuments ProjectDocument[]
   members          ProjectMember[]
   SharedWorkspace  SharedWorkspace[]
+  associates       ProjectAssociate[]
 }
 
 model ProjectMember {
@@ -210,6 +213,8 @@ model Conversation {
   meta               ConversationMeta?
   messages           Message[]
   SharedWorkspace    SharedWorkspace[]
+  aiAssociate        AIAssociate?           @relation(fields: [aiAssociateId], references: [id])
+  aiAssociateId      String?
 }
 
 model Message {
@@ -353,4 +358,53 @@ model SharedWorkspaceAccess {
   accessTime        DateTime        @default(now())
   SharedWorkspace   SharedWorkspace @relation(fields: [sharedWorkspaceId], references: [id], onDelete: Cascade)
   User              User?           @relation(fields: [userId], references: [id])
+}
+
+model AIAssociate {
+  id             String   @id @default(cuid())
+  name           String
+  instructions   String   @db.Text
+  organizationId String
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization  Organization       @relation(fields: [organizationId], references: [id])
+  createdBy     User               @relation(fields: [createdById], references: [id])
+  steps         AssociateStep[]
+  tools         AssociateTool[]
+  projects      ProjectAssociate[] // Many-to-many relation
+  conversations Conversation[]
+}
+
+model AssociateStep {
+  id          String @id @default(cuid())
+  associateId String
+  description Stringa
+  stepOrder   Int // To maintain the order of steps
+
+  // Relations
+  associate AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+}
+
+model AssociateTool {
+  id          String @id @default(cuid())
+  associateId String
+  toolId      String // The ID of the tool (e.g., "documentSearch", "webSearch")
+
+  // Relations
+  associate AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+}
+
+model ProjectAssociate {
+  associateId String
+  projectId   String
+  addedAt     DateTime @default(now())
+
+  // Relations
+  associate AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([associateId, projectId])
 }

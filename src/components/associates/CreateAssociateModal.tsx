@@ -297,7 +297,7 @@ export function CreateAssociateModal({ isOpen, onClose, onCreatePro }: CreateAss
             </Button>
             <Button 
               onClick={handleCreateAssociate}
-              disabled={!isFormValid}
+              disabled
             >
               Create Associate
             </Button>

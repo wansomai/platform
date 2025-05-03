@@ -389,7 +389,7 @@ export default function WorkflowsPage() {
                 </p>
                 <Button onClick={() => setShowProModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
-                  New Workflow
+                  New Associate
                 </Button>
               </div>
             ) : (
