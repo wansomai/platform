@@ -18,16 +18,19 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 
-  interface User {
+ export interface User {
     id: string;
     email: string;
     name: string;
     role?: string;
+    fullName: string;
     organizationId?: string;
     organization?: {
       id: string;
       name: string;
     };
+    image?: string;
+    emailVerified?: Date | null;
   }
 }
 

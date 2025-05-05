@@ -2,17 +2,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_SECRET, JWT_REFRESH_EXPIRES_IN } from './constants';
 
-export interface User {
-  id: string;
-  email: string;
-  fullName: string;
-  role: string;
-  organizationId: string;
-  organization: {
-    id: string;
-    name: string;
-  };
-}
+import { User } from 'next-auth'; 
 
 export interface TokenPayload {
   userId: string;
@@ -35,13 +25,10 @@ export const generateAccessToken = (user: User): string => {
   const payload: TokenPayload = {
     userId: user.id,
     email: user.email,
-    name: user.fullName,
-    role: user.role,
-    organizationId: user.organizationId,
-    organization: {
-      id: user.organization.id,
-      name: user.organization.name,
-    }
+    name: user.name || user.fullName || '',
+    role: user.role || 'user', 
+    organizationId: user.organizationId || '', 
+    organization: user.organization || { id: '', name: '' } 
   };
   
   return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
@@ -54,13 +41,10 @@ export const generateRefreshToken = (user: User): string => {
   const payload: TokenPayload = {
     userId: user.id,
     email: user.email,
-    name: user.fullName,
-    role: user.role,
-    organizationId: user.organizationId,
-    organization: {
-      id: user.organization.id,
-      name: user.organization.name,
-    }
+    name: user.name || user.fullName || '',
+    role:user.role || 'user',
+    organizationId: user.organizationId || '',
+    organization:user.organization || { id: '', name: '' }
   };
   
   return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRES_IN });

@@ -75,7 +75,7 @@ function LoginFormContent() {
             {error}
           </div>
         )}
-         {/* <div className="mt-6">
+         <div className="mt-6">
          
           
           <div className="mt-6">
@@ -104,7 +104,7 @@ function LoginFormContent() {
               <span className="px-2 bg-white text-gray-500">Or continue with</span>
             </div>
           </div>
-        </div> */}
+        </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4 rounded-md shadow-sm">

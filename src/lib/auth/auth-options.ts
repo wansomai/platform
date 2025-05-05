@@ -174,10 +174,6 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user }) {
-      console.log("JWT Callback - Input:", { 
-        tokenExists: !!token, 
-        userExists: !!user 
-      });
       
       // Initial sign in
       if (user) {
@@ -191,9 +187,9 @@ export const authOptions: NextAuthOptions = {
           userId: user.id,
           email: user.email,
           name: user.name,
-          role: (user as CustomUser).role,
-          organizationId: (user as CustomUser).organizationId,
-          organization: (user as CustomUser).organization,
+          role: (user as CustomUser).role || 'user', 
+          organizationId: (user as any).organizationId, 
+          organization: (user as any).organization,
           accessToken
         };
         
