@@ -38,12 +38,12 @@ export function WorkspaceLayout({ children }: { children: React.ReactNode }) {
 
       {/* Right Sidebar - Context Panel */}
       <div className="w-80 border-l bg-white flex flex-col">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="context">Context</TabsTrigger>
             <TabsTrigger value="associates">Associates</TabsTrigger>
           </TabsList>
-        </Tabs>
+        </Tabs> */}
         
         <div className="flex-1 overflow-auto">
           {activeTab === "context" ? (
