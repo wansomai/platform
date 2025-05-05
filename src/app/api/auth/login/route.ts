@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       id: user.id,
       email: user.email,
       fullName: user.fullName || '',
+      name: user.fullName || '',
       role: user.role,
       organizationId: user.organizationId,
       organization: {

@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     
     // Get project data from request body
     const body = await request.json();
-    console.log("Request body:", body);
+ 
     const { title, description, organizationId } = body;
 
     if (!title) {
@@ -122,6 +122,13 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { organizationId: true }
+    });
+
+    console.log("User data when creating project:", {
+      userId,
+      foundUser: user,
+      requestedOrgId: organizationId,
+      organizationFound: organization
     });
     
     if (!user || user.organizationId !== organizationId) {

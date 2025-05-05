@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         fullName: fullName || '',
-        role: 'USER',
+        role: 'admin',
         organization: {
           create: {
             name: organizationName
@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
       id: user.id,
       email: user.email,
       fullName: String(user.fullName || ''),
+      name: String(user.fullName || ''),
       role: user.role,
       organizationId: user.organizationId,
       organization: {
