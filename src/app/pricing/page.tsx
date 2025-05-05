@@ -7,6 +7,7 @@ const PricingPage = () => {
     return (
         <div>
             <Navbar/>
+         
             <PricingSection/>
             <Footer/>
         </div>

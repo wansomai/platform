@@ -78,11 +78,12 @@ const PricingSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-50" id="pricing">
+    <section className="mt-20 py-20 bg-gray-50" id="pricing">
       <div className="container mx-auto px-4">
         {/* Heading */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+          <p>Wansom AI Pricing</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Simple, Transparent Pricing</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Choose the plan that's right for your legal needs. All plans include access to our core features.
           </p>

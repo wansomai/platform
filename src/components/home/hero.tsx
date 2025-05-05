@@ -102,7 +102,7 @@ const HeroSection: React.FC = () => {
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 text-center">
         <h1 className="text-bold text-3xl md:text-6xl font-bold font-marcellus mb-4 text-gray-800">
-          Legal Workspace that Saves you time.
+          Legal AI Workspace that Saves you time.
         </h1>
         
         <Sparkles className='w-10 h-10 text-green-600 mx-auto'/>
