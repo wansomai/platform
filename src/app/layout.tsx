@@ -9,8 +9,17 @@ import Script from 'next/script';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Wansom",
+  title: "Wansom AI",
   description: "Wansom AI, AI assistant, free legal documents, contract reviews,company lawyer.",
+  openGraph: {
+    title: 'Wansom AI',
+    description: 'Your AI assistant for all your legal needs',
+    url: 'https://www.wansom.co/',
+    siteName: 'Wansom AI',
+    images: '/images/features-2.png',
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
