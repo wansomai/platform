@@ -79,7 +79,7 @@ export default function DashboardPage() {
             </Button>
             <Button variant="outline" className="text-white border-white bg-black" onClick={() => router.push("/assistant")}>
               <MessageSquare className="mr-2 h-4 w-4" />
-              Ask Assistant
+              Chat with AI
             </Button>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={Briefcase}
               title="Create Workspace"
-              description="Organize your deep work into dedicated spaces"
+              description="Organize your deep work into dedicated  workspaces"
               href="/projects"
               color="text-purple-600"
             />
@@ -182,12 +182,12 @@ export default function DashboardPage() {
                             href={`/projects/${project.id}`}
                             className="block"
                           >
-                            <div className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                              <div className="flex items-center space-x-3">
+                            <div className="flex items-center flex-wrap justify-between p-4 hover:bg-gray-50 transition-colors">
+                              <div className="flex items-center space-x-3 ">
                                 <div className="p-2 bg-gray-100 rounded-full">
                                   <Briefcase className="h-5 w-5 text-gray-500" />
                                 </div>
-                                <div>
+                                <div >
                                   <h3 className="font-medium">{project.title}</h3>
                                   <p className="text-xs text-gray-500">
                                     {project.documents_count} documents • {project.team_count} team members

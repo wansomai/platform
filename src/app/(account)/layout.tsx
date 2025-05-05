@@ -174,13 +174,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               badge={5}
               onClick={isMobile ? handleMobileNavigation : undefined}
             />
-            <SidebarLink
+            {/* <SidebarLink
               href="/integrations"
               icon={Clock}
               label="Integrations"
               active={pathname === '/integrations'}
               onClick={isMobile ? handleMobileNavigation : undefined}
-            />
+            /> */}
           </div>
           
           {/* Recent projects section */}
@@ -337,7 +337,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                  pathname.includes('/vault') ? 'Document Vault' :
                  pathname.includes('/assistant') ? 'AI Assistant' :
                  pathname.includes('/workflows') ? 'Asociates' :
-                 pathname.includes('/integrations') ? 'Integrations' :
                  pathname.includes('/projects') ? 'Workspaces' : 'Legal AI'}
               </h1>
             </div>
