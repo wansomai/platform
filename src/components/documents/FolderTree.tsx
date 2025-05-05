@@ -65,13 +65,13 @@ export function FolderTree({ folders, activeFolder, onFolderSelect }: FolderTree
           )}
           
           <div 
-            className="flex-1 flex items-center"
+            className="flex-1 flex items-center overflow-x-auto"
             onClick={() => onFolderSelect(folder.id)}
           >
             {isExpanded ? (
-              <FolderOpen className="h-4 w-4 mr-2 text-amber-500" />
+              <FolderOpen className="h-4 w-4 min-h-4 min-w-4 mr-2 text-amber-500" />
             ) : (
-              <Folder className="h-4 w-4 mr-2 text-amber-500" />
+              <Folder className="h-4 w-4 mr-2 text-amber-500 min-h-4 min-w-4" />
             )}
             <span className="truncate">{folder.name}</span>
             {folder.documentCount > 0 && (

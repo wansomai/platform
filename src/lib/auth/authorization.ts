@@ -82,7 +82,6 @@ export function getUserIdFromRequest(request: NextRequest): string | null {
     );
     
     const payload = JSON.parse(jsonPayload);
-    console.log('Decoded JWT payload:', payload);
     
     // Return the user ID from the payload
     return payload.userId || null;

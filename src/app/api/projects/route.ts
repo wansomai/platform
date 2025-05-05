@@ -124,12 +124,7 @@ export async function POST(request: NextRequest) {
       select: { organizationId: true }
     });
 
-    console.log("User data when creating project:", {
-      userId,
-      foundUser: user,
-      requestedOrgId: organizationId,
-      organizationFound: organization
-    });
+
     
     if (!user || user.organizationId !== organizationId) {
       return NextResponse.json(
