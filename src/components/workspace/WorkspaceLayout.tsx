@@ -55,9 +55,9 @@ export function WorkspaceLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header bar */}
-        <div className="border-b bg-white">
+        <div className="border-b bg-white block md:hidden">
           <div className="flex items-center h-16 px-4 justify-between">
-            <div className="flex items-center">
+            <div  className="flex items-center">
               <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
               <h1 className="text-lg font-semibold truncate">
                 {currentProject?.title || "Project Workspace"}
@@ -66,11 +66,6 @@ export function WorkspaceLayout({
             
             {/* Show status and context button */}
             <div className="flex items-center space-x-2">
-              {currentProject && (
-                <span className="text-sm text-gray-500 hidden sm:inline">
-                  {currentProject.status}
-                </span>
-              )}
               
               {/* Context panel button - only visible on mobile/tablet */}
               <Sheet open={showMobileContext} onOpenChange={setShowMobileContext}>
@@ -87,7 +82,12 @@ export function WorkspaceLayout({
                 <SheetContent side="right" className="p-0 w-[90%] max-w-md sm:max-w-lg lg:hidden">
                   <div className="flex flex-col h-full">
                     <div className="flex justify-between items-center h-16 px-4 border-b">
-                      <h3 className="font-medium">Context Panel</h3>
+                    <div  className="flex items-center">
+              <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+              <h1 className="text-lg font-semibold truncate">
+                {currentProject?.title || "Project Workspace"}
+              </h1>
+            </div>
                       <SheetClose asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <X className="h-4 w-4" />
@@ -134,7 +134,12 @@ export function WorkspaceLayout({
         {/* Content - only show when expanded */}
         <div className="flex h-16 items-center px-4 border-b">
           {!rightSidebarCollapsed && (
-            <h3 className="text-sm font-medium">Context Panel</h3>
+             <div  className="flex items-center">
+             <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+             <h1 className="text-lg font-semibold truncate">
+               {currentProject?.title || "Project Workspace"}
+             </h1>
+           </div>
           )}
         </div>
         
