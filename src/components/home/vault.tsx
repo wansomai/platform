@@ -10,7 +10,7 @@ const VaultSection = () => {
           Store, manage, and access your legal documents in one secure location.
         </p> 
         <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-          <img src='/images/vault.png' alt="Wakili Chat Interface" className="w-full"/>
+          <img src='/wansom-vault.png' alt="Wansom AI Document Vault" className="w-full"/>
         </div>
 
       </div>
