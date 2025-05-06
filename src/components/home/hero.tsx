@@ -141,7 +141,7 @@ const HeroSection: React.FC = () => {
         
         {/* Contract Editor Preview */}
         <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
-          <img src='/images/home.png' alt="Wakili Chat Interface" className="w-full"/>
+          <img src='/wansom-home.png' alt="wansom AI Chat Interface" className="w-full"/>
         </div>
       </div>
     </section>
