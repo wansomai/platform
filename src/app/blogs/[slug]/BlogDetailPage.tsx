@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
@@ -10,14 +9,9 @@ import Navbar from "@/components/layout/Navbar";
 import { Footer } from "react-day-picker";
 import { Linkedin } from "lucide-react";
 
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
 
-const BlogDetailPageClient: React.FC = () => {
-  const { slug } = useParams();
+const BlogDetailPageClient =async ( context: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await context.params;
   const [blog, setBlog] = useState<any>(null);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

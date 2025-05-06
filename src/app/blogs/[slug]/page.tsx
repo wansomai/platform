@@ -3,6 +3,12 @@ import { getAllBlogPosts } from '@/lib/data/contentful';
 import { adaptBlogPost } from '@/lib/data/blogAdapter';
 import BlogDetailPageClient from './BlogDetailPage';
 
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
+
 // Generate metadata for each blog post
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
@@ -50,6 +56,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       },
     };
   } catch (error) {
+    console.error('Error generating metadata:', error);
     return {
       title: 'Blog Post | WakiliChat',
       description: 'Legal technology and AI law insights from WakiliChat.',
@@ -66,4 +73,6 @@ function createSlug(title: string): string {
     .trim();
 }
 
-export default BlogDetailPageClient;
+export default async function Page({ params }: PageProps) {
+  return <BlogDetailPageClient params={Promise.resolve(params)} />;
+}
