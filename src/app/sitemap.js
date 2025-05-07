@@ -53,6 +53,17 @@ export default async function sitemap() {
       },
     },
     {
+      url: `${baseUrl}/demo`,
+      lastModified: new Date(),
+      alternates: {
+        languages: {
+          es: `${baseUrl}/es/demo`,
+          de: `${baseUrl}/de/demo`,
+        },
+      },
+    },
+    
+    {
       url: `${baseUrl}/blogs`,
       lastModified: new Date(),
       alternates: {
