@@ -12,7 +12,7 @@ const BookingPage = () => {
     <div className="">
       <Navbar />
       <div className="w-full max-w-4xl mx-auto   rounded-lg p-6 mt-10 ">
-        <div className="flex justify-center h-fit bg-green-50 rounded-lg">
+        <div className="flex justify-center h-fit rounded-lg">
           <CalendlyWidget />
         </div>
       </div>
