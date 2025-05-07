@@ -12,7 +12,7 @@ function createSlug(title) {
 }
 
 export default async function sitemap() {
-  const baseUrl = 'https://wansom.co';
+  const baseUrl = 'https://www.wansom.co';
 
   // Initialize Contentful client
   const client = createClient({
