@@ -61,6 +61,7 @@
     "pdfjs-dist": "^4.10.38",
     "prisma": "^6.4.1",
     "react": "^19.0.0",
+    "react-calendly": "^4.3.1",
     "react-day-picker": "^9.5.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
