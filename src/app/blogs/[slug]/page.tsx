@@ -5,7 +5,7 @@ import BlogDetailPageClient from './BlogDetailPage';
 
 
 type Props = {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string,id: string }>;
 }
 
 
@@ -76,5 +76,6 @@ function createSlug(title: string): string {
 }
 
 export default async function Page({ params }: Props) {
-  return <BlogDetailPageClient params={Promise.resolve(params)} />;
+  const resolvedParams = await params;
+  return <BlogDetailPageClient params={resolvedParams} />;
 }

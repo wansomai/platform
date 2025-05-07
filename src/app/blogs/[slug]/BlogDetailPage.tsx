@@ -3,48 +3,65 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
+import { getAllBlogPosts, getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
 import { adaptBlogPost, adaptBlogPosts } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "react-day-picker";
 import { Linkedin } from "lucide-react";
 
+interface PageProps {
+  params: {
+    slug: string;
+    id: string;
+  };
+}
 
-const BlogDetailPageClient =async ( context: { params: Promise<{ slug: string }> }) => {
-  const { slug } = await context.params;
+function createSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+
+const BlogDetailPageClient = ({ params }: PageProps) => {
+  const { slug, id } = params;
   const [blog, setBlog] = useState<any>(null);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+
   useEffect(() => {
     const fetchBlogPost = async () => {
       try {
-        if (!slug || typeof slug !== "string") {
-          throw new Error("Invalid blog ID");
+        if (!slug || typeof slug !== 'string') {
+          throw new Error('Invalid blog slug');
         }
 
         setLoading(true);
-        const blogPost = await getBlogPostById(slug);
-
+        
+        // Get all blog posts and find the one with matching slug
+        const allBlogPosts = await getAllBlogPosts();
+        
+        // Find the blog post with matching slug
+        const blogPost = allBlogPosts.find(post => {
+          const postSlug = createSlug(post.fields.title);
+          return postSlug === slug;
+        });
+        
         if (!blogPost) {
-          throw new Error("Blog post not found");
+          throw new Error('Blog post not found');
         }
-
+        
         const adaptedPost = adaptBlogPost(blogPost);
         setBlog(adaptedPost);
-
-        // Fetch related posts based on tags
-        const relatedBlogPosts = await getRelatedBlogPosts(
-          slug as string,
-          adaptedPost.tags || [],
-          3
-        );
-
-        setRelatedPosts(adaptBlogPosts(relatedBlogPosts));
       } catch (err) {
-        console.error("Error fetching blog post:", err);
-        setError("Failed to load blog post");
+        console.error('Error fetching blog post:', err);
+        setError('Failed to load blog post');
       } finally {
         setLoading(false);
       }
