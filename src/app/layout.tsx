@@ -59,6 +59,9 @@ export default function RootLayout({
       },s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
       a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
       twq('config','pp93c');
+      twq('event', 'tw-pp93c-pp93e', {
+        phone_number: null // phone number in E164 standard
+      });
     `
   }}
 />
