@@ -66,7 +66,6 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
         setLoading(false);
       }
     };
-
     fetchBlogPost();
   }, [slug]);
 
