@@ -725,7 +725,7 @@ export default function AssistantPage() {
                         {message.isLoading && message.content.length === 0 ? (
                           <div className="flex items-center gap-2">
                             <LogoAnimation size="sm" className="text-gray-500" />
-                            <span>Processing...</span>
+                            <span>Just a moment...</span>
                           </div>
                         ) : (
                           <MessageDisplay 
