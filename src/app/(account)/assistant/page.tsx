@@ -636,52 +636,54 @@ export default function AssistantPage() {
   
   return (
     <div className="container mx-auto p-2 sm:p-4 max-w-4xl h-full">
-      <Card className="h-fit overflow-y-auto min-h-[calc(100vh-8rem)] flex flex-col">
-        <CardContent className="flex-1 p-0 flex flex-col">
-          {/* Header */}
-          <div className="p-2 sm:p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary-600" />
-              <h2 className="text-lg font-medium">
-                {activeConversation 
-                  ? conversations.find(c => c.threadId === activeConversation)?.title || "Quick Assistant"
-                  : "Quick Assistant"}
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {/* Save conversation button */}
-              {threadId && !activeConversation && (
+      <Card className="h-fit overflow-y-auto min-h-[calc(100vh-12rem)] flex flex-col">
+        <CardContent className="flex-1 p-0 flex flex-col relative">
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm">
+            <div className="p-2 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary-600" />
+                <h2 className="text-lg font-medium">
+                  {activeConversation 
+                    ? conversations.find(c => c.threadId === activeConversation)?.title || "Quick Assistant"
+                    : "Quick AI Assistant"}
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {/* Save conversation button */}
+                {threadId && !activeConversation && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setShowSaveDialog(true)}
+                  >
+                    <Save className="h-4 w-4 mr-1" />
+                    Save Chat
+                  </Button>
+                )}
+                
+                {/* Load conversation button */}
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => setShowSaveDialog(true)}
+                  onClick={() => setShowConversationsDialog(true)}
                 >
-                  <Save className="h-4 w-4 mr-1" />
-                  Save Chat
+                  <MessageSquare className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Conversations</span>
+                  <span className="sm:hidden">Chats</span>
                 </Button>
-              )}
-              
-              {/* Load conversation button */}
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowConversationsDialog(true)}
-              >
-                <MessageSquare className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Conversations</span>
-                <span className="sm:hidden">Chats</span>
-              </Button>
-              
-              {/* New chat button */}
-              <Button variant="outline" size="sm" onClick={clearChat}>
-                <RefreshCw className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">New Chat</span>
-                <span className="sm:hidden">New</span>
-              </Button>
+                
+                {/* New chat button */}
+                <Button variant="outline" size="sm" onClick={clearChat}>
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">New Chat</span>
+                  <span className="sm:hidden">New</span>
+                </Button>
+              </div>
             </div>
           </div>
           
-          {/* Messages container */}
+          {/* Messages container - adjust padding-top to account for sticky header */}
           <ScrollArea className="flex-1 p-2 sm:p-4 overflow-y-auto max-h-[calc(100vh-16rem)] sm:max-h-[calc(100vh-8rem)]">
             <div className="space-y-6">
               {messages.map((message) => (
@@ -725,7 +727,7 @@ export default function AssistantPage() {
                         {message.isLoading && message.content.length === 0 ? (
                           <div className="flex items-center gap-2">
                             <LogoAnimation size="sm" className="text-gray-500" />
-                            <span>Just a moment...</span>
+                            <span className="animate-pulse">Just a moment...</span>
                           </div>
                         ) : (
                           <MessageDisplay 

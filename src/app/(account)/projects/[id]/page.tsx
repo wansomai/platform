@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { useUIStore } from "@/store/ui.store"
 import { useProjectStore } from "@/store/project.store"
-import { Loader2 } from "lucide-react"
+import LogoAnimation from "@/components/commons/LogoAnimation"
 
 
 export default function ProjectPage() {
@@ -32,8 +32,8 @@ export default function ProjectPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="flex flex-col items-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary-600 mb-4" />
-          <p className="text-gray-500">Loading project... </p>
+        <LogoAnimation size="sm" className="text-gray-500" />
+        <span className="animate-pulse">Just a moment...</span>
         </div>
       </div>
     )

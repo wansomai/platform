@@ -19,6 +19,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import { ActionHandler, ActionType } from "@/components/actions/ActionHandler"
+import LogoAnimation from "../commons/LogoAnimation"
 
 export function ChatInterface() {
   const params = useParams()
@@ -219,8 +220,8 @@ const handleSend = async (customMessage?: string) => {
   if (isLoading && !currentConversation) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
-        <span className="ml-2 text-secondary-700">Loading conversation...</span>
+       <LogoAnimation size="sm" className="text-gray-500" />
+        <span className="ml-2 text-secondary-700 animate-pulse">Loading conversation...</span>
       </div>
     )
   }
@@ -313,8 +314,8 @@ function ChatMessageItem({
           >
             {message.isLoading ? (
               <div className="flex items-center">
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                <span>Thinking...</span>
+                <LogoAnimation size="sm" className="text-gray-500" />
+                <span className="animate-pulse">Thinking...</span>
               </div>
             ) : (
               <MessageDisplay 

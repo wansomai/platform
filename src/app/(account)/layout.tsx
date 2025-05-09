@@ -11,15 +11,11 @@ import {
   Database, 
   MessageSquare, 
   LogOut, 
-  User, 
   ChevronDown, 
-  Clock, 
   Briefcase,
-  Search,
   Zap,
   PanelLeft,
   PanelRight,
-  Bell,
   Menu,
   X
 } from "lucide-react";
@@ -332,7 +328,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </Link>
               
               {/* Page title - visible on desktop */}
-              <h1 className="text-xl font-semibold text-gray-800 hidden lg:block">
+              <h1 className="text-xl font-semibold text-gray-800 hidden lg:block" >
                 {pathname === '/dashboard' ? 'Dashboard' : 
                  pathname.includes('/vault') ? 'Document Vault' :
                  pathname.includes('/assistant') ? 'AI Assistant' :
