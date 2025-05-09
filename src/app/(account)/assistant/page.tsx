@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Send,
   Loader2,
@@ -23,18 +22,18 @@ import {
   FileText,
   Trash2,
   RefreshCw,
-  UploadCloud,
   XCircle,
   HelpCircle,
   MessageSquare,
   Paperclip,
   Save,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  StopCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { apiService } from "@/lib/api";
 import MessageDisplay from "@/components/chat/MessageDisplay";
+import LogoAnimation from "@/components/commons/LogoAnimation";
 
 // Define message types
 interface Message {
@@ -43,6 +42,7 @@ interface Message {
   role: "user" | "assistant";
   timestamp: Date;
   isLoading?: boolean;
+  messageId?: string;
 }
 
 // Define conversation type
@@ -76,11 +76,189 @@ const suggestionPrompts = [
 // Local storage key for saving conversations
 const STORAGE_KEY = 'assistant-conversations';
 
-// Add this interface near the top of the file with other interfaces
-interface AssistantResponse {
-  threadId?: string;
-  content?: string;
-}
+// Debug flag for stream logging
+const DEBUG_STREAMING = true;
+
+// Stream logger utility
+const streamLogger = {
+  log: (...args: any[]) => {
+    if (DEBUG_STREAMING) {
+      console.log('[Stream]', ...args);
+    }
+  },
+  
+  error: (...args: any[]) => {
+    if (DEBUG_STREAMING) {
+      console.error('[Stream Error]', ...args);
+    }
+  },
+  
+  info: (...args: any[]) => {
+    if (DEBUG_STREAMING) {
+      console.info('[Stream Info]', ...args);
+    }
+  },
+  
+  chunk: (chunkNumber: number, chunk: string) => {
+    if (DEBUG_STREAMING) {
+      const preview = chunk.length > 50 
+        ? chunk.substring(0, 50) + '...' 
+        : chunk;
+      console.log(`[Stream] Chunk #${chunkNumber}: ${preview}`);
+    }
+  }
+};
+
+// Process the streaming response from the API
+const processStreamResponse = async (
+  response: Response, 
+  assistantMessageId: string,
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+  setCurrentAssistantMessage: React.Dispatch<React.SetStateAction<Message | null>>,
+  setThreadId: React.Dispatch<React.SetStateAction<string | null>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+) => {
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Error connecting to assistant');
+  }
+
+  if (!response.body) {
+    throw new Error('Response body is null');
+  }
+
+  // Create a reader for the stream
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let responseContent = '';
+  let currentMessageId = '';
+  let currentThreadId = null;
+
+  try {
+    // Track chunks received for debugging
+    let chunkCount = 0;
+    streamLogger.log('Starting to process stream...');
+
+    // Read the stream
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        streamLogger.log('Stream complete, total chunks:', chunkCount);
+        break;
+      }
+
+      // Decode chunk and log for debugging
+      const chunk = decoder.decode(value, { stream: true });
+      chunkCount++;
+      streamLogger.chunk(chunkCount, chunk);
+
+      // Process each line (event) in the chunk
+      const lines = chunk.split('\n').filter(line => line.trim() !== '');
+      
+      for (const line of lines) {
+        try {
+          const event = JSON.parse(line);
+          streamLogger.info('Event:', event.type);
+
+          // Handle delta updates (streaming content)
+          if (event.type === 'delta') {
+            responseContent += event.content || '';
+            currentMessageId = event.messageId || currentMessageId;
+            currentThreadId = event.threadId || currentThreadId;
+
+            streamLogger.log('Content updated:', responseContent.length, 'chars');
+
+            // Update the UI with the new content immediately
+            setMessages(prevMessages =>
+              prevMessages.map(msg =>
+                msg.id === assistantMessageId
+                  ? {
+                      ...msg,
+                      content: responseContent,
+                      isLoading: true,
+                      messageId: currentMessageId
+                    }
+                  : msg
+              )
+            );
+          } 
+          // Handle status updates
+          else if (event.type === 'status') {
+            if (event.threadId && !currentThreadId) {
+              currentThreadId = event.threadId;
+              setThreadId(currentThreadId);
+            }
+
+            if (event.status === 'completed') {
+              streamLogger.log('Stream completed');
+              // Mark message as complete
+              setMessages(prevMessages =>
+                prevMessages.map(msg =>
+                  msg.id === assistantMessageId
+                    ? {
+                        ...msg,
+                        content: responseContent,
+                        isLoading: false,
+                        messageId: currentMessageId
+                      }
+                    : msg
+                )
+              );
+              setIsLoading(false);
+              setCurrentAssistantMessage(null);
+            }
+          }
+          // Handle error updates
+          else if (event.type === 'error') {
+            streamLogger.error('Stream error:', event.error);
+            setMessages(prevMessages =>
+              prevMessages.map(msg =>
+                msg.id === assistantMessageId
+                  ? {
+                      ...msg,
+                      content: responseContent + `\n\nError: ${event.error}`,
+                      isLoading: false
+                    }
+                  : msg
+              )
+            );
+            throw new Error(event.error || 'Unknown error in stream');
+          }
+        } catch (err) {
+          streamLogger.error('Error parsing stream event:', err, line);
+        }
+      }
+    }
+
+    // Ensure message is marked as complete if stream ends without completed status
+    setMessages(prevMessages =>
+      prevMessages.map(msg =>
+        msg.id === assistantMessageId
+          ? {
+              ...msg,
+              content: responseContent,
+              isLoading: false,
+              messageId: currentMessageId
+            }
+          : msg
+      )
+    );
+
+    // Save thread ID if we received one
+    if (currentThreadId) {
+      setThreadId(currentThreadId);
+    }
+
+    return { content: responseContent, messageId: currentMessageId, threadId: currentThreadId };
+  } catch (error) {
+    // Handle errors during stream processing
+    streamLogger.error('Error processing stream:', error);
+    throw error;
+  } finally {
+    setIsLoading(false);
+    setCurrentAssistantMessage(null);
+  }
+};
 
 export default function AssistantPage() {
   const { data: session } = useSession();
@@ -88,6 +266,7 @@ export default function AssistantPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const streamControllerRef = useRef<AbortController | null>(null);
   
   // State
   const [messages, setMessages] = useState<Message[]>([]);
@@ -103,6 +282,7 @@ export default function AssistantPage() {
   const [conversationTitle, setConversationTitle] = useState<string>("");
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [currentAssistantMessage, setCurrentAssistantMessage] = useState<Message | null>(null);
   
   // Load saved conversations from local storage
   useEffect(() => {
@@ -162,6 +342,15 @@ export default function AssistantPage() {
     }
   }, [conversations]);
   
+  // Clean up controller on unmount
+  useEffect(() => {
+    return () => {
+      if (streamControllerRef.current) {
+        streamControllerRef.current.abort();
+      }
+    };
+  }, []);
+  
   // Handle loading a conversation
   const loadConversation = (conversationId: string) => {
     const conversation = conversations.find(c => c.threadId === conversationId);
@@ -207,6 +396,28 @@ export default function AssistantPage() {
     }
   };
   
+  // Stop the current stream
+  const stopStreamingResponse = () => {
+    if (streamControllerRef.current) {
+      streamControllerRef.current.abort();
+      streamControllerRef.current = null;
+      
+      // Mark the current message as no longer loading
+      if (currentAssistantMessage) {
+        setMessages(prevMessages =>
+          prevMessages.map(msg =>
+            msg.id === currentAssistantMessage.id
+              ? { ...msg, isLoading: false }
+              : msg
+          )
+        );
+        setCurrentAssistantMessage(null);
+      }
+      
+      setIsLoading(false);
+    }
+  };
+  
   // Handle sending a message
   const handleSendMessage = async () => {
     if (!input.trim() && uploadedFiles.length === 0) return;
@@ -241,12 +452,20 @@ export default function AssistantPage() {
     };
     
     setMessages(prevMessages => [...prevMessages, userMessage, loadingMessage]);
+    setCurrentAssistantMessage(loadingMessage);
     setIsLoading(true);
     
     try {
-      // Prepare form data if files are attached
-      let formData: FormData = new FormData();
+      // Cancel any existing streams
+      if (streamControllerRef.current) {
+        streamControllerRef.current.abort();
+      }
       
+      // Create a new AbortController
+      streamControllerRef.current = new AbortController();
+      
+      // Prepare form data
+      const formData = new FormData();
       formData.append('message', messageContent);
       
       // Add threadId if we have one (continuing conversation)
@@ -259,48 +478,38 @@ export default function AssistantPage() {
         formData.append('files', file);
       });
       
-      // Send request to API
-      const response = await apiService.postMultipart('/api/assistant', formData) as AssistantResponse;
+      // Set up fetch options with the AbortController
+      const fetchOptions = {
+        method: 'POST',
+        body: formData,
+        signal: streamControllerRef.current.signal
+      };
       
-      // Save the threadId from the response if we don't have one yet
-      if (!threadId && response.threadId) {
-        setThreadId(response.threadId);
-        
-        // Suggest saving the conversation after first message exchange
-        if (!activeConversation) {
-          // Auto-generate a title from the first user message
-          const suggestedTitle = messageContent.length > 30
-            ? `${messageContent.substring(0, 30)}...`
-            : messageContent;
-          setConversationTitle(suggestedTitle);
-          setTimeout(() => setShowSaveDialog(true), 1000);
-        }
-      }
+      streamLogger.log('Sending message to API...');
+      const response = await fetch('/api/assistant', fetchOptions);
       
-      // Update the loading message with the actual response
-      setMessages(prevMessages =>
-        prevMessages.map(msg =>
-          msg.id === assistantMessageId
-            ? {
-                ...msg,
-                content: response.content || "",
-                isLoading: false
-              }
-            : msg
-        )
+      streamLogger.log('Response received, processing stream...');
+      // Process the streaming response
+      await processStreamResponse(
+        response,
+        assistantMessageId,
+        setMessages,
+        setCurrentAssistantMessage,
+        setThreadId,
+        setIsLoading
       );
       
       // If this is an active saved conversation, update it
       if (activeConversation) {
-        const updatedMessages = [
-          ...messages.filter(m => !m.isLoading),
+        // We need to get the updated messages
+        const updatedMessages = messages.filter(m => !m.isLoading).concat([
           userMessage,
           {
             ...loadingMessage,
-            content: response.content || "",
-            isLoading: false
+            isLoading: false,
+            content: messages.find(m => m.id === assistantMessageId)?.content || ''
           }
-        ];
+        ]);
         
         setConversations(prevConversations =>
           prevConversations.map(conv =>
@@ -315,27 +524,44 @@ export default function AssistantPage() {
         );
       }
       
+      // Suggest saving the conversation after first message exchange
+      if (threadId && !activeConversation) {
+        // Auto-generate a title from the first user message
+        const suggestedTitle = messageContent.length > 30
+          ? `${messageContent.substring(0, 30)}...`
+          : messageContent;
+        setConversationTitle(suggestedTitle);
+        setTimeout(() => setShowSaveDialog(true), 1000);
+      }
+      
       // Clear uploaded files after sending
       setUploadedFiles([]);
+      
     } catch (error) {
-      console.error("Error sending message:", error);
-      
-      // Replace loading message with error
-      setMessages(prevMessages =>
-        prevMessages.map(msg =>
-          msg.id === assistantMessageId
-            ? {
-                ...msg,
-                content: "Sorry, I encountered an error processing your request. Please try again.",
-                isLoading: false
-              }
-            : msg
-        )
-      );
-      
-      setError("Failed to get a response from the assistant.");
+      if (error instanceof Error && error.name === 'AbortError') {
+        streamLogger.log('Request was aborted');
+      } else {
+        streamLogger.error("Error sending message:", error);
+        
+        // Replace loading message with error
+        setMessages(prevMessages =>
+          prevMessages.map(msg =>
+            msg.id === assistantMessageId
+              ? {
+                  ...msg,
+                  content: "Sorry, I encountered an error processing your request. Please try again.",
+                  isLoading: false
+                }
+              : msg
+          )
+        );
+        
+        setError(error instanceof Error ? error.message : "Failed to get a response from the assistant.");
+      }
     } finally {
       setIsLoading(false);
+      setCurrentAssistantMessage(null);
+      streamControllerRef.current = null;
     }
   };
   
@@ -370,6 +596,12 @@ export default function AssistantPage() {
   
   // Clear chat history and start new conversation
   const clearChat = () => {
+    // Stop any ongoing stream
+    if (streamControllerRef.current) {
+      streamControllerRef.current.abort();
+      streamControllerRef.current = null;
+    }
+    
     setMessages([
       {
         id: "welcome",
@@ -382,6 +614,8 @@ export default function AssistantPage() {
     setThreadId(null);
     setActiveConversation(null);
     setConversationTitle("");
+    setIsLoading(false);
+    setCurrentAssistantMessage(null);
   };
   
   // Use a suggestion prompt
@@ -488,10 +722,10 @@ export default function AssistantPage() {
                             : "bg-gray-100"
                         }`}
                       >
-                        {message.isLoading ? (
-                          <div className="flex items-center">
-                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            <span>Thinking...</span>
+                        {message.isLoading && message.content.length === 0 ? (
+                          <div className="flex items-center gap-2">
+                            <LogoAnimation size="sm" className="text-gray-500" />
+                            <span>Processing...</span>
                           </div>
                         ) : (
                           <MessageDisplay 
@@ -502,23 +736,25 @@ export default function AssistantPage() {
                       </div>
                       
                       {/* Message actions */}
-                      {message.role === "assistant" && !message.isLoading && (
+                      {message.role === "assistant" && (
                         <div className="flex items-center gap-1 mt-2">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8"
-                                  onClick={() => copyToClipboard(message.content)}
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Copy to clipboard</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                           {!message.isLoading && message.content ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => copyToClipboard(message.content)}
+                                  >
+                                    <Copy className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Copy to clipboard</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : null}
                         </div>
                       )}
                     </div>
@@ -606,6 +842,23 @@ export default function AssistantPage() {
               />
               
               <div className="absolute right-2 bottom-2 flex gap-1">
+              {isLoading && currentAssistantMessage ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-red-500"
+                                    onClick={stopStreamingResponse}
+                                  >
+                                    <StopCircle className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Stop generating</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+): null}
                 <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
                   <DialogTrigger asChild>
                     <Button 
@@ -633,6 +886,7 @@ export default function AssistantPage() {
                         <Input
                           id="file"
                           type="file"
+                          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif"
                           ref={fileInputRef}
                           onChange={handleFileUpload}
                           className="col-span-3"

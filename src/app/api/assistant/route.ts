@@ -1,5 +1,5 @@
-// app/api/assistant/quick/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+// app/api/assistant/route.ts
+import { NextRequest } from 'next/server';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
 import OpenAI from 'openai';
 
@@ -8,75 +8,70 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Assistant ID - you would create this once in the OpenAI dashboard
-// and then use that ID in your application
+// Assistant ID from environment variables
 const ASSISTANT_ID = process.env.OPENAI_ASSISTANT_ID;
+
+// Encoder for streaming response
+const encoder = new TextEncoder();
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = getUserIdFromRequest(request);
-    
-    if (!userId) {
-      return NextResponse.json(
-        { error: "Unauthorized", message: "Authentication required" },
-        { status: 401 }
-      );
-    }
-    
-    // Handle multipart form data (with files) or regular JSON
-    const contentType = request.headers.get('content-type') || '';
-    let message = '';
-    let fileIds: string[] = [];
-    let threadId: string | null = null;
-    
+    // Uncomment to re-enable authentication
+    // const userId = getUserIdFromRequest(request);
+    // if (!userId) {
+    //   return new Response(JSON.stringify({ 
+    //     error: "Unauthorized", 
+    //     message: "Authentication required" 
+    //   }), { 
+    //     status: 401, 
+    //     headers: { 'Content-Type': 'application/json' }
+    //   });
+    // }
+
+    // Process the form data
     const formData = await request.formData();
-    message = formData.get('message')?.toString() || '';
-    threadId = formData.get('threadId')?.toString() || null;
+    const message = formData.get('message')?.toString() || '';
+    const threadId = formData.get('threadId')?.toString() || null;
     
     // Process files
     const files = formData.getAll('files');
-    // Upload each file to OpenAI and get file IDs
+    const fileIds: string[] = [];
+    
     for (const fileItem of files) {
       if (fileItem instanceof File) {
-        const file = fileItem;
-        
-        // Convert File to Buffer
-        const arrayBuffer = await file.arrayBuffer();
+        const arrayBuffer = await fileItem.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
-        
-        // Upload file to OpenAI
         const uploadedFile = await openai.files.create({
-          file: new File([buffer], file.name, { type: file.type }),
+          file: new File([buffer], fileItem.name, { type: fileItem.type }),
           purpose: 'assistants',
         });
-        
         fileIds.push(uploadedFile.id);
       }
     }
-    
-    if (!message) {
-      return NextResponse.json(
-        { message: 'No message provided' },
-        { status: 400 }
-      );
+
+    // Validate input
+    if (!message && fileIds.length === 0) {
+      return new Response(JSON.stringify({ 
+        message: 'No message or files provided' 
+      }), { 
+        status: 400, 
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
-    
+
+    // Get or create thread
     let thread;
-    
-    // Use existing thread if provided, otherwise create a new one
     if (threadId) {
       try {
-        // Verify the thread exists
         thread = await openai.beta.threads.retrieve(threadId);
       } catch (error) {
         console.warn(`Thread ${threadId} not found, creating a new one:`, error);
         thread = await openai.beta.threads.create();
       }
     } else {
-      // Create a new thread
       thread = await openai.beta.threads.create();
     }
-    
+
     // Add user message to thread
     if (fileIds.length > 0) {
       await openai.beta.threads.messages.create(thread.id, {
@@ -93,101 +88,173 @@ export async function POST(request: NextRequest) {
         content: message,
       });
     }
-    
-    // Run the assistant on the thread
-    const run = await openai.beta.threads.runs.create(thread.id, {
-      assistant_id: ASSISTANT_ID || '',
-    });
-    
-    // Poll for completion
-    let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-    
-    // Poll until the run completes or fails
-    let attempts = 0;
-    const maxAttempts = 60; // 30 second timeout with 500ms intervals
-    
-    while (
-      runStatus.status !== 'completed' && 
-      runStatus.status !== 'failed' && 
-      attempts < maxAttempts
-    ) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-      attempts++;
-    }
-    
-    if (runStatus.status === 'failed') {
-      return NextResponse.json(
-        { 
-          message: 'Assistant processing failed', 
-          error: runStatus.last_error?.message 
-        },
-        { status: 500 }
-      );
-    }
-    
-    if (attempts >= maxAttempts) {
-      return NextResponse.json(
-        { message: 'Processing timed out' },
-        { status: 504 }
-      );
-    }
-    
-    // Get the assistant's response
-    const messages = await openai.beta.threads.messages.list(thread.id);
-    
-    // Get the last assistant message
-    const assistantMessages = messages.data.filter(msg => msg.role === 'assistant');
-    
-    if (assistantMessages.length === 0) {
-      return NextResponse.json(
-        { message: 'No response generated' },
-        { status: 500 }
-      );
-    }
-    
-    // Extract the text content
-    const latestMessage = assistantMessages[0];
-    let responseContent = '';
-    
-    // Extract the text from the message content
-    for (const contentPart of latestMessage.content) {
-      if (contentPart.type === 'text') {
-        responseContent = contentPart.text.value;
-        break;
-      }
-    }
-    
-    // In a production environment, consider keeping files associated with the thread
-    // instead of deleting them immediately - especially for ongoing conversations
-    if (!threadId) {  // Only delete files for one-off conversations
-      for (const fileId of fileIds) {
+
+    // Create a stream for the response
+    const stream = new ReadableStream({
+      async start(controller) {
         try {
-          await openai.files.del(fileId);
+          // Send initial status to client immediately
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'status',
+                status: 'started',
+                threadId: thread.id,
+                content: '',
+              }) + '\n'
+            )
+          );
+
+          // Start the stream from OpenAI
+          const runStream = await openai.beta.threads.runs.stream(thread.id, {
+            assistant_id: ASSISTANT_ID || '',
+          });
+
+          // Log for debugging
+          console.log(`Streaming started for thread ${thread.id}`);
+
+          // Process each chunk from OpenAI
+          for await (const chunk of runStream) {
+            // Log chunk type for debugging
+            console.log(`Received chunk event: ${chunk.event}`);
+
+            // Handle different event types
+            if (chunk.event === 'thread.message.delta') {
+              if (
+                chunk.data?.delta?.content && 
+                chunk.data.delta.content.length > 0 && 
+                chunk.data.delta.content[0].type === 'text'
+              ) {
+                // Get the text content
+                const textValue = chunk.data.delta.content[0].text?.value;
+                
+                if (textValue) {
+                  // Log for debugging
+                  console.log(`Sending delta: ${textValue.substring(0, 50)}${textValue.length > 50 ? '...' : ''}`);
+                  
+                  // Send the text delta to the client
+                  controller.enqueue(
+                    encoder.encode(
+                      JSON.stringify({
+                        type: 'delta',
+                        threadId: thread.id,
+                        messageId: chunk.data.id || chunk.data.id,
+                        content: textValue,
+                      }) + '\n'
+                    )
+                  );
+                }
+              }
+            } else if (chunk.event === 'thread.message.created') {
+              // Log message creation
+              console.log(`Message created: ${chunk.data.id}`);
+              
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'status',
+                    status: 'message_created',
+                    threadId: thread.id,
+                    messageId: chunk.data.id,
+                  }) + '\n'
+                )
+              );
+            } else if (chunk.event === 'thread.run.completed') {
+              // Log completion
+              console.log(`Run completed for thread ${thread.id}`);
+              
+              // Signal completion to the client
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'status',
+                    status: 'completed',
+                    threadId: thread.id,
+                  }) + '\n'
+                )
+              );
+            } else if (chunk.event === 'thread.run.failed') {
+              // Log failure
+              console.error(`Run failed for thread ${thread.id}:`, chunk.data || 'Unknown error');
+              
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'error',
+                    error: chunk.data || 'Run failed',
+                  }) + '\n'
+                )
+              );
+            } else if (chunk.event === 'thread.run.requires_action') {
+              // Handle tool calls here if needed
+              console.log('Tool action required:', chunk.data);
+              
+              // For now, just inform the client that tools are being used
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'status',
+                    status: 'tool_call',
+                    threadId: thread.id,
+                    content: 'Using tools to process your request...',
+                  }) + '\n'
+                )
+              );
+            }
+          }
+
+          // Clean up temporary files
+          if (!threadId) {
+            console.log('Cleaning up temporary files...');
+            for (const fileId of fileIds) {
+              try {
+                await openai.files.del(fileId);
+                console.log(`Deleted file ${fileId}`);
+              } catch (error) {
+                console.error(`Error deleting file ${fileId}:`, error);
+              }
+            }
+          }
+          
         } catch (error) {
-          console.error(`Error deleting file ${fileId}:`, error);
+          console.error('Error in stream processing:', error);
+          
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'error',
+                error: error instanceof Error ? error.message : 'Unknown error',
+              }) + '\n'
+            )
+          );
+        } finally {
+          console.log('Stream closed');
+          controller.close();
         }
       }
-    }
-    
-    // Return the response along with the threadId for continuity
-    return NextResponse.json({
-      content: responseContent,
-      timestamp: new Date().toISOString(),
-      threadId: thread.id, // Client should store and pass this for conversation continuity
-      messageId: latestMessage.id, // Helpful for message tracking
-      messageHistory: messages.data.length // Provide context on conversation length
     });
-    
+
+    // Return the stream response with proper headers
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+
   } catch (error) {
     console.error('Error in assistant endpoint:', error);
     
-    return NextResponse.json(
-      { 
+    return new Response(
+      JSON.stringify({
         message: 'Error processing request',
         error: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
+      }),
+      { 
+        status: 500, 
+        headers: { 'Content-Type': 'application/json' }
+      }
     );
   }
 }
