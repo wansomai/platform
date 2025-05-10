@@ -68,7 +68,6 @@ export async function POST(request: NextRequest) {
         email: user.email,
         fullName: user.fullName || 'User'
       });
-      console.log(`Welcome email sent to ${user.email}`);
     } catch (emailError) {
       // Log the error but don't fail the registration process
       console.error('Error sending welcome email:', emailError);

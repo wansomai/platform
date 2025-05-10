@@ -12,8 +12,9 @@ export interface Message {
   actionType?: string;
   isLoading?: boolean;
   metadata?: any;
-  isStreaming?: boolean; // Add streaming flag
-  tempId?: string; // Add temporary ID for streaming messages
+  isStreaming?: boolean; // streaming flag
+  tempId?: string; //temporary ID for streaming messages
+  processingStatus?: string; //current processing stage
 }
 
 export interface Reference {
@@ -122,13 +123,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
   updateStreamingMessage: (tempId, updates) => set((state) => {
     if (!state.currentConversation) return state;
     
-    console.log('Updating streaming message:', tempId, updates);
-    
     const updatedMessages = state.currentConversation.messages.map((msg) => {
       if (msg.tempId === tempId || msg.id === tempId) {
-        console.log('Found message to update:', msg);
         const updatedMessage = { ...msg, ...updates };
-        console.log('Updated message:', updatedMessage);
         return updatedMessage;
       }
       return msg;
@@ -145,11 +142,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   finalizeStreamingMessage: (tempId, finalMessage) => set((state) => {
     if (!state.currentConversation) return state;
     
-    console.log('Finalizing message:', tempId, finalMessage);
-    
     const updatedMessages = state.currentConversation.messages.map((msg) => {
       if (msg.tempId === tempId || msg.id === tempId) {
-        console.log('Replacing streaming message with final:', msg);
         return { ...finalMessage, isStreaming: false, tempId: undefined };
       }
       return msg;
@@ -230,117 +224,92 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
   
-  
- // src/store/chat.store.ts
-sendMessage: async (projectId, conversationId, content, userId, metadata) => {
-  // First add an optimistic user message
-  const tempId = `temp-${Date.now()}`;
-  const userMessage: Message = {
-    id: tempId,
-    content,
-    role: 'user',
-    timestamp: new Date().toISOString()
-  };
-  
-  get().addMessage(userMessage);
-  
-  // Add a streaming placeholder for the assistant response
-  const streamingId = `streaming-${Date.now()}`;
-  const streamingMessage: Message = {
-    id: streamingId,
-    tempId: streamingId,
-    content: '',
-    role: 'assistant',
-    timestamp: new Date().toISOString(),
-    isStreaming: true
-  };
-  
-  get().addMessage(streamingMessage);
-  
-  try {
-    set({ error: null });
+  sendMessage: async (projectId, conversationId, content, userId, metadata) => {
+    const tempId = `temp-${Date.now()}`;
+    const userMessage: Message = {
+      id: tempId,
+      content,
+      role: 'user',
+      timestamp: new Date().toISOString()
+    };
     
-    console.log('Created streaming message with ID:', streamingId);
+    get().addMessage(userMessage);
     
-    await apiService.postStream(
-      `/api/projects/${projectId}/conversations/${conversationId}/messages`,
-      { 
-        content,
-        metadata,
-        // Pass the streaming ID to the API so it can use it for deltas
-        streamingId 
-      },
-      // onMessage handler
-      (data) => {
-        console.log('Received streaming data:', data);
-        
-        switch (data.type) {
-          case 'delta':
-            console.log('Processing delta for messageId:', data.messageId);
-            // Update the streaming message with new content
-            // Use the messageId from the API if provided, otherwise fall back to our streamingId
-            const targetId = data.messageId || streamingId;
-            const currentMessage = get().currentConversation?.messages.find(
-              m => m.tempId === targetId || m.id === targetId || m.tempId === streamingId || m.id === streamingId
-            );
-            console.log('Current message before update:', currentMessage);
-            
-            get().updateStreamingMessage(streamingId, {
-              content: (currentMessage?.content || '') + data.content
-            });
-            break;
-            
-          case 'final':
-            console.log('Processing final message:', data);
-            // The API might send back a different tempMessageId than our streamingId
-            // We need to find the message by our original streamingId
-            get().finalizeStreamingMessage(streamingId, {
-              id: data.messageId,
-              content: data.content,
-              role: 'assistant',
-              timestamp: new Date().toISOString(),
-              references: data.references,
-              webSearchResults: data.webSearchResults,
-              isStreaming: false
-            });
-            break;
-            
-          case 'status':
-            console.log('Status update:', data.status);
-            break;
-            
-          case 'error':
-            console.error('Stream error:', data.error);
-            throw new Error(data.error);
-        }
-      },
-      // onError handler
-      (error) => {
-        console.error('Streaming error:', error);
-        set({ error: error.message || 'Failed to send message' });
-      }
-    );
+    const streamingId = `streaming-${Date.now()}`;
+    const streamingMessage: Message = {
+      id: streamingId,
+      tempId: streamingId,
+      content: '',
+      role: 'assistant',
+      timestamp: new Date().toISOString(),
+      isStreaming: true
+    };
     
-    console.log('Stream finished');
-  } catch (error: any) {
-    console.error('Error in sendMessage:', error);
+    get().addMessage(streamingMessage);
     
-    // Remove the streaming message on error
-    set((state) => {
-      if (!state.currentConversation) return state;
+    try {
+      set({ error: null });
       
-      return {
-        currentConversation: {
-          ...state.currentConversation,
-          messages: state.currentConversation.messages.filter(
-            (msg) => msg.id !== streamingId && msg.tempId !== streamingId
-          )
+      await apiService.postStream(
+        `/api/projects/${projectId}/conversations/${conversationId}/messages`,
+        { 
+          content,
+          metadata,
+          streamingId 
         },
-        error: error.message || 'Failed to send message'
-      };
-    });
-  }
-},
+        (data) => {
+          switch (data.type) {
+            case 'delta':
+              const targetId = data.messageId || streamingId;
+              const currentMessage = get().currentConversation?.messages.find(
+                m => m.tempId === targetId || m.id === targetId || m.tempId === streamingId || m.id === streamingId
+              );
+              
+              get().updateStreamingMessage(streamingId, {
+                content: (currentMessage?.content || '') + data.content
+              });
+              break;
+              
+            case 'final':
+              get().finalizeStreamingMessage(streamingId, {
+                id: data.messageId,
+                content: data.content,
+                role: 'assistant',
+                timestamp: new Date().toISOString(),
+                references: data.references,
+                webSearchResults: data.webSearchResults,
+                isStreaming: false
+              });
+              break;
+              
+            case 'status':
+              break;
+              
+            case 'error':
+              throw new Error(data.error);
+          }
+        },
+        (error) => {
+          set({ error: error.message || 'Failed to send message' });
+        }
+      );
+      
+    } catch (error: any) {
+      set((state) => {
+        if (!state.currentConversation) return state;
+        
+        return {
+          currentConversation: {
+            ...state.currentConversation,
+            messages: state.currentConversation.messages.filter(
+              (msg) => msg.id !== streamingId && msg.tempId !== streamingId
+            )
+          },
+          error: error.message || 'Failed to send message'
+        };
+      });
+    }
+  },
   // Toggle pin status of a conversation
   
   togglePinConversation: async (projectId, conversationId) => {

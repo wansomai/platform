@@ -19,6 +19,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
+import { ProcessingStatus } from "./ProcessingStatus"
 
 export function ChatInterface() {
   const params = useParams()
@@ -215,13 +216,6 @@ export function ChatInterface() {
  }) {
   const isUser = message.role === 'user';
 
-  console.log('Rendering message:', {
-    id: message.id,
-    tempId: message.tempId,
-    content: message.content?.substring(0, 50) + '...',
-    isStreaming: message.isStreaming,
-    role: message.role
-  });
   
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
@@ -249,7 +243,7 @@ export function ChatInterface() {
               isUser ? "bg-green-600 text-white" : "bg-secondary-100"
             }`}
           >
-            {message.isLoading || isStreaming ? (
+          {message.isLoading || isStreaming ? (
               <div className="flex items-center">
                 {message.content ? (
                   // Show streaming content
@@ -261,15 +255,25 @@ export function ChatInterface() {
                     {isStreaming && (
                       <div className="flex items-center gap-1">
                         <LogoAnimation size="sm" className="text-gray-500" />
-                        <span className="text-xs text-gray-500 animate-pulse">Thinking...</span>
+                        <span className="text-xs text-gray-500 animate-pulse">
+                          {message.processingStatus || "Thinking..."}
+                        </span>
                       </div>
                     )}
                   </div>
                 ) : (
-                  // Show loading animation if no content yet
-                  <div className="flex items-center">
-                    <LogoAnimation size="sm" className="text-gray-500" />
-                    <span className="animate-pulse">Thinking...</span>
+                  // Show processing status or loading animation
+                  <div className="flex flex-col items-start">
+                    {message.processingStatus && message.processingStatus !== 'completed' ? (
+                      <ProcessingStatus status={message.processingStatus} />
+                    ) : (
+                      <div className="flex items-center">
+                        <LogoAnimation size="sm" className="text-gray-500" />
+                        <span className="animate-pulse ml-2">
+                          {message.processingStatus || "Processing..."}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

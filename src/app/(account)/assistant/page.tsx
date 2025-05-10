@@ -76,39 +76,6 @@ const suggestionPrompts = [
 // Local storage key for saving conversations
 const STORAGE_KEY = 'assistant-conversations';
 
-// Debug flag for stream logging
-const DEBUG_STREAMING = true;
-
-// Stream logger utility
-const streamLogger = {
-  log: (...args: any[]) => {
-    if (DEBUG_STREAMING) {
-      console.log('[Stream]', ...args);
-    }
-  },
-  
-  error: (...args: any[]) => {
-    if (DEBUG_STREAMING) {
-      console.error('[Stream Error]', ...args);
-    }
-  },
-  
-  info: (...args: any[]) => {
-    if (DEBUG_STREAMING) {
-      console.info('[Stream Info]', ...args);
-    }
-  },
-  
-  chunk: (chunkNumber: number, chunk: string) => {
-    if (DEBUG_STREAMING) {
-      const preview = chunk.length > 50 
-        ? chunk.substring(0, 50) + '...' 
-        : chunk;
-      console.log(`[Stream] Chunk #${chunkNumber}: ${preview}`);
-    }
-  }
-};
-
 // Process the streaming response from the API
 const processStreamResponse = async (
   response: Response, 
@@ -127,7 +94,6 @@ const processStreamResponse = async (
     throw new Error('Response body is null');
   }
 
-  // Create a reader for the stream
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let responseContent = '';
@@ -135,40 +101,22 @@ const processStreamResponse = async (
   let currentThreadId = null;
 
   try {
-    // Track chunks received for debugging
-    let chunkCount = 0;
-    streamLogger.log('Starting to process stream...');
-
-    // Read the stream
     while (true) {
       const { done, value } = await reader.read();
-      if (done) {
-        streamLogger.log('Stream complete, total chunks:', chunkCount);
-        break;
-      }
+      if (done) break;
 
-      // Decode chunk and log for debugging
       const chunk = decoder.decode(value, { stream: true });
-      chunkCount++;
-      streamLogger.chunk(chunkCount, chunk);
-
-      // Process each line (event) in the chunk
       const lines = chunk.split('\n').filter(line => line.trim() !== '');
       
       for (const line of lines) {
         try {
           const event = JSON.parse(line);
-          streamLogger.info('Event:', event.type);
 
-          // Handle delta updates (streaming content)
           if (event.type === 'delta') {
             responseContent += event.content || '';
             currentMessageId = event.messageId || currentMessageId;
             currentThreadId = event.threadId || currentThreadId;
 
-            streamLogger.log('Content updated:', responseContent.length, 'chars');
-
-            // Update the UI with the new content immediately
             setMessages(prevMessages =>
               prevMessages.map(msg =>
                 msg.id === assistantMessageId
@@ -182,7 +130,6 @@ const processStreamResponse = async (
               )
             );
           } 
-          // Handle status updates
           else if (event.type === 'status') {
             if (event.threadId && !currentThreadId) {
               currentThreadId = event.threadId;
@@ -190,8 +137,6 @@ const processStreamResponse = async (
             }
 
             if (event.status === 'completed') {
-              streamLogger.log('Stream completed');
-              // Mark message as complete
               setMessages(prevMessages =>
                 prevMessages.map(msg =>
                   msg.id === assistantMessageId
@@ -208,9 +153,7 @@ const processStreamResponse = async (
               setCurrentAssistantMessage(null);
             }
           }
-          // Handle error updates
           else if (event.type === 'error') {
-            streamLogger.error('Stream error:', event.error);
             setMessages(prevMessages =>
               prevMessages.map(msg =>
                 msg.id === assistantMessageId
@@ -225,12 +168,11 @@ const processStreamResponse = async (
             throw new Error(event.error || 'Unknown error in stream');
           }
         } catch (err) {
-          streamLogger.error('Error parsing stream event:', err, line);
+          console.error('Error parsing stream event:', err);
         }
       }
     }
 
-    // Ensure message is marked as complete if stream ends without completed status
     setMessages(prevMessages =>
       prevMessages.map(msg =>
         msg.id === assistantMessageId
@@ -244,15 +186,12 @@ const processStreamResponse = async (
       )
     );
 
-    // Save thread ID if we received one
     if (currentThreadId) {
       setThreadId(currentThreadId);
     }
 
     return { content: responseContent, messageId: currentMessageId, threadId: currentThreadId };
   } catch (error) {
-    // Handle errors during stream processing
-    streamLogger.error('Error processing stream:', error);
     throw error;
   } finally {
     setIsLoading(false);
@@ -485,10 +424,8 @@ export default function AssistantPage() {
         signal: streamControllerRef.current.signal
       };
       
-      streamLogger.log('Sending message to API...');
       const response = await fetch('/api/assistant', fetchOptions);
       
-      streamLogger.log('Response received, processing stream...');
       // Process the streaming response
       await processStreamResponse(
         response,
@@ -539,9 +476,7 @@ export default function AssistantPage() {
       
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        streamLogger.log('Request was aborted');
       } else {
-        streamLogger.error("Error sending message:", error);
         
         // Replace loading message with error
         setMessages(prevMessages =>

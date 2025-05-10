@@ -34,8 +34,6 @@ export async function sendEmail({ to, subject, html, from }: EmailOptions) {
       subject,
       html,
     });
-    
-    console.log(`Email sent to ${to}: ${info.messageId}`);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('Error sending email:', error);

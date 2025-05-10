@@ -167,8 +167,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const response = await apiService.get<ApiResponse<ProjectDetails>>(`/api/projects/${projectId}`);
-      
-      console.log(response.data,"fetched project details");
       // Get the project data from the response
       const projectData = response.data || null;
       

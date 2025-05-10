@@ -110,13 +110,8 @@ export async function POST(request: NextRequest) {
             assistant_id: ASSISTANT_ID || '',
           });
 
-          // Log for debugging
-          console.log(`Streaming started for thread ${thread.id}`);
-
           // Process each chunk from OpenAI
           for await (const chunk of runStream) {
-            // Log chunk type for debugging
-            console.log(`Received chunk event: ${chunk.event}`);
 
             // Handle different event types
             if (chunk.event === 'thread.message.delta') {
@@ -129,9 +124,7 @@ export async function POST(request: NextRequest) {
                 const textValue = chunk.data.delta.content[0].text?.value;
                 
                 if (textValue) {
-                  // Log for debugging
-                  console.log(`Sending delta: ${textValue.substring(0, 50)}${textValue.length > 50 ? '...' : ''}`);
-                  
+                 
                   // Send the text delta to the client
                   controller.enqueue(
                     encoder.encode(
@@ -146,9 +139,7 @@ export async function POST(request: NextRequest) {
                 }
               }
             } else if (chunk.event === 'thread.message.created') {
-              // Log message creation
-              console.log(`Message created: ${chunk.data.id}`);
-              
+             
               controller.enqueue(
                 encoder.encode(
                   JSON.stringify({
@@ -160,9 +151,7 @@ export async function POST(request: NextRequest) {
                 )
               );
             } else if (chunk.event === 'thread.run.completed') {
-              // Log completion
-              console.log(`Run completed for thread ${thread.id}`);
-              
+             
               // Signal completion to the client
               controller.enqueue(
                 encoder.encode(
@@ -186,9 +175,7 @@ export async function POST(request: NextRequest) {
                 )
               );
             } else if (chunk.event === 'thread.run.requires_action') {
-              // Handle tool calls here if needed
-              console.log('Tool action required:', chunk.data);
-              
+             
               // For now, just inform the client that tools are being used
               controller.enqueue(
                 encoder.encode(
@@ -205,11 +192,11 @@ export async function POST(request: NextRequest) {
 
           // Clean up temporary files
           if (!threadId) {
-            console.log('Cleaning up temporary files...');
+         
             for (const fileId of fileIds) {
               try {
                 await openai.files.del(fileId);
-                console.log(`Deleted file ${fileId}`);
+             
               } catch (error) {
                 console.error(`Error deleting file ${fileId}:`, error);
               }
@@ -228,7 +215,6 @@ export async function POST(request: NextRequest) {
             )
           );
         } finally {
-          console.log('Stream closed');
           controller.close();
         }
       }

@@ -210,14 +210,15 @@ export async function POST(
     // Create a stream for the response
     const stream = new ReadableStream({
       async start(controller) {
+        
         try {
           // Send initial status to client immediately
-          console.log('Sending initial status');
           controller.enqueue(
             encoder.encode(
               JSON.stringify({
                 type: 'status',
                 status: 'started',
+                statusMessage: 'Processing your request...',
                 conversationId: conversation.id,
                 content: '',
               }) + '\n'
@@ -423,7 +424,6 @@ export async function POST(
           let documentReferences = new Set<string>();
           
           // Stream the response
-          console.log('Starting to stream from OpenAI');
           const responseStream = await chatModel.stream(formattedPrompt);
           
           for await (const chunk of responseStream) {
@@ -451,7 +451,7 @@ export async function POST(
               }
             }
           }
-          console.log('Stream complete, saving message');
+
           // Format the final content
           const formattedContent = formatAIMessage(fullContent);
           
@@ -490,7 +490,6 @@ export async function POST(
             
             await Promise.all(refPromises.filter(Boolean));
           }
-          console.log('Message saved, sending final response');
           // Fetch the complete message with references
           const completeMessage = await prisma.message.findUnique({
             where: { id: assistantMessage.id },
@@ -539,7 +538,6 @@ export async function POST(
               }) + '\n'
             )
           );
-          console.log('Streaming complete');
         } catch (error) {
           console.error('Error in stream processing:', error);
           
@@ -670,3 +668,5 @@ function sanitizeSearchResults(rawResults: string): string {
     return "Web search results unavailable";
   }
 }
+
+

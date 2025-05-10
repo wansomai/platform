@@ -19,7 +19,6 @@ export default function ProjectPage() {
   useEffect(() => {
     const loadProjectData = async () => {
       if (projectId && !currentProject && !isLoading) {
-        console.log("Initial project data fetch");
         await fetchProjectById(projectId);
       }
     };

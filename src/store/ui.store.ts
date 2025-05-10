@@ -27,7 +27,6 @@ export const useUIStore = create<UIState>((set,get) => ({
   // Active tab in workspace - set default to 'overview'
   activeWorkspaceTab: 'chat',
   setActiveWorkspaceTab: (tab) => {
-    console.log(`Switching to tab: ${tab}`);
     set({ activeWorkspaceTab: tab });
   },
   

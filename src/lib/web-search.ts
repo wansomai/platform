@@ -18,9 +18,6 @@ export async function performWebSearch(query: string): Promise<string> {
     // Execute the search
     const rawResults = await search.call({input: query});
     
-    // Log search for monitoring/debugging
-    console.log(`Web search performed for query: ${query}`);
-    
     // Check if we have results
     if (!rawResults || typeof rawResults !== 'string' || rawResults.trim() === '') {
       return "No relevant information found from web search.";

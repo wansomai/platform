@@ -21,8 +21,6 @@ export function AddTeamMemberModal() {
   const [email, setEmail] = useState("")
 
   const handleAddMember = () => {
-    // Implement logic to add team member
-    console.log("Adding team member:", { name, role, email })
     // Reset the form after adding
     setName("")
     setRole("")

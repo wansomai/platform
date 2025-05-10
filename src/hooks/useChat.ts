@@ -54,7 +54,6 @@ export function useChat(projectId: string) {
       setError(null)  
       // Send message to API
       const endpoint = apiEndpoints.conversations.create(projectId)
-      console.log(endpoint)
       const response = await api.post(endpoint, {
         message: content,
         context,
