@@ -18,10 +18,8 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
 import LRUCache from 'lru-cache'
 
-
-
 // Set a reasonable timeout
-export const maxDuration = 60; // Reduced from 60 to ensure faster response
+export const maxDuration = 60;
 
 // Initialize Prisma with connection pooling
 const prisma = new PrismaClient({
@@ -71,7 +69,10 @@ function isSimpleGreeting(text: string): boolean {
   return simplePatterns.some(pattern => pattern.test(normalizedText)) || normalizedText.length < 20;
 }
 
-// POST handler - Send a message to the conversation (Optimized)
+// Encoder for streaming response
+const encoder = new TextEncoder();
+
+// POST handler - Send a message to the conversation with streaming
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; conversationId: string }> }
@@ -128,7 +129,6 @@ export async function POST(
     });
     
     // For context-dependent queries, get project details
-    // Define project types properly to avoid type errors
     interface SimpleProject {
       title: string;
     }
@@ -141,7 +141,6 @@ export async function POST(
       } | null;
     }
     
-    // Use type assertions to fix type errors
     const projectPromise = isSimpleQuery 
       ? Promise.resolve({ title: "" } as SimpleProject) 
       : prisma.project.findUnique({
@@ -208,301 +207,364 @@ export async function POST(
       documentsPromise
     ]);
     
-    // Process settings
-    let settings = DEFAULT_SETTINGS;
-    if (conversationMeta?.settings) {
-      try {
-        settings = typeof conversationMeta.settings === 'string' 
-          ? JSON.parse(conversationMeta.settings) 
-          : conversationMeta.settings as any;
-      } catch (error) {
-        console.error('Error parsing settings:', error);
-      }
-    }
-    
-    // Create the custom instructions
-    const customInstructions = conversationMeta?.instructions ||
-                              (isSimpleQuery ? "" : (project as FullProject)?.knowledgeBase?.instructions || "");
-    
-    // Prepare document vectors for search - only if needed
-    let relevantContent = "";
-    const documentObjects: Document[] = [];
-    
-    if (!isSimpleQuery && conversationDocuments.length > 0) {
-      try {
-        // Create document objects from conversation documents
-        
-        // Process only documents with content (skip extraction for speed)
-        for (const docRef of conversationDocuments) {
-          if (!docRef.document.content?.content) continue;
-          
-          const documentId = docRef.document.id;
-          const documentContent = docRef.document.content.content;
-          
-          // Create smaller chunks from document content for better relevance
-          const chunks = chunkDocumentContent(
-            documentContent, 
-            docRef.document.title,
-            documentId
+    // Create a stream for the response
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Send initial status to client immediately
+          console.log('Sending initial status');
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'status',
+                status: 'started',
+                conversationId: conversation.id,
+                content: '',
+              }) + '\n'
+            )
           );
+
+          // Process settings
+          let settings = DEFAULT_SETTINGS;
+          if (conversationMeta?.settings) {
+            try {
+              settings = typeof conversationMeta.settings === 'string' 
+                ? JSON.parse(conversationMeta.settings) 
+                : conversationMeta.settings as any;
+            } catch (error) {
+              console.error('Error parsing settings:', error);
+            }
+          }
           
-          documentObjects.push(...chunks);
-        }
-        
-        if (documentObjects.length > 0) {
-          // Initialize embeddings and vector store
-          const embeddings = new OpenAIEmbeddings({
+          // Create the custom instructions
+          const customInstructions = conversationMeta?.instructions ||
+                                    (isSimpleQuery ? "" : (project as FullProject)?.knowledgeBase?.instructions || "");
+          
+          // Prepare document vectors for search - only if needed
+          let relevantContent = "";
+          const documentObjects: Document[] = [];
+          
+          if (!isSimpleQuery && conversationDocuments.length > 0) {
+            try {
+              // Process only documents with content (skip extraction for speed)
+              for (const docRef of conversationDocuments) {
+                if (!docRef.document.content?.content) continue;
+                
+                const documentId = docRef.document.id;
+                const documentContent = docRef.document.content.content;
+                
+                // Create smaller chunks from document content for better relevance
+                const chunks = chunkDocumentContent(
+                  documentContent, 
+                  docRef.document.title,
+                  documentId
+                );
+                
+                documentObjects.push(...chunks);
+              }
+              
+              if (documentObjects.length > 0) {
+                // Initialize embeddings and vector store
+                const embeddings = new OpenAIEmbeddings({
+                  openAIApiKey: process.env.OPENAI_API_KEY,
+                  modelName: "text-embedding-ada-002",
+                  batchSize: 512,
+                  stripNewLines: true
+                });
+                
+                // Only search a reasonable number of documents
+                const docsToSearch = documentObjects.slice(0, MAX_TOTAL_CHUNKS);
+                
+                // Create vector store and search
+                const vectorStore = await MemoryVectorStore.fromDocuments(
+                  docsToSearch,
+                  embeddings
+                );
+                
+                // Find the most relevant documents
+                const queryResults = await vectorStore.similaritySearch(
+                  content, 
+                  3,
+                  (doc) => doc.pageContent.length > 50
+                );
+                
+                // Format relevant content
+                if (queryResults.length > 0) {
+                  relevantContent = queryResults
+                    .map(doc => {
+                      const truncatedContent = doc.pageContent.substring(0, MAX_DOCUMENT_CHUNK_SIZE);
+                      return `### Document: ${doc.metadata.title} ###\n${truncatedContent}\n`;
+                    })
+                    .join("\n\n");
+                }
+              }
+            } catch (vectorError) {
+              console.error("Error in vector search:", vectorError);
+              // Fallback to a simpler approach without failing completely
+              relevantContent = documentObjects.slice(0, 2)
+                .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 500)}\n`)
+                .join("\n\n");
+            }
+          }
+          
+          // Get web search results if enabled and appropriate
+          let webSearchResults = "";
+          if (settings.webSearch && !isSimpleQuery && isWebSearchConfigured()) {
+            try {
+              // Start web search in parallel with other operations
+              const searchPromise = performWebSearch(content);
+              
+              // Set a timeout to ensure search doesn't slow down response too much
+              const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Web search timeout')), 2000);
+              });
+              
+              // Use the search results only if they come back quickly enough
+              const searchResults = await Promise.race([searchPromise, timeoutPromise])
+                .catch(() => "Search timed out");
+              
+              if (searchResults && searchResults !== "Search timed out") {
+                webSearchResults = sanitizeSearchResults(searchResults as string);
+              }
+            } catch (error) {
+              console.error("Web search error:", error);
+            }
+          }
+          
+          // Format message history in correct order
+          const aiMessages = messageHistory.reverse().map((msg) => ({
+            role: msg.role as "user" | "assistant" | "system",
+            content: msg.content,
+          }));
+          
+          // Create appropriate system message based on context
+          let systemMessage;
+          
+          if (isSimpleQuery) {
+            systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
+              project?.title || "Project"
+            }".
+            Provide helpful, accurate, and concise responses.
+            ${customInstructions ? `Special instructions: ${customInstructions}` : ""}`;
+          } else {
+            const fullProject = project as FullProject;
+            
+            systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
+              fullProject?.title || "Project"
+            }".
+            ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
+            ${customInstructions ? `Special instructions: ${customInstructions}` : ""}
+            
+            ${relevantContent ? 
+              `${settings.citeSources ? 
+                "IMPORTANT: I'm providing you with documents that are relevant to this conversation. " +
+                "Use information from these documents to answer questions when possible. " +
+                "Cite document names when you reference information from them."
+                : 
+                "I'm providing you with documents that are relevant to this conversation. " +
+                "Use information from these documents to answer questions when possible."
+              }
+              
+              Here are the relevant documents for context:
+              ${relevantContent}
+              
+              ${settings.citeSources ? 
+                "If you find information in the documents, tell the user which document it came from."
+                : 
+                "Use the document information when relevant to the query."
+              }`
+              : 
+              conversationDocuments.length > 0
+                ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
+                : "No documents are currently attached to this conversation."
+            }
+            
+            ${webSearchResults ? 
+              `I've also searched the web and found this relevant information: 
+              ${webSearchResults}
+              
+              Use this information if it's relevant to the query.`
+              : 
+              ""
+            }
+            
+            ${settings.suggestActions ? 
+              "If appropriate, suggest relevant actions based on the query."
+              : 
+              ""
+            }`;
+          }
+          
+          // Create the prompt template
+          const prompt = ChatPromptTemplate.fromPromptMessages([
+            SystemMessagePromptTemplate.fromTemplate(systemMessage),
+            ...aiMessages.map((msg) =>
+              msg.role === "user"
+                ? HumanMessagePromptTemplate.fromTemplate(msg.content)
+                : SystemMessagePromptTemplate.fromTemplate(msg.content)
+            ),
+            HumanMessagePromptTemplate.fromTemplate(content),
+          ]);
+          
+          // Configure the chat model for streaming
+          const chatModel = new ChatOpenAI({
             openAIApiKey: process.env.OPENAI_API_KEY,
-            modelName: "text-embedding-ada-002", // Use smaller embedding model for speed
-            batchSize: 512, // Increase batch size for faster processing
-            stripNewLines: true // Remove newlines for better embeddings
+            modelName: settings.model || process.env.OPENAI_MODEL || "gpt-3.5-turbo",
+            temperature: settings.temperature || 0.7,
+            streaming: true,
           });
           
-          // Only search a reasonable number of documents
-          const docsToSearch = documentObjects.slice(0, MAX_TOTAL_CHUNKS);
+          // Format the prompt
+          const formattedPrompt = await prompt.format({});
           
-          // Create vector store and search
-          const vectorStore = await MemoryVectorStore.fromDocuments(
-            docsToSearch,
-            embeddings
-          );
+          // Create a temporary assistant message to stream into
+          const tempMessageId = `temp-${Date.now()}`;
+          let fullContent = "";
+          let documentReferences = new Set<string>();
           
-          // Find the most relevant documents (limited to speed up response)
-          const queryResults = await vectorStore.similaritySearch(
-            content, 
-            3,  // Top 3 most relevant chunks
-            (doc) => doc.pageContent.length > 50 // Filter out very small chunks
-          );
+          // Stream the response
+          console.log('Starting to stream from OpenAI');
+          const responseStream = await chatModel.stream(formattedPrompt);
           
-          // Format relevant content
-          if (queryResults.length > 0) {
-            relevantContent = queryResults
-              .map(doc => {
-                // Limit the size of each document chunk
-                const truncatedContent = doc.pageContent.substring(0, MAX_DOCUMENT_CHUNK_SIZE);
-                return `### Document: ${doc.metadata.title} ###\n${truncatedContent}\n`;
-              })
-              .join("\n\n");
+          for await (const chunk of responseStream) {
+            const textContent = chunk.content.toString();
+            fullContent += textContent;
+            
+            // Send the text delta to the client
+            controller.enqueue(
+              encoder.encode(
+                JSON.stringify({
+                  type: 'delta',
+                  conversationId: conversation.id,
+                  messageId: tempMessageId,
+                  content: textContent,
+                }) + '\n'
+              )
+            );
+            
+            // Check for document references during streaming
+            if (settings.citeSources && relevantContent) {
+              for (const doc of documentObjects) {
+                if (fullContent.includes(doc.metadata.title)) {
+                  documentReferences.add(doc.metadata.documentId);
+                }
+              }
+            }
           }
-        }
-      } catch (vectorError) {
-        console.error("Error in vector search:", vectorError);
-        // Fallback to a simpler approach without failing completely
-        relevantContent = documentObjects.slice(0, 2)
-          .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 500)}\n`)
-          .join("\n\n");
-      }
-    }
-    
-    // Get web search results if enabled and appropriate
-    let webSearchResults = "";
-    if (settings.webSearch && !isSimpleQuery && isWebSearchConfigured()) {
-      try {
-        // Start web search in parallel with other operations
-        const searchPromise = performWebSearch(content);
-        
-        // Set a timeout to ensure search doesn't slow down response too much
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Web search timeout')), 2000);
-        });
-        
-        // Use the search results only if they come back quickly enough
-        const searchResults = await Promise.race([searchPromise, timeoutPromise])
-          .catch(() => "Search timed out");
-        
-        if (searchResults && searchResults !== "Search timed out") {
-          webSearchResults = sanitizeSearchResults(searchResults as string);
-        }
-      } catch (error) {
-        console.error("Web search error:", error);
-      }
-    }
-    
-    // Format message history in correct order
-    const aiMessages = messageHistory.reverse().map((msg) => ({
-      role: msg.role as "user" | "assistant" | "system",
-      content: msg.content,
-    }));
-    
-    // Create appropriate system message based on context
-    let systemMessage;
-    
-    if (isSimpleQuery) {
-      // Simple system message for greetings
-      systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
-        project?.title || "Project"
-      }".
-      Provide helpful, accurate, and concise responses.
-      ${customInstructions ? `Special instructions: ${customInstructions}` : ""}`;
-    } else {
-      // Type-safe handling for the full project structure
-      const fullProject = project as FullProject;
-      
-      // Full context for substantive questions
-      systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
-        fullProject?.title || "Project"
-      }".
-      ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
-      ${customInstructions ? `Special instructions: ${customInstructions}` : ""}
-      
-      ${relevantContent ? 
-        `${settings.citeSources ? 
-          "IMPORTANT: I'm providing you with documents that are relevant to this conversation. " +
-          "Use information from these documents to answer questions when possible. " +
-          "Cite document names when you reference information from them."
-          : 
-          "I'm providing you with documents that are relevant to this conversation. " +
-          "Use information from these documents to answer questions when possible."
-        }
-        
-        Here are the relevant documents for context:
-        ${relevantContent}
-        
-        ${settings.citeSources ? 
-          "If you find information in the documents, tell the user which document it came from."
-          : 
-          "Use the document information when relevant to the query."
-        }`
-        : 
-        conversationDocuments.length > 0
-          ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
-          : "No documents are currently attached to this conversation."
-      }
-      
-      ${webSearchResults ? 
-        `I've also searched the web and found this relevant information: 
-        ${webSearchResults}
-        
-        Use this information if it's relevant to the query.`
-        : 
-        ""
-      }
-      
-      ${settings.suggestActions ? 
-        "If appropriate, suggest relevant actions based on the query."
-        : 
-        ""
-      }`;
-    }
-    
-    // Create the prompt template
-    const prompt = ChatPromptTemplate.fromPromptMessages([
-      SystemMessagePromptTemplate.fromTemplate(systemMessage),
-      ...aiMessages.map((msg) =>
-        msg.role === "user"
-          ? HumanMessagePromptTemplate.fromTemplate(msg.content)
-          : SystemMessagePromptTemplate.fromTemplate(msg.content)
-      ),
-      HumanMessagePromptTemplate.fromTemplate(content),
-    ]);
-    
-    // Configure the chat model
-    const chatModel = new ChatOpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY,
-      modelName: settings.model || process.env.OPENAI_MODEL || "gpt-3.5-turbo",
-      temperature: settings.temperature || 0.7,
-      maxConcurrency: 5,
-      maxRetries: 3,
-    });
-    
-    // Format the prompt
-    const formattedPrompt = await prompt.format({});
-    
-    // Generate the complete response (without streaming - we'll add that later)
-    const response = await chatModel.invoke(formattedPrompt);
-    const responseContent = response.content.toString();
-    
-    // Track references for citation
-    let documentReferences = new Set<string>();
-    
-    // Check for document references
-    if (settings.citeSources && relevantContent) {
-      for (const doc of documentObjects) {
-        if (responseContent.includes(doc.metadata.title)) {
-          documentReferences.add(doc.metadata.documentId);
-        }
-      }
-    }
-    
-    // Update conversation timestamp
-    await prisma.conversation.update({
-      where: { id: conversationId },
-      data: { updatedAt: new Date() },
-    }).catch(console.error);
-    
-    // Save the AI message to the database
-    const assistantMessage = await prisma.message.create({
-      data: {
-        content: formatAIMessage(responseContent),
-        role: "assistant",
-        conversationId,
-        metadata: webSearchResults ? 
-          JSON.stringify({ webSearchResults: true }) : 
-          undefined
-      }
-    });
-    
-    // Save references if needed
-    if (settings.citeSources && documentReferences.size > 0) {
-      const refPromises = Array.from(documentReferences).map(docId => {
-        const doc = conversationDocuments.find(d => d.document.id === docId);
-        if (!doc) return null;
-        
-        return prisma.messageReference.create({
-          data: {
-            messageId: assistantMessage.id,
-            documentId: docId,
-            text: doc.document.content?.content.substring(0, 200) + "..." || "",
+          console.log('Stream complete, saving message');
+          // Format the final content
+          const formattedContent = formatAIMessage(fullContent);
+          
+          // Update conversation timestamp
+          await prisma.conversation.update({
+            where: { id: conversationId },
+            data: { updatedAt: new Date() },
+          }).catch(console.error);
+          
+          // Save the AI message to the database
+          const assistantMessage = await prisma.message.create({
+            data: {
+              content: formattedContent,
+              role: "assistant",
+              conversationId,
+              metadata: webSearchResults ? 
+                JSON.stringify({ webSearchResults: true }) : 
+                undefined
+            }
+          });
+          
+          // Save references if needed
+          if (settings.citeSources && documentReferences.size > 0) {
+            const refPromises = Array.from(documentReferences).map(docId => {
+              const doc = conversationDocuments.find(d => d.document.id === docId);
+              if (!doc) return null;
+              
+              return prisma.messageReference.create({
+                data: {
+                  messageId: assistantMessage.id,
+                  documentId: docId,
+                  text: doc.document.content?.content.substring(0, 200) + "..." || "",
+                }
+              });
+            });
+            
+            await Promise.all(refPromises.filter(Boolean));
           }
-        });
-      });
-      
-      await Promise.all(refPromises.filter(Boolean));
-    }
-    
-    // Fetch the complete message with references for returning to the client
-    const completeMessage = await prisma.message.findUnique({
-      where: { id: assistantMessage.id },
-      include: {
-        references: {
-          include: {
-            document: {
-              select: {
-                id: true,
-                title: true,
+          console.log('Message saved, sending final response');
+          // Fetch the complete message with references
+          const completeMessage = await prisma.message.findUnique({
+            where: { id: assistantMessage.id },
+            include: {
+              references: {
+                include: {
+                  document: {
+                    select: {
+                      id: true,
+                      title: true,
+                    },
+                  },
+                },
               },
             },
-          },
-        },
+          });
+          
+          // Send the final message with references
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'final',
+                conversationId: conversation.id,
+                messageId: assistantMessage.id,
+                tempMessageId,
+                content: formattedContent,
+                webSearchResults: webSearchResults && settings.webSearch ? webSearchResults : undefined,
+                references: completeMessage?.references.map((ref) => ({
+                  id: ref.id,
+                  documentId: ref.documentId,
+                  documentName: ref.document?.title || "Unknown Document",
+                  text: ref.text,
+                  page: ref.page,
+                })) || [],
+              }) + '\n'
+            )
+          );
+          
+          // Signal completion
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'status',
+                status: 'completed',
+                conversationId: conversation.id,
+              }) + '\n'
+            )
+          );
+          console.log('Streaming complete');
+        } catch (error) {
+          console.error('Error in stream processing:', error);
+          
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'error',
+                error: error instanceof Error ? error.message : 'Unknown error',
+              }) + '\n'
+            )
+          );
+        } finally {
+          controller.close();
+        }
+      }
+    });
+
+    // Return the stream response with proper headers
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
     });
-    
-    // Format response
-    const responseMessage = {
-      id: completeMessage?.id,
-      content: completeMessage?.content,
-      role: completeMessage?.role,
-      timestamp: completeMessage?.createdAt.toISOString(),
-      // Include web search results if available
-      webSearchResults: webSearchResults && settings.webSearch ? webSearchResults : undefined,
-      references:
-        completeMessage?.references.map((ref) => ({
-          id: ref.id,
-          documentId: ref.documentId,
-          documentName: ref.document?.title || "Unknown Document",
-          text: ref.text,
-          page: ref.page,
-        })) || [],
-    };
-    
-    return NextResponse.json(
-      {
-        status: 201,
-        message: "Message sent successfully",
-        data: responseMessage,
-      },
-      { status: 201 }
-    );
     
   } catch (error) {
     console.error("Error processing message:", error);

@@ -4,11 +4,11 @@ import { getSession, signOut } from 'next-auth/react';
 
 // Create a custom axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://wakili.chat',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://wansom.co',
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Important for cookies
+  withCredentials: true,
 });
 
 // Request interceptor to add auth token
@@ -32,17 +32,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
       console.error('Authentication error:', error.response?.data);
       
       try {
-        // Sign out the user and redirect to login
         await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
       } catch (signOutError) {
         console.error('Error signing out:', signOutError);
         
-        // Fallback redirect
         if (typeof window !== 'undefined') {
           window.location.href = '/login?session=expired';
         }
@@ -89,6 +86,7 @@ export const apiService = {
       }
     });
   },
+  
   postMultipart: async <T>(url: string, formData: FormData): Promise<T> => {
     const response = await apiClient.post<T>(url, formData, {
       headers: {
@@ -101,6 +99,126 @@ export const apiService = {
   patch: async <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
     const response = await apiClient.patch<T>(url, data, config);
     return response.data;
+  },
+  
+  // Add stream support for SSE
+  stream: async (url: string, data?: any, onMessage?: (data: any) => void, onError?: (error: any) => void) => {
+    const session = await getSession();
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream',
+        'Authorization': session?.accessToken ? `Bearer ${session.accessToken}` : '',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+    
+    if (!reader) {
+      throw new Error('No response body');
+    }
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) break;
+      
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+      
+      for (const line of lines) {
+        if (line.trim() === '') continue;
+        
+        try {
+          const data = JSON.parse(line);
+          if (onMessage) onMessage(data);
+        } catch (parseError) {
+          if (onError) onError(parseError);
+        }
+      }
+    }
+  },
+
+  postStream: async (
+    url: string, 
+    data?: any, 
+    onMessage?: (data: any) => void, 
+    onError?: (error: any) => void
+  ) => {
+    try {
+      const session = await getSession();
+      
+      if (!session?.accessToken) {
+        throw new Error('No authentication token available');
+      }
+      
+      const fullUrl = url.startsWith('http') 
+        ? url 
+        : `${process.env.NEXT_PUBLIC_API_URL || 'https://wakili.chat'}${url}`;
+      
+      const response = await fetch(fullUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'text/event-stream',
+          'Authorization': `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify(data),
+        credentials: 'include', // Important for cookies
+      });
+      
+      if (!response.ok) {
+        // Handle 401 specifically
+        if (response.status === 401) {
+          await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
+          return;
+        }
+        
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+      
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error('No response body');
+      }
+      
+      // Read the stream
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.trim() === '') continue;
+          
+          try {
+            const data = JSON.parse(line);
+            if (onMessage) onMessage(data);
+          } catch (parseError) {
+            console.error('Error parsing streaming data:', parseError);
+            if (onError) onError(parseError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Stream error:', error);
+      if (onError) onError(error);
+      throw error;
+    }
   }
 };
 
