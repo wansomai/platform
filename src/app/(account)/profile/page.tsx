@@ -80,7 +80,7 @@ const Page = () => {
 
             <Separator className="my-4" />
 
-            <div className="flex justify-end space-x-4">
+            {/* <div className="flex justify-end space-x-4">
               {isEditing ? (
                 <>
                   <Button
@@ -102,7 +102,7 @@ const Page = () => {
                   Edit Profile
                 </Button>
               )}
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 
