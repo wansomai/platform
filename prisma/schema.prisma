@@ -42,58 +42,58 @@ model VerificationToken {
 }
 
 model User {
-  id                    String                  @id @default(cuid())
-  email                 String                  @unique
-  fullName              String?
-  password              String
-  role                  String                  @default("member")
-  organizationId        String               
-  activeOrganizationId  String?                // Currently active organization
-  createdAt             DateTime                @default(now())
-  updatedAt             DateTime                @updatedAt
-  accounts              Account[]
-  actions               ConversationAction[]
-  conversationDocuments ConversationDocument[]
-  documents             Document[]
-  Folder                Folder[]
-  sentInvitations       Invitation[]            @relation("InvitedBy")
-  messages              Message[]
-  projectDocuments      ProjectDocument[]
-  projectMembers        ProjectMember[]
-  sessions              Session[]
-  SharedMessage         SharedMessage[]
-  SharedWorkspace       SharedWorkspace[]
-  SharedWorkspaceAccess SharedWorkspaceAccess[]
-  organization          Organization            @relation(fields: [organizationId], references: [id]) // Legacy relation
-  activeOrganization    Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
-  createdAIAssociates   AIAssociate[]
+  id                      String                  @id @default(cuid())
+  email                   String                  @unique
+  fullName                String?
+  password                String
+  role                    String                  @default("member")
+  organizationId          String
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  activeOrganizationId    String?
+  createdAIAssociates     AIAssociate[]
+  accounts                Account[]
+  actions                 ConversationAction[]
+  conversationDocuments   ConversationDocument[]
+  documents               Document[]
+  Folder                  Folder[]
+  sentInvitations         Invitation[]            @relation("InvitedBy")
+  messages                Message[]
+  projectDocuments        ProjectDocument[]
+  projectMembers          ProjectMember[]
+  sessions                Session[]
+  SharedMessage           SharedMessage[]
+  SharedWorkspace         SharedWorkspace[]
+  SharedWorkspaceAccess   SharedWorkspaceAccess[]
+  activeOrganization      Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
+  organization            Organization            @relation(fields: [organizationId], references: [id])
   organizationMemberships UserOrganization[]
 }
 
 model Organization {
-  id           String        @id @default(cuid())
+  id           String             @id @default(cuid())
   name         String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  aiAssociates AIAssociate[]
   documents    Document[]
   Folder       Folder[]
   invitations  Invitation[]
   projects     Project[]
-  users        User[]      
-  aiAssociates AIAssociate[]
+  activeUsers  User[]             @relation("ActiveOrganization")
+  users        User[]
   members      UserOrganization[]
-  activeUsers  User[]        @relation("ActiveOrganization")
 }
+
 model UserOrganization {
   userId         String
   organizationId String
-  role           String      @default("member") // Role in this specific organization
-  joinedAt       DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String       @default("member")
+  joinedAt       DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@id([userId, organizationId])
   @@index([organizationId])
 }
@@ -418,4 +418,3 @@ model ProjectAssociate {
 
   @@id([associateId, projectId])
 }
-
