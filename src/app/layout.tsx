@@ -10,10 +10,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Wansom AI",
-  description: "Wansom AI, AI assistant, free legal documents, contract reviews,company lawyer.",
+  description: "Wansom AI,Collaborative AI workspace for legal teams.",
   openGraph: {
     title: 'Wansom AI',
-    description: 'Your AI assistant for all your legal needs',
+    description: 'Collaborative AI workspace for legal teams',
     url: 'https://www.wansom.co/',
     siteName: 'Wansom AI',
     images: '/images/features-2.png',
