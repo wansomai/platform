@@ -69,7 +69,7 @@ export function OrganizationSwitcher() {
     setIsSwitching(true)
     
     try {
-      await apiService.post('/api/organizations/switch', { organizationId })
+      await apiService.post('/api/organization/switch', { organizationId })
       
       // Update the session to reflect the change
       await update() // This will trigger a session update

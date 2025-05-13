@@ -51,7 +51,7 @@ interface Organization {
   joinedAt?: string
 }
 
-export function OrganizationsPage() {
+export default function OrganizationsPage() {
   const { data: session, update } = useSession()
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -69,7 +69,7 @@ export function OrganizationsPage() {
       
       try {
         setIsLoading(true)
-        const response = await apiService.get<{ data: Organization[] }>('/api/organizations')
+        const response = await apiService.get<{ data: Organization[] }>('/api/organization')
         setOrganizations(response.data)
       } catch (error) {
         console.error("Error fetching organizations:", error)
@@ -93,7 +93,7 @@ export function OrganizationsPage() {
     setIsSwitching(true)
     
     try {
-      await apiService.post('/api/organizations/switch', { organizationId })
+      await apiService.post('/api/organization/switch', { organizationId })
       
       // Update the session to reflect the change
       await update() // This will trigger a session update
@@ -121,7 +121,7 @@ export function OrganizationsPage() {
     setIsCreating(true)
     
     try {
-      const response = await apiService.post<{ data: Organization }>('/api/organizations', {
+      const response = await apiService.post<{ data: Organization }>('/api/organization', {
         name: newOrgName.trim()
       })
       

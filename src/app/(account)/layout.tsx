@@ -209,10 +209,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               onClick={isMobile ? handleMobileNavigation : undefined}
             />
             {/* <SidebarLink
-              href="/team"
+              href="/teams"
               icon={Users2}
               label="Team"
-              active={pathname === '/team'}
+              active={pathname === '/teams'}
               onClick={isMobile ? handleMobileNavigation : undefined}
             /> */}
           </div>

@@ -48,7 +48,7 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   fetchTeamMembers: async (organizationId) => {
     try {
       set({ isLoading: true, error: null })
-      const response = await apiService.get<{ data: TeamMember[] }>(`/api/organizations/${organizationId}/members`)
+      const response = await apiService.get<{ data: TeamMember[] }>(`/api/organization/${organizationId}/members`)
       set({ members: response.data, isLoading: false })
       return response.data
     } catch (error: any) {
@@ -63,7 +63,7 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   fetchInvitations: async (organizationId) => {
     try {
       set({ isLoading: true, error: null })
-      const response = await apiService.get<{ data: Invitation[] }>(`/api/organizations/${organizationId}/invitations`)
+      const response = await apiService.get<{ data: Invitation[] }>(`/api/organization/${organizationId}/invitations`)
       set({ invitations: response.data, isLoading: false })
       return response.data
     } catch (error: any) {
@@ -78,7 +78,7 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   inviteTeamMember: async (organizationId, email, role) => {
     try {
       set({ isLoading: true, error: null })
-      const response = await apiService.post(`/api/organizations/${organizationId}/invitations`, {
+      const response = await apiService.post(`/api/organization/${organizationId}/invitations`, {
         email,
         role
       })
@@ -100,7 +100,7 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   cancelInvitation: async (organizationId, invitationId) => {
     try {
       set({ isLoading: true, error: null })
-      await apiService.delete(`/api/organizations/${organizationId}/invitations/${invitationId}`)
+      await apiService.delete(`/api/organization/${organizationId}/invitations/${invitationId}`)
       
       // Update invitations list
       set((state) => ({
@@ -121,7 +121,7 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   removeTeamMember: async (organizationId, userId) => {
     try {
       set({ isLoading: true, error: null })
-      await apiService.delete(`/api/organizations/${organizationId}/members/${userId}`)
+      await apiService.delete(`/api/organization/${organizationId}/members/${userId}`)
       
       // Update members list
       set((state) => ({
@@ -142,7 +142,7 @@ export const useTeamsStore = create<TeamsState>((set, get) => ({
   updateMemberRole: async (organizationId, userId, role) => {
     try {
       set({ isLoading: true, error: null })
-      await apiService.put(`/api/organizations/${organizationId}/members/${userId}`, { role })
+      await apiService.put(`/api/organization/${organizationId}/members/${userId}`, { role })
       
       // Update member role in state
       set((state) => ({

@@ -1,5 +1,4 @@
--- AlterTable
-ALTER TABLE "Conversation" ADD COLUMN     "aiAssociateId" TEXT;
+
 
 -- AlterTable
 ALTER TABLE "User" ADD COLUMN     "activeOrganizationId" TEXT,
@@ -68,9 +67,6 @@ ALTER TABLE "UserOrganization" ADD CONSTRAINT "UserOrganization_userId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "UserOrganization" ADD CONSTRAINT "UserOrganization_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Conversation" ADD CONSTRAINT "Conversation_aiAssociateId_fkey" FOREIGN KEY ("aiAssociateId") REFERENCES "AIAssociate"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AIAssociate" ADD CONSTRAINT "AIAssociate_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

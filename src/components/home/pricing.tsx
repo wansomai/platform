@@ -29,7 +29,7 @@ const PricingSection: React.FC = () => {
         { name: "Priority support", included: false },
       ],
       popular: false,
-      cta: "Get Started",
+      cta: "Try It Free",
       ctaColor: "bg-gray-700 hover:bg-[#005c4d]"
     },
     {
@@ -50,7 +50,7 @@ const PricingSection: React.FC = () => {
         { name: "Priority support", included: true },
       ],
       popular: true,
-      cta: "Start Pro Trial",
+      cta: "Request Access",
       ctaColor: "bg-[#005c4d] hover:bg-green-800"
     },
     {
@@ -72,7 +72,7 @@ const PricingSection: React.FC = () => {
         { name: "Priority support", included: true },
       ],
       popular: false,
-      cta: "Contact Sales",
+      cta: "Book A Demo",
       ctaColor: "bg-gray-700 hover:bg-yellow-600"
     }
   ];
@@ -134,7 +134,7 @@ const PricingSection: React.FC = () => {
               <h3 className="text-xl font-bold">{plan.name}</h3>
               <p className="text-gray-600 mt-2 mb-6">{plan.description}</p>
               
-              <div className="mb-6">
+              {/* <div className="mb-6">
                 <span className="text-4xl font-bold">
                   ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceAnnually}
                 </span>
@@ -146,7 +146,7 @@ const PricingSection: React.FC = () => {
                     ${(Number(plan.priceMonthly) * 12 - Number(plan.priceAnnually) * 12).toFixed(0)} saved per year
                   </div>
                 )}
-              </div>
+              </div> */}
               
               <ul className="space-y-4 mb-8 flex-grow">
                 {plan.features.map((feature, featureIndex) => (
