@@ -47,7 +47,7 @@ export default function InvitationPage() {
       
       try {
         // This would be a separate endpoint to get invitation details by token
-        const response = await apiService.get(`/api/invitations?token=${token}`)
+        const response:any = await apiService.get(`/api/invitations?token=${token}`)
         setInvitation(response.data)
       } catch (error: any) {
         setError(error.message || "Failed to load invitation details")
