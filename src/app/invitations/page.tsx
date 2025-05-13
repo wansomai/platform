@@ -23,7 +23,7 @@ import {
 import { apiService } from "@/lib/api"
 import { useNotifications } from "@/hooks/useNotifications"
 
-export default function InvitationPage() {
+function InvitationContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { data: session, status } = useSession()
@@ -146,7 +146,7 @@ export default function InvitationPage() {
   
   // Show invitation details
   return (
-      <Suspense fallback={<div>Loading...</div>}>
+    
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
@@ -224,6 +224,28 @@ export default function InvitationPage() {
           </Button>
         </CardFooter>
       </Card>
-    </div></Suspense>
+    </div>
+  )
+}
+
+export default function InvitationPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle>Loading Invitation</CardTitle>
+            <CardDescription>
+              Please wait while we load the invitation details...
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center py-6">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <InvitationContent />
+    </Suspense>
   )
 }
