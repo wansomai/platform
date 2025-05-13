@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import {
@@ -146,6 +146,7 @@ export default function InvitationPage() {
   
   // Show invitation details
   return (
+      <Suspense fallback={<div>Loading...</div>}>
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
@@ -223,6 +224,6 @@ export default function InvitationPage() {
           </Button>
         </CardFooter>
       </Card>
-    </div>
+    </div></Suspense>
   )
 }
