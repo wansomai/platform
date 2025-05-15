@@ -37,16 +37,16 @@ const Navbar = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-      isScrolled || isOpen ? 'bg-white shadow-sm backdrop-filter backdrop-blur-lg bg-opacity-20' : 'bg-transparent'
+      isScrolled || isOpen ? 'bg-[#355e66] shadow-sm backdrop-filter lg:backdrop-blur-md  text-white bg-opacity-60' : 'bg-transparent text-gray-300'
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
-          <Image src="/logo-lg.png" alt="wansom ai" width={140} height={52} />
+          <Image src="/images/logo-dark.png" alt="wansom ai" width={140} height={52} />
         </Link>
 
         {/* Mobile menu button */}
         <button 
-          className="md:hidden z-50 text-gray-800 focus:outline-none"
+          className="md:hidden z-50 text-white focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -58,34 +58,34 @@ const Navbar = () => {
           <Image src="/images/logo-dark.png" alt="wansom ai" width={140} height={52} />
         </Link>
 
-          <nav className="flex space-x-6">
+          <nav className="flex space-x-6 ">
             
-            <div className="relative group">
-              <Link href="/#ai-assistant" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
+            <div className="relative group ">
+              <Link href="/#ai-assistant" className="font-semibold text-lg  flex items-center">
                 AI Assistant
                 <Sparkles className="ml-1 w-4 h-4" />
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#document-vault" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
+              <Link href="/#document-vault" className="font-semibold text-lg  flex items-center">
                 Vault
              
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#workflows" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
+              <Link href="/#workflows" className="font-semibold text-lg  flex items-center">
                 Workflows
        
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#integrations" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
+              <Link href="/#integrations" className="font-semibold text-lg  flex items-center">
                 Integrations
                 
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#security" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
+              <Link href="/#security" className="font-semibold text-lg flex items-center">
                 Security
               </Link>
             </div>
