@@ -37,7 +37,7 @@ const Navbar = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-      isScrolled || isOpen ? 'bg-white shadow-sm' : 'bg-transparent'
+      isScrolled || isOpen ? 'bg-white shadow-sm backdrop-filter backdrop-blur-lg bg-opacity-20' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
@@ -55,37 +55,37 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
         <Link href="/">
-          <Image src="/logo-lg.png" alt="wansom ai" width={140} height={52} />
+          <Image src="/images/logo-dark.png" alt="wansom ai" width={140} height={52} />
         </Link>
 
           <nav className="flex space-x-6">
             
             <div className="relative group">
-              <Link href="/#ai-assistant" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#ai-assistant" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
                 AI Assistant
                 <Sparkles className="ml-1 w-4 h-4" />
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#document-vault" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#document-vault" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
                 Vault
              
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#workflows" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#workflows" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
                 Workflows
        
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#integrations" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#integrations" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
                 Integrations
                 
               </Link>
             </div>
             <div className="relative group">
-              <Link href="/#security" className="font-semibold text-lg text-gray-800 hover:text-green-600 flex items-center">
+              <Link href="/#security" className="font-semibold text-lg text-white hover:text-[#d47b0f] flex items-center">
                 Security
               </Link>
             </div>
@@ -95,7 +95,7 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Link href="/login" className="font-medium text-gray-800 hover:text-green-600 border border-gray-300 rounded-md py-2 px-4">
+            <Link href="/login" className="font-medium text-white hover:text-green-600 border border-gray-300 rounded-md py-2 px-4">
               Sign in
             </Link>
             <Link

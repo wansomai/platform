@@ -97,8 +97,21 @@
   border-top: 1px solid #eee;
   margin: 1.5rem 0;
 }
-
-
+ .bg-primary{
+  background-color:#355e66;
+ }
+ .bg-dark{
+  background-color:#005c4d;
+ }
+ .text-dim{
+  color: #f3f4f4;
+ }
+.bg-secondary{
+  background-color:#d47b0f;
+}
+.text-secondary{
+  color: #d47b0f;
+ }
 
 @layer base {
   :root {

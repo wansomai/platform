@@ -92,55 +92,48 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative pt-40 pb-20 overflow-hidden">
-      {/* Animated Background Canvas */}
-      <canvas 
-        ref={canvasRef} 
-        className="absolute top-0 left-0 w-full h-full z-0"
-      />
+    <section className="relative pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
       
       {/* Content */}
-      <div className="container relative z-10 mx-auto px-4 text-center">
-        <h1 className="text-bold text-3xl md:text-6xl font-bold font-marcellus mb-4 text-gray-800">
-          Legal AI Workspace that Saves you time.
+      <div className="container relative z-10 mx-auto px-4 text-center ">
+        <h1 className="text-bold text-3xl md:text-6xl font-bold font-marcellus mb-4 text-white text-shadow-2xs">
+         Collaborative AI workspace for legal teams
         </h1>
         
-        <Sparkles className='w-10 h-10 text-green-600 mx-auto'/>
-        
-        <p className="text-lg md:text-xl max-w-4xl mx-auto mb-8 font-jost text-gray-700">
+        <p className="text-lg md:text-xl max-w-4xl mx-auto mb-8 font-jost text-[#f3f4f4]">
           Our AI automates routine legal processes, so you can focus on high-impact work.
         </p>
         
         <button 
-          className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-6 mb-10"
+          className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-dark hover:bg-[#d47b0f] rounded-md py-3 px-6 mb-10"
           onClick={() => window.location.href = '/register'}
         >
-          TRY IT FOR FREE <Sparkles className='w-5 h-5 text-white'/>
+          TRY IT FOR FREE <Sparkles className='w-5 h-5 text-white' />
         </button>
         
         <div className="flex flex-col md:flex-row justify-center items-center mb-8">
           <div className="flex items-center mb-4 md:mb-0">
-            <span className="uppercase tracking-wide font-semibold mr-6 text-gray-800 font-jost">
+            <span className="uppercase tracking-wide font-semibold mr-6 text-white font-jost">
               TRUSTED BY
             </span>
-            <div className="flex text-green-700 font-jost font-bold">
+            <div className="flex text-white font-bold">
               +180 Firms 
             </div>
           </div>
           
-          <div className="mx-6 h-6 border-r border-gray-300 hidden md:block"></div>
+          <div className="mx-6 h-6 border-r border-gray-100 hidden md:block"></div>
           
           <div className="flex items-center">
-            <span className="text-lg font-semibold mr-2 text-gray-800">G2</span>
-            <span className="text-lg font-semibold mr-2 text-gray-800">4.8</span>
-            <div className="flex text-yellow-400">
+            <span className="text-lg font-semibold mr-2 text-dim">G2</span>
+            <span className="text-lg font-semibold mr-2 text-dim">4.8</span>
+            <div className="flex text-secondary">
               {'★★★★★'}
             </div>
           </div>
         </div>
         
         {/* Contract Editor Preview */}
-        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-8 md:-mb-24">
           <img src='/wansom-home.png' alt="wansom AI Chat Interface" className="w-full"/>
         </div>
       </div>
