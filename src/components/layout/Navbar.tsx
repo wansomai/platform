@@ -37,7 +37,7 @@ const Navbar = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-      isScrolled || isOpen ? 'bg-[#355e66] shadow-sm backdrop-filter lg:backdrop-blur-md  text-white bg-opacity-60' : 'bg-transparent text-gray-300'
+      isScrolled || isOpen ? 'bg-[#355e66] shadow-sm backdrop-filter lg:backdrop-blur-lg  text-white bg-opacity-40' : 'bg-transparent text-gray-300'
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
@@ -49,7 +49,7 @@ const Navbar = () => {
           className="md:hidden z-50 text-white focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X className='text-black' size={24} /> : <Menu size={24} />}
         </button>
 
         {/* Desktop Navigation */}
