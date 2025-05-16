@@ -179,7 +179,7 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#005c4d] hover:bg-green-700 border border-transparent rounded-md group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-black border border-transparent rounded-md group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             {isLoading ? 'Creating account...' : 'Create account'}
           </button>

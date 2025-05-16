@@ -148,7 +148,7 @@ function LoginFormContent() {
             <button
               type="submit"
               disabled={isLoading}
-              className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-[#005c4d] border border-transparent rounded-md group hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="relative flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary border border-transparent rounded-md group hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
