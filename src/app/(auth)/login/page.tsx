@@ -64,7 +64,7 @@ function LoginFormContent() {
   };
   
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center py-12'>
+    <div className='flex min-h-screen flex-col items-center justify-center py-12 bg-primary'>
       <div className="w-full max-w-md mx-auto p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
