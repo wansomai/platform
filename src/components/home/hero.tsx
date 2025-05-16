@@ -111,7 +111,7 @@ const HeroSection: React.FC = () => {
           TRY IT FOR FREE <Sparkles className='w-5 h-5 text-white' />
         </button>
         
-        <div className="flex flex-col md:flex-row justify-center items-center mb-8">
+        {/* <div className="flex flex-col md:flex-row justify-center items-center mb-8">
           <div className="flex items-center mb-4 md:mb-0">
             <span className="uppercase tracking-wide font-semibold mr-6 text-white font-jost">
               TRUSTED BY
@@ -131,7 +131,7 @@ const HeroSection: React.FC = () => {
             </div>
           </div>
         </div>
-        
+         */}
         {/* Contract Editor Preview */}
         <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-8 md:-mb-24">
           <img src='/wansom-home.png' alt="wansom AI Chat Interface" className="w-full"/>

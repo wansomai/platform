@@ -2,7 +2,7 @@
 'use client'
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { ArrowRight, FileText, CheckCircle, Calculator, BookOpen, FileSearch, Scale, ShieldCheck, AlertCircle, Calendar } from 'lucide-react';
+import { Star, Activity, PieChart, Grid,ArrowRight, FileText, CheckCircle, Calculator, BookOpen, FileSearch, Scale, ShieldCheck, AlertCircle, Calendar, Sparkles } from 'lucide-react';
 
 const FeaturesSection: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -57,77 +57,33 @@ const FeaturesSection: React.FC = () => {
     }
   ];
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
+    <div className="py-8 md:py-16 bg-white ">
         {/* Section Heading */}
-        <div className="mb-16" id='ai-assistant'>
-          <h2 className="text-2xl md:text-4xl font-bold mb-4 font-marcellus max-w-5xl mx-auto text-center">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal processes for global teams</h2>
-        </div>
+        <section className="container mx-auto px-4" id='ai-assistant'>
+          <h2 className="text-2xl md:text-4xl font-bold mb-4 font-marcellus max-w-5xl mx-auto text-start md:text-center">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal processes for global teams</h2>
+        </section>
+       
 
-        {/* Features with Image */}
-        <div className="flex flex-col md:flex-row items-center gap-8 mb-20">
-          {/* Image Side */}
-          <div className="md:w-1/2">
-            <div className="rounded-lg overflow-hidden">
-              <Image 
-                src="/images/features-2.png" 
-                alt="Legal Dashboard" 
-                width={600}
-                height={400}
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-
-          {/* Content Side */}
-          <div className="md:w-1/2">
-            <h3 className="text-2xl font-bold mb-6">Legal AI Assistant Trained on your enterprise Data</h3>
-            <p className="text-gray-600 mb-6">
-              Our Legal AI Assistant is trained on your enterprise data, providing personalized insights and recommendations to help you make informed decisions.
-            </p>
-            {/* Feature Item 1 */}
-            <div className="mb-8">
-              <div className="bg-gray-100 inline-block px-4 py-2 rounded-md mb-2">
-                <h4 className="text-xl font-medium text-green-700">Dedicated Legal Workspaces</h4>
-              </div>
-              <p className="text-gray-600">
-                Create dedicated legal workspaces to organize deep work and collaborate with your team. Provide instructions in natural language and collaborate with our AI agent for quicker results.
-              </p>
-            </div>
-            
-            {/* Feature Item 2 */}
-            <div className="mb-8">
-              <div className="bg-gray-100 inline-block px-4 py-2 rounded-md mb-2">
-                <h4 className="text-xl font-medium text-green-700">Deep Research</h4>
-              </div>
-              <p className="text-gray-600">
-               Enable web search and supplement your enterprise data with real-time legal insights and recommendations to help you make more informed decisions.
-              </p>
-            </div>
-            
-            {/* Feature Item 3 */}
-            <div className='mb-8'>
-              <div className="bg-gray-100 inline-block px-4 py-2 rounded-md mb-2">
-                <h4 className="text-xl font-medium text-green-700">Customizable Actions</h4>
-              </div>
-              <p className="text-gray-600">
-                Define custom actions and workflows to automate routine tasks and improve efficiency directly within your legal workspace.
-              </p>
-            </div>
-            <div>
-              <div className="bg-gray-100 inline-block px-4 py-2 rounded-md mb-2">
-                <h4 className="text-xl font-medium text-green-700">Document Drafting</h4>
-              </div>
-              <p className="text-gray-600">
-               Draft legal documents and contracts with ease using our AI-powered templates and suggestions. Save time and reduce errors in your legal drafting process.
-              </p>
-            </div>
-          </div>
-        </div>
+<section className='flex items-center justify-center gap-5 container mx-auto px-4 mb-12'>
+  {
+    [1,2,3,4,5,6,7].map((item) => (
+      <div key={item} className='w-1/3'>
+        <img 
+          src={`/logos/${item}.png`} 
+          alt="Legal Dashboard" 
+         
+          className="h-20 w-40 mx-auto object-contain grayscale hover:grayscale-0 transition duration-300"
+        />
+      </div>
+    ))
+  }
+</section>
+ <PartnerSupportSection/>
+      
 
         {/* Everything You Need Section */}
-        <div className="mb-10" id="workflows">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What You Can Automate with Wansom</h2>
+        <div className="mb-10 py-12 max-w-8xl px-4 mx-auto" id="workflows">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What You Can Automate with Wansom AI</h2>
           <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">
             Legal Processes can be tedious and time-consuming, We save you time by automating them.
           </p>
@@ -141,7 +97,7 @@ const FeaturesSection: React.FC = () => {
               return (
                 <div 
                   key={process.title} 
-                  className={`${isHighlighted ? ' bg-[#005c4d] p-8' : 'bg-gray-100 p-8'} rounded-lg relative`}
+                  className={`${isHighlighted ? ' bg-primary p-8' : 'bg-gray-100 p-8'} rounded-lg relative`}
                 >
                   {isHighlighted ? (
                     <div className="flex justify-center mb-5">
@@ -151,7 +107,7 @@ const FeaturesSection: React.FC = () => {
                     </div>
                   ) : (
                     <div className={`flex justify-center mb-5 `}>
-                      <div className="bg-[#005c4d] rounded-full p-3">
+                      <div className="bg-primary rounded-full p-3">
                         <process.icon className="w-5 h-5 text-white" />
                       </div>
                     </div>
@@ -165,7 +121,7 @@ const FeaturesSection: React.FC = () => {
                       {process.description}
                     </p>
                     <div className="flex justify-center">
-                      <button className={`flex items-center ${isHighlighted ? 'text-white' : 'text-green-700'} font-medium`} onClick={() => window.location.href = '/login'}>
+                      <button className={`flex items-center ${isHighlighted ? 'text-white' : 'text-secondary'} font-medium`} onClick={() => window.location.href = '/login'}>
                         Try it out <ArrowRight className="w-4 h-4 ml-1" />
                       </button>
                     </div>
@@ -194,7 +150,7 @@ const FeaturesSection: React.FC = () => {
             {Array.from({ length: Math.ceil(legalProcesses.length / 3) }, (_, i) => (
               <button 
                 key={i}
-                className={`w-3 h-3 rounded-full ${currentSlide === i ? 'bg-green-700' : 'bg-gray-300'}`}
+                className={`w-3 h-3 rounded-full ${currentSlide === i ? 'bg-primary' : 'bg-gray-300'}`}
                 aria-label={`Go to slide ${i + 1}`}
                 onClick={() => {
                   setCurrentSlide(i);
@@ -215,9 +171,109 @@ const FeaturesSection: React.FC = () => {
             </svg>
           </button>
         </div>
-      </div>
-    </section>
+     
+    </div>
   );
 };
 
 export default FeaturesSection;
+
+
+const PartnerSupportSection = () => {
+  return (
+    <div className=" px-4 py-12 bg-primary ">
+      {/* Main section with two columns on desktop, stacked on mobile */}
+      <div className="flex flex-col lg:flex-row gap-8 container mx-auto ">
+        {/* Left column - heading and ratings */}
+        <div className="lg:w-1/2">
+             <h2 className='text-2xl md:text-4xl font-bold mb-4 text-white max-w-5xl mx-auto text-start'>
+           Protecting Client confidentiality. Built for collaboration 
+          </h2>
+          <p className='text-dim mb-6 text-lg'>
+            AI is helping global legal teams achieve cost savings, increase productivity, and manage complex processes more effectively. Wansom AI  provides a secure, collaborative workspace powered by custom legal AI models that integrate directly into your firm’s workflows.<br/>
+ Whether your goal is to streamline operations, improve legal outcomes, or handle complex matters, we ensure AI delivers measurable value for your practice and your clients
+          </p>
+          
+        <img src='/wansom-features.png' alt="wansom AI Chat Interface" className="w-[140%] h-auto mx-auto rounded-lg  mb-8"/>
+        </div>
+        
+        {/* Right column - feature cards */}
+        <div className="lg:w-1/2">
+          <div className="space-y-6">
+            {/* Publishing Card */}
+            <div className="flex gap-4 p-4">
+              <div className="mt-1">
+                <div className="p-2 bg-green-50 rounded-lg">
+                  <Sparkles className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-1">Custom AI Models</h3>
+                <p className="text-gray-100 text-lg">
+                 Domain specific AI models for the legal industry. Fine-tuned by jurisdiction, case types, and legal specific document formats
+                </p>
+              </div>
+            </div>
+            
+            {/* Analytics Card */}
+            <div className="flex gap-4 p-4 ">
+              <div className="mt-1">
+                <div className="p-2 bg-green-50 rounded-lg">
+                  <PieChart className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-1">Collaborative Workspace</h3>
+                <p className="text-gray-100 text-lg">
+                  Enable real-time collaboration across teams handling shared legal matters.
+                </p>
+              </div>
+            </div>
+            
+            {/* Engagement Card */}
+            <div className="flex gap-4 p-4">
+              <div className="mt-1">
+                <div className="p-2 bg-green-50 rounded-lg">
+                  <FileText className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-1">Document Intelligence</h3>
+                <p className="text-gray-100 text-lg">
+                  Extract insights, summarize, and review large documents in minutes with AI precision.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4 p-4">
+              <div className="mt-1">
+                <div className="p-2 bg-green-50 rounded-lg">
+                  <Activity className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-1">Agentic Workflows</h3>
+                <p className="text-gray-100 text-lg">
+                  Streamline processes like, Drafting, compliance reporting, Research, onboarding, and more.
+                </p>
+              </div>
+            </div>
+
+              <div className="flex gap-4 p-4">
+              <div className="mt-1">
+                <div className="p-2 bg-green-50 rounded-lg">
+                  <Activity className="w-6 h-6 text-secondary" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-1">Deep Research</h3>
+                <p className="text-gray-100 text-lg">
+                  Enable web search and supplement your enterprise data with real-time legal insights and recommendations to help you make more informed decisions.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
