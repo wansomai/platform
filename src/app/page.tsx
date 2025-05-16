@@ -92,7 +92,7 @@ export default function Home() {
       {/* Security Section */}
       <section className="py-20 bg-white" id="security">
         <div className="container mx-auto px-4 max-w-7xl">
-        <h2 className=" text-3xl md:text-4xl font-bold mb-4 font-mercellius text-center">What your firm does<br/> best, amplified.</h2>
+        <h2 className=" text-3xl md:text-4xl font-bold mb-4 font-mercellius text-center">What your firm does best,<br/> amplified.</h2>
           <div className="">
             
             

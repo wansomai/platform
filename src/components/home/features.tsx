@@ -2,7 +2,7 @@
 'use client'
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Star, Activity, PieChart, Grid,ArrowRight, FileText, CheckCircle, Calculator, BookOpen, FileSearch, Scale, ShieldCheck, AlertCircle, Calendar, Sparkles } from 'lucide-react';
+import { Star, Activity, PieChart, Grid,ArrowRight, FileText, CheckCircle, Calculator, BookOpen, FileSearch, Scale, ShieldCheck, AlertCircle, Calendar, Sparkles, Atom } from 'lucide-react';
 
 const FeaturesSection: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -60,7 +60,7 @@ const FeaturesSection: React.FC = () => {
     <div className="py-8 md:py-16 bg-white ">
         {/* Section Heading */}
         <section className="container mx-auto px-4" id='ai-assistant'>
-          <h2 className="text-2xl md:text-4xl font-bold mb-4 font-marcellus max-w-5xl mx-auto text-start md:text-center">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal processes for global teams</h2>
+          <h2 className="text-2xl md:text-4xl font-bold mb-4 font-marcellus max-w-5xl mx-auto text-start md:text-center">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal Processes for Global Teams</h2>
         </section>
        
 
@@ -84,7 +84,7 @@ const FeaturesSection: React.FC = () => {
         {/* Everything You Need Section */}
         <div className="mb-10 py-12 max-w-8xl px-4 mx-auto" id="workflows">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What You Can Automate with Wansom AI</h2>
-          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">
+          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12 text-lg">
             Legal Processes can be tedious and time-consuming, We save you time by automating them.
           </p>
           
@@ -261,7 +261,7 @@ const PartnerSupportSection = () => {
               <div className="flex gap-4 p-4">
               <div className="mt-1">
                 <div className="p-2 bg-green-50 rounded-lg">
-                  <Activity className="w-6 h-6 text-secondary" />
+                  <Atom className="w-6 h-6 text-secondary" />
                 </div>
               </div>
               <div>
