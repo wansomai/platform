@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: 'Careers at Wansom AI | Join Our Legal Tech Team',
     description: 'Join Wansom AI and help shape the future of legal technology. Explore exciting career opportunities in Nairobi.',
     type: 'website',
-    url: 'https://wansom.co/careers',
+    url: 'https://wansom.ai/careers',
     images: [
       {
         url: '/dashboard.jpg',

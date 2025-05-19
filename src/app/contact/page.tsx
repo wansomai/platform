@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Contact Us | Wansom AI - Legal Services',
     description: 'Get in touch with Wansom AI. Located at I&M House, Upper Hill, Nairobi. Connect with our legal team for inquiries, support, and consultations.',
     type: 'website',
-    url: 'https://wansom.co/contact',
+    url: 'https://wansom.ai/contact',
     images: [
       {
         url: '/dashboard.jpg',

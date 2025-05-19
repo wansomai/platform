@@ -22,8 +22,8 @@ export async function POST(request:NextRequest) {
     .join("\n\n");
 
   const mailOptions = {
-    from: "info@wansom.co",
-    to: ["info@wansom.co"],
+    from: "law@wansom.ai",
+    to: ["law@wansom.ai"],
     subject: "New Form Submission",
     text: `You have received a new submission:\n\n${formattedPayload}`,
   };

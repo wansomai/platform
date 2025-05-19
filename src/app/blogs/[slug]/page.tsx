@@ -37,7 +37,7 @@ export async function generateMetadata( { params }: Props,
         title: adaptedPost.title,
         description: adaptedPost.preview,
         type: 'article',
-        url: `https://wansom.co/blogs/${params}`,
+        url: `https://wansom.ai/blogs/${params}`,
         images: [
           {
             url: adaptedPost.image || '/images/features-1.png',

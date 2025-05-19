@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: 'Legal Tech Blog | AI Law Insights & Resources | wansom AI',
     description: 'Expert insights on AI law, digital ethics, and legal technology transformation. Stay informed with wansom\'s latest research and analysis.',
     type: 'website',
-    url: 'https://wansom.co/blogs',
+    url: 'https://wansom.ai/blogs',
     images: [
       {
         url: '/images/features-2.png',

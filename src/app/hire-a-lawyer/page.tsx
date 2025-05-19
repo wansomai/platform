@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Hire a Lawyer | Get Legal Advice Online | wansom AI',
     description: 'Connect with experienced lawyers online for legal advice, document review, and consultation. Get quick answers to your legal questions from real attorneys specialized in your issue.',
     type: 'website',
-    url: 'https://wansom.co/hire-a-lawyer',
+    url: 'https://wansom.ai/hire-a-lawyer',
     images: [
       {
         url: '/hero.png', // You'll need to add this image

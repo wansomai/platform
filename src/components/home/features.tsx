@@ -60,7 +60,7 @@ const FeaturesSection: React.FC = () => {
     <div className="py-8 md:py-16 bg-white ">
         {/* Section Heading */}
         <section className="container mx-auto px-4" id='ai-assistant'>
-          <h2 className="text-2xl md:text-4xl font-bold mb-4 font-marcellus max-w-5xl mx-auto text-start md:text-center">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal Processes for Global Teams</h2>
+          <h2 className="text-2xl md:text-4xl font-bold font-marcellus max-w-5xl mx-auto text-start md:text-center mb-8">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal Processes for Global Teams</h2>
         </section>
        
 

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Wansom AI',
     description: 'Collaborative AI workspace for legal teams',
-    url: 'https://www.wansom.co/',
+    url: 'https://www.wansom.ai/',
     siteName: 'Wansom AI',
     images: '/images/features-2.png',
     locale: 'en_US',

@@ -116,7 +116,7 @@ export function sendWelcomeEmail(user: { email: string; fullName: string; }) {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://wansom.co/images/logo-dark.png" alt="Wansom Logo">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
         </div>
         <div class="content">
           <h1>Welcome to Wansom, ${user.fullName}!</h1>
@@ -152,9 +152,9 @@ export function sendWelcomeEmail(user: { email: string; fullName: string; }) {
           
           <p>Ready to get started?</p>
           
-          <p><a href="https://wansom.com/dashboard" class="button">Enter Your Workspace</a></p>
+          <p><a href="https://wansom.ai/dashboard" class="button">Enter Your Workspace</a></p>
           
-          <p>If you have any questions or need assistance, our support team is ready to help. Simply reply to this email or contact us at ceo@wansom.co.</p>
+          <p>If you have any questions or need assistance, our support team is ready to help. Simply reply to this email or contact us at law@wansom.ai</p>
           
           <p>Best regards,<br>
           The Wansom Team</p>
@@ -166,7 +166,7 @@ export function sendWelcomeEmail(user: { email: string; fullName: string; }) {
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.co/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>

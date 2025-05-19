@@ -135,7 +135,7 @@ const CareersPageClient = () => {
                   <p className="text-gray-600 mb-4">{job.description}</p>
                   
                   <div className="flex justify-end">
-                    <a href='mailto:info@wansom.co' className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center">
+                    <a href='mailto:info@wansom.ai' className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center">
                       Apply Now
                       <ChevronRight className="ml-1 h-4 w-4" />
                     </a>
