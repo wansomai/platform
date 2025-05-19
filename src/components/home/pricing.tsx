@@ -96,7 +96,7 @@ const PricingSection: React.FC = () => {
             <button 
               onClick={() => setBillingPeriod(billingPeriod === 'monthly' ? 'annually' : 'monthly')}
               className={`relative inline-flex h-6 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                billingPeriod === 'annually' ? 'bg-green-700' : 'bg-gray-300'
+                billingPeriod === 'annually' ? 'bg-primary' : 'bg-gray-300'
               }`}
               role="switch"
               aria-checked={billingPeriod === 'annually'}
