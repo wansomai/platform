@@ -203,14 +203,7 @@ export default function DashboardPage() {
                             </div>
                           </Link>
                         ))}
-                        {projects && projects.length > 3 && (
-                          <div className="p-3 text-center">
-                            <Button variant="ghost" onClick={() => router.push('/projects')}>
-                              View all workspaces
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                          </div>
-                        )}
+                      
                       </div>
                     )}
                   </div>
@@ -219,7 +212,7 @@ export default function DashboardPage() {
               </Tabs>
             </CardContent>
             <CardFooter className="border-t p-3 bg-gray-50">
-              <Button variant="ghost" size="sm" className="w-full" onClick={() => router.push('/projects')}>
+              <Button variant="ghost"  className="w-full" onClick={() => router.push('/projects')}>
                 View all Workspaces
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
