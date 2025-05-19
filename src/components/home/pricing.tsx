@@ -51,7 +51,7 @@ const PricingSection: React.FC = () => {
       ],
       popular: true,
       cta: "Request Access",
-      ctaColor: "bg-[#005c4d] hover:bg-green-800"
+      ctaColor: "bg-primary hover:bg-green-800"
     },
     {
       name: "Enterprise",
