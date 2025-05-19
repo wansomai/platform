@@ -1,20 +1,24 @@
 // components/FeaturesSection.tsx
-'use client'
+'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Star, Activity, PieChart, Grid,ArrowRight, FileText, CheckCircle, Calculator, BookOpen, FileSearch, Scale, ShieldCheck, AlertCircle, Calendar, Sparkles, Atom } from 'lucide-react';
+import { 
+  Star, Activity, PieChart, Grid, ArrowRight, FileText, 
+  CheckCircle, Calculator, BookOpen, FileSearch, Scale, 
+  ShieldCheck, AlertCircle, Calendar, Sparkles, Atom,
+  ChevronLeft, ChevronRight
+} from 'lucide-react';
 
 const FeaturesSection: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   
-  // Comprehensive list of legal processes that can be automated
+  // Legal processes data
   const legalProcesses = [
     {
       title: "Contract Review & Management",
       description: "Automate contract reviews, extract key terms, identify risks, and manage renewal deadlines—saving you hours of manual work.",
       icon: FileText
     },
-  
     {
       title: "Tax Filings & Compliance",
       description: "Streamline tax preparation, automate regulatory filings, and stay compliant with ever-changing legal requirements and deadlines.",
@@ -56,220 +60,253 @@ const FeaturesSection: React.FC = () => {
       icon: Calendar
     }
   ];
+
+  // Partner logos data
+  const partnerLogos = [
+    { src: "/logos/1.png", alt: "Partner Law Firm 1" },
+    { src: "/logos/2.png", alt: "Partner Law Firm 2" },
+    { src: "/logos/3.png", alt: "Partner Law Firm 3" },
+    { src: "/logos/4.png", alt: "Partner Law Firm 4" },
+    { src: "/logos/5.png", alt: "Partner Law Firm 5" },
+    { src: "/logos/6.png", alt: "Partner Law Firm 6" },
+    { src: "/logos/7.png", alt: "Partner Law Firm 7" }
+  ];
+
+  const totalSlides = Math.ceil(legalProcesses.length / 3);
+
+  const handlePrevSlide = () => {
+    setCurrentSlide(prev => (prev > 0 ? prev - 1 : totalSlides - 1));
+  };
+
+  const handleNextSlide = () => {
+    setCurrentSlide(prev => (prev < totalSlides - 1 ? prev + 1 : 0));
+  };
+
+  const handleSlideChange = (index: number) => {
+    setCurrentSlide(index);
+  };
+
   return (
-    <div className="py-8 md:py-16 bg-white ">
-        {/* Section Heading */}
-        <section className="container mx-auto px-4" id='ai-assistant'>
-          <h2 className="text-2xl md:text-4xl font-bold font-marcellus max-w-5xl mx-auto text-start md:text-center mb-8">Built By Leading Lawfirms and Advocates,<br/>Powering End to End Legal Processes for Global Teams</h2>
-        </section>
-       
+    <div className="section-spacing bg-white">
+      {/* Header Section */}
+      <section className="section-container" id="ai-assistant">
+        <div className="text-start md:text-center mb-12 lg:mb-16">
+          <h2 className="text-heading-2 mb-6 max-w-5xl mx-auto">
+            Built By Leading Law Firms and Advocates,<br />
+            Powering End to End Legal Processes for Global Teams
+          </h2>
+        </div>
+      </section>
 
-<section className='flex items-center justify-center gap-5 container mx-auto px-4 mb-12'>
-  {
-    [1,2,3,4,5,6,7].map((item) => (
-      <div key={item} className='w-1/3'>
-        <img 
-          src={`/logos/${item}.png`} 
-          alt="Legal Dashboard" 
-         
-          className="h-20 w-40 mx-auto object-contain grayscale hover:grayscale-0 transition duration-300"
-        />
-      </div>
-    ))
-  }
-</section>
- <PartnerSupportSection/>
-      
+      {/* Partner Logos */}
+      <section className="section-container mb-16">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-8 items-center">
+          {partnerLogos.map((logo, index) => (
+            <div key={index} className="flex justify-center">
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                width={160}
+                height={80}
+                className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
 
-        {/* Everything You Need Section */}
-        <div className="mb-10 py-12 max-w-8xl px-4 mx-auto" id="workflows">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What You Can Automate with Wansom AI</h2>
-          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12 text-lg">
-            Legal Processes can be tedious and time-consuming, We save you time by automating them.
-          </p>
+      {/* Partner Support Section */}
+      <PartnerSupportSection />
+
+      {/* Automation Section */}
+      <div className="section-spacing bg-gray-50" id="workflows">
+        <div className="section-container">
+          <div className="text-center mb-12 lg:mb-16">
+            <h2 className="text-heading-2 mb-4">
+              What You Can Automate with Wansom AI
+            </h2>
+            <p className="text-body-large text-muted max-w-3xl mx-auto">
+              Legal processes can be tedious and time-consuming. We save you time by automating them.
+            </p>
+          </div>
           
           {/* Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {legalProcesses.map((process, index) => {
-              // Every third item (index % 3 === 1) gets the green background
-              const isHighlighted = index % 3 === 1;
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+            {legalProcesses.slice(currentSlide * 3, (currentSlide * 3) + 3).map((process, index) => {
+              // Every middle card gets highlighted
+              const isHighlighted = index === 1;
+              const actualIndex = currentSlide * 3 + index;
               
               return (
                 <div 
-                  key={process.title} 
-                  className={`${isHighlighted ? ' bg-primary p-8' : 'bg-gray-100 p-8'} rounded-lg relative`}
+                  key={actualIndex} 
+                  className={`relative rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 ${
+                    isHighlighted 
+                      ? 'bg-primary text-white shadow-xl' 
+                      : 'bg-white shadow-lg hover:shadow-xl'
+                  }`}
                 >
-                  {isHighlighted ? (
-                    <div className="flex justify-center mb-5">
-                      <div className="bg-white rounded-full p-3">
-                        <process.icon className={`w-6 h-6 text-green-800`} />
+                  <div className="p-8">
+                    <div className="flex justify-center mb-6">
+                      <div className={`p-4 rounded-full ${
+                        isHighlighted 
+                          ? 'bg-white/10 backdrop-blur-sm' 
+                          : 'bg-primary'
+                      }`}>
+                        <process.icon className={`w-8 h-8 ${
+                          isHighlighted ? 'text-white' : 'text-white'
+                        }`} />
                       </div>
                     </div>
-                  ) : (
-                    <div className={`flex justify-center mb-5 `}>
-                      <div className="bg-primary rounded-full p-3">
-                        <process.icon className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className={isHighlighted ? '' : 'border border-gray-200 rounded-lg p-8'}>
-                    <h3 className={`text-xl font-bold mb-3 text-center ${isHighlighted ? 'text-white' : ''}`}>
+                    
+                    <h3 className={`text-heading-5 text-center mb-4 ${
+                      isHighlighted ? 'text-white' : 'text-gray-900'
+                    }`}>
                       {process.title}
                     </h3>
-                    <p className={`${isHighlighted ? 'text-gray-100' : 'text-gray-600'} mb-4`}>
+                    
+                    <p className={`text-body mb-6 ${
+                      isHighlighted ? 'text-gray-100' : 'text-gray-600'
+                    }`}>
                       {process.description}
                     </p>
+                    
                     <div className="flex justify-center">
-                      <button className={`flex items-center ${isHighlighted ? 'text-white' : 'text-secondary'} font-medium`} onClick={() => window.location.href = '/login'}>
-                        Try it out <ArrowRight className="w-4 h-4 ml-1" />
+                      <button 
+                        className={`inline-flex items-center text-sm font-semibold transition-all hover:gap-3 ${
+                          isHighlighted 
+                            ? 'text-white hover:text-gray-100' 
+                            : 'text-primary hover:text-primary/80'
+                        }`}
+                        onClick={() => window.location.href = '/login'}
+                        aria-label={`Try ${process.title}`}
+                      >
+                        <span>Try it out</span>
+                        <ArrowRight className="w-4 h-4 ml-2 transition-transform" />
                       </button>
                     </div>
                   </div>
                 </div>
               );
-            }).slice(currentSlide * 3, (currentSlide * 3) + 3)}
+            })}
           </div>
-        </div>
 
-        {/* Slider Controls */}
-        <div className="flex justify-center items-center space-x-4 mt-10">
-          <button 
-            className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors" 
-            aria-label="Previous slide"
-            onClick={() => {
-              setCurrentSlide(prev => (prev > 0 ? prev - 1 : Math.floor(legalProcesses.length / 3) - 1));
-            }}
-          >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          
-          <div className="flex space-x-2">
-            {Array.from({ length: Math.ceil(legalProcesses.length / 3) }, (_, i) => (
-              <button 
-                key={i}
-                className={`w-3 h-3 rounded-full ${currentSlide === i ? 'bg-primary' : 'bg-gray-300'}`}
-                aria-label={`Go to slide ${i + 1}`}
-                onClick={() => {
-                  setCurrentSlide(i);
-                }}
-              />
-            ))}
+          {/* Slider Controls */}
+          <div className="flex justify-center items-center gap-6">
+            <button 
+              className="p-3 rounded-full border border-gray-300 hover:bg-gray-50 transition-all duration-200 hover:scale-105 focus-ring" 
+              onClick={handlePrevSlide}
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            
+            <div className="flex gap-2">
+              {Array.from({ length: totalSlides }, (_, i) => (
+                <button 
+                  key={i}
+                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                    currentSlide === i 
+                      ? 'bg-primary scale-110' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  onClick={() => handleSlideChange(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+            
+            <button 
+              className="p-3 rounded-full border border-gray-300 hover:bg-gray-50 transition-all duration-200 hover:scale-105 focus-ring" 
+              onClick={handleNextSlide}
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
           </div>
-          
-          <button 
-            className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors" 
-            aria-label="Next slide"
-            onClick={() => {
-              setCurrentSlide(prev => (prev < Math.floor(legalProcesses.length / 3) - 1 ? prev + 1 : 0));
-            }}
-          >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
         </div>
-     
+      </div>
     </div>
   );
 };
 
-export default FeaturesSection;
-
-
+// Partner Support Section Component
 const PartnerSupportSection = () => {
-  return (
-    <div className=" px-4 py-12 bg-primary ">
-      {/* Main section with two columns on desktop, stacked on mobile */}
-      <div className="flex flex-col lg:flex-row gap-8 container mx-auto ">
-        {/* Left column - heading and ratings */}
-        <div className="lg:w-1/2">
-             <h2 className='text-2xl md:text-4xl font-bold mb-4 text-white max-w-5xl mx-auto text-start'>
-           Protecting Client confidentiality. Built for collaboration 
-          </h2>
-          <p className='text-dim mb-6 text-lg'>
-            AI is helping global legal teams achieve cost savings, increase productivity, and manage complex processes more effectively. Wansom AI  provides a secure, collaborative workspace powered by custom legal AI models that integrate directly into your firm’s workflows.<br/>
- Whether your goal is to streamline operations, improve legal outcomes, or handle complex matters, we ensure AI delivers measurable value for your practice and your clients
-          </p>
-          
-        <img src='/wansom-features.png' alt="wansom AI Chat Interface" className="w-[140%] h-auto mx-auto rounded-lg  mb-8"/>
-        </div>
-        
-        {/* Right column - feature cards */}
-        <div className="lg:w-1/2">
-          <div className="space-y-6">
-            {/* Publishing Card */}
-            <div className="flex gap-4 p-4">
-              <div className="mt-1">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <Sparkles className="w-6 h-6 text-secondary" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Custom AI Models</h3>
-                <p className="text-gray-100 text-lg">
-                 Domain specific AI models for the legal industry. Fine-tuned by jurisdiction, case types, and legal specific document formats
-                </p>
-              </div>
-            </div>
-            
-            {/* Analytics Card */}
-            <div className="flex gap-4 p-4 ">
-              <div className="mt-1">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <PieChart className="w-6 h-6 text-secondary" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Collaborative Workspace</h3>
-                <p className="text-gray-100 text-lg">
-                  Enable real-time collaboration across teams handling shared legal matters.
-                </p>
-              </div>
-            </div>
-            
-            {/* Engagement Card */}
-            <div className="flex gap-4 p-4">
-              <div className="mt-1">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <FileText className="w-6 h-6 text-secondary" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Document Intelligence</h3>
-                <p className="text-gray-100 text-lg">
-                  Extract insights, summarize, and review large documents in minutes with AI precision.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4 p-4">
-              <div className="mt-1">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <Activity className="w-6 h-6 text-secondary" />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Agentic Workflows</h3>
-                <p className="text-gray-100 text-lg">
-                  Streamline processes like, Drafting, compliance reporting, Research, onboarding, and more.
-                </p>
-              </div>
-            </div>
+  const features = [
+    {
+      icon: Sparkles,
+      title: "Custom AI Models",
+      description: "Domain-specific AI models for the legal industry. Fine-tuned by jurisdiction, case types, and legal-specific document formats."
+    },
+    {
+      icon: PieChart,
+      title: "Collaborative Workspace",
+      description: "Enable real-time collaboration across teams handling shared legal matters."
+    },
+    {
+      icon: FileText,
+      title: "Document Intelligence",
+      description: "Extract insights, summarize, and review large documents in minutes with AI precision."
+    },
+    {
+      icon: Activity,
+      title: "Agentic Workflows",
+      description: "Streamline processes like drafting, compliance reporting, research, onboarding, and more."
+    },
+    {
+      icon: Atom,
+      title: "Deep Research",
+      description: "Enable web search and supplement your enterprise data with real-time legal insights and recommendations to help you make more informed decisions."
+    }
+  ];
 
-              <div className="flex gap-4 p-4">
-              <div className="mt-1">
-                <div className="p-2 bg-green-50 rounded-lg">
-                  <Atom className="w-6 h-6 text-secondary" />
+  return (
+    <div className="section-spacing bg-primary">
+      <div className="section-container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 ">
+          {/* Left Column - Content */}
+          <div className="order-1">
+            <h2 className="text-heading-2 text-white mb-6">
+              Protecting Client Confidentiality. Built for Collaboration
+            </h2>
+            <p className="text-body-large text-dim mb-8">
+              AI is helping global legal teams achieve cost savings, increase productivity, and manage complex processes more effectively. Wansom AI provides a secure, collaborative workspace powered by custom legal AI models that integrate directly into your firm's workflows.
+            </p>
+            <p className="text-body text-dim mb-8">
+              Whether your goal is to streamline operations, improve legal outcomes, or handle complex matters, we ensure AI delivers measurable value for your practice and your clients.
+            </p>
+             <div className="features-image-container">
+              <img 
+                src="/wansom-features.png" 
+                alt="Wansom AI Features Dashboard showing collaborative tools and AI-powered legal workflows"
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+              />
+            </div>
+           
+          </div>
+          
+          {/* Right Column - Image */}
+          <div className="order-2">
+            <div className="space-y-6">
+              {features.map((feature, index) => (
+                <div key={index} className="flex gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                      <feature.icon className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-heading-5 text-white mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-body text-gray-100">
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1">Deep Research</h3>
-                <p className="text-gray-100 text-lg">
-                  Enable web search and supplement your enterprise data with real-time legal insights and recommendations to help you make more informed decisions.
-                </p>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -277,3 +314,5 @@ const PartnerSupportSection = () => {
     </div>
   );
 };
+
+export default FeaturesSection;

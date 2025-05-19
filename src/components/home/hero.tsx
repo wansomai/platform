@@ -92,15 +92,15 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
+    <section className="relative pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
       
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 text-center ">
-        <h1 className="text-bold text-3xl md:text-6xl font-bold font-marcellus mb-4 text-white text-shadow-2xs">
+        <h1 className=" text-heading-1 mb-4 text-white text-shadow-2xs">
          Collaborative AI workspace for legal teams
         </h1>
         
-        <p className="text-lg md:text-xl max-w-4xl mx-auto mb-8 font-jost text-[#f3f4f4]">
+        <p className="text-lg md:text-xl max-w-4xl mx-auto mb-8  text-[#f3f4f4]">
           Our AI automates routine legal processes, so you can focus on high-impact work.
         </p>
         
@@ -111,30 +111,15 @@ const HeroSection: React.FC = () => {
           TRY IT FOR FREE <Sparkles className='w-5 h-5 text-white' />
         </button>
         
-        {/* <div className="flex flex-col md:flex-row justify-center items-center mb-8">
-          <div className="flex items-center mb-4 md:mb-0">
-            <span className="uppercase tracking-wide font-semibold mr-6 text-white font-jost">
-              TRUSTED BY
-            </span>
-            <div className="flex text-white font-bold">
-              +180 Firms 
-            </div>
-          </div>
-          
-          <div className="mx-6 h-6 border-r border-gray-100 hidden md:block"></div>
-          
-          <div className="flex items-center">
-            <span className="text-lg font-semibold mr-2 text-dim">G2</span>
-            <span className="text-lg font-semibold mr-2 text-dim">4.8</span>
-            <div className="flex text-secondary">
-              {'★★★★★'}
-            </div>
-          </div>
-        </div>
-         */}
+  
         {/* Contract Editor Preview */}
         <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-8 md:-mb-24">
-          <img src='/wansom-home.png' alt="wansom AI Chat Interface" className="w-full"/>
+          <img 
+  src="/wansom-home.png" 
+  alt="Wansom AI Chat Interface" 
+  className="w-full h-auto"
+  loading="eager"
+/>
         </div>
       </div>
     </section>

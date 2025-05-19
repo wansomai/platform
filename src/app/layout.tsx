@@ -6,19 +6,58 @@ import { Notifications } from "@/components/ui/Notifications";
 import AuthProvider from "@/providers/AuthProvider";
 import Script from 'next/script';
 
-const inter = Roboto({ weight: "300", subsets: ["latin"] });
+// Configure Roboto with multiple weights for professional use
+const roboto = Roboto({ 
+  weight: ["300", "400", "500"],
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-roboto'
+});
 
 export const metadata: Metadata = {
   title: "Wansom AI",
-  description: "Wansom AI,Collaborative AI workspace for legal teams.",
+  description: "Wansom AI - Collaborative AI workspace for legal teams.",
   openGraph: {
     title: 'Wansom AI',
     description: 'Collaborative AI workspace for legal teams',
     url: 'https://www.wansom.ai/',
     siteName: 'Wansom AI',
-    images: '/images/features-2.png',
+    images: [
+      {
+        url: '/images/features-2.png',
+        width: 1200,
+        height: 630,
+        alt: 'Wansom AI - Legal AI Platform'
+      }
+    ],
     locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Wansom AI',
+    description: 'Collaborative AI workspace for legal teams',
+    images: ['/images/features-2.png'],
+  },
+  keywords: [
+    'legal AI',
+    'law firm software',
+    'document automation',
+    'legal tech',
+    'AI assistant',
+    'legal collaboration'
+  ],
+  authors: [{ name: 'Wansom AI' }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -28,9 +67,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-                  <head>
-             <meta name="google-site-verification" content="fkcTStcVW3qayGemjRjx9Jcr5Ryq0bBCG5GLDjMiLuw" />
+    <html lang="en" className={roboto.variable}>
+      <head>
+        <meta name="google-site-verification" content="fkcTStcVW3qayGemjRjx9Jcr5Ryq0bBCG5GLDjMiLuw" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#355e66" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        
+        {/* Google Analytics */}
         <Script
           strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=G-J08Q7P3RH2`}
@@ -49,12 +94,12 @@ export default function RootLayout({
             `,
           }}
         />
-
       </head>
-      <body className={inter.className}>
+      <body className={`${roboto.className} antialiased`}>
         <AuthProvider>
-          <Notifications/>
-          {children}</AuthProvider>
+          <Notifications />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
