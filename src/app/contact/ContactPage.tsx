@@ -7,7 +7,7 @@ import InquiryForm from "@/components/forms/InquiryForm";
 
 export default function ContactPageClient() {
   return (
-    <main className="min-h-screen relative">
+    <main className="min-h-screen relative bg-[#f3f4f4]">
       <div className="fixed left-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-4 z-50">
         <a
           href="https://x.com/wansom_ai"

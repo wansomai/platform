@@ -9,9 +9,9 @@ const CalendlyWidget = dynamic(
 
 const BookingPage = () => {
   return (
-    <div className="">
+    <div className="bg-primary min-h-screen">
       <Navbar />
-      <div className="w-full max-w-4xl mx-auto   rounded-lg p-6 mt-10 ">
+      <div className="w-full max-w-4xl mx-auto   rounded-lg p-6  ">
         <div className="flex justify-center h-fit rounded-lg">
           <CalendlyWidget />
         </div>
