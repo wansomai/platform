@@ -240,7 +240,7 @@ export function ChatInterface() {
           
           <div
             className={`rounded-lg px-4 py-3 ${
-              isUser ? "bg-green-600 text-white" : "bg-secondary-100"
+              isUser ? "bg-primary text-white" : "bg-secondary-100"
             }`}
           >
           {message.isLoading || isStreaming ? (

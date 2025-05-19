@@ -31,7 +31,7 @@ export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({ status }) =>
             <div key={step.key} className="flex items-center">
               {index > 0 && (
                 <div className={`w-2 h-px mx-1 ${
-                  isCompleted ? 'bg-green-500' : 'bg-gray-300'
+                  isCompleted ? 'bg-primary' : 'bg-gray-300'
                 }`} />
               )}
               <div className="relative">

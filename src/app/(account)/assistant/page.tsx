@@ -655,7 +655,7 @@ export default function AssistantPage() {
                       <div
                         className={`rounded-lg px-3 sm:px-4 py-2 ${
                           message.role === "user"
-                            ? "bg-green-600 text-white"
+                            ? "bg-primary text-white"
                             : "bg-gray-100"
                         }`}
                       >

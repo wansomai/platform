@@ -73,7 +73,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline" className="text-white  hover:bg-primary-700 bg-green-600" onClick={() => setShowProjectModal(true)}>
+            <Button variant="outline" className="text-white  hover:bg-black bg-primary hover:text-white" onClick={() => setShowProjectModal(true)}>
               <FolderPlus className="mr-2 h-4 w-4" />
               New Workspace
             </Button>

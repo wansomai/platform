@@ -77,7 +77,7 @@ export function AssociateCard({ associate, onUseInWorkspace }: AssociateCardProp
             <Badge variant="outline" className={associate.status === "active" ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-700 border-gray-200"}>
               {associate.status === "active" ? (
                 <>
-                  <span className="h-2 w-2 rounded-full bg-green-500 mr-1.5 animate-pulse"></span>
+                  <span className="h-2 w-2 rounded-full bg-primary mr-1.5 animate-pulse"></span>
                   Active
                 </>
               ) : (
