@@ -166,7 +166,7 @@ function IntegrationsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 mb-12">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-8 mb-12">
           {integrations.map((integration, index) => (
             <div 
               key={index}
