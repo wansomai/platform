@@ -59,8 +59,8 @@ function SecuritySection() {
   return (
     <section className=" bg-white" id="security">
       <div className="max-w-8xl mx-auto px-4 lg:px-8 py-12 lg:py-16">
-        <div className="bg-primary bg-[url(/meeting.jpg)] bg-blend-multiply bg-cover bg-center rounded-xl overflow-hidden">
-          <div className="p-8 lg:p-12">
+        <div className=" bg-primary bg-[url(/meeting.jpg)] bg-blend-multiply bg-cover bg-center rounded-xl overflow-hidden">
+          <div className="p-8 lg:p-12 section-container">
             <div className="text-center mb-8 lg:mb-12">
               <h2 className="text-heading-2 text-white mb-4">
                 What your firm does best, amplified.
