@@ -88,7 +88,7 @@ export default function ContactPageClient() {
               </div>
          </div>
      </section>
-        <div className="container mx-auto px-6 md:pl-20 py-10 pt-32 ">
+        <div className="container mx-auto px-6 md:pl-0 py-10 pt-32 ">
           <div className="grid lg:grid-cols-2 gap-12 ">
             {/* Left Column - Contact Form */}
             <div>

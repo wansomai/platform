@@ -59,14 +59,14 @@ const BlogsPageClient = () => {
     <div className="bg-gray-50 min-h-screen">
         <Navbar/>
       {/* Header Section */}
-      <section className="bg-white py-16 mt-10">
-        <div className="container mx-auto px-4">
+      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
+        <div className="container mx-auto px-4 py-12">
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Blog & Resources</h1>
-            <div className="text-sm text-gray-600 mb-6">
+            <div className="text-sm  mb-6">
               <Link href="/" className="hover:text-blue-600">Home</Link> / <span>Articles</span>
             </div>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg ">
             Explore our latest thoughts, research, and insights on ,AI Law, digital ethics, AI governance, and technology transformation.
             </p>
           </div>
