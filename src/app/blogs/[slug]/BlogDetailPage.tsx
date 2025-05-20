@@ -110,48 +110,19 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="fixed left-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-4 z-50">
-        <a
-          href={twitterShareUrl}
-          target="_blank"
-          className="text-slate-800 hover:text-slate-600 transition-colors"
-        >
-          <div className="w-8 h-8 border border-yellow-600 rounded-full flex items-center justify-center ">
-            <svg
-              className="w-6 h-6"
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M36.6526 3.8078H43.3995L28.6594 20.6548L46 43.5797H32.4225L21.7881 29.6759L9.61989 43.5797H2.86886L18.6349 25.56L2 3.8078H15.9222L25.5348 16.5165L36.6526 3.8078ZM34.2846 39.5414H38.0232L13.8908 7.63406H9.87892L34.2846 39.5414Z"
-                fill="black"
-              />
-            </svg>
-          </div>
-        </a>
-        <a
-          href={linkedinShareUrl}
-          target="_blank"
-          className="text-slate-800 hover:text-slate-600 transition-colors"
-        >
-          <div className="w-8 h-8 border rounded-full border-yellow-600 flex items-center justify-center">
-            <Linkedin className="w-4 h-4" />
-          </div>
-        </a>
-      </div>
+      <Navbar />
       {/* Header Section */}
-      <section className="">
-        <Navbar />
-        <div className="container mx-auto px-6 md:pl-20 py-10 pt-32">
+      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
+        
+        <div className="container mx-auto px-6 py-12 text-white">
           <div className="grid  gap-12">
             {/* Left Column - Contact Form */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              <h1 className="text-3xl md:text-4xl font-bold  mb-4">
                 {blog.title}
               </h1>
               {/* Breadcrumb */}
-              <div className="container mx-auto px-4 py-4 text-sm text-gray-600">
+              <div className="container mx-auto px-4 py-4 text-sm ">
                 <div className="flex items-center">
                   <Link href="/" className="hover:text-teal-600">
                     Home
@@ -161,7 +132,7 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
                     Articles
                   </Link>
                   <span className="mx-2">/</span>
-                  <span className="text-gray-500 truncate max-w-[200px]">
+                  <span className="truncate max-w-[200px]">
                     {blog.title}
                   </span>
                 </div>
