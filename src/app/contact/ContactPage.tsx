@@ -7,7 +7,7 @@ import InquiryForm from "@/components/forms/InquiryForm";
 
 export default function ContactPageClient() {
   return (
-    <main className="min-h-screen relative bg-[#f3f4f4]">
+    <main className=" relative bg-[#f3f4f4]">
       <div className="fixed left-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col gap-4 z-50">
         <a
           href="https://x.com/wansom_ai"
@@ -36,19 +36,15 @@ export default function ContactPageClient() {
           </div>
         </a>
       </div>
-
+    <Navbar />
       {/* Hero Section with Two Columns */}
-      <section className="">
-        <Navbar />
-        <div className="container mx-auto px-6 md:pl-20 py-10 pt-32">
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Left Column - Contact Form */}
-            <div>
-              <h1 className="font-marcellus text-5xl mb-6">Contact Us</h1>
-              <div className="font-jost text-sm text-slate-600 mb-10">
+      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
+         <div className="container mx-auto px-4 lg:px-8 py-12  text-white">
+    <h1 className="font-marcellus text-5xl mb-6 text-white">Contact Us</h1>
+              <div className="font-jost text-sm  mb-5 ">
                 Home / Contact Us
               </div>
-              <div className="flex items-center gap-3 text-slate-600 mb-4 ">
+              <div className="flex items-center gap-3 mb-4 ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -73,7 +69,7 @@ export default function ContactPageClient() {
                   Nairobi, Kenya
                 </p>
               </div>
-              <div className="flex items-center gap-3 text-slate-600 mb-4 ">
+              <div className="flex items-center gap-3  mb-4 ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -90,6 +86,13 @@ export default function ContactPageClient() {
                 </svg>
                 <p>info@wansom.ai</p>
               </div>
+         </div>
+     </section>
+        <div className="container mx-auto px-6 md:pl-20 py-10 pt-32 ">
+          <div className="grid lg:grid-cols-2 gap-12 ">
+            {/* Left Column - Contact Form */}
+            <div>
+          
 
               <h2 className="font-marcellus text-2xl mb-8">
                 Send us a message
@@ -99,16 +102,8 @@ export default function ContactPageClient() {
 
             {/* Right Column - Map */}
             <div className="space-y-6">
-              <div>
-                <Image
-                  src="/hero.png"
-                  alt="AI lawyer"
-                  width={600}
-                  height={400}
-                  className="rounded-lg object-cover w-full"
-                />
-              </div>
-              <div className="w-full h-[400px] rounded-lg overflow-hidden">
+            
+              <div className="w-full h-[500px] rounded-lg overflow-hidden">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.800665020861!2d36.808691074965616!3d-1.2941083986935926!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f11e9e9f172db%3A0xde236816f452452b!2sI%26M%20Bank%202nd%20Ngong%20Avenue%20Branch%2C%20Ngong%20Ave%2C%20Nairobi!5e0!3m2!1sen!2ske!4v1717142028581!5m2!1sen!2ske" width="600" height="450" loading="lazy" 
                   className="w-full h-full"
@@ -122,7 +117,7 @@ export default function ContactPageClient() {
           </div>
         </div>
         <Footer />
-      </section>
+     
     </main>
   );
 }
