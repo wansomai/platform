@@ -60,19 +60,19 @@ const LegalDocumentsPageClient = () => {
     <div className="bg-gray-50 min-h-screen">
         <Navbar/>
       {/* Header Section */}
-      <section className="bg-white py-16 mt-10">
+      <section className=" py-16 pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Legal Templates & Documents : Downloadable Agreements, Contracts, Leases, Wills & More</h1>
-            <div className="text-sm text-gray-600 mb-6">
+            <div className="text-sm  mb-6">
               <Link href="/" className="hover:text-blue-600">Home</Link> / <span>legal-deocuments</span>
             </div>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg ">
                 Explore our collection of legal documents and templates to help you navigate the complexities of legal matters. Whether you're looking for contracts, agreements, or other essential documents, we have you covered.
             </p>
 
             <Link
-                  href="login"
+                  href="/login"
                   className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-4 text-center flex items-center gap-2 mt-6 w-fit"
                   
                 >

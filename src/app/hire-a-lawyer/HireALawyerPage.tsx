@@ -81,7 +81,7 @@ const HireALawyerPage = () => {
     <div>
       <Navbar/>
       <main className="min-h-screen flex-col items-center justify-between">
-        <section className="py-20 hero-bg">
+        <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="grid md:grid-cols-2 gap-12 mt-10">
               <div className="text-left">
@@ -206,7 +206,7 @@ const HireALawyerPage = () => {
             </div>
           </div>
         </section>
-        <section className="py-10" id="about">
+        <section className="py-10 section-container" id="about">
           <h1 className="section-title text-dark text-4xl mb-5 text-center lg:max-w-[80%] mx-auto">
             Get quick answers from real lawyers, easily.
           </h1>
@@ -214,19 +214,19 @@ const HireALawyerPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-10 py-10">
             <div className="flex flex-col items-center gap-4">
               <img src="/icons/5.svg" alt="Ask question icon" />
-              <p className="text-lg text-dim text-center">
+              <p className="text-lg text-dark text-center">
                 Ask your detailed legal or tax question to send to an attorney.
               </p>
             </div>
             <div className="flex flex-col items-center gap-4">
               <img src="/icons/2.svg" alt="Legal advice icon" />
-              <p className="text-lg text-dim text-center">
+              <p className="text-lg text-dark text-center">
                 Get legal advice online or by phone from a lawyer that specializes in your issue.
               </p>
             </div>
             <div className="flex flex-col items-center gap-4">
               <img src="/icons/1.svg" alt="Resolution icon" />
-              <p className="text-lg text-dim text-center">
+              <p className="text-lg text-dark text-center">
                 Resolve your issue and move forward with confidence.
               </p>
             </div>
