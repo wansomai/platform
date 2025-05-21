@@ -6,6 +6,7 @@ import { Notifications } from "@/components/ui/Notifications";
 import AuthProvider from "@/providers/AuthProvider";
 import Script from 'next/script';
 
+
 // Configure Roboto with multiple weights for professional use
 const roboto = Roboto({ 
   weight: ["300", "400", "500"],
@@ -99,6 +100,7 @@ export default function RootLayout({
         <AuthProvider>
           <Notifications />
           {children}
+          
         </AuthProvider>
       </body>
     </html>

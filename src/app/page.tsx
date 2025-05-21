@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/home/hero";
 import FeaturesSection from "@/components/home/features";
 import VaultSection from "@/components/home/vault";
+import CookieConsent, { Cookies } from "react-cookie-consent";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,6 +32,17 @@ export default function Home() {
         <SecuritySection />
         <IntegrationsSection />
       </main>
+             <CookieConsent
+  location="bottom"
+  buttonText="Accept Cookies"
+  cookieName="wansomCookies"
+  style={{ background: "#2B373B" }}
+  buttonStyle={{ color: "#ffffff", fontSize: "13px",backgroundColor:"#005c4d" }}
+  expires={150}
+>
+ We use essential cookies to make our site function effectively. We’d like to set additional cookies to better understand site usage, enhance site improvements, and remember your settings. We also use cookies set by other sites to assist in delivering content from their services. View our
+
+</CookieConsent>
       <Footer />
     </>
   );
