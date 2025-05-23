@@ -355,7 +355,7 @@ export default function WorkflowsPage() {
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-1">
-                            {associate.tools.includes("documentSearch") && (
+                            {associate.tools?.includes("documentSearch") && (
                               <Badge
                                 variant="outline"
                                 className="text-xs bg-white"
@@ -364,7 +364,7 @@ export default function WorkflowsPage() {
                                 Docs
                               </Badge>
                             )}
-                            {associate.tools.includes("webSearch") && (
+                            {associate.tools?.includes("webSearch") && (
                               <Badge
                                 variant="outline"
                                 className="text-xs bg-white"
