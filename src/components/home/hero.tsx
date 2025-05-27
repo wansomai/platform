@@ -101,7 +101,7 @@ const HeroSection: React.FC = () => {
         </h1>
         
         <p className="text-lg md:text-xl max-w-4xl mx-auto mb-8  text-[#f3f4f4]">
-          Our AI automates routine legal processes, so you can focus on high-impact work.
+          Save time by automating routine legal processes with AI, so you can focus on high-impact work.
         </p>
         
         <button 
