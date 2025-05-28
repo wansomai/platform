@@ -299,7 +299,7 @@ export default function WorkflowsPage() {
                   onClick={() => setShowProModal(true)}
                 >
                   <Zap className="mr-2 h-4 w-4" />
-                  Use Template
+                  Use in workspace
                 </Button>
               </CardContent>
             </Card>

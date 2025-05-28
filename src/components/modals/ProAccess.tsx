@@ -54,7 +54,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Create unlimited associates for your firm</span>
+                <span>Create unlimited  AI associates for your firm</span>
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -67,7 +67,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             </ul>
           </div>
           
-          <div className="mt-2 p-4 border rounded-lg">
+          {/* <div className="mt-2 p-4 border rounded-lg">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Pro Plan</h3>
@@ -78,7 +78,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 <p className="text-xs text-gray-500">Billed monthly</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         
         <DialogFooter className="flex flex-col sm:flex-row gap-2">
@@ -86,7 +86,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             Not Now
           </Button>
           <Button 
-            onClick={onRequestAccess} 
+            onClick={onRequestAccess}
             className="sm:flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
             disabled={isLoading}
           >
