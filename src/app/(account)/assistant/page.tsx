@@ -658,7 +658,7 @@ export default function AssistantPage() {
       </div>
 
       {/* Input area at bottom - Compact with inline controls */}
-      <div className="flex-none border-t bg-white">
+      <div className="flex-none border bg-white rounded-md">
         <div className="p-2 sm:p-4 max-w-3xl mx-auto">
           {error && (
             <div className="mb-2 p-2 rounded-lg bg-red-50 text-red-800 text-sm">

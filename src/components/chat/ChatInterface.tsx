@@ -29,6 +29,7 @@ export function ChatInterface() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Get state from stores
   const { addToast } = useUIStore()
@@ -65,11 +66,8 @@ export function ChatInterface() {
   
   // Scroll to bottom when messages change
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]')
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight
-      }
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [currentConversation?.messages])
   
@@ -128,6 +126,10 @@ export function ChatInterface() {
       // Only clear input if we're sending the user's typed input
       if (!customMessage) {
         setInput("");
+        // Reset textarea height
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+        }
       }
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -159,45 +161,56 @@ export function ChatInterface() {
   }
   
   return (
-    <div className="flex flex-col h-full bg-white">
-      <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-      <div className="space-y-6">
-        {currentConversation?.messages.map((message) => (
-          <ChatMessageItem 
-            key={message.id || message.tempId || `msg-${Math.random()}`} 
-            message={message} 
-            user={session?.user} 
-            onCopy={() => copyMessageToClipboard(message.content)}
-          />
-        ))}
+    <div className="flex flex-col h-full bg-white relative">
+      {/* Messages container - Full height with padding bottom for floating input */}
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-20 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+        <style jsx>{`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        
+        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
+          {currentConversation?.messages.map((message) => (
+            <ChatMessageItem 
+              key={message.id || message.tempId || `msg-${Math.random()}`} 
+              message={message} 
+              user={session?.user} 
+              onCopy={() => copyMessageToClipboard(message.content)}
+            />
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
-    </ScrollArea>
- 
-      <div className="flex-none p-4 border-t">
-        <div className="flex gap-2">
+
+      {/* Floating Input Area at Bottom - Centered */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors w-[90vw] max-w-3xl relative">
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="flex-1 min-h-[52px] max-h-[200px] resize-none"
-            rows={1}
+            className="border-0 resize-none min-h-[52px] max-h-[120px] pr-16 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
             disabled={isSubmitting}
           />
-          <Button 
-            onClick={() => handleSend()} 
-            size="icon" 
-            className="h-[52px] w-[52px]" 
-            disabled={!input.trim() || isSubmitting}
-          >
-            {isSubmitting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
-            <span className="sr-only">Send message</span>
-          </Button>
+          
+          {/* Send button positioned inside textarea */}
+          <div className="absolute right-2 bottom-2">
+            <Button 
+              onClick={() => handleSend()} 
+              size="icon" 
+              className="h-8 w-8 rounded-lg bg-primary hover:bg-primary/90" 
+              disabled={!input.trim() || isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin text-white" />
+              ) : (
+                <Send className="h-4 w-4 text-white" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -225,13 +238,13 @@ export function ChatInterface() {
   
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`flex gap-3 max-w-[80%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        <Avatar className="h-8 w-8 mt-1 hidden lg:block">
-          <AvatarFallback>{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
+      <div className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+        <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
+          <AvatarFallback className="text-xs sm:text-sm">{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
         </Avatar>
         
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2 mb-1 text-sm">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
             <span className="font-medium">{isUser ? 'You' : 'AI Assistant'}</span>
             <span className="text-muted-foreground text-xs">
               {message.timestamp ? formatDistanceToNow(new Date(message.timestamp), { addSuffix: true }) : ''}
@@ -239,8 +252,8 @@ export function ChatInterface() {
           </div>
           
           <div
-            className={`rounded-lg px-4 py-3 ${
-              isUser ? "bg-primary text-white" : "bg-secondary-100"
+            className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
+              isUser ? "bg-primary text-white" : "bg-gray-100 border"
             }`}
           >
           {message.isLoading || isStreaming ? (
