@@ -4,10 +4,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -570,151 +568,162 @@ export default function AssistantPage() {
   };
   
   return (
-    <div className="container mx-auto p-2 sm:p-4 max-w-4xl h-full">
-      <Card className="h-fit overflow-y-auto min-h-[calc(100vh-12rem)] flex flex-col">
-        <CardContent className="flex-1 p-0 flex flex-col relative">
-          {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b shadow-sm">
-            <div className="p-2 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary-600" />
-                <h2 className="text-lg font-medium">
-                  {activeConversation 
-                    ? conversations.find(c => c.threadId === activeConversation)?.title || "Quick Assistant"
-                    : "Quick AI Assistant"}
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {/* Save conversation button */}
-                {threadId && !activeConversation && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setShowSaveDialog(true)}
-                  >
-                    <Save className="h-4 w-4 mr-1" />
-                    Save Chat
-                  </Button>
-                )}
-                
-                {/* Load conversation button */}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setShowConversationsDialog(true)}
-                >
-                  <MessageSquare className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Conversations</span>
-                  <span className="sm:hidden">Chats</span>
-                </Button>
-                
-                {/* New chat button */}
-                <Button variant="outline" size="sm" onClick={clearChat}>
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">New Chat</span>
-                  <span className="sm:hidden">New</span>
-                </Button>
-              </div>
-            </div>
+    <div className="h-full max-w-4xl mx-auto flex flex-col bg-white">
+      {/* Header - Compact on mobile */}
+      <div className="flex-none border-b bg-white">
+        <div className="p-2 sm:p-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-600 flex-shrink-0" />
+            <h2 className="text-sm sm:text-lg font-medium truncate">
+              {activeConversation 
+                ? conversations.find(c => c.threadId === activeConversation)?.title || "Quick Assistant"
+                : "Quick AI Assistant"}
+            </h2>
           </div>
-          
-          {/* Messages container - adjust padding-top to account for sticky header */}
-          <ScrollArea className="flex-1 p-2 sm:p-4 overflow-y-auto max-h-[calc(100vh-16rem)] sm:max-h-[calc(100vh-8rem)]">
-            <div className="space-y-6">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                >
+          <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+            {/* Save conversation button - hidden on mobile */}
+            {threadId && !activeConversation && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowSaveDialog(true)}
+                className="hidden sm:flex"
+              >
+                <Save className="h-4 w-4 mr-1" />
+                Save Chat
+              </Button>
+            )}
+            
+            {/* Load conversation button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowConversationsDialog(true)}
+              className="px-2 sm:px-3"
+            >
+              <MessageSquare className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">Conversations</span>
+            </Button>
+            
+            {/* New chat button */}
+            <Button variant="outline" size="sm" onClick={clearChat} className="px-2 sm:px-3">
+              <RefreshCw className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">New Chat</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Messages container - Optimized for mobile */}
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+        <style jsx>{`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        
+        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] ${
+                  message.role === "user" ? "flex-row-reverse" : "flex-row"
+                }`}
+              >
+                <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
+                  {message.role === "user" ? (
+                    <AvatarImage src={session?.user?.image || undefined} alt="You"/>
+                  ) : (
+                    <AvatarImage src="/avatars/ai-avatar.png" alt="AI"  />
+                  )}
+                  <AvatarFallback className="text-xs sm:text-sm">
+                    {message.role === "user" ? (session?.user?.name?.charAt(0) || "U") : "AI"}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
+                    <span className="font-medium">
+                      {message.role === "user" ? "You" : "AI Assistant"}
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {formatDistanceToNow(message.timestamp, { addSuffix: true })}
+                    </span>
+                  </div>
+                  
                   <div
-                    className={`flex gap-2 sm:gap-3 max-w-[95%] sm:max-w-[90%] ${
-                      message.role === "user" ? "flex-row-reverse" : "flex-row"
+                    className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
+                      message.role === "user"
+                        ? "bg-primary text-white"
+                        : "bg-gray-100 border"
                     }`}
                   >
-                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0 hidden lg:block">
-                      {message.role === "user" ? (
-                        <AvatarImage src={session?.user?.image || undefined} alt="You"/>
-                      ) : (
-                        <AvatarImage src="/avatars/ai-avatar.png" alt="AI"  />
-                      )}
-                      <AvatarFallback>
-                        {message.role === "user" ? (session?.user?.name?.charAt(0) || "U") : "AI"}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-1 text-sm">
-                        <span className="font-medium">
-                          {message.role === "user" ? "You" : "AI Assistant"}
-                        </span>
-                        <span className="text-muted-foreground text-xs">
-                          {formatDistanceToNow(message.timestamp, { addSuffix: true })}
-                        </span>
+                    {message.isLoading && message.content.length === 0 ? (
+                      <div className="flex items-center gap-2">
+                        <LogoAnimation size="sm" className="text-gray-500" />
+                        <span className="animate-pulse text-sm">Thinking...</span>
                       </div>
-                      
-                      <div
-                        className={`rounded-lg px-3 sm:px-4 py-2 ${
-                          message.role === "user"
-                            ? "bg-primary text-white"
-                            : "bg-gray-100"
-                        }`}
-                      >
-                        {message.isLoading && message.content.length === 0 ? (
-                          <div className="flex items-center gap-2">
-                            <LogoAnimation size="sm" className="text-gray-500" />
-                            <span className="animate-pulse">Just a moment...</span>
-                          </div>
-                        ) : (
-                          <MessageDisplay 
-                            content={message.content}
-                            className={message.role === "user" ? "text-white" : ""}
-                          />
-                        )}
-                      </div>
-                      
-                      {/* Message actions */}
-                      {message.role === "assistant" && (
-                        <div className="flex items-center gap-1 mt-2">
-                           {!message.isLoading && message.content ? (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    onClick={() => copyToClipboard(message.content)}
-                                  >
-                                    <Copy className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Copy to clipboard</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          ) : null}
-                        </div>
-                      )}
-                    </div>
+                    ) : (
+                      <MessageDisplay 
+                        content={message.content}
+                        className={message.role === "user" ? "text-white" : ""}
+                      />
+                    )}
                   </div>
+                  
+                  {/* Message actions */}
+                  {message.role === "assistant" && !message.isLoading && message.content && (
+                    <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 sm:h-7 sm:w-7"
+                              onClick={() => copyToClipboard(message.content)}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Copy to clipboard</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  )}
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
+              </div>
             </div>
-          </ScrollArea>
-          
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Input area at bottom - Mobile optimized */}
+      <div className="flex-none border-t bg-white">
+        <div className="p-2 sm:p-4 max-w-3xl mx-auto">
+          {error && (
+            <div className="mb-2 sm:mb-3 p-2 sm:p-3 rounded-lg bg-red-50 text-red-800 text-sm">
+              {error}
+            </div>
+          )}
+
           {/* Uploaded files display */}
           {uploadedFiles.length > 0 && (
-            <div className="px-2 sm:px-4 py-2 border-t">
-              <p className="text-sm text-gray-500 mb-2">Uploaded files:</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="mb-2 sm:mb-3 p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-xs sm:text-sm text-blue-700 mb-2 font-medium">Uploaded files:</p>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {uploadedFiles.map((file, index) => (
-                  <Badge variant="outline" key={index} className="flex items-center gap-1 pl-2 pr-1 py-1">
+                  <Badge variant="outline" key={index} className="flex items-center gap-1 pl-2 pr-1 py-1 bg-white text-xs">
                     <FileText className="h-3 w-3 mr-1" />
                     <span className="truncate max-w-[100px] sm:max-w-[150px]">{file.name}</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-5 w-5 ml-1 text-gray-500 hover:text-gray-700"
+                      className="h-4 w-4 ml-1 text-gray-500 hover:text-gray-700"
                       onClick={() => removeFile(index)}
                     >
                       <XCircle className="h-3 w-3" />
@@ -725,40 +734,29 @@ export default function AssistantPage() {
             </div>
           )}
           
-          {/* Input area */}
-          <div className="p-2 sm:p-4 border-t">
-            {error && (
-              <div className="mb-2 p-2 rounded-md bg-red-50 text-red-800 text-sm">
-                {error}
-              </div>
-            )}
-            
-            {/* Suggestion chips with toggle button */}
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center text-sm">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="p-0 h-6" 
-                  onClick={() => setShowSuggestions(!showSuggestions)}
-                >
-                  {showSuggestions ? (
-                    <ChevronDown className="h-4 w-4 mr-1 text-gray-500" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 mr-1 text-gray-500" />
-                  )}
-                  <span className="text-gray-500 text-xs">Suggestions</span>
-                </Button>
-              </div>
-            </div>
+          {/* Suggestion chips - Compact on mobile */}
+          <div className="mb-2 sm:mb-3">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-0 h-5 sm:h-6 mb-1 sm:mb-2" 
+              onClick={() => setShowSuggestions(!showSuggestions)}
+            >
+              {showSuggestions ? (
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-gray-500" />
+              ) : (
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-gray-500" />
+              )}
+              <span className="text-gray-500 text-xs">Quick prompts</span>
+            </Button>
             
             {showSuggestions && (
-              <div className="mb-3 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {suggestionPrompts.map((suggestion, index) => (
                   <Badge
                     key={index}
                     variant="outline"
-                    className="cursor-pointer px-2 sm:px-3 py-1 text-primary-600 bg-primary-50 hover:bg-primary-100 text-xs sm:text-sm"
+                    className="cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 text-primary-600 bg-primary-50 hover:bg-primary-100 text-xs transition-colors"
                     onClick={() => useSuggestion(suggestion.prompt)}
                   >
                     {suggestion.title}
@@ -766,103 +764,105 @@ export default function AssistantPage() {
                 ))}
               </div>
             )}
+          </div>
+          
+          {/* Input field - Compact on mobile */}
+          <div className="relative bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors">
+            <Textarea
+              ref={textareaRef}
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="border-0 resize-none min-h-[44px] sm:min-h-[52px] max-h-[120px] sm:max-h-[200px] pr-16 sm:pr-20 rounded-xl sm:rounded-2xl focus-visible:ring-0 focus-visible:ring-offset-0 text-sm sm:text-base"
+              disabled={isLoading}
+            />
             
-            <div className="relative">
-              <Textarea
-                ref={textareaRef}
-                placeholder="Type your message..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="pr-24 min-h-[60px] max-h-[200px] resize-none"
-                disabled={isLoading}
-              />
-              
-              <div className="absolute right-2 bottom-2 flex gap-1">
+            <div className="absolute right-1 sm:right-2 bottom-1 sm:bottom-2 flex gap-1">
               {isLoading && currentAssistantMessage ? (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-red-500"
-                                    onClick={stopStreamingResponse}
-                                  >
-                                    <StopCircle className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Stop generating</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-): null}
-                <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8"
-                      disabled={isLoading}
-                    >
-                      <Paperclip className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Upload File</DialogTitle>
-                      <DialogDescription>
-                        Upload a file to provide context for the assistant.
-                        Uploaded files are temporary and only used for this session.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="file" className="text-right">
-                          File
-                        </Label>
-                        <Input
-                          id="file"
-                          type="file"
-                          accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif"
-                          ref={fileInputRef}
-                          onChange={handleFileUpload}
-                          className="col-span-3"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
-                        Cancel
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 sm:h-9 sm:w-9 text-red-500 hover:bg-red-50"
+                        onClick={stopStreamingResponse}
+                      >
+                        <StopCircle className="h-4 w-4" />
                       </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-                
-                <Button 
-                  onClick={handleSendMessage} 
-                  size="icon" 
-                  className="h-8 w-8"
-                  disabled={isLoading || (!input.trim() && uploadedFiles.length === 0)}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-            
-            <div className="mt-2 text-xs text-gray-500 flex items-center">
-              <HelpCircle className="h-3 w-3 mr-1" />
-              <span>
-                Quick Assistant uses minimal context. For in-depth document analysis, 
-                use workspace Conversations.
-              </span>
+                    </TooltipTrigger>
+                    <TooltipContent>Stop generating</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : null}
+              
+              <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-gray-100"
+                    disabled={isLoading}
+                  >
+                    <Paperclip className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Upload File</DialogTitle>
+                    <DialogDescription>
+                      Upload a file to provide context for the assistant.
+                      Uploaded files are temporary and only used for this session.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="file" className="text-right">
+                        File
+                      </Label>
+                      <Input
+                        id="file"
+                        type="file"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.gif"
+                        ref={fileInputRef}
+                        onChange={handleFileUpload}
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
+                      Cancel
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+              
+              <Button 
+                onClick={handleSendMessage} 
+                size="icon" 
+                className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl"
+                disabled={isLoading || (!input.trim() && uploadedFiles.length === 0)}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="mt-1 sm:mt-2 text-xs text-gray-500 flex items-center justify-center">
+            <HelpCircle className="h-3 w-3 mr-1" />
+            <span className="text-center">
+              Quick Assistant uses minimal context. For in-depth document analysis, 
+              use workspace Conversations.
+            </span>
+          </div>
+        </div>
+      </div>
       
       {/* Save Conversation Dialog */}
       <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
