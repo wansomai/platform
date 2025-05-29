@@ -48,7 +48,7 @@ interface ChatState {
   updateConversation: (conversationId: string, data: Partial<Conversation>) => void;
   deleteConversation: (conversationId: string) => void;
   clearConversations: () => void;
-  
+  clearCurrentConversation: () => void;
   // Message management
   addMessage: (message: Message) => void;
   updateMessage: (messageId: string, content: string) => void;
@@ -95,6 +95,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
       : state.currentConversation
   })),
   clearConversations: () => set({ conversations: [], currentConversation: null }),
+  clearCurrentConversation: () => {
+    set({
+      currentConversation: null,
+      isLoading: false,
+      error: null
+    });
+  },
   
   // Message management
   addMessage: (message) => set((state) => {

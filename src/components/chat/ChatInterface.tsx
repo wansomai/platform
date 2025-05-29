@@ -39,24 +39,41 @@ export function ChatInterface() {
     createConversation, 
     sendMessage, 
     isLoading, 
-    error 
+    error,
+    clearCurrentConversation // Add this method to your store
   } = useChatStore()
  
   const {data: session} = useSession()
   
-  // Set up conversation when component mounts
+  // Clear conversation state when projectId changes
+  useEffect(() => {
+    // Clear the current conversation when switching projects
+    clearCurrentConversation?.()
+  }, [projectId, clearCurrentConversation])
+  
+  // Set up conversation when component mounts or projectId changes
   useEffect(() => {
     const initializeChat = async () => {
       if (projectId && !currentConversation) {
-        // Try to get the most recent conversation if it exists
-        const conversations = await useChatStore.getState().fetchConversations(projectId)
-        
-        if (conversations.length > 0) {
-          // Load the most recent conversation
-          await fetchConversation(projectId, conversations[0].id)
-        } else {
-          // Create a new conversation
-          await createConversation(projectId)
+        try {
+          // Try to get the most recent conversation if it exists
+          const conversations = await useChatStore.getState().fetchConversations(projectId)
+          
+          if (conversations.length > 0) {
+            // Load the most recent conversation
+            await fetchConversation(projectId, conversations[0].id)
+          } else {
+            // Create a new conversation
+            await createConversation(projectId)
+          }
+        } catch (error) {
+          console.error('Failed to initialize chat:', error)
+          // Fallback: create a new conversation
+          try {
+            await createConversation(projectId)
+          } catch (fallbackError) {
+            console.error('Failed to create fallback conversation:', fallbackError)
+          }
         }
       }
     }
