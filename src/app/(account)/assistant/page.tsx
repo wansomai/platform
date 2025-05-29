@@ -249,7 +249,7 @@ export default function AssistantPage() {
       setMessages([
         {
           id: "welcome",
-          content: "Hello! I'm your AI assistant. How can I help you today?",
+          content: "Hello, How can I help you today?",
           role: "assistant",
           timestamp: new Date()
         }
@@ -538,7 +538,7 @@ export default function AssistantPage() {
     setMessages([
       {
         id: "welcome",
-        content: "Hello! I'm your AI assistant. How can I help you today?",
+        content: "Hello, How can I help you today?",
         role: "assistant",
         timestamp: new Date()
       }

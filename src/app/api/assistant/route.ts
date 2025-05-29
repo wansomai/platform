@@ -1,6 +1,5 @@
 // app/api/assistant/route.ts
 import { NextRequest } from 'next/server';
-import { getUserIdFromRequest } from '@/lib/auth/authorization';
 import OpenAI from 'openai';
 
 // Initialize OpenAI client
@@ -16,18 +15,6 @@ const encoder = new TextEncoder();
 
 export async function POST(request: NextRequest) {
   try {
-    // Uncomment to re-enable authentication
-    // const userId = getUserIdFromRequest(request);
-    // if (!userId) {
-    //   return new Response(JSON.stringify({ 
-    //     error: "Unauthorized", 
-    //     message: "Authentication required" 
-    //   }), { 
-    //     status: 401, 
-    //     headers: { 'Content-Type': 'application/json' }
-    //   });
-    // }
-
     // Process the form data
     const formData = await request.formData();
     const message = formData.get('message')?.toString() || '';

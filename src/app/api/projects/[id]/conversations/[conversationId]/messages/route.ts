@@ -342,7 +342,7 @@ export async function POST(
           let systemMessage;
           
           if (isSimpleQuery) {
-            systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
+            systemMessage = `You are wansom, a legal assistant for professionals working on a project titled "${
               project?.title || "Project"
             }".
             Provide helpful, accurate, and concise responses.
@@ -350,7 +350,7 @@ export async function POST(
           } else {
             const fullProject = project as FullProject;
             
-            systemMessage = `You are a helpful AI legal assistant for professionals working on a project titled "${
+            systemMessage = `You are wansom,legal assistant for professionals working on a project titled "${
               fullProject?.title || "Project"
             }".
             ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
