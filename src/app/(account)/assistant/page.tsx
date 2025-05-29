@@ -568,53 +568,8 @@ export default function AssistantPage() {
   };
   
   return (
-    <div className="h-full max-w-4xl mx-auto flex flex-col bg-white">
-      {/* Header - Compact on mobile */}
-      <div className="flex-none border-b bg-white">
-        <div className="p-2 sm:p-4 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-600 flex-shrink-0" />
-            <h2 className="text-sm sm:text-lg font-medium truncate">
-              {activeConversation 
-                ? conversations.find(c => c.threadId === activeConversation)?.title || "Quick Assistant"
-                : "Quick AI Assistant"}
-            </h2>
-          </div>
-          <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-            {/* Save conversation button - hidden on mobile */}
-            {threadId && !activeConversation && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowSaveDialog(true)}
-                className="hidden sm:flex"
-              >
-                <Save className="h-4 w-4 mr-1" />
-                Save Chat
-              </Button>
-            )}
-            
-            {/* Load conversation button */}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setShowConversationsDialog(true)}
-              className="px-2 sm:px-3"
-            >
-              <MessageSquare className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">Conversations</span>
-            </Button>
-            
-            {/* New chat button */}
-            <Button variant="outline" size="sm" onClick={clearChat} className="px-2 sm:px-3">
-              <RefreshCw className="h-4 w-4 sm:mr-1" />
-              <span className="hidden sm:inline">New Chat</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages container - Optimized for mobile */}
+    <div className="h-full max-w-4xl mx-auto flex flex-col">
+      {/* Messages container - Full height without header */}
       <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`
           .scrollbar-hide::-webkit-scrollbar {
@@ -702,20 +657,20 @@ export default function AssistantPage() {
         </div>
       </div>
 
-      {/* Input area at bottom - Mobile optimized */}
+      {/* Input area at bottom - Compact with inline controls */}
       <div className="flex-none border-t bg-white">
         <div className="p-2 sm:p-4 max-w-3xl mx-auto">
           {error && (
-            <div className="mb-2 sm:mb-3 p-2 sm:p-3 rounded-lg bg-red-50 text-red-800 text-sm">
+            <div className="mb-2 p-2 rounded-lg bg-red-50 text-red-800 text-sm">
               {error}
             </div>
           )}
 
           {/* Uploaded files display */}
           {uploadedFiles.length > 0 && (
-            <div className="mb-2 sm:mb-3 p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-xs sm:text-sm text-blue-700 mb-2 font-medium">Uploaded files:</p>
-              <div className="flex flex-wrap gap-1 sm:gap-2">
+            <div className="mb-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-xs text-blue-700 mb-1 font-medium">Uploaded files:</p>
+              <div className="flex flex-wrap gap-1">
                 {uploadedFiles.map((file, index) => (
                   <Badge variant="outline" key={index} className="flex items-center gap-1 pl-2 pr-1 py-1 bg-white text-xs">
                     <FileText className="h-3 w-3 mr-1" />
@@ -734,67 +689,97 @@ export default function AssistantPage() {
             </div>
           )}
           
-          {/* Suggestion chips - Compact on mobile */}
-          <div className="mb-2 sm:mb-3">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-0 h-5 sm:h-6 mb-1 sm:mb-2" 
-              onClick={() => setShowSuggestions(!showSuggestions)}
-            >
-              {showSuggestions ? (
-                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-gray-500" />
-              ) : (
-                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-gray-500" />
-              )}
-              <span className="text-gray-500 text-xs">Quick prompts</span>
-            </Button>
-            
-            {showSuggestions && (
-              <div className="flex flex-wrap gap-1 sm:gap-2">
-                {suggestionPrompts.map((suggestion, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 text-primary-600 bg-primary-50 hover:bg-primary-100 text-xs transition-colors"
-                    onClick={() => useSuggestion(suggestion.prompt)}
-                  >
-                    {suggestion.title}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Suggestion chips - Compact */}
+          {showSuggestions && (
+            <div className="mb-2 flex flex-wrap gap-1">
+              {suggestionPrompts.map((suggestion, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="cursor-pointer px-2 py-1 text-primary-600 bg-primary-50 hover:bg-primary-100 text-xs transition-colors"
+                  onClick={() => useSuggestion(suggestion.prompt)}
+                >
+                  {suggestion.title}
+                </Badge>
+              ))}
+            </div>
+          )}
           
-          {/* Input field - Compact on mobile */}
-          <div className="relative bg-white rounded-xl sm:rounded-2xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors">
+          {/* Input field with inline controls */}
+          <div className="relative bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors">
             <Textarea
               ref={textareaRef}
               placeholder="Type your message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="border-0 resize-none min-h-[44px] sm:min-h-[52px] max-h-[120px] sm:max-h-[200px] pr-16 sm:pr-20 rounded-xl sm:rounded-2xl focus-visible:ring-0 focus-visible:ring-offset-0 text-sm sm:text-base"
+              className="border-0 resize-none min-h-[44px] max-h-[120px] pr-32 sm:pr-40 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
               disabled={isLoading}
             />
             
-            <div className="absolute right-1 sm:right-2 bottom-1 sm:bottom-2 flex gap-1">
+            {/* Inline controls in input */}
+            <div className="absolute right-1 bottom-1 flex items-center gap-1">
+              {/* Chat controls - compact */}
+              {threadId && !activeConversation && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setShowSaveDialog(true)}
+                  className="h-7 w-7 text-gray-500 hover:text-gray-700"
+                  title="Save Chat"
+                >
+                  <Save className="h-3 w-3" />
+                </Button>
+              )}
+              
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowConversationsDialog(true)}
+                className="h-7 w-7 text-gray-500 hover:text-gray-700"
+                title="History"
+              >
+                <MessageSquare className="h-3 w-3" />
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={clearChat}
+                className="h-7 w-7 text-gray-500 hover:text-gray-700"
+                title="New Chat"
+              >
+                <RefreshCw className="h-3 w-3" />
+              </Button>
+
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowSuggestions(!showSuggestions)}
+                title="Quick prompts"
+              >
+                {showSuggestions ? (
+                  <ChevronDown className="h-3 w-3" />
+                ) : (
+                  <ChevronRight className="h-3 w-3" />
+                )}
+              </Button>
+
+              {/* Divider */}
+              <div className="w-px h-4 bg-gray-300 mx-1" />
+              
+              {/* Main action buttons */}
               {isLoading && currentAssistantMessage ? (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 sm:h-9 sm:w-9 text-red-500 hover:bg-red-50"
-                        onClick={stopStreamingResponse}
-                      >
-                        <StopCircle className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Stop generating</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-red-500 hover:bg-red-50"
+                  onClick={stopStreamingResponse}
+                  title="Stop generating"
+                >
+                  <StopCircle className="h-3 w-3" />
+                </Button>
               ) : null}
               
               <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
@@ -802,10 +787,11 @@ export default function AssistantPage() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-gray-100"
+                    className="h-7 w-7 text-gray-500 hover:text-gray-700"
                     disabled={isLoading}
+                    title="Upload file"
                   >
-                    <Paperclip className="h-4 w-4" />
+                    <Paperclip className="h-3 w-3" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
@@ -842,19 +828,19 @@ export default function AssistantPage() {
               <Button 
                 onClick={handleSendMessage} 
                 size="icon" 
-                className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl"
+                className="h-7 w-7 rounded-lg bg-primary hover:bg-primary/90"
                 disabled={isLoading || (!input.trim() && uploadedFiles.length === 0)}
               >
                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-3 w-3 animate-spin text-white" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3 w-3 text-white" />
                 )}
               </Button>
             </div>
           </div>
           
-          <div className="mt-1 sm:mt-2 text-xs text-gray-500 flex items-center justify-center">
+          <div className="mt-1 text-xs text-gray-500 flex items-center justify-center">
             <HelpCircle className="h-3 w-3 mr-1" />
             <span className="text-center">
               Quick Assistant uses minimal context. For in-depth document analysis, 
