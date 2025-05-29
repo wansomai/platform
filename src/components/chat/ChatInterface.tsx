@@ -243,7 +243,7 @@ export function ChatInterface() {
           <AvatarFallback className="text-xs sm:text-sm">{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
         </Avatar>
         
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
             <span className="font-medium">{isUser ? 'You' : 'AI Assistant'}</span>
             <span className="text-muted-foreground text-xs">
@@ -252,7 +252,7 @@ export function ChatInterface() {
           </div>
           
           <div
-            className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
+            className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 overflow-hidden ${
               isUser ? "bg-primary text-white" : "bg-gray-100 border"
             }`}
           >
