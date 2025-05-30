@@ -251,7 +251,7 @@ const PartnerSupportSection = () => {
     },
     {
       icon: Activity,
-      title: "Agentic Workflows",
+      title: "Legal Workflows",
       description: "Streamline processes like drafting, compliance reporting, research, onboarding, and more."
     },
     {

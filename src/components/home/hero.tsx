@@ -113,7 +113,7 @@ const HeroSection: React.FC = () => {
         
   
         {/* Contract Editor Preview */}
-        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 lg:-mb-3">
+        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-1 lg:-mb-3">
           <video 
             autoPlay 
             loop 
