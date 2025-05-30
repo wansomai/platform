@@ -113,13 +113,17 @@ const HeroSection: React.FC = () => {
         
   
         {/* Contract Editor Preview */}
-        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-8 md:-mb-24">
-          <img 
-  src="/wansom-home.png" 
-  alt="Wansom AI Chat Interface" 
-  className="w-full h-auto"
-  loading="eager"
-/>
+        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-3">
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-full h-auto"
+          >
+            <source src="/hero.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </div>
       </div>
     </section>
