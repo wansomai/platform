@@ -27,7 +27,7 @@ const Footer = () => {
                     <a href="/#integrations" className="hover:underline  me-4 md:me-6" aria-label="contact our support team">Integrations</a>
                 </li>
                 <li>
-                    <a href="/#pricing" className="hover:underline  me-4 md:me-6" aria-label="contact our support team">Pricing</a>
+                    <a href="mailto:law@wansom.ai" className="hover:underline  me-4 md:me-6" aria-label="contact our support team">law@wansom.ai</a>
                 </li>
                 <li>
                 <div className=" ml-2 flex items-center gap-2">
