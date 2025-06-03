@@ -4,11 +4,11 @@ import LegalDocumentsPageClient from './LegaDocumentsPage';
 
 
 export const metadata: Metadata = {
-  title: 'Legal Templates & Documents | wansom AI',
+  title: 'legal document templates | wansom AI',
   description: 'Download agreements, contracts, leases, wills and more legal documents. Access professional legal templates and create custom documents with AI assistance.',
   openGraph: {
-    title: 'Legal Templates & Documents | Wansom AI',
-    description: 'Download agreements, contracts, leases, wills and more legal documents. Access professional legal templates and create custom documents with AI assistance.',
+    title: 'legal document templates | Wansom AI',
+    description: 'Download legal document templates, agreements, contracts, leases, wills and more legal documents. Draft with AI assistance.',
     type: 'website',
     images: [
       {
