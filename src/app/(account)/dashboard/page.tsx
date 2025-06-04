@@ -75,7 +75,7 @@ export default function DashboardPage() {
           <div className="hidden md:flex items-center space-x-3">
             <Button variant="outline" className="text-white  hover:bg-black bg-primary hover:text-white" onClick={() => setShowProjectModal(true)}>
               <FolderPlus className="mr-2 h-4 w-4" />
-              New Workspace
+              New Project Workspace
             </Button>
             <Button variant="outline" className="text-white border-white bg-black" onClick={() => router.push("/assistant")}>
               <MessageSquare className="mr-2 h-4 w-4" />
@@ -100,7 +100,7 @@ export default function DashboardPage() {
             />
             <QuickActionCard
               icon={Briefcase}
-              title="Create Workspace"
+              title="Create Project Workspace"
               description="Organize your deep work into dedicated  workspaces"
               href="/projects"
               color="text-purple-600"

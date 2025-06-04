@@ -67,9 +67,9 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Create New Workspace</DialogTitle>
+          <DialogTitle>Create New Project Workspace</DialogTitle>
           <DialogDescription>
-            Create a new workspace to organize your documents and conversations.
+            Create a new workspace to organize project documents and conversations.
           </DialogDescription>
         </DialogHeader>
         
