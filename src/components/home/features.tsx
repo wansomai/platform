@@ -236,7 +236,7 @@ const PartnerSupportSection = () => {
   const features = [
     {
       icon: Sparkles,
-      title: "Custom AI Models",
+      title: "Legal-Specific AI Models",
       description: "Domain-specific AI models for the legal industry. Fine-tuned by jurisdiction, case types, and legal-specific document formats."
     },
     {

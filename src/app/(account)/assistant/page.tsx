@@ -27,7 +27,9 @@ import {
   Save,
   ChevronDown,
   ChevronRight,
-  StopCircle
+  StopCircle,
+  Plus,
+  SlidersHorizontal
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import MessageDisplay from "@/components/chat/MessageDisplay";
@@ -749,7 +751,7 @@ export default function AssistantPage() {
                 className="h-7 w-7 text-gray-500 hover:text-gray-700"
                 title="New Chat"
               >
-                <RefreshCw className="h-3 w-3" />
+                <Plus className="h-3 w-3" />
               </Button>
 
               <Button 
@@ -760,7 +762,7 @@ export default function AssistantPage() {
                 title="Quick prompts"
               >
                 {showSuggestions ? (
-                  <ChevronDown className="h-3 w-3" />
+                  <SlidersHorizontal className="h-3 w-3" />
                 ) : (
                   <ChevronRight className="h-3 w-3" />
                 )}

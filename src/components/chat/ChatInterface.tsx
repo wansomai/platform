@@ -178,7 +178,7 @@ export function ChatInterface() {
   }
   
   return (
-    <div className="flex flex-col h-full bg-white relative">
+    <div className="flex flex-col h-full relative">
       {/* Messages container - Full height with padding bottom for floating input */}
       <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-20 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`

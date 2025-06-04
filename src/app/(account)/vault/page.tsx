@@ -96,7 +96,12 @@ export default function VaultPage() {
   const [fileType, setFileType] = useState<string | undefined>(undefined);
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? "grid" : "list";
+    }
+    return "grid"; // Default for SSR
+  });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
   const [documentToMove, setDocumentToMove] = useState<string | null>(null);
@@ -153,17 +158,13 @@ export default function VaultPage() {
   useEffect(() => {
     clearSelectedDocuments();
   }, [viewMode, clearSelectedDocuments]);
-  
-  // Handle document preview
-  const handleDocumentPreview = (document: any) => {
-    setPreviewDocument(document);
-  };
-  
+ 
   // Handle AI insights
   const handleShowInsights = (documentId: string) => {
     setInsightDocument(documentId);
     setShowInsights(true);
   };
+  
   
   // Handle document deletion
   const handleDeleteDocument = async (id: string) => {
