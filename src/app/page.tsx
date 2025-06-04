@@ -58,7 +58,7 @@ function SecuritySection() {
     },
     {
       icon: Shield,
-      title: "No Training on User Data",
+      title: "No AI Training on User Data",
       description: "Your confidential information stays private and is never used to train our AI models."
     },
     {
@@ -69,52 +69,40 @@ function SecuritySection() {
   ];
 
   return (
-    <section className=" bg-white" id="security">
-      <div className="max-w-8xl mx-auto px-4 lg:px-8 py-12 lg:py-16">
-        <div className=" bg-primary bg-[url(/meeting.jpg)] bg-blend-multiply bg-cover bg-center rounded-xl overflow-hidden">
-          <div className="p-8 lg:p-12 section-container">
-            <div className="text-center mb-8 lg:mb-12">
-              <h2 className="text-heading-2 text-white mb-4">
-                What your firm does best, amplified.
-              </h2>
-              <p className="text-body-large text-dim max-w-4xl mx-auto">
-                We provide enterprise-level security to ensure your firm and clients' data remain safe.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-10">
+    <section className=" bg-white section-spacing" id="security">
+      <div className="section-container">
+        <div className="flex flex-col md:flex-row  justify-center gap-8">
+          <div className="md:basis-1/2 text-center md:text-left mb-8 md:mb-0">
+            <h2 className="text-heading-2 text-gray-900 mb-4">
+             Built to the highest security standards
+            </h2>
+            <p className="text-body-large text-gray-600 max-w-3xl mx-auto md:mx-0">
+              Wansom AI is built with  enterprise-level security at its core, ensuring your firm's sensitive data remains confidential and protected.We adhere to the highest security standards, including SOC 2 Type II and ISO 27001 certifications. Wansom AI does not train on your data, ensuring its privacy and security.
+            </p></div>
+             
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
               {securityFeatures.map((feature, index) => (
                 <div 
                   key={index}
-                  className="flex flex-col md:flex-row items-center md:items-start gap-4 p-4 lg:p-6 bg-black/10 rounded-xl backdrop-blur-sm"
+                  className="flex flex-col gap-4 p-4 bg-primary rounded-lg"
                 >
-                  <div className="flex-shrink-0">
-                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+                  <div className="flex-shrink-0 flex items-center justify-center gap-3">
+                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm w-fit h-fit flex items-center justify-center">
                       <feature.icon className="w-8 h-8 text-white" />
                     </div>
-                  </div>
-                  <div className="text-center md:text-left">
-                    <h3 className="text-heading-5 text-white mb-2">
+                     <h3 className="text-lg text-white mb-2">
                       {feature.title}
                     </h3>
-                    <p className="text-body text-dim">
+                  </div>
+                  <div className="text-center md:text-left">
+                   
+                    <p className="text-sm text-dim">
                       {feature.description}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
-
-            <div className="text-center">
-              <Link 
-                href="/demo" 
-                className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-transparent border border-white w-fit rounded-md py-3 px-6"
-              >
-                <span>Book A Demo</span>
-                <ExternalLink className="w-5 h-5 ml-2" />
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </section>

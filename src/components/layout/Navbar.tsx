@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Sparkles, Menu, X } from 'lucide-react'
+import { Sparkles, Menu, X, ChevronDown } from 'lucide-react'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   // Handle navbar transparency on scroll
   useEffect(() => {
@@ -35,6 +36,27 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.dropdown-container')) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const aiPlatformItems = [
+    { name: 'Legal Drafting', href: '/#legal-drafting' },
+    { name: 'Deep Research', href: '/#deep-research' },
+    { name: 'Due Diligence', href: '/#due-diligence' },
+    { name: 'Contract Reviews', href: '/#contract-reviews' },
+    { name: 'Case Preparation', href: '/#case-preparation' },
+  ]
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
       isScrolled || isOpen ? 'bg-[#355e66] shadow-sm backdrop-filter lg:backdrop-blur-lg  text-white bg-opacity-40' : 'bg-transparent text-gray-300'
@@ -60,12 +82,37 @@ const Navbar = () => {
 
           <nav className="flex space-x-6 ">
             
-            <div className="relative group ">
-              <Link href="/#ai-assistant" className="font-semibold text-lg  flex items-center">
-                AI Assistant
-                <Sparkles className="ml-1 w-4 h-4" />
-              </Link>
+            <div className="relative group dropdown-container">
+              <button 
+                className="font-semibold text-lg flex items-center hover:text-[#355e66]  focus:outline-none"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onMouseEnter={() => setIsDropdownOpen(true)}
+              >
+                AI Platform
+                <ChevronDown className={`ml-1 w-6 h-6 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {/* Dropdown Menu */}
+              <div 
+                className={`absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 transition-all duration-200 ${
+                  isDropdownOpen ? 'opacity-100 visible transform translate-y-0' : 'opacity-0 invisible transform -translate-y-2'
+                }`}
+                onMouseEnter={() => setIsDropdownOpen(true)}
+                onMouseLeave={() => setIsDropdownOpen(false)}
+              >
+                {aiPlatformItems.map((item, index) => (
+                  <Link
+                    key={index}
+                    href={item.href}
+                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#355e66]  transition-colors duration-150 first:rounded-t-md last:rounded-b-md"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
             </div>
+
             <div className="relative group">
               <Link href="/#document-vault" className="font-semibold text-lg  flex items-center">
                 Vault
@@ -115,14 +162,27 @@ const Navbar = () => {
         >
           <div className="container mx-auto px-4 pt-20 pb-6 h-full overflow-y-auto">
             <nav className="flex flex-col space-y-6">
-            <Link
-                href="/#ai-assistant"
-                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 flex items-center border-b border-gray-100"
-                onClick={() => setIsOpen(false)}
-              >
-                AI Assistant
-                <Sparkles className="ml-2 w-4 h-4" />
-              </Link>
+              
+              {/* Mobile AI Platform Section */}
+              <div className="border-b border-gray-100">
+                <div className="font-semibold text-lg text-gray-800 py-2 flex items-center">
+                  AI Platform
+                  <Sparkles className="ml-2 w-4 h-4" />
+                </div>
+                <div className="ml-6 pb-2">
+                  {aiPlatformItems.map((item, index) => (
+                    <Link
+                      key={index}
+                      href={item.href}
+                      className="block py-2 text-sm text-gray-600 hover:text-green-600"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
               <Link
                 href="/#document-vault"
                 className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
