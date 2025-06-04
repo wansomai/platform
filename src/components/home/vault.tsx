@@ -23,7 +23,6 @@ const VaultSection: React.FC = () => {
             className="w-full h-full object-contain lg:object-cover object-top"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
         </div>
       </div>
     </section>
