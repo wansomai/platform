@@ -1,5 +1,5 @@
 // lib/data/blogAdapter.ts
-import { BlogPost } from './contentful';
+import { BlogPost,DocumentTemplate } from './contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
 
@@ -84,6 +84,40 @@ export function adaptBlogPost(post: BlogPost) {
   };
 }
 
+export function adaptDocumentTemplate(post: DocumentTemplate) {
+  // Convert rich text to HTML
+  const contentHtml = post.fields.description
+    ? documentToHtmlString(post.fields.description, htmlRenderOptions) 
+    : '';
+  
+  // Generate slug from title
+  const slug = createSlug(post.fields.title || '');
+  const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
+  
+  return {
+    id: post.sys.id,
+    title: post.fields.title || 'Untitled',
+    preview: post.fields.preview || '',
+    description: post.fields.description, // Keep original content
+    contentHtml, // Add the HTML version for dangerouslySetInnerHTML
+    image: post.fields.image?.fields?.file?.url 
+      ? `https:${post.fields.image.fields.file.url}` 
+      : undefined,
+    date: new Date(post.sys.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+    link: `/legal-documents/${slug}`,
+    slug,
+    tags,
+  };
+}
+
 export function adaptBlogPosts(posts: BlogPost[]) {
   return posts.map(adaptBlogPost);
+}
+
+export function adaptDocumentTemplates(posts: DocumentTemplate[]) {
+  return posts.map(adaptDocumentTemplate);
 }

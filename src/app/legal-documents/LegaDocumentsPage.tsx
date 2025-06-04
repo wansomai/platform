@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllBlogPosts } from '@/lib/data/contentful';
-import { adaptBlogPosts } from '@/lib/data/blogAdapter';
-import PostCard from '@/components/home/blog-post';
+import {  getAllDocumentTemplates } from '@/lib/data/contentful';
+import {  adaptDocumentTemplates } from '@/lib/data/blogAdapter';
 import Pagination from '@/components/home/pagination';
 import Navbar from '@/components/layout/Navbar';
 import { Sparkles } from 'lucide-react';
+import LegalDocCard from '@/components/home/legal-documents';
 
 const POSTS_PER_PAGE = 9; // 3x3 grid
 
@@ -22,8 +22,8 @@ const LegalDocumentsPageClient = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const blogPosts = await getAllBlogPosts();
-        const adaptedPosts = adaptBlogPosts(blogPosts);
+        const blogPosts = await getAllDocumentTemplates();
+        const adaptedPosts = adaptDocumentTemplates(blogPosts);
         setPosts(adaptedPosts);
       } catch (err) {
         console.error('Error fetching blog posts:', err);
@@ -63,7 +63,7 @@ const LegalDocumentsPageClient = () => {
       <section className=" py-16 pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6">Legal Templates & Documents : Downloadable Agreements, Contracts, Leases, Wills & More</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-6">Legal Document Templates : Downloadable Agreements, Contracts, Leases, Wills & More</h1>
             <div className="text-sm  mb-6">
               <Link href="/" className="hover:text-blue-600">Home</Link> / <span>legal-deocuments</span>
             </div>
@@ -105,7 +105,7 @@ const LegalDocumentsPageClient = () => {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {paginatedPosts.map((post) => (
-                      <PostCard key={post.id} post={post} type="all" />
+                      <LegalDocCard key={post.id} post={post} type="all" />
                     ))}
                   </div>
                   

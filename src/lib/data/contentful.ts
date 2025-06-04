@@ -1,3 +1,4 @@
+import { Document } from './../../store/documents.store';
 // lib/contentful.ts
 import { createClient } from 'contentful';
 import { createSlug } from './blogAdapter';
@@ -32,7 +33,29 @@ export interface BlogPostFields {
   };
   tags?: string[]; // Optional tags field
 }
-
+export interface DocumentTemplateFields {
+  title: string;
+  preview?: string;
+  description: any; // Rich text content
+  image?: {
+    fields: {
+      file: {
+        url: string;
+        details?: {
+          size?: number;
+          image?: {
+            width: number;
+            height: number;
+          };
+        };
+        fileName?: string;
+        contentType?: string;
+      },
+      title?: string;
+    }
+  };
+  tags?: string[]; // Optional tags field
+}
 export interface BlogPost {
   sys: {
     id: string;
@@ -46,6 +69,19 @@ export interface BlogPost {
   };
   fields: BlogPostFields;
 }
+export interface DocumentTemplate {
+  sys: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    contentType: {
+      sys: {
+        id: string;
+      };
+    };
+  };
+  fields: DocumentTemplateFields;
+}
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
   const response = await client.getEntries({
@@ -54,6 +90,14 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   });
   
   return response.items as unknown as BlogPost[];
+}
+export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
+  const response = await client.getEntries({
+    content_type: 'documentTemplates',
+    order: ['-sys.createdAt'], // Get newest first
+  });
+  
+  return response.items as unknown as DocumentTemplate[];
 }
 
 export async function getBlogPostById(id: string): Promise<BlogPost | null> {
