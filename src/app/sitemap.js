@@ -57,6 +57,10 @@ export default async function sitemap() {
       url: `${baseUrl}/careers`,
       lastModified: new Date(),
     },
+     {
+      url: `${baseUrl}/webinar`,
+      lastModified: new Date(),
+    },
   ];
 
   // Get blog posts from Contentful
@@ -83,8 +87,32 @@ export default async function sitemap() {
     // Continue with static routes if Contentful fetch fails
   }
 
+    // Get legal documents from Contentful
+  let legalDocumentRoutes = [];
+  try {
+    const response = await client.getEntries({
+      content_type: 'documentTemplates',
+      order: '-sys.createdAt',
+    });
+
+    // Map legal documents to sitemap format
+    legalDocumentRoutes = response.items.map(post => {
+      // Create slug from title
+      const slug = post.fields.title ? createSlug(post.fields.title) : post.sys.id;
+      
+      return {
+        url: `${baseUrl}/egal-documents/${slug}`,
+        lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
+ 
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching legal documents for sitemap:', error);
+    // Continue with static routes if Contentful fetch fails
+  }
+
   // Combine all routes
-  const routes = [...staticRoutes, ...blogRoutes];
+  const routes = [...staticRoutes, ...blogRoutes, ...legalDocumentRoutes];
 
   return routes;
 }
