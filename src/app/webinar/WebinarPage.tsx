@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Linkedin, X } from "lucide-react";
+import { Calendar, Linkedin, X } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import InquiryForm from "@/components/forms/InquiryForm";
@@ -38,35 +38,17 @@ export default function WebinarPageClient() {
       </div>
     <Navbar />
       {/* Hero Section with Two Columns */}
-      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
+      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/wansom-webinar.png)] bg-blend-multiply bg-cover">
          <div className="container mx-auto px-4 lg:px-8 py-12  text-white">
-    <h1 className="font-marcellus text-5xl mb-6 text-white">Contact Us</h1>
+    <h1 className="font-marcellus text-5xl mb-6 text-white">Safeguarding Attorney-Client Privilege when using AI - Webinar</h1>
               <div className="font-jost text-sm  mb-5 ">
-                Home / Contact Us
+                Home / webinar
               </div>
               <div className="flex items-center gap-3 mb-4 ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                  />
-                </svg>{" "}
+             <Calendar className=" text-white h-6 w-6" />
                 <p>
-                  5th<sup>th</sup> Floor, I&M House, 2Nd Ngong Avenue, Upper Hill,
-                  Nairobi, Kenya
+                  19th<sup>th</sup>,
+                    <span className="ml-1">June 2025</span>
                 </p>
               </div>
               <div className="flex items-center gap-3  mb-4 ">
@@ -84,7 +66,7 @@ export default function WebinarPageClient() {
                     d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
                   />
                 </svg>
-                <p>info@wansom.ai</p>
+                <p>law@wansom.ai</p>
               </div>
          </div>
      </section>
@@ -103,16 +85,13 @@ export default function WebinarPageClient() {
             {/* Right Column - Map */}
             <div className="space-y-6">
             
-              <div className="w-full h-[500px] rounded-lg overflow-hidden">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.800665020861!2d36.808691074965616!3d-1.2941083986935926!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f11e9e9f172db%3A0xde236816f452452b!2sI%26M%20Bank%202nd%20Ngong%20Avenue%20Branch%2C%20Ngong%20Ave%2C%20Nairobi!5e0!3m2!1sen!2ske!4v1717142028581!5m2!1sen!2ske" width="600" height="450" loading="lazy" 
-                  className="w-full h-full"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+              <div className="w-full h-auto rounded-lg overflow-hidden">
+               <img
+                  src="/wansom-webinar.png"/>
               </div>
+              <p>
+                Join us for an insightful webinar on "Safeguarding Attorney-Client Privilege when using AI." This session will explore the challenges and best practices for maintaining confidentiality in the age of artificial intelligence. Don't miss this opportunity to enhance your understanding of legal ethics in the digital era.
+              </p>
             </div>
           </div>
         </div>
