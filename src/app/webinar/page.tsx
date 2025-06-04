@@ -1,39 +1,39 @@
 // app/contact/page.tsx
 import { Metadata } from 'next';
-import ContactPageClient from './WebinarPage';
+import WebinarPageClient from './WebinarPage';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Wansom AI - Legal Services',
-  description: 'Get in touch with Wansom AI. Located at I&M House, Upper Hill, Nairobi. Connect with our legal team for inquiries, support, and consultations.',
-  keywords: 'contact wansom AI, legal services contact, lawyer consultation, legal help nairobi, contact form',
+  title: 'Safeguarding Attorney-Client Privilege when using AI | Wansom AI - Webinar',
+  description: 'join our webinar on safeguarding attorney-client privilege when using AI in legal practice. Learn best practices and strategies to protect sensitive information.',
+  keywords: 'AI in legal practice, attorney-client privilege, legal ethics, AI webinar, data privacy in law',
   openGraph: {
-    title: 'Contact Us | Wansom AI - Legal Services',
-    description: 'Get in touch with Wansom AI. Located at I&M House, Upper Hill, Nairobi. Connect with our legal team for inquiries, support, and consultations.',
+    title: 'Safeguarding Attorney-Client Privilege when using AI | Wansom AI - Webinar',
+    description: 'Join our webinar on safeguarding attorney-client privilege when using AI in legal practice. Learn best practices and strategies to protect sensitive information.',
     type: 'website',
-    url: 'https://wansom.ai/contact',
+    url: 'https://wansom.ai/webinar',
     images: [
       {
-        url: '/dashboard.jpg',
+        url: '/wansom-webinar.png',
         width: 1200,
         height: 630,
-        alt: 'Contact wansom AI Legal Services',
+        alt: 'Wansom AI Webinar',
       }
     ],
     locale: 'en_US',
-    siteName: 'wansom',
+    siteName: 'wansom AI',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact Wansom AI Legal Services',
-    description: 'Get in touch with our legal team for consultations and support.',
-    images: ['/dashboard.jpg'],
+    title: 'Safeguarding Attorney-Client Privilege when using AI | Wansom AI - Webinar',
+    description: 'Join our webinar on safeguarding attorney-client privilege when using AI in legal practice. Learn best practices and strategies to protect sensitive information.',
+    images: ['/wansom-webinar.png'],
   }
 };
 
 const ContactPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
-      <ContactPageClient />
+      <WebinarPageClient />
     </div>
   );
 };
