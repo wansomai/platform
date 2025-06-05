@@ -21,6 +21,8 @@ import {
   Clipboard,
   ChevronDown,
   ChevronUp,
+  Paperclip,
+  Send,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
@@ -65,7 +67,7 @@ const ContractReviewPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
+      <section className="pt-24 md:pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/1.png')] bg-cover bg-center bg-blend-multiply opacity-30"></div>
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
@@ -144,7 +146,7 @@ const ContractReviewPage = () => {
                   </div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 h-[580px]">
+                <div className="grid lg:grid-cols-3 md:h-[580px]">
                   {/* Main content area */}
                   <div className="lg:col-span-2 p-6 bg-white">
                     {/* AI Suggestion bubble */}
@@ -164,7 +166,7 @@ const ContractReviewPage = () => {
                         <h3 className="font-bold text-base mb-3">
                           9.1 Data Protection and Privacy:
                         </h3>
-                        <p className="text-gray-700 mb-4">
+                        <p className="text-gray-700 mb-4 hidden md:block">
                           Employee data is collected and processed for
                           legitimate business purposes (payroll, benefits,
                           performance, etc.) in accordance with Company policy
@@ -206,18 +208,18 @@ const ContractReviewPage = () => {
 
                     {/* Chat input */}
                     <div className="mt-6 flex items-center space-x-3">
-                      <div className="flex-1 relative">
+                      <div className="md:flex-1 relative">
                         <input
                           type="text"
                           placeholder="Ask Anything about this project"
                           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
                         />
                         <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                          <div className="w-4 h-4 text-gray-400">📎</div>
+                          <div className="w-4 h-4 text-gray-400"><Paperclip className="h-4 w-4"/></div>
                         </div>
                       </div>
                       <button className="bg-[#355e66] text-white p-3 rounded-lg hover:bg-[#2a4d54] transition-colors">
-                        <ArrowRight className="w-4 h-4" />
+                        <Send className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -265,7 +267,7 @@ const ContractReviewPage = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-3 p-2 hover:bg-white rounded">
+                        <div className="hidden md:flex items-center space-x-3 p-2 hover:bg-white rounded">
                           <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center">
                             <span className="text-red-600 text-xs font-bold">
                               PDF
@@ -281,7 +283,7 @@ const ContractReviewPage = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-3 p-2 hover:bg-white rounded">
+                        <div className="hidden md:flex items-center space-x-3 p-2 hover:bg-white rounded">
                           <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
                             <span className="text-green-600 text-xs font-bold">
                               XLS
@@ -316,7 +318,7 @@ const ContractReviewPage = () => {
                       </div>
 
                       <div className="flex space-x-2">
-                        <button className="flex-1 bg-[#355e66] text-white py-2 px-3 rounded text-sm hover:bg-[#2a4d54] transition-colors">
+                        <button className="md:flex-1 bg-[#355e66] text-white py-2 px-3 rounded text-sm hover:bg-[#2a4d54] transition-colors">
                           View Task
                         </button>
                         <button className="px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-50 transition-colors">
@@ -352,7 +354,7 @@ const ContractReviewPage = () => {
                     style={{ fontFamily: "Times, serif" }}
                   >
                     {/* Document header */}
-                    <div className="text-center mb-8">
+                    <div className="hidden md:block text-center mb-8">
                       <h1 className="text-lg md:text-2xl font-bold mb-2">
                         SOFTWARE LICENSING AGREEMENT
                       </h1>
@@ -400,7 +402,7 @@ const ContractReviewPage = () => {
                       </div>
 
                       {/* Section 3 - with medium risk */}
-                      <div >
+                      <div className="hidden md:block" >
                         <h3 className="font-bold text-base mb-3">
                           3. PAYMENT TERMS
                         </h3>
@@ -441,7 +443,7 @@ const ContractReviewPage = () => {
                 </div>
 
                 {/* Sidebar */}
-                <div className="bg-white border-l -mt-[120px] md:mt-0">
+                <div className="bg-white border-l -mt-[100px] md:mt-0">
                   <div className="p-4 border-b bg-gray-50 ">
                     <div className="flex gap-2 items-center">
                       <h3 className="font-semibold ">Review</h3>
@@ -510,7 +512,7 @@ const ContractReviewPage = () => {
                       </div>
 
                       {/* High Risk */}
-                      <div className="border rounded-lg">
+                      <div className="border rounded-lg hidden md:block">
                         <div
                           className="p-3 cursor-pointer"
                           onClick={() =>
@@ -552,7 +554,7 @@ const ContractReviewPage = () => {
                       </div>
 
                       {/* Medium Risk */}
-                      <div className="border rounded-lg">
+                      <div className="border rounded-lg ">
                         <div
                           className="p-3 cursor-pointer"
                           onClick={() =>
@@ -594,7 +596,7 @@ const ContractReviewPage = () => {
                       </div>
 
                       {/* Low Risk */}
-                      <div className="border rounded-lg">
+                      <div className="border rounded-lg hidden md:block">
                         <div
                           className="p-3 cursor-pointer"
                           onClick={() =>
