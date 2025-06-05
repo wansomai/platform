@@ -1,6 +1,6 @@
 
 import { Metadata } from 'next';
-import LegalDraftingPage from './DocDraftingPage';
+import ContractReviewPage from './ContractReviewPage';
 
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ const Page = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
- <LegalDraftingPage/>
+ <ContractReviewPage/>
     </div>
   );
 };
