@@ -176,60 +176,162 @@ const LegalDraftingPage = () => {
             </h2>
           </div>
 
-          <div className="max-w-6xl mx-auto">
-            <div className="bg-white rounded-xl shadow-2xl border overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b">
-                <div className="flex items-center space-x-4">
-                  <div className="flex space-x-2">
-                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                  </div>
-                  <div className="text-sm text-gray-600">MSA - SaaS Software → J</div>
-                  <div className="ml-auto text-sm text-gray-500">Wansom</div>
-                </div>
+         <div className="max-w-6xl mx-auto">
+  <div className="bg-white rounded-xl shadow-2xl border overflow-hidden">
+    {/* Header */}
+    <div className="bg-gray-50 px-4 md:px-6 py-3 md:py-4 border-b">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex space-x-1 md:space-x-2">
+            <div className="w-2 h-2 md:w-3 md:h-3 bg-red-400 rounded-full"></div>
+            <div className="w-2 h-2 md:w-3 md:h-3 bg-yellow-400 rounded-full"></div>
+            <div className="w-2 h-2 md:w-3 md:h-3 bg-green-400 rounded-full"></div>
+          </div>
+          <div className="text-xs md:text-sm text-gray-600 truncate">Employment Agreement - Final.pdf</div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="hidden md:inline text-xs bg-gray-200 px-2 py-1 rounded">Page 1 of 3</span>
+          <span className="text-xs md:text-sm text-gray-500">Wansom</span>
+        </div>
+      </div>
+    </div>
+    
+    <div className="p-4 md:p-8 bg-white">
+      <div className="grid lg:grid-cols-2 gap-4 md:gap-8">
+        {/* Document Section */}
+        <div className="bg-white border border-gray-300 rounded-lg p-3 md:p-6 shadow-sm" style={{fontFamily: 'Times, serif'}}>
+          {/* Document Header */}
+          <div className="text-center mb-4 md:mb-6">
+            <h1 className="text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2">EMPLOYMENT AGREEMENT</h1>
+            <p className="text-xs md:text-sm text-gray-600">Innovate Tech Solutions LLC</p>
+            <hr className="mt-2 md:mt-4 border-gray-300" />
+          </div>
+
+          {/* Document Content */}
+          <div className="space-y-2 md:space-y-4 text-xs md:text-sm leading-relaxed">
+            <div className="mb-2 md:mb-4">
+              <p className="font-semibold text-gray-900">3. COMPENSATION AND BENEFITS</p>
+            </div>
+            
+            <div className="space-y-2 md:space-y-3">
+              <p className="text-gray-700">
+                <span className="font-medium">3.1</span> Base salary of $120,000 annually, payable in accordance with Company's standard payroll practices.
+              </p>
+              
+              {/* Highlighted section */}
+              <div className="bg-yellow-200 px-2 py-1 rounded border-l-2 md:border-l-4 border-yellow-400">
+                <p className="text-gray-700">
+                  <span className="font-medium">3.2</span> <span className="bg-yellow-300 px-1">Employee shall be eligible for annual performance bonuses at the sole discretion of the Company, with targets to be established quarterly.</span>
+                </p>
               </div>
               
-              <div className="p-8 bg-gray-100">
-                <div className="grid lg:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <div className="text-sm font-medium text-gray-700 mb-4">1.</div>
-                    <div className="space-y-3 text-gray-700 leading-relaxed">
-                      <p><strong>SAAS SERVICES AND SUPPORT</strong></p>
-                      <p>1.1 Subject to the terms of this Agreement, Company will use commercially reasonable efforts to provide Customer the Services in accordance with the service level specifications set forth herein as they may be updated from time to time by Company. Company reserves the right to modify or cancel passwords, it deems inappropriate.</p>
-                      <p>1.2 Subject to the terms hereof, Company will provide Customer with reasonable technical support services in accordance with the Company's practices set forth in Exhibit C.</p>
-                    </div>
+              <p className="text-gray-700">
+                <span className="font-medium">3.3</span> Standard benefits package including health insurance, dental coverage, and 401(k) matching as outlined in the Employee Handbook.
+              </p>
+              
+              <div className="mt-3 md:mt-6">
+                <p className="font-semibold text-gray-900">4. CONFIDENTIALITY</p>
+              </div>
+              
+              <p className="text-gray-700">
+                <span className="font-medium">4.1</span> Employee acknowledges access to confidential information and agrees to maintain strict confidentiality during and after employment...
+              </p>
+            </div>
+          </div>
+          
+          {/* Page footer - hidden on mobile */}
+          <div className="hidden md:block mt-8 pt-4 border-t border-gray-300 text-center">
+            <p className="text-xs text-gray-500">Page 1</p>
+          </div>
+        </div>
+        
+        {/* Chat Interface Section */}
+        <div className="space-y-3 md:space-y-4 -mt-[70%] -mr-3 md:mt-0 w-[80%] md:w-full mx-auto md:max-w-md lg:max-w-lg">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            {/* Chat Header */}
+            <div className="bg-[#355e66] px-3 md:px-4 py-2 md:py-3 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full"></div>
+                  <span className="text-xs md:text-sm font-medium">Wansom Assistant</span>
+                </div>
+                <span className="text-xs bg-white/20 px-1.5 md:px-2 py-0.5 md:py-1 rounded">Active</span>
+              </div>
+            </div>
+            
+            {/* Chat Messages */}
+            <div className="p-3 md:p-4 h-48 md:h-64 overflow-y-auto bg-gray-50">
+              <div className="space-y-3 md:space-y-4">
+                {/* AI Message */}
+                <div className="flex space-x-2">
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-[#355e66] rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-white">AI</span>
                   </div>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-gray-700">Wansom Assistant</span>
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">Suggestions</span>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <button className="w-full text-left p-3 bg-[#355e66] text-white rounded-lg hover:bg-[#2a4d54] transition-colors">
-                          <div className="font-medium text-sm mb-1">New Clause</div>
-                          <div className="text-xs opacity-90">Describe the clause or article you want to draft</div>
-                        </button>
-                        
-                        <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                          <div className="font-medium text-sm mb-1 text-gray-700">Similar Length</div>
-                          <div className="text-xs text-gray-500">Match the length and style</div>
-                        </button>
-                        
-                        <div className="text-xs text-gray-500 flex items-center">
-                          <ArrowRight className="w-3 h-3 mr-1" />
-                          Previous Activity
-                        </div>
-                      </div>
+                  <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm max-w-xs">
+                    <p className="text-xs md:text-sm text-gray-700">I notice you highlighted the bonus clause. Would you like me to suggest improvements?</p>
+                  </div>
+                </div>
+                
+                {/* User Message */}
+                <div className="flex space-x-2 justify-end">
+                  <div className="bg-[#355e66] text-white p-2 md:p-3 rounded-lg max-w-xs">
+                    <p className="text-xs md:text-sm">Yes, make it more specific with clear criteria and timeline</p>
+                  </div>
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-white">You</span>
+                  </div>
+                </div>
+                
+                {/* AI Response */}
+                <div className="flex space-x-2">
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-[#355e66] rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs text-white">AI</span>
+                  </div>
+                  <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm max-w-xs">
+                    <p className="text-xs md:text-sm text-gray-700 mb-2">Here's a clearer version:</p>
+                    <div className="p-2 bg-green-50 border-l-2 border-green-400 text-xs">
+                      "Annual bonuses of 10-25% of base salary based on: (a) individual performance metrics, (b) company revenue targets. Decisions made by March 31st following performance year."
                     </div>
+                    <button className="mt-2 text-xs bg-[#355e66] text-white px-2 py-1 rounded hover:bg-[#2a4d54] transition-colors">
+                      Apply Changes
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
+            
+            {/* Chat Input */}
+            <div className="p-2 md:p-3  border-t bg-white">
+              <div className="flex space-x-2">
+                <input 
+                  type="text" 
+                  placeholder="Ask me to revise this section..."
+                  className="flex-1 px-2 md:px-3 py-1.5 md:py-2 border border-gray-300 rounded-lg text-xs md:text-sm focus:ring-1 focus:ring-[#355e66] focus:border-transparent"
+                />
+                <button className="bg-[#355e66] text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-[#2a4d54] transition-colors">
+                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+                </button>
+              </div>
+            </div>
           </div>
+          
+          {/* Quick Actions - Simplified for mobile */}
+          <div className="bg-white border border-gray-200 rounded-lg p-3 md:p-4">
+            <h3 className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">Quick Actions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
+              <button className="text-left p-2 text-xs md:text-sm bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                📝 Draft clause
+              </button>
+              <button className="text-left p-2 text-xs md:text-sm bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                🔍 Review risks
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       </section>
 
