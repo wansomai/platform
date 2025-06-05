@@ -56,7 +56,7 @@ const LegalDraftingPage = () => {
               quickly with AI
             </h1>
             
-            <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12">
+            <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12" onClick={() => window.location.href = '/login'}>
               Start Drafting Now
             </button>
 

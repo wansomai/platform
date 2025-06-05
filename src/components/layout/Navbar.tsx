@@ -52,7 +52,7 @@ const Navbar = () => {
   const aiPlatformItems = [
     { name: 'Legal Drafting', href: '/ai-legal-drafting' },
     { name: 'Deep Research', href: '/#deep-research' },
-    { name: 'Due Diligence', href: '/#due-diligence' },
+    { name: 'Due Diligence', href: '/ai-due-diligence' },
     { name: 'Contract Reviews', href: '/ai-contract-review' },
     { name: 'Case Preparation', href: '/#case-preparation' },
   ]
