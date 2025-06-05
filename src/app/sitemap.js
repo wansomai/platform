@@ -73,6 +73,10 @@ export default async function sitemap() {
       url: `${baseUrl}/ai-due-diligence`,
       lastModified: new Date(),
     },
+         {
+      url: `${baseUrl}/ai-legal-research`,
+      lastModified: new Date(),
+    },
   ];
 
   // Get blog posts from Contentful
