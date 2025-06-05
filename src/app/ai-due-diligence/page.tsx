@@ -4,18 +4,18 @@ import DueDiligencePage from './DueDiligence';
 
 
 export const metadata: Metadata = {
-  title: 'AI Legal Drafting | wansom AI',
-  description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
+  title: 'AI For Due Diligence | wansom AI',
+  description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
   openGraph: {
-    title: 'AI Legal Drafting | wansom AI',
-    description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
+    title: 'AI For Due Diligence | wansom AI',
+    description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
     type: 'website',
     images: [
       {
         url: '/legal-drafting.jpg',
         width: 1200,
         height: 630,
-        alt: 'wansom AI Legal Drafting',
+        alt: 'AI For Due Diligence',
       },
     ],
   },
