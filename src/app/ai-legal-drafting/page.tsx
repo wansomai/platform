@@ -17,10 +17,11 @@ import {
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Image from 'next/image';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const LegalDraftingPage = () => {
   const [formData, setFormData] = useState({
-    jurisdiction: 'Queensland, Australia',
+    jurisdiction: 'London, United Kingdom',
     customer: 'New customer',
     fees: '$1000',
     paymentTerms: 'Monthly'
@@ -167,7 +168,7 @@ const LegalDraftingPage = () => {
       </section>
 
       {/* Quickly draft section */}
-      <section className="section-spacing bg-white">
+      <section className="section-spacing bg-gray-100">
         <div className="section-container">
           <div className="text-center mb-16">
             <h2 className="text-heading-2 mb-4">
@@ -336,39 +337,41 @@ const LegalDraftingPage = () => {
       </section>
 
       {/* Wansom adapts section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="section-spacing bg-gray-50">
+        <div className="section-container">
+          <div className="grid lg:grid-cols-2 gap-10 ">
             <div>
-              <div className="bg-white rounded-xl p-8 shadow-lg border max-w-md">
-                <h3 className="text-lg font-semibold mb-6 text-gray-900">Jurisdiction (optional)</h3>
-                <input 
-                  type="text" 
-                  value={formData.jurisdiction}
-                  onChange={(e) => setFormData({...formData, jurisdiction: e.target.value})}
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
-                />
-                
-                <h4 className="font-medium mb-4 text-gray-700">Details</h4>
-                <div className="space-y-3 text-sm text-gray-600">
-                  <div>Customer: {formData.customer}</div>
-                  <div>Fees: {formData.fees}</div>
-                  <div>Payment Terms: {formData.paymentTerms}</div>
-                </div>
-                
-                <button className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors">
-                  Generate Document Outline
-                </button>
-              </div>
-            </div>
+                <div className='bg-primary rounded-lg p-6 flex items-center justify-center'>
+  <div className="bg-white rounded-xl p-8 shadow-lg border max-w-md w-full">
+    <h3 className="text-lg font-semibold mb-6 text-gray-900">Jurisdiction</h3>
+    <input 
+      type="text" 
+      value={formData.jurisdiction}
+      onChange={(e) => setFormData({...formData, jurisdiction: e.target.value})}
+      className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
+    />
+    
+    <h4 className="font-medium mb-4 text-gray-700">Drafting Settings</h4>
+    <div className="space-y-3 text-sm text-gray-600">
+      <div>Document Type: Employment Agreement</div>
+      <div>Writing Style: Formal</div>
+      <div>Clause Length: Standard</div>
+    
+    </div>
+    
+    <button className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors">
+      Generate Document Outline
+    </button>
+  </div></div>
+</div>
 
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-                Wansom adapts<br />
+              <h2 className="text-heading-2 mb-4 text-gray-900">
+                Wansom adapts
                 to your documents
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Wansom automatically detects the substance of your document to draft relevant, ready to use language. You direct which content is approved and applied.
+                Wansom automatically detects the substance of your document to draft relevant, ready to use clauses. Collaborate with AI to achieve tasks faster.
               </p>
               
               <div className="space-y-4">
@@ -397,42 +400,17 @@ const LegalDraftingPage = () => {
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <blockquote className="text-3xl md:text-4xl font-medium mb-8 text-gray-900">
-              "Rather than spending 30 to 40<br />
-              minutes on a letter, I can draft it<br />
-              using Wansom in 10 to 12 minutes."
-            </blockquote>
-            <div className="flex items-center justify-center space-x-4">
-              <div className="w-12 h-12 bg-[#355e66] rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">TS</span>
-              </div>
-              <div className="text-left">
-                <div className="font-medium text-gray-900">Todd Strang</div>
-                <div className="text-gray-600">Partner, KMSC Law LLP</div>
-              </div>
-              <button className="ml-8 bg-[#355e66] hover:bg-[#2a4d54] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                Read KMSC's Story
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Draft from scratch section */}
-      <section className="py-20 bg-[#355e66]">
-        <div className="container mx-auto px-4">
+      <section className="section-spacing bg-[#355e66]">
+        <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
                 Draft from scratch or<br />
-                existing precedents
+                existing templates
               </h2>
               <p className="text-xl text-gray-100 mb-8">
-                Create new clauses and documents, or store your existing precedents and Wansom will draft content to match.
+                Create new clauses and documents, or store your existing templates and Wansom will draft content to match.
               </p>
               
               <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors">
@@ -451,9 +429,9 @@ const LegalDraftingPage = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-6 bg-gray-100">
                   <h3 className="font-bold text-gray-900 mb-4">
-                    CONFIDENTIALITY AND USE OF<br />
+                    CONFIDENTIALITY AND USE OF
                     SUBCONTRACTORS
                   </h3>
                   <p className="text-gray-600 text-sm mb-6 leading-relaxed">
@@ -467,7 +445,7 @@ const LegalDraftingPage = () => {
                       <BookOpen className="w-4 h-4 text-gray-600" />
                     </button>
                     <button className="bg-[#355e66] text-white px-4 py-2 rounded font-medium hover:bg-[#2a4d54] transition-colors">
-                      Insert at Cursor
+                      Continue Editing
                     </button>
                   </div>
                 </div>
@@ -477,125 +455,6 @@ const LegalDraftingPage = () => {
         </div>
       </section>
 
-      {/* Features grid */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-gray-900">
-              Review, draft, and chat in<br />
-              140+ languages
-            </h2>
-            <button className="bg-[#355e66] hover:bg-[#2a4d54] text-white px-8 py-4 rounded-lg font-semibold transition-colors">
-              Try Wansom Free
-            </button>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <BookOpen className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Save favourite clauses</h3>
-              <p className="text-gray-600">
-                Store and access your favourite clauses and documents. Draft new language based on your preferred terms and past work.
-              </p>
-            </div>
-
-            <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Insert directly without copy/paste</h3>
-              <p className="text-gray-600 mb-4">
-                No more copy and paste. Easily input your draft content in-line with a single click.
-              </p>
-              <div className="bg-[#355e66] text-white px-3 py-1 rounded text-sm inline-flex items-center">
-                <Zap className="w-4 h-4 mr-2" />
-                Insert at Cursor
-              </div>
-            </div>
-
-            <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Pull from precedents</h3>
-              <p className="text-gray-600">
-                Upload documents to your Clause Library to reference key language you want to repurpose. Share documents for yourself, or make them accessible to your team.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Another testimonial */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <blockquote className="text-3xl md:text-4xl font-medium mb-8 text-gray-900">
-              "If a clause needs to be rewritten<br />
-              based on comments, I use Wansom<br />
-              to provide a first pass of the rewrite."
-            </blockquote>
-            <div className="flex items-center justify-center space-x-4">
-              <div className="w-12 h-12 bg-[#355e66] rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">AV</span>
-              </div>
-              <div className="text-left">
-                <div className="font-medium text-gray-900">Abhishek Vaidyanathan</div>
-                <div className="text-gray-600">NEAR Foundation</div>
-              </div>
-              <button className="ml-8 bg-[#355e66] hover:bg-[#2a4d54] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                Read NEAR Foundation's Story
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AI Agent section */}
-      <section className="py-20 bg-[#355e66]">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center bg-[#b8690c] rounded-full px-4 py-2 mb-8">
-              <span className="text-sm font-medium text-white">Legal work made magic</span>
-              <span className="ml-3 bg-[#9d5608] text-xs px-2 py-1 rounded text-white">Associate</span>
-            </div>
-            
-            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">
-              The first AI agent that can<br />
-              assemble multi-document<br />
-              transactions
-            </h2>
-            
-            <button className="text-white border border-white px-6 py-3 rounded-lg hover:bg-white hover:text-[#d47b0f] transition-colors">
-              More on Wansom Associate →
-            </button>
-            
-            <div className="mt-12">
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-2xl mx-auto">
-                <div className="bg-gray-50 p-4 border-b">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-gray-600">Review Term Sheet</span>
-                    <span className="text-xs bg-gray-200 px-2 py-1 rounded">TermSheet.docx</span>
-                    <div className="ml-auto">
-                      <button className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                        <Play className="w-4 h-4 text-gray-600" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-8">
-                  <div className="text-gray-600 text-sm text-center">
-                    AI Associate Demo Video Preview
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* More spells section */}
       <section className="py-20 bg-white">
@@ -604,71 +463,40 @@ const LegalDraftingPage = () => {
           
           <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="w-16 h-16 bg-red-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold mb-2 text-gray-900">Review</h3>
+              <h3 className="font-bold mb-2 text-gray-900">Contract Review</h3>
               <p className="text-gray-600 text-sm">Redline contracts and catch risks</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold mb-2 text-gray-900">Ask</h3>
-              <p className="text-gray-600 text-sm">Quick answers to complex questions</p>
+              <h3 className="font-bold mb-2 text-gray-900">Deep Research</h3>
+              <p className="text-gray-600 text-sm">Quick answers to complex legal questions</p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+                <MagnifyingGlassIcon className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold mb-2 text-gray-900">Benchmarks</h3>
-              <p className="text-gray-600 text-sm">Compare contracts to industry standards</p>
+              <h3 className="font-bold mb-2 text-gray-900">Due Diligence</h3>
+              <p className="text-gray-600 text-sm">Never be caught offguard during transactions</p>
             </div>
             
             <div className="text-center relative">
-              <div className="absolute -top-2 -right-2 bg-[#355e66] text-white text-xs px-2 py-1 rounded">New</div>
+              <div className="absolute -top-2 -right-2 bg-[#355e66] text-white text-xs px-2 py-1 rounded">Beta</div>
               <div className="w-16 h-16 bg-[#d47b0f] rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h3 className="font-bold mb-2 text-gray-900">Associate</h3>
-              <p className="text-gray-600 text-sm">Multi-step document workflows</p>
+              <h3 className="font-bold mb-2 text-gray-900">Case Preparation</h3>
+              <p className="text-gray-600 text-sm">Predict possible case oucomes with AI role play</p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-gray-900">Start your 7-day free trial</h2>
-          <p className="text-xl text-gray-600 mb-8">Join 3000+ legal teams using Wansom</p>
-          
-          <div className="max-w-md mx-auto grid grid-cols-1 gap-4 mb-8">
-            <input 
-              type="email" 
-              placeholder="e.g. joe@email.com"
-              className="px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
-            />
-            <select className="px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#355e66] focus:border-transparent">
-              <option>Are you a legal professional?</option>
-              <option>Yes - Law Firm Partner</option>
-              <option>Yes - Solo Practitioner</option>
-              <option>Yes - In-House Counsel</option>
-              <option>Yes - Legal Associate</option>
-              <option>No - But interested in legal tech</option>
-            </select>
-          </div>
-          
-          <button className="bg-[#355e66] hover:bg-[#2a4d54] text-white px-8 py-4 rounded-lg font-semibold transition-colors">
-            Try Wansom Free
-          </button>
-          
-          <p className="text-gray-500 text-sm mt-4">*Required</p>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );
