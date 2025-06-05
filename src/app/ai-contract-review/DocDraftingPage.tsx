@@ -170,7 +170,7 @@ const LegalDraftingPage = () => {
       {/* Quickly draft section */}
       <section className="section-spacing bg-gray-100">
         <div className="section-container">
-          <div className="text-start lg:text-cneter mb-16">
+          <div className="text-center mb-16">
             <h2 className="text-heading-2 mb-4">
               Quickly draft relevant terms and clauses<br />
               across multiple documents
@@ -461,7 +461,7 @@ const LegalDraftingPage = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-16 text-gray-900">More features to explore</h2>
           
-          <div className=" grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-white" />
