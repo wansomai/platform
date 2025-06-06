@@ -4,10 +4,10 @@ import DueDiligencePage from './DueDiligence';
 
 
 export const metadata: Metadata = {
-  title: 'AI For Due Diligence | wansom AI',
+  title: 'Best AI For Due Diligence | wansom AI',
   description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
   openGraph: {
-    title: 'AI For Due Diligence | wansom AI',
+    title: 'Best AI For Due Diligence | wansom AI',
     description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
     type: 'website',
     images: [

@@ -4,10 +4,10 @@ import LegalDraftingPage from './DocDraftingPage';
 
 
 export const metadata: Metadata = {
-  title: 'AI for Legal Drafting | wansom AI',
+  title: 'Best AI for Legal Drafting | wansom AI',
   description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
   openGraph: {
-    title: 'AI for Legal Drafting | wansom AI',
+    title: 'Best AI for Legal Drafting | wansom AI',
     description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
     type: 'website',
     images: [

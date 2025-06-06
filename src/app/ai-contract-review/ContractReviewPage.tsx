@@ -83,7 +83,7 @@ const ContractReviewPage = () => {
               </div>
 
               <h1 className="text-heading-1 mb-4 text-shadow">
-                AI For Contract Review
+                Best AI For Contract Review
               </h1>
 
               <p className="text-xl mb-8 text-gray-100">
