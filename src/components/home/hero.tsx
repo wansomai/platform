@@ -106,7 +106,7 @@ const HeroSection: React.FC = () => {
         </p>
         
         <button 
-          className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-dark hover:bg-[#d47b0f] rounded-md py-3 px-6 mb-10"
+          className="font-medium uppercase flex gap-1 items-center mx-auto text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 mb-10"
           onClick={() => window.location.href = '/register'}
         >
           TRY WANSOM FOR FREE <Sparkles className='w-5 h-5 text-white' />

@@ -1,13 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShieldCheck, FolderLock, Shield, ExternalLink } from "lucide-react";
+import { ShieldCheck, FolderLock, Shield, ExternalLink, CheckCircle, Globe, Zap, Target } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/home/hero";
 import FeaturesSection from "@/components/home/features";
 import VaultSection from "@/components/home/vault";
 import CookieConsent, { Cookies } from "react-cookie-consent";
+import { ResearchInterfaceCards, ResearchSourcesWorkflow } from "./ai-legal-research/LegalResearchPage";
+import CreativeIntegrationsSection from "@/components/home/Security";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,9 +31,11 @@ export default function Home() {
         <HeroSection />
         
         <FeaturesSection />
+      <LegalDraftingSection />
+      <LegalResearchSection/>
+      <AutomateProcesses/>
         <VaultSection />
-        <SecuritySection />
-        <IntegrationsSection />
+        <CreativeIntegrationsSection/>
       </main>
              <CookieConsent
   location="bottom"
@@ -49,66 +53,6 @@ export default function Home() {
   );
 }
 
-// Security Section Component
-function SecuritySection() {
-  const securityFeatures = [
-    {
-      icon: FolderLock,
-      title: "Data Encrypted in Transit and at Rest",
-      description: "End-to-end encryption protects your sensitive legal documents and communications."
-    },
-    {
-      icon: Shield,
-      title: "No AI Training on User Data",
-      description: "Your confidential information stays private and is never used to train our AI models."
-    },
-    {
-      icon: ShieldCheck,
-      title: "On-premise Deployment Available",
-      description: "Deploy Wansom AI within your own infrastructure for maximum security control."
-    }
-  ];
-
-  return (
-    <section className=" bg-white section-spacing" id="security">
-      <div className="section-container">
-        <div className="flex flex-col md:flex-row  justify-center gap-8">
-          <div className="md:basis-1/2 text-center md:text-left mb-8 md:mb-0">
-            <h2 className="text-heading-2 text-gray-900 mb-4">
-             Built to the highest security standards
-            </h2>
-            <p className="text-body-large text-gray-600 max-w-3xl mx-auto md:mx-0">
-              Wansom AI is built with  enterprise-level security at its core, ensuring your firm's sensitive data remains confidential and protected.We adhere to the highest security standards, including SOC 2 Type II and ISO 27001 certifications. Wansom AI does not train on your data, ensuring its privacy and security.
-            </p></div>
-             
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {securityFeatures.map((feature, index) => (
-                <div 
-                  key={index}
-                  className="flex flex-col gap-4 p-4 bg-primary rounded-lg"
-                >
-                  <div className="flex-shrink-0 flex items-center justify-center gap-3">
-                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm w-fit h-fit flex items-center justify-center">
-                      <feature.icon className="w-8 h-8 text-white" />
-                    </div>
-                     <h3 className="text-lg text-white mb-2">
-                      {feature.title}
-                    </h3>
-                  </div>
-                  <div className="text-center md:text-left">
-                   
-                    <p className="text-sm text-dim">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // Integrations Section Component
 function IntegrationsSection() {
@@ -196,12 +140,159 @@ function IntegrationsSection() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Link href="/login" className="btn-primary">
-            View All Integrations
-          </Link>
-        </div>
+  
       </div>
     </section>
   );
+}
+function LegalDraftingSection(){
+      return (
+        <section className="section-spacing  bg-white" id="legal-drafting">
+        <div className="section-container">
+          <div className="grid lg:grid-cols-2 gap-10 ">
+            
+                <div className='bg-primary rounded-lg p-6 flex items-center justify-center order-2 lg:order-1'>
+  <div className="bg-white rounded-xl p-8 shadow-lg border max-w-md w-full">
+    <h3 className="text-lg font-semibold mb-6 text-gray-900">Jurisdiction</h3>
+    <input 
+      type="text" 
+      value="London, UK"
+     readOnly
+      className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
+    />
+    
+    <h4 className="font-medium mb-4 text-gray-700">Drafting Settings</h4>
+    <div className="space-y-3 text-sm text-gray-600">
+      <div>Document Type: Employment Agreement</div>
+      <div>Writing Style: Formal</div>
+      <div>Clause Length: Standard</div>
+    
+    </div>
+    
+    <button className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors">
+      Generate Document Outline
+    </button>
+  </div>
+  </div>
+
+
+            <div className="order-1 lg:order-2 ">
+              <h2 className="text-heading-2 mb-4 text-gray-900">
+                Draft Correct Legally formatted Documents and Clauses
+quickly with AI
+              </h2>
+              <p className="text-xl text-gray-600 mb-8">
+                Wansom automatically detects the substance of your document to draft relevant, ready to use clauses. Collaborate with AI to achieve tasks faster.
+              </p>
+              
+              <div className="space-y-4">
+                <p className="font-medium text-gray-900">Wansom instantly understands:</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-[#355e66] mr-3" />
+                    <span className="text-gray-700">Contract Type</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-[#355e66] mr-3" />
+                    <span className="text-gray-700">Jurisdiction</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-[#355e66] mr-3" />
+                    <span className="text-gray-700">Party Details</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-[#355e66] mr-3" />
+                    <span className="text-gray-700">Writing Style</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      )
+}
+
+function LegalResearchSection(){
+  return (
+    <section className="section-spacing bg-gray-50" id="legal-research">
+      <div className="section-container pb-12">
+        <div className="text-center mb-12 ">
+          <h2 className="text-heading-2 text-gray-900">
+           Access millions of legal authorities in one intelligent search
+          </h2>
+          <p className="text-body-large text-gray-600 max-w-3xl mx-auto">
+            Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.
+          </p>
+          
+        </div>
+        {/* Add your AI Legal Research component here */}
+        <ResearchInterfaceCards/>
+      </div>
+    </section>
+  );
+}
+function AutomateProcesses(){
+  return(
+         <section className="section-spacing bg-gray-100">
+            <div className="section-container pb-12">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                  <h2 className="text-heading-2 mb-6 text-gray-900">
+                   Automate Legal Worflows
+                  </h2>
+                  <p className="text-xl text-gray-600 mb-8">
+                     Legal processes can be tedious and time-consuming. We save you time by automating them.
+                  </p>
+    
+                  <div className="space-y-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center">
+                        <Globe className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2">
+                          Tax Filings & Compliance
+                        </h3>
+                        <p className="text-gray-600">
+                         Streamline tax preparation, automate regulatory filings, and stay compliant with ever-changing legal requirements and deadlines.
+                        </p>
+                      </div>
+                    </div>
+    
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center">
+                        <Zap className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2">
+                        Due Diligence
+                        </h3>
+                        <p className="text-gray-600">
+                          Automate due diligence for mergers, acquisitions, and investments with advanced document analysis and risk assessment.
+                        </p>
+                      </div>
+                    </div>
+    
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                        <Target className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2">
+                          Legal Appointments & Deadlines
+                        </h3>
+                        <p className="text-gray-600">
+                         Automate scheduling, client onboarding, and deadline tracking with smart reminders and calendar integration.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+      <ResearchSourcesWorkflow/>
+              
+              </div>
+            </div>
+          </section>
+  )
 }

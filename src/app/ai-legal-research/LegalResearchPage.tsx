@@ -147,8 +147,9 @@ const LegalResearchPage = () => {
                 </div>
               </div>
             </div>
+              {/* Hero Demo Interface */}
 <ResearchInterfaceCards/>
-            {/* Hero Demo Interface */}
+          
             
           </div>
         </div>
@@ -405,7 +406,7 @@ const LegalResearchPage = () => {
   );
 };
 
-const ResearchInterfaceCards = () => {
+export const ResearchInterfaceCards = () => {
   const [query, setQuery] = useState('');
 
   return (
@@ -511,7 +512,7 @@ const ResearchInterfaceCards = () => {
     </div>
   );
 };
-const ResearchSourcesWorkflow = () => {
+export const ResearchSourcesWorkflow = () => {
   return (
     <div className="max-w-4xl mx-auto bg-primary p-8 rounded-3xl">
       {/* Top Card */}

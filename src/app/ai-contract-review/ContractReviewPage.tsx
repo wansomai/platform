@@ -185,7 +185,7 @@ const ContractReviewPage = () => {
                         <FileText className="w-8 h-8 text-blue-600" />
                         <div>
                           <div className="font-medium text-gray-900">
-                            Standard Employment Contract Template v3.docx
+                            Standard Employment Contract v3.docx
                           </div>
                         </div>
                         <div className="ml-auto flex space-x-2">
@@ -277,8 +277,8 @@ const ContractReviewPage = () => {
                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                        <g
                                          id="SVGRepo_tracerCarrier"
-                                         stroke-linecap="round"
-                                         stroke-linejoin="round"
+                                         strokeLinecap="round"
+                                        strokeLinejoin="round"
                                        ></g>
                                        <g id="SVGRepo_iconCarrier">
                                          <rect
@@ -317,8 +317,8 @@ const ContractReviewPage = () => {
                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                        <g
                                          id="SVGRepo_tracerCarrier"
-                                         stroke-linecap="round"
-                                         stroke-linejoin="round"
+                                         strokeLinecap="round"
+                                         strokeLinejoin="round"
                                        ></g>
                                        <g id="SVGRepo_iconCarrier">
                                          {" "}
@@ -354,8 +354,8 @@ const ContractReviewPage = () => {
                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                        <g
                                          id="SVGRepo_tracerCarrier"
-                                         stroke-linecap="round"
-                                         stroke-linejoin="round"
+                                         strokeLinecap="round"
+                                         strokeLinejoin="round"
                                        ></g>
                                        <g id="SVGRepo_iconCarrier">
                                          <rect
@@ -395,8 +395,8 @@ const ContractReviewPage = () => {
                                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                        <g
                                          id="SVGRepo_tracerCarrier"
-                                         stroke-linecap="round"
-                                         stroke-linejoin="round"
+                                        strokeLinecap="round"
+                                         strokeLinejoin="round"
                                        ></g>
                                        <g id="SVGRepo_iconCarrier">
                                          {" "}

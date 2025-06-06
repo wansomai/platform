@@ -46,56 +46,7 @@ const DueDiligencePage = () => {
     { src: "/logos/4.png", alt: "Netsheria" },
   ];
 
-  const dueDiligenceCategories = [
-    {
-      id: "financial",
-      label: "Financial",
-      count: 847,
-      color: "text-blue-600 bg-blue-100",
-      completed: 92,
-    },
-    {
-      id: "legal",
-      label: "Legal",
-      count: 234,
-      color: "text-purple-600 bg-purple-100",
-      completed: 78,
-    },
-    {
-      id: "operational",
-      label: "Operational",
-      count: 156,
-      color: "text-green-600 bg-green-100",
-      completed: 85,
-    },
-    {
-      id: "technical",
-      label: "Technical",
-      count: 89,
-      color: "text-orange-600 bg-orange-100",
-      completed: 65,
-    },
-  ];
-    const documentCategories = [
-    {
-      title: "Financial Statements & Audits",
-      rules: 16,
-      icon: BarChart3,
-      description: "Comprehensive analysis of financial data, cash flows, and audit reports"
-    },
-    {
-      title: "Corporate Governance Documents", 
-      rules: 8,
-      icon: Building,
-      description: "Board resolutions, bylaws, and organizational structure analysis"
-    },
-    {
-      title: "Operational & Commercial Agreements",
-      rules: 39,
-      icon: Calendar,
-      description: "Customer contracts, supplier agreements, and operational policies"
-    }
-  ];
+ 
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -151,51 +102,7 @@ const DueDiligencePage = () => {
               </div>
             </div>
  {/* Document Categories Grid */}
-          <div className="relative bg-primary rounded-xl shadow-xl overflow-hidden p-6 w-full lg:basis-2/5">
-            <div className="space-y-3">
-              {documentCategories.map((category, index) => (
-                <div 
-                  key={index}
-                  className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Users className="w-5 h-5 text-[#355e66]" />
-                      </div>
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <FileText className="w-4 h-4" />
-                        <span className="text-sm font-medium">{category.rules} Issues</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">
-                    {category.title}
-                  </h3>
-                  
-                  <div className="space-y-2">
-                    {/* Placeholder content bars */}
-                    <div className="flex space-x-2">
-                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
-                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
-                      <div className="h-2 bg-gray-200 rounded-full w-16"></div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <div className="h-2 bg-gray-200 rounded-full w-24"></div>
-                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
-                      <div className="h-2 bg-gray-200 rounded-full w-20"></div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
-                      <div className="h-2 bg-gray-200 rounded-full w-16"></div>
-                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <DocumentsVault/>
           
           </div>
         </div>
@@ -645,5 +552,104 @@ const ComprehensiveAnalysisSection = () => {
     </section>
   );
 };
+export const DocumentsVault=() => {
+   const dueDiligenceCategories = [
+    {
+      id: "financial",
+      label: "Financial",
+      count: 847,
+      color: "text-blue-600 bg-blue-100",
+      completed: 92,
+    },
+    {
+      id: "legal",
+      label: "Legal",
+      count: 234,
+      color: "text-purple-600 bg-purple-100",
+      completed: 78,
+    },
+    {
+      id: "operational",
+      label: "Operational",
+      count: 156,
+      color: "text-green-600 bg-green-100",
+      completed: 85,
+    },
+    {
+      id: "technical",
+      label: "Technical",
+      count: 89,
+      color: "text-orange-600 bg-orange-100",
+      completed: 65,
+    },
+  ];
+    const documentCategories = [
+    {
+      title: "Financial Statements & Audits",
+      rules: 16,
+      icon: BarChart3,
+      description: "Comprehensive analysis of financial data, cash flows, and audit reports"
+    },
+    {
+      title: "Corporate Governance Documents", 
+      rules: 8,
+      icon: Building,
+      description: "Board resolutions, bylaws, and organizational structure analysis"
+    },
+    {
+      title: "Operational & Commercial Agreements",
+      rules: 39,
+      icon: Calendar,
+      description: "Customer contracts, supplier agreements, and operational policies"
+    }
+  ];
+  return (
+  <div className="relative bg-primary rounded-xl shadow-xl overflow-hidden p-6 w-full lg:basis-2/5">
+            <div className="space-y-3">
+              {documentCategories.map((category, index) => (
+                <div 
+                  key={index}
+                  className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-[#355e66]" />
+                      </div>
+                      <div className="flex items-center space-x-2 text-gray-600">
+                        <FileText className="w-4 h-4" />
+                        <span className="text-sm font-medium">{category.rules} Issues</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">
+                    {category.title}
+                  </h3>
+                  
+                  <div className="space-y-2">
+                    {/* Placeholder content bars */}
+                    <div className="flex space-x-2">
+                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                      <div className="h-2 bg-gray-200 rounded-full w-16"></div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <div className="h-2 bg-gray-200 rounded-full w-24"></div>
+                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                      <div className="h-2 bg-gray-200 rounded-full w-20"></div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                      <div className="h-2 bg-gray-200 rounded-full w-16"></div>
+                      <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+  )
+}
 
 export default DueDiligencePage;
