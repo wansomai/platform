@@ -94,7 +94,7 @@ const CreativeIntegrationsSection = () => {
  
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50" id='integrations'>
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-heading-2 text-black font-bold mb-4">
