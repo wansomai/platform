@@ -30,6 +30,7 @@ const AnimatedLegalInterface = () => {
   ];
 
   const userMessage = "Update the contract to match our latest privacy policy";
+  
   const contractText =
     "Employee data is collected and processed for legitimate business purposes (payroll, benefits, performance, etc.) in accordance with Company policy and applicable laws. Data types, storage, access, and retention are detailed in our Data Protection Policy. Employees have rights to access, rectify, or request erasure of their data under GDPR and applicable privacy regulations.";
 
