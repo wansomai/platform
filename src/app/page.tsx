@@ -27,6 +27,7 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
+        
         <FeaturesSection />
         <VaultSection />
         <SecuritySection />

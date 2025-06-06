@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Sparkles } from 'lucide-react';
+import AnimatedLegalInterface from './Animatedhero';
 
 const HeroSection: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -110,21 +111,9 @@ const HeroSection: React.FC = () => {
         >
           TRY WANSOM FOR FREE <Sparkles className='w-5 h-5 text-white' />
         </button>
-        
+        <AnimatedLegalInterface/>
   
-        {/* Contract Editor Preview */}
-        <div className="relative max-w-7xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200 -mb-1 lg:-mb-3">
-          <video 
-            autoPlay 
-            loop 
-            muted 
-            playsInline
-            className="w-full h-auto"
-          >
-            <source src="/hero.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
+ 
       </div>
     </section>
   );
