@@ -156,7 +156,7 @@ function AutomateProcesses(){
     
                   <div className="space-y-6">
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center p-3">
                         <Globe className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -170,7 +170,7 @@ function AutomateProcesses(){
                     </div>
     
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center p-3">
                         <Zap className="w-6 h-6 text-white" />
                       </div>
                       <div>
@@ -184,7 +184,7 @@ function AutomateProcesses(){
                     </div>
     
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center p-3">
                         <Target className="w-6 h-6 text-white" />
                       </div>
                       <div>
