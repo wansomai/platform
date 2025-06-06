@@ -197,7 +197,7 @@ const AnimatedLegalInterface = () => {
 
               {/* Generated content box - faster animation */}
               <div
-                className={`bg-gray-100 border border-gray-300 rounded-lg p-4 mt-6 transition-all duration-400 ${
+                className={`bg-gray-100 border border-gray-300 rounded-lg p-4 mt-6 transition-all duration-400 hidden md:block ${
                   showGeneratedContent
                     ? "opacity-100 transform scale-100"
                     : "opacity-0 transform scale-95"
@@ -222,7 +222,7 @@ const AnimatedLegalInterface = () => {
 
               {/* File preview - faster highlight animation */}
               <div
-                className={`flex items-center  space-x-3 mt-6 p-3 bg-gray-50 rounded-lg transition-all duration-200 ${
+                className={`hidden md:flex items-center  space-x-3 mt-6 p-3 bg-gray-50 rounded-lg transition-all duration-200 ${
                   highlightedFile === "contract"
                     ? "ring-2 ring-[#355e66] bg-blue-50 justify-start"
                     : ""
