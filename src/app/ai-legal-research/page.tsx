@@ -5,14 +5,14 @@ import LegalResearchPage from './LegalResearchPage';
 
 export const metadata: Metadata = {
   title: 'AI Legal Research| wansom AI',
-  description: 'Review and redline your contracts within a collaborative AI workspace',
+  description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
   openGraph: {
     title: 'AI Legal Research| wansom AI',
-    description: 'Review and redline your contracts within a collaborative AI workspace',
+    description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
     type: 'website',
     images: [
       {
-        url: '/legal-drafting.jpg',
+        url: '/legal-research.png',
         width: 1200,
         height: 630,
         alt: 'wansom AI Legal Drafting',

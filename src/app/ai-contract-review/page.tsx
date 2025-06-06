@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/legal-drafting.jpg',
+        url: '/legal-drafting.png',
         width: 1200,
         height: 630,
         alt: 'wansom AI Legal Drafting',
