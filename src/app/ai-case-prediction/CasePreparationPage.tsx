@@ -184,7 +184,7 @@ const CasePreparationPage = () => {
                   {/* Main content area - Chat Simulation */}
                   <div className="lg:col-span-2 p-6 bg-white flex flex-col">
                     {/* AI Suggestion bubble */}
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 relative">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 relative hidden md:block">
                       <div className="absolute -top-2 left-4 bg-gray-50 w-4 h-4 rotate-45 border-l border-t border-blue-200"></div>
                       <p className="text-sm text-gray-800 font-medium">
                         Based on similar employment disputes, your case has an
@@ -198,7 +198,7 @@ const CasePreparationPage = () => {
                       <div className="space-y-4">
                         {/* Your opening argument */}
                         <div className="flex justify-end">
-                          <div className="bg-[#355e66] text-white p-3 rounded-lg  w-[90%]">
+                          <div className="bg-[#355e66] text-white p-3 rounded-lg  w-[95%]">
                             <p className="text-sm">
                               "My client was terminated in direct retaliation
                               for reporting safety violations to OSHA. This
@@ -209,7 +209,7 @@ const CasePreparationPage = () => {
 
                         {/* AI opposing counsel response */}
                         <div className="flex justify-start">
-                          <div className=" p-3 rounded-lg w-[90%]">
+                          <div className=" p-3 rounded-lg w-[95%]">
                             <div className="flex items-center mb-1 gap-1">
                               <Sparkles className="w-4 h-4 text-primary" />
 
@@ -232,7 +232,7 @@ const CasePreparationPage = () => {
                           </div>
                         </div>
                         {/* Your counter-argument */}
-                        <div className="flex justify-end">
+                        <div className="hidden md:flex justify-end">
                           <div className="bg-[#355e66] text-white p-3 rounded-lg w-[90%]">
                            
                             <p className="text-sm">
