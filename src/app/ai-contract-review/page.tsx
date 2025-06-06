@@ -4,10 +4,10 @@ import ContractReviewPage from './ContractReviewPage';
 
 
 export const metadata: Metadata = {
-  title: 'AI Contract Review| wansom AI',
+  title: 'AI for Contract Review| wansom AI',
   description: 'Review and redline your contracts within a collaborative AI workspace',
   openGraph: {
-    title: ' AI Contract Review| wansom AI',
+    title: ' AI for Contract Review| wansom AI',
     description: 'Review and redline your contracts within a collaborative AI workspace',
     type: 'website',
     images: [

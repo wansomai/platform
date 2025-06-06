@@ -54,7 +54,7 @@ const Navbar = () => {
     { name: 'Deep Research', href: '/ai-legal-research' },
     { name: 'Due Diligence', href: '/ai-due-diligence' },
     { name: 'Contract Reviews', href: '/ai-contract-review' },
-    { name: 'Case Preparation', href: '/#case-preparation' },
+    { name: 'Case Preparation', href: '/ai-case-prediction' },
   ]
 
   return (

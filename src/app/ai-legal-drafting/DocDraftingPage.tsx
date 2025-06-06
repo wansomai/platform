@@ -17,7 +17,6 @@ import {
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Image from 'next/image';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import MoreFeatures from '@/components/home/MoreFeatures';
 
 const LegalDraftingPage = () => {
