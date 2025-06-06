@@ -10,7 +10,9 @@ import {
   Brain,
   Zap,
   BookOpen,
-  Shield
+  Shield,
+  Target,
+  TrendingUp
 } from 'lucide-react';
 
 // Import existing components

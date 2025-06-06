@@ -379,8 +379,9 @@ const CasePreparationPage = () => {
 
       {/* AI Case Simulation section */}
       <section className="section-spacing bg-gray-100">
-        <div className="section-container text-center">
-          <h2 className="text-heading-2 mb-4 text-gray-900">
+        <div className="section-container flex flex-col md:flex-row">
+       <div className="md:basis-1/2">
+           <h2 className="text-heading-2 mb-4 text-gray-900">
             Simulate opposing counsel strategies
           </h2>
           <p className="text-xl text-gray-600 mb-12">
@@ -388,340 +389,11 @@ const CasePreparationPage = () => {
             weaknesses, and help you prepare for every possible scenario in
             court.
           </p>
-
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-xl shadow-2xl border overflow-hidden">
-              {/* Case simulation interface */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 md:h-[700px]">
-                {/* Main simulation area */}
-                <div className="lg:col-span-2 p-6 bg-white">
-                  {/* Simulation header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-gray-900">
-                      AI Opposition Simulation
-                    </h3>
-                    <div className="flex items-center space-x-2">
-                      <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                        Live Simulation
-                      </span>
-                      <button className="p-2 border border-gray-300 rounded hover:bg-gray-50">
-                        <Play className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Simulation conversation */}
-                  <div className="bg-gray-50 rounded-lg p-6 mb-6 h-96 overflow-y-auto">
-                    <div className="space-y-4">
-                      {/* Your argument */}
-                      <div className="flex justify-end">
-                        <div className="bg-[#355e66] text-white p-4 rounded-lg max-w-md">
-                          <div className="text-xs mb-1 opacity-75">
-                            Your Argument:
-                          </div>
-                          <p className="text-sm">
-                            "The termination clearly violates whistleblower
-                            protection laws. My client reported legitimate
-                            safety concerns and was fired in direct
-                            retaliation."
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* AI opposing counsel response */}
-                      <div className="flex justify-start">
-                        <div className="bg-red-50 border border-red-200 p-4 rounded-lg max-w-md">
-                          <div className="flex items-center mb-2">
-                            <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mr-2">
-                              <Brain className="w-3 h-3 text-white" />
-                            </div>
-                            <span className="text-xs font-medium text-red-800">
-                              AI Opposing Counsel:
-                            </span>
-                          </div>
-                          <p className="text-sm text-red-700">
-                            "The termination was due to performance issues
-                            documented over 6 months. The safety report was
-                            filed only after the employee received a negative
-                            review. This suggests strategic timing rather than
-                            genuine concern."
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Counter-argument suggestion */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <div className="flex items-start space-x-3">
-                          <Lightbulb className="w-5 h-5 text-blue-600 mt-0.5" />
-                          <div>
-                            <div className="font-medium text-blue-800 mb-1">
-                              AI Suggestion:
-                            </div>
-                            <p className="text-sm text-blue-700">
-                              Counter with evidence that safety concerns existed
-                              before the performance review. Emphasize the
-                              timeline and any witnesses who can corroborate
-                              earlier informal complaints.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Your counter-argument */}
-                      <div className="flex justify-end">
-                        <div className="bg-[#355e66] text-white p-4 rounded-lg max-w-md">
-                          <div className="text-xs mb-1 opacity-75">
-                            Your Counter:
-                          </div>
-                          <p className="text-sm">
-                            "We have testimony from three colleagues who confirm
-                            my client raised safety concerns informally in team
-                            meetings two months before any performance issues
-                            were documented."
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Input for next argument */}
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="text"
-                      placeholder="Enter your next argument..."
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
-                    />
-                    <button className="bg-[#355e66] text-white px-6 py-3 rounded-lg hover:bg-[#2a4d54] transition-colors">
-                      Submit
-                    </button>
-                  </div>
-                </div>
-
-                {/* Simulation sidebar */}
-                <div className="bg-gray-50 border-l p-4">
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-4">
-                      Simulation Metrics
-                    </h4>
-
-                    <div className="space-y-4">
-                      <div className="p-3 bg-white rounded border">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-[#355e66]">
-                            87%
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            Argument Strength
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-3 bg-white rounded border">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">
-                            15
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            Successful Counters
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-3 bg-white rounded border">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-orange-600">
-                            3
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            Weak Points Found
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-4">
-                      Opposition Strategy
-                    </h4>
-
-                    <div className="space-y-2 text-sm">
-                      <div className="p-2 bg-red-50 rounded border-l-2 border-red-500">
-                        <div className="font-medium text-red-800">
-                          Timeline Challenge
-                        </div>
-                        <div className="text-red-600">
-                          Questioning chronology of events
-                        </div>
-                      </div>
-                      <div className="p-2 bg-yellow-50 rounded border-l-2 border-yellow-500">
-                        <div className="font-medium text-yellow-800">
-                          Performance Focus
-                        </div>
-                        <div className="text-yellow-600">
-                          Emphasizing work quality issues
-                        </div>
-                      </div>
-                      <div className="p-2 bg-purple-50 rounded border-l-2 border-purple-500">
-                        <div className="font-medium text-purple-800">
-                          Motive Attack
-                        </div>
-                        <div className="text-purple-600">
-                          Questioning whistleblower intent
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors mb-2">
-                    End Simulation
-                  </button>
-
-                  <button className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    Save Analysis
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+       </div>
+<CasePreparationInterface/>
         </div>
       </section>
 
-      {/* Outcome prediction section */}
-      <section className="section-spacing bg-gray-50">
-        <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-heading-2 mb-6 text-gray-900">
-                Predict case outcomes with AI-powered analytics
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Our AI analyzes thousands of similar cases, judge preferences,
-                and legal precedents to provide accurate outcome predictions and
-                strategic recommendations.
-              </p>
-
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center">
-                    <BarChart3 className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Statistical Analysis
-                    </h3>
-                    <p className="text-gray-600">
-                      AI processes outcomes from 50,000+ similar cases to
-                      predict settlement ranges and trial success rates.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center">
-                    <Scale className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Judge Pattern Analysis
-                    </h3>
-                    <p className="text-gray-600">
-                      Understand specific judge tendencies and preferences to
-                      tailor your presentation strategy accordingly.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                    <Target className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Strategic Recommendations
-                    </h3>
-                    <p className="text-gray-600">
-                      Get specific advice on evidence prioritization, argument
-                      sequencing, and settlement timing.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative bg-primary rounded-xl shadow-xl overflow-hidden p-6">
-              <div className="bg-white rounded-xl shadow-xl border p-6">
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <PieChart className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold text-gray-900">
-                      Outcome Prediction
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Johnson v. TechCorp - Wrongful Termination Analysis
-                  </p>
-                </div>
-
-                <div className="space-y-4 mb-4">
-                  <div className="p-3 bg-green-50 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-green-800">
-                        Settlement Likelihood
-                      </span>
-                      <span className="font-bold text-green-600">75%</span>
-                    </div>
-                    <div className="text-sm text-green-700">
-                      Expected range: $85K - $125K
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-blue-50 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-blue-800">
-                        Trial Victory
-                      </span>
-                      <span className="font-bold text-blue-600">65%</span>
-                    </div>
-                    <div className="text-sm text-blue-700">
-                      Potential award: $150K - $200K
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-red-50 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-red-800">
-                        Defense Victory
-                      </span>
-                      <span className="font-bold text-red-600">15%</span>
-                    </div>
-                    <div className="text-sm text-red-700">
-                      Risk of dismissal or unfavorable ruling
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <div className="text-sm text-gray-800">
-                    <strong>Key Insight:</strong> Similar cases with strong
-                    documentation evidence settle 89% of the time. Consider
-                    strengthening timeline evidence for better position.
-                  </div>
-                </div>
-
-                <div className="flex space-x-2">
-                  <button className="flex-1 bg-[#355e66] text-white py-2 px-4 rounded hover:bg-[#2a4d54] transition-colors">
-                    View Details
-                  </button>
-                  <button className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors">
-                    <Download className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Case preparation workflow section */}
       <section className="section-spacing bg-[#355e66]">
@@ -779,183 +451,6 @@ const CasePreparationPage = () => {
         </div>
       </section>
 
-      {/* Case preparation features section */}
-      <section className="section-spacing bg-white">
-        <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden border">
-                <div className="p-4 border-b bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 text-sm">
-                      Case Preparation Dashboard
-                    </span>
-                    <div className="flex space-x-2">
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                        In Progress
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
-                      <CheckCircle className="w-6 h-6 text-green-500" />
-                      <div className="flex-1">
-                        <h4 className="font-medium">Document Analysis</h4>
-                        <p className="text-sm text-gray-600">
-                          47 documents processed, 12 key pieces identified
-                        </p>
-                      </div>
-                      <span className="text-sm text-green-600 font-medium">
-                        Complete
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">Legal Research</h4>
-                        <p className="text-sm text-gray-600">
-                          Analyzing 234 similar cases and precedents
-                        </p>
-                      </div>
-                      <span className="text-sm text-blue-600 font-medium">
-                        78%
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-                      <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">Strategy Development</h4>
-                        <p className="text-sm text-gray-600">
-                          Building argument framework and counter-strategies
-                        </p>
-                      </div>
-                      <span className="text-sm text-yellow-600 font-medium">
-                        45%
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
-                      <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-500">
-                          Outcome Prediction
-                        </h4>
-                        <p className="text-sm text-gray-500">
-                          Statistical analysis and probability modeling
-                        </p>
-                      </div>
-                      <span className="text-sm text-gray-500 font-medium">
-                        Queued
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 pt-6 border-t">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-gray-600">
-                        Overall Progress
-                      </span>
-                      <span className="text-sm font-medium">67%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-[#355e66] h-2 rounded-full"
-                        style={{ width: "67%" }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Estimated completion: 45 minutes
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-heading-2 mb-6 text-gray-900">
-                AI-powered case preparation from evidence to strategy
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Transform your case preparation process with AI that analyzes
-                evidence, develops strategies, simulates opposition, and
-                predicts outcomes - all in one comprehensive workflow.
-              </p>
-
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-[#355e66] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    1
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Intelligent Document Processing
-                    </h3>
-                    <p className="text-gray-600">
-                      AI extracts key facts, identifies evidence gaps, and
-                      organizes materials by relevance and importance.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-[#d47b0f] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    2
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Strategic Analysis & Planning
-                    </h3>
-                    <p className="text-gray-600">
-                      Develop comprehensive case strategies based on successful
-                      patterns from similar cases.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    3
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Opposition Simulation
-                    </h3>
-                    <p className="text-gray-600">
-                      Test your arguments against AI-powered opposing counsel to
-                      identify and address weaknesses.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    4
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Outcome Prediction & Optimization
-                    </h3>
-                    <p className="text-gray-600">
-                      Get probabilistic outcome analysis and recommendations for
-                      optimal case positioning.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* More features section */}
       <section className="py-20 bg-gray-50">
@@ -1009,6 +504,92 @@ const CasePreparationPage = () => {
       </section>
 
       <Footer />
+    </div>
+  );
+};
+
+
+const CasePreparationInterface = () => {
+  return (
+    <div className="bg-[#355e66] rounded-lg p-4 relative overflow-hidden md:min-w-[500px]">
+      <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-[75%]">
+        <div className="flex items-center bg-gray-50 px-4 py-3 border-b">
+          <div className="flex space-x-2">
+            <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+          </div>
+          <div className="flex ml-auto space-x-4 text-sm">
+            <button className="flex items-center text-gray-600">
+              <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+              Analysis
+            </button>
+            <button className="flex items-center text-[#355e66] font-medium">
+              <span className="w-2 h-2 bg-[#355e66] rounded-full mr-2"></span>
+              Strategy
+            </button>
+            <button className="flex items-center text-gray-600">
+              <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+              Predict
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6 text-gray-900">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-[#355e66] rounded-lg flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h3 className="font-medium">AI Opposition Simulation</h3>
+                <p className="text-sm text-gray-600">Test arguments against AI counsel</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Target className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <h3 className="font-medium">Strategy Development</h3>
+                <p className="text-sm text-gray-600">Build comprehensive case strategy</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <h3 className="font-medium">Outcome Prediction</h3>
+                <p className="text-sm text-gray-600">AI-powered success probability</p>
+              </div>
+            </div>
+            
+            <button className="text-sm text-gray-600 flex items-center">
+              3 More Features <ArrowRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="text-center lg:text-left w-[60%] absolute top-1/2 right-1 md:right-10">
+        <div className="bg-white rounded-lg shadow-xl p-6">
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            <div className="text-sm text-gray-600 mb-2">Case Analysis Report</div>
+            <div className="space-y-2">
+              <div className="h-2 bg-gray-300 rounded w-full"></div>
+              <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+              <div className="h-2 bg-green-500 rounded w-5/6"></div>
+              <div className="h-2 bg-[#355e66] rounded w-1/2"></div>
+              <div className="h-2 bg-gray-300 rounded w-2/3"></div>
+              <div className="text-xs text-green-600 mt-2 font-medium">87% Success Rate</div>
+            </div>
+          </div>
+          <div className="text-xs text-gray-500 text-center">Case Strategy Preview</div>
+        </div>
+      </div>
     </div>
   );
 };

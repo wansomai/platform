@@ -5,17 +5,17 @@ import CasePreparationPage from './CasePreparationPage';
 
 export const metadata: Metadata = {
   title: 'AI for case prediction| wansom AI',
-  description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
+  description: 'Prepare winning cases with AI that analyzes your arguments, predicts outcomes, and simulates opposing counsel strategies to strengthen your position.',
   openGraph: {
     title: 'AI for case prediction| wansom AI',
-    description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
+    description: 'Prepare winning cases with AI that analyzes your arguments, predicts outcomes, and simulates opposing counsel strategies to strengthen your position.',
     type: 'website',
     images: [
       {
         url: '/legal-research.png',
         width: 1200,
         height: 630,
-        alt: 'wansom AI Legal Drafting',
+        alt: 'AI for case prediction',
       },
     ],
   },
