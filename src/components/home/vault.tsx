@@ -69,7 +69,6 @@ const VaultSection: React.FC = () => {
           </h2>
           <p className="text-body-large text-dim max-w-5xl mx-auto">
             Store, manage, and access your legal documents in one secure location built with enterprise-level security at its core, ensuring your firm's sensitive data remains confidential and protected.
-            Our platform adheres to the highest security standards, including SOC 2 Type II and ISO 27001 certifications. Wansom AI does not train on your data, ensuring its privacy and security.
           </p>
                 <div className="mt-5">
               {securityFeatures.map((feature, index) => (
