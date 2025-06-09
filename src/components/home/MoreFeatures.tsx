@@ -1,5 +1,4 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { ArrowRight, Brain, CheckCircle, FileText, FolderLock, Search, Shield, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, FolderLock, Shield, ShieldCheck } from "lucide-react";
 
 const MoreFeatures = () => {
   return (
