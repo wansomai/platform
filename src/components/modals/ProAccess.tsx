@@ -27,9 +27,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             </div>
             <div>
               <DialogTitle>Upgrade to wansom Pro</DialogTitle>
-              <DialogDescription>
-               Unlock advanced AI features and integrations to supercharge your legal workflow.
-              </DialogDescription>
+             
             </div>
           </div>
         </DialogHeader>
