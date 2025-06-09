@@ -56,6 +56,7 @@ import {
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import MoreFeatures from "@/components/home/MoreFeatures";
 
 const CasePreparationPage = () => {
   const [selectedStrategy, setSelectedStrategy] = useState("arguments");
@@ -126,8 +127,8 @@ const CasePreparationPage = () => {
                 strengthen your position.
               </p>
 
-              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12">
-                Start Case Analysis
+              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12"  onClick={() => (window.location.href = "/login")}>
+                Try Wansom AI For Free
               </button>
 
               {/* Trusted by logos */}
@@ -444,7 +445,7 @@ const CasePreparationPage = () => {
           </div>
 
           <div className="text-center">
-            <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors">
+            <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
               Start Case Preparation
             </button>
           </div>
@@ -453,55 +454,7 @@ const CasePreparationPage = () => {
 
 
       {/* More features section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-16 text-gray-900">
-            More features to explore
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Legal Drafting</h3>
-              <p className="text-gray-600 text-sm">
-                Draft correct legal documents and clauses quickly
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Contract Review</h3>
-              <p className="text-gray-600 text-sm">
-                Redline contracts and catch risks automatically
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileSearch className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Due Diligence</h3>
-              <p className="text-gray-600 text-sm">
-                Never be caught off guard during transactions
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Legal Research</h3>
-              <p className="text-gray-600 text-sm">
-                Get instant answers to complex legal questions
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+     <MoreFeatures/>
 
       <Footer />
     </div>

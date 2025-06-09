@@ -114,7 +114,7 @@ const Navbar = () => {
             </div>
 
             <div className="relative group">
-              <Link href="/#document-vault" className="font-semibold text-lg  flex items-center">
+              <Link href="/document-vault" className="font-semibold text-lg  flex items-center">
                 Vault
              
               </Link>

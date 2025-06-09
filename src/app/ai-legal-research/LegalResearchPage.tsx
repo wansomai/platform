@@ -266,7 +266,7 @@ const LegalResearchPage = () => {
           </div>
 
           <div className="text-center">
-            <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors">
+            <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
               Try Legal Research Free
             </button>
           </div>

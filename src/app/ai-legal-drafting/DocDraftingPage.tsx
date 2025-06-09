@@ -415,7 +415,7 @@ const LegalDraftingPage = () => {
                 Create new clauses and documents, or store your existing templates and Wansom will draft content to match.
               </p>
               
-              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors">
+              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
                 Try Wansom Free
               </button>
             </div>
