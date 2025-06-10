@@ -3,53 +3,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   Search,
-  Plus,
-  Filter,
   Briefcase,
-  FileText,
-  Users,
-  Calendar,
-  Clock,
-  AlertCircle,
-  MoreVertical,
-  CheckCircle,
   ArrowRight,
   FolderPlus,
   ArrowUpDown,
-  SlidersHorizontal,
-  Star,
-  StarOff
 } from "lucide-react";
-import { formatDistanceToNow, format, parseISO } from "date-fns";
+import {  format } from "date-fns";
 import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 
-// Project status badges
-const getStatusBadge = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "active":
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Active</Badge>;
-    case "completed":
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Completed</Badge>;
-    case "on hold":
-      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">On Hold</Badge>;
-    case "archived":
-      return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Archived</Badge>;
-    default:
-      return <Badge>{status}</Badge>;
-  }
-};
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -120,15 +89,7 @@ export default function ProjectsPage() {
     // Apply sort order
     return sortOrder === "asc" ? -result : result;
   });
-  
-  // Handle toggling a project as favorite
-  const toggleFavorite = (projectId: string) => {
-    setFavoriteProjects((prev) =>
-      prev.includes(projectId)
-        ? prev.filter((id) => id !== projectId)
-        : [...prev, projectId]
-    );
-  };
+
   
   // Handle project creation
   const handleCreateProject = () => {
@@ -164,32 +125,6 @@ export default function ProjectsPage() {
           />
         </div>
         
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="on hold">On Hold</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="updated">Last Updated</SelectItem>
-            <SelectItem value="created">Date Created</SelectItem>
-            <SelectItem value="name">Project Name</SelectItem>
-            <SelectItem value="activity">Activity Level</SelectItem>
-            <SelectItem value="documents">Document Count</SelectItem>
-          </SelectContent>
-        </Select>
-        
         <Button 
           variant="outline" 
           size="icon" 
@@ -197,24 +132,6 @@ export default function ProjectsPage() {
           className="hidden sm:flex"
         >
           <ArrowUpDown className="h-4 w-4" />
-        </Button>
-        
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
-          className="hidden sm:flex"
-        >
-          {viewMode === "grid" ? (
-            <TableBodyIcon className="h-4 w-4" />
-          ) : (
-            <div className="grid grid-cols-2 gap-1">
-              <div className="h-1.5 w-1.5 bg-current rounded"></div>
-              <div className="h-1.5 w-1.5 bg-current rounded"></div>
-              <div className="h-1.5 w-1.5 bg-current rounded"></div>
-              <div className="h-1.5 w-1.5 bg-current rounded"></div>
-            </div>
-          )}
         </Button>
       </div>
       
@@ -240,7 +157,7 @@ export default function ProjectsPage() {
             Create Workspace
           </Button>
         </div>
-      ) : viewMode === "grid" ? (
+      ) : (
         // Grid View
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sortedProjects.map((project) => (
@@ -252,43 +169,14 @@ export default function ProjectsPage() {
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex-1 truncate mr-2">{project.title}</CardTitle>
-                  <div className="flex items-center gap-2">
-                    {getStatusBadge(project.status)}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(project.id);
-                      }}
-                    >
-                      {favoriteProjects.includes(project.id) ? (
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      ) : (
-                        <Star className="h-4 w-4 text-gray-400" />
-                      )}
-                    </Button>
-                  </div>
+           
                 </div>
                 <CardDescription className="line-clamp-2">{project.description || "No description"}</CardDescription>
               </CardHeader>
-              
-              <CardContent className="pb-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-500">Documents</p>
-                    <p className="font-medium">{project.documents_count}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Team Members</p>
-                    <p className="font-medium">{project.team_count}</p>
-                  </div>
-            
-                </div>
-              </CardContent>
+
               
               <CardFooter className="border-t pt-4">
+                <p className="text-gray-600">Created {format(new Date(project.createdAt), 'MMM d, yyyy')} </p>
                 <Button variant="ghost" size="sm" className="ml-auto">
                   View Workspace
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -297,108 +185,6 @@ export default function ProjectsPage() {
             </Card>
           ))}
         </div>
-      ) : (
-        // List View
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40px]">
-                    <span className="sr-only">Favorite</span>
-                  </TableHead>
-                  <TableHead>Workspace</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Documents</TableHead>
-                  <TableHead>Team</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Last Activity</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedProjects.map((project) => (
-                  <TableRow 
-                    key={project.id}
-                    className="cursor-pointer"
-                    onClick={() => router.push(`/projects/${project.id}`)}
-                  >
-                    <TableCell>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(project.id);
-                        }}
-                      >
-                        {favoriteProjects.includes(project.id) ? (
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        ) : (
-                          <Star className="h-4 w-4 text-gray-400" />
-                        )}
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{project.title}</div>
-                      <div className="text-sm text-gray-500 truncate max-w-[200px]">
-                        {project.description || "No description"}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(project.status)}</TableCell>
-                    <TableCell>{project.documents_count}</TableCell>
-                    <TableCell>{project.team_count}</TableCell>
-                    <TableCell>{format(new Date(project.createdAt), 'MMM d, yyyy')}</TableCell>
-                    <TableCell>{project.last_activity ? project.last_activity : "None"}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => router.push(`/projects/${project.id}`)}>
-                            <Briefcase className="mr-2 h-4 w-4" />
-                            View Project
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => router.push(`/projects/${project.id}/documents`)}>
-                            <FileText className="mr-2 h-4 w-4" />
-                            View Documents
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => router.push(`/projects/${project.id}/team`)}>
-                            <Users className="mr-2 h-4 w-4" />
-                            Manage Team
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFavorite(project.id);
-                            }}
-                          >
-                            {favoriteProjects.includes(project.id) ? (
-                              <>
-                                <StarOff className="mr-2 h-4 w-4" />
-                                Remove from Favorites
-                              </>
-                            ) : (
-                              <>
-                                <Star className="mr-2 h-4 w-4" />
-                                Add to Favorites
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       )}
       
       {/* Create Project Modal */}
@@ -409,28 +195,5 @@ export default function ProjectsPage() {
         />
       )}
     </div>
-  );
-}
-
-// Helper function for TableBody icon
-function TableBodyIcon(props:any) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M12 3v18"></path>
-      <rect width="18" height="18" x="3" y="3" rx="2"></rect>
-      <path d="M3 9h18"></path>
-      <path d="M3 15h18"></path>
-    </svg>
   );
 }
