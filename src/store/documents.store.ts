@@ -1,4 +1,4 @@
-// src/store/documents.store.ts - Modified with file size check
+// src/store/documents.store.ts - Enhanced with auto-refresh capabilities
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
 
@@ -22,14 +22,15 @@ interface DocumentFilters {
   sort?: 'recent' | 'oldest' | 'name' | 'size';
   page?: number;
   limit?: number;
-  folder?: string | null;  // Add folder filter
+  folder?: string | null;
 }
 
 interface DocumentsState {
   documents: Document[];
-  selectedDocuments: string[]; // For multi-select in UI
+  selectedDocuments: string[];
   isLoading: boolean;
   error: string | null;
+  lastFetched: number | null; // Track when documents were last fetched
   pagination: {
     total: number;
     page: number;
@@ -38,7 +39,7 @@ interface DocumentsState {
   };
   
   // Methods
-  fetchDocuments: (filters?: DocumentFilters) => Promise<Document[]>;
+  fetchDocuments: (filters?: DocumentFilters, forceRefresh?: boolean) => Promise<Document[]>;
   uploadDocument: (fileData: FormData, onProgress?: ((progress: number) => void) | null) => Promise<Document | null>;
   deleteDocument: (id: string) => Promise<boolean>;
   selectDocument: (id: string) => void;
@@ -50,15 +51,19 @@ interface DocumentsState {
   removeDocument: (id: string) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
+  refreshDocuments: () => Promise<void>; // Force refresh current documents
+  invalidateCache: () => void; // Clear cache to force next fetch
 }
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+const CACHE_DURATION = 30000; // 30 seconds cache
 
 export const useDocumentsStore = create<DocumentsState>((set, get) => ({
   documents: [],
   selectedDocuments: [],
   isLoading: false,
   error: null,
+  lastFetched: null,
   pagination: {
     total: 0,
     page: 1,
@@ -66,8 +71,21 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     pages: 0,
   },
   
-  fetchDocuments: async (filters) => {
+  fetchDocuments: async (filters, forceRefresh = false) => {
     try {
+      const state = get();
+      
+      // Check if we need to fetch (cache invalidation)
+      const now = Date.now();
+      const shouldFetch = forceRefresh || 
+                         !state.lastFetched || 
+                         (now - state.lastFetched) > CACHE_DURATION ||
+                         state.documents.length === 0;
+      
+      if (!shouldFetch && state.documents.length > 0) {
+        return state.documents;
+      }
+      
       set({ isLoading: true, error: null });
       
       // Build query string
@@ -79,7 +97,7 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
         if (filters.sort) params.append('sort', filters.sort);
         if (filters.page) params.append('page', filters.page.toString());
         if (filters.limit) params.append('limit', filters.limit.toString());
-        if (filters.folder) params.append('folder', filters.folder); // Add folder param
+        if (filters.folder) params.append('folder', filters.folder);
         
         if (params.toString()) {
           url += `?${params.toString()}`;
@@ -99,7 +117,8 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       set({ 
         documents: response.data,
         pagination: response.pagination,
-        isLoading: false 
+        isLoading: false,
+        lastFetched: now
       });
       
       return response.data;
@@ -126,13 +145,22 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       set({ isLoading: true, error: null });
       
       // Use the upload method with progress tracking
-      const response = await apiService.upload<Document>('/api/documents', fileData, onProgress);
+      const response = await apiService.upload<{status: number, message: string, data: Document}>('/api/documents', fileData, onProgress);
       
-      set({ isLoading: false });
+      const newDocument = response.data.data; // Extract the document from the data wrapper
       
-      // Get updated documents list
-      await get().fetchDocuments();
-      return response.data;
+      // Add the new document to the store immediately
+      set((state) => ({
+        documents: [newDocument, ...state.documents],
+        pagination: {
+          ...state.pagination,
+          total: state.pagination.total + 1
+        },
+        isLoading: false,
+        lastFetched: Date.now() // Update cache timestamp
+      }));
+      
+      return newDocument;
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to upload document';
       set({ 
@@ -150,7 +178,12 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
       // Remove document from list
       set((state) => ({
         documents: state.documents.filter(d => d.id !== id),
-        selectedDocuments: state.selectedDocuments.filter(docId => docId !== id)
+        selectedDocuments: state.selectedDocuments.filter(docId => docId !== id),
+        pagination: {
+          ...state.pagination,
+          total: Math.max(0, state.pagination.total - 1)
+        },
+        lastFetched: Date.now() // Update cache timestamp
       }));
       
       return true;
@@ -191,9 +224,44 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     set({ selectedDocuments: [] });
   },
   
-  setDocuments: (documents) => set({ documents }),
-  addDocument: (document) => set((state) => ({ documents: [...state.documents, document] })),
-  removeDocument: (id) => set((state) => ({ documents: state.documents.filter(d => d.id !== id) })),
+  setDocuments: (documents) => set({ 
+    documents, 
+    lastFetched: Date.now() 
+  }),
+  
+  addDocument: (document) => set((state) => ({ 
+    documents: [document, ...state.documents],
+    pagination: {
+      ...state.pagination,
+      total: state.pagination.total + 1
+    },
+    lastFetched: Date.now()
+  })),
+  
+  removeDocument: (id) => set((state) => ({ 
+    documents: state.documents.filter(d => d.id !== id),
+    pagination: {
+      ...state.pagination,
+      total: Math.max(0, state.pagination.total - 1)
+    },
+    lastFetched: Date.now()
+  })),
+  
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
+  
+  // Force refresh current documents with same filters
+  refreshDocuments: async () => {
+    const state = get();
+    // Use current pagination state to refresh with same filters
+    await state.fetchDocuments({
+      page: state.pagination.page,
+      limit: state.pagination.limit
+    }, true); // Force refresh
+  },
+  
+  // Clear cache to force next fetch
+  invalidateCache: () => {
+    set({ lastFetched: null });
+  }
 }));

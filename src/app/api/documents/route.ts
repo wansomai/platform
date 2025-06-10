@@ -1,8 +1,12 @@
-// app/api/documents/route.ts
+// app/api/documents/route.ts - Enhanced with consistent response format
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
 import { blobStorageService } from '@/lib/storage';
+import { extractTextFromFile } from '@/lib/documentParser';
+
+// Set a reasonable timeout for document processing
+export const maxDuration = 60;
 
 // List documents (with filtering options)
 export async function GET(request: NextRequest) {
@@ -30,14 +34,14 @@ export async function GET(request: NextRequest) {
     }
     
     // Get query parameters
-     // Get query parameters
-     const searchParams = request.nextUrl.searchParams;
-     const searchTerm = searchParams.get('search') || undefined;
-     const fileType = searchParams.get('type') || undefined;
-     const sortBy = searchParams.get('sort') || 'recent';
-     const folderId = searchParams.get('folder') || undefined;
-     const limit = parseInt(searchParams.get('limit') || '50');
-     const page = parseInt(searchParams.get('page') || '1');
+    const searchParams = request.nextUrl.searchParams;
+    const searchTerm = searchParams.get('search') || undefined;
+    const fileType = searchParams.get('type') || undefined;
+    const sortBy = searchParams.get('sort') || 'recent';
+    const folderId = searchParams.get('folder') || undefined;
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const page = parseInt(searchParams.get('page') || '1');
+    
     // Build query filters
     const where: any = {
       organization_id: user.organizationId,
@@ -51,7 +55,7 @@ export async function GET(request: NextRequest) {
       ];
     }
     
-    if (fileType) {
+    if (fileType && fileType !== 'all') {
       where.file_type = fileType;
     }
     
@@ -104,7 +108,11 @@ export async function GET(request: NextRequest) {
     const formattedDocuments = documents.map(doc => ({
       id: doc.id,
       title: doc.title,
-      description: doc.description || '',
+      description: doc.description ? 
+        (typeof doc.description === 'object' && 'String' in doc.description ? 
+          (doc.description as any).String : 
+          '') : 
+        '',
       fileUrl: doc.file_url,
       fileType: doc.file_type,
       fileSize: doc.file_size,
@@ -154,7 +162,7 @@ export async function POST(request: NextRequest) {
     // Get user's organization
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { organizationId: true }
+      select: { organizationId: true, fullName: true }
     });
     
     if (!user) {
@@ -186,7 +194,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-// If folderId is provided, verify it exists and belongs to the organization
+
+    // If folderId is provided, verify it exists and belongs to the organization
     if (folderId) {
       const folder = await prisma.folder.findUnique({
         where: { 
@@ -217,6 +226,18 @@ export async function POST(request: NextRequest) {
       file.type
     );
     
+    // Start content extraction in background
+    let contentExtracted = false;
+    let extractedText = '';
+    
+    try {
+      extractedText = await extractTextFromFile(fileBuffer, file.type);
+      contentExtracted = true;
+    } catch (extractError) {
+      console.error('Error extracting text from file:', extractError);
+      // Continue without extracted text - content extraction can be done later
+    }
+    
     // Create document record in database
     const document = await prisma.document.create({
       data: {
@@ -240,13 +261,34 @@ export async function POST(request: NextRequest) {
           Valid: true
         },
         content_extracted: {
-          Bool: false,
+          Bool: contentExtracted,
           Valid: true
+        }
+      },
+      include: {
+        createdByUser: {
+          select: {
+            id: true,
+            fullName: true
+          }
         }
       }
     });
     
-    // Format response
+    // If text was extracted, store it
+    if (contentExtracted && extractedText) {
+      await prisma.documentContent.create({
+        data: {
+          documentId: document.id,
+          content: extractedText
+        }
+      }).catch(err => {
+        console.error('Error storing document content:', err);
+        // Don't fail the upload if content storage fails
+      });
+    }
+    
+    // Format response to match the expected Document interface
     const documentInfo = {
       id: document.id,
       title: document.title,
@@ -254,7 +296,11 @@ export async function POST(request: NextRequest) {
       fileUrl: document.file_url,
       fileType: document.file_type,
       fileSize: document.file_size,
-      createdAt: document.created_at.toISOString()
+      createdBy: document.createdByUser?.fullName || 'Unknown',
+      createdById: document.created_by,
+      createdAt: document.created_at.toISOString(),
+      updatedAt: document.updated_at.toISOString(),
+      contentExtracted: contentExtracted
     };
     
     return NextResponse.json({

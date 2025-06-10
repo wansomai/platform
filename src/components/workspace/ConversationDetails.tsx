@@ -8,12 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { 
   FileText, 
   Search, 
   Plus, 
-  Upload,
   MoreVertical,
   Download,
   Eye,
@@ -29,11 +27,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useChatStore } from "@/store/chat.store";
-import { useDocumentsStore } from "@/store/documents.store";
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
 import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useConversationSettingsStore } from "@/store/conversation-settings.store";
+import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal";
+import { DeleteConfirmationDialog } from "@/components/modals/DeleteConfirmationDialog";
 
 export function ConversationDetails() {
   const params = useParams();
@@ -43,6 +42,11 @@ export function ConversationDetails() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditingInstructions, setIsEditingInstructions] = useState(false);
   const [isSettingChanged, setIsSettingChanged] = useState(false);
+  
+  // Document management state
+  const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
+  const [isRemovingDocument, setIsRemovingDocument] = useState(false);
   
   // Use the instructions store
   const { 
@@ -61,18 +65,11 @@ export function ConversationDetails() {
     isLoading: isLoadingSettings
   } = useConversationSettingsStore();
   
-  const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
-  const [selectedDocumentsToAdd, setSelectedDocumentsToAdd] = useState<string[]>([]);
-  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
   // Hooks
   const { currentConversation } = useChatStore();
-  const { documents, fetchDocuments, isLoading: isLoadingDocuments } = useDocumentsStore();
   const { 
     documents: conversationDocuments, 
     fetchConversationDocuments, 
-    attachDocumentsToConversation,
     removeDocumentFromConversation,
     isLoading: isLoadingConversationDocuments
   } = useConversationDocumentsStore();
@@ -91,16 +88,6 @@ export function ConversationDetails() {
   const filteredDocuments = conversationDocuments?.filter(
     doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
-  
-  // Available documents for selection (excluding already attached ones)
-  const availableDocuments = documents.filter(doc => 
-    !conversationDocuments.some(convDoc => convDoc.id === doc.id)
-  );
-  
-  // Filter available documents based on search
-  const filteredAvailableDocuments = availableDocuments.filter(
-    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   
   // Handlers for instructions
   const handleSaveInstructions = async () => {
@@ -143,45 +130,6 @@ export function ConversationDetails() {
     }
   };
   
-  // Handle document selection
-  const toggleDocumentSelection = (documentId: string) => {
-    setSelectedDocumentsToAdd(prev => 
-      prev.includes(documentId)
-        ? prev.filter(id => id !== documentId)
-        : [...prev, documentId]
-    );
-  };
-  
-  // Track loading state for document attachment
-  const [isAttachingDocuments, setIsAttachingDocuments] = useState(false);
-  
-  // Handle adding selected documents to conversation
-  const handleAddSelectedDocuments = async () => {
-    if (!currentConversation?.id || selectedDocumentsToAdd.length === 0) return;
-    
-    try {
-      setIsAttachingDocuments(true);
-      const success = await attachDocumentsToConversation(
-        currentConversation.id, 
-        selectedDocumentsToAdd
-      );
-      
-      if (success) {
-        notify.success("Documents added to conversation");
-        setSelectedDocumentsToAdd([]);
-        setShowDocumentSelectionDialog(false);
-      }
-    } catch (error) {
-      notify.error("Failed to add documents");
-      console.error("Error adding documents:", error);
-    } finally {
-      setIsAttachingDocuments(false);
-    }
-  };
-  
-  // Track loading state for document removal
-  const [isRemovingDocument, setIsRemovingDocument] = useState(false);
-  
   // Handle document removal from conversation
   const handleRemoveDocument = async () => {
     if (!currentConversation?.id || !documentToDelete) return;
@@ -190,13 +138,12 @@ export function ConversationDetails() {
       setIsRemovingDocument(true);
       const success = await removeDocumentFromConversation(
         currentConversation.id, 
-        documentToDelete
+        documentToDelete.id
       );
       
       if (success) {
         notify.success("Document removed from conversation");
         setDocumentToDelete(null);
-        setShowDeleteConfirm(false);
       }
     } catch (error) {
       notify.error("Failed to remove document");
@@ -206,10 +153,18 @@ export function ConversationDetails() {
     }
   };
   
-  // Load all documents when opening the document selection dialog
-  const handleOpenDocumentSelection = () => {
-    fetchDocuments();
-    setShowDocumentSelectionDialog(true);
+  // Handle successful document addition
+  const handleDocumentsAdded = (count: number) => {
+    // Refresh the conversation documents
+    if (currentConversation?.id) {
+      fetchConversationDocuments(currentConversation.id);
+    }
+    
+    // Show success message
+    const message = count === 1 
+      ? "Document added to conversation" 
+      : `${count} documents added to conversation`;
+    notify.success(message);
   };
   
   return (
@@ -345,7 +300,7 @@ export function ConversationDetails() {
                 <h3 className="font-medium text-sm">Active Documents</h3>
                 <div className="flex space-x-2">
                   <Button 
-                    onClick={handleOpenDocumentSelection} 
+                    onClick={() => setShowDocumentSelectionDialog(true)} 
                     className="flex items-center" 
                     variant="outline" 
                     size="sm"
@@ -401,8 +356,10 @@ export function ConversationDetails() {
                             Download
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-red-600" onClick={() => {
-                            setDocumentToDelete(doc.id);
-                            setShowDeleteConfirm(true);
+                            setDocumentToDelete({
+                              id: doc.id,
+                              name: doc.title
+                            });
                           }}>
                             <Trash2 className="h-4 w-4 mr-2" />
                             Remove from Context
@@ -418,7 +375,7 @@ export function ConversationDetails() {
                     <p className="text-xs text-muted-foreground mb-4">
                       {searchTerm ? "No documents match your search" : "Add documents to enhance the AI's responses"}
                     </p>
-                    <Button variant="outline" size="sm" onClick={handleOpenDocumentSelection}>
+                    <Button variant="outline" size="sm" onClick={() => setShowDocumentSelectionDialog(true)}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Documents
                     </Button>
@@ -430,123 +387,27 @@ export function ConversationDetails() {
         </ScrollArea>
       </Tabs>
       
-      {/* Document Selection Dialog */}
-      <Dialog open={showDocumentSelectionDialog} onOpenChange={setShowDocumentSelectionDialog}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Add Documents to Conversation</DialogTitle>
-            <DialogDescription>
-              Select documents from your vault to provide context to the AI assistant.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4 overflow-x-hidden">
-            <div className="relative mb-4">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search documents..." 
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            
-            <div className="h-[300px] overflow-y-auto border rounded-md">
-              {isLoadingDocuments ? (
-                <p className="text-sm text-center py-4 text-muted-foreground">Loading documents...</p>
-              ) : filteredAvailableDocuments.length > 0 ? (
-                <div className="divide-y">
-                  {filteredAvailableDocuments.map((doc) => (
-                    <div 
-                      key={doc.id} 
-                      className={`flex items-center p-3 hover:bg-secondary-50 cursor-pointer ${
-                        selectedDocumentsToAdd.includes(doc.id) ? "bg-secondary-100" : ""
-                      }`}
-                      onClick={() => toggleDocumentSelection(doc.id)}
-                    >
-                      <div onClick={(e) => {
-                          // Prevent the click from reaching the parent div
-                          e.stopPropagation();
-                        }}>
-                        <Checkbox 
-                          checked={selectedDocumentsToAdd.includes(doc.id)}
-                          className="mr-3"
-                          onCheckedChange={(checked) => {
-                            toggleDocumentSelection(doc.id);
-                          }}
-                        />
-                      </div>
-                      <FileText className="h-4 w-4 mr-3 text-primary-600" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{doc.title}</p>
-                        <div className="flex items-center text-xs text-muted-foreground">
-                          <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
-                          <span>{formatBytes(doc.fileSize)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-center py-4 text-muted-foreground">
-                  {searchTerm ? "No documents match your search" : "No documents available"}
-                </p>
-              )}
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDocumentSelectionDialog(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleAddSelectedDocuments}
-              disabled={selectedDocumentsToAdd.length === 0 || isAttachingDocuments}
-            >
-              {isAttachingDocuments ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Adding...
-                </>
-              ) : (
-                <>Add Selected ({selectedDocumentsToAdd.length})</>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Document Selection Modal */}
+      {currentConversation && (
+        <DocumentSelectionModal
+          open={showDocumentSelectionDialog}
+          onOpenChange={setShowDocumentSelectionDialog}
+          conversationId={currentConversation.id}
+          onDocumentsAdded={handleDocumentsAdded}
+        />
+      )}
       
       {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Remove Document</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to remove this document from the conversation context?
-              The document will still be available in your vault.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={isRemovingDocument}>
-              Cancel
-            </Button>
-            <Button 
-              variant="destructive" 
-              onClick={handleRemoveDocument}
-              disabled={isRemovingDocument}
-            >
-              {isRemovingDocument ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Removing...
-                </>
-              ) : (
-                "Remove"
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmationDialog
+        open={!!documentToDelete}
+        onOpenChange={(open) => {
+          if (!open) setDocumentToDelete(null);
+        }}
+        onConfirm={handleRemoveDocument}
+        variant="document"
+        itemName={documentToDelete?.name}
+        isLoading={isRemovingDocument}
+      />
     </div>
   );
 }
