@@ -380,7 +380,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   ? "Asociates"
                   : pathname.includes("/projects")
                   ? "Workspaces"
-                  : "Legal AI"}
+                  : "WANSOM"}
               </h1>
             </div>
 
