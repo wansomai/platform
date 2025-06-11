@@ -252,7 +252,7 @@ export function ChatInterface() {
       </div>
 
       {/* Floating Input Area with Embedded Tools */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50">
         <div className="w-[90vw] max-w-3xl">
           {/* Input Area with embedded icons */}
           <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
@@ -368,7 +368,7 @@ export function ChatInterface() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type your message..."
-              className="border-0 resize-none min-h-[52px] max-h-[120px] pl-6 pr-16 pb-8 pt-3 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
+              className="border-0 resize-none min-h-[52px] max-h-[120px] pl-6 pr-16 pb-7 pt-3 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
               disabled={isSubmitting}
             />
             
@@ -424,21 +424,21 @@ function ChatMessageItem({
   
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
+      <div className={`flex gap-2 sm:gap-3 max-w-[90%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+        {/* <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
           <AvatarFallback className="text-xs sm:text-sm">{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
-        </Avatar>
+        </Avatar> */}
         
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
-            <span className="font-medium">{isUser ? 'You' : 'AI Assistant'}</span>
+            <span className="font-medium">{isUser ? 'You' : 'Wansom'}</span>
             <span className="text-muted-foreground text-xs">
               {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           </div>
           
           <div
-            className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 overflow-hidden ${
+            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${
               isUser ? "bg-primary text-white" : "bg-gray-100 border"
             }`}
           >
