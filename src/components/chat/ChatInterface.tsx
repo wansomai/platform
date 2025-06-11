@@ -7,19 +7,34 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { 
   Copy, 
   Send, 
   Loader2,
   Search, 
+  SlidersHorizontal,
+  Plus,
+  X,
+  Paperclip
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
-import { formatDistanceToNow } from 'date-fns'
+import { useConversationSettingsStore } from "@/store/conversation-settings.store"
+import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
+// Removed date-fns import - using inline time formatting
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
+import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal"
 
 export function ChatInterface() {
   const params = useParams()
@@ -27,6 +42,8 @@ export function ChatInterface() {
   
   const [input, setInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showDocumentModal, setShowDocumentModal] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -40,14 +57,26 @@ export function ChatInterface() {
     sendMessage, 
     isLoading, 
     error,
-    clearCurrentConversation // Add this method to your store
+    clearCurrentConversation
   } = useChatStore()
+
+  const {
+    settings,
+    fetchSettings,
+    updateSetting,
+    isLoading: isLoadingSettings
+  } = useConversationSettingsStore()
+
+  const { 
+    documents: conversationDocuments, 
+    fetchConversationDocuments,
+    attachDocumentsToConversation
+  } = useConversationDocumentsStore()
  
   const {data: session} = useSession()
   
   // Clear conversation state when projectId changes
   useEffect(() => {
-    // Clear the current conversation when switching projects
     clearCurrentConversation?.()
   }, [projectId, clearCurrentConversation])
   
@@ -56,19 +85,15 @@ export function ChatInterface() {
     const initializeChat = async () => {
       if (projectId && !currentConversation) {
         try {
-          // Try to get the most recent conversation if it exists
           const conversations = await useChatStore.getState().fetchConversations(projectId)
           
           if (conversations.length > 0) {
-            // Load the most recent conversation
             await fetchConversation(projectId, conversations[0].id)
           } else {
-            // Create a new conversation
             await createConversation(projectId)
           }
         } catch (error) {
           console.error('Failed to initialize chat:', error)
-          // Fallback: create a new conversation
           try {
             await createConversation(projectId)
           } catch (fallbackError) {
@@ -80,6 +105,14 @@ export function ChatInterface() {
     
     initializeChat()
   }, [projectId, currentConversation, fetchConversation, createConversation])
+
+  // Fetch settings and documents when conversation changes
+  useEffect(() => {
+    if (currentConversation?.id) {
+      fetchSettings(currentConversation.id)
+      fetchConversationDocuments(currentConversation.id)
+    }
+  }, [currentConversation?.id, fetchSettings, fetchConversationDocuments])
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -107,23 +140,20 @@ export function ChatInterface() {
   useEffect(() => {
     const handlePromptSendEvent = (event: any) => {
       if (event.detail && event.detail.promptTemplate) {
-        // Send the prompt directly
         if (currentConversation) {
           handleSend(event.detail.promptTemplate);
         }
       }
     };
     
-    // Add event listener
     document.addEventListener('action-prompt-send', handlePromptSendEvent);
     
-    // Cleanup
     return () => {
       document.removeEventListener('action-prompt-send', handlePromptSendEvent);
     };
   }, [currentConversation]);
  
-  // Update the handleSend method to use streaming
+  // Handle send message with streaming
   const handleSend = async (customMessage?: string) => {
     const messageToSend = customMessage || input;
     if (!messageToSend.trim() || isSubmitting || !currentConversation) return;
@@ -131,7 +161,6 @@ export function ChatInterface() {
     try {
       setIsSubmitting(true);
       
-      // Use the updated sendMessage that supports streaming
       await sendMessage(
         projectId, 
         currentConversation.id, 
@@ -140,10 +169,8 @@ export function ChatInterface() {
         ''
       );
       
-      // Only clear input if we're sending the user's typed input
       if (!customMessage) {
         setInput("");
-        // Reset textarea height
         if (textareaRef.current) {
           textareaRef.current.style.height = 'auto';
         }
@@ -167,6 +194,30 @@ export function ChatInterface() {
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
+
+  // Handle setting changes
+  const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
+    if (!currentConversation) return;
+    
+    try {
+      await updateSetting(currentConversation.id, settingKey, value);
+      addToast({ message: `${settingKey} setting updated`, type: 'success' });
+    } catch (error) {
+      addToast({ message: `Failed to update ${settingKey} setting`, type: 'error' });
+    }
+  };
+
+  // Handle documents added
+  const handleDocumentsAdded = (count: number) => {
+    if (currentConversation?.id) {
+      fetchConversationDocuments(currentConversation.id);
+    }
+    
+    const message = count === 1 
+      ? "Document added to conversation" 
+      : `${count} documents added to conversation`;
+    addToast({ message, type: 'success' });
+  };
   
   if (isLoading && !currentConversation) {
     return (
@@ -179,8 +230,8 @@ export function ChatInterface() {
   
   return (
     <div className="flex flex-col h-full relative">
-      {/* Messages container - Full height with padding bottom for floating input */}
-      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-20 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+      {/* Messages container */}
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -200,52 +251,170 @@ export function ChatInterface() {
         </div>
       </div>
 
-      {/* Floating Input Area at Bottom - Centered */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors w-[90vw] max-w-3xl relative">
-          <Textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="border-0 resize-none min-h-[52px] max-h-[120px] pr-16 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full"
-            disabled={isSubmitting}
-          />
-          
-          {/* Send button positioned inside textarea */}
-          <div className="absolute right-2 bottom-2">
-            <Button 
-              onClick={() => handleSend()} 
-              size="icon" 
-              className="h-8 w-8 rounded-lg bg-primary hover:bg-primary/90" 
-              disabled={!input.trim() || isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin text-white" />
-              ) : (
-                <Send className="h-4 w-4 text-white" />
-              )}
-            </Button>
+      {/* Floating Input Area with Embedded Tools */}
+      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="w-[90vw] max-w-3xl">
+          {/* Input Area with embedded icons */}
+          <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
+            {/* Left side icons */}
+            <div className="absolute left-6 bottom-2 flex items-center gap-1 z-10">
+              {/* Documents Tool */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowDocumentModal(true)}
+                className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
+                title={`Documents (${conversationDocuments?.length || 0})`}
+              >
+                <Paperclip className="h-6 w-6 text-gray-500" />
+              </Button>
+
+              {/* Settings Tool */}
+              <DropdownMenu open={showSettings} onOpenChange={setShowSettings}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
+                    title="AI Settings" 
+                  >
+                    <SlidersHorizontal className="h-6 w-6 text-gray-500" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="start" 
+                  className="w-72 p-4 mb-2"
+                  side="top"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-sm">AI Assistant Settings</h4>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowSettings(false)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="cite-sources" className="font-medium text-sm">
+                            Cite sources
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Provide citations when referencing documents
+                          </p>
+                        </div>
+                        <Switch 
+                          id="cite-sources" 
+                          checked={settings.citeSources}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('citeSources', checked);
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="suggest-actions" className="font-medium text-sm">
+                            Suggest actions
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Suggest relevant actions when appropriate
+                          </p>
+                        </div>
+                        <Switch 
+                          id="suggest-actions" 
+                          checked={settings.suggestActions}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('suggestActions', checked);
+                          }}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="web-search" className="font-medium text-sm">
+                            Web search
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Allow searching the web for information
+                          </p>
+                        </div>
+                        <Switch 
+                          id="web-search" 
+                          checked={settings.webSearch}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('webSearch', checked);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message..."
+              className="border-0 resize-none min-h-[52px] max-h-[120px] pl-6 pr-16 pb-7 pt-3 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
+              disabled={isSubmitting}
+            />
+            
+            {/* Send button positioned inside textarea */}
+            <div className="absolute right-2 bottom-2">
+              <Button 
+                onClick={() => handleSend()} 
+                size="icon" 
+                className="h-8 w-8 rounded-lg bg-primary hover:bg-primary/90" 
+                disabled={!input.trim() || isSubmitting}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                ) : (
+                  <Send className="h-4 w-4 text-white" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Document Selection Modal */}
+      {currentConversation && (
+        <DocumentSelectionModal
+          open={showDocumentModal}
+          onOpenChange={setShowDocumentModal}
+          conversationId={currentConversation.id}
+          onDocumentsAdded={handleDocumentsAdded}
+        />
+      )}
     </div>
   )
- }
- 
- // Update ChatMessageItem to handle streaming messages
- function ChatMessageItem({ 
+}
+
+// Update ChatMessageItem to handle streaming messages
+function ChatMessageItem({ 
   message, 
   user,
   onCopy 
- }: { 
+}: { 
   message: ChatMessage, 
   user: any,
   onCopy: () => void
- }) {
+}) {
   const isUser = message.role === 'user';
-
   
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
@@ -255,28 +424,27 @@ export function ChatInterface() {
   
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`flex gap-2 sm:gap-3 max-w-[90%] sm:max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
+      <div className={`flex gap-2 sm:gap-3 max-w-[90%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+        {/* <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
           <AvatarFallback className="text-xs sm:text-sm">{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
-        </Avatar>
+        </Avatar> */}
         
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
-            <span className="font-medium">{isUser ? 'You' : 'AI Assistant'}</span>
+            <span className="font-medium">{isUser ? 'You' : 'Wansom'}</span>
             <span className="text-muted-foreground text-xs">
-              {message.timestamp ? formatDistanceToNow(new Date(message.timestamp), { addSuffix: true }) : ''}
+              {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           </div>
           
           <div
-            className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 overflow-hidden ${
+            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${
               isUser ? "bg-primary text-white" : "bg-gray-100 border"
             }`}
           >
-          {message.isLoading || isStreaming ? (
+            {message.isLoading || isStreaming ? (
               <div className="flex items-center">
                 {message.content ? (
-                  // Show streaming content
                   <div className="space-y-2">
                     <MessageDisplay 
                       content={formattedContent} 
@@ -292,7 +460,6 @@ export function ChatInterface() {
                     )}
                   </div>
                 ) : (
-                  // Show processing status or loading animation
                   <div className="flex flex-col items-start">
                     {message.processingStatus && message.processingStatus !== 'completed' ? (
                       <ProcessingStatus status={message.processingStatus} />
@@ -355,10 +522,9 @@ export function ChatInterface() {
       </div>
     </div>
   );
- }
- 
- // Simple function to remove system prefix
- function formatMessageContent(content: string): string {
-  // Remove "System:" prefix if it exists at the beginning
+}
+
+// Simple function to remove system prefix
+function formatMessageContent(content: string): string {
   return content.replace(/^System:\s*/i, '');
- }
+}
