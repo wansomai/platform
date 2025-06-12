@@ -15,7 +15,10 @@ import {
 } from "lucide-react";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
+import { useConversationSettingsStore } from "@/store/conversation-settings.store";
+import { useChatStore } from "@/store/chat.store";
 import { ChatInterface } from "@/components/chat/ChatInterface";
+import LegalCanvas from "@/components/chat/CanvasInterface";
 import { 
   Sheet, 
   SheetContent, 
@@ -44,11 +47,23 @@ export function WorkspaceLayout({
     fetchProjectById, 
     isLoading 
   } = useProjectStore();
+  const { currentConversation } = useChatStore();
+  const { settings, fetchSettings } = useConversationSettingsStore();
 
   // Fetch project data when the component mounts
   useEffect(() => {
     fetchProjectById(projectId);
   }, [fetchProjectById, projectId]);
+
+  // Fetch conversation settings when conversation changes
+  useEffect(() => {
+    if (currentConversation?.id) {
+      fetchSettings(currentConversation.id);
+    }
+  }, [currentConversation?.id, fetchSettings]);
+
+  // Determine which interface to show based on legal drafting setting
+  const showLegalDrafting = settings.legalDrafting;
 
   return (
     <div className="flex h-screen">
@@ -104,9 +119,9 @@ export function WorkspaceLayout({
           </div>
         </div>
         
-        {/* Main content */}
+        {/* Main content - Switch between ChatInterface and LegalCanvas */}
         <div className="flex-1 overflow-auto">
-          <ChatInterface />
+          {showLegalDrafting ? <LegalCanvas /> : <ChatInterface />}
         </div>
       </div>
 

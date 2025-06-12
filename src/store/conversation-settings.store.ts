@@ -6,6 +6,7 @@ export interface ConversationSettings {
   citeSources: boolean;
   suggestActions: boolean;
   webSearch: boolean;
+  legalDrafting: boolean; // Added legal drafting option
   model?: string;
   temperature?: number;
 }
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: ConversationSettings = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
+  legalDrafting: false, // Default to false
   model: 'gpt-3.5-turbo',
   temperature: 0.7
 };

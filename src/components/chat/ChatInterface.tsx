@@ -17,7 +17,8 @@ import {
   SlidersHorizontal,
   Plus,
   X,
-  Paperclip
+  Paperclip,
+  FileEdit
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -35,6 +36,7 @@ import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal"
+import { ChatInput } from "./ChatInput"
 
 export function ChatInterface() {
   const params = useParams()
@@ -252,144 +254,8 @@ export function ChatInterface() {
       </div>
 
       {/* Floating Input Area with Embedded Tools */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="w-[90vw] max-w-3xl">
-          {/* Input Area with embedded icons */}
-          <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
-            {/* Left side icons */}
-            <div className="absolute left-6 bottom-2 flex items-center gap-1 z-10">
-              {/* Documents Tool */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDocumentModal(true)}
-                className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
-                title={`Documents (${conversationDocuments?.length || 0})`}
-              >
-                <Paperclip className="h-6 w-6 text-gray-500" />
-              </Button>
-
-              {/* Settings Tool */}
-              <DropdownMenu open={showSettings} onOpenChange={setShowSettings}>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
-                    title="AI Settings" 
-                  >
-                    <SlidersHorizontal className="h-6 w-6 text-gray-500" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="start" 
-                  className="w-72 p-4 mb-2"
-                  side="top"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-sm">AI Assistant Settings</h4>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowSettings(false)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label htmlFor="cite-sources" className="font-medium text-sm">
-                            Cite sources
-                          </Label>
-                          <p className="text-xs text-muted-foreground">
-                            Provide citations when referencing documents
-                          </p>
-                        </div>
-                        <Switch 
-                          id="cite-sources" 
-                          checked={settings.citeSources}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
-                            handleSettingChange('citeSources', checked);
-                          }}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label htmlFor="suggest-actions" className="font-medium text-sm">
-                            Suggest actions
-                          </Label>
-                          <p className="text-xs text-muted-foreground">
-                            Suggest relevant actions when appropriate
-                          </p>
-                        </div>
-                        <Switch 
-                          id="suggest-actions" 
-                          checked={settings.suggestActions}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
-                            handleSettingChange('suggestActions', checked);
-                          }}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label htmlFor="web-search" className="font-medium text-sm">
-                            Web search
-                          </Label>
-                          <p className="text-xs text-muted-foreground">
-                            Allow searching the web for information
-                          </p>
-                        </div>
-                        <Switch 
-                          id="web-search" 
-                          checked={settings.webSearch}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
-                            handleSettingChange('webSearch', checked);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            <Textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              className="border-0 resize-none min-h-[52px] max-h-[120px] pl-6 pr-16 pb-7 pt-3 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
-              disabled={isSubmitting}
-            />
-            
-            {/* Send button positioned inside textarea */}
-            <div className="absolute right-2 bottom-2">
-              <Button 
-                onClick={() => handleSend()} 
-                size="icon" 
-                className="h-8 w-8 rounded-lg bg-primary hover:bg-primary/90" 
-                disabled={!input.trim() || isSubmitting}
-              >
-                {isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-white" />
-                ) : (
-                  <Send className="h-4 w-4 text-white" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+   
+      <ChatInput onDocumentsAdded={handleDocumentsAdded}/>
 
       {/* Document Selection Modal */}
       {currentConversation && (
