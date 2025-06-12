@@ -168,10 +168,10 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
+                    className="h-8 w-fit px-2 hover:bg-gray-100 rounded-md"
                     title="AI Settings" 
                   >
-                    <SlidersHorizontal className="h-6 w-6 text-gray-500" />
+                    <SlidersHorizontal className="h-6 w-6 text-gray-500" /> Actions
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 

@@ -1,13 +1,24 @@
-'use client'
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Save, 
   Download,
   Edit3,
   Lightbulb,
-  Eye
+  Eye,
+  FileText,
+  RefreshCw,
+  MessageSquare,
+  Scale,
+  BookOpen,
+  Plus,
+  X,
+  Check,
+  Send,
+  MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,28 +27,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { ChatInput } from '@/components/chat/ChatInput';
-import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
+import { ChatInput } from './ChatInput';
+import * as mammoth from 'mammoth';
 
 // TypeScript interfaces
-interface ChatMessage {
-  id: number;
-  type: 'user' | 'ai';
-  content: string;
-  timestamp: string;
-}
-
-interface Template {
-  id: number;
-  name: string;
-  type: string;
-  size: string;
-  lastUsed: string;
-  description: string;
-}
-
 interface SelectionRange {
   text: string;
+  index: number;
+  length: number;
   rect: {
     top: number;
     left: number;
@@ -46,13 +43,287 @@ interface SelectionRange {
   };
 }
 
+interface AISuggestion {
+  id: string;
+  type: 'improve' | 'explain' | 'expand' | 'cite';
+  originalText: string;
+  suggestion: string;
+  explanation?: string;
+  confidence: number;
+}
+
 const LegalCanvas: React.FC = () => {
   const [selectedText, setSelectedText] = useState<string>('');
   const [selectionRange, setSelectionRange] = useState<SelectionRange | null>(null);
-  const [chatInput, setChatInput] = useState<string>('');
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [showActionBar, setShowActionBar] = useState(false);
+  const [showImproveInput, setShowImproveInput] = useState(false);
+  const [improveInstructions, setImproveInstructions] = useState('');
+  const [currentSuggestion, setCurrentSuggestion] = useState<AISuggestion | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingAction, setProcessingAction] = useState<string>('');
 
-  const [canvasContent, setCanvasContent] = useState<string>(`<h1>MEMORANDUM</h1>
+  const [canvasContent, setCanvasContent] = useState<string>('');
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const quillRef = useRef<ReactQuill>(null);
+  const actionBarRef = useRef<HTMLDivElement>(null);
+  const improveInputRef = useRef<HTMLInputElement>(null);
+
+  // Quill.js configuration
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      ['blockquote'],
+      ['link', 'image'],
+      ['clean']
+    ],
+  };
+
+  const formats = [
+    'header', 'font',
+    'bold', 'italic', 'underline', 'strike',
+    'color', 'background',
+    'script',
+    'align',
+    'list', 'indent',
+    'blockquote',
+    'link', 'image'
+  ];
+
+  // Handle Quill editor selection changes
+  useEffect(() => {
+    if (quillRef.current) {
+      const quill = quillRef.current.getEditor();
+      
+      const handleSelection = (range: any, oldRange: any, source: any) => {
+        if (range && range.length > 0) {
+          const selectedText = quill.getText(range.index, range.length);
+          if (selectedText.trim() && selectedText.trim().length > 3) {
+            const bounds = quill.getBounds(range.index, range.length);
+            const editorContainer = quill.container.getBoundingClientRect();
+            
+            if (bounds) {
+              setSelectedText(selectedText.trim());
+              setSelectionRange({
+                text: selectedText.trim(),
+                index: range.index,
+                length: range.length,
+                rect: {
+                  top: bounds.top + editorContainer.top,
+                  left: bounds.left + editorContainer.left,
+                  width: bounds.width,
+                  height: bounds.height,
+                }
+              });
+              setShowActionBar(true);
+              setShowImproveInput(false);
+              setImproveInstructions('');
+            }
+          }
+        } else {
+          clearSelection();
+        }
+      };
+
+      quill.on('selection-change', handleSelection);
+      
+      return () => {
+        quill.off('selection-change', handleSelection);
+      };
+    }
+  }, []);
+
+  const clearSelection = () => {
+    setSelectedText('');
+    setSelectionRange(null);
+    setShowActionBar(false);
+    setShowImproveInput(false);
+    setImproveInstructions('');
+    setCurrentSuggestion(null);
+  };
+
+  // Handle AI actions on selected text
+  const handleAIAction = async (action: string, customInstructions?: string) => {
+    if (!selectedText || !selectionRange) return;
+    
+    setIsProcessing(true);
+    setProcessingAction(action);
+    
+    // Simulate AI processing
+    setTimeout(() => {
+      const suggestion: AISuggestion = {
+        id: Date.now().toString(),
+        type: action as any,
+        originalText: selectedText,
+        suggestion: generateAISuggestion(action, selectedText, customInstructions),
+        explanation: generateExplanation(action, selectedText),
+        confidence: 0.85
+      };
+      
+      setCurrentSuggestion(suggestion);
+      setIsProcessing(false);
+      setProcessingAction('');
+      setShowImproveInput(false);
+      setImproveInstructions('');
+    }, 1500);
+  };
+
+  // Handle improve action with custom instructions
+  const handleImproveAction = () => {
+    setCurrentSuggestion(null); // Clear any existing suggestion
+    setShowImproveInput(true);
+    setTimeout(() => {
+      improveInputRef.current?.focus();
+    }, 100);
+  };
+
+  // Submit improve instructions
+  const submitImproveInstructions = () => {
+    if (!improveInstructions.trim()) return;
+    handleAIAction('improve', improveInstructions);
+  };
+
+  const handleImproveKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitImproveInstructions();
+    } else if (e.key === 'Escape') {
+      setShowImproveInput(false);
+      setImproveInstructions('');
+    }
+  };
+
+  // Generate AI suggestion based on action
+  const generateAISuggestion = (action: string, text: string, customInstructions?: string): string => {
+    switch (action.toLowerCase()) {
+      case 'improve':
+        const baseImprovement = text.replace(/\[.*?\]/g, 'specific legal parameters').replace(/analysis/g, 'comprehensive legal analysis');
+        return customInstructions 
+          ? `${baseImprovement} (Enhanced based on: ${customInstructions})`
+          : baseImprovement;
+      case 'explain':
+        return `This section ${text.toLowerCase().includes('background') 
+          ? 'establishes the factual foundation necessary for the legal analysis by providing essential context about the circumstances that give rise to the legal issues being examined' 
+          : 'outlines the relevant legal principles and authorities that form the basis for the subsequent analysis, ensuring the reader understands the applicable legal framework'}.`;
+      case 'expand':
+        return `${text} Furthermore, it is important to consider the broader implications of this matter, including potential compliance requirements and risk mitigation strategies that should be addressed in the client's decision-making process.`;
+      case 'cite':
+        return `${text} See generally [Relevant Case Citation], [Statute Citation] (establishing the legal framework for this analysis).`;
+      default:
+        return text;
+    }
+  };
+
+  const generateExplanation = (action: string, text: string): string => {
+    switch (action.toLowerCase()) {
+      case 'improve':
+        return 'Enhanced for legal precision and clarity based on your specific requirements';
+      case 'explain':
+        return 'AI-generated explanation of this section\'s purpose and legal significance';
+      case 'expand':
+        return 'Added comprehensive analysis and practical considerations';
+      case 'cite':
+        return 'Added placeholder citations for legal authority';
+      default:
+        return 'AI-generated suggestion';
+    }
+  };
+
+  // Accept AI suggestion
+  const acceptSuggestion = (suggestion: AISuggestion) => {
+    // For explanation, we don't replace the original text
+    if (suggestion.type === 'explain') {
+      clearSelection();
+      return;
+    }
+
+    // For other actions, replace the selected text
+    if (quillRef.current && selectionRange) {
+      const quill = quillRef.current.getEditor();
+      quill.deleteText(selectionRange.index, selectionRange.length);
+      quill.insertText(selectionRange.index, suggestion.suggestion);
+    }
+    
+    clearSelection();
+  };
+
+  // Reject AI suggestion
+  const rejectSuggestion = () => {
+    setCurrentSuggestion(null);
+  };
+
+  // Handle save and export
+  const handleSaveToVault = (): void => {
+    console.log('Saving document to vault...');
+  };
+
+  const handleExportToWord = (): void => {
+    console.log('Exporting to Word...');
+  };
+
+  // Handle documents added
+  const handleDocumentsAdded = (count: number) => {
+    console.log(`Documents added: ${count}`);
+  };
+
+  // Handle template insertion
+  const handleInsertTemplate = async (file: File) => {
+    setIsLoadingTemplate(true);
+    
+    try {
+      // Convert File to ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      
+      // Use mammoth to extract HTML from the Word document
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      
+      if (result.value) {
+        // Clean up the HTML for better Quill compatibility
+        let cleanHtml = result.value;
+        
+        // Basic HTML cleanup for Quill
+        cleanHtml = cleanHtml
+          // Remove Word-specific styles and classes
+          .replace(/class="[^"]*"/g, '')
+          .replace(/style="[^"]*"/g, '')
+          // Ensure proper paragraph structure
+          .replace(/<p><\/p>/g, '<br>')
+          // Remove empty spans
+          .replace(/<span[^>]*><\/span>/g, '')
+          // Clean up extra whitespace
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        setCanvasContent(cleanHtml);
+        setShowTemplateModal(false);
+        
+        // Log any conversion messages for debugging
+        if (result.messages && result.messages.length > 0) {
+          console.log('Mammoth conversion messages:', result.messages);
+        }
+        
+        console.log('Template loaded successfully');
+      } else {
+        throw new Error('Failed to extract content from the document');
+      }
+      
+    } catch (error) {
+      console.error('Error processing template:', error);
+      
+      // Fallback to sample templates based on filename if mammoth fails
+      const fileName = file.name.toLowerCase();
+      let fallbackContent = '';
+      
+      if (fileName.includes('memo') || fileName.includes('memorandum')) {
+        fallbackContent = `<h1>MEMORANDUM</h1>
 
 <p><strong>TO:</strong> [Client Name]<br>
 <strong>FROM:</strong> [Attorney Name]<br>
@@ -79,241 +350,144 @@ const LegalCanvas: React.FC = () => {
 
 <h2>III. CONCLUSION AND RECOMMENDATIONS</h2>
 
-<p>Based on the foregoing analysis, we recommend [specific recommendations].</p>`);
-  
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      type: 'ai',
-      content: "I'm ready to help you draft this legal memorandum. You can select any text to get suggestions, or ask me questions in this chat.",
-      timestamp: '10:30 AM'
-    }
-  ]);
+<p>Based on the foregoing analysis, we recommend [specific recommendations].</p>`;
+      } else if (fileName.includes('contract') || fileName.includes('agreement')) {
+        fallbackContent = `<h1>SERVICE AGREEMENT</h1>
 
-  const [templates] = useState<Template[]>([
-    { 
-      id: 1, 
-      name: 'Contract Amendment Template', 
-      type: 'contract', 
-      size: '2.3 MB',
-      lastUsed: '2 days ago',
-      description: 'Standard contract amendment format used by the firm'
-    },
-    { 
-      id: 2, 
-      name: 'Motion to Dismiss Template', 
-      type: 'motion', 
-      size: '1.8 MB',
-      lastUsed: '1 week ago',
-      description: 'Federal court motion template with standard arguments'
-    },
-    { 
-      id: 3, 
-      name: 'Legal Brief Template', 
-      type: 'brief', 
-      size: '2.1 MB',
-      lastUsed: '3 days ago',
-      description: 'Appellate brief template with proper citations'
-    },
-    { 
-      id: 4, 
-      name: 'Due Diligence Checklist', 
-      type: 'checklist', 
-      size: '500 KB',
-      lastUsed: '5 days ago',
-      description: 'M&A due diligence document checklist'
-    },
-    { 
-      id: 5, 
-      name: 'Employment Agreement Template', 
-      type: 'contract', 
-      size: '1.9 MB',
-      lastUsed: '1 week ago',
-      description: 'Standard employment agreement with confidentiality clauses'
-    },
-    { 
-      id: 6, 
-      name: 'Litigation Hold Notice', 
-      type: 'notice', 
-      size: '800 KB',
-      lastUsed: '4 days ago',
-      description: 'Template for litigation hold notifications'
-    }
-  ]);
+<p>This Service Agreement ("Agreement") is entered into on [Date] between [Company Name], a [State] corporation ("Company"), and [Client Name] ("Client").</p>
 
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<ReactQuill>(null);
-  const selectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+<h2>1. SERVICES</h2>
 
+<p>Company agrees to provide the following services: [Description of Services]</p>
 
-  // Quill.js configuration
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'script': 'sub' }, { 'script': 'super' }],
-      [{ 'align': [] }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-      ['blockquote'],
-      ['link', 'image'],
-      ['clean']
-    ],
-  };
+<h2>2. TERM</h2>
 
-  const formats = [
-    'header', 'font',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'script',
-    'align',
-    'list', 'bullet', 'indent',
-    'blockquote',
-    'link', 'image'
-  ];
+<p>This Agreement shall commence on [Start Date] and continue until [End Date], unless terminated earlier in accordance with the terms herein.</p>
 
-  // Handle save to vault
-  const handleSaveToVault = (): void => {
-    console.log('Saving document to vault...');
-    // Implementation would go here
-  };
+<h2>3. COMPENSATION</h2>
 
-  // Handle export to Word
-  const handleExportToWord = (): void => {
-    console.log('Exporting to Word...');
-    // Implementation would go here
-  };
+<p>In consideration for the services, Client agrees to pay Company [Amount] according to the following schedule: [Payment Terms]</p>
 
-  // Handle Quill editor initialization and events
-  useEffect(() => {
-    if (quillRef.current) {
-      const quill = quillRef.current.getEditor();
+<h2>4. TERMINATION</h2>
+
+<p>Either party may terminate this Agreement with [Notice Period] written notice.</p>
+
+<h2>5. GOVERNING LAW</h2>
+
+<p>This Agreement shall be governed by the laws of [State/Jurisdiction].</p>
+
+<p><strong>Company:</strong> _____________________</p>
+<p><strong>Client:</strong> _____________________</p>`;
+      } else if (fileName.includes('brief') || fileName.includes('motion')) {
+        fallbackContent = `<h1>MOTION TO [RELIEF SOUGHT]</h1>
+
+<p><strong>TO THE HONORABLE COURT:</strong></p>
+
+<p>NOW COMES [Party Name], by and through undersigned counsel, and respectfully moves this Court for [relief sought] and in support thereof states as follows:</p>
+
+<h2>I. INTRODUCTION</h2>
+
+<p>[Brief introduction of the motion and relief sought]</p>
+
+<h2>II. STATEMENT OF FACTS</h2>
+
+<p>[Relevant factual background]</p>
+
+<h2>III. ARGUMENT</h2>
+
+<h3>A. Legal Standard</h3>
+
+<p>[Applicable legal standard and authorities]</p>
+
+<h3>B. Application</h3>
+
+<p>[Application of law to facts]</p>
+
+<h2>IV. CONCLUSION</h2>
+
+<p>For the foregoing reasons, [Party Name] respectfully requests that this Court grant the motion for [relief sought].</p>
+
+<p>Respectfully submitted,</p>
+<p>_____________________<br>
+[Attorney Name]<br>
+[Bar Number]<br>
+Attorney for [Party Name]</p>`;
+      } else {
+        fallbackContent = `<h1>[DOCUMENT TITLE]</h1>
+
+<p>[Document introduction and purpose]</p>
+
+<h2>SECTION 1</h2>
+
+<p>[Content for section 1]</p>
+
+<h2>SECTION 2</h2>
+
+<p>[Content for section 2]</p>
+
+<h2>SECTION 3</h2>
+
+<p>[Content for section 3]</p>
+
+<p><strong>Date:</strong> [Date]<br>
+<strong>Prepared by:</strong> [Attorney Name]</p>`;
+      }
       
-      // Add selection change listener
-      const handleSelection = (range: any, oldRange: any, source: any) => {
-        if (range && range.length > 0) {
-          const selectedText = quill.getText(range.index, range.length);
-          if (selectedText.trim()) {
-            setSelectedText(selectedText);
-          }
-        } else {
-          setSelectedText('');
-          setSelectionRange(null);
-        }
-      };
-
-      quill.on('selection-change', handleSelection);
-      
-      // Cleanup
-      return () => {
-        quill.off('selection-change', handleSelection);
-      };
+      if (fallbackContent) {
+        setCanvasContent(fallbackContent);
+        setShowTemplateModal(false);
+        console.log('Used fallback template due to processing error');
+      }
+    } finally {
+      setIsLoadingTemplate(false);
     }
-  }, []);
-
-  // Handle AI actions on selected text
-  const handleAIAction = (action: string): void => {
-    if (!selectedText) return;
-    
-    setIsProcessing(true);
-    
-    // Add user message showing the action
-    const userMessage: ChatMessage = {
-      id: chatMessages.length + 1,
-      type: 'user',
-      content: `${action} this text: "${selectedText.substring(0, 100)}${selectedText.length > 100 ? '...' : ''}"`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    
-    setChatMessages(prev => [...prev, userMessage]);
-    
-    // Simulate AI processing
-    setTimeout(() => {
-      const aiResponse: ChatMessage = {
-        id: chatMessages.length + 2,
-        type: 'ai',
-        content: getAIResponse(action, selectedText),
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      
-      setChatMessages(prev => [...prev, aiResponse]);
-      setIsProcessing(false);
-      
-      // Clear selection
-      setSelectedText('');
-      setSelectionRange(null);
-    }, 1500);
-  };
-
-  // Generate AI response based on action
-  const getAIResponse = (action: string, text: string): string => {
-    switch (action.toLowerCase()) {
-      case 'improve':
-        return `Here's an improved version of that text:\n\n"${text.replace(/\[.*?\]/g, 'specific details')}" \n\nI've made it more specific and legally precise. Would you like me to explain the changes?`;
-      case 'explain':
-        return `This section ${text.toLowerCase().includes('legal') ? 'establishes the legal framework' : 'provides important context'} for your argument. The language follows standard legal memo format and helps build your case systematically.`;
-      case 'rewrite':
-        return `Here's a rewritten version:\n\n"${text.split(' ').reverse().join(' ')}" \n\nThis version maintains the legal meaning while improving clarity and flow.`;
-      default:
-        return `I've analyzed the selected text and can help you ${action.toLowerCase()} it. What specific aspect would you like me to focus on?`;
-    }
-  };
-
-  // Handle documents added to conversation
-  const handleDocumentsAdded = (count: number) => {
-    
-    console.log(`${count} documents added to conversation context`);
   };
 
   return (
     <div className="flex h-screen bg-gray-50 relative">
       {/* Document Canvas */}
       <div className="flex-1 relative overflow-y-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-        
-        <div
-          ref={canvasRef}
-          className="max-w-4xl mx-auto pb-32"
-        >
-          {/* AI Action Buttons for Selected Text */}
-          {selectedText && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-blue-800">
-                  Selected: "{selectedText.substring(0, 50)}..."
-                </p>
-                <div className="flex space-x-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleAIAction('Improve')}
-                    className="h-7 px-3 bg-primary-600 hover:bg-primary-700 text-black"
-                  >
-                    <Lightbulb className="h-3 w-3 mr-1" />
-                    Improve
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleAIAction('Explain')}
-                    className="h-7 px-3 bg-primary hover:bg-green-700 text-white"
-                  >
-                    <Eye className="h-3 w-3 mr-1" />
-                    Explain
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => handleAIAction('Rewrite')}
-                    className="h-7 px-3 bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <Edit3 className="h-3 w-3 mr-1" />
-                    Rewrite
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
+        <div ref={canvasRef} className="max-w-4xl mx-auto pb-32">
           
           {/* Quill Rich Text Editor */}
-          <div className="bg-white">
+          <div className="bg-white relative">
+            {/* Custom File Menu Bar */}
+            <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-sm text-gray-700 hover:bg-gray-100">
+                      File
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem onClick={handleSaveToVault}>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save to Vault
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleExportToWord}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export to Word
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowTemplateModal(true)}
+                  className="text-sm"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Insert Template
+                </Button>
+              </div>
+
+              {/* Document status */}
+              <div className="text-xs text-gray-500">
+                {canvasContent ? 'Document loaded' : 'Blank document'}
+              </div>
+            </div>
             
             <ReactQuill
               ref={quillRef}
@@ -322,18 +496,265 @@ const LegalCanvas: React.FC = () => {
               onChange={setCanvasContent}
               modules={modules}
               formats={formats}
-              style={{
-                height: '750px',
-              }}
+              style={{ height: '750px' }}
             />
+
+            {/* Enhanced Unified Action Bar */}
+            {showActionBar && selectionRange && (
+              <div
+                ref={actionBarRef}
+                className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg"
+                style={{
+                  top: Math.max(10, selectionRange.rect.top - 80),
+                  left: Math.max(10, selectionRange.rect.left),
+                }}
+              >
+                <div className="p-3">
+                  {/* Show AI suggestion if available */}
+                  {currentSuggestion ? (
+                    <div className="space-y-3">
+                      {/* Header */}
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-sm text-gray-900">
+                          {currentSuggestion.type === 'explain' ? 'Explanation' : 
+                           currentSuggestion.type === 'improve' ? 'Improvement' :
+                           currentSuggestion.type === 'cite' ? 'Citation' : 'Suggestion'}
+                        </h4>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={clearSelection}
+                          className="h-6 w-6 p-0 hover:bg-gray-100"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                      {/* Show original only for improve action */}
+                      {currentSuggestion.type === 'improve' && (
+                        <div>
+                          <div className="text-xs text-gray-500 mb-1">Original:</div>
+                          <div className="text-sm bg-gray-50 p-2 rounded border">
+                            "{currentSuggestion.originalText.length > 100 
+                              ? currentSuggestion.originalText.substring(0, 100) + '...'
+                              : currentSuggestion.originalText}"
+                          </div>
+                        </div>
+                      )}
+
+                      {/* AI Response */}
+                      <div>
+                        <div className="text-xs text-gray-500 mb-1">
+                          {currentSuggestion.type === 'explain' ? 'Explanation:' : 'Suggested:'}
+                        </div>
+                        <div className={`text-sm p-3 rounded border ${
+                          currentSuggestion.type === 'explain' ? 'bg-blue-50' :
+                          currentSuggestion.type === 'improve' ? 'bg-green-50' :
+                          currentSuggestion.type === 'cite' ? 'bg-purple-50' : 'bg-gray-50'
+                        }`}>
+                          {currentSuggestion.suggestion}
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2 pt-2">
+                        {currentSuggestion.type !== 'explain' && (
+                          <Button
+                            size="sm"
+                            onClick={() => acceptSuggestion(currentSuggestion)}
+                            className="h-7 px-3 bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Check className="h-3 w-3 mr-1" />
+                            Accept
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={rejectSuggestion}
+                          className="h-7 px-3"
+                        >
+                          <X className="h-3 w-3 mr-1" />
+                          {currentSuggestion.type === 'explain' ? 'Close' : 'Reject'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : showImproveInput ? (
+                    /* Improve Input */
+                    <div className="w-80">
+                      <div className="text-xs text-gray-600 mb-2">
+                        How would you like to improve this text?
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          ref={improveInputRef}
+                          value={improveInstructions}
+                          onChange={(e) => setImproveInstructions(e.target.value)}
+                          onKeyDown={handleImproveKeyDown}
+                          placeholder="e.g., make it more formal, add legal citations..."
+                          className="h-8 text-xs"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={submitImproveInstructions}
+                          disabled={!improveInstructions.trim() || isProcessing}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Send className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setShowImproveInput(false);
+                            setImproveInstructions('');
+                          }}
+                          className="h-8 w-8 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Initial Action Buttons */
+                    <div className="flex items-center gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleAIAction('explain')}
+                        disabled={isProcessing}
+                        className="h-8 px-2 text-xs hover:bg-blue-50 hover:text-blue-700"
+                        title="Explain this section"
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        Explain
+                      </Button>
+                      
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleImproveAction}
+                        disabled={isProcessing}
+                        className="h-8 px-2 text-xs hover:bg-green-50 hover:text-green-700"
+                        title="Improve this text"
+                      >
+                        <Lightbulb className="h-3 w-3 mr-1" />
+                        Improve
+                      </Button>
+                      
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleAIAction('cite')}
+                        disabled={isProcessing}
+                        className="h-8 px-2 text-xs hover:bg-purple-50 hover:text-purple-700"
+                        title="Add legal citations"
+                      >
+                        <Scale className="h-3 w-3 mr-1" />
+                        Cite
+                      </Button>
+
+                      <div className="w-px h-6 bg-gray-200 mx-1" />
+                      
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={clearSelection}
+                        className="h-8 w-8 p-0 hover:bg-gray-100"
+                        title="Close"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Processing indicator */}
+                  {isProcessing && (
+                    <div className="mt-3 flex items-center justify-center py-2 border-t">
+                      <RefreshCw className="h-3 w-3 animate-spin mr-2 text-blue-600" />
+                      <span className="text-xs text-blue-600">
+                        {processingAction}ing...
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
+
+        {/* Centered Chat Input */}
+        <ChatInput onDocumentsAdded={handleDocumentsAdded} />
       </div>
 
-      {/* Persistent Chat Input Component */}
-      <ChatInput onDocumentsAdded={handleDocumentsAdded} />
+      {/* Template Upload Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Insert Document Template</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowTemplateModal(false)}
+                disabled={isLoadingTemplate}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
 
-      {/* Custom Styles for Quill Editor */}
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Upload a Word document (.docx) to use as a template for your legal document.
+              </p>
+
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  accept=".docx,.doc"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleInsertTemplate(file);
+                    }
+                  }}
+                  disabled={isLoadingTemplate}
+                  className="hidden"
+                  id="template-upload"
+                />
+                <label
+                  htmlFor="template-upload"
+                  className={`cursor-pointer flex flex-col items-center ${
+                    isLoadingTemplate ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <FileText className="h-12 w-12 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium">
+                    {isLoadingTemplate ? 'Processing template...' : 'Click to upload template'}
+                  </span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    Supports .docx and .doc files
+                  </span>
+                </label>
+              </div>
+
+              {isLoadingTemplate && (
+                <div className="flex items-center justify-center py-2">
+                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                  <span className="text-sm text-gray-600">Converting template...</span>
+                </div>
+              )}
+
+              <div className="text-xs text-gray-500">
+                <strong>Tip:</strong> You can also start with our built-in templates by uploading files named "memo.docx", "contract.docx", or "brief.docx" for different document types.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Styles */}
       <style jsx global>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -377,55 +798,17 @@ const LegalCanvas: React.FC = () => {
           border-bottom: 1px solid #e5e7eb !important;
         }
         
-        .ql-toolbar .ql-formats {
-          margin-right: 15px !important;
-        }
-        
-        .ql-toolbar .ql-formats:not(:last-child) {
-          border-right: 1px solid #e5e7eb !important;
-          padding-right: 15px !important;
-        }
-        
-        .ql-toolbar button {
-          border: none !important;
-          border-radius: 4px !important;
-          padding: 4px 6px !important;
-          margin: 1px 2px !important;
-          background: transparent !important;
-          color: #374151 !important;
-        }
-        
-        .ql-toolbar button:hover {
-          background: #e5e7eb !important;
-          color: #111827 !important;
-        }
-        
-        .ql-toolbar button.ql-active {
-          background: #dbeafe !important;
-          color: #1d4ed8 !important;
-        }
-        
-        .ql-toolbar .ql-picker {
-          color: #374151 !important;
-        }
-        
-        .ql-toolbar .ql-picker-label {
-          border: none !important;
-          padding: 4px 8px !important;
-          border-radius: 4px !important;
-        }
-        
-        .ql-toolbar .ql-picker-label:hover {
-          background: #e5e7eb !important;
-        }
-        
-        .ql-toolbar .ql-picker.ql-expanded .ql-picker-label {
-          background: #e5e7eb !important;
-        }
-        
         .ql-container {
           border: none !important;
           font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
+        }
+
+        .ql-editor .ql-syntax {
+          background-color: #f3f4f6 !important;
+          color: #374151 !important;
+          padding: 0.25rem 0.5rem !important;
+          border-radius: 0.25rem !important;
+          font-family: ui-monospace, monospace !important;
         }
       `}</style>
     </div>
