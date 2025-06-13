@@ -35,7 +35,7 @@ export async function generateMetadata( { params }: Props,
       keywords: adaptedPost.title || 'legal document templates, Draft legal documments, legal insights',
       openGraph: {
         title: adaptedPost.title,
-        description: adaptedPost.description,
+        description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
         type: 'article',
         url: `https://wansom.ai/legal-documents/${params}`,
         images: [
