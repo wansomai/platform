@@ -35,7 +35,7 @@ export interface BlogPostFields {
 }
 export interface DocumentTemplateFields {
   title: string;
-  preview?: string;
+  preview?: any;
   description: any; // Rich text content
   image?: {
     fields: {
@@ -96,7 +96,6 @@ export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
     content_type: 'documentTemplates',
     order: ['-sys.createdAt'], // Get newest first
   });
-  
   return response.items as unknown as DocumentTemplate[];
 }
 

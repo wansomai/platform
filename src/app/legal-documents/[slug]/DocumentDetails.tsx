@@ -7,7 +7,6 @@ import { getAllDocumentTemplates } from "@/lib/data/contentful";
 import {adaptDocumentTemplate } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "react-day-picker";
-import { Linkedin } from "lucide-react";
 
 interface PageProps {
   params: {
@@ -32,8 +31,6 @@ const DocDetailPageClient = ({ params }: PageProps) => {
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-
 
   useEffect(() => {
     const fetchBlogPost = async () => {

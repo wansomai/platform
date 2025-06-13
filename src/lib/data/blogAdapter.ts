@@ -89,7 +89,9 @@ export function adaptDocumentTemplate(post: DocumentTemplate) {
   const contentHtml = post.fields.description
     ? documentToHtmlString(post.fields.description, htmlRenderOptions) 
     : '';
-  
+  const previewHtml = post.fields.preview
+    ? documentToHtmlString(post.fields.preview, htmlRenderOptions)
+    : '';
   // Generate slug from title
   const slug = createSlug(post.fields.title || '');
   const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
@@ -97,7 +99,7 @@ export function adaptDocumentTemplate(post: DocumentTemplate) {
   return {
     id: post.sys.id,
     title: post.fields.title || 'Untitled',
-    preview: post.fields.preview || '',
+    preview: previewHtml || '',
     description: post.fields.description, // Keep original content
     contentHtml, // Add the HTML version for dangerouslySetInnerHTML
     image: post.fields.image?.fields?.file?.url 
