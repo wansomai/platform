@@ -22,7 +22,7 @@ export async function generateMetadata( { params }: Props,
 
     if (!blogPost) {
       return {
-        title: 'Legal Document Not Found | wansom AI',
+        title: 'Legal Document Template Not Found | wansom AI',
         description: 'The requested legal document could not be found.',
       };
     }

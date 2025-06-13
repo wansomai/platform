@@ -126,8 +126,8 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     Home
                   </Link>
                   <span className="mx-2">/</span>
-                  <Link href="/blogs" className="hover:text-teal-600">
-                    Articles
+                  <Link href="/legal-documents" className="hover:text-teal-600">
+                    Documents
                   </Link>
                   <span className="mx-2">/</span>
                   <span className="truncate max-w-[200px]">
