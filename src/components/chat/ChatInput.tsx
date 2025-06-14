@@ -208,7 +208,22 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         />
                       </div>
                       
-                    
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
+                            Legal drafting
+                          </Label>
+                          
+                        </div>
+                        <Switch 
+                          id="legal-drafting" 
+                          checked={settings.legalDrafting}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('legalDrafting', checked);
+                          }}
+                        />
+                      </div>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
@@ -243,19 +258,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                           }}
                         />
                       </div>
-                        <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
-                            Legal drafting
-                          </Label>
-                          
-                        </div>
-                        <Switch 
-                          id="legal-drafting" 
-                          checked={settings.legalDrafting}
-                          disabled
-                        />
-                      </div>
+                      
                     
                     </div>
                   </div>
