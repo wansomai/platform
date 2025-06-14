@@ -34,7 +34,7 @@ const ContractReviewPage = () => {
 
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocayes" },
+    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
     { src: "/logos/7.png", alt: "Riskhouse International" },
     { src: "/logos/4.png", alt: "Netsheria" },
   ];
