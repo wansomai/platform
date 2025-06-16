@@ -4,13 +4,11 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { 
   Star, Activity, PieChart, Grid, ArrowRight, FileText, 
-  CheckCircle, Calculator, BookOpen, FileSearch, Scale, 
-  ShieldCheck, AlertCircle, Calendar, Sparkles, Atom,
+ Sparkles, Atom,
   ChevronLeft, ChevronRight,
   Play,
   Gavel
 } from 'lucide-react';
-import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/outline';
 
 const FeaturesSection: React.FC = () => {
 
