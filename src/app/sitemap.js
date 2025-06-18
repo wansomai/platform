@@ -125,7 +125,7 @@ export default async function sitemap() {
       const slug = post.fields.title ? createSlug(post.fields.title) : post.sys.id;
       
       return {
-        url: `${baseUrl}/egal-documents/${slug}`,
+        url: `${baseUrl}/legal-documents/${slug}`,
         lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
  
       };
