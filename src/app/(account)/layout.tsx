@@ -329,7 +329,124 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        
+         <header className="block lg:hidden bg-white shadow-sm z-10">
+          <div className="flex h-16 items-center justify-between px-4">
+            <div className="flex items-center space-x-4">
+              {/* Mobile menu button */}
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden">
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-[280px]">
+                  <div className="flex h-16 items-center justify-between border-b px-4">
+                    <Link href="/dashboard" className="flex items-center">
+                      <img
+                        src="/logo-lg.png"
+                        alt="Logo"
+                        className="h-12 w-auto object-contain"
+                      />
+                    </Link>
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon">
+                        <X className="h-5 w-5" />
+                      </Button>
+                    </SheetClose>
+                  </div>
+                  {sidebarContent(true)}
+                </SheetContent>
+              </Sheet>
+
+              {/* Logo - visible on mobile */}
+              <Link href="/dashboard" className="flex lg:hidden items-center">
+                <img
+                  src="/logo-lg.png"
+                  alt="Logo"
+                  className="h-8 w-auto object-contain"
+                />
+              </Link>
+
+              {/* Page title - visible on desktop */}
+              <h1 className="text-xl font-semibold text-gray-800 hidden lg:block">
+                {pathname === "/dashboard"
+                  ? "Dashboard"
+                  : pathname.includes("/vault")
+                  ? "Document Vault"
+                  : pathname.includes("/assistant")
+                  ? "AI Assistant"
+                  : pathname.includes("/workflows")
+                  ? "Asociates"
+                  : pathname.includes("/projects")
+                  ? "Workspaces"
+                  : "WANSOM"}
+              </h1>
+            </div>
+
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Assistant button */}
+              <Button
+                variant="outline"
+                onClick={() => router.push("/assistant")}
+                className="hidden sm:flex"
+              >
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Quick AI Assistant
+              </Button>
+
+              {/* Mobile assistant icon */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.push("/assistant")}
+                className="sm:hidden"
+              >
+                <MessageSquare className="h-5 w-5" />
+              </Button>
+
+              {/* User dropdown */}
+              <div className="relative group">
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2"
+                  size="sm"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={session?.user?.image || undefined}
+                      alt={session?.user?.name || "User"}
+                    />
+                    <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                  </Avatar>
+                  <span className="hidden md:inline-block">
+                    {session?.user?.name?.split(" ")[0]}
+                  </span>
+                </Button>
+
+                <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden group-hover:block z-50">
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    proile
+                  </Link>
+                  {/* <Link
+                    href="/settings"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Settings
+                  </Link> */}
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
 
         {/* Main content area */}
         <main className="flex-1 overflow-auto">{children}</main>
