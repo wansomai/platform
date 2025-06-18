@@ -203,7 +203,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <Label htmlFor="web-search" className="font-medium text-sm">
-                            Web search
+                            Deep Research
                           </Label>
                          
                         </div>
