@@ -45,8 +45,9 @@ export const metadata: Metadata = {
     'law firm software',
     'document automation',
     'legal tech',
+    "AI Lawyer",
     'AI assistant',
-    'legal collaboration'
+    'AI Contract review'
   ],
   authors: [{ name: 'Wansom AI' }],
   robots: {

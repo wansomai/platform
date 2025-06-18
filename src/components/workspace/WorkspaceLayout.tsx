@@ -148,7 +148,7 @@ export function WorkspaceLayout({
         {/* Content - only show when expanded */}
         <div className="flex h-16 items-center px-4 border-b">
           {!rightSidebarCollapsed && (
-             <div  className="flex items-center">
+             <div  className="flex items-center overflow-x-hidden">
              <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
              <h1 className="text-lg font-semibold truncate">
                {currentProject?.title || "Project Workspace"}

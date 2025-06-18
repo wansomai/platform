@@ -225,7 +225,7 @@ export function ChatInterface() {
     return (
       <div className="flex items-center justify-center h-full">
         <LogoAnimation size="sm" className="text-gray-500" />
-        <span className="ml-2 text-secondary-700 animate-pulse">Loading conversation...</span>
+        <span className="ml-2 text-secondary-700 animate-pulse">Loading workspace...</span>
       </div>
     )
   }
