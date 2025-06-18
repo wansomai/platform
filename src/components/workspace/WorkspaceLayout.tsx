@@ -17,6 +17,7 @@ import {
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
 import { useConversationSettingsStore } from "@/store/conversation-settings.store";
+import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
 import { useChatStore } from "@/store/chat.store";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import LegalCanvas from "@/components/chat/CanvasInterface";
@@ -29,7 +30,6 @@ const WorkspaceLoading = ({ projectTitle }: { projectTitle?: string }) => (
     <div className="flex flex-col items-center space-y-4 text-center max-w-md mx-auto p-6">
       <div className="relative">
         <LogoAnimation size="lg" className="text-primary-600" />
-      
       </div>
       
       <div className="space-y-2">
@@ -72,14 +72,38 @@ export function WorkspaceLayout({
   const { currentConversation } = useChatStore();
   const { settings, fetchSettings } = useConversationSettingsStore();
 
-  // Project loading without artificial delays
+  // Enhanced project loading with all necessary data
   useEffect(() => {
     const initializeWorkspace = async () => {
       if (!projectId) return;
       
       try {
         setIsInitializing(true);
+        
+        // Load project data first
         await fetchProjectById(projectId);
+        
+        // Once project is loaded, initialize conversations
+        const conversations = await useChatStore.getState().fetchConversations(projectId);
+        
+        let currentConv = null;
+        // If there are conversations, load the first one
+        if (conversations.length > 0) {
+          currentConv = await useChatStore.getState().fetchConversation(projectId, conversations[0].id);
+        } else {
+          // Create a new conversation if none exist
+          currentConv = await useChatStore.getState().createConversation(projectId);
+        }
+        
+        // If we have a conversation, preload its settings and documents
+        if (currentConv?.id) {
+          // Load conversation settings and documents in parallel
+          await Promise.all([
+            fetchSettings(currentConv.id).catch(err => console.error('Error loading settings:', err)),
+            useConversationDocumentsStore.getState().fetchConversationDocuments(currentConv.id).catch(err => console.error('Error loading documents:', err))
+          ]);
+        }
+        
         setIsInitializing(false);
       } catch (error) {
         console.error('Error initializing workspace:', error);
@@ -88,14 +112,14 @@ export function WorkspaceLayout({
     };
 
     initializeWorkspace();
-  }, [projectId, fetchProjectById]);
+  }, [projectId, fetchProjectById, fetchSettings]);
 
-  // Fetch conversation settings when conversation changes
+  // Fetch conversation settings when conversation changes (fallback)
   useEffect(() => {
-    if (currentConversation?.id) {
+    if (currentConversation?.id && !isInitializing) {
       fetchSettings(currentConversation.id);
     }
-  }, [currentConversation?.id, fetchSettings]);
+  }, [currentConversation?.id, fetchSettings, isInitializing]);
 
   // Show loading state during initialization
   if (isInitializing || projectLoading) {

@@ -373,8 +373,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   ? "Dashboard"
                   : pathname.includes("/vault")
                   ? "Document Vault"
-                  : pathname.includes("/assistant")
-                  ? "AI Assistant"
                   : pathname.includes("/workflows")
                   ? "Asociates"
                   : pathname.includes("/projects")
@@ -387,7 +385,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               {/* Assistant button */}
               <Button
                 variant="outline"
-                onClick={() => router.push("/assistant")}
+                onClick={() => router.push("/projects")}
                 className="hidden sm:flex"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
@@ -398,7 +396,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push("/assistant")}
+                onClick={() => router.push("/projects")}
                 className="sm:hidden"
               >
                 <MessageSquare className="h-5 w-5" />

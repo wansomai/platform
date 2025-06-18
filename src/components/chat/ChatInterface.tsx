@@ -3,22 +3,40 @@
 
 import { useRef, useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { 
   Copy, 
-  Search, 
-  RefreshCw
+  Search
 } from "lucide-react"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
-import { useConversationSettingsStore } from "@/store/conversation-settings.store"
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
+import { useProjectStore } from "@/store/project.store"
+
+// Empty state component for when there are no messages
+const EmptyState = ({ projectTitle }: { projectTitle?: string }) => (
+  <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 text-center">
+    <div className="max-w-md mx-auto space-y-6">
+      {/* Logo and greeting */}
+      <div className="space-y-4">
+        <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-5xl">
+          😎
+        </div>
+        <div className="space-y-2">
+        
+          <p className="text-gray-600 text-3xl capitalize">
+          All Your favorite legal tools in a unified AI workspace
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+);
 
 export function ChatInterface() {
   const params = useParams()
@@ -30,64 +48,25 @@ export function ChatInterface() {
   const { addToast } = useUIStore()
   const { 
     currentConversation, 
-    fetchConversation, 
-    createConversation, 
     isLoading, 
-    error,
-    clearCurrentConversation
+    error
   } = useChatStore()
-
-  const {
-    settings,
-    fetchSettings,
-    isLoading: isLoadingSettings
-  } = useConversationSettingsStore()
 
   const { 
     documents: conversationDocuments, 
     fetchConversationDocuments
   } = useConversationDocumentsStore()
+
+  const { currentProject } = useProjectStore()
  
   const {data: session} = useSession()
   
-  // Clear conversation state when projectId changes
-  useEffect(() => {
-    clearCurrentConversation?.()
-  }, [projectId, clearCurrentConversation])
-  
-  // Set up conversation when component mounts or projectId changes
-  useEffect(() => {
-    const initializeChat = async () => {
-      if (projectId && !currentConversation) {
-        try {
-          const conversations = await useChatStore.getState().fetchConversations(projectId)
-          
-          if (conversations.length > 0) {
-            await fetchConversation(projectId, conversations[0].id)
-          } else {
-            await createConversation(projectId)
-          }
-        } catch (error) {
-          console.error('Failed to initialize chat:', error)
-          try {
-            await createConversation(projectId)
-          } catch (fallbackError) {
-            console.error('Failed to create fallback conversation:', fallbackError)
-          }
-        }
-      }
-    }
-    
-    initializeChat()
-  }, [projectId, currentConversation, fetchConversation, createConversation])
-
-  // Fetch settings and documents when conversation changes
+  // Fetch documents when conversation changes
   useEffect(() => {
     if (currentConversation?.id) {
-      fetchSettings(currentConversation.id)
       fetchConversationDocuments(currentConversation.id)
     }
-  }, [currentConversation?.id, fetchSettings, fetchConversationDocuments])
+  }, [currentConversation?.id, fetchConversationDocuments])
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -108,7 +87,8 @@ export function ChatInterface() {
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
-
+  
+  // Show loading only if we're actually loading and have no conversation yet
   if (isLoading && !currentConversation) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -117,11 +97,16 @@ export function ChatInterface() {
       </div>
     )
   }
+
+  // Show empty state if no messages
+  if (!currentConversation?.messages || currentConversation.messages.length === 0) {
+    return <EmptyState projectTitle={currentProject?.title} />
+  }
   
   return (
     <div className="flex flex-col h-full">
-      {/* Messages container - with bottom padding for ChatInput */}
-      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+      {/* Messages container - Add bottom padding for the floating ChatInput */}
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-24 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -144,7 +129,7 @@ export function ChatInterface() {
   )
 }
 
-// ChatMessageItem component (same as before)
+// Update ChatMessageItem to handle streaming messages
 function ChatMessageItem({ 
   message, 
   user,
@@ -263,5 +248,5 @@ function ChatMessageItem({
 
 // Simple function to remove system prefix
 function formatMessageContent(content: string): string {
-  return content.replace(/^System:\s*/i, '');
+  return content.replace(/^Wansom:\s*/i, '');
 }

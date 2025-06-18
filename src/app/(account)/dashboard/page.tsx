@@ -174,7 +174,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <QuickActionCard
               icon={MessageSquare}
-              title="Quick AI Assistant"
+              title="New AI Chat"
               description="Chat with legal specific AI, get quick responses to your questions"
               onClick={handleQuickChatCreate}
               color="text-green-600"
