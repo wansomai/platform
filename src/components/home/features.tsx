@@ -4,20 +4,18 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { 
   Star, Activity, PieChart, Grid, ArrowRight, FileText, 
-  CheckCircle, Calculator, BookOpen, FileSearch, Scale, 
-  ShieldCheck, AlertCircle, Calendar, Sparkles, Atom,
+ Sparkles, Atom,
   ChevronLeft, ChevronRight,
   Play,
   Gavel
 } from 'lucide-react';
-import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/outline';
 
 const FeaturesSection: React.FC = () => {
 
   // Partner logos data
   const partnerLogos = [
       { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocayes" },
+    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
     { src: "/logos/3.png", alt: "Cymelle Arttoneys" },
     { src: "/logos/4.png", alt: "Netsheria" },
     { src: "/logos/5.png", alt: "Partner Law Firm 5" },

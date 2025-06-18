@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
+  legalDrafting: false, // Added legal drafting option
   model: 'gpt-3.5-turbo',
   temperature: 0.7
 };
@@ -85,6 +86,9 @@ export async function GET(
           // Otherwise assume it's already a JSON object from Prisma
           settings = conversationMeta.settings as any;
         }
+        
+        // Ensure all default properties exist (for backward compatibility)
+        settings = { ...DEFAULT_SETTINGS, ...settings };
       } catch (error) {
         console.error('Error parsing settings', error);
         // Fall back to defaults if parsing fails
@@ -137,6 +141,7 @@ export async function PUT(
       citeSources: typeof settings.citeSources === 'boolean' ? settings.citeSources : DEFAULT_SETTINGS.citeSources,
       suggestActions: typeof settings.suggestActions === 'boolean' ? settings.suggestActions : DEFAULT_SETTINGS.suggestActions,
       webSearch: typeof settings.webSearch === 'boolean' ? settings.webSearch : DEFAULT_SETTINGS.webSearch,
+      legalDrafting: typeof settings.legalDrafting === 'boolean' ? settings.legalDrafting : DEFAULT_SETTINGS.legalDrafting,
       model: typeof settings.model === 'string' ? settings.model : DEFAULT_SETTINGS.model,
       temperature: typeof settings.temperature === 'number' ? settings.temperature : DEFAULT_SETTINGS.temperature
     };

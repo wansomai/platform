@@ -246,7 +246,7 @@ export function DocumentSelectionModal({
               onClick={() => setUploadMode('select')}
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
             >
-              Select Existing
+              Add From Vault
             </Button>
             <Button
               variant={uploadMode === 'upload' ? 'default' : 'ghost'}

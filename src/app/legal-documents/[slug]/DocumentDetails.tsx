@@ -7,7 +7,6 @@ import { getAllDocumentTemplates } from "@/lib/data/contentful";
 import {adaptDocumentTemplate } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "react-day-picker";
-import { Linkedin } from "lucide-react";
 
 interface PageProps {
   params: {
@@ -32,8 +31,6 @@ const DocDetailPageClient = ({ params }: PageProps) => {
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-
 
   useEffect(() => {
     const fetchBlogPost = async () => {
@@ -129,8 +126,8 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     Home
                   </Link>
                   <span className="mx-2">/</span>
-                  <Link href="/blogs" className="hover:text-teal-600">
-                    Articles
+                  <Link href="/legal-documents" className="hover:text-teal-600">
+                    Documents
                   </Link>
                   <span className="mx-2">/</span>
                   <span className="truncate max-w-[200px]">

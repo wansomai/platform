@@ -3,14 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-interface BlogPost {
-  id: string;
-  image?: string;
-  title: string;
-  preview?: string;
-  date: string;
-  link: string;
-}
 
 const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
   return (
@@ -34,9 +26,9 @@ const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
           className="font-marcellus text-xl mb-4" 
           dangerouslySetInnerHTML={{ __html: post.title }}
         />
-        {/* {post.preview && (
-          <p className="font-jost text-slate-600 mb-4 line-clamp-3">{post.preview}</p>
-        )} */}
+        {post.preview && (
+          <p className="font-jost text-slate-600 mb-4 line-clamp-3"  dangerouslySetInnerHTML={{ __html: post.preview }}></p>
+        )}
         <div className="flex justify-between items-center mt-auto">
           <span className="font-jost text-sm text-slate-500">
             {post.date}
