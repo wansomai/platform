@@ -233,7 +233,7 @@ export function ChatInterface() {
   return (
     <div className="flex flex-col h-full relative">
       {/* Messages container */}
-      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 scrollbar-hide lg:mb-16" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`
           .scrollbar-hide::-webkit-scrollbar {
             display: none;

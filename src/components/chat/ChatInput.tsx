@@ -297,8 +297,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              className="border-0 resize-none min-h-[52px] max-h-[120px] pl-6 pr-16 pb-7 pt-3 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
+              placeholder="Ask Wansom..."
+              className="border-0 resize-none min-h-[90px] max-h-[180px] pl-6 pr-16 pt-4 pb-6 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
               disabled={isSubmitting}
             />
             

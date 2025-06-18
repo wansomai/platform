@@ -711,7 +711,7 @@ export default function AssistantPage() {
           <div className="relative bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors">
             <Textarea
               ref={textareaRef}
-              placeholder="Type your message..."
+              placeholder="Ask Wansom..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

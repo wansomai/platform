@@ -80,8 +80,7 @@ export function WorkspaceLayout({
             </div>
             
             {/* Show status and context button */}
-            <div className="flex items-center space-x-2">
-              
+            <div className="flex items-center space-x-2">             
               {/* Context panel button - only visible on mobile/tablet */}
               <Sheet open={showMobileContext} onOpenChange={setShowMobileContext}>
                 <SheetTrigger asChild>
