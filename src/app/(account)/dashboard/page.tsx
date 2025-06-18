@@ -73,6 +73,10 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="hidden md:flex items-center space-x-3">
+             <Button variant="outline" className="text-white border-white bg-black hover:bg-[#005c4d] hover:text-white" onClick={() => router.push("/assistant")}>
+              <MessageSquare className="mr-2 h-4 w-4" />
+             Quick AI Assistant
+            </Button>
             <Button variant="outline" className="text-white  hover:bg-black bg-primary hover:text-white" onClick={() => setShowProjectModal(true)}>
               <FolderPlus className="mr-2 h-4 w-4" />
               New Project Workspace
@@ -86,36 +90,38 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className="lg:col-span-2 space-y-6">
           <h2 className="text-xl font-semibold">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <QuickActionCard
-              icon={FileUp}
-              title="Upload Document"
-              description="Add contracts, pleadings, or evidence to your vault"
-              href="/vault"
-              color="text-blue-600"
-            />
-            <QuickActionCard
-              icon={Briefcase}
-              title="Create Project Workspace"
-              description="Organize your deep work into dedicated  workspaces"
-              href="/projects"
-              color="text-purple-600"
-            />
-            <QuickActionCard
-              icon={MessageSquare}
-              title="AI Assistant"
-              description="Get help with legal research and document analysis"
-              href="/assistant"
-              color="text-green-600"
-            />
-            <QuickActionCard
-              icon={Zap}
-              title="Start Workflow"
-              description="Automated predefined legal process with templates"
-              href="/workflows"
-              color="text-amber-600"
-            />
-          </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <QuickActionCard
+                        icon={MessageSquare}
+                        title="Quick AI Assistant"
+                        description="Chat with legal specific AI,get quick responses to your questions "
+                        href="/assistant"
+                        color="text-green-600"
+                      />
+                       <QuickActionCard
+                        icon={Briefcase}
+                        title="Create Project Workspace"
+                        description="Collaborate,organize your work into case or client files"
+                        href="/projects"
+                        color="text-purple-600"
+                      />
+                      <QuickActionCard
+                        icon={FileUp}
+                        title="Upload Document"
+                        description="Add contracts, pleadings, or evidence to your vault"
+                        href="/vault"
+                        color="text-blue-600"
+                      />
+                     
+                   
+                      <QuickActionCard
+                        icon={Zap}
+                        title="Start Workflow"
+                        description="Automated predefined legal processes with templates"
+                        href="/workflows"
+                        color="text-amber-600"
+                      />
+                    </div>
         </div>
 
         {/* Activity Feed & Assistant */}

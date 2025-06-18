@@ -171,7 +171,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                     className="h-8 w-fit px-2 hover:bg-gray-100 rounded-md"
                     title="AI Settings" 
                   >
-                    <SlidersHorizontal className="h-6 w-6 text-gray-500" /> Actions
+                    <SlidersHorizontal className="h-6 w-6 text-gray-500" /> Tools
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
@@ -212,6 +212,35 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <div className="space-y-1">
                           <Label htmlFor="legal-drafting" className="font-medium text-sm">
                             Legal drafting
+                          </Label>
+                          
+                        </div>
+                        <Switch 
+                          id="legal-drafting" 
+                          checked={settings.legalDrafting}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('legalDrafting', checked);
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
+                            Contract Review
+                          </Label>
+                          
+                        </div>
+                        <Switch 
+                          id="legal-drafting" 
+                          checked={settings.legalDrafting}
+                          disabled
+                        />
+                      </div>
+                         <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
+                            Case Preparation
                           </Label>
                           
                         </div>
