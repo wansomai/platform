@@ -12,6 +12,7 @@ import {
   Briefcase,
   Settings,
   X,
+  Loader2,
 } from "lucide-react";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
@@ -25,6 +26,31 @@ import {
   SheetTrigger, 
   SheetClose 
 } from "@/components/ui/sheet";
+import LogoAnimation from "@/components/commons/LogoAnimation";
+
+// Loading component for workspace initialization
+const WorkspaceLoading = ({ projectTitle }: { projectTitle?: string }) => (
+  <div className="flex items-center justify-center h-screen bg-gray-50">
+    <div className="flex flex-col items-center space-y-4 text-center max-w-md mx-auto p-6">
+      <div className="relative">
+        <LogoAnimation size="lg" className="text-primary-600" />
+      </div>
+      
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Setting up your workspace
+        </h2>
+        {projectTitle && (
+          <p className="text-sm text-gray-600">
+            Preparing "{projectTitle}"
+          </p>
+        )}
+        <p className="text-sm text-gray-500">
+          Loading your workspace...
+        </p>
+      </div>
+  </div></div>
+);
 
 export function WorkspaceLayout({
   children,
@@ -36,6 +62,7 @@ export function WorkspaceLayout({
   
   // Local state for mobile sidebar
   const [showMobileContext, setShowMobileContext] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   
   // Get state from stores
   const { 
@@ -45,15 +72,28 @@ export function WorkspaceLayout({
   const { 
     currentProject, 
     fetchProjectById, 
-    isLoading 
+    isLoading: projectLoading 
   } = useProjectStore();
   const { currentConversation } = useChatStore();
   const { settings, fetchSettings } = useConversationSettingsStore();
 
-  // Fetch project data when the component mounts
+  // Project loading without artificial delays
   useEffect(() => {
-    fetchProjectById(projectId);
-  }, [fetchProjectById, projectId]);
+    const initializeWorkspace = async () => {
+      if (!projectId) return;
+      
+      try {
+        setIsInitializing(true);
+        await fetchProjectById(projectId);
+        setIsInitializing(false);
+      } catch (error) {
+        console.error('Error initializing workspace:', error);
+        setIsInitializing(false);
+      }
+    };
+
+    initializeWorkspace();
+  }, [projectId, fetchProjectById]);
 
   // Fetch conversation settings when conversation changes
   useEffect(() => {
@@ -61,6 +101,36 @@ export function WorkspaceLayout({
       fetchSettings(currentConversation.id);
     }
   }, [currentConversation?.id, fetchSettings]);
+
+  // Show loading state during initialization
+  if (isInitializing || projectLoading) {
+    return <WorkspaceLoading projectTitle={currentProject?.title} />;
+  }
+
+  // Show error state if project failed to load and we're not loading
+  if (!currentProject && !projectLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center space-y-4">
+          <div className="text-red-500">
+            <X className="h-12 w-12 mx-auto mb-4" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Failed to load workspace
+          </h2>
+          <p className="text-gray-600">
+            The requested workspace could not be found or loaded.
+          </p>
+          <Button 
+            onClick={() => window.location.href = '/dashboard'}
+            className="mt-4"
+          >
+            Return to Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Determine which interface to show based on legal drafting setting
   const showLegalDrafting = settings.legalDrafting;
@@ -72,7 +142,7 @@ export function WorkspaceLayout({
         {/* Header bar */}
         <div className="border-b bg-white block md:hidden">
           <div className="flex items-center h-16 px-4 justify-between">
-            <div  className="flex items-center">
+            <div className="flex items-center">
               <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
               <h1 className="text-lg font-semibold truncate">
                 {currentProject?.title || "Project Workspace"}
@@ -96,12 +166,12 @@ export function WorkspaceLayout({
                 <SheetContent side="right" className="p-0 w-[90%] max-w-md sm:max-w-lg lg:hidden">
                   <div className="flex flex-col h-full">
                     <div className="flex justify-between items-center h-16 px-4 border-b">
-                    <div  className="flex items-center">
-              <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
-              <h1 className="text-lg font-semibold truncate">
-                {currentProject?.title || "Project Workspace"}
-              </h1>
-            </div>
+                      <div className="flex items-center">
+                        <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+                        <h1 className="text-lg font-semibold truncate">
+                          {currentProject?.title || "Project Workspace"}
+                        </h1>
+                      </div>
                       <SheetClose asChild>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                           <X className="h-4 w-4" />
@@ -127,7 +197,7 @@ export function WorkspaceLayout({
       {/* Right Sidebar - Context Panel (Desktop only) */}
       <div
         className={cn(
-          "relative  border-l bg-white transition-all duration-300 hidden lg:flex lg:flex-col",
+          "relative border-l bg-white transition-all duration-300 hidden lg:flex lg:flex-col",
           rightSidebarCollapsed ? "w-[60px]" : "w-80"
         )}
       >
@@ -148,12 +218,12 @@ export function WorkspaceLayout({
         {/* Content - only show when expanded */}
         <div className="flex h-16 items-center px-4 border-b">
           {!rightSidebarCollapsed && (
-             <div  className="flex items-center overflow-x-hidden">
-             <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
-             <h1 className="text-lg font-semibold truncate">
-               {currentProject?.title || "Project Workspace"}
-             </h1>
-           </div>
+             <div className="flex items-center overflow-x-hidden">
+               <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+               <h1 className="text-lg font-semibold truncate">
+                 {currentProject?.title || "Project Workspace"}
+               </h1>
+             </div>
           )}
         </div>
         

@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { v4 as uuidv4 } from 'uuid';
 import {
   FileText,
   FolderPlus,
@@ -17,18 +16,23 @@ import {
   Briefcase,
   FileUp,
   Zap,
+  Loader2,
 } from "lucide-react";
 import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useNotifications } from "@/hooks/useNotifications";
+
 // Quick Action Card Component
 interface QuickActionProps {
   icon: React.ElementType;
   title: string;
   description: string;
-  href: string;
+  href?: string;
+  onClick?: () => void;
   color?: string;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 const QuickActionCard = ({
@@ -36,55 +40,115 @@ const QuickActionCard = ({
   title,
   description,
   href,
+  onClick,
   color = "text-primary-600",
-}: QuickActionProps) => (
-  <Card className="hover:shadow-md transition-all cursor-pointer">
-    <Link href={href} className="block p-6">
+  loading = false,
+  disabled = false,
+}: QuickActionProps) => {
+  const content = (
+    <div className={`block p-6 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
       <div className="flex items-start space-x-4">
-        <div className={`rounded-full p-3 ${color.replace("text", "bg")}/10`}>
-          <Icon className={`h-6 w-6 ${color}`} />
+        <div className={`rounded-full p-3 ${color.replace("text", "bg")}/10 ${disabled ? 'opacity-50' : ''}`}>
+          {loading ? (
+            <Loader2 className={`h-6 w-6 animate-spin ${color}`} />
+          ) : (
+            <Icon className={`h-6 w-6 ${color}`} />
+          )}
         </div>
-        <div className="space-y-1">
-          <h3 className="font-medium">{title}</h3>
+        <div className="space-y-1 flex-1">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">{title}</h3>
+            {loading && (
+              <span className="text-xs text-gray-500 animate-pulse">Creating...</span>
+            )}
+          </div>
           <p className="text-sm text-gray-500">{description}</p>
         </div>
       </div>
-    </Link>
-  </Card>
-);
+    </div>
+  );
+
+  if (href && !loading && !disabled) {
+    return (
+      <Card className="hover:shadow-md transition-all">
+        <Link href={href}>{content}</Link>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={`hover:shadow-md transition-all ${!disabled && !loading ? 'hover:shadow-md' : ''}`}>
+      <div onClick={disabled || loading ? undefined : onClick}>
+        {content}
+      </div>
+    </Card>
+  );
+};
+
+// Helper function to generate meaningful project names
+const generateQuickChatProjectName = (): string => {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  });
+  const dateStr = now.toLocaleDateString([], { 
+    month: 'short', 
+    day: 'numeric' 
+  });
+  
+  return `Wansom - ${dateStr} ${timeStr}`;
+};
 
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { fetchProjects, projects, isLoading,createProject } = useProjectStore();
+  const { fetchProjects, projects, isLoading, createProject } = useProjectStore();
   const { documents, fetchDocuments } = useDocumentsStore();
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
+  const { notify } = useNotifications();
+
   useEffect(() => {
     fetchProjects();
     fetchDocuments();
   }, [fetchProjects, fetchDocuments]);
-   const { notify } = useNotifications()
-  
-    const handleProjectCreate = async () => {
-      if (!session?.user?.organization?.id) {
-   notify.error('something went wrong')
-        return
-      }
-   const tempTitle=uuidv4()
-  const payload={
-    title:tempTitle,
-    description:'',
-    organizationId: session.user.organization.id
-  }
-      try {
-        await createProject(payload)
-        router.push(`/projects/${tempTitle}`)
-      } catch (error: any) {
-        notify.error('something went wrong.')
-      } finally {
-        router.push(`/projects/${tempTitle}`)
-      }
+
+  const handleQuickChatCreate = async () => {
+    if (!session?.user?.organization?.id) {
+      notify.error('Something went wrong. Please try again.');
+      return;
     }
+
+    setIsCreatingQuickChat(true);
+    
+    try {
+      // Generate a meaningful project name
+      const projectTitle = generateQuickChatProjectName();
+      
+      const payload = {
+        title: projectTitle,
+        description: 'Quick AI chat session',
+        organizationId: session.user.organization.id
+      };
+
+      const newProject = await createProject(payload);
+      
+      if (newProject) {
+        notify.success('AI workspace created successfully!');
+        // Navigate to the new project
+        router.push(`/projects/${newProject.id}`);
+      } else {
+        throw new Error('Failed to create project');
+      }
+    } catch (error: any) {
+      notify.error('Failed to create AI workspace. Please try again.');
+      console.error('Error creating quick chat:', error);
+    } finally {
+      setIsCreatingQuickChat(false);
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
@@ -108,30 +172,22 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           <h2 className="text-2xl">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="hover:shadow-md transition-all cursor-pointer">
-              <div className="block p-6" onClick={handleProjectCreate}>
-                <div className="flex items-start space-x-4">
-                  <div
-                    className={`rounded-full p-3 bg-green-600/10 text-green-600`}
-                  >
-                    <MessageSquare className={`h-6 w-6`} />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-medium">Quick AI Assistant</h3>
-                    <p className="text-sm text-gray-500">
-                      Chat with legal specific AI,get quick responses to your
-                      questions
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
+            <QuickActionCard
+              icon={MessageSquare}
+              title="Quick AI Assistant"
+              description="Chat with legal specific AI, get quick responses to your questions"
+              onClick={handleQuickChatCreate}
+              color="text-green-600"
+              loading={isCreatingQuickChat}
+              disabled={isCreatingQuickChat}
+            />
             <QuickActionCard
               icon={Briefcase}
               title="Create Project Workspace"
-              description="Collaborate,organize your work into case or client files"
+              description="Collaborate, organize your work into case or client files"
               href="/projects"
               color="text-purple-600"
+              disabled={isCreatingQuickChat}
             />
             <QuickActionCard
               icon={FileUp}
@@ -139,14 +195,15 @@ export default function DashboardPage() {
               description="Add contracts, pleadings, or evidence to your vault"
               href="/vault"
               color="text-blue-600"
+              disabled={isCreatingQuickChat}
             />
-
             <QuickActionCard
               icon={Zap}
               title="Start Workflow"
               description="Automate predefined legal processes with templates"
               href="/workflows"
               color="text-amber-600"
+              disabled={isCreatingQuickChat}
             />
           </div>
         </div>
@@ -258,6 +315,7 @@ export default function DashboardPage() {
                 variant="ghost"
                 className="w-full"
                 onClick={() => router.push("/projects")}
+                disabled={isCreatingQuickChat}
               >
                 View all Workspaces
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -266,6 +324,7 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+      
       <CreateProjectModal
         open={showProjectModal}
         onClose={() => setShowProjectModal(false)}

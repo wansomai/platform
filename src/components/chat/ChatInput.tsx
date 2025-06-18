@@ -218,7 +218,10 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <Switch 
                           id="legal-drafting" 
                           checked={settings.legalDrafting}
-                          disabled
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('legalDrafting', checked);
+                          }}
                         />
                       </div>
                       <div className="flex items-center justify-between">

@@ -10,6 +10,24 @@ import { useConversationSettingsStore } from "@/store/conversation-settings.stor
 import { useChatStore } from "@/store/chat.store"
 import LogoAnimation from "@/components/commons/LogoAnimation"
 
+// Enhanced loading component for the project page
+const ProjectLoadingState = ({ title }: { title?: string }) => (
+  <div className="flex items-center justify-center h-full min-h-[400px]">
+    <div className="flex flex-col items-center space-y-4 text-center">
+      <div className="relative">
+        <LogoAnimation size="md" className="text-primary-600" />
+      </div>
+      <div className="space-y-1">
+        <h3 className="text-lg font-medium text-gray-900">
+          {title ? `Loading ${title}` : 'Loading workspace'}
+        </h3>
+        <p className="text-sm text-gray-500 animate-pulse">
+          Setting up your AI assistant...
+        </p>
+      </div>
+    </div>
+  </div>
+)
 
 export default function ProjectPage() {
   const params = useParams()
@@ -29,7 +47,7 @@ export default function ProjectPage() {
     };
     
     loadProjectData();
-  }, []); // Empty dependency array for initial mount only
+  }, [projectId, currentProject, isLoading, fetchProjectById]); // Added dependencies for better effect management
   
   // Fetch conversation settings when conversation changes
   useEffect(() => {
@@ -38,13 +56,27 @@ export default function ProjectPage() {
     }
   }, [currentConversation?.id, fetchSettings]);
   
-  // Show loading state if project is loading
-  if (isLoading || !currentProject) {
+  // Show loading state if project is loading or settings are loading for first time
+  if (isLoading || (!currentProject && projectId)) {
+    return <ProjectLoadingState title={currentProject?.title} />
+  }
+
+  // Show error state if project couldn't be loaded
+  if (!isLoading && !currentProject) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex flex-col items-center">
-        <LogoAnimation size="sm" className="text-gray-500" />
-        <span className="animate-pulse">Just a moment...</span>
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <div className="text-center space-y-4">
+          <div className="text-gray-400">
+            <LogoAnimation size="md" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg font-medium text-gray-900">
+              Workspace not found
+            </h3>
+            <p className="text-sm text-gray-500">
+              The workspace you're looking for doesn't exist or you don't have access to it.
+            </p>
+          </div>
         </div>
       </div>
     )
