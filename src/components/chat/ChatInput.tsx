@@ -11,7 +11,8 @@ import {
   Loader2,
   SlidersHorizontal,
   X,
-  Paperclip
+  Paperclip,
+  Settings
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -36,7 +37,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   const [input, setInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDocumentModal, setShowDocumentModal] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
+  const [showToolsDropdown, setShowToolsDropdown] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   
   // Get state from stores
@@ -55,6 +56,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   const { 
     documents: conversationDocuments
   } = useConversationDocumentsStore()
+
+  // Get right sidebar state from UI store
+  const { rightSidebarCollapsed, setRightSidebarCollapsed } = useUIStore()
  
   const {data: session} = useSession()
   
@@ -141,6 +145,11 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
     // Call parent handler if provided
     onDocumentsAdded?.(count);
   };
+
+  // Toggle sidebar function
+  const toggleSidebar = () => {
+    setRightSidebarCollapsed(!rightSidebarCollapsed);
+  };
   
   return (
     <>
@@ -150,7 +159,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
           {/* Input Area with embedded icons */}
           <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
             {/* Left side icons */}
-            <div className="absolute left-6 bottom-2 flex items-center gap-1 z-10">
+            <div className="absolute left-6 bottom-2 flex items-center gap-1 z-10 w-full">
               {/* Documents Tool */}
               <Button
                 variant="outline"
@@ -162,14 +171,14 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                 <Paperclip className="h-6 w-6 text-gray-500" />
               </Button>
 
-              {/* Settings Tool */}
-              <DropdownMenu open={showSettings} onOpenChange={setShowSettings}>
+              {/* Tools Dropdown */}
+              <DropdownMenu open={showToolsDropdown} onOpenChange={setShowToolsDropdown}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
                     className="h-8 w-fit px-2 hover:bg-gray-100 rounded-md"
-                    title="AI Settings" 
+                    title="AI Tools" 
                   >
                     <SlidersHorizontal className="h-6 w-6 text-gray-500" /> Tools
                   </Button>
@@ -185,7 +194,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setShowSettings(false)}
+                        onClick={() => setShowToolsDropdown(false)}
                         className="h-6 w-6 p-0"
                       >
                         <X className="h-3 w-3" />
@@ -218,7 +227,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <Switch 
                           id="legal-drafting" 
                           checked={settings.legalDrafting}
-                          disabled={isLoadingSettings}
+                            disabled={isLoadingSettings}
                           onCheckedChange={(checked) => {
                             handleSettingChange('legalDrafting', checked);
                           }}
@@ -226,26 +235,26 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
-                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
+                          <Label htmlFor="contract-review" className="font-medium text-sm">
                             Contract Review
                           </Label>
                           
                         </div>
                         <Switch 
-                          id="legal-drafting" 
+                          id="contract-review" 
                           checked={settings.legalDrafting}
                           disabled
                         />
                       </div>
                          <div className="flex items-center justify-between">
                         <div className="space-y-1">
-                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
+                          <Label htmlFor="case-preparation" className="font-medium text-sm">
                             Case Preparation
                           </Label>
                           
                         </div>
                         <Switch 
-                          id="legal-drafting" 
+                          id="case-preparation" 
                           checked={settings.legalDrafting}
                           disabled
                         />
@@ -290,6 +299,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
+<button className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border" onClick={toggleSidebar}> <Settings className="h-4 w-4 text-gray-500 text-xs" />Settings</button>
+              {/* Settings Button for Sidebar Toggle */}
+             
             </div>
 
             <Textarea

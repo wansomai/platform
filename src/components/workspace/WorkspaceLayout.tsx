@@ -20,12 +20,7 @@ import { useConversationSettingsStore } from "@/store/conversation-settings.stor
 import { useChatStore } from "@/store/chat.store";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import LegalCanvas from "@/components/chat/CanvasInterface";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger, 
-  SheetClose 
-} from "@/components/ui/sheet";
+import { ChatInput } from "@/components/chat/ChatInput";
 import LogoAnimation from "@/components/commons/LogoAnimation";
 
 // Loading component for workspace initialization
@@ -34,6 +29,7 @@ const WorkspaceLoading = ({ projectTitle }: { projectTitle?: string }) => (
     <div className="flex flex-col items-center space-y-4 text-center max-w-md mx-auto p-6">
       <div className="relative">
         <LogoAnimation size="lg" className="text-primary-600" />
+      
       </div>
       
       <div className="space-y-2">
@@ -61,7 +57,6 @@ export function WorkspaceLayout({
   const projectId = params.id as string;
   
   // Local state for mobile sidebar
-  const [showMobileContext, setShowMobileContext] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   
   // Get state from stores
@@ -139,73 +134,34 @@ export function WorkspaceLayout({
     <div className="flex h-screen">
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header bar */}
-        <div className="border-b bg-white block md:hidden">
-          <div className="flex items-center h-16 px-4 justify-between">
-            <div className="flex items-center">
-              <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
-              <h1 className="text-lg font-semibold truncate">
-                {currentProject?.title || "Project Workspace"}
-              </h1>
-            </div>
-            
-            {/* Show status and context button */}
-            <div className="flex items-center space-x-2">             
-              {/* Context panel button - only visible on mobile/tablet */}
-              <Sheet open={showMobileContext} onOpenChange={setShowMobileContext}>
-                <SheetTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="lg:hidden"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    <span>Context</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="p-0 w-[90%] max-w-md sm:max-w-lg lg:hidden">
-                  <div className="flex flex-col h-full">
-                    <div className="flex justify-between items-center h-16 px-4 border-b">
-                      <div className="flex items-center">
-                        <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
-                        <h1 className="text-lg font-semibold truncate">
-                          {currentProject?.title || "Project Workspace"}
-                        </h1>
-                      </div>
-                      <SheetClose asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </SheetClose>
-                    </div>
-                    <div className="flex-1 overflow-auto">
-                      <ConversationDetails />
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          </div>
-        </div>
-        
         {/* Main content - Switch between ChatInterface and LegalCanvas */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto relative">
           {showLegalDrafting ? <LegalCanvas /> : <ChatInterface />}
+          
+          {/* Shared ChatInput component */}
+          <ChatInput onDocumentsAdded={(count) => {
+            // Handle documents added if needed
+            console.log(`${count} documents added to conversation`);
+          }} />
         </div>
       </div>
 
-      {/* Right Sidebar - Context Panel (Desktop only) */}
+      {/* Right Sidebar - Context Panel */}
       <div
         className={cn(
-          "relative border-l bg-white transition-all duration-300 hidden lg:flex lg:flex-col",
-          rightSidebarCollapsed ? "w-[60px]" : "w-80"
+          "relative border-l bg-white transition-all duration-300 flex flex-col",
+          // On mobile, show as overlay when not collapsed
+          "lg:relative lg:flex",
+          rightSidebarCollapsed 
+            ? "hidden lg:flex lg:w-[60px]" 
+            : "fixed inset-y-0 right-0 w-80 z-40 lg:relative lg:w-80"
         )}
       >
-        {/* Toggle button */}
+        {/* Toggle button - only show on desktop */}
         <Button
           variant="ghost"
           size="icon"
-          className="absolute -left-3 top-3 h-6 w-6 rounded-full border bg-white z-10"
+          className="absolute -left-3 top-3 h-6 w-6 rounded-full border bg-white z-10 hidden lg:flex"
           onClick={() => setRightSidebarCollapsed(!rightSidebarCollapsed)}
         >
           {rightSidebarCollapsed ? (
@@ -215,14 +171,25 @@ export function WorkspaceLayout({
           )}
         </Button>
         
-        {/* Content - only show when expanded */}
+        {/* Header */}
         <div className="flex h-16 items-center px-4 border-b">
           {!rightSidebarCollapsed && (
-             <div className="flex items-center overflow-x-hidden">
-               <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
-               <h1 className="text-lg font-semibold truncate">
-                 {currentProject?.title || "Project Workspace"}
-               </h1>
+             <div className="flex items-center justify-between w-full overflow-x-hidden">
+               <div className="flex items-center">
+                 <Briefcase className="h-5 w-5 text-primary-600 mr-2" />
+                 <h1 className="text-lg font-semibold truncate">
+                   {currentProject?.title || "Project Workspace"}
+                 </h1>
+               </div>
+               {/* Close button for mobile */}
+               <Button
+                 variant="ghost"
+                 size="icon"
+                 className="lg:hidden"
+                 onClick={() => setRightSidebarCollapsed(true)}
+               >
+                 <X className="h-4 w-4" />
+               </Button>
              </div>
           )}
         </div>
@@ -233,6 +200,14 @@ export function WorkspaceLayout({
           </ScrollArea>
         )}
       </div>
+
+      {/* Backdrop for mobile sidebar */}
+      {!rightSidebarCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setRightSidebarCollapsed(true)}
+        />
+      )}
     </div>
   );
 }

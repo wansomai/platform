@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { ChatInput } from './ChatInput';
 import * as mammoth from 'mammoth';
 
 // TypeScript interfaces
@@ -269,11 +268,6 @@ const LegalCanvas: React.FC = () => {
     console.log('Exporting to Word...');
   };
 
-  // Handle documents added
-  const handleDocumentsAdded = (count: number) => {
-    console.log(`Documents added: ${count}`);
-  };
-
   // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
     setIsLoadingTemplate(true);
@@ -446,8 +440,8 @@ Attorney for [Party Name]</p>`;
   return (
     <div className="flex h-screen bg-gray-50 relative">
       {/* Document Canvas */}
-      <div className="flex-1 relative overflow-y-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-        <div ref={canvasRef} className="max-w-4xl mx-auto pb-32">
+      <div className="flex-1 relative overflow-y-auto scrollbar-hide pb-32" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+        <div ref={canvasRef} className="max-w-4xl mx-auto">
           
           {/* Quill Rich Text Editor */}
           <div className="bg-white relative">
@@ -683,9 +677,6 @@ Attorney for [Party Name]</p>`;
 
           </div>
         </div>
-
-        {/* Centered Chat Input */}
-        <ChatInput onDocumentsAdded={handleDocumentsAdded} />
       </div>
 
       {/* Template Upload Modal */}

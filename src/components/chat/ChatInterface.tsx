@@ -3,51 +3,27 @@
 
 import { useRef, useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { 
   Copy, 
-  Send, 
-  Loader2,
   Search, 
-  SlidersHorizontal,
-  Plus,
-  X,
-  Paperclip,
-  FileEdit
+  RefreshCw
 } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
 import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { useConversationSettingsStore } from "@/store/conversation-settings.store"
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
-// Removed date-fns import - using inline time formatting
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
-import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal"
-import { ChatInput } from "./ChatInput"
 
 export function ChatInterface() {
   const params = useParams()
   const projectId = params.id as string
   
-  const [input, setInput] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showDocumentModal, setShowDocumentModal] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Get state from stores
@@ -56,7 +32,6 @@ export function ChatInterface() {
     currentConversation, 
     fetchConversation, 
     createConversation, 
-    sendMessage, 
     isLoading, 
     error,
     clearCurrentConversation
@@ -65,14 +40,12 @@ export function ChatInterface() {
   const {
     settings,
     fetchSettings,
-    updateSetting,
     isLoading: isLoadingSettings
   } = useConversationSettingsStore()
 
   const { 
     documents: conversationDocuments, 
-    fetchConversationDocuments,
-    attachDocumentsToConversation
+    fetchConversationDocuments
   } = useConversationDocumentsStore()
  
   const {data: session} = useSession()
@@ -130,97 +103,12 @@ export function ChatInterface() {
     }
   }, [error, addToast])
   
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
-    }
-  }, [input])
-  
-  // Handle direct prompt sending
-  useEffect(() => {
-    const handlePromptSendEvent = (event: any) => {
-      if (event.detail && event.detail.promptTemplate) {
-        if (currentConversation) {
-          handleSend(event.detail.promptTemplate);
-        }
-      }
-    };
-    
-    document.addEventListener('action-prompt-send', handlePromptSendEvent);
-    
-    return () => {
-      document.removeEventListener('action-prompt-send', handlePromptSendEvent);
-    };
-  }, [currentConversation]);
- 
-  // Handle send message with streaming
-  const handleSend = async (customMessage?: string) => {
-    const messageToSend = customMessage || input;
-    if (!messageToSend.trim() || isSubmitting || !currentConversation) return;
-    
-    try {
-      setIsSubmitting(true);
-      
-      await sendMessage(
-        projectId, 
-        currentConversation.id, 
-        messageToSend,
-        session?.user?.id,
-        ''
-      );
-      
-      if (!customMessage) {
-        setInput("");
-        if (textareaRef.current) {
-          textareaRef.current.style.height = 'auto';
-        }
-      }
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
-  
   const copyMessageToClipboard = (content: string) => {
     navigator.clipboard.writeText(content)
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
 
-  // Handle setting changes
-  const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
-    if (!currentConversation) return;
-    
-    try {
-      await updateSetting(currentConversation.id, settingKey, value);
-      addToast({ message: `${settingKey} setting updated`, type: 'success' });
-    } catch (error) {
-      addToast({ message: `Failed to update ${settingKey} setting`, type: 'error' });
-    }
-  };
-
-  // Handle documents added
-  const handleDocumentsAdded = (count: number) => {
-    if (currentConversation?.id) {
-      fetchConversationDocuments(currentConversation.id);
-    }
-    
-    const message = count === 1 
-      ? "Document added to conversation" 
-      : `${count} documents added to conversation`;
-    addToast({ message, type: 'success' });
-  };
-  
   if (isLoading && !currentConversation) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -231,9 +119,9 @@ export function ChatInterface() {
   }
   
   return (
-    <div className="flex flex-col h-full relative">
-      {/* Messages container */}
-      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 scrollbar-hide lg:mb-16" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+    <div className="flex flex-col h-full">
+      {/* Messages container - with bottom padding for ChatInput */}
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -252,25 +140,11 @@ export function ChatInterface() {
           <div ref={messagesEndRef} />
         </div>
       </div>
-
-      {/* Floating Input Area with Embedded Tools */}
-   
-      <ChatInput onDocumentsAdded={handleDocumentsAdded}/>
-
-      {/* Document Selection Modal */}
-      {currentConversation && (
-        <DocumentSelectionModal
-          open={showDocumentModal}
-          onOpenChange={setShowDocumentModal}
-          conversationId={currentConversation.id}
-          onDocumentsAdded={handleDocumentsAdded}
-        />
-      )}
     </div>
   )
 }
 
-// Update ChatMessageItem to handle streaming messages
+// ChatMessageItem component (same as before)
 function ChatMessageItem({ 
   message, 
   user,
@@ -291,9 +165,6 @@ function ChatMessageItem({
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-2 sm:gap-3 max-w-[90%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        {/* <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mt-1 flex-shrink-0">
-          <AvatarFallback className="text-xs sm:text-sm">{isUser ? user?.fullName?.charAt(0) || 'U' : 'AI'}</AvatarFallback>
-        </Avatar> */}
         
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
