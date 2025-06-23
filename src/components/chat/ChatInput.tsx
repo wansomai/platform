@@ -25,6 +25,7 @@ import { useConversationSettingsStore } from "@/store/conversation-settings.stor
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { useSession } from "next-auth/react"
 import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal"
+import ProAccessModal from "../modals/ProAccess"
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -39,6 +40,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   const [showDocumentModal, setShowDocumentModal] = useState(false)
   const [showToolsDropdown, setShowToolsDropdown] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [showProAcess,setShowProAccess]=useState(false)
+    const [isRequestingPro, setIsRequestingPro] = useState(false);
   
   // Get state from stores
   const { addToast } = useUIStore()
@@ -69,7 +72,6 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
   }, [input])
-  
   // Handle direct prompt sending from external components
   useEffect(() => {
     const handlePromptSendEvent = (event: any) => {
@@ -150,6 +152,36 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   const toggleSidebar = () => {
     setRightSidebarCollapsed(!rightSidebarCollapsed);
   };
+
+    // Handle Pro access request
+  const handleRequestProAccess = async() => {
+    setIsRequestingPro(true);
+        const payload={
+            email: session?.user.email,
+            name: session?.user.name
+          }
+      try {
+        const response = await fetch('/api/prorequests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      
+          body: JSON.stringify(payload),
+        });
+  
+        await response.json();
+        setIsSubmitting(false);
+        setShowProAccess(false);
+      } catch (error) {
+        console.error('Error:', error);
+         setIsRequestingPro(false);
+         setShowProAccess(false);
+      } finally {
+       setIsRequestingPro(false);
+       setShowProAccess(false);
+      }
+  };
   
   return (
     <>
@@ -227,7 +259,10 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <Switch 
                           id="legal-drafting" 
                           checked={settings.legalDrafting}
-                            disabled
+                            disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            setShowProAccess(true)
+                          }}
                         />
                       </div>
                       <div className="flex items-center justify-between">
@@ -240,7 +275,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <Switch 
                           id="contract-review" 
                           checked={settings.legalDrafting}
-                          disabled
+                             onCheckedChange={(checked) => {
+                            setShowProAccess(true)
+                          }}
                         />
                       </div>
                          <div className="flex items-center justify-between">
@@ -253,7 +290,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <Switch 
                           id="case-preparation" 
                           checked={settings.legalDrafting}
-                          disabled
+                           onCheckedChange={(checked) => {
+                            setShowProAccess(true)
+                          }}
                         />
                       </div>
                     <div className="space-y-4">
@@ -329,7 +368,12 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
           </div>
         </div>
       </div>
-
+  <ProAccessModal 
+        isOpen={showProAcess}
+        onClose={() => setShowProAccess(false)}
+        onRequestAccess={handleRequestProAccess}
+        isLoading={isRequestingPro}
+      />   
       {/* Document Selection Modal */}
       {currentConversation && (
         <DocumentSelectionModal

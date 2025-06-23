@@ -46,13 +46,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           <div className="space-y-3">
             <h3 className="font-medium">With Pro access, you'll get:</h3>
             <ul className="space-y-2">
+             
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Connect with cloud storage providers like Dropbox, Google Drive, and OneDrive</span>
-              </li>
-              <li className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Create unlimited  AI associates for your firm</span>
+                <span>Create unlimited  AI associates in your workspaces</span>
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -60,7 +57,11 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </li>
               <li className="flex items-start">
                 <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Set up automated workflows</span>
+                <span>Create unlimited project workspaces</span>
+              </li>
+               <li className="flex items-start">
+                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                <span>Connect more data sources and tools;Google Drive, Calendar,Private datastore</span>
               </li>
             </ul>
           </div>
