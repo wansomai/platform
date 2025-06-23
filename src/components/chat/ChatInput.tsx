@@ -171,7 +171,6 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
         });
   
         await response.json();
-        setIsSubmitting(false);
         setShowProAccess(false);
       } catch (error) {
         console.error('Error:', error);
