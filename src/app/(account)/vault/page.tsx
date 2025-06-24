@@ -2,8 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,8 +41,6 @@ import { formatDistanceToNow } from "date-fns";
 import { DocumentUploadModal } from "@/components/workspace/DocumentUploadModal";
 import { FolderTree } from "@/components/documents/FolderTree";
 import { FolderModal } from "@/components/documents/FolderModal";
-import { DocumentPreview } from "@/components/documents/DocumentPreview";
-import { DocumentInsights } from "@/components/documents/DocumentInsights";
 
 // Document Type Icons component
 const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
@@ -900,23 +896,7 @@ export default function VaultPage() {
         </div>
       </div>
       
-      {/* Document Preview */}
-      {previewDocument && (
-        <DocumentPreview
-          document={previewDocument}
-          open={!!previewDocument}
-          onClose={() => setPreviewDocument(null)}
-        />
-      )}
       
-      {/* AI Insights Dialog */}
-      {insightDocument && (
-        <DocumentInsights
-          documentId={insightDocument}
-          open={showInsights}
-          onClose={() => setShowInsights(false)}
-        />
-      )}
       
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
