@@ -3,12 +3,12 @@ import { Metadata } from 'next';
 import WebinarPageClient from './WebinarPage';
 
 export const metadata: Metadata = {
-  title: 'Safeguarding Attorney-Client Privilege when using AI | Wansom AI - Webinar',
-  description: 'join our webinar on safeguarding attorney-client privilege when using AI in legal practice. Learn best practices and strategies to protect sensitive information.',
-  keywords: 'AI in legal practice, attorney-client privilege, legal ethics, AI webinar, data privacy in law',
+  title: 'AI lawyer podcast| Wansom AI',
+  description: 'ai in law podcast where we talk everything ai,law,data privcay,governance and policy',
+  keywords: 'AI lawyer, attorney-client privilege, legal ethics, AI webinar, data privacy in law',
   openGraph: {
-    title: 'Safeguarding Attorney-Client Privilege when using AI | Wansom AI - Webinar',
-    description: 'Join our webinar on safeguarding attorney-client privilege when using AI in legal practice. Learn best practices and strategies to protect sensitive information.',
+    title: 'AI lawyer podcast| Wansom AI',
+    description: 'ai in law podcast where we talk everything ai,law,data privcay,governance and policy',
     type: 'website',
     url: 'https://wansom.ai/webinar',
     images: [
@@ -24,8 +24,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Safeguarding Attorney-Client Privilege when using AI | Wansom AI - Webinar',
-    description: 'Join our webinar on safeguarding attorney-client privilege when using AI in legal practice. Learn best practices and strategies to protect sensitive information.',
+    title: 'ai in law podcast where we talk everything ai,law,data privcay,governance and policy',
     images: ['/wansom-webinar.png'],
   }
 };
