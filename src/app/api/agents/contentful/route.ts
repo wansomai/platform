@@ -52,6 +52,9 @@ Step-by-step process with bullet points.
 
 **Why Use Wansom AI Drafting?**
 Step-by-step process with bullet points.
+ Fast and Efficient: Create a professional document in minutes.
+ Smart Automation: Our AI understands your needs and tailors the document accordingly.
+Comprehensive: Our templates are designed by legal professionals, ensuring their accuracy and compliance.
 
 **Customize Your [Document Name] Form Now**
 Call-to-action.
