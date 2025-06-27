@@ -8,7 +8,14 @@ const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm group h-full flex flex-col">
       <div className="relative h-[240px] overflow-hidden">
-       
+        {post.image ? (
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
             <Image
             src={'/contract-sample.webp'}
@@ -17,6 +24,7 @@ const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
           </div>
+        )}
       </div>
       <div className="p-8 flex flex-col flex-grow">
         <h3 
