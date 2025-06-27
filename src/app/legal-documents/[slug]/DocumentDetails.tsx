@@ -145,7 +145,18 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
-  <div className="block lg:hidden">
+        {blog.image ? (
+            <div className="block lg:hidden">
+              <div className="">
+                <img
+                  src={blog.image}
+                  alt={blog.title}
+                
+                  className="rounded-lg w-full h-auto object-cover"
+                />
+              </div>
+            </div>
+          ):  <div className="block lg:hidden">
               <div className="">
                 <img
                   src="/contract-sample.webp"
@@ -154,7 +165,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   className="rounded-lg w-full h-auto object-cover"
                 />
               </div>
-            </div>
+            </div>}
             
           
           
@@ -205,7 +216,23 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           </div>
 
           {/* Fixed image column */}
+          {blog.image && (
+            <div className="hidden lg:block w-5/12">
+              <div className="sticky top-32">
+              <Image
+                  src="/contract-sample.webp"
+                  alt={blog.title}
+                  width={1200}
+                  height={630}
+                  className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
+                />
+                
+               <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+              </div>
 
+            </div>
+          )}
+          {!blog.image && (
             <div className="hidden lg:block w-5/12">
               <div className="sticky top-32">
               <Image
@@ -220,6 +247,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
               </div>
               
             </div>
+          )}
         </div>
       </div>
       <Footer />

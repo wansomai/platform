@@ -40,7 +40,7 @@ export async function generateMetadata( { params }: Props,
         url: `https://wansom.ai/legal-documents/${params}`,
         images: [
           {
-            url: adaptedPost.image || '/images/features-1.png',
+            url: adaptedPost.image || '/contract-sample.webp',
             width: 1200,
             height: 630,
             alt: adaptedPost.title,
@@ -54,7 +54,7 @@ export async function generateMetadata( { params }: Props,
         card: 'summary_large_image',
         title: adaptedPost.title,
         description: adaptedPost.preview,
-        images: [adaptedPost.image || '/images/features-1.png'],
+        images: [adaptedPost.image || '/contract-sample.webp'],
       },
     };
   } catch (error) {
