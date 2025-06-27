@@ -60,7 +60,7 @@ export async function generateMetadata( { params }: Props,
   } catch (error) {
     console.error('Error generating metadata:', error);
     return {
-      title: 'Legal document template | wansom AI',
+      title: 'Legal document templates | wansom AI',
       description: 'legal document templates, Draft legal documments, legal insights',
     };
   }

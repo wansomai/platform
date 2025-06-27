@@ -17,7 +17,12 @@ const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-400">No image</span>
+            <Image
+            src={'/contract-sample.webp'}
+            alt={post.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+          />
           </div>
         )}
       </div>
