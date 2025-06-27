@@ -145,18 +145,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
-        {blog.image ? (
-            <div className="block lg:hidden">
-              <div className="">
-                <img
-                  src={blog.image}
-                  alt={blog.title}
-                
-                  className="rounded-lg w-full h-auto object-cover"
-                />
-              </div>
-            </div>
-          ):  <div className="block lg:hidden">
+  <div className="block lg:hidden">
               <div className="">
                 <img
                   src="/contract-sample.webp"
@@ -165,7 +154,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   className="rounded-lg w-full h-auto object-cover"
                 />
               </div>
-            </div>}
+            </div>
             
           
           
