@@ -116,7 +116,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           <div className="grid  gap-12">
             {/* Left Column - Contact Form */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold  mb-4">
+              <h1 className="text-3xl  mb-4">
                 {blog.title}
               </h1>
               {/* Breadcrumb */}
@@ -216,23 +216,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           </div>
 
           {/* Fixed image column */}
-          {blog.image && (
-            <div className="hidden lg:block w-5/12">
-              <div className="sticky top-32">
-              <Image
-                  src="/contract-sample.webp"
-                  alt={blog.title}
-                  width={1200}
-                  height={630}
-                  className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
-                />
-                
-               <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-              </div>
 
-            </div>
-          )}
-          {!blog.image && (
             <div className="hidden lg:block w-5/12">
               <div className="sticky top-32">
               <Image
@@ -247,7 +231,6 @@ const DocDetailPageClient = ({ params }: PageProps) => {
               </div>
               
             </div>
-          )}
         </div>
       </div>
       <Footer />
