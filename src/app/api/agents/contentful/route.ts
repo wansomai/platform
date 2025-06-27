@@ -62,12 +62,12 @@ Call-to-action.
 IMPORTANT: Return ONLY valid JSON. Do not include markdown code blocks or any other formatting. Just pure JSON.
 
 {
-  "title": "SEO-optimized title (e.g., 'Health Care Proxy Template - Medical Power of Attorney Form','Free Divorce Papers Template – Download & Customize Instantly')",
+  "title": "SEO-optimized title (e.g., 'Health Care Proxy Template PDF','sample Free Divorce Papers – Download & Customize Instantly')",
   "preview": "Brief 2-3 sentence product preview.Make sure the product name is within the first sentence. Mention to the reader that they can customize the document with wansom.ai",
   "description": "Full content following the exact format above with proper markdown formatting, bold text (**text**), and the specific structure shown"
 }
 
-Use the exact tone, formatting, and structure from the health care proxy example. Include proper formatting. Always end with the call-to-action with inline link to https://www.wansom.ai/register .`;
+Use the exact tone, formatting, and structure from the health care proxy example. Include proper formatting. Always end with the call-to-action.`;
 
 const userPrompt = `Create SEO-optimized content for this legal document template: "${documentName}"
 
