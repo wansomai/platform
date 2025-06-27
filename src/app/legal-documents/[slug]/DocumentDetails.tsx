@@ -116,7 +116,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           <div className="grid  gap-12">
             {/* Left Column - Contact Form */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold  mb-4">
+              <h1 className="text-3xl  mb-4">
                 {blog.title}
               </h1>
               {/* Breadcrumb */}
@@ -145,18 +145,19 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
-        {blog.image && (
-            <div className="blcok lg:hidden">
+  <div className="block lg:hidden">
               <div className="">
                 <img
-                  src={blog.image}
+                  src="/contract-sample.webp"
                   alt={blog.title}
                 
                   className="rounded-lg w-full h-auto object-cover"
                 />
               </div>
             </div>
-          )}
+            
+          
+          
           {/* Main content column */}
           <div className="w-full lg:w-7/12">
             {/* Blog Content */}
@@ -204,20 +205,21 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           </div>
 
           {/* Fixed image column */}
-          {blog.image && (
+
             <div className="hidden lg:block w-5/12">
               <div className="sticky top-32">
-                <Image
-                  src={blog.image}
+              <Image
+                  src="/contract-sample.webp"
                   alt={blog.title}
                   width={1200}
                   height={630}
                   className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
                 />
+                
                <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
               </div>
+              
             </div>
-          )}
         </div>
       </div>
       <Footer />
