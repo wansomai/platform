@@ -1,4 +1,4 @@
-import { Document } from './../../store/documents.store';
+
 // lib/contentful.ts
 import { createClient } from 'contentful';
 import { createSlug } from './blogAdapter';
