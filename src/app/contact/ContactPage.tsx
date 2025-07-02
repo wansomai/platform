@@ -44,7 +44,7 @@ export default function ContactPageClient() {
               <div className="font-jost text-sm  mb-5 ">
                 Home / Contact Us
               </div>
-              <div className="flex items-center gap-3 mb-4 ">
+              {/* <div className="flex items-center gap-3 mb-4 ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -68,7 +68,7 @@ export default function ContactPageClient() {
                   5th<sup>th</sup> Floor, I&M House, 2Nd Ngong Avenue, Upper Hill,
                   Nairobi, Kenya
                 </p>
-              </div>
+              </div> */}
               <div className="flex items-center gap-3  mb-4 ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +89,7 @@ export default function ContactPageClient() {
          </div>
      </section>
         <div className="container mx-auto px-6 md:pl-0 py-10 pt-32 ">
-          <div className="grid lg:grid-cols-2 gap-12 ">
+          <div className="flex items-center justify-center gap-12 ">
             {/* Left Column - Contact Form */}
             <div>
           
@@ -101,7 +101,7 @@ export default function ContactPageClient() {
             </div>
 
             {/* Right Column - Map */}
-            <div className="space-y-6">
+            {/* <div className="space-y-6">
             
               <div className="w-full h-[500px] rounded-lg overflow-hidden">
                 <iframe
@@ -113,7 +113,7 @@ export default function ContactPageClient() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <Footer />
