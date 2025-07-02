@@ -155,6 +155,10 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   className="rounded-lg w-full h-auto object-cover"
                 />
               </div>
+                <div className="flex justify-center mt-4 gap-2">
+                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+                </div>
             </div>
           ):  <div className="block lg:hidden">
               <div className="">
@@ -164,7 +168,12 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                 
                   className="rounded-lg w-full h-auto object-cover"
                 />
+                <div className="flex justify-center mt-4 gap-2">
+                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+                </div>
               </div>
+
             </div>}
             
           
@@ -227,7 +236,10 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
                 />
                 
-               <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                  <div className="flex justify-center mt-4 gap-2">
+                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+                </div>
               </div>
 
             </div>
@@ -243,7 +255,10 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
                 />
                 
-               <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                   <div className="flex justify-center mt-4 gap-2">
+                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+                </div>
               </div>
               
             </div>
