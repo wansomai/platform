@@ -3,14 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
 
-// Default settings
+// Default settings with jurisdiction support
 const DEFAULT_SETTINGS = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  legalDrafting: false, // Added legal drafting option
-  model: 'gpt-3.5-turbo',
-  temperature: 0.7
+  legalDrafting: false,
+  model: 'gpt-4',
+  temperature: 0.7,
+  jurisdiction: undefined
 };
 
 // Get settings for a conversation
@@ -90,14 +91,14 @@ export async function GET(
         // Ensure all default properties exist (for backward compatibility)
         settings = { ...DEFAULT_SETTINGS, ...settings };
       } catch (error) {
-        console.error('Error parsing settings', error);
-        // Fall back to defaults if parsing fails
+        console.error('Error parsing conversation settings:', error);
+        settings = DEFAULT_SETTINGS;
       }
     }
     
     return NextResponse.json({
       status: 200,
-      message: 'Conversation settings retrieved successfully',
+      message: 'Settings retrieved successfully',
       data: { settings }
     });
   } catch (error) {
@@ -116,6 +117,8 @@ export async function PUT(
 ) {
   try {
     const conversationId = (await params).id;
+    const body = await request.json();
+    const { settings } = body;
     
     // Get user ID from token
     const userId = getUserIdFromRequest(request);
@@ -126,24 +129,30 @@ export async function PUT(
       );
     }
     
-    // Get settings from request body
-    const { settings } = await request.json();
-    
+    // Validate settings structure
     if (!settings || typeof settings !== 'object') {
       return NextResponse.json(
-        { message: 'Invalid settings object', error: true }, 
+        { message: 'Invalid settings format', error: true }, 
         { status: 400 }
       );
     }
     
-    // Validate settings (basic validation)
+    // Validate individual settings with jurisdiction support
     const validatedSettings = {
       citeSources: typeof settings.citeSources === 'boolean' ? settings.citeSources : DEFAULT_SETTINGS.citeSources,
       suggestActions: typeof settings.suggestActions === 'boolean' ? settings.suggestActions : DEFAULT_SETTINGS.suggestActions,
       webSearch: typeof settings.webSearch === 'boolean' ? settings.webSearch : DEFAULT_SETTINGS.webSearch,
       legalDrafting: typeof settings.legalDrafting === 'boolean' ? settings.legalDrafting : DEFAULT_SETTINGS.legalDrafting,
       model: typeof settings.model === 'string' ? settings.model : DEFAULT_SETTINGS.model,
-      temperature: typeof settings.temperature === 'number' ? settings.temperature : DEFAULT_SETTINGS.temperature
+      temperature: typeof settings.temperature === 'number' ? settings.temperature : DEFAULT_SETTINGS.temperature,
+      jurisdiction: settings.jurisdiction && typeof settings.jurisdiction === 'object' ? {
+        id: settings.jurisdiction.id,
+        name: settings.jurisdiction.name,
+        country: settings.jurisdiction.country,
+        state: settings.jurisdiction.state,
+        legalSystem: settings.jurisdiction.legalSystem,
+        citationStyle: settings.jurisdiction.citationStyle
+      } : undefined
     };
     
     // Verify conversation access
