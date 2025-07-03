@@ -38,16 +38,13 @@ export default async function sitemap() {
       url: `${baseUrl}/demo`,
       lastModified: new Date(),
     },
-    
     {
       url: `${baseUrl}/blogs`,
       lastModified: new Date(),
- 
     },
     {
       url: `${baseUrl}/legal-documents`,
       lastModified: new Date(),
-
     },
     {
       url: `${baseUrl}/contact`,
@@ -57,31 +54,31 @@ export default async function sitemap() {
       url: `${baseUrl}/careers`,
       lastModified: new Date(),
     },
-     {
+    {
       url: `${baseUrl}/webinar`,
       lastModified: new Date(),
     },
-     {
+    {
       url: `${baseUrl}/ai-legal-drafting`,
       lastModified: new Date(),
     },
-      {
+    {
       url: `${baseUrl}/ai-contract-review`,
       lastModified: new Date(),
     },
-      {
+    {
       url: `${baseUrl}/ai-due-diligence`,
       lastModified: new Date(),
     },
-         {
+    {
       url: `${baseUrl}/ai-legal-research`,
       lastModified: new Date(),
     },
-         {
+    {
       url: `${baseUrl}/ai-case-prediction`,
       lastModified: new Date(),
     },
-     {
+    {
       url: `${baseUrl}/document-vault`,
       lastModified: new Date(),
     },
@@ -97,13 +94,12 @@ export default async function sitemap() {
 
     // Map blog posts to sitemap format
     blogRoutes = response.items.map(post => {
-      // Create slug from title
-      const slug = post.fields.title ? createSlug(post.fields.title) : post.sys.id;
+      // Create slug from title with fallback
+      const slug = post.fields?.title ? createSlug(post.fields.title) : post.sys.id;
       
       return {
         url: `${baseUrl}/blogs/${slug}`,
         lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
- 
       };
     });
   } catch (error) {
@@ -111,7 +107,7 @@ export default async function sitemap() {
     // Continue with static routes if Contentful fetch fails
   }
 
-    // Get legal documents from Contentful
+  // Get legal documents from Contentful
   let legalDocumentRoutes = [];
   try {
     const response = await client.getEntries({
@@ -121,13 +117,12 @@ export default async function sitemap() {
 
     // Map legal documents to sitemap format
     legalDocumentRoutes = response.items.map(post => {
-      // Create slug from title
-      const slug = post.fields.title ? createSlug(post.fields.title) : post.sys.id;
+      // Create slug from title with fallback
+      const slug = post.fields?.title ? createSlug(post.fields.title) : post.sys.id;
       
       return {
         url: `${baseUrl}/legal-documents/${slug}`,
         lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
- 
       };
     });
   } catch (error) {

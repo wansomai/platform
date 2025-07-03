@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
 };
 
-const BlogsPage = () => {
+const Page = () => {
 
 
 
@@ -33,4 +33,4 @@ const BlogsPage = () => {
   );
 };
 
-export default BlogsPage;
+export default Page;
