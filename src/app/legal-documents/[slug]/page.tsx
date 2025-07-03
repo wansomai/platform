@@ -3,26 +3,25 @@ import { getAllDocumentTemplates } from '@/lib/data/contentful';
 import { adaptDocumentTemplate } from '@/lib/data/blogAdapter';
 import DocDetailPageClient from './DocumentDetails';
 
-
 type Props = {
-  params: Promise<{ slug: string,id: string }>;
+  params: Promise<{ slug: string, id: string }>;
 }
 
-
 // Generate metadata for each blog post
-export async function generateMetadata( { params }: Props,
-  parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   try {
+    const { slug } = await params;
     const allBlogPosts = await getAllDocumentTemplates();
-    const blogPost = allBlogPosts.find(async(post) => {
+    
+    // Fix: Remove async from find callback and properly compare slugs
+    const blogPost = allBlogPosts.find((post) => {
       const postSlug = createSlug(post.fields.title);
-      const { slug } = await params;
       return postSlug === slug;
     });
 
     if (!blogPost) {
       return {
-        title: 'Legal Document Template Not Found | wansom AI',
+        title: 'Legal Document Template Not Found',
         description: 'The requested legal document could not be found.',
       };
     }
@@ -30,14 +29,14 @@ export async function generateMetadata( { params }: Props,
     const adaptedPost = adaptDocumentTemplate(blogPost);
     
     return {
-      title: `${adaptedPost.title} | wansom AI Blog`,
+      title: `${blogPost.fields.title}`,
       description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
       keywords: adaptedPost.title || 'legal document templates, Draft legal documments, legal insights',
       openGraph: {
         title: adaptedPost.title,
         description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
         type: 'article',
-        url: `https://wansom.ai/legal-documents/${params}`,
+        url: `https://wansom.ai/legal-documents/${slug}`, // Fix: Use slug instead of params
         images: [
           {
             url: adaptedPost.image || '/contract-sample.webp',
