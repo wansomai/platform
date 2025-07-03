@@ -3,20 +3,19 @@ import { getAllBlogPosts } from '@/lib/data/contentful';
 import { adaptBlogPost } from '@/lib/data/blogAdapter';
 import BlogDetailPageClient from './BlogDetailPage';
 
-
 type Props = {
-  params: Promise<{ slug: string,id: string }>;
+  params: Promise<{ slug: string, id: string }>;
 }
 
-
 // Generate metadata for each blog post
-export async function generateMetadata( { params }: Props,
-  parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   try {
+    const { slug } = await params;
     const allBlogPosts = await getAllBlogPosts();
-    const blogPost = allBlogPosts.find(async(post) => {
+    
+    // Fix: Remove async from find callback and properly compare slugs
+    const blogPost = allBlogPosts.find((post) => {
       const postSlug = createSlug(post.fields.title);
-      const { slug } = await params;
       return postSlug === slug;
     });
 
@@ -37,7 +36,7 @@ export async function generateMetadata( { params }: Props,
         title: adaptedPost.title,
         description: adaptedPost.preview,
         type: 'article',
-        url: `https://wansom.ai/blogs/${params}`,
+        url: `https://wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
         images: [
           {
             url: adaptedPost.image || '/images/features-1.png',
