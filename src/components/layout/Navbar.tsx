@@ -142,14 +142,14 @@ const Navbar = () => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Link href="/login" className="font-medium text-white hover:text-green-600 border border-gray-300 rounded-md py-2 px-4">
-              Sign in
+            <Link href="/demo" className="font-medium text-white hover:text-green-600 border border-gray-300 rounded-md py-2 px-4">
+              Schedule a Demo
             </Link>
             <Link
-              href="/demo"
+              href="/login"
               className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-2 px-4"
             >
-              Book A Demo
+              Start For Free
             </Link>
           </div>
         </div>
