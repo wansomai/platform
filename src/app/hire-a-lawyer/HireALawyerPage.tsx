@@ -411,11 +411,11 @@ const LegalHeroSection = () => {
       className=" flex items-center justify-between pt-24 md:pt-32 bg-[#355e66] relative overflow-hidden"
     >
       <div className="section-container mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 lg:gap-12 items-center">
           {/* Left Side - Content */}
           <div className="text-left space-y-8">
             <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight">
+              <h1 className="text-3xl lg:text-6xl font-bold text-white leading-tight">
                 Ask An Expert Lawyer
               </h1>
               <p className="text-xl text-gray-200 leading-relaxed max-w-lg">
