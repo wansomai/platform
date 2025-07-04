@@ -3,12 +3,12 @@ import HireALawyerPage from './HireALawyerPage';
 
 
 export const metadata: Metadata = {
-  title: 'Hire a Lawyer | Get Legal Advice Online | Wansom Ai',
-  description: 'Connect with experienced lawyers online for legal advice, document review, and consultation. Get quick answers to your legal questions from real attorneys specialized in your issue.',
-  keywords: 'hire lawyer, legal advice online, attorney consultation, legal help, find lawyer, legal services, legal consultation, legal questions, document review',
+  title: 'Ask an expert lawyer near your | Get Legal Advice Online',
+  description: 'Ask expereince lawyers near you online for legal advice, legal document review, and consultation. Get quick answers to your legal questions from real attorneys specialized in your issue.',
+  keywords: 'free legal service,lawyer near me, attorney consultation,lawfirms near me, legal help, find lawyer, legal services, legal consultation, legal questions',
   openGraph: {
-    title: 'Hire a Lawyer | Get Legal Advice Online | wansom AI',
-    description: 'Connect with experienced lawyers online for legal advice, document review, and consultation. Get quick answers to your legal questions from real attorneys specialized in your issue.',
+    title: 'Ask an expert lawyer near your | Get Legal Advice Online',
+    description: 'Ask expereince lawyers near you online for legal advice, legal document review, and consultation. Get quick answers to your legal questions from real attorneys specialized in your issue.',
     type: 'website',
     url: 'https://wansom.ai/hire-a-lawyer',
     images: [
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Hire a Lawyer | Get Legal Advice Online | Wansom AI',
-    description: 'Connect with experienced lawyers online for legal advice, document review, and consultation.',
+    title: 'Ask an expert lawyer near your | Get Legal Advice Online',
+    description: 'Ask expereince lawyers near you online for legal advice, legal document review, and consultation. Get quick answers to your legal questions from real attorneys specialized in your issue.',
     images: ['/hero.png'],
   },
 };
