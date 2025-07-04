@@ -56,9 +56,9 @@ const PractiseAreasComponent = () => {
       {service.title}
     </h3>
     <p className="font-jost text-white/90 mb-6">{service.subtitle}</p>
-    <button className="flex items-center text-white font-jost group">
+    <a className="flex items-center text-white font-jost group" href="/hire-a-lawyer/#ask-a-lawyer" onClick={() => setHoveredIndex(index)}>
       Ask a Lawyer
-    </button>
+    </a>
     <hr className="h-0.5 w-20 bg-white" />
   </div>
 ))}

@@ -8,11 +8,7 @@ import {
   Users,
   DollarSign,
   Shield,
-  Clock,
-  Star,
-  TrendingUp,
-  Award,
-  FileText,
+  Clock
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import PractiseAreasComponent from "./practiseareas";
@@ -100,7 +96,7 @@ const HireALawyerPage = () => {
             className="text-4xl font-bold mb-5 text-center lg:max-w-4xl mx-auto"
             style={{ color: "#1f2937" }}
           >
-            Get quick answers from real lawyers, easily.
+            Get expert advice from real lawyers
           </h2>
           <p className="text-lg text-center mb-10" style={{ color: "#6b7280" }}>
             Ask any legal or tax question, or have a network attorney review
@@ -158,7 +154,7 @@ const HireALawyerPage = () => {
       <section className="py-16" style={{ backgroundColor: "#f3f4f4" }}>
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-12">
-            <div>
+            <div id="ask-a-lawyer">
              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full mx-auto">
          
             {submitStatus.success && (
@@ -357,54 +353,6 @@ const HireALawyerPage = () => {
 };
 
 const LegalHeroSection = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    message: "",
-  });
-
-  const [submitStatus, setSubmitStatus] = useState({
-    success: false,
-    error: false,
-    message: "",
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (e: { target: { id: any; value: any; }; }) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setSubmitStatus({ success: false, error: false, message: "" });
-
-    try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setSubmitStatus({
-        success: true,
-        error: false,
-        message:
-          "Your legal question has been submitted successfully! We'll get back to you soon.",
-      });
-
-      setFormData({ email: "", message: "" });
-    } catch (error) {
-      setSubmitStatus({
-        success: false,
-        error: true,
-        message:
-          "There was an error submitting your request. Please try again.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <section
@@ -419,7 +367,7 @@ const LegalHeroSection = () => {
                 Ask An Expert Lawyer
               </h1>
               <p className="text-xl text-gray-200 leading-relaxed max-w-lg">
-                Ask any legal question and get expert advice from our lawyer nextwork
+                Ask any legal question and get expert advice from our lawyer network
                 within 24hrs
               </p>
             </div>
