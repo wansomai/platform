@@ -95,17 +95,17 @@ const HireALawyerPage = ({
 
   return (
     <div className="min-h-screen bg-white">
-     
+      <Navbar/> 
       {/* Hero Section */}
       <section
-      className=" pt-24 md:pt-16 pl-5 lg:pl-20 bg-[#355e66] relative overflow-hidden"
+      className=" pt-24 md:pt-20 pl-5 lg:pl-20 bg-[#355e66] relative overflow-hidden"
     >
-       <Navbar/>
-        <div className="grid lg:grid-cols-2 gap-5 lg:gap-12 items-center">
+     
+        <div className="grid lg:grid-cols-2 gap-5 items-center">
           {/* Left Side - Content */}
           <div className="text-left space-y-8">
             <div className="space-y-6">
-             <h1 className="text-4xl font-bold text-white">
+             <h1 className="text-4xl font-semibold text-white">
       Get expert advice from expert {practiceArea} lawyers in {location ?? "your area"}
   </h1>
   <p className="text-xl text-gray-200">
@@ -126,74 +126,77 @@ const HireALawyerPage = ({
         
       </div>
     </section>
-
-      {/* How It Works Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <h2
-            className="text-4xl font-bold mb-5 text-center lg:max-w-4xl mx-auto"
-            style={{ color: "#1f2937" }}
-          >
-            How it works
-          </h2>
-          <p className="text-lg text-center mb-10" style={{ color: "#6b7280" }}>
-            Ask any legal or tax question, or have a network attorney review
-            your document.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: "#355e66" }}
-                >
-                  <MessageSquare className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <p className="text-lg" style={{ color: "#1f2937" }}>
-                Ask your detailed legal or tax question to send to an attorney.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: "#355e66" }}
-                >
-                  <Phone className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <p className="text-lg" style={{ color: "#1f2937" }}>
-                Get legal advice online or by phone from a lawyer that
-                specializes in your issue.
-              </p>
-            </div>
-
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-                  style={{ backgroundColor: "#355e66" }}
-                >
-                  <CheckCircle className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <p className="text-lg" style={{ color: "#1f2937" }}>
-                Resolve your issue and move forward with confidence.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Statistics Section */}
-      <section className="py-16" style={{ backgroundColor: "#f3f4f4" }}>
+  {/* Statistics Section */}
+      <section className="py-16 bg-white" >
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-12">
-            <div id="ask-a-lawyer">
-             <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full mx-auto">
+            <div>
+              <h2
+                className="text-4xl font-semibold mb-6"
+                style={{ color: "#1f2937" }}
+              >
+                Over 300k legal questions answered...
+              </h2>
+              <p className="text-lg mb-8" style={{ color: "#6b7280" }}>
+                Our network of experienced {practiceArea} attorneys has helped hundreds of
+                thousands of people get the legal guidance they need. From
+                simple questions to complex legal matters, we're here to help.
+              </p>
+
+              <div className=" flex flex-col md:flex-row items-start md:items-center gap-5">
+            {[
+          
+              {
+                icon: Clock,
+                title: "Fast and easy",
+                description:
+                  "Get answers in as little as 15 minutes. Our streamlined process connects you with qualified attorneys quickly and efficiently.",
+              },
+              {
+                icon: Shield,
+                title: "Private and safe",
+                description:
+                  "Your information is protected with bank-level security. All communications with attorneys are confidential and secure.",
+              },
+              {
+                icon: DollarSign,
+                title: "Affordable and simple",
+                description:
+                  "Get flat-rate pricing with no hidden fees. Know exactly what you'll pay before you commit to getting legal help.",
+              },
+            ].map((feature, index) => (
+              <div key={index} className="flex  items-start lg:items-center space-x-1">
+                <div className="">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#355e66" }}
+                  >
+                    <feature.icon className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <h3
+                    className="text-md font-semibold"
+                    style={{ color: "#1f2937" }}
+                  >
+                    {feature.title}
+                  </h3>
+                  <p style={{ color: "#6b7280" }} className="block lg:hidden">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+             
+            </div>
+            <div id="ask-a-lawyer" className="lg:ml-20 lg:-mt-10 ">
+              <div className="bg-primary rounded-t-2xl shadow-2xl p-4 max-w-3xl w-full "> 
+                <h2 className="text-xl font-semibold text-white  text-center">
+                 Send Us A Message
+                </h2>
+              
+              
+              </div>
+             <div className="bg-white rounded-b-2xl shadow-2xl p-8 max-w-3xl w-full mx-auto ">
          
             {submitStatus.success && (
               <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -208,6 +211,7 @@ const HireALawyerPage = ({
             )}
 
             <div className="space-y-6">
+              
               <div>
                 <label
                   htmlFor="email"
@@ -293,67 +297,72 @@ const HireALawyerPage = ({
             </div>
           </div>
             </div>
-            <div>
-              <h2
-                className="text-4xl font-semibold mb-6"
-                style={{ color: "#1f2937" }}
-              >
-                Over 300k questions answered... and counting
-              </h2>
-              <p className="text-lg mb-8" style={{ color: "#6b7280" }}>
-                Our network of experienced {practiceArea} attorneys has helped hundreds of
-                thousands of people get the legal guidance they need. From
-                simple questions to complex legal matters, we're here to help.
-              </p>
+            
+          </div>
+        </div>
+      </section>
+      {/* How It Works Section */}
+      <section className="py-16 bg-[#f3f4f4]">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <h2
+            className="text-4xl font-bold mb-5 text-center lg:max-w-4xl mx-auto"
+            style={{ color: "#1f2937" }}
+          >
+            How it works
+          </h2>
+          <p className="text-lg text-center mb-10" style={{ color: "#6b7280" }}>
+            Ask any legal or tax question, or have a network attorney review
+            your document.
+          </p>
 
-              <div className="space-y-6">
-            {[
-          
-              {
-                icon: Clock,
-                title: "Fast and easy",
-                description:
-                  "Get answers in as little as 15 minutes. Our streamlined process connects you with qualified attorneys quickly and efficiently.",
-              },
-              {
-                icon: Shield,
-                title: "Private and safe",
-                description:
-                  "Your information is protected with bank-level security. All communications with attorneys are confidential and secure.",
-              },
-              {
-                icon: DollarSign,
-                title: "Affordable and simple",
-                description:
-                  "Get flat-rate pricing with no hidden fees. Know exactly what you'll pay before you commit to getting legal help.",
-              },
-            ].map((feature, index) => (
-              <div key={index} className="flex items-start space-x-4">
-                <div className="flex-shrink-0">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "#355e66" }}
-                  >
-                    <feature.icon className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div>
-                  <h3
-                    className="text-xl font-semibold mb-2"
-                    style={{ color: "#1f2937" }}
-                  >
-                    {feature.title}
-                  </h3>
-                  <p style={{ color: "#6b7280" }}>{feature.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-6">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: "#355e66" }}
+                >
+                  <MessageSquare className="w-8 h-8 text-white" />
                 </div>
               </div>
-            ))}
-          </div>
-             
+              <p className="text-lg" style={{ color: "#1f2937" }}>
+                Ask your detailed legal or tax question to send to an attorney.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-6">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: "#355e66" }}
+                >
+                  <Phone className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <p className="text-lg" style={{ color: "#1f2937" }}>
+                Get legal advice online or by phone from a lawyer that
+                specializes in your issue.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-6">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: "#355e66" }}
+                >
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <p className="text-lg" style={{ color: "#1f2937" }}>
+                Resolve your issue and move forward with confidence.
+              </p>
             </div>
           </div>
         </div>
       </section>
+
+    
       {/* Why Choose Section */}
    <PractiseAreasComponent/>
 
