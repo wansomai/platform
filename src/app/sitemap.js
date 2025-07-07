@@ -129,9 +129,28 @@ export default async function sitemap() {
     console.error('Error fetching legal documents for sitemap:', error);
     // Continue with static routes if Contentful fetch fails
   }
+    // Get lawyer pages from Contentful
+  let lawyerPageRoutes = [];
+  try {
+    const response = await client.getEntries({
+      content_type: 'lawyerPages',
+      order: '-sys.createdAt',
+    });
+
+    // Map legal documents to sitemap format
+    lawyerPageRoutes = response.items.map(post => {
+      return {
+        url: `${baseUrl}/hire-a-lawyer/${post.fields?.slug}`,
+        lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching lawyer pages for sitemap:', error);
+    // Continue with static routes if Contentful fetch fails
+  }
 
   // Combine all routes
-  const routes = [...staticRoutes, ...blogRoutes, ...legalDocumentRoutes];
+  const routes = [...staticRoutes, ...blogRoutes, ...legalDocumentRoutes, ...lawyerPageRoutes];
 
   return routes;
 }
