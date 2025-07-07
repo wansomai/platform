@@ -1,156 +1,107 @@
-// app/sitemap.js
+import { headers } from 'next/headers';
 import { createClient } from 'contentful';
 
-// Function to create a slug from the title
-function createSlug(title) {
-  return title
+// Revalidate once per hour (in seconds)
+export const revalidate = 3600;
+
+/* Helpers ------------------------------------------------------------- */
+
+const slugify = (str = '') =>
+  str
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Remove consecutive hyphens
-    .trim(); // Trim any leading/trailing spaces or hyphens
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+
+/** Fetch *all* entries for a content type (handles pagination). */
+async function fetchAllEntries(client, { content_type }) {
+  const pageSize = 1000; // Contentful hard max
+  let skip = 0;
+  let items = [];
+  while (true) {
+    const res = await client.getEntries({ content_type, skip, limit: pageSize });
+    items = items.concat(res.items);
+    if (skip + pageSize >= res.total) break;
+    skip += pageSize;
+  }
+  return items;
 }
 
+/* Main sitemap generator --------------------------------------------- */
 export default async function sitemap() {
-  const baseUrl = 'https://www.wansom.ai';
+  // -------------------------------------------------------------------
+  // 1. Resolve base URL dynamically (falls back to prod URL)
+  // -------------------------------------------------------------------
+  const host = headers().get('host');
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    (host ? `https://${host}` : 'https://www.wansom.ai');
 
-  // Initialize Contentful client
+  // -------------------------------------------------------------------
+  // 2. Init Contentful
+  // -------------------------------------------------------------------
   const client = createClient({
-    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID || '',
-    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN || '',
+    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
+    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
   });
 
-  // Static routes
+  // -------------------------------------------------------------------
+  // 3. Static routes
+  // -------------------------------------------------------------------
   const staticRoutes = [
-    {
-      url: `${baseUrl}`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/hire-a-lawyer`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/demo`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/blogs`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/legal-documents`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/careers`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/webinar`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/ai-legal-drafting`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/ai-contract-review`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/ai-due-diligence`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/ai-legal-research`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/ai-case-prediction`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/document-vault`,
-      lastModified: new Date(),
-    },
-  ];
+    '',
+    'hire-a-lawyer',
+    'pricing',
+    'demo',
+    'blogs',
+    'legal-documents',
+    'contact',
+    'careers',
+    'webinar',
+    'ai-legal-drafting',
+    'ai-contract-review',
+    'ai-due-diligence',
+    'ai-legal-research',
+    'ai-case-prediction',
+    'document-vault',
+  ].map((path) => ({
+    url: `${baseUrl}/${path}`,
+    lastModified: new Date(),
+  }));
 
-  // Get blog posts from Contentful
-  let blogRoutes = [];
-  try {
-    const response = await client.getEntries({
-      content_type: 'blogPost',
-      order: '-sys.createdAt',
-    });
+  // -------------------------------------------------------------------
+  // 4. Dynamic routes (blogs, documents, lawyer pages)
+  // -------------------------------------------------------------------
+  const [blogPosts, legalDocs, lawyerPages] = await Promise.all([
+    fetchAllEntries(client, { content_type: 'blogPost' }),
+    fetchAllEntries(client, { content_type: 'documentTemplates' }),
+    fetchAllEntries(client, { content_type: 'lawyerPages' }),
+  ]);
 
-    // Map blog posts to sitemap format
-    blogRoutes = response.items.map(post => {
-      // Create slug from title with fallback
-      const slug = post.fields?.title ? createSlug(post.fields.title) : post.sys.id;
-      
-      return {
-        url: `${baseUrl}/blogs/${slug}`,
-        lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
-      };
-    });
-  } catch (error) {
-    console.error('Error fetching blog posts for sitemap:', error);
-    // Continue with static routes if Contentful fetch fails
-  }
+  const blogRoutes = blogPosts.map((post) => {
+    const slug = slugify(post.fields.title)??NEXT_PUBLIC_BASE_URL;
+    return {
+      url: `${baseUrl}/blogs/${slug}`,
+      lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
+    };
+  });
 
-  // Get legal documents from Contentful
-  let legalDocumentRoutes = [];
-  try {
-    const response = await client.getEntries({
-      content_type: 'documentTemplates',
-      order: '-sys.createdAt',
-    });
+  const legalDocRoutes = legalDocs.map((doc) => {
+    const slug =  slugify(doc.fields.title)??doc.fields.slug;
+    return {
+      url: `${baseUrl}/legal-documents/${slug}`,
+      lastModified: new Date(doc.sys.updatedAt || doc.sys.createdAt),
+    };
+  });
 
-    // Map legal documents to sitemap format
-    legalDocumentRoutes = response.items.map(post => {
-      // Create slug from title with fallback
-      const slug = post.fields?.title ? createSlug(post.fields.title) : post.sys.id;
-      
-      return {
-        url: `${baseUrl}/legal-documents/${slug}`,
-        lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
-      };
-    });
-  } catch (error) {
-    console.error('Error fetching legal documents for sitemap:', error);
-    // Continue with static routes if Contentful fetch fails
-  }
-    // Get lawyer pages from Contentful
-  let lawyerPageRoutes = [];
-  try {
-    const response = await client.getEntries({
-      content_type: 'lawyerPages',
-      order: '-sys.createdAt',
-    });
+  const lawyerRoutes = lawyerPages.map((page) => ({
+    url: `${baseUrl}/hire-a-lawyer/${page.fields.slug}`,
+    lastModified: new Date(page.sys.updatedAt || page.sys.createdAt),
+  }));
 
-    // Map legal documents to sitemap format
-    lawyerPageRoutes = response.items.map(post => {
-      return {
-        url: `${baseUrl}/hire-a-lawyer/${post.fields?.slug}`,
-        lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
-      };
-    });
-  } catch (error) {
-    console.error('Error fetching lawyer pages for sitemap:', error);
-    // Continue with static routes if Contentful fetch fails
-  }
-
-  // Combine all routes
-  const routes = [...staticRoutes, ...blogRoutes, ...legalDocumentRoutes, ...lawyerPageRoutes];
-
-  return routes;
+  // -------------------------------------------------------------------
+  // 5. Combine & return
+  // -------------------------------------------------------------------
+  return [...staticRoutes, ...blogRoutes, ...legalDocRoutes, ...lawyerRoutes];
 }
