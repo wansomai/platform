@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { createClient } from 'contentful';
 
 // Revalidate once per hour (in seconds)
@@ -20,7 +19,7 @@ async function fetchAllEntries(client, { content_type }) {
   let skip = 0;
   let items = [];
   while (true) {
-    const res = await client.getEntries({ content_type, skip, limit: pageSize });
+    const res = await client.getEntries({ content_type,  select: 'fields.title,sys.createdAt,sys.updatedAt' ,skip, limit: pageSize });
     items = items.concat(res.items);
     if (skip + pageSize >= res.total) break;
     skip += pageSize;
@@ -33,10 +32,8 @@ export default async function sitemap() {
   // -------------------------------------------------------------------
   // 1. Resolve base URL dynamically (falls back to prod URL)
   // -------------------------------------------------------------------
-  const host = headers().get('host');
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    (host ? `https://${host}` : 'https://www.wansom.ai');
+    process.env.NEXT_PUBLIC_BASE_URL ??'https://www.wansom.ai';
 
   // -------------------------------------------------------------------
   // 2. Init Contentful
@@ -70,14 +67,34 @@ export default async function sitemap() {
     lastModified: new Date(),
   }));
 
+  async function fetchLawyerPages(client,{ content_type }) {
+  const limit = 1000;                       // CDN hard limit
+  let skip = 0;
+  const items = [];
+
+  while (true) {
+    const res = await client.getEntries({
+      content_type,
+      select: 'fields.slug,sys.createdAt,sys.updatedAt', // only what we need
+      limit,
+      skip,
+    });
+
+    items.push(...res.items);
+    if (res.items.length < limit) break;
+    skip += limit;
+  }
+  return items;
+}
+
   // -------------------------------------------------------------------
   // 4. Dynamic routes (blogs, documents, lawyer pages)
   // -------------------------------------------------------------------
-  const [blogPosts, legalDocs, lawyerPages] = await Promise.all([
-    fetchAllEntries(client, { content_type: 'blogPost' }),
-    fetchAllEntries(client, { content_type: 'documentTemplates' }),
-    fetchAllEntries(client, { content_type: 'lawyerPages' }),
-  ]);
+ const [blogPosts, legalDocs, lawyerPages] = await Promise.all([
+  fetchAllEntries(client, { content_type: 'blogPost' }),
+  fetchAllEntries(client, { content_type: 'documentTemplates'}),
+  fetchLawyerPages(client, { content_type: 'lawyerPages' }),      // ← the new, size‑safe helper
+]);
 
   const blogRoutes = blogPosts.map((post) => {
     const slug = slugify(post.fields.title)??NEXT_PUBLIC_BASE_URL;
