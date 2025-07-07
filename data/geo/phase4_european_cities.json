@@ -1,0 +1,3802 @@
+[
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Amsterdam?",
+        "answer": "The standard limitation period is three years in Amsterdam, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Amsterdam?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Amsterdam law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Amsterdam offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Amsterdam?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Amsterdam."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Amsterdam are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Amsterdam, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Amsterdam?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Amsterdam."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Amsterdam."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Amsterdam can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "How is property registered in Amsterdam?",
+        "answer": "Land Registry services cover Amsterdam; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Amsterdam. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Amsterdam?",
+        "answer": "Yes—Amsterdam places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Amsterdam?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Amsterdam can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Amsterdam depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Amsterdam for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Amsterdam?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Amsterdam provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Amsterdam must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Amsterdam, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Amsterdam?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Amsterdam."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Amsterdam."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Amsterdam offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Amsterdam?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Amsterdam."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Amsterdam."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Amsterdam."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Amsterdam?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Amsterdam."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Amsterdam (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "amsterdam",
+    "locationName": "Amsterdam",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Amsterdam?",
+        "answer": "The online filing deadline is 31 January following the tax year in Amsterdam."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Amsterdam."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Amsterdam."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Berlin?",
+        "answer": "The standard limitation period is three years in Berlin, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Berlin?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Berlin law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Berlin offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Berlin?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Berlin."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Berlin are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Berlin, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Berlin?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Berlin."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Berlin."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Berlin can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "How is property registered in Berlin?",
+        "answer": "Land Registry services cover Berlin; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Berlin. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Berlin?",
+        "answer": "Yes—Berlin places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Berlin?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Berlin can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Berlin depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Berlin for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Berlin?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Berlin provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Berlin must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Berlin, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Berlin?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Berlin."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Berlin."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Berlin offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Berlin?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Berlin."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Berlin."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Berlin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Berlin?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Berlin."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Berlin (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "berlin",
+    "locationName": "Berlin",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Berlin?",
+        "answer": "The online filing deadline is 31 January following the tax year in Berlin."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Berlin."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Berlin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Hamburg?",
+        "answer": "The standard limitation period is three years in Hamburg, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Hamburg?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Hamburg law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Hamburg offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Hamburg?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Hamburg."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Hamburg are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Hamburg, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Hamburg?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Hamburg."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Hamburg."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Hamburg can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "How is property registered in Hamburg?",
+        "answer": "Land Registry services cover Hamburg; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Hamburg. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Hamburg?",
+        "answer": "Yes—Hamburg places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Hamburg?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Hamburg can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Hamburg depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Hamburg for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Hamburg?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Hamburg provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Hamburg must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Hamburg, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Hamburg?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Hamburg."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Hamburg."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Hamburg offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Hamburg?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Hamburg."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Hamburg."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Hamburg."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Hamburg?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Hamburg."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Hamburg (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "hamburg",
+    "locationName": "Hamburg",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Hamburg?",
+        "answer": "The online filing deadline is 31 January following the tax year in Hamburg."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Hamburg."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Hamburg."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Frankfurt?",
+        "answer": "The standard limitation period is three years in Frankfurt, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Frankfurt?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Frankfurt law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Frankfurt offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Frankfurt?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Frankfurt."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Frankfurt are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Frankfurt, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Frankfurt?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Frankfurt."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Frankfurt."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Frankfurt can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "How is property registered in Frankfurt?",
+        "answer": "Land Registry services cover Frankfurt; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Frankfurt. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Frankfurt?",
+        "answer": "Yes—Frankfurt places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Frankfurt?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Frankfurt can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Frankfurt depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Frankfurt for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Frankfurt?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Frankfurt provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Frankfurt must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Frankfurt, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Frankfurt?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Frankfurt."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Frankfurt."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Frankfurt offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Frankfurt?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Frankfurt."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Frankfurt."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Frankfurt."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Frankfurt?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Frankfurt."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Frankfurt (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "frankfurt",
+    "locationName": "Frankfurt",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Frankfurt?",
+        "answer": "The online filing deadline is 31 January following the tax year in Frankfurt."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Frankfurt."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Frankfurt."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Munich?",
+        "answer": "The standard limitation period is three years in Munich, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Munich?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Munich law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Munich offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Munich?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Munich."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Munich are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Munich, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Munich?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Munich."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Munich."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Munich can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "How is property registered in Munich?",
+        "answer": "Land Registry services cover Munich; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Munich. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Munich?",
+        "answer": "Yes—Munich places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Munich?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Munich can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Munich depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Munich for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Munich?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Munich provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Munich must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Munich, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Munich?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Munich."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Munich."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Munich offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Munich?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Munich."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Munich."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Munich."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Munich?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Munich."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Munich (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "munich",
+    "locationName": "Munich",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Munich?",
+        "answer": "The online filing deadline is 31 January following the tax year in Munich."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Munich."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Munich."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Paris?",
+        "answer": "The standard limitation period is three years in Paris, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Paris?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Paris law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Paris offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Paris?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Paris."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Paris are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Paris, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Paris?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Paris."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Paris."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Paris can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "How is property registered in Paris?",
+        "answer": "Land Registry services cover Paris; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Paris. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Paris?",
+        "answer": "Yes—Paris places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Paris?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Paris can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Paris depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Paris for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Paris?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Paris provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Paris must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Paris, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Paris?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Paris."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Paris."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Paris offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Paris?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Paris."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Paris."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Paris."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Paris?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Paris."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Paris (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "paris",
+    "locationName": "Paris",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Paris?",
+        "answer": "The online filing deadline is 31 January following the tax year in Paris."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Paris."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Paris."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Lyon?",
+        "answer": "The standard limitation period is three years in Lyon, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Lyon?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Lyon law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Lyon offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Lyon?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Lyon."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Lyon are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Lyon, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Lyon?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Lyon."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Lyon."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Lyon can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "How is property registered in Lyon?",
+        "answer": "Land Registry services cover Lyon; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Lyon. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Lyon?",
+        "answer": "Yes—Lyon places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Lyon?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Lyon can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Lyon depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Lyon for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Lyon?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Lyon provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Lyon must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Lyon, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Lyon?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Lyon."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Lyon."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Lyon offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Lyon?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Lyon."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Lyon."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Lyon."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Lyon?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Lyon."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Lyon (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "lyon",
+    "locationName": "Lyon",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Lyon?",
+        "answer": "The online filing deadline is 31 January following the tax year in Lyon."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Lyon."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Lyon."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Madrid?",
+        "answer": "The standard limitation period is three years in Madrid, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Madrid?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Madrid law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Madrid offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Madrid?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Madrid."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Madrid are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Madrid, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Madrid?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Madrid."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Madrid."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Madrid can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "How is property registered in Madrid?",
+        "answer": "Land Registry services cover Madrid; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Madrid. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Madrid?",
+        "answer": "Yes—Madrid places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Madrid?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Madrid can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Madrid depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Madrid for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Madrid?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Madrid provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Madrid must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Madrid, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Madrid?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Madrid."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Madrid."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Madrid offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Madrid?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Madrid."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Madrid."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Madrid."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Madrid?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Madrid."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Madrid (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "madrid",
+    "locationName": "Madrid",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Madrid?",
+        "answer": "The online filing deadline is 31 January following the tax year in Madrid."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Madrid."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Madrid."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Barcelona?",
+        "answer": "The standard limitation period is three years in Barcelona, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Barcelona?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Barcelona law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Barcelona offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Barcelona?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Barcelona."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Barcelona are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Barcelona, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Barcelona?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Barcelona."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Barcelona."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Barcelona can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "How is property registered in Barcelona?",
+        "answer": "Land Registry services cover Barcelona; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Barcelona. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Barcelona?",
+        "answer": "Yes—Barcelona places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Barcelona?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Barcelona can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Barcelona depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Barcelona for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Barcelona?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Barcelona provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Barcelona must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Barcelona, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Barcelona?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Barcelona."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Barcelona."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Barcelona offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Barcelona?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Barcelona."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Barcelona."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Barcelona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Barcelona?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Barcelona."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Barcelona (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "barcelona",
+    "locationName": "Barcelona",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Barcelona?",
+        "answer": "The online filing deadline is 31 January following the tax year in Barcelona."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Barcelona."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Barcelona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Lisbon?",
+        "answer": "The standard limitation period is three years in Lisbon, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Lisbon?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Lisbon law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Lisbon offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Lisbon?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Lisbon."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Lisbon are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Lisbon, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Lisbon?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Lisbon."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Lisbon."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Lisbon can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "How is property registered in Lisbon?",
+        "answer": "Land Registry services cover Lisbon; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Lisbon. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Lisbon?",
+        "answer": "Yes—Lisbon places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Lisbon?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Lisbon can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Lisbon depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Lisbon for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Lisbon?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Lisbon provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Lisbon must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Lisbon, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Lisbon?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Lisbon."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Lisbon."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Lisbon offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Lisbon?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Lisbon."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Lisbon."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Lisbon."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Lisbon?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Lisbon."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Lisbon (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "lisbon",
+    "locationName": "Lisbon",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Lisbon?",
+        "answer": "The online filing deadline is 31 January following the tax year in Lisbon."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Lisbon."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Lisbon."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Porto?",
+        "answer": "The standard limitation period is three years in Porto, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Porto?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Porto law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Porto offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Porto?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Porto."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Porto are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Porto, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Porto?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Porto."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Porto."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Porto can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "How is property registered in Porto?",
+        "answer": "Land Registry services cover Porto; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Porto. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Porto?",
+        "answer": "Yes—Porto places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Porto?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Porto can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Porto depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Porto for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Porto?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Porto provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Porto must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Porto, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Porto?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Porto."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Porto."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Porto offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Porto?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Porto."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Porto."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Porto."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Porto?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Porto."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Porto (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "porto",
+    "locationName": "Porto",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Porto?",
+        "answer": "The online filing deadline is 31 January following the tax year in Porto."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Porto."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Porto."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Milan?",
+        "answer": "The standard limitation period is three years in Milan, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Milan?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Milan law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Milan offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Milan?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Milan."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Milan are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Milan, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Milan?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Milan."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Milan."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Milan can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "How is property registered in Milan?",
+        "answer": "Land Registry services cover Milan; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Milan. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Milan?",
+        "answer": "Yes—Milan places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Milan?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Milan can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Milan depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Milan for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Milan?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Milan provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Milan must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Milan, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Milan?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Milan."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Milan."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Milan offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Milan?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Milan."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Milan."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Milan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Milan?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Milan."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Milan (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "milan",
+    "locationName": "Milan",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Milan?",
+        "answer": "The online filing deadline is 31 January following the tax year in Milan."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Milan."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Milan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Rome?",
+        "answer": "The standard limitation period is three years in Rome, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Rome?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Rome law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Rome offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Rome?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Rome."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Rome are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Rome, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Rome?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Rome."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Rome."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Rome can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "How is property registered in Rome?",
+        "answer": "Land Registry services cover Rome; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Rome. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Rome?",
+        "answer": "Yes—Rome places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Rome?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Rome can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Rome depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Rome for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Rome?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Rome provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Rome must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Rome, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Rome?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Rome."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Rome."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Rome offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Rome?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Rome."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Rome."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Rome."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Rome?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Rome."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Rome (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "rome",
+    "locationName": "Rome",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Rome?",
+        "answer": "The online filing deadline is 31 January following the tax year in Rome."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Rome."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Rome."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Stockholm?",
+        "answer": "The standard limitation period is three years in Stockholm, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Stockholm?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Stockholm law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Stockholm offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Stockholm?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Stockholm."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Stockholm are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Stockholm, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Stockholm?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Stockholm."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Stockholm."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Stockholm can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "How is property registered in Stockholm?",
+        "answer": "Land Registry services cover Stockholm; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Stockholm. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Stockholm?",
+        "answer": "Yes—Stockholm places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Stockholm?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Stockholm can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Stockholm depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Stockholm for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Stockholm?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Stockholm provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Stockholm must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Stockholm, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Stockholm?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Stockholm."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Stockholm."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Stockholm offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Stockholm?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Stockholm."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Stockholm."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Stockholm."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Stockholm?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Stockholm."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Stockholm (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "stockholm",
+    "locationName": "Stockholm",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Stockholm?",
+        "answer": "The online filing deadline is 31 January following the tax year in Stockholm."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Stockholm."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Stockholm."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Copenhagen?",
+        "answer": "The standard limitation period is three years in Copenhagen, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Copenhagen?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Copenhagen law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Copenhagen offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Copenhagen?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Copenhagen."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Copenhagen are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Copenhagen, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Copenhagen?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Copenhagen."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Copenhagen."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Copenhagen can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "How is property registered in Copenhagen?",
+        "answer": "Land Registry services cover Copenhagen; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Copenhagen. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Copenhagen?",
+        "answer": "Yes—Copenhagen places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Copenhagen?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Copenhagen can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Copenhagen depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Copenhagen for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Copenhagen?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Copenhagen provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Copenhagen must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Copenhagen, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Copenhagen?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Copenhagen."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Copenhagen."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Copenhagen offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Copenhagen?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Copenhagen."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Copenhagen."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Copenhagen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Copenhagen?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Copenhagen."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Copenhagen (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "copenhagen",
+    "locationName": "Copenhagen",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Copenhagen?",
+        "answer": "The online filing deadline is 31 January following the tax year in Copenhagen."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Copenhagen."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Copenhagen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Zurich?",
+        "answer": "The standard limitation period is three years in Zurich, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Zurich?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Zurich law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Zurich offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Zurich?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Zurich."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Zurich are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Zurich, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Zurich?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Zurich."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Zurich."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Zurich can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "How is property registered in Zurich?",
+        "answer": "Land Registry services cover Zurich; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Zurich. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Zurich?",
+        "answer": "Yes—Zurich places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Zurich?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Zurich can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Zurich depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Zurich for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Zurich?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Zurich provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Zurich must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Zurich, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Zurich?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Zurich."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Zurich."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Zurich offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Zurich?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Zurich."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Zurich."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Zurich."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Zurich?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Zurich."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Zurich (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "zurich",
+    "locationName": "Zurich",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Zurich?",
+        "answer": "The online filing deadline is 31 January following the tax year in Zurich."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Zurich."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Zurich."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Geneva?",
+        "answer": "The standard limitation period is three years in Geneva, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Geneva?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Geneva law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Geneva offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Geneva?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Geneva."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Geneva are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Geneva, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Geneva?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Geneva."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Geneva."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Geneva can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "How is property registered in Geneva?",
+        "answer": "Land Registry services cover Geneva; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Geneva. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Geneva?",
+        "answer": "Yes—Geneva places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Geneva?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Geneva can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Geneva depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Geneva for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Geneva?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Geneva provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Geneva must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Geneva, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Geneva?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Geneva."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Geneva."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Geneva offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Geneva?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Geneva."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Geneva."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Geneva."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Geneva?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Geneva."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Geneva (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "geneva",
+    "locationName": "Geneva",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Geneva?",
+        "answer": "The online filing deadline is 31 January following the tax year in Geneva."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Geneva."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Geneva."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Brussels?",
+        "answer": "The standard limitation period is three years in Brussels, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Brussels?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Brussels law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Brussels offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Brussels?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Brussels."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Brussels are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Brussels, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Brussels?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Brussels."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Brussels."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Brussels can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "How is property registered in Brussels?",
+        "answer": "Land Registry services cover Brussels; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Brussels. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Brussels?",
+        "answer": "Yes—Brussels places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Brussels?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Brussels can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Brussels depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Brussels for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Brussels?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Brussels provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Brussels must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Brussels, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Brussels?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Brussels."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Brussels."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Brussels offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Brussels?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Brussels."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Brussels."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Brussels."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Brussels?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Brussels."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Brussels (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "brussels",
+    "locationName": "Brussels",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Brussels?",
+        "answer": "The online filing deadline is 31 January following the tax year in Brussels."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Brussels."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Brussels."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Vienna?",
+        "answer": "The standard limitation period is three years in Vienna, starting from the date of injury or discovery."
+      },
+      {
+        "question": "What damages can I recover for a road‑traffic accident in Vienna?",
+        "answer": "You may claim medical costs, lost earnings, property damage, and compensation for pain and suffering under Vienna law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury solicitors in Vienna offer 'no win, no fee' agreements—fees are paid only if your claim succeeds."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Vienna?",
+        "answer": "An uncontested divorce can complete in 4–6 months, while disputed matters may extend proceedings in Vienna."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court fees in Vienna are fixed, but total costs depend on solicitor fees and issues like child arrangements or property."
+      },
+      {
+        "question": "Do both spouses need to attend court?",
+        "answer": "With digital filing in Vienna, many uncontested cases are handled without personal attendance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "Can I work while my visa application is pending in Vienna?",
+        "answer": "Generally you must wait for approval unless you hold a bridging visa or work permit in Vienna."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months depending on visa category and Home Office workload affecting Vienna."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "While not required, an immigration solicitor in Vienna can improve the success rate of appeals."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "How is property registered in Vienna?",
+        "answer": "Land Registry services cover Vienna; registering title protects ownership and simplifies future transactions."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Stamp Duty Land Tax (or its devolved equivalent) applies when buying property in Vienna. Rates vary by price band."
+      },
+      {
+        "question": "Can non‑residents buy property in Vienna?",
+        "answer": "Yes—Vienna places few restrictions on foreign buyers, but additional stamp duty surcharges may apply."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "When should I hire a criminal solicitor in Vienna?",
+        "answer": "Immediately after arrest or when contacted by police. Early legal advice in Vienna can affect bail and interview outcomes."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Vienna depend on offence severity and risk factors; a solicitor can argue for your release."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Legal Aid may be available in Vienna for qualifying defendants based on means and interests of justice tests."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "What is the notice period for dismissal in Vienna?",
+        "answer": "Employees are entitled to statutory notice based on length of service, unless the contract in Vienna provides longer."
+      },
+      {
+        "question": "Can my employer dismiss me without reason?",
+        "answer": "After two years’ service, your employer in Vienna must show a fair reason and follow a fair procedure."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "There is no statutory right to overtime pay in Vienna, but contracts or collective agreements may provide it."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Vienna?",
+        "answer": "Most contracts may be oral, but certain agreements such as land transfers must be written under laws in Vienna."
+      },
+      {
+        "question": "How do I enforce a breached contract?",
+        "answer": "You can sue for damages or specific performance in the civil courts serving Vienna."
+      },
+      {
+        "question": "Should I form a limited company or partnership?",
+        "answer": "A limited company in Vienna offers liability protection; consult a commercial solicitor for tax and compliance advice."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Vienna?",
+        "answer": "Yes, if it is signed by the testator and witnessed by two independent adults under succession law in Vienna."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may be settled in 6–9 months; contested wills or complex assets can prolong probate in Vienna."
+      },
+      {
+        "question": "Can I challenge a will?",
+        "answer": "You can contest for lack of capacity or undue influence within the probate courts of Vienna."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Vienna?",
+        "answer": "Apply to the UK IPO/Irish IPO; approval usually takes 4–8 months including publication and opposition periods."
+      },
+      {
+        "question": "What is the length of patent protection?",
+        "answer": "A UK/IE patent lasts 20 years from filing, provided renewal fees are paid, covering applicants in Vienna."
+      },
+      {
+        "question": "Can I sue for copyright infringement without registration?",
+        "answer": "Copyright arises automatically, but registration in Vienna (for US works) or evidence of creation aids enforcement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "vienna",
+    "locationName": "Vienna",
+    "faq": [
+      {
+        "question": "When do I file self‑assessment returns in Vienna?",
+        "answer": "The online filing deadline is 31 January following the tax year in Vienna."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Reasonable household goods and tools of trade are typically exempt from the bankruptcy estate in Vienna."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Most HMRC debts survive bankruptcy unless they are older and fall under special rules; seek advice in Vienna."
+      }
+    ]
+  }
+]
