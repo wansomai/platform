@@ -8,17 +8,23 @@ import {
   Users,
   DollarSign,
   Shield,
-  Clock,
-  Star,
-  TrendingUp,
-  Award,
-  FileText,
+  Clock
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
-import PractiseAreasComponent from "./practiseareas";
+import PractiseAreasComponent from "../practiseareas";
 import Footer from "@/components/layout/Footer";
+import FaqSection from "@/components/home/faqs";
+interface Props {
+  location?: string
+  practiceArea?: string
+  faq?: any
+}
 
-const HireALawyerPage = () => {
+const HireALawyerPage = ({
+  location,
+  practiceArea,
+  faq
+}: Props) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -91,7 +97,35 @@ const HireALawyerPage = () => {
     <div className="min-h-screen bg-white">
       <Navbar/>
       {/* Hero Section */}
-      <LegalHeroSection />
+      <section
+      className=" flex items-center justify-between pt-24 md:pt-32 bg-[#355e66] relative overflow-hidden"
+    >
+      <div className="section-container mx-auto">
+        <div className="grid lg:grid-cols-2 lg:gap-12 items-center">
+          {/* Left Side - Content */}
+          <div className="text-left space-y-8">
+            <div className="space-y-6">
+             <h1 className="text-4xl font-bold text-white">
+      Get expert advice from expert {practiceArea} lawyers in {location ?? "your area"}
+  </h1>
+  <p className="text-xl text-gray-200">
+    {`Our ${practiceArea} attorneys in ${location} are ready to help. Receive personalized legal advice within 24 working hours.`} 
+  </p>
+
+            </div>
+
+        
+          </div>
+
+          {/* Right Side - Form */}
+          <div>
+            <img src="/hero.png"/>
+
+          </div>
+          
+        </div>
+      </div>
+    </section>
 
       {/* How It Works Section */}
       <section className="py-16 bg-white">
@@ -100,7 +134,7 @@ const HireALawyerPage = () => {
             className="text-4xl font-bold mb-5 text-center lg:max-w-4xl mx-auto"
             style={{ color: "#1f2937" }}
           >
-            Get quick answers from real lawyers, easily.
+            How it works
           </h2>
           <p className="text-lg text-center mb-10" style={{ color: "#6b7280" }}>
             Ask any legal or tax question, or have a network attorney review
@@ -158,7 +192,7 @@ const HireALawyerPage = () => {
       <section className="py-16" style={{ backgroundColor: "#f3f4f4" }}>
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid md:grid-cols-2 gap-12">
-            <div>
+            <div id="ask-a-lawyer">
              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full mx-auto">
          
             {submitStatus.success && (
@@ -267,7 +301,7 @@ const HireALawyerPage = () => {
                 Over 300k questions answered... and counting
               </h2>
               <p className="text-lg mb-8" style={{ color: "#6b7280" }}>
-                Our network of experienced attorneys has helped hundreds of
+                Our network of experienced {practiceArea} attorneys has helped hundreds of
                 thousands of people get the legal guidance they need. From
                 simple questions to complex legal matters, we're here to help.
               </p>
@@ -325,6 +359,7 @@ const HireALawyerPage = () => {
 
 
       {/* Final CTA Section */}
+      <FaqSection faqRichText={faq}/>
       {/* <section className="py-16" style={{ backgroundColor: "#d47b0f" }}>
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h2 className="text-3xl font-bold mb-4 text-white">
@@ -356,87 +391,5 @@ const HireALawyerPage = () => {
   );
 };
 
-const LegalHeroSection = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    message: "",
-  });
-
-  const [submitStatus, setSubmitStatus] = useState({
-    success: false,
-    error: false,
-    message: "",
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleChange = (e: { target: { id: any; value: any; }; }) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    setSubmitStatus({ success: false, error: false, message: "" });
-
-    try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setSubmitStatus({
-        success: true,
-        error: false,
-        message:
-          "Your legal question has been submitted successfully! We'll get back to you soon.",
-      });
-
-      setFormData({ email: "", message: "" });
-    } catch (error) {
-      setSubmitStatus({
-        success: false,
-        error: true,
-        message:
-          "There was an error submitting your request. Please try again.",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <section
-      className=" flex items-center justify-between pt-24 md:pt-32 bg-[#355e66] relative overflow-hidden"
-    >
-      <div className="section-container mx-auto">
-        <div className="grid lg:grid-cols-2 lg:gap-12 items-center">
-          {/* Left Side - Content */}
-          <div className="text-left space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-3xl lg:text-6xl font-bold text-white leading-tight">
-                Ask An Expert Lawyer
-              </h1>
-              <p className="text-xl text-gray-200 leading-relaxed max-w-lg">
-                Ask any legal question and get expert advice from our lawyer nextwork
-                within 24hrs
-              </p>
-            </div>
-
-        
-          </div>
-
-          {/* Right Side - Form */}
-          <div>
-            <img src="/hero.png"/>
-
-          </div>
-          
-        </div>
-      </div>
-    </section>
-  );
-};
 
 export default HireALawyerPage;

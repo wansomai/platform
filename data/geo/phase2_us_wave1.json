@@ -1,0 +1,4202 @@
+[
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in California?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in California, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in California?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under California law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in California work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "How long does a divorce take in California?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in California."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in California are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in California."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in California?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in California."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in California."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in California can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "How is property title recorded in California?",
+        "answer": "California uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in California."
+      },
+      {
+        "question": "Can foreigners buy property in California?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in California."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in California?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in California can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in California depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "California provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in California?",
+        "answer": "California follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in California."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under California and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in California?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in California."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of California."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in California offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in California?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under California probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in California."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of California."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "How do I register a trademark in California?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in California and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in California."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "california",
+    "locationName": "California",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in California?",
+        "answer": "State income tax returns are generally due April 15, but California may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "California allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in California."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Texas?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Texas, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Texas?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Texas law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Texas work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Texas?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Texas."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Texas are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Texas."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Texas?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Texas."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Texas."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Texas can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "How is property title recorded in Texas?",
+        "answer": "Texas uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Texas."
+      },
+      {
+        "question": "Can foreigners buy property in Texas?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Texas."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Texas?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Texas can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Texas depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Texas provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Texas?",
+        "answer": "Texas follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Texas."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Texas and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Texas?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Texas."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Texas."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Texas offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Texas?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Texas probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Texas."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Texas."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Texas?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Texas and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Texas."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "texas",
+    "locationName": "Texas",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Texas?",
+        "answer": "State income tax returns are generally due April 15, but Texas may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Texas allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Texas."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Florida?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Florida, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Florida?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Florida law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Florida work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Florida?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Florida."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Florida are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Florida."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Florida?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Florida."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Florida."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Florida can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "How is property title recorded in Florida?",
+        "answer": "Florida uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Florida."
+      },
+      {
+        "question": "Can foreigners buy property in Florida?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Florida."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Florida?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Florida can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Florida depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Florida provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Florida?",
+        "answer": "Florida follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Florida."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Florida and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Florida?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Florida."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Florida."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Florida offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Florida?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Florida probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Florida."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Florida."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Florida?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Florida and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Florida."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "florida",
+    "locationName": "Florida",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Florida?",
+        "answer": "State income tax returns are generally due April 15, but Florida may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Florida allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Florida."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in New York?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in New York, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in New York?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under New York law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in New York work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "How long does a divorce take in New York?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in New York."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in New York are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in New York."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in New York?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in New York."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in New York."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in New York can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "How is property title recorded in New York?",
+        "answer": "New York uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in New York."
+      },
+      {
+        "question": "Can foreigners buy property in New York?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in New York."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in New York?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in New York can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in New York depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "New York provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in New York?",
+        "answer": "New York follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in New York."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under New York and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in New York?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in New York."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of New York."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in New York offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in New York?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under New York probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in New York."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of New York."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "How do I register a trademark in New York?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in New York and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in New York."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "new-york",
+    "locationName": "New York",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in New York?",
+        "answer": "State income tax returns are generally due April 15, but New York may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "New York allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in New York."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Pennsylvania?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Pennsylvania, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Pennsylvania?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Pennsylvania law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Pennsylvania work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Pennsylvania?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Pennsylvania."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Pennsylvania are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Pennsylvania."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Pennsylvania?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Pennsylvania."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Pennsylvania."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Pennsylvania can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "How is property title recorded in Pennsylvania?",
+        "answer": "Pennsylvania uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Pennsylvania."
+      },
+      {
+        "question": "Can foreigners buy property in Pennsylvania?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Pennsylvania."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Pennsylvania?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Pennsylvania can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Pennsylvania depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Pennsylvania provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Pennsylvania?",
+        "answer": "Pennsylvania follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Pennsylvania."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Pennsylvania and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Pennsylvania?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Pennsylvania."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Pennsylvania."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Pennsylvania offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Pennsylvania?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Pennsylvania probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Pennsylvania."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Pennsylvania."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Pennsylvania?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Pennsylvania and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Pennsylvania."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "pennsylvania",
+    "locationName": "Pennsylvania",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Pennsylvania?",
+        "answer": "State income tax returns are generally due April 15, but Pennsylvania may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Pennsylvania allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Pennsylvania."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Illinois?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Illinois, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Illinois?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Illinois law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Illinois work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Illinois?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Illinois."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Illinois are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Illinois."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Illinois?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Illinois."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Illinois."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Illinois can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "How is property title recorded in Illinois?",
+        "answer": "Illinois uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Illinois."
+      },
+      {
+        "question": "Can foreigners buy property in Illinois?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Illinois."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Illinois?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Illinois can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Illinois depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Illinois provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Illinois?",
+        "answer": "Illinois follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Illinois."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Illinois and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Illinois?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Illinois."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Illinois."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Illinois offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Illinois?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Illinois probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Illinois."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Illinois."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Illinois?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Illinois and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Illinois."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "illinois",
+    "locationName": "Illinois",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Illinois?",
+        "answer": "State income tax returns are generally due April 15, but Illinois may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Illinois allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Illinois."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Ohio?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Ohio, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Ohio?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Ohio law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Ohio work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Ohio?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Ohio."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Ohio are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Ohio."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Ohio?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Ohio."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Ohio."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Ohio can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "How is property title recorded in Ohio?",
+        "answer": "Ohio uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Ohio."
+      },
+      {
+        "question": "Can foreigners buy property in Ohio?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Ohio."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Ohio?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Ohio can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Ohio depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Ohio provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Ohio?",
+        "answer": "Ohio follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Ohio."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Ohio and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Ohio?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Ohio."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Ohio."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Ohio offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Ohio?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Ohio probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Ohio."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Ohio."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Ohio?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Ohio and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Ohio."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "ohio",
+    "locationName": "Ohio",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Ohio?",
+        "answer": "State income tax returns are generally due April 15, but Ohio may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Ohio allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Ohio."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Georgia?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Georgia, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Georgia?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Georgia law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Georgia work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Georgia?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Georgia."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Georgia are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Georgia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Georgia?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Georgia."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Georgia."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Georgia can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "How is property title recorded in Georgia?",
+        "answer": "Georgia uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Georgia."
+      },
+      {
+        "question": "Can foreigners buy property in Georgia?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Georgia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Georgia?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Georgia can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Georgia depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Georgia provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Georgia?",
+        "answer": "Georgia follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Georgia."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Georgia and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Georgia?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Georgia."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Georgia."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Georgia offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Georgia?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Georgia probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Georgia."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Georgia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Georgia?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Georgia and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Georgia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "georgia",
+    "locationName": "Georgia",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Georgia?",
+        "answer": "State income tax returns are generally due April 15, but Georgia may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Georgia allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Georgia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in North Carolina?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in North Carolina, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in North Carolina?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under North Carolina law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in North Carolina work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "How long does a divorce take in North Carolina?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in North Carolina."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in North Carolina are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in North Carolina."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in North Carolina?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in North Carolina."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in North Carolina."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in North Carolina can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "How is property title recorded in North Carolina?",
+        "answer": "North Carolina uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in North Carolina."
+      },
+      {
+        "question": "Can foreigners buy property in North Carolina?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in North Carolina."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in North Carolina?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in North Carolina can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in North Carolina depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "North Carolina provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in North Carolina?",
+        "answer": "North Carolina follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in North Carolina."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under North Carolina and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in North Carolina?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in North Carolina."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of North Carolina."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in North Carolina offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in North Carolina?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under North Carolina probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in North Carolina."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of North Carolina."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "How do I register a trademark in North Carolina?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in North Carolina and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in North Carolina."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "north-carolina",
+    "locationName": "North Carolina",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in North Carolina?",
+        "answer": "State income tax returns are generally due April 15, but North Carolina may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "North Carolina allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in North Carolina."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Michigan?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Michigan, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Michigan?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Michigan law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Michigan work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Michigan?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Michigan."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Michigan are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Michigan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Michigan?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Michigan."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Michigan."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Michigan can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "How is property title recorded in Michigan?",
+        "answer": "Michigan uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Michigan."
+      },
+      {
+        "question": "Can foreigners buy property in Michigan?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Michigan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Michigan?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Michigan can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Michigan depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Michigan provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Michigan?",
+        "answer": "Michigan follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Michigan."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Michigan and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Michigan?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Michigan."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Michigan."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Michigan offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Michigan?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Michigan probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Michigan."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Michigan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Michigan?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Michigan and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Michigan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "michigan",
+    "locationName": "Michigan",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Michigan?",
+        "answer": "State income tax returns are generally due April 15, but Michigan may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Michigan allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Michigan."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in New Jersey?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in New Jersey, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in New Jersey?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under New Jersey law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in New Jersey work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "How long does a divorce take in New Jersey?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in New Jersey."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in New Jersey are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in New Jersey."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in New Jersey?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in New Jersey."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in New Jersey."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in New Jersey can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "How is property title recorded in New Jersey?",
+        "answer": "New Jersey uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in New Jersey."
+      },
+      {
+        "question": "Can foreigners buy property in New Jersey?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in New Jersey."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in New Jersey?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in New Jersey can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in New Jersey depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "New Jersey provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in New Jersey?",
+        "answer": "New Jersey follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in New Jersey."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under New Jersey and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in New Jersey?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in New Jersey."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of New Jersey."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in New Jersey offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in New Jersey?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under New Jersey probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in New Jersey."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of New Jersey."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "How do I register a trademark in New Jersey?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in New Jersey and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in New Jersey."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "new-jersey",
+    "locationName": "New Jersey",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in New Jersey?",
+        "answer": "State income tax returns are generally due April 15, but New Jersey may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "New Jersey allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in New Jersey."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Virginia?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Virginia, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Virginia?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Virginia law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Virginia work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Virginia?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Virginia."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Virginia are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Virginia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Virginia?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Virginia."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Virginia."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Virginia can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "How is property title recorded in Virginia?",
+        "answer": "Virginia uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Virginia."
+      },
+      {
+        "question": "Can foreigners buy property in Virginia?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Virginia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Virginia?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Virginia can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Virginia depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Virginia provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Virginia?",
+        "answer": "Virginia follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Virginia."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Virginia and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Virginia?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Virginia."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Virginia."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Virginia offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Virginia?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Virginia probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Virginia."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Virginia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Virginia?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Virginia and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Virginia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "virginia",
+    "locationName": "Virginia",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Virginia?",
+        "answer": "State income tax returns are generally due April 15, but Virginia may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Virginia allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Virginia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Washington?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Washington, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Washington?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Washington law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Washington work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Washington?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Washington."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Washington are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Washington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Washington?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Washington."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Washington."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Washington can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "How is property title recorded in Washington?",
+        "answer": "Washington uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Washington."
+      },
+      {
+        "question": "Can foreigners buy property in Washington?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Washington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Washington?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Washington can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Washington depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Washington provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Washington?",
+        "answer": "Washington follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Washington."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Washington and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Washington?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Washington."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Washington."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Washington offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Washington?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Washington probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Washington."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Washington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Washington?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Washington and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Washington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "washington",
+    "locationName": "Washington",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Washington?",
+        "answer": "State income tax returns are generally due April 15, but Washington may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Washington allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Washington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Arizona?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Arizona, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Arizona?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Arizona law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Arizona work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Arizona?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Arizona."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Arizona are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Arizona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Arizona?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Arizona."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Arizona."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Arizona can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "How is property title recorded in Arizona?",
+        "answer": "Arizona uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Arizona."
+      },
+      {
+        "question": "Can foreigners buy property in Arizona?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Arizona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Arizona?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Arizona can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Arizona depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Arizona provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Arizona?",
+        "answer": "Arizona follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Arizona."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Arizona and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Arizona?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Arizona."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Arizona."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Arizona offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Arizona?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Arizona probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Arizona."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Arizona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Arizona?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Arizona and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Arizona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "arizona",
+    "locationName": "Arizona",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Arizona?",
+        "answer": "State income tax returns are generally due April 15, but Arizona may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Arizona allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Arizona."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Massachusetts?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Massachusetts, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Massachusetts?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Massachusetts law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Massachusetts work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Massachusetts?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Massachusetts."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Massachusetts are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Massachusetts."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Massachusetts?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Massachusetts."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Massachusetts."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Massachusetts can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "How is property title recorded in Massachusetts?",
+        "answer": "Massachusetts uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Massachusetts."
+      },
+      {
+        "question": "Can foreigners buy property in Massachusetts?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Massachusetts."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Massachusetts?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Massachusetts can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Massachusetts depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Massachusetts provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Massachusetts?",
+        "answer": "Massachusetts follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Massachusetts."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Massachusetts and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Massachusetts?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Massachusetts."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Massachusetts."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Massachusetts offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Massachusetts?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Massachusetts probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Massachusetts."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Massachusetts."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Massachusetts?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Massachusetts and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Massachusetts."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "massachusetts",
+    "locationName": "Massachusetts",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Massachusetts?",
+        "answer": "State income tax returns are generally due April 15, but Massachusetts may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Massachusetts allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Massachusetts."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Tennessee?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Tennessee, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Tennessee?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Tennessee law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Tennessee work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Tennessee?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Tennessee."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Tennessee are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Tennessee."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Tennessee?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Tennessee."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Tennessee."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Tennessee can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "How is property title recorded in Tennessee?",
+        "answer": "Tennessee uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Tennessee."
+      },
+      {
+        "question": "Can foreigners buy property in Tennessee?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Tennessee."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Tennessee?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Tennessee can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Tennessee depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Tennessee provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Tennessee?",
+        "answer": "Tennessee follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Tennessee."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Tennessee and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Tennessee?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Tennessee."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Tennessee."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Tennessee offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Tennessee?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Tennessee probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Tennessee."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Tennessee."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Tennessee?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Tennessee and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Tennessee."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "tennessee",
+    "locationName": "Tennessee",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Tennessee?",
+        "answer": "State income tax returns are generally due April 15, but Tennessee may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Tennessee allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Tennessee."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Indiana?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Indiana, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Indiana?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Indiana law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Indiana work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Indiana?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Indiana."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Indiana are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Indiana."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Indiana?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Indiana."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Indiana."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Indiana can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "How is property title recorded in Indiana?",
+        "answer": "Indiana uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Indiana."
+      },
+      {
+        "question": "Can foreigners buy property in Indiana?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Indiana."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Indiana?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Indiana can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Indiana depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Indiana provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Indiana?",
+        "answer": "Indiana follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Indiana."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Indiana and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Indiana?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Indiana."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Indiana."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Indiana offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Indiana?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Indiana probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Indiana."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Indiana."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Indiana?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Indiana and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Indiana."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "indiana",
+    "locationName": "Indiana",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Indiana?",
+        "answer": "State income tax returns are generally due April 15, but Indiana may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Indiana allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Indiana."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Missouri?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Missouri, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Missouri?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Missouri law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Missouri work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Missouri?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Missouri."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Missouri are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Missouri."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Missouri?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Missouri."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Missouri."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Missouri can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "How is property title recorded in Missouri?",
+        "answer": "Missouri uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Missouri."
+      },
+      {
+        "question": "Can foreigners buy property in Missouri?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Missouri."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Missouri?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Missouri can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Missouri depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Missouri provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Missouri?",
+        "answer": "Missouri follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Missouri."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Missouri and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Missouri?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Missouri."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Missouri."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Missouri offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Missouri?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Missouri probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Missouri."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Missouri."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Missouri?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Missouri and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Missouri."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "missouri",
+    "locationName": "Missouri",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Missouri?",
+        "answer": "State income tax returns are generally due April 15, but Missouri may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Missouri allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Missouri."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Maryland?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Maryland, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Maryland?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Maryland law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Maryland work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Maryland?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Maryland."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Maryland are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Maryland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Maryland?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Maryland."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Maryland."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Maryland can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "How is property title recorded in Maryland?",
+        "answer": "Maryland uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Maryland."
+      },
+      {
+        "question": "Can foreigners buy property in Maryland?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Maryland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Maryland?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Maryland can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Maryland depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Maryland provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Maryland?",
+        "answer": "Maryland follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Maryland."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Maryland and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Maryland?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Maryland."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Maryland."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Maryland offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Maryland?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Maryland probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Maryland."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Maryland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Maryland?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Maryland and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Maryland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "maryland",
+    "locationName": "Maryland",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Maryland?",
+        "answer": "State income tax returns are generally due April 15, but Maryland may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Maryland allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Maryland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Wisconsin?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in Wisconsin, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in Wisconsin?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under Wisconsin law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Wisconsin work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Wisconsin?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in Wisconsin."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in Wisconsin are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in Wisconsin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in Wisconsin?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in Wisconsin."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in Wisconsin."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in Wisconsin can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "How is property title recorded in Wisconsin?",
+        "answer": "Wisconsin uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in Wisconsin."
+      },
+      {
+        "question": "Can foreigners buy property in Wisconsin?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in Wisconsin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in Wisconsin?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in Wisconsin can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in Wisconsin depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "Wisconsin provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in Wisconsin?",
+        "answer": "Wisconsin follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in Wisconsin."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under Wisconsin and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in Wisconsin?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in Wisconsin."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of Wisconsin."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in Wisconsin offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in Wisconsin?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under Wisconsin probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in Wisconsin."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of Wisconsin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Wisconsin?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in Wisconsin and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in Wisconsin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "wisconsin",
+    "locationName": "Wisconsin",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in Wisconsin?",
+        "answer": "State income tax returns are generally due April 15, but Wisconsin may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "Wisconsin allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in Wisconsin."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in District of Columbia?",
+        "answer": "Most claims must be filed within 2–3 years of the accident in District of Columbia, but the exact statute of limitations depends on the injury type."
+      },
+      {
+        "question": "What damages can I recover after a car accident in District of Columbia?",
+        "answer": "You may be eligible for medical expenses, lost wages, property damage, and compensation for pain and suffering under District of Columbia law."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in District of Columbia work on a contingency basis, meaning you only pay if your case is successful."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "How long does a divorce take in District of Columbia?",
+        "answer": "An uncontested divorce can be finalized in as little as three months, while a contested case may take over a year in District of Columbia."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees in District of Columbia are modest, but total costs depend on lawyer fees and whether child custody or property issues are contested."
+      },
+      {
+        "question": "Do both spouses need to appear in court?",
+        "answer": "At least one spouse usually testifies. Settlements can reduce the number of required appearances in District of Columbia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "Can I work while my visa adjustment is pending in District of Columbia?",
+        "answer": "Generally you need an Employment Authorization Document (EAD) to work legally while your adjustment application is pending in District of Columbia."
+      },
+      {
+        "question": "How long does it take to obtain a work visa?",
+        "answer": "Processing times range from a few weeks to several months, depending on the visa category and USCIS workload in District of Columbia."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa denial?",
+        "answer": "While not mandatory, an immigration attorney in District of Columbia can improve the success rate of an appeal or motion to reopen."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Real‑Estate & Property",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "How is property title recorded in District of Columbia?",
+        "answer": "District of Columbia uses a deeds recording system; proper recording protects ownership and helps avoid disputes."
+      },
+      {
+        "question": "What taxes apply to property transfers?",
+        "answer": "Expect transfer taxes or stamps and possible capital-gains tax on high-value sales in District of Columbia."
+      },
+      {
+        "question": "Can foreigners buy property in District of Columbia?",
+        "answer": "Yes, there are generally no restrictions on foreign ownership of real estate in District of Columbia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defense",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "When should I hire a criminal lawyer in District of Columbia?",
+        "answer": "Immediately after arrest or if you learn you are under investigation—early legal advice in District of Columbia can affect bail and evidence."
+      },
+      {
+        "question": "Is bail automatic?",
+        "answer": "Bail decisions in District of Columbia depend on the offense and risk factors; a lawyer can argue for release on favorable terms."
+      },
+      {
+        "question": "What if I can’t afford a lawyer?",
+        "answer": "District of Columbia provides public defenders for defendants who meet income eligibility requirements."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labor",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "What is the notice period for termination in District of Columbia?",
+        "answer": "District of Columbia follows at‑will employment, but contractual or WARN Act notices may apply in mass layoffs."
+      },
+      {
+        "question": "Can my employer fire me without cause?",
+        "answer": "At‑will employment allows termination without cause, but not for illegal reasons such as discrimination or retaliation in District of Columbia."
+      },
+      {
+        "question": "Am I entitled to overtime pay?",
+        "answer": "Non‑exempt employees usually receive 1.5× wages for hours worked beyond 40 per week under District of Columbia and federal law."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "Do contracts need to be in writing in District of Columbia?",
+        "answer": "Most contracts can be oral, but real estate, surety, and certain sales over $500 must be written under the Statute of Frauds in District of Columbia."
+      },
+      {
+        "question": "How do I enforce a contract breach?",
+        "answer": "You may sue for damages or specific performance in the civil courts of District of Columbia."
+      },
+      {
+        "question": "Should I form an LLC or corporation?",
+        "answer": "An LLC in District of Columbia offers liability protection and pass‑through taxation; a lawyer can help choose the best structure."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "Is a handwritten (holographic) will valid in District of Columbia?",
+        "answer": "Yes, but only if it meets specific witnessing requirements under District of Columbia probate law."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Simple estates may close in 6–9 months, but contested wills or complex assets can extend probate beyond a year in District of Columbia."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "You can challenge a will on grounds such as undue influence or lack of capacity in the probate court of District of Columbia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "How do I register a trademark in District of Columbia?",
+        "answer": "File with the USPTO; the process typically takes 8–12 months, including publication and opposition periods."
+      },
+      {
+        "question": "What is the duration of patent protection?",
+        "answer": "Utility patents last 20 years from the filing date, subject to maintenance fees, in District of Columbia and nationwide."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Registration is required before you can file an infringement lawsuit in District of Columbia."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Bankruptcy",
+    "location": "district-of-columbia",
+    "locationName": "District of Columbia",
+    "faq": [
+      {
+        "question": "When must I file state tax returns in District of Columbia?",
+        "answer": "State income tax returns are generally due April 15, but District of Columbia may conform to IRS extensions."
+      },
+      {
+        "question": "What assets are exempt in Chapter 7 bankruptcy?",
+        "answer": "District of Columbia allows exemptions for homestead, vehicle, tools of trade, and certain retirement accounts."
+      },
+      {
+        "question": "Can tax debts be discharged through bankruptcy?",
+        "answer": "Older income tax debts may be dischargeable if they meet the 3‑2‑240 rule; consult a bankruptcy attorney in District of Columbia."
+      }
+    ]
+  }
+]

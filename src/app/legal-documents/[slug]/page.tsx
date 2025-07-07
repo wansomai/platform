@@ -7,7 +7,7 @@ type Props = {
   params: Promise<{ slug: string, id: string }>;
 }
 
-// Generate metadata for each blog post
+// Generate metadata for each legal document template page
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   try {
     const { slug } = await params;
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         url: `https://wansom.ai/legal-documents/${slug}`, // Fix: Use slug instead of params
         images: [
           {
-            url: adaptedPost.image || '/contract-sample.webp',
+            url: "/contract-sample.webp",
             width: 1200,
             height: 630,
             alt: adaptedPost.title,
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         card: 'summary_large_image',
         title: adaptedPost.title,
         description: adaptedPost.preview,
-        images: [adaptedPost.image || '/contract-sample.webp'],
+        images: ['/contract-sample.webp'],
       },
     };
   } catch (error) {

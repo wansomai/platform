@@ -27,7 +27,7 @@ const LegalDocumentsPageClient = () => {
         setPosts(adaptedPosts);
       } catch (err) {
         console.error('Error fetching blog posts:', err);
-        setError('Failed to load blog posts');
+        setError('Failed to load legal document');
       } finally {
         setLoading(false);
       }
@@ -65,7 +65,7 @@ const LegalDocumentsPageClient = () => {
           <div className="max-w-4xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Legal Document Templates : Downloadable Agreements, Contracts, Leases, Wills & More</h1>
             <div className="text-sm  mb-6">
-              <Link href="/" className="hover:text-blue-600">Home</Link> / <span>legal-deocuments</span>
+              <Link href="/" className="hover:text-yellow-600">Home</Link> / <span>legal-deocuments</span>
             </div>
             <p className="text-lg ">
                 Explore our collection of legal documents and templates to help you navigate the complexities of legal matters. Whether you're looking for contracts, agreements, or other essential documents, we have you covered.

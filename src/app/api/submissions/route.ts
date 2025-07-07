@@ -23,7 +23,7 @@ export async function POST(request:NextRequest) {
 
   const mailOptions = {
     from: "law@wansom.ai",
-    to: ["ochiengwarren10@gmail.com"],
+    to: ["wansomco@gmail.com","law@wansom.ai"],
     subject: "New Form Submission",
     text: `You have received a new submission:\n\n${formattedPayload}`,
   };

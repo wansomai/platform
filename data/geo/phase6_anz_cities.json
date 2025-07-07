@@ -1,0 +1,2002 @@
+[
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Sydney?",
+        "answer": "In Sydney, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Sydney?",
+        "answer": "Compensation in Sydney may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Sydney offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Sydney?",
+        "answer": "In Sydney, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Sydney, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Sydney are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Sydney?",
+        "answer": "Some bridging visas in Sydney allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Sydney varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Sydney can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "How is property title registered in Sydney?",
+        "answer": "Sydney uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Sydney."
+      },
+      {
+        "question": "Can foreigners buy property in Sydney?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Sydney."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Sydney?",
+        "answer": "Immediately after police contact or arrest. Early advice in Sydney can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Sydney can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Sydney has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Sydney?",
+        "answer": "Notice in Sydney depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Sydney must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Sydney earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Sydney?",
+        "answer": "While oral contracts are valid in Sydney, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Sydney?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Sydney."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Sydney."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Sydney?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Sydney."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Sydney may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Sydney are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Sydney?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Sydney last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Sydney for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "sydney",
+    "locationName": "Sydney",
+    "faq": [
+      {
+        "question": "When are tax returns due in Sydney?",
+        "answer": "In Sydney, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Sydney law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Sydney, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Melbourne?",
+        "answer": "In Melbourne, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Melbourne?",
+        "answer": "Compensation in Melbourne may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Melbourne offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Melbourne?",
+        "answer": "In Melbourne, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Melbourne, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Melbourne are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Melbourne?",
+        "answer": "Some bridging visas in Melbourne allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Melbourne varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Melbourne can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "How is property title registered in Melbourne?",
+        "answer": "Melbourne uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Melbourne."
+      },
+      {
+        "question": "Can foreigners buy property in Melbourne?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Melbourne."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Melbourne?",
+        "answer": "Immediately after police contact or arrest. Early advice in Melbourne can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Melbourne can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Melbourne has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Melbourne?",
+        "answer": "Notice in Melbourne depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Melbourne must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Melbourne earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Melbourne?",
+        "answer": "While oral contracts are valid in Melbourne, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Melbourne?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Melbourne."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Melbourne."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Melbourne?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Melbourne."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Melbourne may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Melbourne are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Melbourne?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Melbourne last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Melbourne for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "melbourne",
+    "locationName": "Melbourne",
+    "faq": [
+      {
+        "question": "When are tax returns due in Melbourne?",
+        "answer": "In Melbourne, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Melbourne law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Melbourne, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Brisbane?",
+        "answer": "In Brisbane, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Brisbane?",
+        "answer": "Compensation in Brisbane may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Brisbane offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Brisbane?",
+        "answer": "In Brisbane, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Brisbane, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Brisbane are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Brisbane?",
+        "answer": "Some bridging visas in Brisbane allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Brisbane varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Brisbane can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "How is property title registered in Brisbane?",
+        "answer": "Brisbane uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Brisbane."
+      },
+      {
+        "question": "Can foreigners buy property in Brisbane?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Brisbane."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Brisbane?",
+        "answer": "Immediately after police contact or arrest. Early advice in Brisbane can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Brisbane can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Brisbane has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Brisbane?",
+        "answer": "Notice in Brisbane depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Brisbane must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Brisbane earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Brisbane?",
+        "answer": "While oral contracts are valid in Brisbane, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Brisbane?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Brisbane."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Brisbane."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Brisbane?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Brisbane."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Brisbane may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Brisbane are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Brisbane?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Brisbane last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Brisbane for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "brisbane",
+    "locationName": "Brisbane",
+    "faq": [
+      {
+        "question": "When are tax returns due in Brisbane?",
+        "answer": "In Brisbane, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Brisbane law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Brisbane, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Perth?",
+        "answer": "In Perth, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Perth?",
+        "answer": "Compensation in Perth may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Perth offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Perth?",
+        "answer": "In Perth, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Perth, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Perth are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Perth?",
+        "answer": "Some bridging visas in Perth allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Perth varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Perth can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "How is property title registered in Perth?",
+        "answer": "Perth uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Perth."
+      },
+      {
+        "question": "Can foreigners buy property in Perth?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Perth."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Perth?",
+        "answer": "Immediately after police contact or arrest. Early advice in Perth can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Perth can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Perth has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Perth?",
+        "answer": "Notice in Perth depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Perth must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Perth earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Perth?",
+        "answer": "While oral contracts are valid in Perth, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Perth?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Perth."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Perth."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Perth?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Perth."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Perth may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Perth are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Perth?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Perth last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Perth for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "perth",
+    "locationName": "Perth",
+    "faq": [
+      {
+        "question": "When are tax returns due in Perth?",
+        "answer": "In Perth, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Perth law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Perth, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Adelaide?",
+        "answer": "In Adelaide, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Adelaide?",
+        "answer": "Compensation in Adelaide may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Adelaide offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Adelaide?",
+        "answer": "In Adelaide, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Adelaide, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Adelaide are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Adelaide?",
+        "answer": "Some bridging visas in Adelaide allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Adelaide varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Adelaide can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "How is property title registered in Adelaide?",
+        "answer": "Adelaide uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Adelaide."
+      },
+      {
+        "question": "Can foreigners buy property in Adelaide?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Adelaide."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Adelaide?",
+        "answer": "Immediately after police contact or arrest. Early advice in Adelaide can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Adelaide can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Adelaide has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Adelaide?",
+        "answer": "Notice in Adelaide depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Adelaide must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Adelaide earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Adelaide?",
+        "answer": "While oral contracts are valid in Adelaide, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Adelaide?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Adelaide."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Adelaide."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Adelaide?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Adelaide."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Adelaide may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Adelaide are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Adelaide?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Adelaide last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Adelaide for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "adelaide",
+    "locationName": "Adelaide",
+    "faq": [
+      {
+        "question": "When are tax returns due in Adelaide?",
+        "answer": "In Adelaide, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Adelaide law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Adelaide, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Canberra?",
+        "answer": "In Canberra, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Canberra?",
+        "answer": "Compensation in Canberra may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Canberra offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Canberra?",
+        "answer": "In Canberra, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Canberra, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Canberra are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Canberra?",
+        "answer": "Some bridging visas in Canberra allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Canberra varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Canberra can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "How is property title registered in Canberra?",
+        "answer": "Canberra uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Canberra."
+      },
+      {
+        "question": "Can foreigners buy property in Canberra?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Canberra."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Canberra?",
+        "answer": "Immediately after police contact or arrest. Early advice in Canberra can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Canberra can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Canberra has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Canberra?",
+        "answer": "Notice in Canberra depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Canberra must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Canberra earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Canberra?",
+        "answer": "While oral contracts are valid in Canberra, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Canberra?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Canberra."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Canberra."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Canberra?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Canberra."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Canberra may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Canberra are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Canberra?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Canberra last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Canberra for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "canberra",
+    "locationName": "Canberra",
+    "faq": [
+      {
+        "question": "When are tax returns due in Canberra?",
+        "answer": "In Canberra, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Canberra law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Canberra, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Auckland?",
+        "answer": "In Auckland, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Auckland?",
+        "answer": "Compensation in Auckland may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Auckland offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Auckland?",
+        "answer": "In Auckland, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Auckland, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Auckland are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Auckland?",
+        "answer": "Some bridging visas in Auckland allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Auckland varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Auckland can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "How is property title registered in Auckland?",
+        "answer": "Auckland uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Auckland."
+      },
+      {
+        "question": "Can foreigners buy property in Auckland?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Auckland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Auckland?",
+        "answer": "Immediately after police contact or arrest. Early advice in Auckland can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Auckland can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Auckland has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Auckland?",
+        "answer": "Notice in Auckland depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Auckland must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Auckland earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Auckland?",
+        "answer": "While oral contracts are valid in Auckland, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Auckland?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Auckland."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Auckland."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Auckland?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Auckland."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Auckland may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Auckland are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Auckland?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Auckland last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Auckland for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "auckland",
+    "locationName": "Auckland",
+    "faq": [
+      {
+        "question": "When are tax returns due in Auckland?",
+        "answer": "In Auckland, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Auckland law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Auckland, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Wellington?",
+        "answer": "In Wellington, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Wellington?",
+        "answer": "Compensation in Wellington may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Wellington offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Wellington?",
+        "answer": "In Wellington, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Wellington, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Wellington are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Wellington?",
+        "answer": "Some bridging visas in Wellington allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Wellington varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Wellington can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "How is property title registered in Wellington?",
+        "answer": "Wellington uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Wellington."
+      },
+      {
+        "question": "Can foreigners buy property in Wellington?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Wellington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Wellington?",
+        "answer": "Immediately after police contact or arrest. Early advice in Wellington can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Wellington can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Wellington has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Wellington?",
+        "answer": "Notice in Wellington depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Wellington must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Wellington earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Wellington?",
+        "answer": "While oral contracts are valid in Wellington, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Wellington?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Wellington."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Wellington."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Wellington?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Wellington."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Wellington may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Wellington are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Wellington?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Wellington last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Wellington for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "wellington",
+    "locationName": "Wellington",
+    "faq": [
+      {
+        "question": "When are tax returns due in Wellington?",
+        "answer": "In Wellington, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Wellington law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Wellington, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Christchurch?",
+        "answer": "In Christchurch, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Christchurch?",
+        "answer": "Compensation in Christchurch may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Christchurch offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Christchurch?",
+        "answer": "In Christchurch, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Christchurch, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Christchurch are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Christchurch?",
+        "answer": "Some bridging visas in Christchurch allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Christchurch varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Christchurch can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "How is property title registered in Christchurch?",
+        "answer": "Christchurch uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Christchurch."
+      },
+      {
+        "question": "Can foreigners buy property in Christchurch?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Christchurch."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Christchurch?",
+        "answer": "Immediately after police contact or arrest. Early advice in Christchurch can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Christchurch can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Christchurch has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Christchurch?",
+        "answer": "Notice in Christchurch depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Christchurch must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Christchurch earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Christchurch?",
+        "answer": "While oral contracts are valid in Christchurch, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Christchurch?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Christchurch."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Christchurch."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Christchurch?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Christchurch."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Christchurch may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Christchurch are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Christchurch?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Christchurch last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Christchurch for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "christchurch",
+    "locationName": "Christchurch",
+    "faq": [
+      {
+        "question": "When are tax returns due in Christchurch?",
+        "answer": "In Christchurch, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Christchurch law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Christchurch, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  },
+  {
+    "practiceArea": "personal-injury",
+    "practiceAreaName": "Personal Injury",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "How long do I have to file a personal injury claim in Hamilton?",
+        "answer": "In Hamilton, most personal injury claims must be filed within three years, though exceptions may apply."
+      },
+      {
+        "question": "What can I claim after a car accident in Hamilton?",
+        "answer": "Compensation in Hamilton may cover treatment costs, loss of income, and general damages for pain and suffering."
+      },
+      {
+        "question": "Do I pay legal fees upfront?",
+        "answer": "Many personal injury lawyers in Hamilton offer no win, no fee arrangements—fees apply only if you win."
+      }
+    ]
+  },
+  {
+    "practiceArea": "divorce-family",
+    "practiceAreaName": "Divorce & Family",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "How long does a divorce take in Hamilton?",
+        "answer": "In Hamilton, you must be separated for 12 months before applying. Uncontested divorces usually take 3–4 months to finalise."
+      },
+      {
+        "question": "What is the cost of filing for divorce?",
+        "answer": "Court filing fees apply in Hamilton, and legal costs vary depending on complexity and representation."
+      },
+      {
+        "question": "Do both spouses have to go to court?",
+        "answer": "If uncontested, divorces in Hamilton are mostly paper-based and don’t require a court appearance."
+      }
+    ]
+  },
+  {
+    "practiceArea": "immigration-visa",
+    "practiceAreaName": "Immigration & Visa",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "Can I work while my visa is pending in Hamilton?",
+        "answer": "Some bridging visas in Hamilton allow work rights; check the specific visa subclass conditions."
+      },
+      {
+        "question": "How long does a work visa take to process?",
+        "answer": "Work visa processing in Hamilton varies by subclass, but often ranges from 1 to 3 months."
+      },
+      {
+        "question": "Do I need a lawyer to appeal a visa refusal?",
+        "answer": "Not required, but immigration lawyers in Hamilton can assist with AAT reviews or ministerial intervention."
+      }
+    ]
+  },
+  {
+    "practiceArea": "land-property",
+    "practiceAreaName": "Property & Conveyancing",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "How is property title registered in Hamilton?",
+        "answer": "Hamilton uses a Torrens system—registration is required for legal ownership and protects title."
+      },
+      {
+        "question": "What taxes apply to property purchases?",
+        "answer": "Expect stamp duty and possibly foreign buyer surcharge when purchasing property in Hamilton."
+      },
+      {
+        "question": "Can foreigners buy property in Hamilton?",
+        "answer": "Yes, but restrictions apply for non-residents. FIRB approval is often required in Hamilton."
+      }
+    ]
+  },
+  {
+    "practiceArea": "criminal-defense",
+    "practiceAreaName": "Criminal Defence",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "When should I contact a criminal lawyer in Hamilton?",
+        "answer": "Immediately after police contact or arrest. Early advice in Hamilton can impact your bail and statement rights."
+      },
+      {
+        "question": "Is bail automatically granted?",
+        "answer": "Bail depends on the charge and circumstances. A lawyer in Hamilton can advocate for your release."
+      },
+      {
+        "question": "Can I get Legal Aid?",
+        "answer": "Yes—Hamilton has means-tested Legal Aid for eligible defendants facing serious charges."
+      }
+    ]
+  },
+  {
+    "practiceArea": "employment-labour",
+    "practiceAreaName": "Employment & Labour",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "What notice is required for termination in Hamilton?",
+        "answer": "Notice in Hamilton depends on contract and Fair Work Act minimums (or the Employment Relations Act in NZ)."
+      },
+      {
+        "question": "Can my employer fire me without reason?",
+        "answer": "Dismissals in Hamilton must be for a valid reason and follow fair process under employment law."
+      },
+      {
+        "question": "Do I get paid overtime?",
+        "answer": "Most employees in Hamilton earn overtime unless covered by an award or enterprise agreement."
+      }
+    ]
+  },
+  {
+    "practiceArea": "business-contracts",
+    "practiceAreaName": "Business & Contracts",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "Do contracts have to be in writing in Hamilton?",
+        "answer": "While oral contracts are valid in Hamilton, written agreements are recommended for clarity and enforceability."
+      },
+      {
+        "question": "How do I enforce a contract in Hamilton?",
+        "answer": "You can file in small claims or superior courts depending on the dispute value in Hamilton."
+      },
+      {
+        "question": "Should I register a company or partnership?",
+        "answer": "An Australian or NZ company provides limited liability. Speak with a commercial lawyer in Hamilton."
+      }
+    ]
+  },
+  {
+    "practiceArea": "wills-probate-succession",
+    "practiceAreaName": "Wills, Probate & Estate",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "Is a handwritten will valid in Hamilton?",
+        "answer": "Yes, if signed and witnessed properly, handwritten wills can be valid in Hamilton."
+      },
+      {
+        "question": "How long does probate take?",
+        "answer": "Probate in Hamilton may take 2–6 months depending on estate complexity and disputes."
+      },
+      {
+        "question": "Can I contest a will?",
+        "answer": "Yes—challenges in Hamilton are allowed for dependents and others with standing."
+      }
+    ]
+  },
+  {
+    "practiceArea": "intellectual-property",
+    "practiceAreaName": "Intellectual Property",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "How do I register a trademark in Hamilton?",
+        "answer": "Apply through IP Australia or IPONZ; processing takes 6–9 months including opposition periods."
+      },
+      {
+        "question": "How long does a patent last?",
+        "answer": "Standard patents in Hamilton last 20 years if renewed; innovation patents (Australia) are shorter."
+      },
+      {
+        "question": "Can I enforce copyright without registration?",
+        "answer": "Yes—copyright arises automatically in Hamilton for original works. Registration is not required."
+      }
+    ]
+  },
+  {
+    "practiceArea": "tax-bankruptcy",
+    "practiceAreaName": "Tax & Insolvency",
+    "location": "hamilton-nz",
+    "locationName": "Hamilton",
+    "faq": [
+      {
+        "question": "When are tax returns due in Hamilton?",
+        "answer": "In Hamilton, individual tax returns are due by 31 Oct unless lodged by a registered agent."
+      },
+      {
+        "question": "What assets are exempt in bankruptcy?",
+        "answer": "Hamilton law protects essential household items, tools of trade, and a basic vehicle value."
+      },
+      {
+        "question": "Are tax debts wiped out by bankruptcy?",
+        "answer": "Income tax debts may be discharged in Hamilton, but fraud-related debts usually survive bankruptcy."
+      }
+    ]
+  }
+]

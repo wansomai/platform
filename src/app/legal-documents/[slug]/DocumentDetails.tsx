@@ -59,7 +59,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
         setBlog(adaptedPost);
       } catch (err) {
         console.error('Error fetching blog post:', err);
-        setError('Failed to load blog post');
+        setError('Failed to load legal document');
       } finally {
         setLoading(false);
       }
@@ -78,16 +78,20 @@ const DocDetailPageClient = ({ params }: PageProps) => {
   if (error || !blog) {
     return (
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-red-600 mb-4">
-            {error || "Blog post not found"}
+        <div className="text-center flex items-center flex-col gap-3 justify-center">
+          <h1 className="text-5xl font-semibold text-primary mb-4 font-serif">
+            Oops!
           </h1>
-          <p className="mb-6">The requested blog post could not be found.</p>
+          <p className="mb-6">The requested legal document could not be found.</p>
+          <img src="/404.png" className="mx-aut0 -mt-20"/>
           <Link
-            href="/blogs"
-            className="inline-block bg-teal-600 text-white px-6 py-2 rounded-md"
+            href="/legal-documents"
+            className="flex gap-1 items-center bg-teal-600 text-sm text-white px-6 py-2 rounded-md"
           >
-            Return to Blogs
+            View More Documents <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+</svg>
+
           </Link>
         </div>
       </div>
