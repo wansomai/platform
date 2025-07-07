@@ -4,6 +4,7 @@ import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import HireALawyerPage from './HireALawyerPage'
 import { getLandingPage, getAllSlugs, getAllLawyerPages } from '@/lib/data/contentful'
+import Link from 'next/link';
 
 
 type Props = {
@@ -13,7 +14,7 @@ type Props = {
 
 // ❶  Generate all pages at build‑time
 export async function generateStaticParams() {
-  const slugs = await getAllSlugs()          // -> ['divorce-lawyer-kenya', ...]
+  const slugs = await getAllSlugs()  
   return slugs.map(slug => ({ slug }))
 }
 
@@ -30,6 +31,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         title: 'No lawyers match your search criteria',
         description: 'No lawyers match your search criteria.Search again or try a different location.',
       };
+      
     }
     
   return {
@@ -63,7 +65,28 @@ export default async function Page({ params }: Props) {
   const preview = (await draftMode()).isEnabled
   const entry = await getLandingPage(slug)
   // if (!entry) return notFound()
+if (!entry || !entry.fields) {
+    return (
+            <div className="container mx-auto px-4 py-16">
+        <div className="text-center flex items-center flex-col gap-3 justify-center">
+          <h1 className="text-5xl font-semibold text-primary mb-4 font-serif">
+            Oops!
+          </h1>
+          <p className="mb-6">Could not find the resource you are looking for.</p>
+          <img src="/404.png" className="mx-aut0 -mt-20"/>
+          <Link
+            href="/"
+            className="flex gap-1 items-center bg-teal-600 text-sm text-white px-6 py-2 rounded-md"
+          >
+            Return Home <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+</svg>
 
+          </Link>
+        </div>
+      </div>
+    );  
+  }
   return (
     <HireALawyerPage
       location={entry.location}
