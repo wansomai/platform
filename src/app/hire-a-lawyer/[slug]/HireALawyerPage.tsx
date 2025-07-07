@@ -95,13 +95,13 @@ const HireALawyerPage = ({
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar/>
+     
       {/* Hero Section */}
       <section
-      className=" flex items-center justify-between pt-24 md:pt-32 bg-[#355e66] relative overflow-hidden"
+      className=" pt-24 md:pt-16 pl-5 lg:pl-20 bg-[#355e66] relative overflow-hidden"
     >
-      <div className="section-container mx-auto">
-        <div className="grid lg:grid-cols-2 lg:gap-12 items-center">
+       <Navbar/>
+        <div className="grid lg:grid-cols-2 gap-5 lg:gap-12 items-center">
           {/* Left Side - Content */}
           <div className="text-left space-y-8">
             <div className="space-y-6">
@@ -119,11 +119,11 @@ const HireALawyerPage = ({
 
           {/* Right Side - Form */}
           <div>
-            <img src="/hero.png"/>
+            <img src="/law-office.jpg"/>
 
           </div>
           
-        </div>
+        
       </div>
     </section>
 

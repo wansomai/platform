@@ -65,7 +65,7 @@ export default async function Page({ params }: Props) {
   const preview = (await draftMode()).isEnabled
   const entry = await getLandingPage(slug)
   // if (!entry) return notFound()
-if (!entry || !entry.fields) {
+if (!entry) {
     return (
             <div className="container mx-auto px-4 py-16">
         <div className="text-center flex items-center flex-col gap-3 justify-center">
