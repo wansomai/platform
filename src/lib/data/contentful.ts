@@ -43,6 +43,13 @@ export interface LawyerPageFields {
   keywords?: string[]; // Optional keywords field
   tags?: string[]; // Optional tags field
 }
+export interface practiseAreaFields {
+  title: string;
+  content: any;
+  slug: string;
+  metaDescription?: string; // Optional meta description field
+  faq?: any; // Rich text content for FAQ
+}
 export interface DocumentTemplateFields {
   title: string;
   preview?: any;
@@ -105,6 +112,19 @@ export interface LawyerPages {
     };
   };
   fields: LawyerPageFields;
+}
+export interface practiseAreaPages {
+  sys: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    contentType: {
+      sys: {
+        id: string;
+      };
+    };
+  };
+  fields: practiseAreaFields;
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
@@ -204,6 +224,14 @@ export async function getAllLawyerPages(): Promise<LawyerPages[]> {
   });
 
   return response.items as unknown as LawyerPages[];
+}
+export async function getAllPractiseAreas(): Promise<practiseAreaPages[]> {
+  const response = await client.getEntries({
+    content_type: "practiseareas",
+    order: ["-sys.createdAt"],
+  });
+
+  return response.items as unknown as practiseAreaPages[];
 }
 export async function getAllSlugs() {
   const res = await client.getEntries({

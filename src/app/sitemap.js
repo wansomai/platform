@@ -90,10 +90,11 @@ export default async function sitemap() {
   // -------------------------------------------------------------------
   // 4. Dynamic routes (blogs, documents, lawyer pages)
   // -------------------------------------------------------------------
- const [blogPosts, legalDocs, lawyerPages] = await Promise.all([
+ const [blogPosts, legalDocs, lawyerPages,practiceAreas] = await Promise.all([
   fetchAllEntries(client, { content_type: 'blogPost' }),
   fetchAllEntries(client, { content_type: 'documentTemplates'}),
-  fetchLawyerPages(client, { content_type: 'lawyerPages' }),      // ← the new, size‑safe helper
+  fetchLawyerPages(client, { content_type: 'lawyerPages' }),
+  fetchAllEntries(client, { content_type: 'practiseareas'}),
 ]);
 
   const blogRoutes = blogPosts.map((post) => {
@@ -111,6 +112,13 @@ export default async function sitemap() {
       lastModified: new Date(doc.sys.updatedAt || doc.sys.createdAt),
     };
   });
+    const practiseAreaRoutes = practiceAreas.map((area) => {
+    const slug =  slugify(area.fields.title)??area.fields.slug;
+    return {
+      url: `${baseUrl}/lawyer-network/${slug}`,
+      lastModified: new Date(area.sys.updatedAt || area.sys.createdAt),
+    };
+  });
 
   const lawyerRoutes = lawyerPages.map((page) => ({
     url: `${baseUrl}/hire-a-lawyer/${page.fields.slug}`,
@@ -120,5 +128,5 @@ export default async function sitemap() {
   // -------------------------------------------------------------------
   // 5. Combine & return
   // -------------------------------------------------------------------
-  return [...staticRoutes, ...blogRoutes, ...legalDocRoutes, ...lawyerRoutes];
+  return [...staticRoutes, ...blogRoutes, ...legalDocRoutes, ...lawyerRoutes, ...practiseAreaRoutes]
 }

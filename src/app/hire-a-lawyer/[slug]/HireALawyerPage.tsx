@@ -11,19 +11,21 @@ import {
   Clock
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
-import PractiseAreasComponent from "../practiseareas";
 import Footer from "@/components/layout/Footer";
 import FaqSection from "@/components/home/faqs";
+import PractiseAreasComponent from "@/components/home/practiseareas";
 interface Props {
   location?: string
   practiceArea?: string
   faq?: any
+  areas?: any[]
 }
 
 const HireALawyerPage = ({
   location,
   practiceArea,
-  faq
+  faq,
+  areas
 }: Props) => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -364,7 +366,7 @@ const HireALawyerPage = ({
 
     
       {/* Why Choose Section */}
-   <PractiseAreasComponent/>
+   <PractiseAreasComponent areas={areas ?? []}/>
 
 
       {/* Final CTA Section */}
