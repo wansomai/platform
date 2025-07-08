@@ -219,7 +219,7 @@ function AutomateProcesses(){
                     </div>
     
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center p-3">
+                      <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center p-3">
                         <Target className="w-6 h-6 text-white" />
                       </div>
                       <div>
