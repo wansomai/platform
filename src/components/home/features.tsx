@@ -30,9 +30,10 @@ const FeaturesSection: React.FC = () => {
       <section className="section-container" id="ai-assistant">
         <div className="text-start md:text-center my-12 lg:my-16">
           <h2 className="text-heading-2 mb-6 max-w-5xl mx-auto">
-            Built By Leading Law Firms and Advocates,<br />
-            Powering End to End Legal Processes for Global Teams
+            Powering Legal Success
           </h2>
+          <p className="text-body-large text-gray-600 mb-8 max-w-3xl mx-auto">
+           Join 3000+  Advocates streamlining their legal processes with wansom.ai</p>
         </div>
       </section>
 
@@ -46,7 +47,7 @@ const FeaturesSection: React.FC = () => {
                 alt={logo.alt}
                 width={160}
                 height={80}
-                className="h-16 w-auto object-contain hover:grayscale transition-all duration-300 hover:scale-105"
+                className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
                 loading="lazy"
               />
             </div>
