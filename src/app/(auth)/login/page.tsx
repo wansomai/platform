@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import Head from "next/head"
 
 // Create a separate component that uses useSearchParams
 function LoginPageContent() {
@@ -293,6 +294,18 @@ function LoginPageContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
+              <Head>
+            <title>Create Your Account | Wansom AI</title>
+        <meta name="description" content="create you wansom.ai account and start automating your legal processes" />
+        <meta name="keywords" content="login wansom.ai, legal ai,ai law,legal ai companies " />
+        <meta property="og:title" content="Create Your Account | Wansom AI"/>
+        <meta property="og:description" content="create you wansom.ai account and start automating your legal processes" />
+        <meta property="og:image" content="/images/features-2.png" />
+        <meta name="twitter:card" content="Legal AI Assistant pricing for wansom AI" />
+        <meta name="twitter:title" content="Create Your Account | Wansom AI" />
+        <meta name="twitter:description" content="create you wansom.ai account and start automating your legal processes" />
+        <meta name="twitter:image"  content="/images/features-2.png"/>
+            </Head>
       <LoginPageContent />
     </Suspense>
   )
