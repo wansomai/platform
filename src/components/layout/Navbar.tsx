@@ -147,7 +147,7 @@ const Navbar = () => {
             </Link>
             <Link
               href="/login"
-              className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-2 px-4"
+              className="font-medium text-white bg-secondary hover:bg-yellow-600 rounded-md py-2 px-4"
             >
               Start For Free
             </Link>

@@ -9,19 +9,12 @@ import {
   Play,
   Gavel
 } from 'lucide-react';
+import PatnerLogoSection from './Partnerlogos';
 
 const FeaturesSection: React.FC = () => {
 
   // Partner logos data
-  const partnerLogos = [
-      { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
-    { src: "/logos/3.png", alt: "Cymelle Arttoneys" },
-    { src: "/logos/4.png", alt: "Netsheria" },
-    { src: "/logos/5.png", alt: "Partner Law Firm 5" },
-    { src: "/logos/6.png", alt: "Bellmac consulting" },
-    { src: "/logos/7.png", alt: "Riskhouse International" }
-  ];
+
 
 
   return (
@@ -30,29 +23,15 @@ const FeaturesSection: React.FC = () => {
       <section className="section-container" id="ai-assistant">
         <div className="text-start md:text-center my-12 lg:my-16">
           <h2 className="text-heading-2 mb-6 max-w-5xl mx-auto">
-            Built By Leading Law Firms and Advocates,<br />
-            Powering End to End Legal Processes for Global Teams
+            Powering Legal Success
           </h2>
+          <p className="text-body-large text-gray-600 mb-8 max-w-3xl mx-auto">
+           Join 3000+  Advocates streamlining their legal processes with wansom.ai</p>
         </div>
       </section>
 
       {/* Partner Logos */}
-      <section className="section-container mb-16">
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-8 items-center">
-          {partnerLogos.map((logo, index) => (
-            <div key={index} className="flex justify-center">
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                width={160}
-                height={80}
-                className="h-16 w-auto object-contain hover:grayscale transition-all duration-300 hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      <PatnerLogoSection/>
 
       {/* Partner Support Section */}
       <PartnerSupportSection />
