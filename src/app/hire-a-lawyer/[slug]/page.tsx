@@ -3,7 +3,7 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import HireALawyerPage from './HireALawyerPage'
-import { getLandingPage, getAllSlugs, getAllLawyerPages } from '@/lib/data/contentful'
+import { getLandingPage, getAllSlugs, getAllLawyerPages, getAllPractiseAreas } from '@/lib/data/contentful'
 import Link from 'next/link';
 
 
@@ -63,6 +63,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 export default async function Page({ params }: Props) {
    const { slug } = await params;
     const allEntries = await getAllLawyerPages()
+    const allAreas = await getAllPractiseAreas();
+        
    const entry = allEntries.find((post) => {
       return post.fields.slug === slug;
     });
@@ -94,6 +96,7 @@ if (!entry) {
       location={entry.fields.location}
       practiceArea={entry.fields.practiceArea}
       faq={entry.fields.faq}
+      areas={allAreas}
     />
   )
 }
