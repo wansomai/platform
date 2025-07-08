@@ -62,10 +62,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 // ❸  Page component
 export default async function Page({ params }: Props) {
    const { slug } = await params;
-    const allEntries = await getAllLawyerPages()
-   const entry = allEntries.find((post) => {
-      return post.fields.slug === slug;
-    });
+  const preview = (await draftMode()).isEnabled
+  const entry = await getLandingPage(slug)
   // if (!entry) return notFound()
 if (!entry) {
     return (
@@ -91,9 +89,9 @@ if (!entry) {
   }
   return (
     <HireALawyerPage
-      location={entry.fields.location}
-      practiceArea={entry.fields.practiceArea}
-      faq={entry.fields.faq}
+      location={entry.location}
+      practiceArea={entry.practiceArea}
+      faq={entry.faq}
     />
   )
 }

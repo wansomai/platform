@@ -11,7 +11,7 @@ import {
   Clock
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
-import PractiseAreasComponent from "../practiseareas";
+import PractiseAreasComponent from "./practiseareas";
 import Footer from "@/components/layout/Footer";
 import FaqSection from "@/components/home/faqs";
 interface Props {
