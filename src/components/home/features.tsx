@@ -82,7 +82,7 @@ const PartnerSupportSection = () => {
               Protecting Client Confidentiality. Built for Collaboration
             </h2>
             <p className="text-body-large text-dim mb-8">
-              AI is helping global legal teams achieve cost savings, increase productivity, and manage complex processes more effectively. Wansom AI provides a secure, collaborative workspace powered by custom legal AI models that integrate directly into your firm's workflows.
+            Our platform provides a secure, collaborative workspace powered by legal specific AI models that integrate directly into your firm's workflows.
             </p>
             <p className="text-body text-dim mb-8">
               Whether your goal is to streamline operations, improve legal outcomes, or handle complex matters, we ensure AI delivers measurable value for your practice and your clients.
