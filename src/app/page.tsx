@@ -8,7 +8,7 @@ import HeroSection from "@/components/home/hero";
 import FeaturesSection from "@/components/home/features";
 import VaultSection from "@/components/home/vault";
 import CookieConsent, { Cookies } from "react-cookie-consent";
-import { ResearchInterfaceCards, ResearchSourcesWorkflow } from "./ai-legal-research/LegalResearchPage";
+import { ResearchInterfaceCards, ResearchSourcesWorkflow } from "./(landingpages)/ai-legal-research/LegalResearchPage";
 import CreativeIntegrationsSection from "@/components/home/Security";
 
 export default function Home() {

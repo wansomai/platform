@@ -24,8 +24,8 @@ import { useUIStore } from "@/store/ui.store"
 import { useConversationSettingsStore } from "@/store/conversation-settings.store"
 import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { useSession } from "next-auth/react"
-import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal"
 import ProAccessModal from "../modals/ProAccess"
+import { UploadDocumentModal } from "../modals/UploadModal"
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -57,7 +57,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   } = useConversationSettingsStore()
 
   const { 
-    documents: conversationDocuments
+    documents: conversationDocuments,
+     fetchConversationDocuments, 
   } = useConversationDocumentsStore()
 
   // Get right sidebar state from UI store
@@ -138,16 +139,19 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   };
 
   // Handle documents added
-  const handleDocumentsAdded = (count: number) => {
-    const message = count === 1 
-      ? "Document added to conversation" 
-      : `${count} documents added to conversation`;
-    addToast({ message, type: 'success' });
+   const handleDocumentsAdded = (documents: any[]) => {
+    const count = documents.length
+    addToast({
+      message: `${count} document${count > 1 ? 's' : ''} added to conversation`,
+      type: "success"
+    })
+    onDocumentsAdded?.(count)
     
-    // Call parent handler if provided
-    onDocumentsAdded?.(count);
-  };
-
+    // Refresh conversation documents
+    if (currentConversation?.id) {
+      fetchConversationDocuments(currentConversation.id)
+    }
+  }
   // Toggle sidebar function
   const toggleSidebar = () => {
     setRightSidebarCollapsed(!rightSidebarCollapsed);
@@ -375,11 +379,12 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
       />   
       {/* Document Selection Modal */}
       {currentConversation && (
-        <DocumentSelectionModal
+        <UploadDocumentModal
           open={showDocumentModal}
+          mode="upload-and-attach"
           onOpenChange={setShowDocumentModal}
           conversationId={currentConversation.id}
-          onDocumentsAdded={handleDocumentsAdded}
+         onDocumentsAdded={handleDocumentsAdded}
         />
       )}
     </>

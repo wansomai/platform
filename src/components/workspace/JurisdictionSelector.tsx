@@ -77,6 +77,7 @@ export function JurisdictionSelector({
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     onChange(null);
   };
 
@@ -105,14 +106,12 @@ export function JurisdictionSelector({
             
             <div className="flex items-center gap-1 ml-2">
               {value && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-4 w-4 p-0 hover:bg-gray-100"
+                <div
+                  className="h-4 w-4 p-0 hover:bg-gray-100 rounded-sm flex items-center justify-center cursor-pointer"
                   onClick={handleClear}
                 >
                   <X className="h-3 w-3" />
-                </Button>
+                </div>
               )}
               <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
             </div>

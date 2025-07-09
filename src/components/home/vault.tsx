@@ -1,6 +1,6 @@
 // components/VaultSection.tsx
 'use client';
-import { DocumentsVault } from '@/app/ai-due-diligence/DueDiligence';
+import { DocumentsVault } from '@/app/(landingpages)/ai-due-diligence/DueDiligence';
 import React,{useState} from 'react';
 import {
   FileText,

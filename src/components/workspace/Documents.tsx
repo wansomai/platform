@@ -56,14 +56,13 @@ import {
   FileImage,
   PenTool
 } from "lucide-react"
-import { useProjectStore, DocumentInfo } from "@/store/project.store"
+import { useProjectStore } from "@/store/project.store"
 import { useUIStore } from "@/store/ui.store"
-import { formatDistanceToNow, format } from 'date-fns'
-import { ProjectComponentProps } from "@/types/project"
+import { formatDistanceToNow } from 'date-fns'
 import { useSession } from 'next-auth/react'
 import { useDocumentsStore } from "@/store/documents.store"
 
-export function Documents({ project }: ProjectComponentProps) {
+export function Documents() {
   const params = useParams()
   const projectId = params.id as string
   
