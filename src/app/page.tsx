@@ -44,7 +44,7 @@ export default function Home() {
           Save time by automating routine legal processes with AI, so you can focus on high-impact work.
         </p>
  <button 
-          className="font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 mb-10"
+          className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 mb-10"
           onClick={() => window.location.href = '/register'}
         >
           TRY WANSOM FOR FREE <Sparkles className='w-5 h-5 text-white' />
