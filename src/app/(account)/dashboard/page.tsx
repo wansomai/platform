@@ -200,7 +200,7 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={Zap}
               title="Start Workflow"
-              description="Automate predefined legal processes with templates"
+              description="Automate predefined legal processes with AI"
               href="/workflows"
               color="text-amber-600"
               disabled={isCreatingQuickChat}

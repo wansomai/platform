@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-col min-h-screen">
        <Navbar darkmode/>
         
-        <main className="flex-1 py-5 lg:py-0">
+        <main className="flex-1 pt-10 lg:pt-0">
           {children}
         </main>
         
