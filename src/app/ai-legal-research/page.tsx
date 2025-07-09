@@ -4,7 +4,7 @@ import LegalResearchPage from './LegalResearchPage';
 
 
 export const metadata: Metadata = {
-  title: 'Best AI Legal Research| wansom AI',
+  title: 'Best AI Legal Research platform| wansom AI',
   description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
   openGraph: {
     title: 'Best AI Legal Research| wansom AI',
