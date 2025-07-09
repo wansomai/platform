@@ -4,10 +4,10 @@ import CasePreparationPage from './CasePreparationPage';
 
 
 export const metadata: Metadata = {
-  title: 'AI for case prediction| wansom AI',
+  title: 'AI for case prediction plaform| wansom AI',
   description: 'Prepare winning cases with AI that analyzes your arguments, predicts outcomes, and simulates opposing counsel strategies to strengthen your position.',
   openGraph: {
-    title: 'AI for case prediction| wansom AI',
+    title: 'AI for case prediction plaform| wansom AI',
     description: 'Prepare winning cases with AI that analyzes your arguments, predicts outcomes, and simulates opposing counsel strategies to strengthen your position.',
     type: 'website',
     images: [

@@ -68,84 +68,10 @@ export default function RegisterPage() {
   };
   
   return (
-    <div className="flex min-h-screen flex-col-reverse md:flex-row">
-      {/* Creative Side */}
-      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-primary px-4 py-12 text-white md:px-12">
-        <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fillRule='evenodd'%3E%3Cg fill='%23ffffff' fillOpacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-            }}
-          ></div>
-        </div>
-
-        <div className="relative z-10 max-w-md text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">Join Us Today</h1>
-          <p className="mb-8 text-lg text-white/80">
-            Start automating your legal processes with AI and join thousands of legal professionals who trust our platform.
-          </p>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-              <h3 className="mb-1 font-semibold">Legal Drafting</h3>
-              <p className="text-sm text-white/70">Draft correct legal documents and clauses quickly</p>
-            </div>
-            <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-              <h3 className="mb-1 font-semibold">Deep Research</h3>
-              <p className="text-sm text-white/70">Get instant answers to complex legal questions</p>
-            </div>
-            <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-              <h3 className="mb-1 font-semibold">Due Diligence</h3>
-              <p className="text-sm text-white/70">Never be caught off guard during transactions</p>
-            </div>
-            <div className="rounded-xl bg-white/10 p-4 backdrop-blur-sm">
-              <h3 className="mb-1 font-semibold">Contract Reviews</h3>
-              <p className="text-sm text-white/70">Redline contracts and catch risks automatically</p>
-            </div>
-          </div>
-
-          <div className="mt-12">
-            <div className="flex items-center justify-center space-x-2">
-              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
-              <span className="block h-2 w-2 rounded-full bg-white"></span>
-              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
-              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
-            </div>
-            <div className="mt-6 flex items-center justify-center">
-              <div className="flex -space-x-2">
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
-                  src="/logos/1.png"
-                  alt="User"
-                />
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
-                  src="/logos/2.png"
-                  alt="User"
-                />
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
-                  src="/logos/4.png"
-                  alt="User"
-                />
-              </div>
-              <p className="ml-2 text-sm text-white/80">Join 3,000+ Advocates</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Animated Elements */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/3 overflow-hidden">
-          <div className="absolute -bottom-8 left-1/4 h-16 w-16 animate-float rounded-full bg-white/10 backdrop-blur-sm"></div>
-          <div className="absolute -bottom-12 left-2/3 h-24 w-24 animate-float-delayed rounded-full bg-white/10 backdrop-blur-sm"></div>
-          <div className="absolute -bottom-16 left-1/2 h-32 w-32 animate-float-slow rounded-full bg-white/10 backdrop-blur-sm"></div>
-        </div>
-      </div>
-
+    <div className="flex min-h-screen flex-col md:flex-row">
+    
       {/* Form Side */}
-      <div className="flex flex-1 flex-col justify-center bg-white px-4 py-12 md:px-12">
+      <div className="flex flex-1 flex-col justify-center bg-white px-4 py-12 lg:pt-24 md:px-12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 text-center">Create your account</h2>
@@ -308,6 +234,50 @@ export default function RegisterPage() {
           </form>
         </div>
       </div>
+        {/* Creative Side */}
+      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-primary px-4 py-12 text-white md:px-12">
+    
+
+        <div className="relative z-10 max-w-md text-center">
+          {/* <h1 className="mb-4 text-4xl font-medium tracking-tight md:text-5xl">Join Us Today</h1> */}
+          <p className="mb-8 text-lg text-white/80">
+            Start automating your legal processes with AI and join thousands of legal professionals who trust our platform.
+          </p>
+
+         
+
+          <div className="mt-12">
+            <div className="flex items-center justify-center space-x-2">
+              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
+              <span className="block h-2 w-2 rounded-full bg-white"></span>
+              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
+              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
+            </div>
+            <div className="mt-6 flex items-center justify-center">
+              <div className="flex -space-x-2">
+                <img
+                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
+                  src="/logos/1.png"
+                  alt="User"
+                />
+                <img
+                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
+                  src="/logos/2.png"
+                  alt="User"
+                />
+                <img
+                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
+                  src="/logos/4.png"
+                  alt="User"
+                />
+              </div>
+              <p className="ml-2 text-sm text-white/80">Join 3,000+ Advocates</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   );
 }

@@ -5,7 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Sparkles, Menu, X, ChevronDown } from 'lucide-react'
 
-const Navbar = () => {
+type NavbarProps = {
+  darkmode?: boolean
+}
+
+const Navbar = ({ darkmode = false }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -63,12 +67,12 @@ const Navbar = () => {
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
-          <Image src="/images/logo-dark.png" alt="wansom ai" width={140} height={52} />
+          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={52} />
         </Link>
 
         {/* Mobile menu button */}
         <button 
-          className="md:hidden z-50 text-white focus:outline-none"
+          className={`md:hidden z-50  focus:outline-none transition-transform duration-300 ${darkmode ? 'text-black' : 'text-white'}`}
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X className='text-black' size={24} /> : <Menu size={24} />}
@@ -77,7 +81,7 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
         <Link href="/">
-          <Image src="/images/logo-dark.png" alt="wansom ai" width={140} height={52} />
+          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={52} />
         </Link>
 
           <nav className="flex space-x-6 ">
