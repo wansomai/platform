@@ -1,5 +1,5 @@
 'use client'
-import { slugify } from "@/lib/utils";
+import slugify from "slugify";
 import { useState } from "react";
 
 
