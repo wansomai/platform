@@ -29,14 +29,14 @@ import { useConversationDocumentsStore } from "@/store/conversation-documents.st
 import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
 import { useConversationSettingsStore } from "@/store/conversation-settings.store";
 import { useNotifications } from "@/hooks/useNotifications";
-import { DocumentSelectionModal } from "@/components/modals/DocumentSelectionModal";
-import { DeleteConfirmationDialog } from "@/components/modals/DeleteConfirmationDialog";
+import { RemoveConfirmationDialog } from "@/components/modals/ConfirmationDialog";
 import { JurisdictionSelector } from "./JurisdictionSelector";
 import { getJurisdictionById, type Jurisdiction } from "@/lib/jurisdictions";
+import { UploadDocumentModal } from "../modals/UploadModal";
 
 export function ConversationDetails() {
   const params = useParams();
-  const projectId = params.id as string;
+   const projectId = params.id as string;
   
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditingInstructions, setIsEditingInstructions] = useState(false);
@@ -126,7 +126,16 @@ export function ConversationDetails() {
       notify.error('Failed to update jurisdiction');
     }
   };
-  
+   // Handle documents added
+  const handleDocumentsAdded = (documents: any[]) => {
+    const count = documents.length;
+    notify.success(`${count} document${count > 1 ? 's' : ''} added to conversation`);
+    
+    // Refresh documents list
+    if (currentConversation?.id) {
+      fetchConversationDocuments(currentConversation.id);
+    }
+  };
   // Handle document removal
   const handleRemoveDocument = async () => {
     if (!documentToDelete || !currentConversation) return;
@@ -357,27 +366,25 @@ export function ConversationDetails() {
         </ScrollArea>
       </div>
 
-      {/* Document Selection Modal */}
-      <DocumentSelectionModal
+  {/* Document Modal */}
+      <UploadDocumentModal
         open={showDocumentSelectionDialog}
         onOpenChange={setShowDocumentSelectionDialog}
-        conversationId={currentConversation.id}
-        onDocumentsAdded={(count) => {
-          const message = count === 1 ? 
-            "Document added to conversation" : 
-            `${count} documents added to conversation`;
-          notify.success(message);
-        }}
+        mode="upload-and-attach"
+        conversationId={currentConversation?.id}
+        projectId={projectId}
+        onDocumentsAdded={handleDocumentsAdded}
+        title="Add Documents to Conversation"
+        description="Select existing documents or upload new ones to add to this conversation."
       />
 
-      {/* Delete Confirmation Dialog */}
-      <DeleteConfirmationDialog
+      {/* Remove Document Confirmation */}
+      <RemoveConfirmationDialog
         open={!!documentToDelete}
         onOpenChange={(open) => !open && setDocumentToDelete(null)}
         onConfirm={handleRemoveDocument}
-        title="Remove Document"
-        description={`Are you sure you want to remove "${documentToDelete?.name}" from this conversation? This won't delete the document from your vault.`}
-
+        itemName={documentToDelete?.name}
+        contextName="this conversation"
         isLoading={isRemovingDocument}
       />
     </>

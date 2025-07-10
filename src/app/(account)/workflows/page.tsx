@@ -4,9 +4,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent } from "@/components/ui/tabs"
 import {
   Dialog,
   DialogContent,
@@ -37,7 +35,6 @@ import {
 } from "lucide-react"
 import ProAccessModal from "@/components/modals/ProAccess"
 import { LightBulbIcon } from "@heroicons/react/24/outline"
-import { CreateAssociateModal } from "@/components/associates/CreateAssociateModal"
 import { useAssociatesStore } from "@/store/associates.store"
 
 // Workflow type definition
@@ -200,11 +197,9 @@ const workflowCategories = {
 const workflowTemplates = Object.values(workflowCategories).flat()
 
 export default function WorkflowsPage() {
-  const [activeTab, setActiveTab] = useState("active") // Changed default to "draft"
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null)
   const [showWorkflowDetails, setShowWorkflowDetails] = useState(false)
-  const [showCreateModal, setShowCreateModal] = useState(false)
 
   // Pro access modal states
   const [showProModal, setShowProModal] = useState(false)
@@ -248,10 +243,6 @@ export default function WorkflowsPage() {
 
   const { associates, fetchAllAssociates, isLoading } = useAssociatesStore()
 
-  // In a useEffect
-  // useEffect(() => {
-  //   fetchAllAssociates()
-  // }, [fetchAllAssociates, showCreateModal]) // Add showCreateModal as dependency
 
   const [filteredResults, setFilteredResults] = useState<any[]>([])
 
@@ -511,14 +502,6 @@ export default function WorkflowsPage() {
       </Dialog>
 
       {/* Modals */}
-      <CreateAssociateModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onCreatePro={() => {
-          setShowCreateModal(false)
-          setShowProModal(true)
-        }}
-      />
       <ProAccessModal
         isOpen={showProModal}
         onClose={() => setShowProModal(false)}

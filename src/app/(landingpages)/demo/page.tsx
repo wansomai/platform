@@ -4,7 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 const CalendlyWidget = dynamic(
-  () => import("../../components/home/CalendlyWidget")
+  () => import("../../../components/home/CalendlyWidget")
 );
 
 const BookingPage = () => {
