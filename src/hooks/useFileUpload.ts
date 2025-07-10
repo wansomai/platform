@@ -1,5 +1,6 @@
 // hooks/useFileUpload.ts
 import { useState, useRef, useCallback } from 'react';
+import { formatFileSize as formatFileSizeUtil } from '@/lib/utils/file';
 
 export interface FileUploadOptions {
   maxFileSize?: number;
@@ -236,13 +237,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): FileUploadState 
 };
 
 // Utility function for formatting file sizes
-export const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+export { formatFileSizeUtil as formatFileSize };
 
 // Utility function for getting file icon based on extension
 export const getFileTypeIcon = (fileName: string): string => {

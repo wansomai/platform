@@ -1,9 +1,11 @@
-// app/api/documents/route.ts - Enhanced with consistent response format
+// app/api/documents/route.ts 
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
+import { formatSearchQuery, validateFile } from '@/lib/utils';
+import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 
 // Set a reasonable timeout for document processing
 export const maxDuration = 60;
@@ -47,11 +49,11 @@ export async function GET(request: NextRequest) {
       organization_id: user.organizationId,
       status: 'active'
     };
-    
-    if (searchTerm) {
+     if (searchTerm) {
+      const searchQuery = formatSearchQuery(searchTerm);
       where.OR = [
-        { title: { contains: searchTerm, mode: 'insensitive' } },
-        { description: { path: ['String'], string_contains: searchTerm } }
+        { title: { contains: searchQuery, mode: 'insensitive' } },
+        { description: { contains: searchQuery, mode: 'insensitive' } }
       ];
     }
     
@@ -186,15 +188,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Check file size limit (5MB for Vercel free tier limit)
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-    if (file.size > MAX_FILE_SIZE) {
+ const validation = validateFile(file, ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG.MAX_SIZE);
+    if (!validation.isValid) {
       return NextResponse.json(
-        { message: 'File size exceeds the limit (5MB). Please upgrade your plan to upload larger files.', error: true },
+        { message: validation.error },
         { status: 400 }
       );
     }
-
     // If folderId is provided, verify it exists and belongs to the organization
     if (folderId) {
       const folder = await prisma.folder.findUnique({

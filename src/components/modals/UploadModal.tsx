@@ -29,6 +29,7 @@ import { useConversationDocumentsStore } from "@/store/conversation-documents.st
 import { useUIStore } from "@/store/ui.store";
 import { useFolderStore } from "@/store/folder.store";
 import { useNotifications } from "@/hooks/useNotifications";
+import { formatFileSize, validateFile, getFileIcon } from "@/lib/utils/file";
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -91,7 +92,6 @@ export function UploadDocumentModal({
     attachDocumentsToConversation
   } = useConversationDocumentsStore();
   
-  const { addToast } = useUIStore();
   const { folders, fetchFolders } = useFolderStore();
   const { notify } = useNotifications();
 
@@ -183,8 +183,10 @@ export function UploadDocumentModal({
   };
   
   const validateAndSetFile = (file: File) => {
-    if (file.size > MAX_FILE_SIZE) {
-      setUploadError('File size exceeds 5MB limit. Please upgrade your plan to upload larger files.');
+    const validation = validateFile(file, undefined, MAX_FILE_SIZE);
+    
+    if (!validation.isValid) {
+      setUploadError(validation.error || 'Invalid file');
       setUploadFile(null);
       return;
     }
@@ -283,14 +285,6 @@ export function UploadDocumentModal({
     }
   };
 
-  // Utility functions
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   // Render functions
   const renderUploadTab = () => (
@@ -321,7 +315,7 @@ export function UploadDocumentModal({
             <div className="space-y-2">
               <p className="text-sm font-medium">{uploadFile.name}</p>
               <p className="text-xs text-muted-foreground">
-                {formatBytes(uploadFile.size)} • {uploadFile.type}
+                {formatFileSize(uploadFile.size)} • {uploadFile.type}
               </p>
               <Button
                 variant="outline"
@@ -450,7 +444,7 @@ export function UploadDocumentModal({
                   <p className="font-medium text-sm truncate">{doc.title}</p>
                   <div className="flex items-center text-xs text-muted-foreground">
                     <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
-                    <span>{formatBytes(doc.fileSize)}</span>
+                    <span>{formatFileSize(doc.fileSize)}</span>
                   </div>
                 </div>
               </div>

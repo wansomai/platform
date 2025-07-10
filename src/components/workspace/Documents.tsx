@@ -51,9 +51,6 @@ import {
   Filter, 
   MoreVertical,
   UploadCloud,
-  File,
-  FileSpreadsheet,
-  FileImage,
   PenTool
 } from "lucide-react"
 import { useProjectStore } from "@/store/project.store"
@@ -61,6 +58,8 @@ import { useUIStore } from "@/store/ui.store"
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from 'next-auth/react'
 import { useDocumentsStore } from "@/store/documents.store"
+import { formatFileSize, getFileIcon } from "@/lib/utils/file"
+import { formatRelativeTime } from "@/lib/utils/date"
 
 export function Documents() {
   const params = useParams()
@@ -138,36 +137,7 @@ export function Documents() {
     }
   }
   
-  // File icon based on file type
-  const getFileIcon = (fileType: string) => {
-    switch (fileType.toLowerCase()) {
-      case 'pdf':
-        return <FileText className="h-4 w-4 text-red-500" />
-      case 'xlsx':
-      case 'xls':
-      case 'csv':
-        return <FileSpreadsheet className="h-4 w-4 text-green-600" />
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-        return <FileImage className="h-4 w-4 text-blue-500" />
-      case 'doc':
-      case 'docx':
-        return <File className="h-4 w-4 text-blue-600" />
-      default:
-        return <File className="h-4 w-4 text-gray-500" />
-    }
-  }
   
-  // Format file size
-  const formatFileSize = (sizeInBytes: number) => {
-    const kb = sizeInBytes / 1024
-    if (kb < 1024) {
-      return `${kb.toFixed(1)} KB`
-    }
-    const mb = kb / 1024
-    return `${mb.toFixed(1)} MB`
-  }
   
   // Document categories
   const categories = [
@@ -327,7 +297,7 @@ export function Documents() {
                   </TableCell>
                   <TableCell>{doc.category}</TableCell>
                   <TableCell>{formatFileSize(doc.file_size)}</TableCell>
-                  <TableCell>{formatDistanceToNow(new Date(doc.uploaded_at), { addSuffix: true })}</TableCell>
+                  <TableCell>{formatRelativeTime(doc.uploaded_at)}</TableCell>
                   <TableCell>{doc.uploaded_by}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
