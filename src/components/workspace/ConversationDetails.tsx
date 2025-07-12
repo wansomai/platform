@@ -24,11 +24,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useChatStore } from "@/store/chat.store";
-import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
-import { useConversationInstructionsStore } from "@/store/conversation-instructions.store";
-import { useConversationSettingsStore } from "@/store/conversation-settings.store";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useUIStore } from "@/store/ui.store";
+import { useWorkspace } from "@/hooks/useWorkspace";
+import { useProjectSettingsStore } from "@/store/workspace-settings.store";
+import { useProjectInstructionsStore } from "@/store/workspace-instructions.store";
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { RemoveConfirmationDialog } from "@/components/modals/ConfirmationDialog";
 import { JurisdictionSelector } from "./JurisdictionSelector";
 import { getJurisdictionById, type Jurisdiction } from "@/lib/jurisdictions";
@@ -36,7 +36,7 @@ import { UploadDocumentModal } from "../modals/UploadModal";
 
 export function ConversationDetails() {
   const params = useParams();
-   const projectId = params.id as string;
+  const projectId = params.id as string;
   
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditingInstructions, setIsEditingInstructions] = useState(false);
@@ -46,347 +46,340 @@ export function ConversationDetails() {
   const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
   const [isRemovingDocument, setIsRemovingDocument] = useState(false);
+   const [showDocumentModal, setShowDocumentModal] = useState(false)
   
-  // Hooks
-  const { currentConversation } = useChatStore();
+  // Get documents from workspace hook (core workspace data)
+  const { isLoading: workspaceLoading } = useWorkspace(projectId);
+  const { fetchProjectDocuments,removeDocumentFromProject,isLoading:projectDocumentsLoading,documents } = useProjectDocumentsStore()
+  
+  // Get settings and instructions from dedicated stores (lazy loaded)
   const { 
-    documents: conversationDocuments, 
-    fetchConversationDocuments, 
-    removeDocumentFromConversation,
-    isLoading: isLoadingConversationDocuments
-  } = useConversationDocumentsStore();
+    settings, 
+    isLoading: settingsLoading, 
+    fetchSettings, 
+    setJurisdiction 
+  } = useProjectSettingsStore();
   
   const { 
     instructions, 
+    isLoading: instructionsLoading, 
     fetchInstructions, 
-    saveInstructions, 
-    setInstructions,
-    isLoading: isLoadingInstructions 
-  } = useConversationInstructionsStore();
-
-  const {
-    settings,
-    setJurisdiction,
-    isLoading: isLoadingSettings
-  } = useConversationSettingsStore();
-
-  const { notify } = useNotifications();
+    saveInstructions 
+  } = useProjectInstructionsStore();
   
-  // Fetch conversation data when conversation changes
+  const { addToast } = useUIStore();
+  
+  // Load project settings and instructions only when component mounts (lazy loading)
   useEffect(() => {
-    if (currentConversation?.id) {
-      fetchConversationDocuments(currentConversation.id);
-      fetchInstructions(currentConversation.id);
+    if (projectId) {
+      fetchSettings(projectId);
+      fetchInstructions(projectId);
+      fetchInstructions(projectId);
     }
-  }, [currentConversation?.id, fetchConversationDocuments, fetchInstructions]);
-
-  // Set temp instructions when instructions change
+  }, [projectId, fetchSettings, fetchInstructions]);
+  
+  // Update temp instructions when instructions change
   useEffect(() => {
-    setTempInstructions(instructions);
-  }, [instructions]);
+    if (!isEditingInstructions) {
+      setTempInstructions(instructions);
+    }
+  }, [instructions, isEditingInstructions]);
   
   // Filter documents based on search term
-  const filteredDocuments = conversationDocuments?.filter(
-    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDocuments = documents?.filter(
+    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           doc.description?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
-
-  // Get current jurisdiction
-  const currentJurisdiction = settings.jurisdiction ? 
-    getJurisdictionById(settings.jurisdiction.id) : null;
   
-  // Handlers for instructions
+  // Handle instructions save - connected to working store
   const handleSaveInstructions = async () => {
-    if (!currentConversation) return;
+    if (!projectId) return;
     
-    const success = await saveInstructions(currentConversation.id, tempInstructions);
-    if (success) {
-      setIsEditingInstructions(false);
-      notify.success('Instructions updated successfully');
-    } else {
-      notify.error('Failed to update instructions');
+    try {
+      const success = await saveInstructions(projectId, tempInstructions);
+      if (success) {
+        setIsEditingInstructions(false);
+        addToast({ message: 'Project instructions updated successfully', type: 'success' });
+      }
+    } catch (error) {
+      addToast({ message: 'Failed to update project instructions', type: 'error' });
     }
   };
-
-  const handleCancelEditInstructions = () => {
+  
+  // Handle instructions cancel
+  const handleCancelInstructions = () => {
     setTempInstructions(instructions);
     setIsEditingInstructions(false);
   };
-
-  // Handle jurisdiction change
-  const handleJurisdictionChange = async (jurisdiction: Jurisdiction | null) => {
-    if (!currentConversation) return;
-    
-    const success = await setJurisdiction(currentConversation.id, jurisdiction);
-    if (success) {
-      notify.success(jurisdiction ? 
-        `Jurisdiction set to ${jurisdiction.name}` : 
-        'Jurisdiction cleared'
-      );
-    } else {
-      notify.error('Failed to update jurisdiction');
-    }
-  };
-   // Handle documents added
-  const handleDocumentsAdded = (documents: any[]) => {
-    const count = documents.length;
-    notify.success(`${count} document${count > 1 ? 's' : ''} added to conversation`);
-    
-    // Refresh documents list
-    if (currentConversation?.id) {
-      fetchConversationDocuments(currentConversation.id);
-    }
-  };
-  // Handle document removal
+  
+  // Handle document removal - connected to working store
   const handleRemoveDocument = async () => {
-    if (!documentToDelete || !currentConversation) return;
+    if (!documentToDelete || !projectId) return;
     
     setIsRemovingDocument(true);
     try {
-      const success = await removeDocumentFromConversation(
-        currentConversation.id, 
-        documentToDelete.id
-      );
-      
+      const success = await removeDocumentFromProject(projectId, documentToDelete.id);
       if (success) {
+        addToast({ message: `${documentToDelete.name} removed from project`, type: 'success' });
         setDocumentToDelete(null);
-        notify.success(`${documentToDelete.name} removed from conversation`);
-      } else {
-        notify.error('Failed to remove document');
       }
     } catch (error) {
-      notify.error('Failed to remove document');
+      addToast({ message: 'Failed to remove document from project', type: 'error' });
     } finally {
       setIsRemovingDocument(false);
     }
   };
-
-  // Handle document actions
-  const handleViewDocument = (documentId: string) => {
-    // Implementation for viewing document
-    console.log('View document:', documentId);
+  
+  // Handle jurisdiction change - connected to working store  
+  const handleJurisdictionChange = async (jurisdiction: Jurisdiction | null) => {
+    if (!projectId) return;
+    
+    try {
+      const success = await setJurisdiction(projectId, jurisdiction);
+      if (success) {
+        addToast({ 
+          message: jurisdiction ? `Jurisdiction set to ${jurisdiction.name}` : 'Jurisdiction cleared',
+          type: 'success'
+        });
+      }
+    } catch (error) {
+      addToast({ message: 'Failed to update jurisdiction', type: 'error' });
+    }
   };
 
-  const handleDownloadDocument = (documentId: string, fileName: string) => {
-    // Implementation for downloading document
-    console.log('Download document:', documentId, fileName);
-  };
-
-  if (!currentConversation) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center text-gray-500">
-          <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No conversation selected</p>
-        </div>
-      </div>
-    );
-  }
-
+    // Handle documents added
+    const handleDocumentsAdded = (documents: any[]) => {
+      const count = documents.length
+      // Show success notification
+      const { addToast } = useUIStore.getState()
+      addToast({
+        message: `${count} document${count !== 1 ? 's' : ''} added to project`,
+        type: "success"
+      })
+      
+      // Refresh project documents
+      if (projectId) {
+        fetchProjectDocuments(projectId)
+      }
+    }
+  
+  // Get current jurisdiction from project settings
+   const currentJurisdiction = settings?.jurisdiction ? 
+    getJurisdictionById(settings.jurisdiction.id) : 
+    null;
+  
   return (
-    <>
-      <div className="flex flex-col h-full">
-       
-        <ScrollArea className="flex-1">
-          <div className="p-4 space-y-6">
-            
-           
-
-            {/* Custom Instructions Section */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Custom Instructions
-                </label>
-                {!isEditingInstructions && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsEditingInstructions(true)}
-                    className="h-8 px-2 text-xs"
-                  >
-                    Edit
-                  </Button>
-                )}
-              </div>
-              
-              {isEditingInstructions ? (
-                <div className="space-y-2">
-                  <Textarea
-                    value={tempInstructions}
-                    onChange={(e) => setTempInstructions(e.target.value)}
-                    placeholder="Enter specific instructions for this conversation..."
-                    className="min-h-[100px] resize-none"
-                    disabled={isLoadingInstructions}
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={handleSaveInstructions}
-                      disabled={isLoadingInstructions}
-                      className="flex-1"
-                    >
-                      {isLoadingInstructions ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <Save className="h-3 w-3" />
-                      )}
-                      Save
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleCancelEditInstructions}
-                      disabled={isLoadingInstructions}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="min-h-[60px] p-3 bg-gray-50 rounded-md">
-                  {instructions ? (
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                      {instructions}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">
-                      No custom instructions set for this conversation.
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-             {/* Jurisdiction Selection */}
-            <div>
-              <JurisdictionSelector
-                value={currentJurisdiction}
-                onChange={handleJurisdictionChange}
-                disabled={isLoadingSettings}
-                placeholder="Select legal jurisdiction..."
-              />
-            </div>
-
-            {/* Documents Section */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
-                  Documents ({conversationDocuments?.length || 0})
-                </label>
+    <ScrollArea className="h-full">
+      <div className="p-4 space-y-6">
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">Project Settings</h2>
+          
+          {/* Project Instructions */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">
+                Project Instructions
+              </label>
+              {!isEditingInstructions && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowDocumentSelectionDialog(true)}
+                  onClick={() => {
+                    setTempInstructions(instructions);
+                    setIsEditingInstructions(true);
+                  }}
                   className="h-8 px-2 text-xs"
+                  disabled={instructionsLoading}
                 >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add
+                  Edit
                 </Button>
-              </div>
-
-              {/* Search Documents */}
-              {conversationDocuments && conversationDocuments.length > 0 && (
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search documents..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-8"
-                  />
-                </div>
               )}
-
-              {/* Documents List */}
-              <div className="space-y-2">
-                {isLoadingConversationDocuments ? (
-                  <div className="text-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin mx-auto" />
-                    <p className="text-sm text-gray-500 mt-2">Loading documents...</p>
-                  </div>
-                ) : filteredDocuments.length > 0 ? (
-                  filteredDocuments.map((doc) => (
-                    <div
-                      key={doc.id}
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
-                    >
-                      <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{doc.title}</p>
-                        <p className="text-xs text-gray-500">
-                          {doc.fileType} • {doc.fileSize ? `${Math.round(doc.fileSize / 1024)} KB` : 'Unknown size'}
-                        </p>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleViewDocument(doc.id)}>
-                            <Eye className="h-4 w-4 mr-2" />
-                            View
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDownloadDocument(doc.id, doc.title)}>
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => setDocumentToDelete({ id: doc.id, name: doc.title })}
-                            className="text-red-600 focus:text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Remove
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  ))
-                ) : conversationDocuments && conversationDocuments.length === 0 ? (
-                  <div className="text-center py-6">
-                    <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm text-gray-500">No documents added</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowDocumentSelectionDialog(true)}
-                      className="mt-2"
-                    >
-                      Add your first document
-                    </Button>
+            </div>
+            
+            {isEditingInstructions ? (
+              <div className="space-y-3">
+                <Textarea
+                  value={tempInstructions}
+                  onChange={(e) => setTempInstructions(e.target.value)}
+                  placeholder="Enter project instructions..."
+                  className="min-h-[100px] text-sm"
+                  disabled={instructionsLoading}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={handleSaveInstructions}
+                    disabled={instructionsLoading}
+                    className="h-8 px-3 text-xs"
+                  >
+                    {instructionsLoading ? (
+                      <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                    ) : (
+                      <Save className="w-3 h-3 mr-1" />
+                    )}
+                    Save
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCancelInstructions}
+                    disabled={instructionsLoading}
+                    className="h-8 px-3 text-xs"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-md min-h-[60px] flex items-center">
+                {instructionsLoading ? (
+                  <div className="flex items-center">
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Loading instructions...
                   </div>
                 ) : (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-gray-500">No documents match your search</p>
-                  </div>
+                  instructions || "No project instructions set"
                 )}
               </div>
-            </div>
+            )}
           </div>
-        </ScrollArea>
+          
+          {/* Jurisdiction Selector */}
+          <div className="space-y-3">
+          <JurisdictionSelector
+              value={currentJurisdiction}
+              onChange={handleJurisdictionChange}
+              disabled={settingsLoading}
+            />
+            {settingsLoading && (
+              <div className="flex items-center text-xs text-gray-500">
+                <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                Loading settings...
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Documents Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Documents</h2>
+            <Button
+              size="sm"
+              onClick={() => setShowDocumentModal(true)}
+              className="h-8 px-3 text-xs"
+              disabled={workspaceLoading}
+            >
+              <Plus className="w-3 h-3 mr-1" />
+              Add Documents
+            </Button>
+          </div>
+
+          {/* Search Documents */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search documents..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-9 text-sm"
+            />
+          </div>
+
+          {/* Documents List */}
+          <div className="space-y-2">
+            {workspaceLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                <span className="ml-2 text-sm text-gray-500">Loading documents...</span>
+              </div>
+            ) : filteredDocuments.length > 0 ? (
+              filteredDocuments.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center justify-between p-3 border border-gray-200 rounded-md hover:bg-gray-50"
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {doc.title}
+                      </p>
+                      {doc.description && (
+                        <p className="text-xs text-gray-500 truncate">
+                          {doc.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => window.open(doc.fileUrl, '_blank')}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = doc.fileUrl;
+                          link.download = doc.title;
+                          link.click();
+                        }}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setDocumentToDelete({ id: doc.id, name: doc.title })}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Remove
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p className="text-sm">No documents found</p>
+                <p className="text-xs text-gray-400 mt-1">Add documents to get started</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-  {/* Document Modal */}
-      <UploadDocumentModal
-        open={showDocumentSelectionDialog}
-        onOpenChange={setShowDocumentSelectionDialog}
+      {/* Document Upload Modal */}
+        <UploadDocumentModal
+        open={showDocumentModal}
         mode="upload-and-attach"
-        conversationId={currentConversation?.id}
+        onOpenChange={setShowDocumentModal}
         projectId={projectId}
         onDocumentsAdded={handleDocumentsAdded}
-        title="Add Documents to Conversation"
-        description="Select existing documents or upload new ones to add to this conversation."
       />
 
-      {/* Remove Document Confirmation */}
-      <RemoveConfirmationDialog
-        open={!!documentToDelete}
-        onOpenChange={(open) => !open && setDocumentToDelete(null)}
-        onConfirm={handleRemoveDocument}
-        itemName={documentToDelete?.name}
-        contextName="this conversation"
-        isLoading={isRemovingDocument}
-      />
-    </>
+
+      {/* Document Removal Confirmation */}
+      {documentToDelete && (
+        <RemoveConfirmationDialog
+          open={!!documentToDelete}
+          onClose={() => setDocumentToDelete(null)}
+          onConfirm={handleRemoveDocument}
+          title="Remove Document"
+          description={`Are you sure you want to remove "${documentToDelete.name}" from this project?`}
+          isLoading={isRemovingDocument}
+        />
+      )}
+    </ScrollArea>
   );
 }

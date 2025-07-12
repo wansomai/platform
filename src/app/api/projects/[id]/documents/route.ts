@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
+import { getUserIdFromRequest } from '@/lib/auth/authorization';
 
 const prisma = new PrismaClient();
 
@@ -74,7 +75,7 @@ export async function GET(
     const projectId = (await params).id;
     
     // Get user ID from request headers (set by middleware)
-    const userId = request.headers.get('x-user-id');
+   const userId = getUserIdFromRequest(request);
     
     if (!userId) {
       return NextResponse.json(

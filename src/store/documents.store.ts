@@ -1,6 +1,22 @@
-// src/store/documents.store.ts - Enhanced with auto-refresh capabilities
+// src/store/documents.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
+
+
+interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+  error?: boolean;
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
 
 export interface Document {
   id: string;
@@ -71,62 +87,49 @@ export const useDocumentsStore = create<DocumentsState>((set, get) => ({
     pages: 0,
   },
   
-  fetchDocuments: async (filters, forceRefresh = false) => {
+ fetchDocuments: async (filters: DocumentFilters = {}, forceRefresh = false) => {
+    const state = get();
+    
+    // OPTIMIZATION 1: Simple cache check
+    const now = Date.now();
+    const hasRecentData = state.lastFetched && (now - state.lastFetched) < CACHE_DURATION;
+    const isSimilarRequest = !filters.search && !filters.type && !filters.folder && filters.page === 1;
+    
+    // Skip fetch if we have recent data and it's a simple request (dashboard)
+    if (hasRecentData && isSimilarRequest && !forceRefresh && state.documents.length > 0) {
+      return state.documents;
+    }
+    
     try {
-      const state = get();
-      
-      // Check if we need to fetch (cache invalidation)
-      const now = Date.now();
-      const shouldFetch = forceRefresh || 
-                         !state.lastFetched || 
-                         (now - state.lastFetched) > CACHE_DURATION ||
-                         state.documents.length === 0;
-      
-      if (!shouldFetch && state.documents.length > 0) {
-        return state.documents;
-      }
-      
       set({ isLoading: true, error: null });
       
-      // Build query string
-      let url = '/api/documents';
-      if (filters) {
-        const params = new URLSearchParams();
-        if (filters.search) params.append('search', filters.search);
-        if (filters.type) params.append('type', filters.type);
-        if (filters.sort) params.append('sort', filters.sort);
-        if (filters.page) params.append('page', filters.page.toString());
-        if (filters.limit) params.append('limit', filters.limit.toString());
-        if (filters.folder) params.append('folder', filters.folder);
-        
-        if (params.toString()) {
-          url += `?${params.toString()}`;
-        }
-      }
+      // Build query params
+      const params = new URLSearchParams();
+      if (filters.search) params.append('search', filters.search);
+      if (filters.type) params.append('type', filters.type);
+      if (filters.sort) params.append('sort', filters.sort);
+      if (filters.folder) params.append('folder', filters.folder);
+      if (filters.page) params.append('page', filters.page.toString());
+      if (filters.limit) params.append('limit', filters.limit.toString());
       
-      const response = await apiService.get<{
-        data: Document[];
-        pagination: {
-          total: number;
-          page: number;
-          limit: number;
-          pages: number;
-        };
-      }>(url);
+      const response = await apiService.get<ApiResponse<Document[]>>(
+        `/api/documents${params.toString() ? `?${params.toString()}` : ''}`
+      );
+      
+      const documents = response.data;
       
       set({ 
-        documents: response.data,
-        pagination: response.pagination,
-        isLoading: false,
-        lastFetched: now
+        documents, 
+        isLoading: false, 
+        lastFetched: now,
+        pagination: response.pagination || state.pagination
       });
       
-      return response.data;
+      return documents;
+      
     } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to fetch documents', 
-        isLoading: false 
-      });
+      console.error('Error fetching documents:', error);
+      set({ error: error.message || 'Failed to fetch documents', isLoading: false });
       return [];
     }
   },

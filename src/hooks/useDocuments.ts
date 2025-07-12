@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import api from '@/lib/api'
 import { useDocumentsStore } from '@/store/documents.store'
-import { useConversationDocumentsStore } from '@/store/conversation-documents.store'
+import { useProjectDocumentsStore } from '@/store/workspace-documents.store'
 import { useUIStore } from '@/store/ui.store'
 import { formatFileSize, validateFile } from '@/lib/utils/file'
 import { formatRelativeTime } from '@/lib/utils/date'
@@ -40,9 +40,9 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
   } = useDocumentsStore();
   
   const { 
-    attachDocumentsToConversation,
-    removeDocumentFromConversation
-  } = useConversationDocumentsStore();
+    attachDocumentsToProject,
+    removeDocumentFromProject
+  } = useProjectDocumentsStore();
   
   const { addToast } = useUIStore();
   
@@ -129,7 +129,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       
       if (document) {
         // Then attach it to the conversation
-        const success = await attachDocumentsToConversation(convId, [document.id]);
+        const success = await attachDocumentsToProject(convId, [document.id]);
         
         if (success) {
           handleSuccess(`${file.name} uploaded and added to conversation`);
@@ -197,7 +197,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
 
     try {
       setIsProcessing(true);
-      const success = await attachDocumentsToConversation(convId, documentIds);
+      const success = await attachDocumentsToProject(convId, documentIds);
       
       if (success) {
         const count = documentIds.length;
@@ -226,7 +226,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
 
     try {
       setIsProcessing(true);
-      const success = await removeDocumentFromConversation(convId, documentId);
+      const success = await removeDocumentFromProject(convId, documentId);
       
       if (success) {
         handleSuccess('Document removed from conversation');

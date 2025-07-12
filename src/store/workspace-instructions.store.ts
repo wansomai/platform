@@ -1,28 +1,29 @@
-// src/store/conversation-instructions.store.ts
+// src/store/workspace-instructions.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
 
-interface ConversationInstructionsState {
+interface ProjectInstructionsState {
   instructions: string;
   isLoading: boolean;
   error: string | null;
   
   // Methods
-  fetchInstructions: (conversationId: string) => Promise<string>;
-  saveInstructions: (conversationId: string, instructions: string) => Promise<boolean>;
+  fetchInstructions: (projectId: string) => Promise<string>;
+  saveInstructions: (projectId: string, instructions: string) => Promise<boolean>;
   setInstructions: (instructions: string) => void;
 }
 
-export const useConversationInstructionsStore = create<ConversationInstructionsState>((set) => ({
+export const useProjectInstructionsStore = create<ProjectInstructionsState>((set) => ({
   instructions: '',
   isLoading: false,
   error: null,
   
-  fetchInstructions: async (conversationId) => {
+  fetchInstructions: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
       
-      const response = await apiService.get<{data: {instructions: string}}>(`/api/conversations/${conversationId}/instructions`);
+      // Updated to use project-level endpoint
+      const response = await apiService.get<{data: {instructions: string}}>(`/api/projects/${projectId}/instructions`);
       
       set({ 
         instructions: response.data.instructions,
@@ -32,18 +33,19 @@ export const useConversationInstructionsStore = create<ConversationInstructionsS
       return response.data.instructions;
     } catch (error: any) {
       set({ 
-        error: error.message || 'Failed to fetch conversation instructions', 
+        error: error.message || 'Failed to fetch project instructions', 
         isLoading: false 
       });
       return '';
     }
   },
   
-  saveInstructions: async (conversationId, instructions) => {
+  saveInstructions: async (projectId, instructions) => {
     try {
       set({ isLoading: true, error: null });
       
-      await apiService.put(`/api/conversations/${conversationId}/instructions`, {
+      // Updated to use project-level endpoint
+      await apiService.put(`/api/projects/${projectId}/instructions`, {
         instructions
       });
       

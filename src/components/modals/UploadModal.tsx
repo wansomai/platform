@@ -25,8 +25,7 @@ import {
 } from "@/components/ui/select";
 
 import { useDocumentsStore } from "@/store/documents.store";
-import { useConversationDocumentsStore } from "@/store/conversation-documents.store";
-import { useUIStore } from "@/store/ui.store";
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { useFolderStore } from "@/store/folder.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { formatFileSize, validateFile, getFileIcon } from "@/lib/utils/file";
@@ -89,8 +88,8 @@ export function UploadDocumentModal({
   
   const { 
     documents: conversationDocuments, 
-    attachDocumentsToConversation
-  } = useConversationDocumentsStore();
+    attachDocumentsToProject
+  } = useProjectDocumentsStore();
   
   const { folders, fetchFolders } = useFolderStore();
   const { notify } = useNotifications();
@@ -219,7 +218,7 @@ export function UploadDocumentModal({
         
         // If mode includes attachment and we have a conversation ID
         if ((mode === 'upload-and-attach') && conversationId) {
-          const success = await attachDocumentsToConversation(
+          const success = await attachDocumentsToProject(
             conversationId, 
             [document.id]
           );
@@ -261,7 +260,7 @@ export function UploadDocumentModal({
       setIsAttachingDocuments(true);
       
       if (conversationId) {
-        const success = await attachDocumentsToConversation(
+        const success = await attachDocumentsToProject(
           conversationId, 
           selectedDocumentsToAdd
         );

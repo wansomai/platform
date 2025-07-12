@@ -82,6 +82,7 @@ interface ProjectState {
   currentProject: ProjectDetails | null
   isLoading: boolean
   error: string | null
+  lastFetched: number | null;  
   
   // Basic state setters
   setProjects: (projects: ProjectListItem[]) => void
@@ -120,6 +121,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   currentProject: null,
   isLoading: false,
   error: null,
+  lastFetched: null,
   
   // Basic state setters
   setProjects: (projects) => set({ projects }),
@@ -141,12 +143,33 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setError: (error) => set({ error }),
   
   // API operations
-  fetchProjects: async () => {
+ fetchProjects: async (forceRefresh = false) => {
+    const state = get();
+    
+    // OPTIMIZATION 1: Simple cache check
+    const now = Date.now();
+    const hasRecentData = state.lastFetched && (now - state.lastFetched) < 30000; // 30 seconds
+    
+    if (hasRecentData && !forceRefresh && state.projects.length > 0) {
+      return state.projects;
+    }
+    
     try {
       set({ isLoading: true, error: null });
-      const response = await apiService.get<ApiResponse<ProjectListItem[]>>('/api/projects');
+      
+      // For dashboard, request fewer projects
+      const isDashboard = state.projects.length === 0; // First load likely dashboard
+      const params = isDashboard ? '?limit=5' : '';
+      
+      const response = await apiService.get<ApiResponse<ProjectListItem[]>>(`/api/projects${params}`);
       const projects = response.data;
-      set({ projects, isLoading: false });
+      
+      set({ 
+        projects, 
+        isLoading: false,
+        lastFetched: now
+      });
+      
       return projects;
       
     } catch (error: any) {

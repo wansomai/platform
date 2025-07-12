@@ -23,7 +23,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index([userId], name: "idx_account_user")
+  @@index([userId], map: "idx_account_user")
 }
 
 model Session {
@@ -33,8 +33,8 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId], name: "idx_session_user")
-  @@index([sessionToken], name: "idx_session_token")
+  @@index([userId], map: "idx_session_user")
+  @@index([sessionToken], map: "idx_session_token")
 }
 
 model VerificationToken {
@@ -73,7 +73,7 @@ model User {
   organization            Organization            @relation(fields: [organizationId], references: [id])
   organizationMemberships UserOrganization[]
 
-  @@index([activeOrganizationId], name: "idx_user_active_org")
+  @@index([activeOrganizationId], map: "idx_user_active_org")
 }
 
 model Organization {
@@ -102,8 +102,8 @@ model UserOrganization {
 
   @@id([userId, organizationId])
   @@index([organizationId])
-  @@index([userId, organizationId], name: "idx_user_organization")
-  @@index([organizationId, role], name: "idx_user_org_role")
+  @@index([userId, organizationId], map: "idx_user_organization")
+  @@index([organizationId, role], map: "idx_user_org_role")
 }
 
 model Project {
@@ -136,8 +136,8 @@ model ProjectMember {
   user      User     @relation(fields: [userId], references: [id])
 
   @@id([userId, projectId])
-  @@index([userId, projectId], name: "idx_project_member_user")
-  @@index([projectId, role], name: "idx_project_member_project")
+  @@index([userId, projectId], map: "idx_project_member_user")
+  @@index([projectId, role], map: "idx_project_member_project")
 }
 
 model Document {
@@ -169,10 +169,10 @@ model Document {
   SharedMessageReference SharedMessageReference[]
 
   @@index([organization_id])
-  @@index([organization_id, created_at(sort: Desc)], name: "idx_document_org_created")
-  @@index([organization_id, status], name: "idx_document_org_status")
-  @@index([project_id, created_at(sort: Desc)], name: "idx_document_project_created")
-  @@index([organization_id, folderId, created_at(sort: Desc)], name: "idx_document_org_folder_created")
+  @@index([organization_id, created_at(sort: Desc)], map: "idx_document_org_created")
+  @@index([organization_id, status], map: "idx_document_org_status")
+  @@index([project_id, created_at(sort: Desc)], map: "idx_document_project_created")
+  @@index([organization_id, folderId, created_at(sort: Desc)], map: "idx_document_org_folder_created")
 }
 
 model Folder {
@@ -189,8 +189,7 @@ model Folder {
   parent         Folder?      @relation("FolderHierarchy", fields: [parentId], references: [id])
   children       Folder[]     @relation("FolderHierarchy")
 
-  @@index([organizationId, parentId], name: "idx_folder_org_parent")
-
+  @@index([organizationId, parentId], map: "idx_folder_org_parent")
 }
 
 model ProjectDocument {
@@ -215,8 +214,8 @@ model ConversationDocument {
   document        Document     @relation(fields: [document_id], references: [id], onDelete: Cascade)
 
   @@id([conversation_id, document_id])
-  @@index([conversation_id], name: "idx_conversation_document_conv")
-  @@index([document_id], name: "idx_conversation_document_doc")
+  @@index([conversation_id], map: "idx_conversation_document_conv")
+  @@index([document_id], map: "idx_conversation_document_doc")
 }
 
 model DocumentContent {
@@ -226,7 +225,7 @@ model DocumentContent {
   updatedAt  DateTime @updatedAt
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
-  @@index([documentId], name: "idx_document_content_document")
+  @@index([documentId], map: "idx_document_content_document")
 }
 
 model Embedding {
@@ -237,8 +236,9 @@ model Embedding {
   chunkIndex Int
   createdAt  DateTime @default(now())
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  @@index([documentId], name: "idx_embedding_document")
-  @@index([documentId, chunkIndex], name: "idx_embedding_document_chunk")
+
+  @@index([documentId], map: "idx_embedding_document")
+  @@index([documentId, chunkIndex], map: "idx_embedding_document_chunk")
 }
 
 model Conversation {
@@ -256,8 +256,9 @@ model Conversation {
   meta               ConversationMeta?
   messages           Message[]
   SharedWorkspace    SharedWorkspace[]
-  @@index([projectId, updatedAt(sort: Desc)], name: "idx_conversation_project_updated")
-  @@index([projectId], name: "idx_conversation_project_id")
+
+  @@index([projectId, updatedAt(sort: Desc)], map: "idx_conversation_project_updated")
+  @@index([projectId], map: "idx_conversation_project_id")
 }
 
 model Message {
@@ -271,8 +272,9 @@ model Message {
   conversation   Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User?              @relation(fields: [userId], references: [id])
   references     MessageReference[]
-  @@index([conversationId, createdAt], name: "idx_message_conversation_created")
-  @@index([conversationId, role], name: "idx_message_conversation_role")
+
+  @@index([conversationId, createdAt], map: "idx_message_conversation_created")
+  @@index([conversationId, role], map: "idx_message_conversation_role")
 }
 
 model MessageReference {
@@ -285,8 +287,8 @@ model MessageReference {
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
-  @@index([messageId], name: "idx_message_reference_message")
-  @@index([documentId], name: "idx_message_reference_document")
+  @@index([messageId], map: "idx_message_reference_message")
+  @@index([documentId], map: "idx_message_reference_document")
 }
 
 model Event {
@@ -304,10 +306,10 @@ model Event {
 model KnowledgeBase {
   id           String   @id @default(cuid())
   projectId    String   @unique
-  clientInfo   Json?
   instructions String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  settings     Json?
   project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 

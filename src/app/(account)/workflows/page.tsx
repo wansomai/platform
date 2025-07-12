@@ -35,7 +35,6 @@ import {
 } from "lucide-react"
 import ProAccessModal from "@/components/modals/ProAccess"
 import { LightBulbIcon } from "@heroicons/react/24/outline"
-import { useAssociatesStore } from "@/store/associates.store"
 
 // Workflow type definition
 interface Workflow {
@@ -241,21 +240,10 @@ export default function WorkflowsPage() {
     }, 2000)
   }
 
-  const { associates, fetchAllAssociates, isLoading } = useAssociatesStore()
 
 
   const [filteredResults, setFilteredResults] = useState<any[]>([])
 
-  // Move filtering logic into useEffect
-  useEffect(() => {
-    const filtered = associates.filter((associate) => {
-      const matchesSearch =
-        associate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        associate.instructions.toLowerCase().includes(searchTerm.toLowerCase())
-      return matchesSearch
-    })
-    setFilteredResults(filtered)
-  }, [associates, searchTerm]) // Add dependencies
 
   // Update the JSX to use filteredResults instead of filteredAssociates
   return (

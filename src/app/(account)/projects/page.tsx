@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -175,7 +175,7 @@ export default function ProjectsPage() {
 
               
               <CardFooter className="border-t pt-4">
-                <p className="text-gray-600">Created {format(new Date(project.createdAt), 'MMM d, yyyy')} </p>
+                <p className="text-gray-600">Created {format(new Date(project.last_activity), "PP")} </p>
                 <Button variant="ghost" size="sm" className="ml-auto">
                   View Workspace
                   <ArrowRight className="ml-2 h-4 w-4" />

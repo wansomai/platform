@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { blobStorageService } from '@/lib/storage';
+import { getUserIdFromRequest } from '@/lib/auth/authorization';
 
 const prisma = new PrismaClient();
 
@@ -291,90 +292,140 @@ export async function PUT(
     );
   }
 }
+// POST - Attach existing vault document to project
 
-// DELETE handler - Delete a document
-export async function DELETE(
+export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string, documentId: string }> }
 ) {
   try {
-    const projectId = (await params).id;
-    const documentId = (await params).documentId;
+    const { id: projectId, documentId } = (await params);
     
-    // Get user ID from request headers (set by middleware)
-    const userId = request.headers.get('x-user-id');
-    
+    const userId = getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
-        { 
-          status: 401,
-          message: 'Unauthorized' 
-        },
+        { message: 'Authentication required', error: true }, 
         { status: 401 }
       );
     }
     
-    // Check if user has access to this project
     const hasAccess = await checkProjectAccess(projectId, userId);
-    
     if (!hasAccess) {
       return NextResponse.json(
-        { 
-          status: 403,
-          message: 'Forbidden' 
-        },
+        { message: 'Access denied to this project', error: true }, 
         { status: 403 }
       );
     }
     
-    // Check if document exists
-    const document = await prisma.document.findUnique({
+    // Get user's organization to verify document access
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true }
+    });
+    
+    // Verify document exists and belongs to user's organization
+    const document = await prisma.document.findFirst({
       where: {
         id: documentId,
-        project_id: projectId
+        organization_id: user?.organizationId
       }
     });
     
     if (!document) {
       return NextResponse.json(
-        { 
-          status: 404,
-          message: 'Document not found' 
-        },
+        { message: 'Document not found or not accessible', error: true }, 
         { status: 404 }
       );
     }
     
-    // Delete document from database
-    // This will automatically delete related content and embeddings due to cascade
-    await prisma.document.delete({
-      where: { id: documentId }
-    });
-    
-    // Delete file from storage
-    try {
-      // Extract the filename from the path or URL
-      const fileName = document.file_url.split('/').pop();
-      if (fileName) {
-        await blobStorageService.deleteFile(document.file_url);
+    // Attach document to project (ignore if already attached)
+    await prisma.projectDocument.upsert({
+      where: {
+        project_id_document_id: {
+          project_id: projectId,
+          document_id: documentId
+        }
+      },
+      update: {}, // No updates if exists
+      create: {
+        project_id: projectId,
+        document_id: documentId,
+        added_by: userId
       }
-    } catch (storageError) {
-      console.error('Error deleting file from storage:', storageError);
-      // Continue with response even if storage deletion fails
-    }
+    });
     
     return NextResponse.json({
       status: 200,
-      message: 'Document deleted successfully'
+      message: 'Document attached to project successfully'
     });
   } catch (error) {
-    console.error('Error deleting document:', error);
-    
+    console.error('Error attaching document to project:', error);
     return NextResponse.json(
-      { 
-        status: 500,
-        message: 'Internal server error' 
-      },
+      { message: 'Failed to attach document to project', error: true },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Remove document from project (keeps in vault)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string, documentId: string }> }
+) {
+  try {
+    const { id: projectId, documentId } = (await params);
+    
+    const userId = getUserIdFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { message: 'Authentication required', error: true }, 
+        { status: 401 }
+      );
+    }
+    
+    const hasAccess = await checkProjectAccess(projectId, userId);
+    if (!hasAccess) {
+      return NextResponse.json(
+        { message: 'Access denied to this project', error: true }, 
+        { status: 403 }
+      );
+    }
+    
+    // Check if the document is attached to the project
+    const projectDocument = await prisma.projectDocument.findUnique({
+      where: {
+        project_id_document_id: {
+          project_id: projectId,
+          document_id: documentId
+        }
+      }
+    });
+    
+    if (!projectDocument) {
+      return NextResponse.json(
+        { message: 'Document not attached to project', error: true }, 
+        { status: 404 }
+      );
+    }
+    
+    // Remove document from project (detach only - document remains in vault)
+    await prisma.projectDocument.delete({
+      where: {
+        project_id_document_id: {
+          project_id: projectId,
+          document_id: documentId
+        }
+      }
+    });
+    
+    return NextResponse.json({
+      status: 200,
+      message: 'Document detached from project successfully'
+    });
+  } catch (error) {
+    console.error('Error detaching document from project:', error);
+    return NextResponse.json(
+      { message: 'Failed to detach document from project', error: true },
       { status: 500 }
     );
   }

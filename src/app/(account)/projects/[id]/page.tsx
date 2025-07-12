@@ -1,54 +1,45 @@
 // app/projects/[id]/page.tsx
 "use client"
 
-import { useEffect } from "react"
 import { useParams } from "next/navigation"
+import { useEffect } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import LegalCanvas from "@/components/chat/CanvasInterface"
-import { useUIStore } from "@/store/ui.store"
-import { useProjectStore } from "@/store/project.store"
-import { useConversationSettingsStore } from "@/store/conversation-settings.store"
-import { useChatStore } from "@/store/chat.store"
 import { ProjectLoading, ErrorState } from "@/components/commons/LoadingState"
+import { useWorkspace } from "@/hooks/useWorkspace"
+import { useProjectSettingsStore } from "@/store/workspace-settings.store"
 
 export default function ProjectPage() {
   const params = useParams()
   const projectId = params.id as string
   
-  const { activeWorkspaceTab } = useUIStore()
-  const { currentProject, fetchProjectById, isLoading } = useProjectStore()
-  const { currentConversation } = useChatStore()
-  const { settings, fetchSettings, isLoading: isLoadingSettings } = useConversationSettingsStore()
+  // Get core workspace data (no settings)
+  const { project, isLoading: workspaceLoading, error: workspaceError } = useWorkspace(projectId)
   
-  // Fetch project data once on mount
-  useEffect(() => {
-    const loadProjectData = async () => {
-      if (projectId && !currentProject && !isLoading) {
-        await fetchProjectById(projectId);
-      }
-    };
-    
-    loadProjectData();
-  }, [projectId, currentProject, isLoading, fetchProjectById]);
+  // Get settings from dedicated store
+  const { settings, isLoading: settingsLoading, fetchSettings } = useProjectSettingsStore()
   
-  // Fetch conversation settings when conversation changes
+  // Load settings when component mounts
   useEffect(() => {
-    if (currentConversation?.id) {
-      fetchSettings(currentConversation.id);
+    if (projectId) {
+      fetchSettings(projectId)
     }
-  }, [currentConversation?.id, fetchSettings]);
+  }, [projectId, fetchSettings])
   
-  // Show loading state if project is loading or settings are loading for first time
-  if (isLoading || (!currentProject && projectId)) {
-    return <ProjectLoading projectTitle={currentProject?.title} />
+  const isLoading = workspaceLoading || settingsLoading
+  const error = workspaceError
+  
+  // Show loading state if project is loading
+  if (isLoading || (!project && projectId)) {
+    return <ProjectLoading projectTitle={project?.title} />
   }
 
   // Show error state if project couldn't be loaded
-  if (!isLoading && !currentProject) {
+  if (error || (!isLoading && !project)) {
     return (
       <ErrorState
         title="Workspace not found"
-        description="The workspace you're looking for doesn't exist or you don't have access to it."
+        description={error || "The workspace you're looking for doesn't exist or you don't have access to it."}
         action={{
           label: "Go Back",
           onClick: () => window.history.back()
@@ -56,9 +47,9 @@ export default function ProjectPage() {
       />
     )
   }
-
-  // Determine which interface to show based on legal drafting setting
-  const showLegalDrafting = settings.legalDrafting;
+  
+  // Determine which interface to show based on settings
+  const showLegalDrafting = settings?.legalDrafting || false
 
   return (
     <div className="h-full">
