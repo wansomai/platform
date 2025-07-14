@@ -28,7 +28,7 @@ import { useDocumentsStore } from "@/store/documents.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { useFolderStore } from "@/store/folder.store";
 import { useNotifications } from "@/hooks/useNotifications";
-import { formatFileSize, validateFile, getFileIcon } from "@/lib/utils/file";
+import { formatFileSize, validateFile } from "@/lib/utils/file";
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -46,7 +46,6 @@ interface UploadDocumentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: 'upload' | 'select' | 'upload-and-attach';
-  conversationId?: string;
   projectId?: string;
   onDocumentsAdded?: (documents: Document[]) => void;
   title?: string;
@@ -57,7 +56,6 @@ export function UploadDocumentModal({
   open, 
   onOpenChange, 
   mode = 'upload',
-  conversationId,
   projectId,
   onDocumentsAdded,
   title,
@@ -87,7 +85,7 @@ export function UploadDocumentModal({
   } = useDocumentsStore();
   
   const { 
-    documents: conversationDocuments, 
+    documents: projectDocuments, 
     attachDocumentsToProject
   } = useProjectDocumentsStore();
   
@@ -108,9 +106,9 @@ export function UploadDocumentModal({
   }[mode];
 
   // Available documents for selection (excluding already attached ones)
-  const availableDocuments = conversationId 
+  const availableDocuments = projectId 
     ? documents.filter(doc => 
-        !conversationDocuments.some(convDoc => convDoc.id === doc.id)
+        !projectDocuments.some(convDoc => convDoc.id === doc.id)
       )
     : documents;
   
@@ -217,9 +215,9 @@ export function UploadDocumentModal({
         const documentsToReturn = [document];
         
         // If mode includes attachment and we have a conversation ID
-        if ((mode === 'upload-and-attach') && conversationId) {
+        if ((mode === 'upload-and-attach') && projectId) {
           const success = await attachDocumentsToProject(
-            conversationId, 
+            projectId, 
             [document.id]
           );
           
@@ -259,9 +257,9 @@ export function UploadDocumentModal({
     try {
       setIsAttachingDocuments(true);
       
-      if (conversationId) {
+      if (projectId) {
         const success = await attachDocumentsToProject(
-          conversationId, 
+          projectId, 
           selectedDocumentsToAdd
         );
         

@@ -43,7 +43,13 @@ export async function GET(
     // Check if project exists
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      select: { id: true }
+      include: {
+        knowledgeBase: {
+          select: {
+            settings: true
+          }
+        }
+      }
     });
     
     if (!project) {
@@ -52,7 +58,7 @@ export async function GET(
         { status: 404 }
       );
     }
-    const settings = DEFAULT_SETTINGS;
+    const settings = project.knowledgeBase?.settings || DEFAULT_SETTINGS;
     
     return NextResponse.json({
       status: 200,

@@ -21,11 +21,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useChatStore } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
-import { useProjectSettingsStore } from "@/store/workspace-settings.store"
-import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 import { useSession } from "next-auth/react"
 import ProAccessModal from "../modals/ProAccess"
 import { UploadDocumentModal } from "../modals/UploadModal"
+import { useProjectSettingsStore } from "@/store/workspace-settings.store"
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -35,19 +35,36 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   const params = useParams()
   const projectId = params.id as string
   
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [input, setInput] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showProAcess, setShowProAccess] = useState(false)
-  const [isRequestingPro, setIsRequestingPro] = useState(false)
   const [showDocumentModal, setShowDocumentModal] = useState(false)
+  const [showToolsDropdown, setShowToolsDropdown] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [showProAcess,setShowProAccess]=useState(false)
+    const [isRequestingPro, setIsRequestingPro] = useState(false);
   
   // Get state from stores
-  const { sendMessage, isLoading } = useChatStore()
+  const { addToast } = useUIStore()
+  const { 
+    currentConversation, 
+    sendMessage
+  } = useChatStore()
+
+  const {
+    settings,
+    updateSetting,
+    isLoading: isLoadingSettings
+  } = useProjectSettingsStore()
+
+  const { 
+    documents: conversationDocuments,
+     fetchProjectDocuments, 
+  } = useProjectDocumentsStore()
+
+  // Get right sidebar state from UI store
   const { rightSidebarCollapsed, setRightSidebarCollapsed } = useUIStore()
-  const { settings, updateSetting, isLoading: isLoadingSettings } = useProjectSettingsStore()
-  const { fetchProjectDocuments } = useProjectDocumentsStore()
-  const { data: session } = useSession()
+ 
+  const {data: session} = useSession()
   
   // Auto-resize textarea
   useEffect(() => {
@@ -56,93 +73,117 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
   }, [input])
-  
-  // Handle send message
-  const handleSend = async () => {
-    if (!input.trim() || isSubmitting || !projectId) return
+  // Handle direct prompt sending from external components
+  useEffect(() => {
+    const handlePromptSendEvent = (event: any) => {
+      if (event.detail && event.detail.promptTemplate) {
+        if (currentConversation) {
+          handleSend(event.detail.promptTemplate);
+        }
+      }
+    };
     
-    const messageContent = input.trim()
-    setInput("")
-    setIsSubmitting(true)
+    document.addEventListener('action-prompt-send', handlePromptSendEvent);
+    
+    return () => {
+      document.removeEventListener('action-prompt-send', handlePromptSendEvent);
+    };
+  }, [currentConversation]);
+ 
+  // Handle send message with streaming
+  const handleSend = async (customMessage?: string) => {
+    const messageToSend = customMessage || input;
+    if (!messageToSend.trim() || isSubmitting || !currentConversation) return;
     
     try {
-      await sendMessage(projectId, messageContent, {
-        settings: settings
-      })
+      setIsSubmitting(true);
+      
+      await sendMessage(
+        projectId, 
+        currentConversation.id, 
+        messageToSend,
+        session?.user?.id,
+        ''
+      );
+      
+      if (!customMessage) {
+        setInput("");
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+        }
+      }
     } catch (error) {
-      console.error('Failed to send message:', error)
+      console.error('Failed to send message:', error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
   
-  // Handle keyboard shortcuts
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       handleSend()
     }
   }
-  
+
   // Handle setting changes
-  const handleSettingChange = async (key: keyof typeof settings, value: any) => {
-    if (!projectId) return
+  const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
+    if (!currentConversation) return;
     
     try {
-      await updateSetting(projectId, key, value)
+      await updateSetting(currentConversation.id, settingKey, value);
+      addToast({ message: `${settingKey} setting updated`, type: 'success' });
     } catch (error) {
-      console.error('Failed to update setting:', error)
+      addToast({ message: `Failed to update ${settingKey} setting`, type: 'error' });
     }
-  }
-  
+  };
+
   // Handle documents added
-  const handleDocumentsAdded = (documents: any[]) => {
+   const handleDocumentsAdded = (documents: any[]) => {
     const count = documents.length
-    // Show success notification
-    const { addToast } = useUIStore.getState()
     addToast({
-      message: `${count} document${count !== 1 ? 's' : ''} added to project`,
+      message: `${count} document${count > 1 ? 's' : ''} added to conversation`,
       type: "success"
     })
     onDocumentsAdded?.(count)
     
-    // Refresh project documents
-    if (projectId) {
-      fetchProjectDocuments(projectId)
+    // Refresh conversation documents
+    if (currentConversation?.id) {
+      fetchProjectDocuments(currentConversation.id)
     }
   }
-  
   // Toggle sidebar function
   const toggleSidebar = () => {
     setRightSidebarCollapsed(!rightSidebarCollapsed);
   };
 
-  // Handle Pro access request
+    // Handle Pro access request
   const handleRequestProAccess = async() => {
     setIsRequestingPro(true);
-    const payload = {
-      email: session?.user.email,
-      name: session?.user.name
-    }
-    try {
-      const response = await fetch('/api/prorequests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      await response.json();
-      setShowProAccess(false);
-    } catch (error) {
-      console.error('Error:', error);
-      setIsRequestingPro(false);
-      setShowProAccess(false);
-    } finally {
-      setIsRequestingPro(false);
-      setShowProAccess(false);
-    }
+        const payload={
+            email: session?.user.email,
+            name: session?.user.name
+          }
+      try {
+        const response = await fetch('/api/prorequests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      
+          body: JSON.stringify(payload),
+        });
+  
+        await response.json();
+        setShowProAccess(false);
+      } catch (error) {
+        console.error('Error:', error);
+         setIsRequestingPro(false);
+         setShowProAccess(false);
+      } finally {
+       setIsRequestingPro(false);
+       setShowProAccess(false);
+      }
   };
   
   return (
@@ -160,39 +201,110 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                 size="sm"
                 onClick={() => setShowDocumentModal(true)}
                 className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
-                title="Upload documents"
+                title={`Documents (${conversationDocuments?.length || 0})`}
               >
-                <Paperclip className="h-4 w-4 text-gray-500" />
+                <Paperclip className="h-6 w-6 text-gray-500" />
               </Button>
 
-              {/* Settings Dropdown */}
-              <DropdownMenu>
+              {/* Tools Dropdown */}
+              <DropdownMenu open={showToolsDropdown} onOpenChange={setShowToolsDropdown}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
-                    title="Chat settings"
+                    className="h-8 w-fit px-2 hover:bg-gray-100 rounded-md"
+                    title="AI Tools" 
                   >
-                    <SlidersHorizontal className="h-4 w-4 text-gray-500" />
+                    <SlidersHorizontal className="h-6 w-6 text-gray-500" /> Tools
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-64 p-4">
+                <DropdownMenuContent 
+                  align="start" 
+                  className="w-72 p-4 mb-2"
+                  side="top"
+                >
                   <div className="space-y-4">
-                    <div className="space-y-3">
-                      <h4 className="text-sm font-medium text-gray-900">Chat Settings</h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-sm text-gray-500">Workspace Settings</h4>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowToolsDropdown(false)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="web-search" className="font-medium text-sm">
+                            Deep Research
+                          </Label>
+                         
+                        </div>
+                        <Switch 
+                          id="web-search" 
+                          checked={settings.webSearch}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('webSearch', checked);
+                          }}
+                        />
+                      </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label 
-                            htmlFor="cite-sources" 
-                            className="text-sm font-normal text-gray-700"
-                          >
-                            Cite Sources
+                        <div className="space-y-1">
+                          <Label htmlFor="legal-drafting" className="font-medium text-sm">
+                            Legal drafting
                           </Label>
-                          <p className="text-xs text-gray-500">
-                            Include document references in responses
-                          </p>
+                          
+                        </div>
+                        <Switch 
+                          id="legal-drafting" 
+                          checked={settings.legalDrafting}
+                            disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            setShowProAccess(true)
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="contract-review" className="font-medium text-sm">
+                            Contract Review
+                          </Label>
+                          
+                        </div>
+                        <Switch 
+                          id="contract-review" 
+                          checked={settings.legalDrafting}
+                             onCheckedChange={(checked) => {
+                            setShowProAccess(true)
+                          }}
+                        />
+                      </div>
+                         <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="case-preparation" className="font-medium text-sm">
+                            Case Preparation
+                          </Label>
+                          
+                        </div>
+                        <Switch 
+                          id="case-preparation" 
+                          checked={settings.legalDrafting}
+                           onCheckedChange={(checked) => {
+                            setShowProAccess(true)
+                          }}
+                        />
+                      </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label htmlFor="cite-sources" className="font-medium text-sm">
+                            Cite sources
+                          </Label>
+                          
                         </div>
                         <Switch 
                           id="cite-sources" 
@@ -205,38 +317,11 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label 
-                            htmlFor="web-search" 
-                            className="text-sm font-normal text-gray-700"
-                          >
-                            Web Search
+                        <div className="space-y-1">
+                          <Label htmlFor="suggest-actions" className="font-medium text-sm">
+                            Suggest actions
                           </Label>
-                          <p className="text-xs text-gray-500">
-                            Search the web for current information
-                          </p>
-                        </div>
-                        <Switch 
-                          id="web-search" 
-                          checked={settings.webSearch}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
-                            handleSettingChange('webSearch', checked);
-                          }}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label 
-                            htmlFor="suggest-actions" 
-                            className="text-sm font-normal text-gray-700"
-                          >
-                            Suggest Actions
-                          </Label>
-                          <p className="text-xs text-gray-500">
-                            Show suggested follow-up actions
-                          </p>
+                         
                         </div>
                         <Switch 
                           id="suggest-actions" 
@@ -247,20 +332,15 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                           }}
                         />
                       </div>
+                      
+                    
                     </div>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-
+<button className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border" onClick={toggleSidebar}> <Settings className="h-4 w-4 text-gray-500 text-xs" />Settings</button>
               {/* Settings Button for Sidebar Toggle */}
-              <button 
-                className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border" 
-                onClick={toggleSidebar}
-                title="Project settings"
-              > 
-                <Settings className="h-4 w-4 text-gray-500 text-xs" />
-                Settings
-              </button>
+             
             </div>
 
             <Textarea
@@ -291,22 +371,22 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
           </div>
         </div>
       </div>
-      
-      <ProAccessModal 
+  <ProAccessModal 
         isOpen={showProAcess}
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
         isLoading={isRequestingPro}
       />   
-      
       {/* Document Selection Modal */}
-      <UploadDocumentModal
-        open={showDocumentModal}
-        mode="upload-and-attach"
-        onOpenChange={setShowDocumentModal}
-        projectId={projectId}
-        onDocumentsAdded={handleDocumentsAdded}
-      />
+    
+        <UploadDocumentModal
+          open={showDocumentModal}
+          mode="upload-and-attach"
+          onOpenChange={setShowDocumentModal}
+          projectId={projectId}
+         onDocumentsAdded={handleDocumentsAdded}
+        />
+    
     </>
   )
 }

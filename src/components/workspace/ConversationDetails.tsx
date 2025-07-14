@@ -1,6 +1,6 @@
 // src/components/workspace/ConversationDetails.tsx
 'use client';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,6 @@ import {
   Search, 
   Plus, 
   MoreVertical,
-  Download,
-  Eye,
   Save,
   Trash2,
   Loader2
@@ -25,7 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useUIStore } from "@/store/ui.store";
-import { useWorkspace } from "@/hooks/useWorkspace";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
 import { useProjectInstructionsStore } from "@/store/workspace-instructions.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
@@ -43,14 +40,12 @@ export function ConversationDetails() {
   const [tempInstructions, setTempInstructions] = useState("");
   
   // Document management state
-  const [showDocumentSelectionDialog, setShowDocumentSelectionDialog] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
   const [isRemovingDocument, setIsRemovingDocument] = useState(false);
    const [showDocumentModal, setShowDocumentModal] = useState(false)
   
   // Get documents from workspace hook (core workspace data)
-  const { isLoading: workspaceLoading } = useWorkspace(projectId);
-  const { fetchProjectDocuments,removeDocumentFromProject,isLoading:projectDocumentsLoading,documents } = useProjectDocumentsStore()
+  const { fetchProjectDocuments,removeDocumentFromProject,isLoading:projectDocumentsLoading,documents:projectDocuments } = useProjectDocumentsStore()
   
   // Get settings and instructions from dedicated stores (lazy loaded)
   const { 
@@ -70,13 +65,16 @@ export function ConversationDetails() {
   const { addToast } = useUIStore();
   
   // Load project settings and instructions only when component mounts (lazy loading)
-  useEffect(() => {
-    if (projectId) {
-      fetchSettings(projectId);
-      fetchInstructions(projectId);
-      fetchInstructions(projectId);
-    }
-  }, [projectId, fetchSettings, fetchInstructions]);
+useEffect(() => {
+  if (projectId) {
+    // Parallel loading with error handling
+    Promise.all([
+      fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
+      fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
+      fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err))
+    ]);
+  }
+}, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments]);
   
   // Update temp instructions when instructions change
   useEffect(() => {
@@ -86,11 +84,26 @@ export function ConversationDetails() {
   }, [instructions, isEditingInstructions]);
   
   // Filter documents based on search term
-  const filteredDocuments = documents?.filter(
-    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           doc.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+const filteredDocuments = useMemo(() => {
+  if (!projectDocuments || !Array.isArray(projectDocuments)) {
+    return [];
+  }
   
+  if (!searchTerm.trim()) {
+    return projectDocuments;
+  }
+  
+  const searchLower = searchTerm.toLowerCase().trim();
+  
+  return projectDocuments.filter(doc => {
+    if (!doc) return false;
+    
+    const titleMatch = doc.title?.toLowerCase().includes(searchLower) || false;
+    const descriptionMatch = doc.description?.toLowerCase().includes(searchLower) || false;
+    
+    return titleMatch || descriptionMatch;
+  });
+}, [projectDocuments, searchTerm]);
   // Handle instructions save - connected to working store
   const handleSaveInstructions = async () => {
     if (!projectId) return;
@@ -172,8 +185,6 @@ export function ConversationDetails() {
     <ScrollArea className="h-full">
       <div className="p-4 space-y-6">
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Project Settings</h2>
-          
           {/* Project Instructions */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -259,110 +270,105 @@ export function ConversationDetails() {
             )}
           </div>
         </div>
-
-        {/* Documents Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Documents</h2>
-            <Button
-              size="sm"
-              onClick={() => setShowDocumentModal(true)}
-              className="h-8 px-3 text-xs"
-              disabled={workspaceLoading}
-            >
-              <Plus className="w-3 h-3 mr-1" />
-              Add Documents
-            </Button>
-          </div>
-
-          {/* Search Documents */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search documents..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-9 text-sm"
-            />
-          </div>
-
-          {/* Documents List */}
-          <div className="space-y-2">
-            {workspaceLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-                <span className="ml-2 text-sm text-gray-500">Loading documents...</span>
-              </div>
-            ) : filteredDocuments.length > 0 ? (
-              filteredDocuments.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="flex items-center justify-between p-3 border border-gray-200 rounded-md hover:bg-gray-50"
+ 
+  {/* Documents Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">
+                  Documents ({projectDocuments?.length || 0})
+                </label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDocumentModal(true)}
+                  className="h-8 px-2 text-xs"
                 >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {doc.title}
-                      </p>
-                      {doc.description && (
-                        <p className="text-xs text-gray-500 truncate">
-                          {doc.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => window.open(doc.fileUrl, '_blank')}
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          const link = document.createElement('a');
-                          link.href = doc.fileUrl;
-                          link.download = doc.title;
-                          link.click();
-                        }}
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setDocumentToDelete({ id: doc.id, name: doc.title })}
-                        className="text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Remove
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-sm">No documents found</p>
-                <p className="text-xs text-gray-400 mt-1">Add documents to get started</p>
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add
+                </Button>
               </div>
-            )}
-          </div>
-        </div>
+
+              {/* Search Documents */}
+              {projectDocuments && projectDocuments.length > 0 && (
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search documents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 h-8"
+                  />
+                </div>
+              )}
+
+              {/* Documents List */}
+              <div className="space-y-2">
+                {projectDocumentsLoading ? (
+                  <div className="text-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+                    <p className="text-sm text-gray-500 mt-2">Loading documents...</p>
+                  </div>
+                ) : filteredDocuments.length > 0 ? (
+                  filteredDocuments.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+                    >
+                      <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate max-w-[200px]">{doc.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {doc.fileType} • {doc.fileSize ? `${Math.round(doc.fileSize / 1024)} KB` : 'Unknown size'}
+                        </p>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+
+                          <DropdownMenuItem 
+                            onClick={() => setDocumentToDelete({ id: doc.id, name: doc.title })}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  ))
+                ) : projectDocuments && projectDocuments.length === 0 ? (
+                  <div className="text-center py-6">
+                    <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p className="text-sm text-gray-500">No documents added</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDocumentModal(true)}
+                      className="mt-2"
+                    >
+                      Add your first document
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-gray-500">No documents match your search</p>
+                  </div>
+                )}
+              </div>
+            </div>
+ 
       </div>
 
       {/* Document Upload Modal */}
         <UploadDocumentModal
         open={showDocumentModal}
         mode="upload-and-attach"
+        title="Add Documents to Project"
+        description="Select existing documents or upload new ones to add to this conversation."
         onOpenChange={setShowDocumentModal}
         projectId={projectId}
         onDocumentsAdded={handleDocumentsAdded}
@@ -372,12 +378,12 @@ export function ConversationDetails() {
       {/* Document Removal Confirmation */}
       {documentToDelete && (
         <RemoveConfirmationDialog
-          open={!!documentToDelete}
-          onClose={() => setDocumentToDelete(null)}
-          onConfirm={handleRemoveDocument}
-          title="Remove Document"
-          description={`Are you sure you want to remove "${documentToDelete.name}" from this project?`}
-          isLoading={isRemovingDocument}
+           open={!!documentToDelete}
+        onOpenChange={(open) => !open && setDocumentToDelete(null)}
+        onConfirm={handleRemoveDocument}
+        itemName={documentToDelete?.name}
+        contextName="this conversation"
+        isLoading={isRemovingDocument}
         />
       )}
     </ScrollArea>

@@ -19,13 +19,6 @@ export function formatFileSize(bytes: number, decimals: number = 1): string {
 }
 
 
-
-/**
- * Alternative format function for backward compatibility
- * @deprecated Use formatFileSize instead
- */
-export const formatBytes = formatFileSize;
-
 /**
  * Get file icon component based on file type/extension
  */

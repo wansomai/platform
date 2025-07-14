@@ -1,7 +1,7 @@
 // app/api/projects/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getUserIdFromRequest, getAccessibleProjectIds } from "@/lib/auth/authorization";
+import { getUserIdFromRequest } from "@/lib/auth/authorization";
 
 const prisma = new PrismaClient();
 
@@ -33,7 +33,6 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // OPTIMIZATION 2: Smart detection of request type
     // Dashboard typically requests fewer projects (limit <= 10, no search params)
     const isLightweightRequest = limit <= 10 && searchParams.size <= 1; // Only 'limit' param
     

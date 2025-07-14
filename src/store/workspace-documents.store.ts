@@ -33,10 +33,8 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
   fetchProjectDocuments: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
-      
-      // ✅ This endpoint exists and works
       const response = await apiService.get<{data: ProjectDocument[]}>(`/api/projects/${projectId}/documents`);
-      
+      console.log('Fetched documents:', response.data);
       set({ 
         documents: response.data,
         isLoading: false 
@@ -56,12 +54,9 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
     try {
       set({ isLoading: true, error: null });
       
-      // ✅ Updated to use individual document endpoints
-      const attachPromises = documentIds.map(documentId => 
-        apiService.post(`/api/projects/${projectId}/documents/${documentId}`)
-      );
-      
-      await Promise.all(attachPromises);
+      await apiService.post(`/api/projects/${projectId}/documents`, {
+        documentIds
+      });
       
       // Refresh document list
       const response = await apiService.get<{data: ProjectDocument[]}>(`/api/projects/${projectId}/documents`);
@@ -70,7 +65,7 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
       return true;
     } catch (error: any) {
       set({ 
-        error: error.message || 'Failed to attach documents to project', 
+        error: error.message || 'Failed to attach documents to conversation', 
         isLoading: false 
       });
       return false;
