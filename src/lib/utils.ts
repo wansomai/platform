@@ -8,4 +8,3 @@ export function cn(...inputs: ClassValue[]) {
 export * from './utils/file';
 export * from './utils/date';
 export * from './utils/text';
-export * from './utils/api';
