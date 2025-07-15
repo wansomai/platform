@@ -24,7 +24,7 @@ interface CustomUser extends User {
 
 // Generate an access token
 const generateAccessToken = async (user: CustomUser) => {
-  const jwtSecret = process.env.NEXTAUTH_SECRET || "23cc5f842ca52345400e310985223cbd92444fba095df1bb9cf0f94a3fb6f9acc7b178a9aa8743db278c5d049946941e33099a15663cd45186c38028c87ed227";
+  const jwtSecret = process.env.NEXTAUTH_SECRET;
   const encodedSecret = new TextEncoder().encode(jwtSecret);
   
   const token = await new jose.SignJWT({

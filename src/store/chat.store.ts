@@ -32,7 +32,6 @@ export interface Conversation {
   messages: Message[];
   createdAt: string;
   updatedAt: string;
-  isPinned: boolean;
 }
 
 interface ChatState {
@@ -61,7 +60,6 @@ interface ChatState {
   fetchConversation: (projectId: string, conversationId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
   sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any) => Promise<void>;
-  togglePinConversation: (projectId: string, conversationId: string) => Promise<boolean>;
 
   // State management
   setLoading: (isLoading: boolean) => void;
@@ -317,27 +315,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       });
     }
   },
-  // Toggle pin status of a conversation
-  
-  togglePinConversation: async (projectId, conversationId) => {
-    const conversation = get().conversations.find(c => c.id === conversationId);
-    if (!conversation) return false;
-    
-    const newPinState = !conversation.isPinned;
-    
-    try {
-      await apiService.put(
-        `/api/projects/${projectId}/conversations/${conversationId}/pin`,
-        { isPinned: newPinState }
-      );
-      
-      get().updateConversation(conversationId, { isPinned: newPinState });
-      return true;
-    } catch (error: any) {
-      set({ error: error.message || 'Failed to update pin status' });
-      return false;
-    }
-  },
+
   
   // State management
   setLoading: (isLoading) => set({ isLoading }),

@@ -5,8 +5,7 @@ import { apiService } from '@/lib/api';
 interface ProjectInstructionsState {
   instructions: string;
   isLoading: boolean;
-  error: string | null;
-  
+  error: string | null; 
   // Methods
   fetchInstructions: (projectId: string) => Promise<string>;
   saveInstructions: (projectId: string, instructions: string) => Promise<boolean>;

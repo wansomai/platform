@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Verify the token
     const payload = jwt.verify(
       authToken,
-      process.env.JWT_SECRET || "your-fallback-secret"
+      process.env.JWT_SECRET || ""
     );
     // Return the user info from the token
     return NextResponse.json({ user: payload });

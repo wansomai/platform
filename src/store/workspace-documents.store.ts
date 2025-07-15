@@ -75,11 +75,7 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
   removeDocumentFromProject: async (projectId, documentId) => {
     try {
       set({ isLoading: true, error: null });
-      
-      // ✅ Updated to use the correct DELETE endpoint
       await apiService.delete(`/api/projects/${projectId}/documents/${documentId}`);
-      
-      // Remove document from list
       set((state) => ({
         documents: state.documents.filter(doc => doc.id !== documentId),
         isLoading: false
