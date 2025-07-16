@@ -9,7 +9,7 @@ import Script from 'next/script';
 
 // Configure Roboto with multiple weights for professional use
 const roboto = Roboto({ 
-  weight: ["300", "400", "500"],
+  weight: ["300", "400", "500", "700", "900"],
   subsets: ["latin"],
   display: 'swap',
   variable: '--font-roboto'

@@ -16,6 +16,7 @@ import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { useProjectStore } from "@/store/project.store"
+import { Skeleton } from "../ui/skeleton"
 
 // Empty state component for when there are no messages
 const EmptyState = ({ projectTitle }: { projectTitle?: string }) => (
@@ -23,9 +24,7 @@ const EmptyState = ({ projectTitle }: { projectTitle?: string }) => (
     <div className="max-w-md mx-auto space-y-6">
       {/* Logo and greeting */}
       <div className="space-y-4">
-        <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-5xl">
-          😎
-        </div>
+  
         <div className="space-y-2">
         
           <p className="text-gray-600 text-3xl capitalize">
@@ -52,21 +51,10 @@ export function ChatInterface() {
     error
   } = useChatStore()
 
-  const { 
-    documents: conversationDocuments, 
-    fetchConversationDocuments
-  } = useConversationDocumentsStore()
 
   const { currentProject } = useProjectStore()
  
   const {data: session} = useSession()
-  
-  // Fetch documents when conversation changes
-  useEffect(() => {
-    if (currentConversation?.id) {
-      fetchConversationDocuments(currentConversation.id)
-    }
-  }, [currentConversation?.id, fetchConversationDocuments])
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -128,8 +116,6 @@ export function ChatInterface() {
     </div>
   )
 }
-
-// Update ChatMessageItem to handle streaming messages
 function ChatMessageItem({ 
   message, 
   user,
@@ -147,9 +133,19 @@ function ChatMessageItem({
   // Check if message is currently streaming
   const isStreaming = message.isStreaming;
   
+  // Memoize the content to prevent flicker during streaming
+  const [displayContent, setDisplayContent] = useState(formattedContent);
+  
+  useEffect(() => {
+    // Only update display content when not streaming or when content actually changes
+    if (!isStreaming || formattedContent !== displayContent) {
+      setDisplayContent(formattedContent);
+    }
+  }, [formattedContent, isStreaming, displayContent]);
+  
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`flex gap-2 sm:gap-3 max-w-[90%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+      <div className={`flex gap-2 sm:gap-3 max-w-[90%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
         
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
@@ -159,52 +155,55 @@ function ChatMessageItem({
             </span>
           </div>
           
-          <div
-            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${
-              isUser ? "bg-primary text-white" : "bg-gray-100 border"
-            }`}
-          >
-            {message.isLoading || isStreaming ? (
-              <div className="flex items-center">
-                {message.content ? (
-                  <div className="space-y-2">
-                    <MessageDisplay 
-                      content={formattedContent} 
-                      className={isUser ? "text-white" : ""} 
-                    />
-                    {isStreaming && (
-                      <div className="flex items-center gap-1">
-                        <LogoAnimation size="sm" className="text-gray-500" />
-                        <span className="text-xs text-gray-500 animate-pulse">
-                          {message.processingStatus || "Thinking..."}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-start">
-                    {message.processingStatus && message.processingStatus !== 'completed' ? (
-                      <ProcessingStatus status={message.processingStatus} />
-                    ) : (
-                      <div className="flex items-center">
-                        <LogoAnimation size="sm" className="text-gray-500" />
-                        <span className="animate-pulse ml-2">
-                          {message.processingStatus || "Processing..."}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
+          {/* Different styling for user vs AI messages */}
+          {isUser ? (
+            // User messages keep the bubble styling with forced white text
+            <div className="rounded-lg px-3 py-2 sm:py-3 overflow-hidden bg-primary">
               <MessageDisplay 
-                content={formattedContent} 
-                className={isUser ? "text-white" : ""} 
+                content={displayContent} 
+                className="text-white [&_*]:text-white [&_strong]:text-white [&_em]:text-white [&_code]:text-white [&_a]:text-white" 
               />
-            )}
+            </div>
+          ) : (
+            // AI messages get clean, document-like styling
+            <div className="overflow-hidden">
+             {message.isLoading || isStreaming ? (
+  <div className="flex items-center">
+    {message.content ? (
+      // Show streaming content once we have some content
+      <div className="space-y-2 w-full">
+        <MessageDisplay 
+          content={displayContent} 
+          className="message-content" 
+        />
+        {isStreaming && (
+          <div className="flex items-center gap-1">
+            <LogoAnimation size="sm" className="text-gray-500" />
+            <span className="text-xs text-gray-500 animate-pulse">
+              {message.processingStatus || "Thinking..."}
+            </span>
           </div>
+        )}
+      </div>
+    ) : (
+      // Show skeleton when no content yet
+      <div className="space-y-2 w-full min-w-[500px]">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-4 w-2/3" />
+      </div>
+    )}
+  </div>
+) : (
+  <MessageDisplay 
+    content={displayContent} 
+    className="message-content" 
+  />
+)}
+            </div>
+          )}
           
-          {/* Display web search results if available */}
+          {/* Rest of the component remains the same... */}
           {!isUser && message.webSearchResults && (
             <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
               <div className="flex items-center mb-2 text-blue-700">
@@ -228,7 +227,6 @@ function ChatMessageItem({
             </div>
           )}
           
-          {/* Show any references/citations */}
           {message.references && message.references.length > 0 && (
             <div className="mt-2 space-y-1">
               <p className="text-xs font-medium text-secondary-500">References:</p>
