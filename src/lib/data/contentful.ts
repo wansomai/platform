@@ -128,19 +128,51 @@ export interface practiseAreaPages {
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const response = await client.getEntries({
-    content_type: "blogPost",
-    order: ["-sys.createdAt"], // Get newest first
-  });
+  let allItems: BlogPost[] = [];
+  let skip = 0;
+  const limit = 1000; // Maximum allowed by Contentful
+  let hasMore = true;
 
-  return response.items as unknown as BlogPost[];
+  while (hasMore) {
+    const response = await client.getEntries({
+      content_type: "blogPost",
+      order: ["-sys.createdAt"],
+      limit: limit,
+      skip: skip
+    });
+
+    allItems = [...allItems, ...(response.items as unknown as BlogPost[])];
+    
+    // Check if there are more items to fetch
+    hasMore = response.items.length === limit;
+    skip += limit;
+  }
+
+  return allItems;
 }
+
 export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
-  const response = await client.getEntries({
-    content_type: "documentTemplates",
-    order: ["-sys.createdAt"], // Get newest first
-  });
-  return response.items as unknown as DocumentTemplate[];
+  let allItems: DocumentTemplate[] = [];
+  let skip = 0;
+  const limit = 1000; // Maximum allowed by Contentful
+  let hasMore = true;
+
+  while (hasMore) {
+    const response = await client.getEntries({
+      content_type: "documentTemplates",
+      order: ["-sys.createdAt"],
+      limit: limit,
+      skip: skip
+    });
+
+    allItems = [...allItems, ...(response.items as unknown as DocumentTemplate[])];
+    
+    // Check if there are more items to fetch
+    hasMore = response.items.length === limit;
+    skip += limit;
+  }
+
+  return allItems;
 }
 
 export async function getBlogPostById(id: string): Promise<BlogPost | null> {
