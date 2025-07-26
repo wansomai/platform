@@ -467,7 +467,7 @@ body {
 }
 
 .blog-content a {
-  @apply text-primary hover:underline;
+  @apply text-[#b8690c] underline;
 }
 
 .blog-content ul,
