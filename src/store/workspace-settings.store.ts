@@ -1,24 +1,8 @@
 // src/store/workspace-settings.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
-import { Jurisdiction } from '@/lib/jurisdictions';
-
-export interface ProjectSettings {
-  citeSources: boolean;
-  suggestActions: boolean;
-  webSearch: boolean;
-  legalDrafting: boolean;
-  model?: string;
-  temperature?: number;
-  jurisdiction?: {
-    id: string;
-    name: string;
-    country: string;
-    state?: string;
-    legalSystem: string;
-    citationStyle: string;
-  };
-}
+import { Jurisdiction } from '@/types';
+import { ProjectSettings } from '@/types';
 
 interface ProjectSettingsState {
   settings: ProjectSettings;

@@ -1,26 +1,15 @@
 // src/store/workspace-documents.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
-
-export interface ProjectDocument {
-  id: string;
-  title: string;
-  description: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  createdBy: string;
-  createdAt: string;
-  addedAt: string;
-}
+import { Document } from '@/types/documents';
 
 interface ProjectDocumentsState {
-  documents: ProjectDocument[];
+  documents: Document[];
   isLoading: boolean;
   error: string | null;
   
   // Methods
-  fetchProjectDocuments: (projectId: string) => Promise<ProjectDocument[]>;
+  fetchProjectDocuments: (projectId: string) => Promise<Document[]>;
   attachDocumentsToProject: (projectId: string, documentIds: string[]) => Promise<boolean>;
   removeDocumentFromProject: (projectId: string, documentId: string) => Promise<boolean>;
 }
@@ -33,7 +22,7 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
   fetchProjectDocuments: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiService.get<{data: ProjectDocument[]}>(`/api/projects/${projectId}/documents`);
+      const response = await apiService.get<{data: Document[]}>(`/api/projects/${projectId}/documents`);
       console.log('Fetched documents:', response.data);
       set({ 
         documents: response.data,
@@ -59,7 +48,7 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
       });
       
       // Refresh document list
-      const response = await apiService.get<{data: ProjectDocument[]}>(`/api/projects/${projectId}/documents`);
+      const response = await apiService.get<{data: Document[]}>(`/api/projects/${projectId}/documents`);
       set({ documents: response.data, isLoading: false });
       
       return true;

@@ -1,15 +1,7 @@
 // store/folder.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
-
-export interface Folder {
-  id: string;
-  name: string;
-  parentId: string | null;
-  documentCount: number;
-  children?: Folder[];
-  createdAt: string;
-}
+import { Folder } from '@/types/documents';
 
 interface FolderState {
   folders: Folder[];

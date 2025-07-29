@@ -1,38 +1,11 @@
 // src/store/chat.store.ts
 import { create } from 'zustand'
 import { apiService } from '@/lib/api'
+import { Message, Conversation } from '@/types/conversations';
 
-export interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant' | 'system';
-  timestamp: string;
-  references?: Reference[];
-  webSearchResults?: string; 
-  actionType?: string;
-  isLoading?: boolean;
-  metadata?: any;
-  isStreaming?: boolean; // streaming flag
-  tempId?: string; //temporary ID for streaming messages
-  processingStatus?: string; //current processing stage
-}
 
-export interface Reference {
-  id: string;
-  documentId: string;
-  documentName: string;
-  text: string;
-  page?: number;
-}
 
-export interface Conversation {
-  id: string;
-  title: string;
-  projectId: string;
-  messages: Message[];
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 interface ChatState {
   conversations: Conversation[];
@@ -278,6 +251,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             case 'final':
               get().finalizeStreamingMessage(streamingId, {
                 id: data.messageId,
+                conversationId,
                 content: data.content,
                 role: 'assistant',
                 timestamp: new Date().toISOString(),

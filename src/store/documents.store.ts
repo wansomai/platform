@@ -1,7 +1,7 @@
 // src/store/documents.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
-
+import { Document, DocumentFilters } from '@/types/documents';
 
 interface ApiResponse<T> {
   status: number;
@@ -18,28 +18,8 @@ interface ApiResponse<T> {
   };
 }
 
-export interface Document {
-  id: string;
-  title: string;
-  description: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  createdBy: string;
-  createdById: string;
-  createdAt: string;
-  updatedAt: string;
-  contentExtracted: boolean;
-}
 
-interface DocumentFilters {
-  search?: string;
-  type?: string;
-  sort?: 'recent' | 'oldest' | 'name' | 'size';
-  page?: number;
-  limit?: number;
-  folder?: string | null;
-}
+
 
 interface DocumentsState {
   documents: Document[];

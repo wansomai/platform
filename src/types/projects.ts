@@ -21,10 +21,15 @@ export interface Project {
     id: string;
     name: string;
   };
+  knowledgeBase: {
+    documents: Document[]
+  }
   members?: ProjectMember[];
   documents?: Document[];
   conversations?: Conversation[];
 }
+
+
 
 export interface ProjectMember {
   userId: string;
@@ -48,4 +53,22 @@ export interface Jurisdiction {
   courtSystem: string[];
   languages: string[];
   isPopular?: boolean;
+}
+
+
+export interface ProjectSettings {
+  citeSources: boolean;
+  suggestActions: boolean;
+  webSearch: boolean;
+  legalDrafting: boolean;
+  model?: string;
+  temperature?: number;
+  jurisdiction?: {
+    id: string;
+    name: string;
+    country: string;
+    state?: string;
+    legalSystem: string;
+    citationStyle: string;
+  };
 }

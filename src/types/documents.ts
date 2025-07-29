@@ -9,8 +9,7 @@ export interface Document {
   createdById: string;
   createdAt: string;
   updatedAt: string;
-  contentExtracted: boolean;
-  
+  contentExtracted: boolean; 
   // Optional fields for different contexts
   folderId?: string | null;
   addedAt?: string;       
@@ -21,6 +20,7 @@ export interface Document {
   extractionProgress?: number;
   lastAccessed?: string;
 }
+
 
 export interface DocumentFilters {
   search?: string;
@@ -35,3 +35,14 @@ export interface DocumentFilters {
     end: string;
   };
 }
+
+
+export interface Folder {
+  id: string;
+  name: string;
+  parentId: string | null;
+  documentCount: number;
+  children?: Folder[];
+  createdAt: string;
+}
+

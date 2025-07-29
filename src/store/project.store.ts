@@ -1,47 +1,7 @@
 // src/store/project.store.ts
 import { create } from 'zustand'
 import { apiService } from '@/lib/api'
-
-export interface ProjectDetails {
-  id: string
-  title: string
-  description: string
-  status: string
-  createdAt: string
-  knowledge_base: {
-    documents: DocumentInfo[]
-  }
-  team_count: number
-  messages_count: number
-  documents_count: number
-  last_activity: string
-}
-
-export interface ProjectListItem {
-  id: string
-  title: string
-  description: string
-  status: string
-  createdAt: string
-  team_count: number
-  messages_count: number
-  documents_count: number
-  last_activity: string
-}
-
-
-
-export interface DocumentInfo {
-  id: string
-  name: string
-  file_url: string
-  file_type: string
-  file_size: number
-  category: string
-  uploaded_at: string
-  uploaded_by: string
-}
-
+import { Project } from '@/types/projects'
 
 interface ApiResponse<T> {
   status: number;
@@ -50,27 +10,27 @@ interface ApiResponse<T> {
   error?: boolean;
 }
 
-interface ProjectState {
-  projects: ProjectListItem[]
-  currentProject: ProjectDetails | null
+interface ProjectState {  
+  projects: Project[]
+  currentProject: Project | null
   isLoading: boolean
   error: string | null
   lastFetched: number | null;  
   
   // Basic state setters
-  setProjects: (projects: ProjectListItem[]) => void
-  setCurrentProject: (project: ProjectDetails | null) => void
-  addProject: (project: ProjectListItem) => void
-  updateProject: (project: ProjectListItem) => void
+  setProjects: (projects: Project[]) => void
+  setCurrentProject: (project: Project | null) => void
+  addProject: (project: Project) => void
+  updateProject: (project: Project) => void
   deleteProject: (projectId: string) => void
   setLoading: (isLoading: boolean) => void
   setError: (error: string | null) => void
   
   // API operations
-  fetchProjects: () => Promise<ProjectListItem[]>
-  fetchProjectById: (projectId: string) => Promise<ProjectDetails | null>
-  createProject: (data: {title: string, description?: string, organizationId: string}) => Promise<ProjectListItem | null>
-  updateProjectDetails: (projectId: string, data: {title: string, description?: string, status?: string}) => Promise<ProjectListItem | null>
+  fetchProjects: () => Promise<Project[]>
+  fetchProjectById: (projectId: string) => Promise<Project | null>
+  createProject: (data: {title: string, description?: string, organizationId: string}) => Promise<Project | null>
+  updateProjectDetails: (projectId: string, data: {title: string, description?: string, status?: string}) => Promise<Project | null>
   removeProject: (projectId: string) => Promise<boolean>
 }
 
@@ -119,7 +79,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const isDashboard = state.projects.length === 0; // First load likely dashboard
       const params = isDashboard ? '?limit=5' : '';
       
-      const response = await apiService.get<ApiResponse<ProjectListItem[]>>(`/api/projects${params}`);
+      const response = await apiService.get<ApiResponse<Project[]>>(`/api/projects${params}`);
       const projects = response.data;
       
       set({ 
@@ -147,13 +107,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     
     try {
       set({ isLoading: true, error: null });
-      const response = await apiService.get<ApiResponse<ProjectDetails>>(`/api/projects/${projectId}`);
+      const response = await apiService.get<ApiResponse<Project>>(`/api/projects/${projectId}`);
       // Get the project data from the response
       const projectData = response.data || null;
       
       // Ensure the knowledge base structure exists
-      if (projectData && !projectData.knowledge_base) {
-        projectData.knowledge_base = {
+      if (projectData && !projectData.knowledgeBase) {
+        projectData.knowledgeBase = {
           documents: [],
         };
       }
@@ -173,7 +133,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   createProject: async (data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiService.post<ApiResponse<ProjectListItem>>('/api/projects', data);
+      const response = await apiService.post<ApiResponse<Project>>('/api/projects', data);
       
       if (response.status === 201) {
         const project = response.data;
@@ -195,7 +155,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   updateProjectDetails: async (projectId, data) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await apiService.put<ApiResponse<ProjectListItem>>(`/api/projects/${projectId}`, data);
+      const response = await apiService.put<ApiResponse<Project>>(`/api/projects/${projectId}`, data);
       const updatedProject = response.data || response.data;
       
       set((state) => ({
