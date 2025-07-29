@@ -8,13 +8,14 @@ import {
   Copy, 
   Search
 } from "lucide-react"
-import { useChatStore, Message as ChatMessage } from "@/store/chat.store"
+import { useChatStore} from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { useProjectStore } from "@/store/project.store"
+import { Message } from "@/types"
 
 // Empty state component for when there are no messages
 const EmptyState = ({ projectTitle }: { projectTitle?: string }) => (
@@ -120,7 +121,7 @@ function ChatMessageItem({
   user,
   onCopy 
 }: { 
-  message: ChatMessage, 
+  message: Message, 
   user: any,
   onCopy: () => void
 }) {

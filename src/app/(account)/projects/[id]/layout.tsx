@@ -1,8 +1,6 @@
 // src/components/workspace/WorkspaceLayout.tsx
 "use client";
-
-import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ConversationDetails } from "@/components/workspace/ConversationDetails";
@@ -12,59 +10,18 @@ import {
   X,
 } from "lucide-react";
 import { useUIStore } from "@/store/ui.store";
-import { useProjectStore } from "@/store/project.store";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { ErrorState } from "@/components/commons/LoadingState";
-import { Project } from "@/types/projects";
 
 export default function WorkspaceLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const params = useParams();
-  const projectId = params.id as string; 
-  // Local state for mobile sidebar
-  const [workspace, setWorkspace] = useState<Project | null>(null);
-  
   // Get state from stores
   const { 
     rightSidebarCollapsed, 
     setRightSidebarCollapsed 
   } = useUIStore();
-  const {   
-    projects
-  } = useProjectStore();
-  // Enhanced project loading with all necessary data
-  useEffect(() => {
-    const initializeWorkspace = async () => {
-      if (!projectId) return;
-      
-      try {
-        const project = projects.find((p) => p.id === projectId);
-        if (project) {
-          setWorkspace(project);
-        }
-      } catch (error) {
-      }
-    };
-
-    initializeWorkspace();
-  }, [projectId]);
-
-  // Show error state if project failed to load and we're not loading
-  if (!workspace) {
-    return (
-      <ErrorState
-        title="Failed to load workspace"
-        description="The requested workspace could not be found or loaded."
-        action={{
-          label: "Try Again",
-          onClick: () => window.location.reload()
-        }}
-      />
-    );
-  }
 
   return (
     <div className="flex h-screen bg-gray-50">
