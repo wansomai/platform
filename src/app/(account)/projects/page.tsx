@@ -70,16 +70,16 @@ export default function ProjectsPage() {
         result = a.title.localeCompare(b.title);
         break;
       case "updated":
-        result = new Date(b.last_activity).getTime() - new Date(a.last_activity).getTime();
+        result = new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
         break;
       case "created":
         result = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         break;
       case "activity":
-        result = b.messages_count - a.messages_count;
+        result = b.messagesCount - a.messagesCount;
         break;
       case "documents":
-        result = b.documents_count - a.documents_count;
+        result = b.documentsCount - a.documentsCount;
         break;
       default:
         result = 0;
@@ -175,7 +175,7 @@ export default function ProjectsPage() {
 
               
               <CardFooter className="border-t pt-4">
-                <p className="text-gray-600">Created {format(new Date(project.last_activity), "PP")} </p>
+                <p className="text-gray-600 text-sm">Created {format(new Date(project.createdAt), "PP")} </p>
                 <Button variant="ghost" size="sm" className="ml-auto">
                   View Workspace
                   <ArrowRight className="ml-2 h-4 w-4" />

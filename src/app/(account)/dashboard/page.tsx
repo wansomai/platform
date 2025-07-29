@@ -293,7 +293,7 @@ export default function DashboardPage() {
                                   <Briefcase className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <div>
-                                  <h3 className="font-medium">
+                                  <h3 className="font-medium text-sm">
                                     {project.title}
                                   </h3>
                                  
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                               </div>
                               <div className="flex items-center">
                                 <span className="text-xs text-gray-500 mr-2">
-                                  {new Date(project.lastActivity).toLocaleDateString()}
+                                  {new Date(project.updatedAt).toLocaleDateString()}
                                 </span>
                                 <ArrowRight className="h-4 w-4 text-gray-400" />
                               </div>

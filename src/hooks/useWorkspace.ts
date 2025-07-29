@@ -1,4 +1,4 @@
-// src/hooks/useWorkspace.ts (Updated for clean separation)
+// src/hooks/useWorkspace.ts 
 import { useState, useEffect } from 'react';
 import { apiService } from '@/lib/api';
 import { useProjectStore } from '@/store/project.store';

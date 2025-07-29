@@ -28,8 +28,9 @@ import { useProjectInstructionsStore } from "@/store/workspace-instructions.stor
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { RemoveConfirmationDialog } from "@/components/modals/ConfirmationDialog";
 import { JurisdictionSelector } from "./JurisdictionSelector";
-import { getJurisdictionById, type Jurisdiction } from "@/lib/jurisdictions";
+import { getJurisdictionById } from "@/lib/jurisdictions";
 import { UploadDocumentModal } from "../modals/UploadModal";
+import { Jurisdiction } from "@/types";
 
 export function ConversationDetails() {
   const params = useParams();
@@ -64,7 +65,7 @@ export function ConversationDetails() {
   
   const { addToast } = useUIStore();
   
-  // Load project settings and instructions only when component mounts (lazy loading)
+  // Load project settings and instructions only when component mounts
 useEffect(() => {
   if (projectId) {
     // Parallel loading with error handling
