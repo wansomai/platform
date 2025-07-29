@@ -52,30 +52,16 @@ export function ConversationDetails() {
   const { 
     settings, 
     isLoading: settingsLoading, 
-    fetchSettings, 
     setJurisdiction 
   } = useProjectSettingsStore();
   
   const { 
     instructions, 
     isLoading: instructionsLoading, 
-    fetchInstructions, 
     saveInstructions 
   } = useProjectInstructionsStore();
   
   const { addToast } = useUIStore();
-  
-  // Load project settings and instructions only when component mounts
-useEffect(() => {
-  if (projectId) {
-    // Parallel loading with error handling
-    Promise.all([
-      fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
-      fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
-      fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err))
-    ]);
-  }
-}, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments]);
   
   // Update temp instructions when instructions change
   useEffect(() => {

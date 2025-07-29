@@ -262,7 +262,7 @@ export default function DashboardPage() {
                       <div className="p-6 text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
                         <p className="text-sm text-gray-500 mt-2">
-                          Loading projects...
+                          Loading workspaces...
                         </p>
                       </div>
                     ) : projects?.length === 0 ? (

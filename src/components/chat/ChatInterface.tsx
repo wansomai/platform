@@ -1,8 +1,7 @@
 // src/components/chat/ChatInterface.tsx
 "use client"
 
-import { useRef, useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { 
   Copy, 
@@ -14,11 +13,10 @@ import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
-import { useProjectStore } from "@/store/project.store"
 import { Message } from "@/types"
 
 // Empty state component for when there are no messages
-const EmptyState = ({ projectTitle }: { projectTitle?: string }) => (
+const EmptyState = () => (
   <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 text-center">
     <div className="max-w-md mx-auto space-y-6">
       {/* Logo and greeting */}
@@ -36,21 +34,15 @@ const EmptyState = ({ projectTitle }: { projectTitle?: string }) => (
 );
 
 export function ChatInterface() {
-  const params = useParams()
-  const projectId = params.id as string
-  
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
   // Get state from stores
   const { addToast } = useUIStore()
-  const { 
+  const {   
     currentConversation, 
-    isLoading, 
     error
   } = useChatStore()
 
-
-  const { currentProject } = useProjectStore()
  
   const {data: session} = useSession()
   
@@ -73,20 +65,10 @@ export function ChatInterface() {
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }
-  
-  // Show loading only if we're actually loading and have no conversation yet
-  if (isLoading && !currentConversation) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <LogoAnimation size="sm" className="text-gray-500" />
-        <span className="ml-2 text-secondary-700 animate-pulse">Loading workspace...</span>
-      </div>
-    )
-  }
 
   // Show empty state if no messages
   if (!currentConversation?.messages || currentConversation.messages.length === 0) {
-    return <EmptyState projectTitle={currentProject?.title} />
+    return <EmptyState />
   }
   
   return (
@@ -115,7 +97,7 @@ export function ChatInterface() {
   )
 }
 
-// Update ChatMessageItem to handle streaming messages
+// ChatMessageItem to handle streaming messages
 function ChatMessageItem({ 
   message, 
   user,
