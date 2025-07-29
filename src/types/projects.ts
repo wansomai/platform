@@ -1,4 +1,4 @@
-import { Conversation } from "./conversations";
+import { Conversation, Message } from "./conversations";
 
 //types/project.ts
 export interface Project {
@@ -27,8 +27,12 @@ export interface Project {
   members?: ProjectMember[];
   documents?: Document[];
   conversations?: Conversation[];
+  messages: Message[];
+  settings: ProjectSettings;
+  instructions: string;
+  currentConversation: Conversation | null;
+  loadedAt: string;
 }
-
 
 
 export interface ProjectMember {

@@ -3,16 +3,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 import api from '@/lib/api'
+import { Project } from '@/types/projects'
 
-interface Project {
-  id: string
-  title: string
-  description: string
-  status: string
-  created_at: string
-  messages_count: number
-  documents_count: number
-}
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([])

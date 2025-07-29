@@ -7,7 +7,7 @@ import { useUIStore } from '@/store/ui.store'
 import { formatFileSize, validateFile } from '@/lib/utils/file'
 import { formatRelativeTime } from '@/lib/utils/date'
 import { cleanTextContent, formatSearchQuery, containsSearchTerm } from '@/lib/utils/text'
-import {FILE_UPLOAD_CONFIG} from '@/lib/utils/constants'
+import {ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG} from '@/lib/utils/constants'
 
 
 export interface UseDocumentsOptions {
@@ -16,16 +16,6 @@ export interface UseDocumentsOptions {
   onSuccess?: (message: string) => void;
   onError?: (error: string) => void;
 }
-const ALLOWED_FILE_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/plain',
-  'text/csv',
-  'image/jpeg',
-  'image/png'
-];
 
 export function useDocuments(options: UseDocumentsOptions = {}) {
   const { projectId, conversationId, onSuccess, onError } = options;
