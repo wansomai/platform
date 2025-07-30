@@ -312,7 +312,7 @@ export async function POST(
               project?.title
             }".
             Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
-            Always start by introducing yourself and getting to know your team mates and get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
+            Get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
             If you are unsure about something,ask for clarification and ask if they would want to research it first before you continue with the project.
             ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}`;
           } else {
@@ -323,7 +323,7 @@ export async function POST(
             }".
             ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
             Your goal is to answer the questions asked by your team matesto ensure that the project is completed successfully.
-            Always start by asking your teammates name and get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
+            Get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
             If you are unsure about something,ask for clarification and ask if they would want to research it first before you continue with the project.
             ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
             

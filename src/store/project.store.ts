@@ -16,7 +16,6 @@ interface ProjectState {
   currentProject: Project | null
   isLoading: boolean
   error: string | null
-  lastFetched: number | null;  
   
   // Basic state setters
   setProjects: (projects: Project[]) => void
@@ -42,10 +41,9 @@ export const useProjectStore = create<ProjectState>()(
       currentProject: null,
       isLoading: false,
       error: null,
-      lastFetched: null,
       
       // Basic state setters
-      setProjects: (projects) => set({ projects, lastFetched: Date.now() }),
+      setProjects: (projects) => set({ projects }),
       setCurrentProject: (project) => set({ currentProject: project }),
       addProject: (project) => set((state) => ({ 
         projects: [...state.projects, project] 
@@ -65,15 +63,6 @@ export const useProjectStore = create<ProjectState>()(
       
       // API operations
       fetchProjects: async () => {   
-        const state = get();
-        const now = Date.now();
-        const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
-        
-        // If we have recent data, return it without fetching
-        if (state.lastFetched && (now - state.lastFetched) < fiveMinutes && state.projects.length > 0) {
-          return state.projects;
-        }
-        
         try {
           set({ isLoading: true, error: null });
           
@@ -82,13 +71,13 @@ export const useProjectStore = create<ProjectState>()(
           
           set({ 
             projects, 
-            isLoading: false,
-            lastFetched: now
+            isLoading: false
           });
           
           return projects;
           
         } catch (error: any) {
+          const state = get();
           set({ error: error.message || 'Failed to fetch projects', isLoading: false });
           return state.projects; // Return cached data on error
         }
@@ -112,7 +101,6 @@ export const useProjectStore = create<ProjectState>()(
         try {
           set({ isLoading: true, error: null });
           const response = await apiService.get<ApiResponse<Project>>(`/api/projects/${projectId}`);
-          // Get the project data from the response
           const projectData = response.data || null;
           
           // Ensure the knowledge base structure exists
@@ -208,12 +196,11 @@ export const useProjectStore = create<ProjectState>()(
       }
     }),
     {
-      name: 'project-store', // Storage key
-      storage: createJSONStorage(() => localStorage), // Use localStorage
+      name: 'project-store',
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         projects: state.projects,
         currentProject: state.currentProject,
-        lastFetched: state.lastFetched,
       }),
       version: 1,
     }
