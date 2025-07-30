@@ -30,7 +30,7 @@ interface ChatState {
   
   // API interactions
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
-  fetchConversation: (projectId: string, conversationId: string) => Promise<Conversation | null>;
+  fetchConversation: (projectId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
   sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any) => Promise<void>;
 
@@ -149,7 +149,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       try {
         set({ isLoading: true, error: null });
         const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
-        set({ conversations: response.data, isLoading: false });
+        console.log(response.data,"found conversations")
+        set({conversations: response.data, isLoading: false });
         return response.data;
       } catch (error: any) {
         set({ 
@@ -159,11 +160,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
         return [];
       }
     },
-  fetchConversation: async (projectId, conversationId) => {
+    
+  fetchConversation: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
       const response = await apiService.get<{ data: Conversation }>(
-        `/api/projects/${projectId}/conversations/${conversationId}`
+        `/api/projects/${projectId}/conversations`
       );
       const conversation = response.data;
       set({ currentConversation: conversation, isLoading: false });

@@ -25,11 +25,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useWorkspace } from '@/hooks/useWorkspace';
 import { useUIStore } from '@/store/ui.store';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import * as mammoth from 'mammoth';
 
 // TypeScript interfaces
 interface SelectionRange {
@@ -76,7 +74,6 @@ const LegalCanvas: React.FC = () => {
   const improveInputRef = useRef<HTMLInputElement>(null);
 
   // Use workspace hook for settings and data
-  const { settings, project } = useWorkspace(projectId);
   const { addToast } = useUIStore();
 
   // Quill.js configuration

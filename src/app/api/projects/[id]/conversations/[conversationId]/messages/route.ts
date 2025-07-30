@@ -22,14 +22,7 @@ import LRUCache from 'lru-cache'
 export const maxDuration = 60;
 
 // Initialize Prisma with connection pooling
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-  log: process.env.NODE_ENV === "development" ? ["error"] : ["error"],
-});
+const prisma = new PrismaClient();
 
 // Default settings if none exist
 const DEFAULT_SETTINGS = {

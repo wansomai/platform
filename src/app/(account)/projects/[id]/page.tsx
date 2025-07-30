@@ -35,7 +35,7 @@ export default function ProjectPage() {
   } = useUIStore(); 
   const { fetchInstructions } = useProjectInstructionsStore()
   const { fetchProjectDocuments } = useProjectDocumentsStore()
-  const { fetchConversations, isLoading: chatLoading } = useChatStore();
+  const { fetchConversation, isLoading: chatLoading } = useChatStore();
     
   // Load project settings and instructions only when component mounts
   useEffect(() => {
@@ -45,10 +45,10 @@ export default function ProjectPage() {
         fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
         fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
         fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err)),
-        fetchConversations(projectId).catch(err => console.warn('Failed to load conversations:', err))
+        fetchConversation(projectId).catch(err => console.warn('Failed to load conversations:', err))
       ]);
     }
-  }, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments, fetchConversations]);
+  }, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments, fetchConversation]);
   
   // Show skeleton loading state if project is loading
   if (chatLoading || (!project && projectId)) {
@@ -84,10 +84,11 @@ export default function ProjectPage() {
           <div className="h-full">
             {showLegalDrafting ? <LegalCanvas /> : <ChatInterface />}
           </div>
-        </main>
-        <div className="border-t bg-white">
+          <div className="border-t bg-white">
           <ChatInput />
         </div>
+        </main>
+        
       </div>
       
       <div className={cn(

@@ -131,7 +131,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
     if (!currentConversation) return;
     
     try {
-      await updateSetting(currentConversation.id, settingKey, value);
+      await updateSetting(projectId, settingKey, value);
       addToast({ message: `${settingKey} setting updated`, type: 'success' });
     } catch (error) {
       addToast({ message: `Failed to update ${settingKey} setting`, type: 'error' });
@@ -189,8 +189,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   return (
     <>
       {/* Floating Input Area with Embedded Tools */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="w-[90vw] max-w-3xl">
+      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[80vw]">
+        <div className="w-full max-w-3xl mx-auto">
           {/* Input Area with embedded icons */}
           <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
             {/* Left side icons */}

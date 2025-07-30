@@ -43,31 +43,26 @@ export async function GET(
         },
         { status: 403 }
       );
-    }
-    
-    // Check if project exists
-    const project = await prisma.project.findUnique({
-      where: { id: projectId }
-    })
-    
-    if (!project) {
-      return NextResponse.json(
-        { 
-          status: 404,
-          message: 'Project not found' 
-        },
-        { status: 404 }
-      )
-    }
-    
+    } 
     // Get conversations
-    const conversations = await prisma.conversation.findMany({
+    const conversation = await prisma.conversation.findFirst({
       where: { projectId },
       orderBy: { updatedAt: 'desc' },
       include: {
         messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1
+          orderBy: { createdAt: 'asc' },
+          include: {
+            references: {
+              include: {
+                document: {
+                  select: {
+                    id: true,
+                    title: true
+                  }
+                }
+              }
+            }
+          }
         },
         _count: {
           select: {
@@ -77,26 +72,39 @@ export async function GET(
       }
     })
     
-    // Format for response
-    const formattedConversations = conversations.map(conversation => {
-      const lastMessage = conversation.messages[0]?.content || ""
-      
-      return {
-        id: conversation.id,
-        title: conversation.title,
-        projectId: conversation.projectId,
-        createdAt: conversation.createdAt.toISOString(),
-        updatedAt: conversation.updatedAt.toISOString(),
-        isPinned: conversation.isPinned,
-        last_message: lastMessage,
-        messages_count: conversation._count.messages
-      }
-    })
+    // Handle case where no conversation exists
+    if (!conversation) {
+      return NextResponse.json({
+        status: 200,
+        message: 'No conversation found for this project',
+        data: null
+      })
+    }
+    
+    // Format the single conversation response
+    const formattedConversation = {
+      id: conversation.id,
+      title: conversation.title,
+      projectId: conversation.projectId,
+      createdAt: conversation.createdAt.toISOString(),
+      updatedAt: conversation.updatedAt.toISOString(),
+      isPinned: conversation.isPinned,
+      messages: conversation.messages.map(message => ({
+        id: message.id,
+        content: message.content,
+        role: message.role,
+        timestamp: message.createdAt.toISOString(),
+        userId: message.userId,
+        // Add any other message fields you need
+      })),
+      last_message: conversation.messages[conversation.messages.length - 1]?.content || "",
+      messages_count: conversation._count.messages
+    }
     
     return NextResponse.json({
       status: 200,
       message: 'Conversations retrieved successfully',
-      data: formattedConversations
+      data: formattedConversation
     })
   } catch (error) {
     console.error('Error fetching conversations:', error)
