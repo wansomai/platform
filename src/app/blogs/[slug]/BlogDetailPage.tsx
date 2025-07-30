@@ -128,11 +128,11 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
               {/* Breadcrumb */}
               <div className="container mx-auto px-4 py-4 text-sm ">
                 <div className="flex items-center">
-                  <Link href="/" className="hover:text-teal-600">
+                  <Link href="/" className="hover:text-[#b8690c]">
                     Home
                   </Link>
                   <span className="mx-2">/</span>
-                  <Link href="/blogs" className="hover:text-teal-600">
+                  <Link href="/blogs" className="hover:text-[#b8690c]">
                     Articles
                   </Link>
                   <span className="mx-2">/</span>

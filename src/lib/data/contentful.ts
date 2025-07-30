@@ -127,21 +127,85 @@ export interface practiseAreaPages {
   fields: practiseAreaFields;
 }
 
-export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const response = await client.getEntries({
-    content_type: "blogPost",
-    order: ["-sys.createdAt"], // Get newest first
-  });
-
-  return response.items as unknown as BlogPost[];
-}
 export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
-  const response = await client.getEntries({
-    content_type: "documentTemplates",
-    order: ["-sys.createdAt"], // Get newest first
-  });
-  return response.items as unknown as DocumentTemplate[];
+  let allItems: DocumentTemplate[] = [];
+  let skip = 0;
+  const limit = 100; // Smaller batch size to stay under 7MB limit
+  let hasMore = true;
+
+  while (hasMore) {
+    const response = await client.getEntries({
+      content_type: "documentTemplates",
+      order: ["-sys.createdAt"],
+      limit: limit,
+      skip: skip,
+      // Only select the fields you actually need to reduce response size
+      select: [
+        'sys.id',
+        'sys.createdAt',
+        'sys.updatedAt',
+        'fields.title',
+        'fields.preview',
+        'fields.description'
+      ],
+      // Reduce the include level to avoid fetching too much nested data
+      include: 1
+    });
+
+    allItems = [...allItems, ...(response.items as unknown as DocumentTemplate[])];
+    
+    // Check if there are more items to fetch
+    hasMore = response.items.length === limit;
+    skip += limit;
+    
+    // Add a small delay to avoid rate limiting
+    if (hasMore) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
+  return allItems;
 }
+
+export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  let allItems: BlogPost[] = [];
+  let skip = 0;
+  const limit = 100; // Smaller batch size
+  let hasMore = true;
+
+  while (hasMore) {
+    const response = await client.getEntries({
+      content_type: "blogPost",
+      order: ["-sys.createdAt"],
+      limit: limit,
+      skip: skip,
+      // Only select the fields you need
+      select: [
+        'sys.id',
+        'sys.createdAt',
+        'sys.updatedAt',
+        'fields.title',
+        'fields.preview',
+        'fields.content',
+        'fields.image',
+      ],
+      include: 1
+    });
+
+    allItems = [...allItems, ...(response.items as unknown as BlogPost[])];
+    
+    hasMore = response.items.length === limit;
+    skip += limit;
+    
+    if (hasMore) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
+  return allItems;
+}
+
+
 
 export async function getBlogPostById(id: string): Promise<BlogPost | null> {
   try {

@@ -37,12 +37,11 @@
   --color-green-light:#e0fbe3;
   
   /* Typography */
-  --font-family-primary: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-weight-light: 100;
   --font-weight-normal: 300;
-  --font-weight-medium: 300;
-  --font-weight-semibold: 400;
-  --font-weight-bold: 500;
+  --font-weight-medium: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 700;
   
   /* Border radius */
   --radius: 0.5rem;
@@ -400,6 +399,55 @@ body {
   background-position: center;
 }
 
+
+
+/* Force proper bold text in AI responses */
+.message-content strong {
+  font-weight: 700 !important;
+  color: inherit !important;
+}
+
+/* Force proper bold text in user messages (white text) */
+.message-content.text-white strong {
+  font-weight: 700 !important;
+  color: white !important;
+}
+
+/* Fix bold text in lists */
+.message-content li strong {
+  font-weight: 700 !important;
+}
+
+/* Fix bold text in headings */
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6 {
+  font-weight: 700 !important;
+}
+
+/* Fix bold text during streaming */
+.message-content .streaming-content strong {
+  font-weight: 700 !important;
+}
+
+/* Ensure markdown bold (**text**) renders properly */
+.message-content [data-lexical-text="true"] {
+  font-weight: inherit;
+}
+
+/* Override any conflicting Tailwind prose styles */
+.message-content.prose strong {
+  font-weight: 700 !important;
+  color: inherit !important;
+}
+
+.message-content.prose.text-white strong {
+  color: white !important;
+}
+
 /* Blog content styles */
 .blog-content h1 {
   @apply text-heading-3 mb-6 mt-8;
@@ -419,7 +467,7 @@ body {
 }
 
 .blog-content a {
-  @apply text-primary hover:underline;
+  @apply text-[#b8690c] underline;
 }
 
 .blog-content ul,
