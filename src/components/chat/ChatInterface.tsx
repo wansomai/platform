@@ -129,7 +129,7 @@ function ChatMessageItem({
           
           <div
             className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${
-              isUser ? "bg-primary text-white" : "bg-transparent"
+              isUser ? "bg-gray-100 text-white" : "bg-transparent"
             }`}
           >
             {message.isLoading || isStreaming ? (
@@ -138,7 +138,7 @@ function ChatMessageItem({
                   <div className="space-y-2">
                     <MessageDisplay 
                       content={formattedContent} 
-                      className={isUser ? "text-white" : ""} 
+                     
                     />
                     {isStreaming && (
                       <div className="flex items-center gap-1">
@@ -167,7 +167,7 @@ function ChatMessageItem({
             ) : (
               <MessageDisplay 
                 content={formattedContent} 
-                className={isUser ? "text-white" : ""} 
+                
               />
             )}
           </div>
