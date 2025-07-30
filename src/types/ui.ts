@@ -1,3 +1,18 @@
+
+// types/ui.ts 
+export interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  duration?: number;
+}
+
+export interface Notification {
+  id: string;
+  type: 'success' | 'error' | 'info';
+  message: string;
+}
+
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 export interface Toast {
   id: string;

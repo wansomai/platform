@@ -1,6 +1,7 @@
 // hooks/useFileUpload.ts
 import { useState, useRef, useCallback } from 'react';
 import { formatFileSize as formatFileSizeUtil } from '@/lib/utils/file';
+import { FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 
 export interface FileUploadOptions {
   maxFileSize?: number;
@@ -34,15 +35,11 @@ export interface FileUploadActions {
   setUploading: (uploading: boolean) => void;
 }
 
-const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const DEFAULT_ALLOWED_TYPES = [
-  '.pdf', '.doc', '.docx', '.txt', '.csv', '.xlsx', '.xls', '.jpg', '.jpeg', '.png'
-];
 
 export const useFileUpload = (options: FileUploadOptions = {}): FileUploadState & FileUploadActions => {
   const {
-    maxFileSize = DEFAULT_MAX_FILE_SIZE,
-    allowedTypes = DEFAULT_ALLOWED_TYPES,
+    maxFileSize = FILE_UPLOAD_CONFIG.MAX_SIZE,
+    allowedTypes = FILE_UPLOAD_CONFIG.ALLOWED_TYPES,
     onFileSelect,
     onError,
     multiple = false

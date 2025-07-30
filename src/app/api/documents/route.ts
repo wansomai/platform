@@ -10,28 +10,14 @@ import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 // Set a reasonable timeout for document processing
 export const maxDuration = 60;
 
-// List documents (with filtering options)
+
 export async function GET(request: NextRequest) {
   try {
-    // Get user ID and organization from token
     const userId = getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
         { message: 'Authentication required', error: true }, 
         { status: 401 }
-      );
-    }
-    
-    // Get user's organization
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!user) {
-      return NextResponse.json(
-        { message: 'User not found', error: true }, 
-        { status: 404 }
       );
     }
     
@@ -41,19 +27,32 @@ export async function GET(request: NextRequest) {
     const fileType = searchParams.get('type') || undefined;
     const sortBy = searchParams.get('sort') || 'recent';
     const folderId = searchParams.get('folder') || undefined;
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const page = parseInt(searchParams.get('page') || '1');
+    
+    // OPTIMIZATION 1: Single query to get user organization
+    const userWithOrg = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true }
+    });
+    
+    if (!userWithOrg?.organizationId) {
+      return NextResponse.json(
+        { message: 'User organization not found', error: true }, 
+        { status: 404 }
+      );
+    }
     
     // Build query filters
     const where: any = {
-      organization_id: user.organizationId,
+      organization_id: userWithOrg.organizationId,
       status: 'active'
     };
-     if (searchTerm) {
-      const searchQuery = formatSearchQuery(searchTerm);
+    
+    if (searchTerm) {
       where.OR = [
-        { title: { contains: searchQuery, mode: 'insensitive' } },
-        { description: { contains: searchQuery, mode: 'insensitive' } }
+        { title: { contains: searchTerm, mode: 'insensitive' } },
+        { description: { contains: searchTerm, mode: 'insensitive' } }
       ];
     }
     
@@ -67,6 +66,11 @@ export async function GET(request: NextRequest) {
       where.folderId = folderId;
     }
     
+    // OPTIMIZATION 2: Dynamic field selection based on usage
+    // Dashboard needs minimal data, full pages need more
+    const hasFilters = searchTerm || fileType || folderId || page > 1;
+    const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
+    
     // Determine sorting
     let orderBy: any;
     switch (sortBy) {
@@ -79,71 +83,88 @@ export async function GET(request: NextRequest) {
       case 'oldest':
         orderBy = { created_at: 'asc' };
         break;
-      case 'recent':
       default:
         orderBy = { created_at: 'desc' };
     }
     
-    // Calculate pagination
     const skip = (page - 1) * limit;
     
-    // Get total count for pagination
-    const totalCount = await prisma.document.count({ where });
-    
-    // Fetch documents
-    const documents = await prisma.document.findMany({
-      where,
-      orderBy,
-      skip,
-      take: limit,
-      include: {
-        createdByUser: {
-          select: {
-            id: true,
-            fullName: true
+    // OPTIMIZATION 3: Parallel queries for count and documents
+    const [totalCount, documents] = await Promise.all([
+      // Only get count if we're paginating (not for simple dashboard requests)
+      hasFilters ? prisma.document.count({ where }) : Promise.resolve(0),
+      
+      prisma.document.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          file_type: true,
+          file_size: true,
+          created_at: true,
+          created_by: true,
+          // OPTIMIZATION 4: Only fetch heavy fields if needed
+          ...(isLimitedRequest ? {} : {
+            description: true,
+            file_url: true,
+            updated_at: true,
+            folderId: true,
+          }),
+          createdByUser: {
+            select: {
+              id: true,
+              fullName: true
+            }
           }
         }
-      }
-    });
+      })
+    ]);
     
-    // Format documents for response
+    // OPTIMIZATION 5: Lightweight response for simple requests
     const formattedDocuments = documents.map(doc => ({
       id: doc.id,
       title: doc.title,
-      description: doc.description ? 
-        (typeof doc.description === 'object' && 'String' in doc.description ? 
-          (doc.description as any).String : 
-          '') : 
-        '',
-      fileUrl: doc.file_url,
       fileType: doc.file_type,
       fileSize: doc.file_size,
       createdBy: doc.createdByUser?.fullName || 'Unknown',
       createdById: doc.created_by,
       createdAt: doc.created_at.toISOString(),
-      updatedAt: doc.updated_at.toISOString(),
-      contentExtracted: doc.content_extracted ? 
-        (typeof doc.content_extracted === 'object' && 'Bool' in doc.content_extracted ? 
-          (doc.content_extracted as any).Bool : 
-          false) : 
-        false
+      // Only include these fields for detailed requests
+      ...(!isLimitedRequest && {
+        description: (doc as any).description || '',
+        fileUrl: (doc as any).file_url,
+        updatedAt: (doc as any).updated_at?.toISOString(),
+        folderId: (doc as any).folderId,
+      })
     }));
+    
+    const pages = hasFilters ? Math.ceil(totalCount / limit) : 1;
     
     return NextResponse.json({
       status: 200,
       message: 'Documents retrieved successfully',
       data: formattedDocuments,
       pagination: {
-        total: totalCount,
+        total: hasFilters ? totalCount : documents.length,
         page,
         limit,
-        pages: Math.ceil(totalCount / limit)
+        pages,
+        hasNext: hasFilters ? page < pages : false,
+        hasPrev: hasFilters ? page > 1 : false
       }
     });
+    
   } catch (error) {
     console.error('Error fetching documents:', error);
     return NextResponse.json(
-      { message: 'Failed to fetch documents', error: true },
+      { 
+        status: 500,
+        message: 'Internal server error',
+        error: true 
+      },
       { status: 500 }
     );
   }

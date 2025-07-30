@@ -14,21 +14,10 @@ export const apiEndpoints = {
     get: (projectId: string) => `/projects/${projectId}`,
     update: (projectId: string) => `/projects/${projectId}`,
     delete: (projectId: string) => `/projects/${projectId}`,
-  },
-  
-  conversations: {
-    list: (projectId: string) => `/projects/${projectId}/conversations`,
-    create: (projectId: string) => `/projects/${projectId}/conversations`,
-    get: (projectId: string, conversationId: string) => 
-      `/projects/${projectId}/conversations/${conversationId}`,
-    update: (projectId: string, conversationId: string) => 
-      `/projects/${projectId}/conversations/${conversationId}`,
-    delete: (projectId: string, conversationId: string) => 
-      `/projects/${projectId}/conversations/${conversationId}`,
-    pin: (projectId: string, conversationId: string) => 
-      `/projects/${projectId}/conversations/${conversationId}/pin`,
-    messages: (projectId: string, conversationId: string) =>
-      `/projects/${projectId}/conversations/${conversationId}/messages`,
+    // Direct project messaging (moved from conversations)
+    messages: (projectId: string) => `/projects/${projectId}/messages`,
+    sendMessage: (projectId: string) => `/projects/${projectId}/messages`,
+    settings: (projectId: string) => `/projects/${projectId}/settings`,
   },
   
   documents: {
@@ -44,6 +33,10 @@ export const apiEndpoints = {
       `/projects/${projectId}/documents/${documentId}/categorize`,
     analyze: (projectId: string, documentId: string) =>
       `/projects/${projectId}/documents/${documentId}/analyze`,
+    // Project documents (moved from conversation documents)
+    attachToProject: (projectId: string) => `/projects/${projectId}/documents/attach`,
+    detachFromProject: (projectId: string, documentId: string) => 
+      `/projects/${projectId}/documents/${documentId}/detach`,
   },
   
   team: {

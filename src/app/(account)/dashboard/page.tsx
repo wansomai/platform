@@ -262,7 +262,7 @@ export default function DashboardPage() {
                       <div className="p-6 text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
                         <p className="text-sm text-gray-500 mt-2">
-                          Loading projects...
+                          Loading workspaces...
                         </p>
                       </div>
                     ) : projects?.length === 0 ? (
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                                   <Briefcase className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <div>
-                                  <h3 className="font-medium">
+                                  <h3 className="font-medium text-sm">
                                     {project.title}
                                   </h3>
                                  
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                               </div>
                               <div className="flex items-center">
                                 <span className="text-xs text-gray-500 mr-2">
-                                  {new Date(project.last_activity).toLocaleDateString()}
+                                  {new Date(project.updatedAt).toLocaleDateString()}
                                 </span>
                                 <ArrowRight className="h-4 w-4 text-gray-400" />
                               </div>

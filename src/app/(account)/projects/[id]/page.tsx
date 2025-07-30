@@ -1,50 +1,67 @@
 // app/projects/[id]/page.tsx
 "use client"
 
-import { useEffect } from "react"
 import { useParams } from "next/navigation"
+import { useEffect } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import LegalCanvas from "@/components/chat/CanvasInterface"
+import { ErrorState } from "@/components/commons/LoadingState"
+import { WorkspaceSkeleton } from "@/components/commons/WorkspaceSkeleton"
+import { useProjectSettingsStore } from "@/store/workspace-settings.store"
 import { useUIStore } from "@/store/ui.store"
-import { useProjectStore } from "@/store/project.store"
-import { useConversationSettingsStore } from "@/store/conversation-settings.store"
+import { Button } from "@/components/ui/button"
+import { Briefcase, ChevronLeft, X } from "lucide-react"
+import { ChatInput } from "@/components/chat/ChatInput"
+import { ConversationDetails } from "@/components/workspace/ConversationDetails"
+import { cn } from "@/lib/utils"
+import { useProjectInstructionsStore } from "@/store/workspace-instructions.store"
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 import { useChatStore } from "@/store/chat.store"
-import { ProjectLoading, ErrorState } from "@/components/commons/LoadingState"
+import { useProjectStore } from "@/store/project.store"
 
 export default function ProjectPage() {
   const params = useParams()
   const projectId = params.id as string
   
-  const { activeWorkspaceTab } = useUIStore()
-  const { currentProject, fetchProjectById, isLoading } = useProjectStore()
-  const { currentConversation } = useChatStore()
-  const { settings, fetchSettings, isLoading: isLoadingSettings } = useConversationSettingsStore()
+  // Get core workspace data (no settings)
+  const { projects } = useProjectStore()
+  const project = projects.find(p => p.id === projectId)
   
-  // Fetch project data once on mount
-  useEffect(() => {
-    const loadProjectData = async () => {
-      if (projectId && !currentProject && !isLoading) {
-        await fetchProjectById(projectId);
-      }
-    };
+  // Get settings from dedicated store
+  const { settings, fetchSettings } = useProjectSettingsStore()
+  const { 
+    rightSidebarCollapsed, 
+    setRightSidebarCollapsed 
+  } = useUIStore(); 
+  const { fetchInstructions } = useProjectInstructionsStore()
+  const { fetchProjectDocuments } = useProjectDocumentsStore()
+  const { fetchConversation, isLoading: chatLoading } = useChatStore();
     
-    loadProjectData();
-  }, [projectId, currentProject, isLoading, fetchProjectById]);
-  
-  // Fetch conversation settings when conversation changes
+  // Load project settings and instructions only when component mounts
   useEffect(() => {
-    if (currentConversation?.id) {
-      fetchSettings(currentConversation.id);
+    if (projectId) {
+      // Parallel loading with error handling
+      Promise.all([
+        fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
+        fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
+        fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err)),
+        fetchConversation(projectId).catch(err => console.warn('Failed to load conversations:', err))
+      ]);
     }
-  }, [currentConversation?.id, fetchSettings]);
+  }, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments, fetchConversation]);
   
-  // Show loading state if project is loading or settings are loading for first time
-  if (isLoading || (!currentProject && projectId)) {
-    return <ProjectLoading projectTitle={currentProject?.title} />
+  // Show skeleton loading state if project is loading
+  if (chatLoading || (!project && projectId)) {
+    return (
+      <WorkspaceSkeleton 
+        showSidebar={!rightSidebarCollapsed}
+        projectTitle={project?.title}
+      />
+    )
   }
 
   // Show error state if project couldn't be loaded
-  if (!isLoading && !currentProject) {
+  if (!project) {
     return (
       <ErrorState
         title="Workspace not found"
@@ -56,14 +73,61 @@ export default function ProjectPage() {
       />
     )
   }
-
-  // Determine which interface to show based on legal drafting setting
-  const showLegalDrafting = settings.legalDrafting;
+  
+  // Determine which interface to show based on settings
+  const showLegalDrafting = settings?.legalDrafting || false
 
   return (
-    <div className="h-full">
-      {/* Show Legal Canvas if legal drafting is enabled, otherwise show Chat Interface */}
-      {showLegalDrafting ? <LegalCanvas /> : <ChatInterface />}
+    <div className="flex h-screen bg-gray-50">
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 overflow-hidden">
+          <div className="h-full">
+            {showLegalDrafting ? <LegalCanvas /> : <ChatInterface />}
+          </div>
+          <div className="border-t bg-white">
+          <ChatInput />
+        </div>
+        </main>
+        
+      </div>
+      
+      <div className={cn(
+        "border-l bg-white transition-all duration-200 ease-in-out flex flex-col",
+        rightSidebarCollapsed ? "w-0 overflow-hidden" : "w-80"
+      )}>
+        {/* Sidebar Header */}
+        <div className="border-b p-4 flex items-center justify-between bg-gray-50">
+          <div className="flex items-center space-x-2">
+            <Briefcase className="h-4 w-4 text-gray-600" />
+            <span className="font-medium text-sm">Details</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setRightSidebarCollapsed(true)}
+            className="h-6 w-6 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Sidebar Content */}
+        <div className="flex-1 overflow-hidden">
+          <ConversationDetails />
+        </div>
+      </div>
+      
+      {/* Sidebar Toggle Button - Only show when collapsed */}
+      {rightSidebarCollapsed && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setRightSidebarCollapsed(false)}
+          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 shadow-lg"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+      )}
     </div>
-  )
+  ) 
 }

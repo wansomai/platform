@@ -205,7 +205,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               icon={Zap}
               label="Workflows"
               active={pathname === "/workflows"}
-              badge={5}
               onClick={isMobile ? handleMobileNavigation : undefined}
             />
             {/* <SidebarLink

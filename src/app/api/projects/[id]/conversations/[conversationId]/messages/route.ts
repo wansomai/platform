@@ -22,21 +22,14 @@ import LRUCache from 'lru-cache'
 export const maxDuration = 60;
 
 // Initialize Prisma with connection pooling
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
-  log: process.env.NODE_ENV === "development" ? ["error"] : ["error"],
-});
+const prisma = new PrismaClient();
 
 // Default settings if none exist
 const DEFAULT_SETTINGS = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  model: 'gpt-3.5-turbo',
+  model: 'gpt-4.1',
   temperature: 0.7
 };
 
@@ -98,7 +91,6 @@ export async function POST(
       where: { id: conversationId, projectId },
       select: { id: true } // Minimal select for faster query
     });
-    
     // Create the user message in parallel with other operations
     const userMessagePromise = prisma.message.create({
       data: {
@@ -120,36 +112,13 @@ export async function POST(
       }
     });
     
-    const metaPromise = prisma.conversationMeta.findUnique({
-      where: { conversationId },
-      select: { 
-        instructions: true,
-        settings: true
-      }
-    });
-    
-    // For context-dependent queries, get project details
-    interface SimpleProject {
-      title: string;
-    }
-    
-    interface FullProject {
-      title: string;
-      description: string | null;
-      knowledgeBase: {
-        instructions: string | null;
-      } | null;
-    }
-    
-    const projectPromise = isSimpleQuery 
-      ? Promise.resolve({ title: "" } as SimpleProject) 
-      : prisma.project.findUnique({
+    const projectPromise = prisma.project.findUnique({
           where: { id: projectId },
           select: {
             title: true,
             description: true,
             knowledgeBase: {
-              select: { instructions: true }
+              select: { instructions: true, settings: true }
             }
           }
         });
@@ -157,8 +126,8 @@ export async function POST(
     // Only load documents for non-simple queries
     const documentsPromise = isSimpleQuery 
       ? Promise.resolve([]) 
-      : prisma.conversationDocument.findMany({
-          where: { conversation_id: conversationId },
+      : prisma.projectDocument.findMany({
+          where: { project_id: projectId },
           select: {
             document: {
               select: {
@@ -196,13 +165,11 @@ export async function POST(
     const [
       userMessage,
       messageHistory,
-      conversationMeta,
       project,
       conversationDocuments
     ] = await Promise.all([
       userMessagePromise,
       messageHistoryPromise,
-      metaPromise,
       projectPromise,
       documentsPromise
     ]);
@@ -227,22 +194,21 @@ export async function POST(
 
           // Process settings
           let settings = DEFAULT_SETTINGS;
-          if (conversationMeta?.settings) {
+          if (project?.knowledgeBase?.settings) {
             try {
-              settings = typeof conversationMeta.settings === 'string' 
-                ? JSON.parse(conversationMeta.settings) 
-                : conversationMeta.settings as any;
+              settings = typeof project.knowledgeBase.settings === 'string' 
+                ? JSON.parse(project.knowledgeBase.settings) 
+                : project.knowledgeBase.settings as any;
             } catch (error) {
               console.error('Error parsing settings:', error);
             }
           }
           
           // Create the custom instructions
-          const customInstructions = conversationMeta?.instructions ||
-                                    (isSimpleQuery ? "" : (project as FullProject)?.knowledgeBase?.instructions || "");
+          const customInstructions = project?.knowledgeBase?.instructions || "";
           
           // Prepare document vectors for search - only if needed
-          let relevantContent = "";
+          let relevantContent = ""; 
           const documentObjects: Document[] = [];
           
           if (!isSimpleQuery && conversationDocuments.length > 0) {
@@ -342,19 +308,24 @@ export async function POST(
           let systemMessage;
           
           if (isSimpleQuery) {
-            systemMessage = `You are wansom, a legal assistant for professionals working on a project titled "${
-              project?.title || "Project"
+            systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
+              project?.title
             }".
-            Provide helpful, accurate, and concise responses.
-            ${customInstructions ? `Special instructions: ${customInstructions}` : ""}`;
+            Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
+            Always start by introducing yourself and getting to know your team mates and get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
+            If you are unsure about something,ask for clarification and ask if they would want to research it first before you continue with the project.
+            ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}`;
           } else {
-            const fullProject = project as FullProject;
+            const fullProject = project;
             
-            systemMessage = `You are wansom,legal assistant for professionals working on a project titled "${
-              fullProject?.title || "Project"
+            systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
+              fullProject?.title
             }".
             ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
-            ${customInstructions ? `Special instructions: ${customInstructions}` : ""}
+            Your goal is to answer the questions asked by your team matesto ensure that the project is completed successfully.
+            Always start by asking your teammates name and get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
+            If you are unsure about something,ask for clarification and ask if they would want to research it first before you continue with the project.
+            ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
             
             ${relevantContent ? 
               `${settings.citeSources ? 
