@@ -176,7 +176,7 @@ function ChatMessageItem({
           {!isUser && message.webSearchResults && (
             <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
               <div className="flex items-center mb-2 text-blue-700">
-                <Search className="h-4 w-4 mr-2" />
+                <Search size={16} className="mr-2" />
                 <span className="font-medium">Web Search Results</span>
               </div>
               <div className="max-h-60 overflow-y-auto">

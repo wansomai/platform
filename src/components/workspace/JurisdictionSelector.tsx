@@ -15,7 +15,6 @@ import { cn } from "@/lib/utils";
 import { 
   JURISDICTIONS, 
   REGIONS, 
-  getJurisdictionsByRegion,
   searchJurisdictions,
 } from "@/lib/jurisdictions";
 import { Jurisdiction } from "@/types";
