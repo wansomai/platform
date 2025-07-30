@@ -181,27 +181,11 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <QuickActionCard
               icon={MessageSquare}
-              title="New AI Chat"
-              description="Chat with legal specific AI, get quick responses to your questions"
+              title="New AI Workspace"
+              description="Collaborate, organize your legal work into AI workspaces"
               onClick={handleQuickChatCreate}
               color="text-green-600"
               loading={isCreatingQuickChat}
-              disabled={isCreatingQuickChat}
-            />
-            <QuickActionCard
-              icon={Briefcase}
-              title="Create Project Workspace"
-              description="Collaborate, organize your work into case or client files"
-              href="/projects"
-              color="text-purple-600"
-              disabled={isCreatingQuickChat}
-            />
-            <QuickActionCard
-              icon={FileUp}
-              title="Upload Documents"
-              description="Add contracts, pleadings, or evidence to your vault"
-              href="/vault"
-              color="text-blue-600"
               disabled={isCreatingQuickChat}
             />
             <QuickActionCard
@@ -212,6 +196,24 @@ export default function DashboardPage() {
               color="text-amber-600"
               disabled={isCreatingQuickChat}
             />
+            <QuickActionCard
+              icon={FileUp}
+              title="Upload Documents"
+              description="Add contracts, pleadings, or evidence to your vault"
+              href="/vault"
+              color="text-blue-600"
+              disabled={isCreatingQuickChat}
+            />
+              <QuickActionCard
+              icon={Briefcase}
+              title="Grow Your Legal Practice"
+              description="Get more clients for your legal business with AI"
+              href="https://business.wansom.ai"
+              color="text-blue-600"
+              disabled={isCreatingQuickChat}
+            />
+            
+            
           </div>
         </div>
 
