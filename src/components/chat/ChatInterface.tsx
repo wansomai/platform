@@ -129,7 +129,7 @@ function ChatMessageItem({
           
           <div
             className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${
-              isUser ? "bg-primary text-white" : "bg-gray-100 border"
+              isUser ? "bg-primary text-white" : "bg-transparent"
             }`}
           >
             {message.isLoading || isStreaming ? (
