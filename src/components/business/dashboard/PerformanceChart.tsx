@@ -112,12 +112,12 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
       {/* Header */}
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-xl font-semibold text-gray-900">{title}</CardTitle>
-        {showExport && (
+        {/* {showExport && (
           <Button variant="outline" size="sm" onClick={onExport} className="flex items-center space-x-2">
             <Download className="w-4 h-4" />
             <span className="text-sm">Export</span>
           </Button>
-        )}
+        )} */}
       </CardHeader>
 
       <CardContent className="space-y-6">
