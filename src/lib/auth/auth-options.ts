@@ -19,6 +19,17 @@ interface CustomUser extends User {
   organization: {
     id: string;
     name: string;
+    contactEmail: string;
+    contactPhone: string;
+    currentWebsite: string;
+    firmSize: string;
+    firmStory: string;
+    linkedinUrl: string;
+    onboardingCompleted: boolean;
+    practiceAreas: string[];
+    profileStatus: string;
+    serviceAreas: string[];
+    yearsInPractice: number;
   };
 }
 
@@ -118,6 +129,17 @@ export const authOptions: NextAuthOptions = {
             const organization = await prisma.organization.create({
               data: {
                 name: `${user.name}'s Organization`,
+                contactEmail: "",
+                contactPhone: "",
+                currentWebsite: "",
+                firmSize: "",
+                firmStory: "",
+                linkedinUrl: "",
+                onboardingCompleted: false,
+                practiceAreas: [],
+                profileStatus: "pending",
+                serviceAreas: [],
+                yearsInPractice: 0
               }
             });
             

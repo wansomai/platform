@@ -53,7 +53,18 @@ export async function POST(request: NextRequest) {
         role: 'admin',
         organization: {
           create: {
-            name: organizationName
+            name: organizationName,
+            contactEmail: "",
+            contactPhone: "",
+            currentWebsite: "",
+            firmSize: "",
+            firmStory: "",
+            linkedinUrl: "",
+            onboardingCompleted: false,
+            practiceAreas: [],
+            profileStatus: "pending",
+            serviceAreas: [],
+            yearsInPractice: 0
           }
         }
       },
