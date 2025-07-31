@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import WelcomeBanner from "@/components/layout/WelcomeBanner";
 import {
   FileText,
   FolderPlus,
@@ -160,18 +161,7 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-5xl text-black">
-              Welcome Back, {session?.user?.name?.split(" ")[0] || "User"}
-            </h1>
-            <p className="text-primary-100 mt-1 text-black">
-              Here's what's happening across your legal workspace
-            </p>
-          </div>
-        </div>
-      </div>
+    <WelcomeBanner />
 
       {/* Quick Actions & Activity Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

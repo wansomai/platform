@@ -77,18 +77,124 @@ model User {
 }
 
 model Organization {
-  id           String             @id @default(cuid())
-  name         String
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  aiAssociates AIAssociate[]
-  documents    Document[]
-  Folder       Folder[]
-  invitations  Invitation[]
-  projects     Project[]
-  activeUsers  User[]             @relation("ActiveOrganization")
-  users        User[]
-  members      UserOrganization[]
+  id                  String                @id @default(cuid())
+  name                String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  contactEmail        String                @default("")
+  contactPhone        String                @default("")
+  currentWebsite      String                @default("")
+  firmSize            String                @default("")
+  firmStory           String                @default("")
+  linkedinUrl         String                @default("")
+  onboardingCompleted Boolean               @default(false)
+  practiceAreas       String[]
+  primaryLocation     Json?
+  profileStatus       String                @default("pending")
+  serviceAreas        Json[]
+  yearsInPractice     Int                   @default(0)
+  aiAssociates        AIAssociate[]
+  documents           Document[]
+  Folder              Folder[]
+  invitations         Invitation[]
+  projects            Project[]
+  activeUsers         User[]                @relation("ActiveOrganization")
+  users               User[]
+  members             UserOrganization[]
+  content             Content[]
+  onboardingSteps     OnboardingAnalytics[]
+  subscription        Subscription?
+}
+
+model Content {
+  id              String           @id @default(cuid())
+  organizationId  String
+  title           String
+  slug            String
+  metaTitle       String?
+  metaDescription String?
+  excerpt         String?
+  practiceArea    String?
+  location        Json?
+  keywords        String[]
+  tags            String[]
+  views           Int              @default(0)
+  leads           Int              @default(0)
+  wordCount       Int?
+  seoScore        Float?
+  status          String           @default("draft")
+  publishedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sections        ContentSection[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, status])
+  @@index([organizationId, practiceArea])
+  @@map("content")
+}
+
+model ContentSection {
+  id         String   @id @default(cuid())
+  contentId  String
+  type       String
+  orderIndex Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId, orderIndex])
+  @@map("content_sections")
+}
+
+model Subscription {
+  id                     String       @id @default(cuid())
+  organizationId         String       @unique
+  paystackSubscriptionId String?      @unique
+  paystackCustomerId     String?
+  planName               String
+  planPrice              String?
+  billingCycle           String?
+  status                 String
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  payments               Payment[]
+  organization           Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                String       @id @default(cuid())
+  subscriptionId    String
+  paystackReference String       @unique
+  amount            Int
+  currency          String       @default("USD")
+  status            String
+  paymentMethod     String?
+  paidAt            DateTime?
+  metadata          Json?
+  createdAt         DateTime     @default(now())
+  subscription      Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model OnboardingAnalytics {
+  id             String       @id @default(cuid())
+  organizationId String
+  stepName       String
+  stepNumber     Int?
+  stepData       Json?
+  timeSpent      Int?
+  completedAt    DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_analytics")
 }
 
 model UserOrganization {
