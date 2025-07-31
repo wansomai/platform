@@ -41,6 +41,8 @@ import {
   useContentSelection,
   ContentItem 
 } from '@/store/content.store';
+import ProAccessModal from '@/components/modals/ProAccess';
+import { useSession } from 'next-auth/react';
 
 interface ContentTableProps {
   showCreateButton?: boolean;
@@ -70,6 +72,7 @@ const ContentTable: React.FC<ContentTableProps> = ({
     clearSelection, 
     hasSelection 
   } = useContentSelection();
+  const { data: session } = useSession();
   
   const { 
     fetchContent, 
@@ -82,6 +85,8 @@ const ContentTable: React.FC<ContentTableProps> = ({
 
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
   const [showFilters, setShowFilters] = useState(false);
+   const [showProModal, setShowProAccess] = useState(false)
+  const [isRequestingPro, setIsRequestingPro] = useState(false);
 
   // Fetch content on component mount
   // useEffect(() => {
@@ -164,6 +169,35 @@ const ContentTable: React.FC<ContentTableProps> = ({
   const isAllSelected = content.length > 0 && selectedIds.length === content.length;
   const isIndeterminate = selectedIds.length > 0 && selectedIds.length < content.length;
 
+      // Handle Pro access request
+  const handleRequestProAccess = async() => {
+    setIsRequestingPro(true);
+        const payload={
+            email: session?.user.email,
+            name: session?.user.name
+          }
+      try {
+        const response = await fetch('/api/prorequests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+      
+          body: JSON.stringify(payload),
+        });
+  
+        await response.json();
+        setShowProAccess(false);
+      } catch (error) {
+        console.error('Error:', error);
+         setIsRequestingPro(false);
+         setShowProAccess(false);
+      } finally {
+       setIsRequestingPro(false);
+       setShowProAccess(false);
+      }
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and Filter Bar */}
@@ -187,7 +221,7 @@ const ContentTable: React.FC<ContentTableProps> = ({
             Filters
           </Button>
           {showCreateButton && (
-            <Button onClick={onCreateNew} className="flex items-center gap-2">
+            <Button onClick={()=>{setShowProAccess(true)}} className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               New Content
             </Button>
@@ -516,6 +550,14 @@ const ContentTable: React.FC<ContentTableProps> = ({
           </div>
         </div>
       )}
+
+         {/* Modals */}
+      <ProAccessModal
+        isOpen={showProModal}
+        onClose={() => setShowProAccess(false)}
+        onRequestAccess={handleRequestProAccess}
+        isLoading={isRequestingPro}
+      />
     </div>
   );
 };
