@@ -198,7 +198,7 @@ export default function DashboardPage() {
               icon={Briefcase}
               title="Grow Your Legal Practice"
               description="Get more clients for your legal business with AI"
-              href="https://business.wansom.ai"
+              href="/business"
               color="text-blue-600"
               disabled={isCreatingQuickChat}
             />
