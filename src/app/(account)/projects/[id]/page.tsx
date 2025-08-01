@@ -14,8 +14,6 @@ import { Briefcase, ChevronLeft, X } from "lucide-react"
 import { ChatInput } from "@/components/chat/ChatInput"
 import { ConversationDetails } from "@/components/workspace/ConversationDetails"
 import { cn } from "@/lib/utils"
-import { useProjectInstructionsStore } from "@/store/workspace-instructions.store"
-import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 import { useChatStore } from "@/store/chat.store"
 import { useProjectStore } from "@/store/project.store"
 
@@ -28,27 +26,17 @@ export default function ProjectPage() {
   const project = projects.find(p => p.id === projectId)
   
   // Get settings from dedicated store
-  const { settings, fetchSettings } = useProjectSettingsStore()
+  const { settings } = useProjectSettingsStore()
   const { 
     rightSidebarCollapsed, 
     setRightSidebarCollapsed 
   } = useUIStore(); 
-  const { fetchInstructions } = useProjectInstructionsStore()
-  const { fetchProjectDocuments } = useProjectDocumentsStore()
   const { fetchConversation, isLoading: chatLoading } = useChatStore();
     
-  // Load project settings and instructions only when component mounts
+  // Load project conversations
   useEffect(() => {
-    if (projectId) {
-      // Parallel loading with error handling
-      Promise.all([
-        fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
-        fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
-        fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err)),
-        fetchConversation(projectId).catch(err => console.warn('Failed to load conversations:', err))
-      ]);
-    }
-  }, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments, fetchConversation]);
+    fetchConversation(projectId).catch(err => console.warn('Failed to load conversations:', err))
+  }, [projectId, fetchConversation]);
   
   // Show skeleton loading state if project is loading
   if (chatLoading || (!project && projectId)) {
@@ -99,7 +87,7 @@ export default function ProjectPage() {
         <div className="border-b p-4 flex items-center justify-between bg-gray-50">
           <div className="flex items-center space-x-2">
             <Briefcase className="h-4 w-4 text-gray-600" />
-            <span className="font-medium text-sm">Details</span>
+            <span className="font-medium text-sm truncate">{project.title}</span>
           </div>
           <Button
             variant="ghost"

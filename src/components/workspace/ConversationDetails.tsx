@@ -52,13 +52,15 @@ export function ConversationDetails() {
   const { 
     settings, 
     isLoading: settingsLoading, 
-    setJurisdiction 
+    setJurisdiction,
+    fetchSettings
   } = useProjectSettingsStore();
   
   const { 
     instructions, 
     isLoading: instructionsLoading, 
-    saveInstructions 
+    saveInstructions,
+    fetchInstructions
   } = useProjectInstructionsStore();
   
   const { addToast } = useUIStore();
@@ -167,6 +169,19 @@ const filteredDocuments = useMemo(() => {
    const currentJurisdiction = settings?.jurisdiction ? 
     getJurisdictionById(settings.jurisdiction.id) : 
     null;
+     
+        
+      // Load project settings and instructions only when component mounts
+      useEffect(() => {
+        if (projectId) {
+          // Parallel loading with error handling
+          Promise.all([
+            fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
+            fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
+            fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err))
+          ]);
+        }
+      }, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments]);
   
   return (
     <ScrollArea className="h-full">

@@ -23,13 +23,13 @@ export interface Project {
   };
   knowledgeBase: {
     documents: Document[]
+    settings: ProjectSettings;
+    instructions: string;
   }
   members?: ProjectMember[];
   documents?: Document[];
   conversations?: Conversation[];
   messages: Message[];
-  settings: ProjectSettings;
-  instructions: string;
   currentConversation: Conversation | null;
   loadedAt: string;
 }
