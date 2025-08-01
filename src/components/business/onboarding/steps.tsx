@@ -7,15 +7,6 @@ import {
   MapPin, 
   Plus,
   X,
-  CheckCircle,
-  Circle,
-  Sparkles,
-  DollarSign,
-  Users,
-  Globe,
-  Search,
-  Building2,
-  Target,
   AlertTriangle,
   Info
 } from 'lucide-react';
