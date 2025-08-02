@@ -28,7 +28,7 @@ import {
 import { useUIStore } from '@/store/ui.store';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-
+import * as mammoth from 'mammoth';
 // TypeScript interfaces
 interface SelectionRange {
   text: string;
@@ -241,6 +241,176 @@ const LegalCanvas: React.FC = () => {
     }
   }, [projectId]);
 
+   // Handle template insertion
+  const handleInsertTemplate = async (file: File) => {
+    setIsLoadingTemplate(true);
+    
+    try {
+      // Convert File to ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      
+      // Use mammoth to extract HTML from the Word document
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      
+      if (result.value) {
+        // Clean up the HTML for better Quill compatibility
+        let cleanHtml = result.value;
+        
+        // Basic HTML cleanup for Quill
+        cleanHtml = cleanHtml
+          // Remove Word-specific styles and classes
+          .replace(/class="[^"]*"/g, '')
+          .replace(/style="[^"]*"/g, '')
+          // Ensure proper paragraph structure
+          .replace(/<p><\/p>/g, '<br>')
+          // Remove empty spans
+          .replace(/<span[^>]*><\/span>/g, '')
+          // Clean up extra whitespace
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        setCanvasContent(cleanHtml);
+        setShowTemplateModal(false);
+        
+        // Log any conversion messages for debugging
+        if (result.messages && result.messages.length > 0) {
+          console.log('Mammoth conversion messages:', result.messages);
+        }
+        
+        console.log('Template loaded successfully');
+      } else {
+        throw new Error('Failed to extract content from the document');
+      }
+      
+    } catch (error) {
+      console.error('Error processing template:', error);
+      
+      // Fallback to sample templates based on filename if mammoth fails
+      const fileName = file.name.toLowerCase();
+      let fallbackContent = '';
+      
+      if (fileName.includes('memo') || fileName.includes('memorandum')) {
+        fallbackContent = `<h1>MEMORANDUM</h1>
+
+<p><strong>TO:</strong> [Client Name]<br>
+<strong>FROM:</strong> [Attorney Name]<br>
+<strong>DATE:</strong> [Date]<br>
+<strong>RE:</strong> [Matter Description]</p>
+
+<h2>EXECUTIVE SUMMARY</h2>
+
+<p>This memorandum provides an analysis of [legal issue] and recommends [recommended action]. Based on our review of applicable law and the facts presented, we conclude that [conclusion].</p>
+
+<h2>I. BACKGROUND</h2>
+
+<p>[Factual background of the matter]</p>
+
+<h2>II. LEGAL ANALYSIS</h2>
+
+<h3>A. Relevant Legal Framework</h3>
+
+<p>[Discussion of applicable statutes, regulations, and case law]</p>
+
+<h3>B. Application to Present Facts</h3>
+
+<p>[Analysis of how the law applies to the specific facts]</p>
+
+<h2>III. CONCLUSION AND RECOMMENDATIONS</h2>
+
+<p>Based on the foregoing analysis, we recommend [specific recommendations].</p>`;
+      } else if (fileName.includes('contract') || fileName.includes('agreement')) {
+        fallbackContent = `<h1>SERVICE AGREEMENT</h1>
+
+<p>This Service Agreement ("Agreement") is entered into on [Date] between [Company Name], a [State] corporation ("Company"), and [Client Name] ("Client").</p>
+
+<h2>1. SERVICES</h2>
+
+<p>Company agrees to provide the following services: [Description of Services]</p>
+
+<h2>2. TERM</h2>
+
+<p>This Agreement shall commence on [Start Date] and continue until [End Date], unless terminated earlier in accordance with the terms herein.</p>
+
+<h2>3. COMPENSATION</h2>
+
+<p>In consideration for the services, Client agrees to pay Company [Amount] according to the following schedule: [Payment Terms]</p>
+
+<h2>4. TERMINATION</h2>
+
+<p>Either party may terminate this Agreement with [Notice Period] written notice.</p>
+
+<h2>5. GOVERNING LAW</h2>
+
+<p>This Agreement shall be governed by the laws of [State/Jurisdiction].</p>
+
+<p><strong>Company:</strong> _____________________</p>
+<p><strong>Client:</strong> _____________________</p>`;
+      } else if (fileName.includes('brief') || fileName.includes('motion')) {
+        fallbackContent = `<h1>MOTION TO [RELIEF SOUGHT]</h1>
+
+<p><strong>TO THE HONORABLE COURT:</strong></p>
+
+<p>NOW COMES [Party Name], by and through undersigned counsel, and respectfully moves this Court for [relief sought] and in support thereof states as follows:</p>
+
+<h2>I. INTRODUCTION</h2>
+
+<p>[Brief introduction of the motion and relief sought]</p>
+
+<h2>II. STATEMENT OF FACTS</h2>
+
+<p>[Relevant factual background]</p>
+
+<h2>III. ARGUMENT</h2>
+
+<h3>A. Legal Standard</h3>
+
+<p>[Applicable legal standard and authorities]</p>
+
+<h3>B. Application</h3>
+
+<p>[Application of law to facts]</p>
+
+<h2>IV. CONCLUSION</h2>
+
+<p>For the foregoing reasons, [Party Name] respectfully requests that this Court grant the motion for [relief sought].</p>
+
+<p>Respectfully submitted,</p>
+<p>_____________________<br>
+[Attorney Name]<br>
+[Bar Number]<br>
+Attorney for [Party Name]</p>`;
+      } else {
+        fallbackContent = `<h1>[DOCUMENT TITLE]</h1>
+
+<p>[Document introduction and purpose]</p>
+
+<h2>SECTION 1</h2>
+
+<p>[Content for section 1]</p>
+
+<h2>SECTION 2</h2>
+
+<p>[Content for section 2]</p>
+
+<h2>SECTION 3</h2>
+
+<p>[Content for section 3]</p>
+
+<p><strong>Date:</strong> [Date]<br>
+<strong>Prepared by:</strong> [Attorney Name]</p>`;
+      }
+      
+      if (fallbackContent) {
+        setCanvasContent(fallbackContent);
+        setShowTemplateModal(false);
+        console.log('Used fallback template due to processing error');
+      }
+    } finally {
+      setIsLoadingTemplate(false);
+    }
+  };
+
+
   // Hide action bar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -433,6 +603,129 @@ const LegalCanvas: React.FC = () => {
           </div>
         )}
       </div>
+      {/* Template Upload Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Insert Document Template</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowTemplateModal(false)}
+                disabled={isLoadingTemplate}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Upload a Word document (.docx) to use as a template for your legal document.
+              </p>
+
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  accept=".docx,.doc"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleInsertTemplate(file);
+                    }
+                  }}
+                  disabled={isLoadingTemplate}
+                  className="hidden"
+                  id="template-upload"
+                />
+                <label
+                  htmlFor="template-upload"
+                  className={`cursor-pointer flex flex-col items-center ${
+                    isLoadingTemplate ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <FileText className="h-12 w-12 text-gray-400 mb-2" />
+                  <span className="text-sm font-medium">
+                    {isLoadingTemplate ? 'Processing template...' : 'Click to upload template'}
+                  </span>
+                  <span className="text-xs text-gray-500 mt-1">
+                    Supports .docx and .doc files
+                  </span>
+                </label>
+              </div>
+
+              {isLoadingTemplate && (
+                <div className="flex items-center justify-center py-2">
+                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                  <span className="text-sm text-gray-600">Converting template...</span>
+                </div>
+              )}
+
+              <div className="text-xs text-gray-500">
+                <strong>Tip:</strong> You can also start with our built-in templates by uploading files named "memo.docx", "contract.docx", or "brief.docx" for different document types.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+            {/* Custom Styles */}
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .ql-editor {
+          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
+          font-size: 16px !important;
+          line-height: 1.8 !important;
+          color: #111827 !important;
+          padding: 2rem !important;
+          min-height: 750px !important;
+        }
+        
+        .ql-editor h1 {
+          font-size: 1.5rem !important;
+          font-weight: 700 !important;
+          margin: 1.5rem 0 1rem 0 !important;
+        }
+        
+        .ql-editor h2 {
+          font-size: 1.25rem !important;
+          font-weight: 600 !important;
+          margin: 1.25rem 0 0.75rem 0 !important;
+        }
+        
+        .ql-editor h3 {
+          font-size: 1.125rem !important;
+          font-weight: 600 !important;
+          margin: 1rem 0 0.5rem 0 !important;
+        }
+        
+        .ql-editor p {
+          margin: 0.75rem 0 !important;
+        }
+        
+        .ql-toolbar {
+          border: none !important;
+          padding: 8px 16px !important;
+          background: #f9fafb !important;
+          border-bottom: 1px solid #e5e7eb !important;
+        }
+        
+        .ql-container {
+          border: none !important;
+          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
+        }
+
+        .ql-editor .ql-syntax {
+          background-color: #f3f4f6 !important;
+          color: #374151 !important;
+          padding: 0.25rem 0.5rem !important;
+          border-radius: 0.25rem !important;
+          font-family: ui-monospace, monospace !important;
+        }
+      `}</style>
     </div>
   );
 };

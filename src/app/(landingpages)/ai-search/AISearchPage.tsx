@@ -2,7 +2,7 @@
 'use client'
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { ArrowRight, CheckCircle, ChevronRight, Circle, Globe, Loader, Loader2, Sparkles, Target, Zap,RotateCcw, Search, MapPin, Eye, Check, X } from "lucide-react";
+import { ArrowRight, CheckCircle, ChevronRight, Circle, Globe, Loader, Sparkles, Target, Zap,RotateCcw, Search, MapPin, Eye, Check, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Handle navbar transparency on scroll
+// Handle navbar transparency on scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
