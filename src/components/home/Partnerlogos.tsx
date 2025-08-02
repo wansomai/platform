@@ -12,7 +12,14 @@ const PatnerLogoSection = () => {
   ];
 
   return (
-    <section className="section-container mb-16">
+    <section className=" section-spacing">
+           <div className="text-center">
+          <h2 className="text-heading-2 mb-6 max-w-5xl mx-auto ">
+            Powering Legal Success
+          </h2>
+          <p className="text-body-large text-gray-600 mb-8 max-w-3xl mx-auto capitalize">
+           Join 3000+  Advocates streamlining their legal processes with wansom.ai</p>
+        </div>
       <div className="relative overflow-hidden">
         <div className="flex animate-scroll whitespace-nowrap">
           {/* First set of logos */}
