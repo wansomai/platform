@@ -162,7 +162,7 @@ export const apiService = {
       
       const fullUrl = url.startsWith('http') 
         ? url 
-        : `${process.env.NEXT_PUBLIC_API_URL || 'https://wakili.chat'}${url}`;
+        : `${process.env.NEXT_PUBLIC_API_URL || 'https://wansom.ai'}${url}`;
       
       const response = await fetch(fullUrl, {
         method: 'POST',

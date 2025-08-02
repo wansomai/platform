@@ -1,39 +1,11 @@
 // src/store/chat.store.ts
 import { create } from 'zustand'
 import { apiService } from '@/lib/api'
+import { Message, Conversation } from '@/types/conversations';
 
-export interface Message {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant' | 'system';
-  timestamp: string;
-  references?: Reference[];
-  webSearchResults?: string; 
-  actionType?: string;
-  isLoading?: boolean;
-  metadata?: any;
-  isStreaming?: boolean; // streaming flag
-  tempId?: string; //temporary ID for streaming messages
-  processingStatus?: string; //current processing stage
-}
 
-export interface Reference {
-  id: string;
-  documentId: string;
-  documentName: string;
-  text: string;
-  page?: number;
-}
 
-export interface Conversation {
-  id: string;
-  title: string;
-  projectId: string;
-  messages: Message[];
-  createdAt: string;
-  updatedAt: string;
-  isPinned: boolean;
-}
+
 
 interface ChatState {
   conversations: Conversation[];
@@ -58,10 +30,9 @@ interface ChatState {
   
   // API interactions
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
-  fetchConversation: (projectId: string, conversationId: string) => Promise<Conversation | null>;
+  fetchConversation: (projectId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
   sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any) => Promise<void>;
-  togglePinConversation: (projectId: string, conversationId: string) => Promise<boolean>;
 
   // State management
   setLoading: (isLoading: boolean) => void;
@@ -178,7 +149,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       try {
         set({ isLoading: true, error: null });
         const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
-        set({ conversations: response.data, isLoading: false });
+        console.log(response.data,"found conversations")
+        set({conversations: response.data, isLoading: false });
         return response.data;
       } catch (error: any) {
         set({ 
@@ -188,11 +160,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
         return [];
       }
     },
-  fetchConversation: async (projectId, conversationId) => {
+    
+  fetchConversation: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
       const response = await apiService.get<{ data: Conversation }>(
-        `/api/projects/${projectId}/conversations/${conversationId}`
+        `/api/projects/${projectId}/conversations`
       );
       const conversation = response.data;
       set({ currentConversation: conversation, isLoading: false });
@@ -280,6 +253,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             case 'final':
               get().finalizeStreamingMessage(streamingId, {
                 id: data.messageId,
+                conversationId,
                 content: data.content,
                 role: 'assistant',
                 timestamp: new Date().toISOString(),
@@ -317,27 +291,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       });
     }
   },
-  // Toggle pin status of a conversation
-  
-  togglePinConversation: async (projectId, conversationId) => {
-    const conversation = get().conversations.find(c => c.id === conversationId);
-    if (!conversation) return false;
-    
-    const newPinState = !conversation.isPinned;
-    
-    try {
-      await apiService.put(
-        `/api/projects/${projectId}/conversations/${conversationId}/pin`,
-        { isPinned: newPinState }
-      );
-      
-      get().updateConversation(conversationId, { isPinned: newPinState });
-      return true;
-    } catch (error: any) {
-      set({ error: error.message || 'Failed to update pin status' });
-      return false;
-    }
-  },
+
   
   // State management
   setLoading: (isLoading) => set({ isLoading }),

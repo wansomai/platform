@@ -1,7 +1,7 @@
 // src/store/ui.store.ts
 import { create } from 'zustand'
 import { v4 as uuidv4 } from 'uuid'
-import { UIState } from '@/types/store'
+import { UIState } from '@/types'
 
 
 

@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import WelcomeBanner from "@/components/layout/WelcomeBanner";
 import {
   FileText,
   FolderPlus,
@@ -160,18 +161,7 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-5xl text-black">
-              Welcome Back, {session?.user?.name?.split(" ")[0] || "User"}
-            </h1>
-            <p className="text-primary-100 mt-1 text-black">
-              Here's what's happening across your legal workspace
-            </p>
-          </div>
-        </div>
-      </div>
+    <WelcomeBanner />
 
       {/* Quick Actions & Activity Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -181,27 +171,11 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <QuickActionCard
               icon={MessageSquare}
-              title="New AI Chat"
-              description="Chat with legal specific AI, get quick responses to your questions"
+              title="New AI Workspace"
+              description="Collaborate, organize your legal work into AI workspaces"
               onClick={handleQuickChatCreate}
               color="text-green-600"
               loading={isCreatingQuickChat}
-              disabled={isCreatingQuickChat}
-            />
-            <QuickActionCard
-              icon={Briefcase}
-              title="Create Project Workspace"
-              description="Collaborate, organize your work into case or client files"
-              href="/projects"
-              color="text-purple-600"
-              disabled={isCreatingQuickChat}
-            />
-            <QuickActionCard
-              icon={FileUp}
-              title="Upload Documents"
-              description="Add contracts, pleadings, or evidence to your vault"
-              href="/vault"
-              color="text-blue-600"
               disabled={isCreatingQuickChat}
             />
             <QuickActionCard
@@ -212,6 +186,24 @@ export default function DashboardPage() {
               color="text-amber-600"
               disabled={isCreatingQuickChat}
             />
+            <QuickActionCard
+              icon={FileUp}
+              title="Upload Documents"
+              description="Add contracts, pleadings, or evidence to your vault"
+              href="/vault"
+              color="text-blue-600"
+              disabled={isCreatingQuickChat}
+            />
+              <QuickActionCard
+              icon={Briefcase}
+              title="Grow Your Legal Practice"
+              description="Get more clients for your legal business with AI"
+              href="/business"
+              color="text-blue-600"
+              disabled={isCreatingQuickChat}
+            />
+            
+            
           </div>
         </div>
 
@@ -262,7 +254,7 @@ export default function DashboardPage() {
                       <div className="p-6 text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
                         <p className="text-sm text-gray-500 mt-2">
-                          Loading projects...
+                          Loading workspaces...
                         </p>
                       </div>
                     ) : projects?.length === 0 ? (
@@ -293,7 +285,7 @@ export default function DashboardPage() {
                                   <Briefcase className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <div>
-                                  <h3 className="font-medium">
+                                  <h3 className="font-medium text-sm">
                                     {project.title}
                                   </h3>
                                  
@@ -301,7 +293,7 @@ export default function DashboardPage() {
                               </div>
                               <div className="flex items-center">
                                 <span className="text-xs text-gray-500 mr-2">
-                                  {new Date(project.last_activity).toLocaleDateString()}
+                                  {new Date(project.updatedAt).toLocaleDateString()}
                                 </span>
                                 <ArrowRight className="h-4 w-4 text-gray-400" />
                               </div>

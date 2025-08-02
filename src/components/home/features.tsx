@@ -9,7 +9,7 @@ import {
   Play,
   Gavel
 } from 'lucide-react';
-import PatnerLogoSection from './Partnerlogos';
+import {PatnerLogoSection} from './Partnerlogos';
 
 const FeaturesSection: React.FC = () => {
 
@@ -22,18 +22,22 @@ const FeaturesSection: React.FC = () => {
      
       {/* Partner Logos */}
       <PatnerLogoSection/>
-
+      <div className='bg-gray-50 pt-5 -mb-16'>
+       <section className="section-container " id="ai-assistant">
+         <img src='/home-demo.png' alt='Partner Logos' className='w-full h-auto object-cover mb-8 rounded-lg' />
+       </section>
+     
+</div>
       {/* Partner Support Section */}
       <PartnerSupportSection />
 
       {/* Automation Section */}
-     
     </div>
   );
 };
 
 // Partner Support Section Component
-const PartnerSupportSection = () => {
+const PartnerSupportSection: React.FC = () => {
   const features = [
     {
       icon: Sparkles,

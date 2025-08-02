@@ -12,13 +12,14 @@ import {
   MessageSquare,
   LogOut,
   ChevronDown,
-  Briefcase,
   Zap,
   PanelLeft,
   PanelRight,
   Menu,
   X,
   Users2,
+  TrendingUp,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,7 +43,7 @@ interface SidebarLinkProps {
   onClick?: () => void;
 }
 
-// Sidebar Link Component - Added onClick prop for mobile navigation
+// Sidebar Link Component
 const SidebarLink = ({
   href,
   icon: Icon,
@@ -138,7 +139,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     return null;
   }
 
-  // Sidebar content - extracted to reuse in both desktop and mobile views
+  // Sidebar content
   const sidebarContent = (isMobile = false) => (
     <div className="flex flex-col h-full">
       {/* User profile */}
@@ -205,16 +206,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               icon={Zap}
               label="Workflows"
               active={pathname === "/workflows"}
-              badge={5}
               onClick={isMobile ? handleMobileNavigation : undefined}
             />
-            {/* <SidebarLink
-              href="/teams"
-              icon={Users2}
-              label="Team"
-              active={pathname === '/teams'}
+            <SidebarLink
+              href="/business"
+              icon={TrendingUp}
+              label="Business"
+              active={pathname === '/business'}
               onClick={isMobile ? handleMobileNavigation : undefined}
-            /> */}
+            />
           </div>
 
           {/* Recent projects section */}

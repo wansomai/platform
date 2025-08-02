@@ -2,12 +2,12 @@
 import { useState } from 'react'
 import api from '@/lib/api'
 import { useDocumentsStore } from '@/store/documents.store'
-import { useConversationDocumentsStore } from '@/store/conversation-documents.store'
+import { useProjectDocumentsStore } from '@/store/workspace-documents.store'
 import { useUIStore } from '@/store/ui.store'
 import { formatFileSize, validateFile } from '@/lib/utils/file'
 import { formatRelativeTime } from '@/lib/utils/date'
 import { cleanTextContent, formatSearchQuery, containsSearchTerm } from '@/lib/utils/text'
-import {FILE_UPLOAD_CONFIG} from '@/lib/utils/constants'
+import {ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG} from '@/lib/utils/constants'
 
 
 export interface UseDocumentsOptions {
@@ -16,16 +16,6 @@ export interface UseDocumentsOptions {
   onSuccess?: (message: string) => void;
   onError?: (error: string) => void;
 }
-const ALLOWED_FILE_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/plain',
-  'text/csv',
-  'image/jpeg',
-  'image/png'
-];
 
 export function useDocuments(options: UseDocumentsOptions = {}) {
   const { projectId, conversationId, onSuccess, onError } = options;
@@ -40,9 +30,9 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
   } = useDocumentsStore();
   
   const { 
-    attachDocumentsToConversation,
-    removeDocumentFromConversation
-  } = useConversationDocumentsStore();
+    attachDocumentsToProject,
+    removeDocumentFromProject
+  } = useProjectDocumentsStore();
   
   const { addToast } = useUIStore();
   
@@ -129,7 +119,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       
       if (document) {
         // Then attach it to the conversation
-        const success = await attachDocumentsToConversation(convId, [document.id]);
+        const success = await attachDocumentsToProject(convId, [document.id]);
         
         if (success) {
           handleSuccess(`${file.name} uploaded and added to conversation`);
@@ -197,7 +187,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
 
     try {
       setIsProcessing(true);
-      const success = await attachDocumentsToConversation(convId, documentIds);
+      const success = await attachDocumentsToProject(convId, documentIds);
       
       if (success) {
         const count = documentIds.length;
@@ -226,7 +216,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
 
     try {
       setIsProcessing(true);
-      const success = await removeDocumentFromConversation(convId, documentId);
+      const success = await removeDocumentFromProject(convId, documentId);
       
       if (success) {
         handleSuccess('Document removed from conversation');

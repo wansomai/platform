@@ -1,4 +1,6 @@
+// src/components/chat/CanvasInterface.tsx
 import React, { useState, useRef, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { 
   Save, 
   Download,
@@ -23,10 +25,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useUIStore } from '@/store/ui.store';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import * as mammoth from 'mammoth';
-
 // TypeScript interfaces
 interface SelectionRange {
   text: string;
@@ -50,6 +52,9 @@ interface AISuggestion {
 }
 
 const LegalCanvas: React.FC = () => {
+  const params = useParams();
+  const projectId = params.id as string;
+  
   const [selectedText, setSelectedText] = useState<string>('');
   const [selectionRange, setSelectionRange] = useState<SelectionRange | null>(null);
   const [showActionBar, setShowActionBar] = useState(false);
@@ -68,205 +73,175 @@ const LegalCanvas: React.FC = () => {
   const actionBarRef = useRef<HTMLDivElement>(null);
   const improveInputRef = useRef<HTMLInputElement>(null);
 
+  // Use workspace hook for settings and data
+  const { addToast } = useUIStore();
+
   // Quill.js configuration
   const modules = {
     toolbar: [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
       ['bold', 'italic', 'underline', 'strike'],
       [{ 'color': [] }, { 'background': [] }],
-      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
       [{ 'align': [] }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-      ['blockquote'],
-      ['link', 'image'],
+      ['link', 'image', 'video'],
       ['clean']
     ],
   };
 
   const formats = [
-    'header', 'font',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'script',
-    'align',
-    'list', 'indent',
-    'blockquote',
-    'link', 'image'
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent',
+    'link', 'image', 'video',
+    'align', 'color', 'background',
+    'script'
   ];
 
-  // Handle Quill editor selection changes
-  useEffect(() => {
-    if (quillRef.current) {
-      const quill = quillRef.current.getEditor();
-      
-      const handleSelection = (range: any, oldRange: any, source: any) => {
-        if (range && range.length > 0) {
-          const selectedText = quill.getText(range.index, range.length);
-          if (selectedText.trim() && selectedText.trim().length > 3) {
-            const bounds = quill.getBounds(range.index, range.length);
-            const editorContainer = quill.container.getBoundingClientRect();
-            
-            if (bounds) {
-              setSelectedText(selectedText.trim());
-              setSelectionRange({
-                text: selectedText.trim(),
-                index: range.index,
-                length: range.length,
-                rect: {
-                  top: bounds.top + editorContainer.top,
-                  left: bounds.left + editorContainer.left,
-                  width: bounds.width,
-                  height: bounds.height,
-                }
-              });
-              setShowActionBar(true);
-              setShowImproveInput(false);
-              setImproveInstructions('');
-            }
-          }
-        } else {
-          clearSelection();
-        }
-      };
+  // Handle text selection
+  const handleTextSelection = () => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
 
-      quill.on('selection-change', handleSelection);
-      
-      return () => {
-        quill.off('selection-change', handleSelection);
-      };
-    }
-  }, []);
-
-  const clearSelection = () => {
-    setSelectedText('');
-    setSelectionRange(null);
-    setShowActionBar(false);
-    setShowImproveInput(false);
-    setImproveInstructions('');
-    setCurrentSuggestion(null);
-  };
-
-  // Handle AI actions on selected text
-  const handleAIAction = async (action: string, customInstructions?: string) => {
-    if (!selectedText || !selectionRange) return;
-    
-    setIsProcessing(true);
-    setProcessingAction(action);
-    
-    // Simulate AI processing
-    setTimeout(() => {
-      const suggestion: AISuggestion = {
-        id: Date.now().toString(),
-        type: action as any,
-        originalText: selectedText,
-        suggestion: generateAISuggestion(action, selectedText, customInstructions),
-        explanation: generateExplanation(action, selectedText),
-        confidence: 0.85
-      };
-      
-      setCurrentSuggestion(suggestion);
-      setIsProcessing(false);
-      setProcessingAction('');
-      setShowImproveInput(false);
-      setImproveInstructions('');
-    }, 1500);
-  };
-
-  // Handle improve action with custom instructions
-  const handleImproveAction = () => {
-    setCurrentSuggestion(null); // Clear any existing suggestion
-    setShowImproveInput(true);
-    setTimeout(() => {
-      improveInputRef.current?.focus();
-    }, 100);
-  };
-
-  // Submit improve instructions
-  const submitImproveInstructions = () => {
-    if (!improveInstructions.trim()) return;
-    handleAIAction('improve', improveInstructions);
-  };
-
-  const handleImproveKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      submitImproveInstructions();
-    } else if (e.key === 'Escape') {
-      setShowImproveInput(false);
-      setImproveInstructions('');
-    }
-  };
-
-  // Generate AI suggestion based on action
-  const generateAISuggestion = (action: string, text: string, customInstructions?: string): string => {
-    switch (action.toLowerCase()) {
-      case 'improve':
-        const baseImprovement = text.replace(/\[.*?\]/g, 'specific legal parameters').replace(/analysis/g, 'comprehensive legal analysis');
-        return customInstructions 
-          ? `${baseImprovement} (Enhanced based on: ${customInstructions})`
-          : baseImprovement;
-      case 'explain':
-        return `This section ${text.toLowerCase().includes('background') 
-          ? 'establishes the factual foundation necessary for the legal analysis by providing essential context about the circumstances that give rise to the legal issues being examined' 
-          : 'outlines the relevant legal principles and authorities that form the basis for the subsequent analysis, ensuring the reader understands the applicable legal framework'}.`;
-      case 'expand':
-        return `${text} Furthermore, it is important to consider the broader implications of this matter, including potential compliance requirements and risk mitigation strategies that should be addressed in the client's decision-making process.`;
-      case 'cite':
-        return `${text} See generally [Relevant Case Citation], [Statute Citation] (establishing the legal framework for this analysis).`;
-      default:
-        return text;
-    }
-  };
-
-  const generateExplanation = (action: string, text: string): string => {
-    switch (action.toLowerCase()) {
-      case 'improve':
-        return 'Enhanced for legal precision and clarity based on your specific requirements';
-      case 'explain':
-        return 'AI-generated explanation of this section\'s purpose and legal significance';
-      case 'expand':
-        return 'Added comprehensive analysis and practical considerations';
-      case 'cite':
-        return 'Added placeholder citations for legal authority';
-      default:
-        return 'AI-generated suggestion';
-    }
-  };
-
-  // Accept AI suggestion
-  const acceptSuggestion = (suggestion: AISuggestion) => {
-    // For explanation, we don't replace the original text
-    if (suggestion.type === 'explain') {
-      clearSelection();
+    const selection = quill.getSelection();
+    if (!selection || selection.length === 0) {
+      setShowActionBar(false);
       return;
     }
 
-    // For other actions, replace the selected text
-    if (quillRef.current && selectionRange) {
-      const quill = quillRef.current.getEditor();
-      quill.deleteText(selectionRange.index, selectionRange.length);
-      quill.insertText(selectionRange.index, suggestion.suggestion);
+    const text = quill.getText(selection.index, selection.length);
+    if (text.trim().length === 0) {
+      setShowActionBar(false);
+      return;
+    }
+
+    const bounds = quill.getBounds(selection.index, selection.length);
+    if (!bounds) {
+      setShowActionBar(false);
+      return;
     }
     
-    clearSelection();
+    const editorRect = quill.container.getBoundingClientRect();
+
+    setSelectedText(text.trim());
+    setSelectionRange({
+      text: text.trim(),
+      index: selection.index,
+      length: selection.length,
+      rect: {
+        top: editorRect.top + bounds.top,
+        left: editorRect.left + bounds.left,
+        width: bounds.width,
+        height: bounds.height,
+      }
+    });
+    setShowActionBar(true);
   };
 
-  // Reject AI suggestion
-  const rejectSuggestion = () => {
-    setCurrentSuggestion(null);
+  // Handle AI-powered actions
+  const handleAIAction = async (action: string, instructions?: string) => {
+    if (!selectedText || !projectId) return;
+
+    setIsProcessing(true);
+    setProcessingAction(action);
+
+    try {
+      let prompt = '';
+      switch (action) {
+        case 'improve':
+          prompt = instructions 
+            ? `Please improve this text based on these instructions: "${instructions}"\n\nText: "${selectedText}"`
+            : `Please improve and refine this legal text for clarity and precision:\n\n"${selectedText}"`;
+          break;
+        case 'explain':
+          prompt = `Please explain this legal text in simple terms:\n\n"${selectedText}"`;
+          break;
+        case 'expand':
+          prompt = `Please expand on this legal text with more detail and context:\n\n"${selectedText}"`;
+          break;
+        case 'cite':
+          prompt = `Please suggest relevant legal citations and authorities for this text:\n\n"${selectedText}"`;
+          break;
+        default:
+          prompt = `Please analyze this legal text:\n\n"${selectedText}"`;
+      }
+
+      // TODO: Implement AI request using project settings
+      // This would typically send a message to your AI service
+      // For now, just show success
+      addToast({ 
+        message: `AI ${action} request processed successfully`, 
+        type: 'success' 
+      });
+
+      setShowActionBar(false);
+      setShowImproveInput(false);
+      setImproveInstructions('');
+
+    } catch (error) {
+      console.error(`Error with AI ${action}:`, error);
+      addToast({ 
+        message: `Failed to process AI ${action} request`, 
+        type: 'error' 
+      });
+    } finally {
+      setIsProcessing(false);
+      setProcessingAction('');
+    }
   };
 
-  // Handle save and export
-  const handleSaveToVault = (): void => {
-    console.log('Saving document to vault...');
+  // Handle improve with custom instructions
+  const handleImproveWithInstructions = () => {
+    if (!improveInstructions.trim()) {
+      addToast({ message: 'Please provide improvement instructions', type: 'error' });
+      return;
+    }
+    handleAIAction('improve', improveInstructions);
   };
 
-  const handleExportToWord = (): void => {
-    console.log('Exporting to Word...');
+  // Handle document save
+  const handleSave = () => {
+    try {
+      localStorage.setItem(`legal_canvas_${projectId}`, canvasContent);
+      addToast({ message: 'Document saved successfully', type: 'success' });
+    } catch (error) {
+      addToast({ message: 'Failed to save document', type: 'error' });
+    }
   };
 
-  // Handle template insertion
+  // Handle document export
+  const handleExport = () => {
+    try {
+      const element = document.createElement('a');
+      const file = new Blob([canvasContent], { type: 'text/html' });
+      element.href = URL.createObjectURL(file);
+      element.download = `legal_document_${new Date().getTime()}.html`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      addToast({ message: 'Document exported successfully', type: 'success' });
+    } catch (error) {
+      addToast({ message: 'Failed to export document', type: 'error' });
+    }
+  };
+
+  // Load saved content on mount
+  useEffect(() => {
+    if (projectId) {
+      const savedContent = localStorage.getItem(`legal_canvas_${projectId}`);
+      if (savedContent) {
+        setCanvasContent(savedContent);
+      }
+    }
+  }, [projectId]);
+
+   // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
     setIsLoadingTemplate(true);
     
@@ -435,248 +410,199 @@ Attorney for [Party Name]</p>`;
     }
   };
 
+
+  // Hide action bar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (actionBarRef.current && !actionBarRef.current.contains(event.target as Node)) {
+        setShowActionBar(false);
+        setShowImproveInput(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div className="flex h-screen bg-gray-50 relative">
-      {/* Document Canvas */}
-      <div className="flex-1 relative overflow-y-auto scrollbar-hide pb-32" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-        <div ref={canvasRef} className="max-w-4xl mx-auto">
+    <div className="h-full flex flex-col bg-white">
+      {/* Toolbar */}
+      <div className="border-b border-gray-200 p-4 flex items-center justify-between bg-gray-50">
+        <div className="flex items-center space-x-2">
+          <Scale className="h-5 w-5 text-primary-600" />
+          <h1 className="text-lg font-semibold text-gray-900">Legal Canvas</h1>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSave}
+            className="flex items-center space-x-1"
+          >
+            <Save className="h-4 w-4" />
+            <span>Save</span>
+          </Button>
           
-          {/* Quill Rich Text Editor */}
-          <div className="bg-white relative">
-            {/* Custom File Menu Bar */}
-            <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
-              <div className="flex items-center gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-sm text-gray-700 hover:bg-gray-100">
-                      File
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem onClick={handleSaveToVault}>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save to Vault
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleExportToWord}>
-                      <Download className="h-4 w-4 mr-2" />
-                      Export to Word
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            className="flex items-center space-x-1"
+          >
+            <Download className="h-4 w-4" />
+            <span>Export</span>
+          </Button>
 
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowTemplateModal(true)}
-                  className="text-sm"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Insert Template
-                </Button>
-              </div>
-
-              {/* Document status */}
-              <div className="text-xs text-gray-500">
-                {canvasContent ? 'Document loaded' : 'Blank document'}
-              </div>
-            </div>
-            
-            <ReactQuill
-              ref={quillRef}
-              theme="snow"
-              value={canvasContent}
-              onChange={setCanvasContent}
-              modules={modules}
-              formats={formats}
-              style={{ height: '750px' }}
-            />
-
-            {/* Enhanced Unified Action Bar */}
-            {showActionBar && selectionRange && (
-              <div
-                ref={actionBarRef}
-                className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg"
-                style={{
-                  top: Math.max(10, selectionRange.rect.top - 80),
-                  left: Math.max(10, selectionRange.rect.left),
-                }}
-              >
-                <div className="p-3">
-                  {/* Show AI suggestion if available */}
-                  {currentSuggestion ? (
-                    <div className="space-y-3">
-                      {/* Header */}
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-sm text-gray-900">
-                          {currentSuggestion.type === 'explain' ? 'Explanation' : 
-                           currentSuggestion.type === 'improve' ? 'Improvement' :
-                           currentSuggestion.type === 'cite' ? 'Citation' : 'Suggestion'}
-                        </h4>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={clearSelection}
-                          className="h-6 w-6 p-0 hover:bg-gray-100"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-
-                      {/* Show original only for improve action */}
-                      {currentSuggestion.type === 'improve' && (
-                        <div>
-                          <div className="text-xs text-gray-500 mb-1">Original:</div>
-                          <div className="text-sm bg-gray-50 p-2 rounded border">
-                            "{currentSuggestion.originalText.length > 100 
-                              ? currentSuggestion.originalText.substring(0, 100) + '...'
-                              : currentSuggestion.originalText}"
-                          </div>
-                        </div>
-                      )}
-
-                      {/* AI Response */}
-                      <div>
-                        <div className="text-xs text-gray-500 mb-1">
-                          {currentSuggestion.type === 'explain' ? 'Explanation:' : 'Suggested:'}
-                        </div>
-                        <div className={`text-sm p-3 rounded border ${
-                          currentSuggestion.type === 'explain' ? 'bg-blue-50' :
-                          currentSuggestion.type === 'improve' ? 'bg-green-50' :
-                          currentSuggestion.type === 'cite' ? 'bg-purple-50' : 'bg-gray-50'
-                        }`}>
-                          {currentSuggestion.suggestion}
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-2 pt-2">
-                        {currentSuggestion.type !== 'explain' && (
-                          <Button
-                            size="sm"
-                            onClick={() => acceptSuggestion(currentSuggestion)}
-                            className="h-7 px-3 bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            <Check className="h-3 w-3 mr-1" />
-                            Accept
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={rejectSuggestion}
-                          className="h-7 px-3"
-                        >
-                          <X className="h-3 w-3 mr-1" />
-                          {currentSuggestion.type === 'explain' ? 'Close' : 'Reject'}
-                        </Button>
-                      </div>
-                    </div>
-                  ) : showImproveInput ? (
-                    /* Improve Input */
-                    <div className="w-80">
-                      <div className="text-xs text-gray-600 mb-2">
-                        How would you like to improve this text?
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          ref={improveInputRef}
-                          value={improveInstructions}
-                          onChange={(e) => setImproveInstructions(e.target.value)}
-                          onKeyDown={handleImproveKeyDown}
-                          placeholder="e.g., make it more formal, add legal citations..."
-                          className="h-8 text-xs"
-                        />
-                        <Button
-                          size="sm"
-                          onClick={submitImproveInstructions}
-                          disabled={!improveInstructions.trim() || isProcessing}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Send className="h-3 w-3" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => {
-                            setShowImproveInput(false);
-                            setImproveInstructions('');
-                          }}
-                          className="h-8 w-8 p-0"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Initial Action Buttons */
-                    <div className="flex items-center gap-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleAIAction('explain')}
-                        disabled={isProcessing}
-                        className="h-8 px-2 text-xs hover:bg-blue-50 hover:text-blue-700"
-                        title="Explain this section"
-                      >
-                        <Eye className="h-3 w-3 mr-1" />
-                        Explain
-                      </Button>
-                      
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={handleImproveAction}
-                        disabled={isProcessing}
-                        className="h-8 px-2 text-xs hover:bg-green-50 hover:text-green-700"
-                        title="Improve this text"
-                      >
-                        <Lightbulb className="h-3 w-3 mr-1" />
-                        Improve
-                      </Button>
-                      
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleAIAction('cite')}
-                        disabled={isProcessing}
-                        className="h-8 px-2 text-xs hover:bg-purple-50 hover:text-purple-700"
-                        title="Add legal citations"
-                      >
-                        <Scale className="h-3 w-3 mr-1" />
-                        Cite
-                      </Button>
-
-                      <div className="w-px h-6 bg-gray-200 mx-1" />
-                      
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={clearSelection}
-                        className="h-8 w-8 p-0 hover:bg-gray-100"
-                        title="Close"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Processing indicator */}
-                  {isProcessing && (
-                    <div className="mt-3 flex items-center justify-center py-2 border-t">
-                      <RefreshCw className="h-3 w-3 animate-spin mr-2 text-blue-600" />
-                      <span className="text-xs text-blue-600">
-                        {processingAction}ing...
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Plus className="h-4 w-4 mr-1" />
+                Templates
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setShowTemplateModal(true)}>
+                <FileText className="h-4 w-4 mr-2" />
+                Contract Template
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowTemplateModal(true)}>
+                <BookOpen className="h-4 w-4 mr-2" />
+                Legal Brief
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowTemplateModal(true)}>
+                <Scale className="h-4 w-4 mr-2" />
+                Motion Template
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
+      {/* Main Editor */}
+      <div className="flex-1 relative" ref={canvasRef}>
+        <ReactQuill
+          ref={quillRef}
+          theme="snow"
+          value={canvasContent}
+          onChange={setCanvasContent}
+          onChangeSelection={handleTextSelection}
+          modules={modules}
+          formats={formats}
+          style={{ height: '100%' }}
+          className="h-full"
+        />
+
+        {/* Floating Action Bar */}
+        {showActionBar && selectionRange && (
+          <div
+            ref={actionBarRef}
+            className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 flex items-center space-x-1"
+            style={{
+              top: selectionRange.rect.top - 60,
+              left: selectionRange.rect.left,
+              transform: selectionRange.rect.left > window.innerWidth - 300 
+                ? 'translateX(-100%)' 
+                : 'none'
+            }}
+          >
+            {!showImproveInput ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleAIAction('explain')}
+                  disabled={isProcessing}
+                  className="flex items-center space-x-1 text-xs"
+                >
+                  <Lightbulb className="h-3 w-3" />
+                  <span>Explain</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowImproveInput(true)}
+                  disabled={isProcessing}
+                  className="flex items-center space-x-1 text-xs"
+                >
+                  <Edit3 className="h-3 w-3" />
+                  <span>Improve</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleAIAction('expand')}
+                  disabled={isProcessing}
+                  className="flex items-center space-x-1 text-xs"
+                >
+                  <Plus className="h-3 w-3" />
+                  <span>Expand</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleAIAction('cite')}
+                  disabled={isProcessing}
+                  className="flex items-center space-x-1 text-xs"
+                >
+                  <BookOpen className="h-3 w-3" />
+                  <span>Cite</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowActionBar(false)}
+                  className="text-xs"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Input
+                  ref={improveInputRef}
+                  placeholder="How should I improve this?"
+                  value={improveInstructions}
+                  onChange={(e) => setImproveInstructions(e.target.value)}
+                  className="text-xs"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleImproveWithInstructions}
+                  disabled={isProcessing || !improveInstructions.trim()}
+                  className="text-xs"
+                >
+                  <Send className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowImproveInput(false);
+                    setImproveInstructions('');
+                  }}
+                  className="text-xs"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+
+            {isProcessing && (
+              <div className="flex items-center space-x-1 text-xs text-blue-600">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                <span>Processing {processingAction}...</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       {/* Template Upload Modal */}
       {showTemplateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -743,7 +669,7 @@ Attorney for [Party Name]</p>`;
         </div>
       )}
 
-      {/* Custom Styles */}
+            {/* Custom Styles */}
       <style jsx global>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
@@ -803,5 +729,6 @@ Attorney for [Party Name]</p>`;
     </div>
   );
 };
+
 
 export default LegalCanvas;

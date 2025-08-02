@@ -36,10 +36,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg">
             <h3 className="font-medium text-amber-800 mb-2 flex items-center">
               <AlertCircle className="h-4 w-4 mr-2" />
-              Associates are now in Pro
+              Grow you legal practice with Pro
             </h3>
             <p className="text-sm text-amber-700">
-            Associates can handle the most complex tasks with little supervision learning and correcting themselves to achieve the best outcome.
+            Get more clients for your legal practice with wansom Pro.Create cotent that get discovered by AI engines and convert chats to leads
             </p>
           </div>
           

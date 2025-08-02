@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-const PatnerLogoSection = () => {
+export const PatnerLogoSection = () => {
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
     { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
@@ -78,5 +78,3 @@ const PatnerLogoSection = () => {
     </section>
   );
 };
-
-export default PatnerLogoSection;

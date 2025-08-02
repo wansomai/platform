@@ -1,23 +1,17 @@
 // store/folder.store.ts
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { apiService } from '@/lib/api';
-
-export interface Folder {
-  id: string;
-  name: string;
-  parentId: string | null;
-  documentCount: number;
-  children?: Folder[];
-  createdAt: string;
-}
+import { Folder } from '@/types/documents';
 
 interface FolderState {
   folders: Folder[];
   isLoading: boolean;
   error: string | null;
+  lastFetched: number | null;
   
   // Methods
-  fetchFolders: () => Promise<Folder[]>;
+  fetchFolders: (forceRefresh?: boolean) => Promise<Folder[]>;
   createFolder: (name: string, parentId: string | null) => Promise<Folder | null>;
   updateFolder: (id: string, name: string, parentId: string | null) => Promise<Folder | null>;
   deleteFolder: (id: string) => Promise<boolean>;
@@ -25,118 +19,160 @@ interface FolderState {
   setFolders: (folders: Folder[]) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
+  invalidateCache: () => void;
 }
 
-export const useFolderStore = create<FolderState>((set, get) => ({
-  folders: [],
-  isLoading: false,
-  error: null,
-  
-  fetchFolders: async () => {
-    try {
-      set({ isLoading: true, error: null });
+export const useFolderStore = create<FolderState>()(
+  persist(
+    (set, get) => ({
+      folders: [],
+      isLoading: false,
+      error: null,
+      lastFetched: null,
       
-      const response = await apiService.get<{ data: Folder[] }>('/api/folders');
-      set({ folders: response.data, isLoading: false });
+      fetchFolders: async (forceRefresh = false) => {
+        const state = get();
+        const now = Date.now();
+        const tenMinutes = 10 * 60 * 1000; // 10 minutes cache for folders
+        
+        // Check if we have recent folder data and don't need to refresh
+        if (state.lastFetched && 
+            (now - state.lastFetched) < tenMinutes && 
+            state.folders.length > 0 && 
+            !forceRefresh) {
+          return state.folders;
+        }
+        
+        try {
+          set({ isLoading: true, error: null });
+          
+          const response = await apiService.get<{ data: Folder[] }>('/api/folders');
+          
+          set({ 
+            folders: response.data, 
+            isLoading: false,
+            lastFetched: now
+          });
+          
+          return response.data;
+        } catch (error: any) {
+          set({ 
+            error: error.message || 'Failed to fetch folders', 
+            isLoading: false 
+          });
+          // Return cached folders on error if available
+          return state.folders;
+        }
+      },
       
-      return response.data;
-    } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to fetch folders', 
-        isLoading: false 
-      });
-      return [];
+      createFolder: async (name, parentId) => {
+        try {
+          set({ isLoading: true, error: null });
+          
+          const response = await apiService.post<{ data: Folder }>('/api/folders', {
+            name,
+            parentId
+          });
+          
+          // Refresh folders to get the updated list with correct hierarchy
+          await get().fetchFolders(true); // Force refresh
+          
+          set({ isLoading: false });
+          return response.data;
+        } catch (error: any) {
+          set({ 
+            error: error.message || 'Failed to create folder', 
+            isLoading: false 
+          });
+          return null;
+        }
+      },
+      
+      updateFolder: async (id, name, parentId) => {
+        try {
+          set({ isLoading: true, error: null });
+          
+          const response = await apiService.put<{ data: Folder }>(`/api/folders/${id}`, {
+            name,
+            parentId
+          });
+          
+          // Refresh folders to get the updated list with correct hierarchy
+          await get().fetchFolders(true); // Force refresh
+          
+          set({ isLoading: false });
+          return response.data;
+        } catch (error: any) {
+          set({ 
+            error: error.message || 'Failed to update folder', 
+            isLoading: false 
+          });
+          return null;
+        }
+      },
+      
+      deleteFolder: async (id) => {
+        try {
+          set({ isLoading: true, error: null });
+          
+          await apiService.delete(`/api/folders/${id}`);
+          
+          // Refresh folders
+          await get().fetchFolders(true); // Force refresh
+          
+          set({ isLoading: false });
+          return true;
+        } catch (error: any) {
+          set({ 
+            error: error.message || 'Failed to delete folder', 
+            isLoading: false 
+          });
+          return false;
+        }
+      },
+      
+      moveDocumentsToFolder: async (folderId, documentIds) => {
+        try {
+          set({ isLoading: true, error: null });
+          
+          const endpoint = folderId ? `/api/folders/${folderId}/documents` : '/api/folders/root/documents';
+          
+          await apiService.post(endpoint, {
+            documentIds
+          });
+          
+          set({ isLoading: false });
+          return true;
+        } catch (error: any) {
+          set({ 
+            error: error.message || 'Failed to move documents', 
+            isLoading: false 
+          });
+          return false;
+        }
+      },
+      
+      setFolders: (folders) => set({ 
+        folders,
+        lastFetched: Date.now()
+      }),
+      
+      setLoading: (isLoading) => set({ isLoading }),
+      setError: (error) => set({ error }),
+      
+      // Clear cache to force next fetch
+      invalidateCache: () => {
+        set({ lastFetched: null });
+      }
+    }),
+    {
+      name: 'folder-store', // Storage key
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        folders: state.folders,
+        lastFetched: state.lastFetched,
+      }),
+      version: 1,
     }
-  },
-  
-  createFolder: async (name, parentId) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const response = await apiService.post<{ data: Folder }>('/api/folders', {
-        name,
-        parentId
-      });
-      
-      // Refresh folders to get the updated list with correct hierarchy
-      await get().fetchFolders();
-      
-      set({ isLoading: false });
-      return response.data;
-    } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to create folder', 
-        isLoading: false 
-      });
-      return null;
-    }
-  },
-  
-  updateFolder: async (id, name, parentId) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const response = await apiService.put<{ data: Folder }>(`/api/folders/${id}`, {
-        name,
-        parentId
-      });
-      
-      // Refresh folders to get the updated list with correct hierarchy
-      await get().fetchFolders();
-      
-      set({ isLoading: false });
-      return response.data;
-    } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to update folder', 
-        isLoading: false 
-      });
-      return null;
-    }
-  },
-  
-  deleteFolder: async (id) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      await apiService.delete(`/api/folders/${id}`);
-      
-      // Refresh folders
-      await get().fetchFolders();
-      
-      set({ isLoading: false });
-      return true;
-    } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to delete folder', 
-        isLoading: false 
-      });
-      return false;
-    }
-  },
-  
-  moveDocumentsToFolder: async (folderId, documentIds) => {
-    try {
-      set({ isLoading: true, error: null });
-      
-      const endpoint = folderId ? `/api/folders/${folderId}/documents` : '/api/folders/root/documents';
-      
-      await apiService.post(endpoint, {
-        documentIds
-      });
-      
-      set({ isLoading: false });
-      return true;
-    } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to move documents', 
-        isLoading: false 
-      });
-      return false;
-    }
-  },
-  
-  setFolders: (folders) => set({ folders }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error })
-}));
+  )
+);

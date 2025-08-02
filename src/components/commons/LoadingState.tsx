@@ -253,14 +253,13 @@ export const ChatEmptyState: React.FC<{ projectTitle?: string }> = ({ projectTit
   <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 text-center">
     <div className="max-w-md mx-auto space-y-6">
       <div className="space-y-4">
-        <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-5xl">
-          😎
-        </div>
+        
         <div className="space-y-2">
           <p className="text-gray-600 text-3xl capitalize">
             All Your favorite legal tools in a unified AI workspace
           </p>
         </div>
+        
       </div>
     </div>
   </div>

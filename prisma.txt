@@ -23,6 +23,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId], map: "idx_account_user")
 }
 
 model Session {
@@ -31,6 +32,9 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_session_user")
+  @@index([sessionToken], map: "idx_session_token")
 }
 
 model VerificationToken {
@@ -68,6 +72,8 @@ model User {
   activeOrganization      Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
   organization            Organization            @relation(fields: [organizationId], references: [id])
   organizationMemberships UserOrganization[]
+
+  @@index([activeOrganizationId], map: "idx_user_active_org")
 }
 
 model Organization {
@@ -96,6 +102,8 @@ model UserOrganization {
 
   @@id([userId, organizationId])
   @@index([organizationId])
+  @@index([userId, organizationId], map: "idx_user_organization")
+  @@index([organizationId, role], map: "idx_user_org_role")
 }
 
 model Project {
@@ -128,6 +136,8 @@ model ProjectMember {
   user      User     @relation(fields: [userId], references: [id])
 
   @@id([userId, projectId])
+  @@index([userId, projectId], map: "idx_project_member_user")
+  @@index([projectId, role], map: "idx_project_member_project")
 }
 
 model Document {
@@ -159,6 +169,10 @@ model Document {
   SharedMessageReference SharedMessageReference[]
 
   @@index([organization_id])
+  @@index([organization_id, created_at(sort: Desc)], map: "idx_document_org_created")
+  @@index([organization_id, status], map: "idx_document_org_status")
+  @@index([project_id, created_at(sort: Desc)], map: "idx_document_project_created")
+  @@index([organization_id, folderId, created_at(sort: Desc)], map: "idx_document_org_folder_created")
 }
 
 model Folder {
@@ -174,6 +188,8 @@ model Folder {
   organization   Organization @relation(fields: [organizationId], references: [id])
   parent         Folder?      @relation("FolderHierarchy", fields: [parentId], references: [id])
   children       Folder[]     @relation("FolderHierarchy")
+
+  @@index([organizationId, parentId], map: "idx_folder_org_parent")
 }
 
 model ProjectDocument {
@@ -198,6 +214,8 @@ model ConversationDocument {
   document        Document     @relation(fields: [document_id], references: [id], onDelete: Cascade)
 
   @@id([conversation_id, document_id])
+  @@index([conversation_id], map: "idx_conversation_document_conv")
+  @@index([document_id], map: "idx_conversation_document_doc")
 }
 
 model DocumentContent {
@@ -206,6 +224,8 @@ model DocumentContent {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId], map: "idx_document_content_document")
 }
 
 model Embedding {
@@ -216,6 +236,9 @@ model Embedding {
   chunkIndex Int
   createdAt  DateTime @default(now())
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId], map: "idx_embedding_document")
+  @@index([documentId, chunkIndex], map: "idx_embedding_document_chunk")
 }
 
 model Conversation {
@@ -233,6 +256,9 @@ model Conversation {
   meta               ConversationMeta?
   messages           Message[]
   SharedWorkspace    SharedWorkspace[]
+
+  @@index([projectId, updatedAt(sort: Desc)], map: "idx_conversation_project_updated")
+  @@index([projectId], map: "idx_conversation_project_id")
 }
 
 model Message {
@@ -246,6 +272,9 @@ model Message {
   conversation   Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User?              @relation(fields: [userId], references: [id])
   references     MessageReference[]
+
+  @@index([conversationId, createdAt], map: "idx_message_conversation_created")
+  @@index([conversationId, role], map: "idx_message_conversation_role")
 }
 
 model MessageReference {
@@ -257,6 +286,9 @@ model MessageReference {
   createdAt  DateTime @default(now())
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId], map: "idx_message_reference_message")
+  @@index([documentId], map: "idx_message_reference_document")
 }
 
 model Event {

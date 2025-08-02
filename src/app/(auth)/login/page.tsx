@@ -75,7 +75,7 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex min-h-screen flex items-center justify-center bg-white">
    
 
       {/* Form Side */}
@@ -213,46 +213,7 @@ function LoginPageContent() {
         </div>
       </div>
          {/* Creative Side */}
-      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-primary px-4 py-12 text-white md:px-12">
-    
-
-        <div className="relative z-10 max-w-md text-center">
-       
-          <h1 className="mb-4 text-4xl tracking-tight md:text-5xl">Welcome Back</h1>
-          <p className="mb-8 text-lg text-white/80">
-            Save time by automating routine legal processes with AI, so you can focus on high-impact work.
-          </p>
-          <div className="mt-12">
-            <div className="flex items-center justify-center space-x-2">
-              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
-              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
-              <span className="block h-2 w-2 rounded-full bg-white"></span>
-              <span className="block h-2 w-2 rounded-full bg-white/60"></span>
-            </div>
-            <div className="mt-6 flex items-center justify-center">
-              <div className="flex -space-x-2">
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
-                  src="/logos/1.png"
-                  alt="User"
-                />
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
-                  src="/logos/2.png"
-                  alt="User"
-                />
-                <img
-                  className="h-12 w-12 rounded-full border-2 border-primary bg-white object-contain"
-                  src="/logos/4.png"
-                  alt="User"
-                />
-              </div>
-              <p className="ml-2 text-sm text-white/80">Join 3,000+ Advocates</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
+      
     </div>
   )
 }

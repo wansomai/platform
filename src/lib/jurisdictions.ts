@@ -1,16 +1,7 @@
 // src/lib/jurisdictions.ts
-export interface Jurisdiction {
-  id: string;
-  name: string;
-  country: string;
-  state?: string;
-  region: string;
-  legalSystem: 'common-law' | 'civil-law' | 'mixed' | 'religious' | 'customary';
-  citationStyle: 'bluebook' | 'oscola' | 'aglc' | 'mcgill' | 'local';
-  courtSystem: string[];
-  languages: string[];
-  isPopular?: boolean;
-}
+
+import { Jurisdiction } from "@/types";
+
 
 export const JURISDICTIONS: Jurisdiction[] = [
   // United States

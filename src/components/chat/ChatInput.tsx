@@ -21,11 +21,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useChatStore } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
-import { useConversationSettingsStore } from "@/store/conversation-settings.store"
-import { useConversationDocumentsStore } from "@/store/conversation-documents.store"
 import { useSession } from "next-auth/react"
 import ProAccessModal from "../modals/ProAccess"
 import { UploadDocumentModal } from "../modals/UploadModal"
+import { useProjectSettingsStore } from "@/store/workspace-settings.store"
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -54,12 +54,12 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
     settings,
     updateSetting,
     isLoading: isLoadingSettings
-  } = useConversationSettingsStore()
+  } = useProjectSettingsStore()
 
   const { 
     documents: conversationDocuments,
-     fetchConversationDocuments, 
-  } = useConversationDocumentsStore()
+     fetchProjectDocuments, 
+  } = useProjectDocumentsStore()
 
   // Get right sidebar state from UI store
   const { rightSidebarCollapsed, setRightSidebarCollapsed } = useUIStore()
@@ -131,7 +131,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
     if (!currentConversation) return;
     
     try {
-      await updateSetting(currentConversation.id, settingKey, value);
+      await updateSetting(projectId, settingKey, value);
       addToast({ message: `${settingKey} setting updated`, type: 'success' });
     } catch (error) {
       addToast({ message: `Failed to update ${settingKey} setting`, type: 'error' });
@@ -149,7 +149,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
     
     // Refresh conversation documents
     if (currentConversation?.id) {
-      fetchConversationDocuments(currentConversation.id)
+      fetchProjectDocuments(currentConversation.id)
     }
   }
   // Toggle sidebar function
@@ -189,8 +189,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   return (
     <>
       {/* Floating Input Area with Embedded Tools */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="w-[90vw] max-w-3xl">
+      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[80vw]">
+        <div className="w-full max-w-3xl mx-auto">
           {/* Input Area with embedded icons */}
           <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
             {/* Left side icons */}
@@ -264,7 +264,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                           checked={settings.legalDrafting}
                             disabled={isLoadingSettings}
                           onCheckedChange={(checked) => {
-                            setShowProAccess(true)
+                             setShowProAccess(true)
                           }}
                         />
                       </div>
@@ -378,15 +378,15 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
         isLoading={isRequestingPro}
       />   
       {/* Document Selection Modal */}
-      {currentConversation && (
+    
         <UploadDocumentModal
           open={showDocumentModal}
           mode="upload-and-attach"
           onOpenChange={setShowDocumentModal}
-          conversationId={currentConversation.id}
+          projectId={projectId}
          onDocumentsAdded={handleDocumentsAdded}
         />
-      )}
+    
     </>
   )
 }

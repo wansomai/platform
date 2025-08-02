@@ -15,10 +15,9 @@ import { cn } from "@/lib/utils";
 import { 
   JURISDICTIONS, 
   REGIONS, 
-  getJurisdictionsByRegion,
   searchJurisdictions,
-  type Jurisdiction 
 } from "@/lib/jurisdictions";
+import { Jurisdiction } from "@/types";
 
 interface JurisdictionSelectorProps {
   value?: Jurisdiction | null;

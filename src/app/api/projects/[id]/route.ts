@@ -16,14 +16,12 @@ const updateProjectSchema = z.object({
 // GET handler - Get project by ID
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Make sure to await params if needed, but in this case we just need to use it directly
-    const { id } = await context.params
-    const projectId = id
+    const projectId = (await params).id;
     
-    // Get user ID from request headers
+    // Get user ID from request headers (use your existing auth function)
     const userId = getUserIdFromRequest(request);
     
     if (!userId) {
@@ -36,7 +34,7 @@ export async function GET(
       );
     }
     
-    // Check if user has access to this project
+    // Check if user has access to this project (use your existing auth function)
     const hasAccess = await checkProjectAccess(projectId, userId);
     
     if (!hasAccess) {
@@ -49,104 +47,241 @@ export async function GET(
       );
     }
     
-    // Get project
-    const project = await prisma.project.findUnique({
+    // Get query parameters for workspace data customization
+    const { searchParams } = new URL(request.url);
+    
+    // Check if this is a workspace request
+    const isWorkspaceRequest = searchParams.get('workspace') === 'true';
+    const includeMessages = searchParams.get('include_messages') === 'true';
+    const messageLimit = Math.min(parseInt(searchParams.get('message_limit') || '50'), 100);
+    const includeDocuments = searchParams.get('include_documents') === 'true';
+    const includeSettings = searchParams.get('include_settings') === 'true';
+  if (isWorkspaceRequest) {
+  // Enhanced workspace response - load everything in parallel with optimized queries
+  const [project, conversations, projectDocuments] = await Promise.all([
+    // Get basic project info with minimal relations
+    prisma.project.findUnique({
       where: { id: projectId },
-      include: {
-        members: {
-          include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        organization: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    }),
+    
+    // Get conversations with messages if requested - optimized query
+    includeMessages ? prisma.conversation.findMany({
+      where: { projectId: projectId },
+      select: {
+        id: true,
+        title: true,
+        isPinned: true,
+        createdAt: true,
+        updatedAt: true,
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: messageLimit,
+          select: {
+            id: true,
+            content: true,
+            role: true,
+            createdAt: true,
+            metadata: true,
             user: {
               select: {
                 id: true,
+                fullName: true,
                 email: true,
-                fullName: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 1, // Get the most recent conversation only
+    }) : Promise.resolve([]),
+    
+    // Get project documents if requested - optimized query
+    includeDocuments ? prisma.projectDocument.findMany({
+      where: { project_id: projectId },
+      select: {
+        added_at: true,
+        document: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            file_url: true,
+            file_type: true,
+            file_size: true,
+            created_at: true,
+            createdByUser: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
               }
             }
           }
         },
-        documents: true,
-        knowledgeBase: true,
-        _count: {
+        user: {
           select: {
-            documents: true,
-            members: true
+            id: true,
+            fullName: true,
+            email: true,
           }
         }
-      }
-    })
-    
-    if (!project) {
-      return NextResponse.json(
-        { 
-          status: 404,
-          message: 'Project not found' 
-        },
-        { status: 404 }
-      )
-    }
-    
-    // Get message count
-    const messageCount = await prisma.message.count({
-      where: {
-        conversation: {
-          projectId
-        }
-      }
-    })
-    
-    // Format team members
-    const teamMembers = project.members?.map((member: any) => ({
-      id: member.user?.id || 'unknown',
-      name: member.user?.fullName || 'Unknown User',
-      email: member.user?.email || 'unknown@example.com',
-      role: member.role || 'member',
-      avatar_url: null // In a real app, you would include the avatar URL
-    })) || []
-    
-    // Format documents
-    const documents = project.documents?.map((doc: any) => ({
-      id: doc.id || 'unknown',
-      name: doc.title || 'Untitled Document',
-      file_url: doc.fileUrl || '',
-      file_type: doc.fileType || 'unknown',
-      file_size: doc.fileSize || 0,
-      category: doc.section || 'uncategorized',
-      uploaded_at: doc.createdAt ? doc.createdAt.toISOString() : new Date().toISOString(),
-      uploaded_by: "User" // In a real app, you would track who uploaded each document
-    })) || []
-    
-    // Format the full project details
-    const formattedProject = {
-      id: project.id,
-      title: project.title || "Untitled Project",
-      description: project.description || "",
-      status: project.status || "active",
-      created_at: project.createdAt.toISOString(),
-      knowledge_base: {
-        team: teamMembers,
-        documents: documents
       },
-      team_count: project._count?.members || 0,
-      documents_count: project._count?.documents || 0,
-      messages_count: messageCount || 0,
-      last_activity: project.updatedAt?.toISOString() || new Date().toISOString()
+      take: 50, // Limit documents for performance
+    }) : Promise.resolve([]),
+    
+    // Removed: knowledgeBase promise (no longer loading settings/instructions)
+  ]);
+  
+  if (!project) {
+    return NextResponse.json(
+      { 
+        status: 404,
+        message: 'Project not found' 
+      },
+      { status: 404 }
+    );
+  }
+  
+  // Get the most recent conversation and its messages
+  const currentConversation = conversations[0] || null;
+  const messages = currentConversation?.messages || [];
+  
+  // Format workspace response
+  const workspaceData = {
+    project: {
+      id: project.id,
+      title: project.title,
+      description: project.description,
+      status: project.status,
+      createdAt: project.createdAt.toISOString(),
+      updatedAt: project.updatedAt.toISOString(),
+      organization: project.organization,
+    },
+    
+    // Current conversation info
+    currentConversation: currentConversation ? {
+      id: currentConversation.id,
+      title: currentConversation.title,
+      isPinned: currentConversation.isPinned,
+      createdAt: currentConversation.createdAt.toISOString(),
+      updatedAt: currentConversation.updatedAt.toISOString(),
+    } : null,
+    
+    // Messages from current conversation
+    ...(includeMessages && {
+      messages: messages.map(message => ({
+        id: message.id,
+        content: message.content,
+        role: message.role,
+        timestamp: message.createdAt.toISOString(),
+        metadata: message.metadata || {},
+        user: message.user,
+      })).reverse() // Reverse to show oldest first
+    }),
+    
+    // Project documents (keeping original working structure)
+    ...(includeDocuments && {
+      documents: projectDocuments.map(pd => ({
+        id: pd.document.id,
+        title: pd.document.title,
+        description: pd.document.description,
+        fileUrl: pd.document.file_url,
+        fileType: pd.document.file_type,
+        fileSize: pd.document.file_size,
+        createdBy: pd.document.createdByUser,
+        createdAt: pd.document.created_at.toISOString(),
+        addedAt: pd.added_at.toISOString(),
+        addedBy: pd.user,
+      }))
+    }),
+    
+    // Removed: settings section (was loading from knowledgeBase)
+    
+    // Metadata
+    meta: {
+      loadedAt: new Date().toISOString(),
+      includes: {
+        messages: includeMessages,
+        documents: includeDocuments,
+        settings: false, // No longer included
+      },
+      counts: {
+        messages: includeMessages ? messages.length : null,
+        documents: includeDocuments ? projectDocuments.length : null,
+        conversations: conversations.length,
+      }
+    }
+  };
+  
+  return NextResponse.json({
+    status: 200,
+    message: 'Workspace loaded successfully',
+    data: workspaceData
+  });
+} else {
+      // Basic project response (existing behavior)
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        include: {
+          organization: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        }
+      });
+      
+      if (!project) {
+        return NextResponse.json(
+          { 
+            status: 404,
+            message: 'Project not found' 
+          },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json({
+        status: 200,
+        message: 'Project retrieved successfully',
+        data: {
+          id: project.id,
+          title: project.title,
+          description: project.description,
+          status: project.status,
+          createdAt: project.createdAt.toISOString(),
+          updatedAt: project.updatedAt.toISOString(),
+          organization: project.organization,
+        }
+      });
     }
     
-    return NextResponse.json({
-      status: 200,
-      message: 'Project retrieved successfully',
-      data: formattedProject
-    })
   } catch (error) {
-    console.error('Error fetching project:', error)
+    console.error('Error loading project:', error);
     
     return NextResponse.json(
       { 
         status: 500,
-        message: 'Internal server error' 
+        message: 'Internal server error'
       },
       { status: 500 }
-    )
+    );
   }
 }
 

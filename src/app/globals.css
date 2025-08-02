@@ -413,6 +413,10 @@ body {
   color: white !important;
 }
 
+.user-text {
+  color: white !important;
+}
+
 /* Fix bold text in lists */
 .message-content li strong {
   font-weight: 700 !important;
