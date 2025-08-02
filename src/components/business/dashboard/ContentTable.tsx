@@ -64,7 +64,6 @@ const ContentTable: React.FC<ContentTableProps> = ({
   const router = useRouter();
   const { content, loading, error, pagination } = useContentList();
   const { filters, setFilters, clearFilters, setSearch } = useContentFilters();
-  const dummyContent=[]
   const { 
     selectedIds, 
     toggleSelection, 
@@ -273,7 +272,7 @@ const ContentTable: React.FC<ContentTableProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value="all">All Types</option>
-                <option value="foundation_page">Foundation Pages</option>
+                <option value="foundation_page">Service Pages</option>
                 <option value="blog_post">Blog Posts</option>
                 <option value="faq">FAQ Pages</option>
               </select>
