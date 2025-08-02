@@ -72,7 +72,7 @@ const Dashboard = () => {
           onCreateNew={handleCreateNew}
           onDelete={handleDelete}
           onView={handleView}
-          itemsPerPage={5}
+          itemsPerPage={6}
           
         />
       </div>
