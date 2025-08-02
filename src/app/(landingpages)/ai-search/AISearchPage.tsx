@@ -46,7 +46,7 @@ function AutomateSeo() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-heading-2 mb-6 text-gray-900">
-              The agentic platform that transforms legal marketing
+              The agentic platform that scales your lega marketing
             </h2>
             <p className="text-body text-gray-600 mb-8">
              We give your team the freedom to focus on legal workby automating your client pipeline.
@@ -74,7 +74,7 @@ function AutomateSeo() {
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Watch the AI Magic</h3>
                   <p className="text-gray-600">
-                  AI researches and generates: SEO optimized landing pages,articles and FAQs 
+                  AI researches and generates optimized service pages,articles and FAQs for your practice.
                   </p>
                 </div>
               </div>
@@ -85,10 +85,10 @@ function AutomateSeo() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2">
-                   Rank and Improve
+                  Review and Publish
                   </h3>
                   <p className="text-gray-600">
-                   We push optimized content to your site and monitor performance.
+                   Every piece of content is customizable and requires your approval before going live.
                   </p>
                 </div>
               </div>
