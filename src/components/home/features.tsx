@@ -22,8 +22,8 @@ const FeaturesSection: React.FC = () => {
     
       {/* Partner Logos */}
       <PatnerLogoSection/>
-      <div className='bg-gray-50 pt-5'>
-       <section className="section-container -mb-16" id="ai-assistant">
+      <div className='bg-gray-50 pt-5 -mb-16'>
+       <section className="section-container " id="ai-assistant">
          <img src='/home-demo.png' alt='Partner Logos' className='w-full h-auto object-cover mb-8 rounded-lg' />
        </section>
      
