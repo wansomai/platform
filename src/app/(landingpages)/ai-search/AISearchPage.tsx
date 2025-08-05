@@ -2,11 +2,11 @@
 'use client'
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { ArrowRight, CheckCircle, ChevronRight, Circle, Globe, Loader, Sparkles, Target, Zap,RotateCcw, Search, MapPin, Eye, Check, X } from "lucide-react";
+import { ArrowRight, CheckCircle, ChevronRight, Circle, Globe, Loader, Sparkles, Target, Zap,RotateCcw, Search, MapPin, Eye, Check, X,ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
+import {PatnerLogoSection} from "@/components/home/Partnerlogos";
 import { useState, useEffect } from "react";
 
 export default function Home() {
@@ -27,7 +27,11 @@ export default function Home() {
       <Navbar/>
       <main>
         <HeroSection/>
+        {/* <section className="section-container " id="ai-assistant">
+         <img src='/academy-demo.png' alt='Partner Logos' className='w-full h-auto object-cover mb-8 rounded-lg' />
+       </section> */}
         <PatnerLogoSection/>
+       
         <HowITWorksSection/>
         <AutomateSeo/>
         <TeamSection/>
@@ -198,13 +202,13 @@ const HeroSection= () => {
       </h1>
       
       <p className="text-lg md:text-xl max-w-4xl mb-8  text-[#f3f4f4]">
-       Wansom AI search enables you get more clients for your legal practice by automating your entire client pipeline. From creating optimized AI profiles to generating content that ranks on search engines.
+        Are you struggling to get more clients for your legal practice? Apply to be part of our AI-first marketing program for lawyers to help automate your client acquisition pipeline.
       </p>
 <button 
         className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-black rounded-md py-3 px-6 mb-10"
         onClick={() => window.location.href = '/register'}
       >
-        Create Your Account <Sparkles className='w-5 h-5 text-white' />
+         Submit Your Application <ArrowUpRight className='w-5 h-5 text-white' />
       </button>
           </div>
 
@@ -229,26 +233,26 @@ const HowITWorksSection = () => {
     {
       id: 'content-engine',
       title: 'AI Content Engine',
-      description: 'Generates blogs, landing pages & FAQs that AI search engines love.',
-      bgColor: 'bg-green-100',
-      accentColor: 'bg-green-500',
+      description: 'Generates service pages, articles & FAQs that rank automatically on AI search engines.',
+      bgColor: 'bg-gray-50',
+      accentColor: 'bg-gray-800',
       illustration: (
         <div className="relative">
           <div className="grid grid-cols-2 gap-2">
-            <div className="bg-green-200 rounded-lg p-3 relative">
-              <div className="w-full h-8 bg-green-300 rounded mb-2"></div>
-              <div className="w-3/4 h-2 bg-green-400 rounded mb-1"></div>
-              <div className="w-1/2 h-2 bg-green-400 rounded"></div>
-              <Search className="absolute -top-1 -right-1 w-4 h-4 text-green-600" />
+            <div className="bg-gray-200 rounded-lg p-3 relative">
+              <div className="w-full h-8 bg-gray-300 rounded mb-2"></div>
+              <div className="w-3/4 h-2 bg-gray-400 rounded mb-1"></div>
+              <div className="w-1/2 h-2 bg-gray-400 rounded"></div>
+              <Search className="absolute -top-1 -right-1 w-4 h-4 text-gray-700" />
             </div>
-            <div className="bg-green-200 rounded-lg p-3">
-              <div className="w-full h-8 bg-green-300 rounded mb-2"></div>
-              <div className="w-2/3 h-2 bg-green-400 rounded mb-1"></div>
-              <div className="w-4/5 h-2 bg-green-400 rounded"></div>
+            <div className="bg-gray-200 rounded-lg p-3">
+              <div className="w-full h-8 bg-gray-300 rounded mb-2"></div>
+              <div className="w-2/3 h-2 bg-gray-400 rounded mb-1"></div>
+              <div className="w-4/5 h-2 bg-gray-400 rounded"></div>
             </div>
           </div>
           <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+            <div className="w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center">
               <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
           </div>
@@ -258,21 +262,21 @@ const HowITWorksSection = () => {
     {
       id: 'local-seo',
       title: 'Local SEO Autopilot',
-      description: 'Optimizes your firm for "lawyer near me" queries in 300+ cities and practice areas.',
-      bgColor: 'bg-red-100',
-      accentColor: 'bg-red-500',
+      description: 'Optimizes your firm\'s profile for "lawyer near me" queries in 300+ cities and practice areas.',
+      bgColor: 'bg-gray-100',
+      accentColor: 'bg-black',
       illustration: (
         <div className="relative flex items-center justify-center">
           <div className="flex items-center space-x-2">
-            <div className="bg-red-200 rounded-lg p-3 w-16 h-12 flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-red-600" />
+            <div className="bg-gray-200 rounded-lg p-3 w-16 h-12 flex items-center justify-center">
+              <MapPin className="w-6 h-6 text-gray-700" />
             </div>
-            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
               <ArrowRight className="w-4 h-4 text-white" />
             </div>
-            <div className="text-red-600 font-bold text-sm">300+</div>
-            <div className="bg-red-200 rounded-lg p-3 w-16 h-12 flex items-center justify-center">
-              <div className="w-8 h-2 bg-red-500 rounded"></div>
+            <div className="text-gray-800 font-bold text-sm">300+</div>
+            <div className="bg-gray-200 rounded-lg p-3 w-16 h-12 flex items-center justify-center">
+              <div className="w-8 h-2 bg-gray-800 rounded"></div>
             </div>
           </div>
         </div>
@@ -281,21 +285,21 @@ const HowITWorksSection = () => {
     {
       id: 'competitor-intelligence',
       title: 'Competitor Intelligence',
-      description: 'See why top firms are featured — and how to outrank them.',
-      bgColor: 'bg-blue-100',
-      accentColor: 'bg-blue-500',
+      description: 'See why top firms are featured — and get content suggestions to outrank them.',
+      bgColor: 'bg-gray-50',
+      accentColor: 'bg-gray-900',
       illustration: (
         <div className="relative flex items-center justify-center">
           <div className="relative">
-            <div className="w-16 h-16 border-2 border-blue-400 rounded-full flex items-center justify-center">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 border-2 border-gray-400 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
                 <Eye className="w-4 h-4 text-white" />
               </div>
             </div>
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-400 rotate-45"></div>
-            <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-blue-500 rounded-full"></div>
-            <div className="absolute top-1/2 -left-8 w-6 h-6 border-2 border-blue-400 rotate-45"></div>
-            <div className="absolute top-1/2 -right-8 w-4 h-4 bg-blue-400"></div>
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-gray-500 rotate-45"></div>
+            <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-gray-700 rounded-full"></div>
+            <div className="absolute top-1/2 -left-8 w-6 h-6 border-2 border-gray-400 rotate-45"></div>
+            <div className="absolute top-1/2 -right-8 w-4 h-4 bg-gray-500"></div>
           </div>
         </div>
       )
@@ -303,22 +307,22 @@ const HowITWorksSection = () => {
     {
       id: 'leads-from-chat',
       title: 'Leads from AI Chat',
-      description: 'Turns real client questions from chat into referrals.',
-      bgColor: 'bg-yellow-100',
-      accentColor: 'bg-yellow-500',
+      description: 'Turns real potential client questions from AI chat into referrals.',
+      bgColor: 'bg-gray-100',
+      accentColor: 'bg-gray-800',
       illustration: (
         <div className="relative flex items-center justify-center">
           <div className="relative">
-            <div className="w-16 h-16 bg-yellow-200 rounded-full flex items-center justify-center">
-              <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
                 <RotateCcw className="w-4 h-4 text-white" />
               </div>
             </div>
-            <div className="absolute -top-1 -right-1 bg-yellow-300 rounded-full px-2 py-1">
+            <div className="absolute -top-1 -right-1 bg-gray-300 rounded-full px-2 py-1">
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
-                <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
-                <div className="w-2 h-2 bg-yellow-600 rounded-full"></div>
+                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+                <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
               </div>
             </div>
           </div>
@@ -328,17 +332,16 @@ const HowITWorksSection = () => {
   ];
 
   return (
-    <section className=" bg-white" id="whyus">
+    <section className="bg-white" id="whyus">
       <div className="section-container section-spacing">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-heading-2 mb-3 leading-tight Capitalize">
+          <h1 className="text-heading-2 mb-3 leading-tight capitalize text-black">
            The AI Transformation
           </h1>
-          <p className=" text-body text-slate-600 max-w-4xl mx-auto mb-6 leading-relaxed ">
+          <p className="text-body text-gray-600 max-w-4xl mx-auto mb-6 leading-relaxed">
             AI is changing how consumers search for legal services. 96% of people seeking legal help start with Google, yet the only average of three sources can be shown by Gemini at a time making top-ranking firms in major cities are capture 60-80% of online leads. 
           </p>
-
         </div>
 
         {/* Features Grid */}
@@ -346,10 +349,10 @@ const HowITWorksSection = () => {
           {features.map((feature, index) => (
             <div
               key={feature.id}
-              className={`${feature.bgColor} rounded p-8 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden`}
+              className={`${feature.bgColor} rounded-xl shadow-lg p-8 group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden border border-gray-200`}
             >
               {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0" style={{
                   backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px)`
                 }}></div>
@@ -358,7 +361,7 @@ const HowITWorksSection = () => {
               {/* Content */}
               <div className="relative z-10 flex flex-col h-full">
                 {/* Title at top */}
-                <h3 className="text-xl font-bold text-[#355e66] mb-6 text-center">
+                <h3 className="text-xl font-bold text-black mb-6 text-center">
                   {feature.title}
                 </h3>
                 
@@ -369,15 +372,10 @@ const HowITWorksSection = () => {
                 
                 {/* Description and Arrow at bottom */}
                 <div className="mt-auto flex items-center justify-between">
-                  <p className="text-slate-600 leading-relaxed text-sm">
+                  <p className="text-gray-600 leading-relaxed text-center">
                     {feature.description}
                   </p>
                   
-                  <div className="flex justify-end">
-                    <div className="w-8 h-8 bg-[#355e66] rounded-full flex items-center justify-center group-hover:bg-[#2a4d54] transition-colors duration-200">
-                      <ArrowRight className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -388,84 +386,6 @@ const HowITWorksSection = () => {
   );
 };
 
-const PatnerLogoSection = () => {
-  const partnerLogos = [
-    { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
-    { src: "/logos/3.png", alt: "Cymelle Arttoneys" },
-    { src: "/logos/4.png", alt: "Netsheria" },
-    { src: "/logos/5.png", alt: "Partner Law Firm 5" },
-    { src: "/logos/6.png", alt: "Bellmac consulting" },
-    { src: "/logos/7.png", alt: "Riskhouse International" }
-  ];
-
-  return (
-    <section className=" section-spacing">
-           <div className="text-center">
-          <h2 className="text-heading-2 mb-6 max-w-5xl mx-auto ">
-            Powering Legal Success
-          </h2>
-          <p className="text-body-large text-gray-600 mb-8 max-w-3xl mx-auto capitalize">
-           Join 3000+  lawyers buidling their digital presence with wansom AI search</p>
-        </div>
-      <div className="relative overflow-hidden">
-        <div className="flex animate-scroll whitespace-nowrap">
-          {/* First set of logos */}
-          <div className="flex items-center space-x-12 md:space-x-16 lg:space-x-20 pr-12 md:pr-16 lg:pr-20">
-            {partnerLogos.map((logo, index) => (
-              <div key={index} className="flex-shrink-0 flex justify-center items-center min-w-[120px] md:min-w-[160px]">
-                <Image
-                  src={logo.src}
-                  alt={logo.alt}
-                  width={160}
-                  height={80}
-                  className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-          
-          {/* Duplicate set for seamless loop */}
-          <div className="flex items-center space-x-12 md:space-x-16 lg:space-x-20 pr-12 md:pr-16 lg:pr-20">
-            {partnerLogos.map((logo, index) => (
-              <div key={`duplicate-${index}`} className="flex-shrink-0 flex justify-center items-center min-w-[120px] md:min-w-[160px]">
-                <Image
-                  src={logo.src}
-                  alt={logo.alt}
-                  width={160}
-                  height={80}
-                  className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        
-        .animate-scroll {
-          animation: scroll 35s linear infinite;
-          width: max-content;
-        }
-        
-        .animate-scroll:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
-    </section>
-  );
-};
 
 const PricingSection = () => {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annually'>('monthly');

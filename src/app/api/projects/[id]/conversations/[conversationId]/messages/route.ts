@@ -308,7 +308,7 @@ export async function POST(
           let systemMessage;
           
           if (isSimpleQuery) {
-            systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
+            systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a legal project titled "${
               project?.title
             }".
             Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
