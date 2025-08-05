@@ -4,12 +4,12 @@ import AISearchPage from './AISearchPage';
 
 
 export const metadata: Metadata =  {
-    title: "Wansom | AI SEO for lawyers",
-    description: "Wansom AI search is the leading marketing and SEO automation platform for lawyers.",
+    title: "Wansom AI Academy",
+    description: "Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.",
     openGraph: {
-      title: 'Wansom AI|Search',
-      description: 'Wansom AI search is the leading marketing and SEO automation platform for lawyers.',
-      url: 'https://www.search.wansom.ai/',
+      title: 'Wansom AI|Academy',
+      description: 'Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.',
+      url: 'https://www.academy.wansom.ai/',
       siteName: 'Wansom AI',
       images: [
         {
@@ -24,12 +24,12 @@ export const metadata: Metadata =  {
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Wansom AI|Search',
-      description: 'Wansom AI search is the leading marketing and SEO automation platform for lawyers.',
+      title: 'Wansom AI|Academy',
+      description: 'Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.',
       images: ['/images/features-2.png'],
     },
     keywords: [
-      'AI SEO',
+      'AI Academy',
       'law firm AI software',
       'SEO automation',
       'legal tech',
