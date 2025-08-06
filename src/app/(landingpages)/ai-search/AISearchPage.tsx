@@ -3,7 +3,6 @@
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { ArrowRight, CheckCircle, ChevronRight, Circle, Globe, Loader, Sparkles, Target, Zap,RotateCcw, Search, MapPin, Eye, Check, X,ArrowUpRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {PatnerLogoSection} from "@/components/home/Partnerlogos";
@@ -34,8 +33,7 @@ export default function Home() {
        
         <HowITWorksSection/>
         <AutomateSeo/>
-        <TeamSection/>
-    <PricingSection/>
+       
       </main>
       <Footer/>
     </div>
@@ -45,15 +43,15 @@ export default function Home() {
 
 function AutomateSeo() {
   return (
-    <section className="section-spacing" id="howitworks">
+    <section className="section-spacing" id="whyjoin">
       <div className="section-container pb-12">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-heading-2 mb-6 text-gray-900">
-              The agentic platform that scales your lega marketing
+            <h2 className="text-heading-2 mb-6 text-gray-900 font-serif">
+              Why Join the Program
             </h2>
             <p className="text-body text-gray-600 mb-8">
-             We give your team the freedom to focus on legal workby automating your client pipeline.
+            We have 20 exclusive spots for top lawyers to learn how to use AI search engines to automate their client acquisition pipeline.
             </p>
 
             <div className="space-y-6">
@@ -63,10 +61,10 @@ function AutomateSeo() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2">
-                     Tell Us About Your Practice
+                     Dedicated Accounts Manager
                   </h3>
                   <p className="text-gray-600">
-                   Set up your firm profile in minutes,select practice areas and locations
+                   You will be assigned a spcialist for three weeks to guide you through the process.
                   </p>
                 </div>
               </div>
@@ -78,7 +76,7 @@ function AutomateSeo() {
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Watch the AI Magic</h3>
                   <p className="text-gray-600">
-                  AI researches and generates optimized service pages,articles and FAQs for your practice.
+                  Once you are done with research and optimization, automate your pipeline with AI and monitor progress.
                   </p>
                 </div>
               </div>
@@ -89,15 +87,22 @@ function AutomateSeo() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-2">
-                  Review and Publish
+                  Review and Optimize
                   </h3>
                   <p className="text-gray-600">
-                   Every piece of content is customizable and requires your approval before going live.
+                   Based on the performance, we review and tweak the AI model to improve the results.
                   </p>
                 </div>
               </div>
             </div>
+            <button 
+        className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-black rounded-md py-3 px-6 mt-10"
+        onClick={() => window.location.href = '/demo'}
+      >
+         Submit Your Application <ArrowUpRight className='w-5 h-5 text-white' />
+      </button>
           </div>
+          
           <ResearchSourcesWorkflow />
         </div>
       </div>
@@ -105,7 +110,7 @@ function AutomateSeo() {
   );
 }
 
-export const ResearchSourcesWorkflow = () => {
+function ResearchSourcesWorkflow() {
   return (
     <div className="max-w-4xl mx-auto bg-primary p-8 rounded-3xl">
       {/* Top Card */}
@@ -168,7 +173,7 @@ export const ResearchSourcesWorkflow = () => {
   );
 };
 
-const TeamSection=()=>{
+function TeamSection(){
  return(
   <div className="section-container section-spacing">
     <h2 className="text-heading-2 text-center mb-3">
@@ -185,7 +190,7 @@ const TeamSection=()=>{
  ) 
 }
 
-const HeroSection= () => {
+function HeroSection(){
  
  
   return (
@@ -197,8 +202,8 @@ const HeroSection= () => {
         {/* Left Side - Content */}
         <div className="text-left space-y-8">
           <div className="space-y-6">
-         <h1 className=" text-heading-1 mb-4 text-white text-shadow-2xs capitalize">
-    Gain more clients for your legal practice with AI
+         <h1 className=" text-heading-1 mb-4 text-white text-shadow-2xs capitalize font-serif">
+   AI Built for Lawyers
       </h1>
       
       <p className="text-lg md:text-xl max-w-4xl mb-8  text-[#f3f4f4]">
@@ -206,7 +211,7 @@ const HeroSection= () => {
       </p>
 <button 
         className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-black rounded-md py-3 px-6 mb-10"
-        onClick={() => window.location.href = '/register'}
+        onClick={() => window.location.href = '/demo'}
       >
          Submit Your Application <ArrowUpRight className='w-5 h-5 text-white' />
       </button>
@@ -228,7 +233,7 @@ const HeroSection= () => {
 };
 
 
-const HowITWorksSection = () => {
+function HowITWorksSection () {
   const features = [
     {
       id: 'content-engine',
@@ -332,11 +337,11 @@ const HowITWorksSection = () => {
   ];
 
   return (
-    <section className="bg-white" id="whyus">
+    <section className="bg-white" id="about">
       <div className="section-container section-spacing">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-heading-2 mb-3 leading-tight capitalize text-black">
+          <h1 className="text-heading-2 mb-3 leading-tight capitalize text-black font-serif">
            The AI Transformation
           </h1>
           <p className="text-body text-gray-600 max-w-4xl mx-auto mb-6 leading-relaxed">
@@ -387,7 +392,7 @@ const HowITWorksSection = () => {
 };
 
 
-const PricingSection = () => {
+function PricingSection () {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annually'>('monthly');
   const router = useRouter()
 
@@ -563,4 +568,4 @@ const PricingSection = () => {
       </div>
     </section>
   );
-};
+}
