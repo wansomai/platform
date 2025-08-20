@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const page = parseInt(searchParams.get('page') || '1');
     
-    // OPTIMIZATION 1: Single query to get user organization
+    //Single query to get user organization
     const userWithOrg = await prisma.user.findUnique({
       where: { id: userId },
       select: { organizationId: true }
@@ -65,8 +65,6 @@ export async function GET(request: NextRequest) {
     } else if (folderId) {
       where.folderId = folderId;
     }
-    
-    // OPTIMIZATION 2: Dynamic field selection based on usage
     // Dashboard needs minimal data, full pages need more
     const hasFilters = searchTerm || fileType || folderId || page > 1;
     const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
@@ -106,13 +104,10 @@ export async function GET(request: NextRequest) {
           file_size: true,
           created_at: true,
           created_by: true,
-          // OPTIMIZATION 4: Only fetch heavy fields if needed
-          ...(isLimitedRequest ? {} : {
             description: true,
             file_url: true,
             updated_at: true,
             folderId: true,
-          }),
           createdByUser: {
             select: {
               id: true,
