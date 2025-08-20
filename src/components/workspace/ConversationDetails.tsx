@@ -189,9 +189,9 @@ const filteredDocuments = useMemo(() => {
         <div className="space-y-4">
           {/* Project Instructions */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between ">
               <label className="text-sm font-medium text-gray-700">
-                Project Instructions
+                Project Instructions 
               </label>
               {!isEditingInstructions && (
                 <Button
@@ -201,10 +201,10 @@ const filteredDocuments = useMemo(() => {
                     setTempInstructions(instructions);
                     setIsEditingInstructions(true);
                   }}
-                  className="h-8 px-2 text-xs"
+                  className="h-8 px-2 text-xs "
                   disabled={instructionsLoading}
                 >
-                  Edit
+                  Edit 
                 </Button>
               )}
             </div>
@@ -356,8 +356,8 @@ const filteredDocuments = useMemo(() => {
                     </Button>
                   </div>
                 ) : (
-                  <div className="text-center py-4">
-                    <p className="text-sm text-gray-500">No documents match your search</p>
+                  <div className="text-center py-6">
+                    <p className="text-sm text-gray-500">No documents found</p>
                   </div>
                 )}
               </div>

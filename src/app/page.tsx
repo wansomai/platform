@@ -202,7 +202,7 @@ function AutomateProcesses() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-heading-2 mb-6 text-gray-900">
-              Automate Legal Worflows
+              Automate Legal Workflows
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Legal processes can be tedious and time-consuming. We save you
