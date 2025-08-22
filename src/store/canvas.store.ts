@@ -21,6 +21,7 @@ interface CanvasState {
   // Canvas management
   setCanvasDocument: (document: CanvasDocument | null) => void;
   refreshCanvasDocument: (projectId: string) => Promise<void>;
+  handleRealTimeUpdate: (document: CanvasDocument) => void;
   
   // API interactions
   fetchCanvasDocument: (projectId: string) => Promise<CanvasDocument | null>;
@@ -46,6 +47,11 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   refreshCanvasDocument: async (projectId) => {
     // Refresh without showing loading spinner
     await get().fetchCanvasDocument(projectId);
+  },
+  
+  handleRealTimeUpdate: (newDocument: CanvasDocument) => {
+    // Direct update from real-time events (like chat updates)
+    set({ canvasDocument: newDocument });
   },
   
   // API interactions

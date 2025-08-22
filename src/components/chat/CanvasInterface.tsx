@@ -6,7 +6,8 @@ import {
   Download,
   FileText,
   RefreshCw,
-  X
+  X,
+  CheckCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
@@ -21,6 +22,7 @@ const LegalCanvas: React.FC = () => {
 
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+  const [showUpdateNotification, setShowUpdateNotification] = useState(false);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<ReactQuill>(null);
@@ -123,24 +125,44 @@ const LegalCanvas: React.FC = () => {
   useEffect(() => {
     if (canvasDocument?.content && quillRef.current) {
       const editor = quillRef.current.getEditor();
+      const currentContent = editor.getContents();
+      
+      // Check if content actually changed (not just initial load)
+      const hasContentChanged = JSON.stringify(currentContent) !== JSON.stringify(canvasDocument.content);
+      
       editor.setContents(canvasDocument.content);
+      
+      // Show update notification if content changed (likely from AI update)
+      if (hasContentChanged && currentContent.ops && currentContent.ops.length > 1) {
+        setShowUpdateNotification(true);
+        setTimeout(() => setShowUpdateNotification(false), 3000); // Hide after 3 seconds
+      }
     }
   }, [canvasDocument]);
 
   // Listen for canvas updates from chat (when AI updates the document)
   useEffect(() => {
-    const handleCanvasUpdate = () => {
-      if (projectId) {
+    const handleCanvasUpdate = (event: any) => {
+      if (projectId && event.detail?.projectId === projectId) {
+        console.log('Canvas update triggered by chat');
         refreshCanvasDocument(projectId); // Refresh canvas data when chat updates it
       }
     };
 
-    // You can implement server-sent events or websockets here for real-time updates
-    // For now, we'll refresh on focus or manual trigger
-    window.addEventListener('focus', handleCanvasUpdate);
+    const handleFocusUpdate = () => {
+      if (projectId) {
+        refreshCanvasDocument(projectId);
+      }
+    };
+
+    // Listen for custom canvas update events from chat
+    window.addEventListener('canvasUpdate', handleCanvasUpdate);
+    // Also refresh on focus as backup
+    window.addEventListener('focus', handleFocusUpdate);
     
     return () => {
-      window.removeEventListener('focus', handleCanvasUpdate);
+      window.removeEventListener('canvasUpdate', handleCanvasUpdate);
+      window.removeEventListener('focus', handleFocusUpdate);
     };
   }, [projectId, refreshCanvasDocument]);
 
@@ -218,9 +240,15 @@ const LegalCanvas: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-4 flex items-center justify-between bg-gray-50">
-        <div className="text-sm text-gray-600">
-          💬 Use chat to generate or edit your document
+      <div className="border-b border-gray-200 p-3 flex items-center justify-between bg-gray-50">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">📝 Legal Document</span>
+          {showUpdateNotification && (
+            <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs animate-pulse">
+              <CheckCircle className="h-3 w-3" />
+              <span>Document updated</span>
+            </div>
+          )}
         </div>
         
         <div className="flex items-center space-x-2">
