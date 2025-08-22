@@ -225,6 +225,7 @@ model Project {
   events           Event[]
   invitations      Invitation[]
   knowledgeBase    KnowledgeBase?
+  canvasDocument   CanvasDocument?
   organization     Organization       @relation(fields: [organizationId], references: [id])
   associates       ProjectAssociate[]
   projectDocuments ProjectDocument[]
@@ -557,4 +558,17 @@ model ProjectAssociate {
   project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@id([associateId, projectId])
+}
+
+model CanvasDocument {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  content     Json     // Quill.js Delta format
+  htmlContent String   @db.Text // For display
+  plainText   String   @db.Text // For AI processing
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId], map: "idx_canvas_document_project")
 }

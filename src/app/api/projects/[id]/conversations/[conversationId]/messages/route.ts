@@ -17,6 +17,7 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
 import LRUCache from 'lru-cache'
+import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
@@ -34,9 +35,11 @@ const DEFAULT_SETTINGS = {
 };
 
 // Maximum size of content to include in context (characters)
-const MAX_DOCUMENT_CHUNK_SIZE = 1000;
-const MAX_CHUNKS_PER_DOC = 3;
-const MAX_TOTAL_CHUNKS = 10;
+const MAX_DOCUMENT_CHUNK_SIZE = 800;
+const MAX_CHUNKS_PER_DOC = 2;
+const MAX_TOTAL_CHUNKS = 6;
+const MAX_SYSTEM_MESSAGE_TOKENS = 4000; // Reserve space for user message and response
+const MAX_RELEVANT_CONTENT_CHARS = 3000;
 
 // Schema validation
 const createMessageSchema = z.object({
@@ -60,6 +63,23 @@ function isSimpleGreeting(text: string): boolean {
     /^nice/, /^ok\b/, /^okay\b/, /^\?{1,3}$/
   ];
   return simplePatterns.some(pattern => pattern.test(normalizedText)) || normalizedText.length < 20;
+}
+
+// Simple token estimation (1 token ≈ 4 characters for English text)
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
+}
+
+// Truncate content to fit within token limits
+function truncateToTokenLimit(content: string, maxTokens: number): string {
+  const estimatedTokens = estimateTokens(content);
+  if (estimatedTokens <= maxTokens) {
+    return content;
+  }
+  
+  // Calculate approximate character limit
+  const maxChars = maxTokens * 4;
+  return content.substring(0, maxChars) + "...";
 }
 
 // Encoder for streaming response
@@ -105,7 +125,7 @@ export async function POST(
     const messageHistoryPromise = prisma.message.findMany({
       where: { conversationId },
       orderBy: { createdAt: "desc" },
-      take: 10, // Limit to 10 most recent messages
+      take: 6, // Reduced to 6 most recent messages to save tokens
       select: {
         role: true,
         content: true,
@@ -122,6 +142,11 @@ export async function POST(
             }
           }
         });
+
+    // Check if project is in drafting mode - get canvas document if needed
+    const canvasDocumentPromise = prisma.canvasDocument.findUnique({
+      where: { projectId }
+    });
     
     // Only load documents for non-simple queries
     const documentsPromise = isSimpleQuery 
@@ -166,17 +191,27 @@ export async function POST(
       userMessage,
       messageHistory,
       project,
-      conversationDocuments
+      conversationDocuments,
+      canvasDocument
     ] = await Promise.all([
       userMessagePromise,
       messageHistoryPromise,
       projectPromise,
-      documentsPromise
+      documentsPromise,
+      canvasDocumentPromise
     ]);
     
     // Create a stream for the response
     const stream = new ReadableStream({
       async start(controller) {
+        let controllerClosed = false;
+        
+        const safeClose = () => {
+          if (!controllerClosed) {
+            controllerClosed = true;
+            controller.close();
+          }
+        };
         
         try {
           // Send initial status to client immediately
@@ -201,6 +236,28 @@ export async function POST(
                 : project.knowledgeBase.settings as any;
             } catch (error) {
               console.error('Error parsing settings:', error);
+            }
+          }
+
+          // Check if project is in drafting mode and handle canvas operations
+          const isDraftingMode = settings.legalDrafting === true;
+          
+          if (isDraftingMode) {
+            // Handle canvas document operations
+            const canvasResult = await handleCanvasDraftingRequest(
+              content,
+              projectId,
+              project,
+              conversationDocuments,
+              canvasDocument,
+              controller,
+              encoder,
+              conversation.id,
+              safeClose
+            );
+            
+            if (canvasResult) {
+              return; // Canvas operation handled, exit stream
             }
           }
           
@@ -255,22 +312,48 @@ export async function POST(
                   (doc) => doc.pageContent.length > 50
                 );
                 
-                // Format relevant content
+                // Format relevant content with token limits
                 if (queryResults.length > 0) {
-                  relevantContent = queryResults
-                    .map(doc => {
-                      const truncatedContent = doc.pageContent.substring(0, MAX_DOCUMENT_CHUNK_SIZE);
-                      return `### Document: ${doc.metadata.title} ###\n${truncatedContent}\n`;
-                    })
-                    .join("\n\n");
+                  let totalContentLength = 0;
+                  const contentParts: string[] = [];
+                  
+                  for (const doc of queryResults) {
+                    const truncatedContent = doc.pageContent.substring(0, MAX_DOCUMENT_CHUNK_SIZE);
+                    const docSection = `### Document: ${doc.metadata.title} ###\n${truncatedContent}\n`;
+                    
+                    if (totalContentLength + docSection.length <= MAX_RELEVANT_CONTENT_CHARS) {
+                      contentParts.push(docSection);
+                      totalContentLength += docSection.length;
+                    } else {
+                      // Add partial content if there's room
+                      const remainingSpace = MAX_RELEVANT_CONTENT_CHARS - totalContentLength;
+                      if (remainingSpace > 100) { // Only add if meaningful space left
+                        const partialSection = docSection.substring(0, remainingSpace - 10) + "...";
+                        contentParts.push(partialSection);
+                      }
+                      break;
+                    }
+                  }
+                  
+                  relevantContent = contentParts.join("\n\n");
                 }
               }
             } catch (vectorError) {
               console.error("Error in vector search:", vectorError);
-              // Fallback to a simpler approach without failing completely
-              relevantContent = documentObjects.slice(0, 2)
-                .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 500)}\n`)
-                .join("\n\n");
+              
+              // Check if it's a token limit error and handle appropriately
+              if (vectorError instanceof Error && vectorError.message.includes('maximum context length')) {
+                console.log("Token limit exceeded in vector search, using minimal fallback");
+                // Use minimal relevant content as fallback
+                relevantContent = documentObjects.slice(0, 1)
+                  .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 300)}\n`)
+                  .join("\n\n");
+              } else {
+                // Other errors - use standard fallback
+                relevantContent = documentObjects.slice(0, 2)
+                  .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 500)}\n`)
+                  .join("\n\n");
+              }
             }
           }
           
@@ -298,11 +381,15 @@ export async function POST(
             }
           }
           
-          // Format message history in correct order
-          const aiMessages = messageHistory.reverse().map((msg) => ({
-            role: msg.role as "user" | "assistant" | "system",
-            content: msg.content,
-          }));
+          // Format message history in correct order with token limits
+          const aiMessages = messageHistory.reverse().map((msg) => {
+            // Truncate individual messages if they're too long
+            const truncatedContent = truncateToTokenLimit(msg.content, 500); // Max 500 tokens per message
+            return {
+              role: msg.role as "user" | "assistant" | "system",
+              content: truncatedContent,
+            };
+          });
           
           // Create appropriate system message based on context
           let systemMessage;
@@ -367,6 +454,9 @@ export async function POST(
             }`;
           }
           
+          // Apply token limits to the system message
+          systemMessage = truncateToTokenLimit(systemMessage, MAX_SYSTEM_MESSAGE_TOKENS);
+          
           // Create the prompt template
           const prompt = ChatPromptTemplate.fromPromptMessages([
             SystemMessagePromptTemplate.fromTemplate(systemMessage),
@@ -394,8 +484,35 @@ export async function POST(
           let fullContent = "";
           let documentReferences = new Set<string>();
           
-          // Stream the response
-          const responseStream = await chatModel.stream(formattedPrompt);
+          // Stream the response with token limit error handling
+          let responseStream;
+          try {
+            responseStream = await chatModel.stream(formattedPrompt);
+          } catch (streamError) {
+            if (streamError instanceof Error && streamError.message.includes('maximum context length')) {
+              console.log("Token limit exceeded in chat model, reducing context");
+              
+              // Drastically reduce system message and try again
+              systemMessage = truncateToTokenLimit(systemMessage, 1500);
+              relevantContent = truncateToTokenLimit(relevantContent, 800);
+              
+              // Recreate prompt with reduced content
+              const reducedPrompt = ChatPromptTemplate.fromPromptMessages([
+                SystemMessagePromptTemplate.fromTemplate(systemMessage),
+                ...aiMessages.slice(-2).map((msg) => // Only use last 2 messages
+                  msg.role === "user"
+                    ? HumanMessagePromptTemplate.fromTemplate(msg.content)
+                    : SystemMessagePromptTemplate.fromTemplate(msg.content)
+                ),
+                HumanMessagePromptTemplate.fromTemplate(content),
+              ]);
+              
+              const reducedFormattedPrompt = await reducedPrompt.format({});
+              responseStream = await chatModel.stream(reducedFormattedPrompt);
+            } else {
+              throw streamError; // Re-throw other errors
+            }
+          }
           
           for await (const chunk of responseStream) {
             const textContent = chunk.content.toString();
@@ -521,7 +638,7 @@ export async function POST(
             )
           );
         } finally {
-          controller.close();
+          safeClose();
         }
       }
     });
@@ -637,6 +754,119 @@ function sanitizeSearchResults(rawResults: string): string {
     return cleanedResult.substring(0, 1000);
   } catch (error) {
     return "Web search results unavailable";
+  }
+}
+
+/**
+ * Handle canvas drafting requests when in drafting mode
+ */
+async function handleCanvasDraftingRequest(
+  content: string,
+  projectId: string,
+  project: any,
+  conversationDocuments: any[],
+  canvasDocument: any,
+  controller: ReadableStreamDefaultController,
+  encoder: TextEncoder,
+  conversationId: string,
+  safeClose: () => void
+): Promise<boolean> {
+  try {
+    // Build project context for AI
+    const projectContext: ProjectContext = {
+      jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+      instructions: project?.knowledgeBase?.instructions || '',
+      documents: conversationDocuments.map(doc => ({
+        title: doc.document.title,
+        content: doc.document.content?.content || ''
+      }))
+    };
+
+    let result;
+    let responseMessage;
+
+    if (!canvasDocument) {
+      // No canvas document exists, generate new document
+      result = await AIDocumentService.generateDocument(content, projectContext);
+      responseMessage = "I've generated the document and loaded it to your canvas.";
+    } else {
+      // Edit existing document
+      result = await AIDocumentService.editDocument(
+        content,
+        canvasDocument.htmlContent,
+        projectContext
+      );
+      responseMessage = "I've updated your document in the canvas.";
+    }
+
+    // Save to canvas document
+    await prisma.canvasDocument.upsert({
+      where: { projectId },
+      create: {
+        projectId,
+        content: result.delta,
+        htmlContent: result.content,
+        plainText: AIDocumentService.stripHtml(result.content)
+      },
+      update: {
+        content: result.delta,
+        htmlContent: result.content,
+        plainText: AIDocumentService.stripHtml(result.content),
+        updatedAt: new Date()
+      }
+    });
+
+    // Save AI response as message
+    await prisma.message.create({
+      data: {
+        content: responseMessage,
+        role: "assistant",
+        conversationId,
+        metadata: JSON.stringify({ canvasUpdated: true })
+      }
+    });
+
+    // Send canvas update response
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_update',
+          conversationId: conversationId,
+          content: responseMessage,
+          canvasContent: result.content,
+          canvasUpdated: true
+        }) + '\n'
+      )
+    );
+
+    // Send completion status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'status',
+          status: 'completed',
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
+
+    safeClose();
+    return true; // Handled as canvas operation
+
+  } catch (error) {
+    console.error('Canvas drafting error:', error);
+    
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'error',
+          error: 'Failed to process document request'
+        }) + '\n'
+      )
+    );
+    
+    safeClose();
+    return true; // Still handled, even with error
   }
 }
 
