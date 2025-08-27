@@ -1,7 +1,7 @@
 // app/hire-a-lawyer/[slug]/page.tsx
 import { Metadata, ResolvingMetadata } from 'next';
 import HireALawyerPage from './HireALawyerPage'
-import { getLandingPage, getAllSlugs, getAllLawyerPages, getAllPractiseAreas,fetchAllEntries } from '@/lib/data/contentful'
+import { getAllSlugs, getAllPractiseAreas,fetchAllEntries } from '@/lib/data/contentful'
 import Link from 'next/link';
 
 

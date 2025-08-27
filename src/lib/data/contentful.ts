@@ -281,14 +281,6 @@ export async function getRelatedBlogPosts(
   return otherPosts.slice(0, limit);
 }
 
-export async function getAllLawyerPages(): Promise<LawyerPages[]> {
-  const response = await client.getEntries({
-    content_type: "lawyerPages",
-    order: ["-sys.createdAt"], // Get newest first
-  });
-
-  return response.items as unknown as LawyerPages[];
-}
 export async function getAllPractiseAreas(): Promise<practiseAreaPages[]> {
   const response = await client.getEntries({
     content_type: "practiseareas",
@@ -306,15 +298,6 @@ export async function getAllSlugs() {
 }
 
 
-export async function getLandingPage(slug: string,) {
-  const res = await client.getEntries({
-    content_type: "lawyerPages",
-    "fields.slug": slug,
-    include: 2,
-    limit: 1
-  });
-  return res.items[0]?.fields as any;
-}
 
 
 export async function fetchAllEntries( content_type: any ) {
