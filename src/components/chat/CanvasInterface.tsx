@@ -242,7 +242,7 @@ const LegalCanvas: React.FC = () => {
       {/* Toolbar */}
       <div className="border-b border-gray-200 p-3 flex items-center justify-between bg-gray-50">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-600">📝 Legal Document</span>
+          <span className="text-sm text-gray-600"></span>
           {showUpdateNotification && (
             <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs animate-pulse">
               <CheckCircle className="h-3 w-3" />

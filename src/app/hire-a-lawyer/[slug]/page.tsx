@@ -1,7 +1,5 @@
 // app/hire-a-lawyer/[slug]/page.tsx
 import { Metadata, ResolvingMetadata } from 'next';
-import { draftMode } from 'next/headers'
-import { notFound } from 'next/navigation'
 import HireALawyerPage from './HireALawyerPage'
 import { getLandingPage, getAllSlugs, getAllLawyerPages, getAllPractiseAreas } from '@/lib/data/contentful'
 import Link from 'next/link';
