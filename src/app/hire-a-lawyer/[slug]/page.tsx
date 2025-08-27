@@ -1,7 +1,7 @@
 // app/hire-a-lawyer/[slug]/page.tsx
 import { Metadata, ResolvingMetadata } from 'next';
 import HireALawyerPage from './HireALawyerPage'
-import { getLandingPage, getAllSlugs, getAllLawyerPages, getAllPractiseAreas } from '@/lib/data/contentful'
+import { getLandingPage, getAllSlugs, getAllLawyerPages, getAllPractiseAreas,fetchAllEntries } from '@/lib/data/contentful'
 import Link from 'next/link';
 
 
@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata>{
   try {
    const { slug } = await params;
-  const allEntries = await getAllLawyerPages()
+  const allEntries = await fetchAllEntries('lawyerPages' )
    const entry = allEntries.find((post) => {
       return post.fields.slug === slug;
     });
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 // ❸  Page component
 export default async function Page({ params }: Props) {
    const { slug } = await params;
-    const allEntries = await getAllLawyerPages()
+    const allEntries = await fetchAllEntries('lawyerPages' )
     const allAreas = await getAllPractiseAreas();
         
    const entry = allEntries.find((post) => {

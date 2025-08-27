@@ -305,6 +305,7 @@ export async function getAllSlugs() {
   return res.items.map((i) => i.fields.slug);
 }
 
+
 export async function getLandingPage(slug: string,) {
   const res = await client.getEntries({
     content_type: "lawyerPages",
@@ -314,5 +315,20 @@ export async function getLandingPage(slug: string,) {
   });
   return res.items[0]?.fields as any;
 }
+
+
+export async function fetchAllEntries( content_type: any ) {
+  const pageSize = 1000; // Contentful hard max
+  let skip = 0;
+  let items: any[] = [];
+  while (true) {
+    const res = await client.getEntries({ content_type, order: ["-sys.createdAt"], skip, limit: pageSize });
+    items = items.concat(res.items);
+    if (skip + pageSize >= res.total) break;
+    skip += pageSize;
+  }
+  return items;
+}
+
 
 export default client;
