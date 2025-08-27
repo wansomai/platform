@@ -1,5 +1,5 @@
 import { Metadata, ResolvingMetadata } from 'next';
-import { getAllDocumentTemplates } from '@/lib/data/contentful';
+import { fetchAllEntries } from '@/lib/data/contentful';
 import { adaptDocumentTemplate } from '@/lib/data/blogAdapter';
 import DocDetailPageClient from './DocumentDetails';
 
@@ -11,7 +11,7 @@ type Props = {
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const allBlogPosts = await getAllDocumentTemplates();
+    const allBlogPosts = await fetchAllEntries('documentTemplates');
     
     // Fix: Remove async from find callback and properly compare slugs
     const blogPost = allBlogPosts.find((post) => {
