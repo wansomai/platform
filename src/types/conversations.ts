@@ -32,6 +32,7 @@ export interface Message {
   processingStatus?: string;
   actionType?: string;
   canvasUpdated?: boolean;
+  canvasMessage?: string; // Message for canvas processing status
   user?: {
     id: string;
     name: string;

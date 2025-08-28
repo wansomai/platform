@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
+import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
 import { Message } from "@/types"
 
 // Empty state component for when there are no messages
@@ -151,7 +152,12 @@ function ChatMessageItem({
                   </div>
                 ) : (
                   <div className="flex flex-col items-start">
-                    {message.processingStatus && message.processingStatus !== 'completed' ? (
+                    {message.processingStatus && isCanvasProcessingStatus(message.processingStatus) ? (
+                      <CanvasProcessingStatus 
+                        status={message.processingStatus} 
+                        message={message.canvasMessage}
+                      />
+                    ) : message.processingStatus && message.processingStatus !== 'completed' ? (
                       <ProcessingStatus status={message.processingStatus} />
                     ) : (
                       <div className="flex items-center">
@@ -217,4 +223,18 @@ function ChatMessageItem({
 // Simple function to remove system prefix
 function formatMessageContent(content: string): string {
   return content.replace(/^Wansom:\s*/i, '');
+}
+
+// Helper function to check if status is canvas-related
+function isCanvasProcessingStatus(status: string): boolean {
+  const canvasStatuses = [
+    'analyzing_request',
+    'processing_context', 
+    'generating_document',
+    'editing_document',
+    'saving_document',
+    'completed',
+    'error'
+  ];
+  return canvasStatuses.includes(status);
 }
