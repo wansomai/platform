@@ -88,12 +88,8 @@ Return only valid JSON without any markdown code blocks or additional formatting
 
       const aiResponse = completion.choices[0]?.message?.content;
       if (!aiResponse) throw new Error('No content generated');
-
-      console.log('AI Response:', aiResponse); // Debug log
       
-      const result = this.parseAIResponse(aiResponse, documentName);
-      console.log('Parsed Result:', JSON.stringify(result, null, 2)); // Debug log
-      
+      const result = this.parseAIResponse(aiResponse, documentName);  
       return result;
     } catch (error) {
       console.error('Error generating content:', error);
@@ -121,7 +117,6 @@ Return only valid JSON without any markdown code blocks or additional formatting
       });
 
       const publishedEntry = await entry.publish();
-      console.log(`Template published with ID: ${publishedEntry.sys.id}`);
       return publishedEntry.sys.id;
     } catch (error) {
       console.error('Error publishing to Contentful:', error);

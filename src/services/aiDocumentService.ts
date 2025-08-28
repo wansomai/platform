@@ -43,6 +43,58 @@ export class AIDocumentService {
     
     return { content: htmlContent, delta };
   }
+
+  static async generateDocumentStreaming(
+    instruction: string,
+    projectContext: ProjectContext,
+    onProgress?: (partial: string, section: string) => void
+  ): Promise<{ content: string; delta: any }> {
+    
+    const prompt = this.buildGenerationPrompt(instruction, projectContext);
+    
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: `You are a legal document drafting assistant. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate.`
+        },
+        {
+          role: "user", 
+          content: prompt
+        }
+      ],
+      temperature: 0.3,
+      stream: true
+    });
+    
+    let fullContent = '';
+    let currentSection = '';
+    
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content || '';
+      if (delta) {
+        fullContent += delta;
+        
+        // Detect section headers for progress tracking
+        if (delta.includes('<h1') || delta.includes('<h2') || delta.includes('<h3')) {
+          const headerMatch = delta.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/);
+          if (headerMatch) {
+            currentSection = headerMatch[1];
+          }
+        }
+        
+        // Call progress callback if provided
+        if (onProgress) {
+          onProgress(fullContent, currentSection);
+        }
+      }
+    }
+    
+    const delta = this.htmlToQuillDelta(fullContent);
+    
+    return { content: fullContent, delta };
+  }
   
   static async editDocument(
     instruction: string,
@@ -71,6 +123,59 @@ export class AIDocumentService {
     const delta = this.htmlToQuillDelta(htmlContent);
     
     return { content: htmlContent, delta };
+  }
+
+  static async editDocumentStreaming(
+    instruction: string,
+    currentContent: string,
+    projectContext: ProjectContext,
+    onProgress?: (partial: string, section: string) => void
+  ): Promise<{ content: string; delta: any }> {
+    
+    const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
+    
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4", 
+      messages: [
+        {
+          role: "system",
+          content: `You are editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity.`
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.3,
+      stream: true
+    });
+    
+    let fullContent = '';
+    let currentSection = '';
+    
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content || '';
+      if (delta) {
+        fullContent += delta;
+        
+        // Detect section headers for progress tracking
+        if (delta.includes('<h1') || delta.includes('<h2') || delta.includes('<h3')) {
+          const headerMatch = delta.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/);
+          if (headerMatch) {
+            currentSection = headerMatch[1];
+          }
+        }
+        
+        // Call progress callback if provided
+        if (onProgress) {
+          onProgress(fullContent, currentSection);
+        }
+      }
+    }
+    
+    const delta = this.htmlToQuillDelta(fullContent);
+    
+    return { content: fullContent, delta };
   }
   
   private static buildGenerationPrompt(instruction: string, context: ProjectContext): string {

@@ -18,6 +18,7 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
 import LRUCache from 'lru-cache'
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
+import { classifyWithContext } from '@/lib/intentClassification';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
@@ -240,26 +241,40 @@ export async function POST(
             }
           }
 
-          // Check if project is in drafting mode and handle canvas operations
+          // Check if project is in drafting mode and analyze user intent
           const isDraftingMode = settings.legalDrafting === true;
+          let intentAnalysis = null;
           
           if (isDraftingMode) {
-            // Handle canvas document operations
-            const canvasResult = await handleCanvasDraftingRequest(
-              content,
-              projectId,
-              project,
-              conversationDocuments,
-              canvasDocument,
-              controller,
-              encoder,
-              conversation.id,
-              safeClose
+            // Classify user intent to determine appropriate action
+            const recentMessages = messageHistory.slice(-3).map(msg => msg.content);
+            intentAnalysis = classifyWithContext(
+              content, 
+              !!canvasDocument,
+              recentMessages
             );
-            
-            if (canvasResult) {
-              return; // Canvas operation handled, exit stream
+
+            console.log('Intent Analysis:', intentAnalysis);
+
+            // Only update canvas if user intends to make changes
+            if (intentAnalysis.shouldUpdateCanvas) {
+              const canvasResult = await handleCanvasDraftingRequestWithStreaming(
+                content,
+                projectId,
+                project,
+                conversationDocuments,
+                canvasDocument,
+                controller,
+                encoder,
+                conversation.id,
+                safeClose
+              );
+              
+              if (canvasResult) {
+                return; // Canvas operation handled, exit stream
+              }
             }
+            // If analysis/question intent, continue to normal chat response below
           }
           
           // Create the custom instructions
@@ -269,7 +284,20 @@ export async function POST(
           let relevantContent = ""; 
           const documentObjects: Document[] = [];
           
-          if (!isSimpleQuery && conversationDocuments.length > 0) {
+          // Include canvas document if in drafting mode and analysis intent
+          if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
+            // Add canvas document for analysis
+            documentObjects.push(new Document({
+              pageContent: canvasDocument.plainText || canvasDocument.htmlContent || '',
+              metadata: {
+                documentId: 'canvas-document',
+                title: 'Current Canvas Document',
+                chunkIndex: 0
+              }
+            }));
+          }
+          
+          if (!isSimpleQuery && (conversationDocuments.length > 0 || documentObjects.length > 0)) {
             try {
               // Process only documents with content (skip extraction for speed)
               for (const docRef of conversationDocuments) {
@@ -344,7 +372,6 @@ export async function POST(
               
               // Check if it's a token limit error and handle appropriately
               if (vectorError instanceof Error && vectorError.message.includes('maximum context length')) {
-                console.log("Token limit exceeded in vector search, using minimal fallback");
                 // Use minimal relevant content as fallback
                 relevantContent = documentObjects.slice(0, 1)
                   .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 300)}\n`)
@@ -406,14 +433,34 @@ export async function POST(
           } else {
             const fullProject = project;
             
+            // Create context-aware system message for drafting mode
+            let draftingContext = '';
+            if (isDraftingMode && canvasDocument) {
+              draftingContext = `
+              
+              CANVAS DOCUMENT CONTEXT: You are working with a legal document currently open in the canvas editor. The document content has been included below for your analysis.
+              
+              CURRENT DOCUMENT TITLE: "Current Canvas Document"
+              
+              IMPORTANT: Based on the user's message, you should ONLY provide analysis, suggestions, and recommendations in this chat response. 
+              Do NOT make actual changes to the document unless the user explicitly requests edits with action words like "add", "update", "change", "modify", etc.
+              
+              For analysis questions about the document (like "what clauses are missing?", "any issues?", "review this"), provide detailed analysis of the current canvas document and offer specific suggestions, 
+              then ask if the user would like you to apply any changes to the document.
+              
+              The canvas document content is included in the context below as "Current Canvas Document".
+              `;
+            }
+
             systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
               fullProject?.title
             }".
             ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
-            Your goal is to answer the questions asked by your team matesto ensure that the project is completed successfully.
-            Get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
-            If you are unsure about something,ask for clarification and ask if they would want to research it first before you continue with the project.
+            Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
+            Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
+            If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
             ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
+            ${draftingContext}
             
             ${relevantContent ? 
               `${settings.citeSources ? 
@@ -434,9 +481,11 @@ export async function POST(
                 "Use the document information when relevant to the query."
               }`
               : 
-              conversationDocuments.length > 0
-                ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
-                : "No documents are currently attached to this conversation."
+              isDraftingMode && canvasDocument
+                ? `You are analyzing the current canvas document. The document content is available for your review and analysis.`
+                : conversationDocuments.length > 0
+                  ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
+                  : "No documents are currently attached to this conversation."
             }
             
             ${webSearchResults ? 
@@ -491,7 +540,6 @@ export async function POST(
             responseStream = await chatModel.stream(formattedPrompt);
           } catch (streamError) {
             if (streamError instanceof Error && streamError.message.includes('maximum context length')) {
-              console.log("Token limit exceeded in chat model, reducing context");
               
               // Drastically reduce system message and try again
               systemMessage = truncateToTokenLimit(systemMessage, 1500);
@@ -856,6 +904,237 @@ async function handleCanvasDraftingRequest(
 
   } catch (error) {
     console.error('Canvas drafting error:', error);
+    
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'error',
+          error: 'Failed to process document request'
+        }) + '\n'
+      )
+    );
+    
+    safeClose();
+    return true; // Still handled, even with error
+  }
+}
+
+/**
+ * Handle canvas drafting requests with streaming updates
+ */
+async function handleCanvasDraftingRequestWithStreaming(
+  content: string,
+  projectId: string,
+  project: any,
+  conversationDocuments: any[],
+  canvasDocument: any,
+  controller: ReadableStreamDefaultController,
+  encoder: TextEncoder,
+  conversationId: string,
+  safeClose: () => void
+): Promise<boolean> {
+  try {
+    // Send initial status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_status',
+          status: 'analyzing_request',
+          message: 'Analyzing your request...',
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
+
+    // Build project context for AI
+    const projectContext: ProjectContext = {
+      jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+      instructions: project?.knowledgeBase?.instructions || '',
+      documents: conversationDocuments.map(doc => ({
+        title: doc.document.title,
+        content: doc.document.content?.content || ''
+      }))
+    };
+
+    // Send context processing status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_status',
+          status: 'processing_context',
+          message: 'Processing project context and documents...',
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
+
+    let result;
+    let responseMessage;
+    let actionType;
+
+    if (!canvasDocument) {
+      actionType = 'generating';
+      responseMessage = "I've generated the document and loaded it to your canvas.";
+      
+      // Send generation status
+      controller.enqueue(
+        encoder.encode(
+          JSON.stringify({
+            type: 'canvas_status',
+            status: 'generating_document',
+            message: 'Generating new legal document...',
+            conversationId: conversationId,
+          }) + '\n'
+        )
+      );
+
+      // Generate new document with streaming updates
+      result = await AIDocumentService.generateDocumentStreaming(content, projectContext, (partialContent, section) => {
+        // Send streaming canvas content updates
+        controller.enqueue(
+          encoder.encode(
+            JSON.stringify({
+              type: 'canvas_content_update',
+              conversationId: conversationId,
+              partialContent: partialContent,
+              currentSection: section,
+              actionType: 'generating'
+            }) + '\n'
+          )
+        );
+      });
+    } else {
+      actionType = 'editing';
+      responseMessage = "I've updated your document in the canvas.";
+      
+      // Send editing status
+      controller.enqueue(
+        encoder.encode(
+          JSON.stringify({
+            type: 'canvas_status',
+            status: 'editing_document',
+            message: 'Updating existing document with your changes...',
+            conversationId: conversationId,
+          }) + '\n'
+        )
+      );
+
+      // Edit existing document with streaming updates
+      result = await AIDocumentService.editDocumentStreaming(
+        content,
+        canvasDocument.htmlContent,
+        projectContext,
+        (partialContent, section) => {
+          // Send streaming canvas content updates
+          controller.enqueue(
+            encoder.encode(
+              JSON.stringify({
+                type: 'canvas_content_update',
+                conversationId: conversationId,
+                partialContent: partialContent,
+                currentSection: section,
+                actionType: 'editing'
+              }) + '\n'
+            )
+          );
+        }
+      );
+    }
+
+    // Send saving status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_status',
+          status: 'saving_document',
+          message: 'Saving changes to canvas...',
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
+
+    // Save to canvas document
+    await prisma.canvasDocument.upsert({
+      where: { projectId },
+      create: {
+        projectId,
+        content: result.delta,
+        htmlContent: result.content,
+        plainText: AIDocumentService.stripHtml(result.content)
+      },
+      update: {
+        content: result.delta,
+        htmlContent: result.content,
+        plainText: AIDocumentService.stripHtml(result.content),
+        updatedAt: new Date()
+      }
+    });
+
+    // Save AI response as message
+    await prisma.message.create({
+      data: {
+        content: responseMessage,
+        role: "assistant",
+        conversationId,
+        metadata: JSON.stringify({ canvasUpdated: true, actionType })
+      }
+    });
+
+    // Send final completion status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_status',
+          status: 'completed',
+          message: `Document ${actionType === 'generating' ? 'generated' : 'updated'} successfully!`,
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
+
+    // Send canvas update response with streaming flag
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_update',
+          conversationId: conversationId,
+          content: responseMessage,
+          canvasContent: result.content,
+          canvasUpdated: true,
+          actionType: actionType,
+          streaming: false // Indicate streaming is complete
+        }) + '\n'
+      )
+    );
+
+    // Send completion status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'status',
+          status: 'completed',
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
+
+    safeClose();
+    return true; // Handled as canvas operation
+
+  } catch (error) {
+    console.error('Canvas drafting error:', error);
+    
+    // Send error status
+    controller.enqueue(
+      encoder.encode(
+        JSON.stringify({
+          type: 'canvas_status',
+          status: 'error',
+          message: 'Failed to process document request',
+          conversationId: conversationId,
+        }) + '\n'
+      )
+    );
     
     controller.enqueue(
       encoder.encode(

@@ -7,11 +7,13 @@ import {
   FileText,
   RefreshCw,
   X,
-  CheckCircle
+  CheckCircle,
+  FileDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
 import { useCanvasStore, useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
+import { useChatStore } from '@/store/chat.store';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import * as mammoth from 'mammoth';
@@ -23,6 +25,12 @@ const LegalCanvas: React.FC = () => {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
   const [showUpdateNotification, setShowUpdateNotification] = useState(false);
+  const [canvasStreamingStatus, setCanvasStreamingStatus] = useState<{
+    show: boolean;
+    status: string;
+    message?: string;
+    actionType?: string;
+  }>({ show: false, status: '' });
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<ReactQuill>(null);
@@ -31,6 +39,7 @@ const LegalCanvas: React.FC = () => {
   const { addToast } = useUIStore();
   const { canvasDocument, isLoading, error, fetchCanvasDocument, refreshCanvasDocument } = useCanvasDocument();
   const { isSaving, saveCanvasDocument, deleteCanvasDocument } = useCanvasSaving();
+  const { currentConversation } = useChatStore();
   
   // Show error toast if there's an error
   useEffect(() => {
@@ -38,6 +47,47 @@ const LegalCanvas: React.FC = () => {
       addToast({ message: error, type: 'error' });
     }
   }, [error, addToast]);
+
+  // Monitor chat messages for canvas streaming status
+  useEffect(() => {
+    if (!currentConversation?.messages) return;
+
+    // Find the latest streaming message with canvas status
+    const streamingMessage = currentConversation.messages
+      .filter(msg => msg.isStreaming && msg.role === 'assistant')
+      .pop();
+
+    if (streamingMessage?.processingStatus) {
+      const isCanvasStatus = [
+        'analyzing_request',
+        'processing_context', 
+        'generating_document',
+        'editing_document',
+        'saving_document',
+        'completed',
+        'error'
+      ].includes(streamingMessage.processingStatus);
+
+      if (isCanvasStatus) {
+        setCanvasStreamingStatus({
+          show: streamingMessage.processingStatus !== 'completed',
+          status: streamingMessage.processingStatus,
+          message: streamingMessage.canvasMessage,
+          actionType: streamingMessage.actionType
+        });
+
+        // Auto-hide completed status after 2 seconds
+        if (streamingMessage.processingStatus === 'completed') {
+          setTimeout(() => {
+            setCanvasStreamingStatus(prev => ({ ...prev, show: false }));
+          }, 2000);
+        }
+      }
+    } else {
+      // No streaming message, hide overlay
+      setCanvasStreamingStatus(prev => ({ ...prev, show: false }));
+    }
+  }, [currentConversation?.messages]);
 
   // Quill.js configuration
   const modules = {
@@ -96,7 +146,7 @@ const LegalCanvas: React.FC = () => {
     // Content changed - could add debounced indicators here if needed
   };
 
-  // Handle document export
+  // Handle document export as HTML
   const handleExport = () => {
     try {
       const content = canvasDocument?.htmlContent || '';
@@ -111,6 +161,50 @@ const LegalCanvas: React.FC = () => {
       addToast({ message: 'Document exported successfully', type: 'success' });
     } catch (error) {
       addToast({ message: 'Failed to export document', type: 'error' });
+    }
+  };
+
+  // Handle Word document export
+  const handleExportWord = async () => {
+    try {
+      if (!canvasDocument?.htmlContent) {
+        addToast({ message: 'No document content to export', type: 'error' });
+        return;
+      }
+
+      // Import html-docx-js dynamically to avoid SSR issues
+      const htmlDocx = await import('html-docx-js/dist/html-docx');
+      
+      // Clean and prepare HTML content for Word export
+      let cleanHtml = canvasDocument.htmlContent;
+      
+      // Basic HTML cleanup for better Word compatibility
+      cleanHtml = cleanHtml
+        // Ensure proper document structure
+        .replace(/^/, '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Legal Document</title></head><body>')
+        .replace(/$/, '</body></html>')
+        // Convert Quill classes to inline styles where needed
+        .replace(/class="ql-align-center"/g, 'style="text-align: center;"')
+        .replace(/class="ql-align-right"/g, 'style="text-align: right;"')
+        .replace(/class="ql-align-justify"/g, 'style="text-align: justify;"')
+        // Add basic styling
+        .replace('<body>', '<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 40px;">');
+
+      // Convert HTML to Word document
+      const docx = htmlDocx.asBlob(cleanHtml);
+      
+      // Create download link
+      const element = document.createElement('a');
+      element.href = URL.createObjectURL(docx);
+      element.download = `legal_document_${new Date().getTime()}.docx`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      addToast({ message: 'Word document exported successfully', type: 'success' });
+    } catch (error) {
+      console.error('Word export error:', error);
+      addToast({ message: 'Failed to export Word document', type: 'error' });
     }
   };
 
@@ -144,8 +238,37 @@ const LegalCanvas: React.FC = () => {
   useEffect(() => {
     const handleCanvasUpdate = (event: any) => {
       if (projectId && event.detail?.projectId === projectId) {
-        console.log('Canvas update triggered by chat');
         refreshCanvasDocument(projectId); // Refresh canvas data when chat updates it
+      }
+    };
+
+    const handleCanvasContentUpdate = (event: any) => {
+      if (projectId && event.detail?.projectId === projectId && quillRef.current) {
+        // Update canvas content in real-time as AI generates it
+        const editor = quillRef.current.getEditor();
+        editor.root.innerHTML = event.detail.partialContent;
+        
+        // Add subtle highlighting to current section being worked on
+        if (event.detail.currentSection) {
+          // Find and highlight the current section
+          const currentSectionElement = Array.from(editor.root.querySelectorAll('h1, h2, h3'))
+            .find(el => el.textContent?.includes(event.detail.currentSection));
+          
+          if (currentSectionElement) {
+            const sectionEl = currentSectionElement as HTMLElement;
+            sectionEl.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+            sectionEl.style.borderLeft = '3px solid rgba(59, 130, 246, 0.5)';
+            sectionEl.style.paddingLeft = '8px';
+            sectionEl.style.transition = 'all 0.3s ease';
+            
+            // Remove highlighting after a delay
+            setTimeout(() => {
+              sectionEl.style.backgroundColor = '';
+              sectionEl.style.borderLeft = '';
+              sectionEl.style.paddingLeft = '';
+            }, 2000);
+          }
+        }
       }
     };
 
@@ -157,11 +280,13 @@ const LegalCanvas: React.FC = () => {
 
     // Listen for custom canvas update events from chat
     window.addEventListener('canvasUpdate', handleCanvasUpdate);
+    window.addEventListener('canvasContentUpdate', handleCanvasContentUpdate);
     // Also refresh on focus as backup
     window.addEventListener('focus', handleFocusUpdate);
     
     return () => {
       window.removeEventListener('canvasUpdate', handleCanvasUpdate);
+      window.removeEventListener('canvasContentUpdate', handleCanvasContentUpdate);
       window.removeEventListener('focus', handleFocusUpdate);
     };
   }, [projectId, refreshCanvasDocument]);
@@ -235,6 +360,28 @@ const LegalCanvas: React.FC = () => {
     console.log('Text selection changed:', range);
   }
 
+  // Helper function to get concise status messages
+  const getStatusMessage = (status: string, message?: string) => {
+    if (message) return message;
+    
+    switch (status) {
+      case 'analyzing_request':
+        return 'Analyzing request...';
+      case 'processing_context':
+        return 'Reviewing documents...';
+      case 'generating_document':
+        return 'Generating document...';
+      case 'editing_document':
+        return 'Updating document...';
+      case 'saving_document':
+        return 'Saving changes...';
+      case 'completed':
+        return 'Complete!';
+      default:
+        return 'Processing...';
+    }
+  };
+
 
 
   return (
@@ -243,6 +390,19 @@ const LegalCanvas: React.FC = () => {
       <div className="border-b border-gray-200 p-3 flex items-center justify-between bg-gray-50">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-600"></span>
+          
+          {/* Canvas streaming status indicator */}
+          {canvasStreamingStatus.show && (
+            <div className="flex items-center space-x-2 bg-blue-50 text-primary px-3 py-1 rounded-full text-xs border border-blue-200">
+              <div className="flex space-x-1">
+                <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+              <span>{getStatusMessage(canvasStreamingStatus.status, canvasStreamingStatus.message)}</span>
+            </div>
+          )}
+          
           {showUpdateNotification && (
             <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs animate-pulse">
               <CheckCircle className="h-3 w-3" />
@@ -281,6 +441,17 @@ const LegalCanvas: React.FC = () => {
           >
             <Save className="h-4 w-4" />
             <span>{isSaving ? 'Saving...' : 'Save'}</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportWord}
+            disabled={!canvasDocument?.htmlContent}
+            className="flex items-center space-x-1"
+          >
+            <FileDown className="h-4 w-4" />
+            <span>Export Word</span>
           </Button>
           
            <Button

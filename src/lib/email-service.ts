@@ -64,8 +64,6 @@ export async function sendEmail(options: EmailOptions) {
       attachments
     });
     
-    console.log(`Email sent to ${to}, message ID: ${info.messageId}`);
-    
     return { 
       success: true, 
       messageId: info.messageId 

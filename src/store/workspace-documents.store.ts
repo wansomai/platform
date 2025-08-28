@@ -23,7 +23,6 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
     try {
       set({ isLoading: true, error: null });
       const response = await apiService.get<{data: Document[]}>(`/api/projects/${projectId}/documents`);
-      console.log('Fetched documents:', response.data);
       set({ 
         documents: response.data,
         isLoading: false 

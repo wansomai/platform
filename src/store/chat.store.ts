@@ -149,7 +149,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
       try {
         set({ isLoading: true, error: null });
         const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
-        console.log(response.data,"found conversations")
         set({conversations: response.data, isLoading: false });
         return response.data;
       } catch (error: any) {
@@ -263,6 +262,26 @@ export const useChatStore = create<ChatState>((set, get) => ({
               });
               break;
               
+            case 'canvas_status':
+              // Handle canvas processing status updates
+              get().updateStreamingMessage(streamingId, {
+                processingStatus: data.status,
+                canvasMessage: data.message
+              });
+              break;
+
+            case 'canvas_content_update':
+              // Handle real-time canvas content updates
+              window.dispatchEvent(new CustomEvent('canvasContentUpdate', {
+                detail: {
+                  projectId,
+                  partialContent: data.partialContent,
+                  currentSection: data.currentSection,
+                  actionType: data.actionType
+                }
+              }));
+              break;
+
             case 'canvas_update':
               // Handle canvas updates - finalize the chat message and trigger canvas refresh
               get().finalizeStreamingMessage(streamingId, {
@@ -272,7 +291,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 role: 'assistant',
                 timestamp: new Date().toISOString(),
                 isStreaming: false,
-                canvasUpdated: true
+                canvasUpdated: true,
+                actionType: data.actionType
               });
               
               // Trigger canvas refresh event with project context
@@ -280,7 +300,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 detail: { 
                   projectId, 
                   canvasContent: data.canvasContent,
-                  messageContent: data.content 
+                  messageContent: data.content,
+                  actionType: data.actionType
                 } 
               }));
               break;
