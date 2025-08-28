@@ -31,7 +31,8 @@ const DEFAULT_SETTINGS = {
   suggestActions: true,
   webSearch: false,
   model: 'gpt-4.1',
-  temperature: 0.7
+  temperature: 0.7,
+  legalDrafting: false // Added property to fix type error
 };
 
 // Maximum size of content to include in context (characters)
