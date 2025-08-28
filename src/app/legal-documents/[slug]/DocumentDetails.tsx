@@ -55,7 +55,6 @@ const DocDetailPageClient = ({ params }: PageProps) => {
         }
         
         const adaptedPost = adaptDocumentTemplate(blogPost);
-        console.log('Adapted Post:', adaptedPost);
         setBlog(adaptedPost);
       } catch (err) {
         console.error('Error fetching blog post:', err);

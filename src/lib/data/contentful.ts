@@ -305,7 +305,6 @@ export async function getPostBySlug({content_type, slug}: {content_type: string,
       'fields.slug': slug,
       limit: 1
     });
-console.log("Entries fetched for slug:", entries);
     if (entries.items.length > 0) {
       // Type cast the entry to DocumentTemplate
       return entries.items[0] as unknown as DocumentTemplate;

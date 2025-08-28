@@ -144,7 +144,6 @@ const LegalCanvas: React.FC = () => {
   useEffect(() => {
     const handleCanvasUpdate = (event: any) => {
       if (projectId && event.detail?.projectId === projectId) {
-        console.log('Canvas update triggered by chat');
         refreshCanvasDocument(projectId); // Refresh canvas data when chat updates it
       }
     };

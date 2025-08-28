@@ -149,7 +149,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
       try {
         set({ isLoading: true, error: null });
         const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
-        console.log(response.data,"found conversations")
         set({conversations: response.data, isLoading: false });
         return response.data;
       } catch (error: any) {

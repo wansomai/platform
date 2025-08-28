@@ -344,7 +344,6 @@ export async function POST(
               
               // Check if it's a token limit error and handle appropriately
               if (vectorError instanceof Error && vectorError.message.includes('maximum context length')) {
-                console.log("Token limit exceeded in vector search, using minimal fallback");
                 // Use minimal relevant content as fallback
                 relevantContent = documentObjects.slice(0, 1)
                   .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 300)}\n`)
@@ -491,7 +490,6 @@ export async function POST(
             responseStream = await chatModel.stream(formattedPrompt);
           } catch (streamError) {
             if (streamError instanceof Error && streamError.message.includes('maximum context length')) {
-              console.log("Token limit exceeded in chat model, reducing context");
               
               // Drastically reduce system message and try again
               systemMessage = truncateToTokenLimit(systemMessage, 1500);
