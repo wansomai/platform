@@ -264,7 +264,7 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                           checked={settings.legalDrafting}
                             disabled={isLoadingSettings}
                           onCheckedChange={(checked) => {
-                             setShowProAccess(true)
+                              handleSettingChange('legalDrafting', checked);
                           }}
                         />
                       </div>

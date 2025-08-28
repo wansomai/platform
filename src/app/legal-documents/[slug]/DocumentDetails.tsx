@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getAllDocumentTemplates } from "@/lib/data/contentful";
+import { fetchAllEntries } from "@/lib/data/contentful";
 import {adaptDocumentTemplate } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "react-day-picker";
@@ -42,7 +42,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
         setLoading(true);
         
         // Get all blog posts and find the one with matching slug
-        const allBlogPosts = await getAllDocumentTemplates();
+        const allBlogPosts = await fetchAllEntries('documentTemplates');
         
         // Find the blog post with matching slug
         const blogPost = allBlogPosts.find(post => {

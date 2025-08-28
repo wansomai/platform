@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { useEffect } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import LegalCanvas from "@/components/chat/CanvasInterface"
+import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
 import { ErrorState } from "@/components/commons/LoadingState"
 import { WorkspaceSkeleton } from "@/components/commons/WorkspaceSkeleton"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
@@ -70,7 +71,7 @@ export default function ProjectPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 overflow-hidden">
           <div className="h-full">
-            {showLegalDrafting ? <LegalCanvas /> : <ChatInterface />}
+            {showLegalDrafting ? <CanvasChatSplitView /> : <ChatInterface />}
           </div>
           <div className="border-t bg-white">
           <ChatInput />

@@ -4,77 +4,40 @@ import { useParams } from 'next/navigation';
 import { 
   Save, 
   Download,
-  Edit3,
-  Lightbulb,
-  Eye,
   FileText,
   RefreshCw,
-  MessageSquare,
-  Scale,
-  BookOpen,
-  Plus,
   X,
-  Check,
-  Send
+  CheckCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useUIStore } from '@/store/ui.store';
+import { useCanvasStore, useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import * as mammoth from 'mammoth';
-// TypeScript interfaces
-interface SelectionRange {
-  text: string;
-  index: number;
-  length: number;
-  rect: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  };
-}
-
-interface AISuggestion {
-  id: string;
-  type: 'improve' | 'explain' | 'expand' | 'cite';
-  originalText: string;
-  suggestion: string;
-  explanation?: string;
-  confidence: number;
-}
 
 const LegalCanvas: React.FC = () => {
   const params = useParams();
   const projectId = params.id as string;
-  
-  const [selectedText, setSelectedText] = useState<string>('');
-  const [selectionRange, setSelectionRange] = useState<SelectionRange | null>(null);
-  const [showActionBar, setShowActionBar] = useState(false);
-  const [showImproveInput, setShowImproveInput] = useState(false);
-  const [improveInstructions, setImproveInstructions] = useState('');
-  const [currentSuggestion, setCurrentSuggestion] = useState<AISuggestion | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingAction, setProcessingAction] = useState<string>('');
 
-  const [canvasContent, setCanvasContent] = useState<string>('');
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
+  const [showUpdateNotification, setShowUpdateNotification] = useState(false);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<ReactQuill>(null);
-  const actionBarRef = useRef<HTMLDivElement>(null);
-  const improveInputRef = useRef<HTMLInputElement>(null);
 
-  // Use workspace hook for settings and data
+  // Use store hooks for canvas data management
   const { addToast } = useUIStore();
+  const { canvasDocument, isLoading, error, fetchCanvasDocument, refreshCanvasDocument } = useCanvasDocument();
+  const { isSaving, saveCanvasDocument, deleteCanvasDocument } = useCanvasSaving();
+  
+  // Show error toast if there's an error
+  useEffect(() => {
+    if (error) {
+      addToast({ message: error, type: 'error' });
+    }
+  }, [error, addToast]);
 
   // Quill.js configuration
   const modules = {
@@ -103,122 +66,42 @@ const LegalCanvas: React.FC = () => {
     'script'
   ];
 
-  // Handle text selection
-  const handleTextSelection = () => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
 
-    const selection = quill.getSelection();
-    if (!selection || selection.length === 0) {
-      setShowActionBar(false);
-      return;
-    }
 
-    const text = quill.getText(selection.index, selection.length);
-    if (text.trim().length === 0) {
-      setShowActionBar(false);
-      return;
-    }
-
-    const bounds = quill.getBounds(selection.index, selection.length);
-    if (!bounds) {
-      setShowActionBar(false);
-      return;
-    }
+  // Handle manual save
+  const handleSave = async () => {
+    if (!quillRef.current) return;
     
-    const editorRect = quill.container.getBoundingClientRect();
-
-    setSelectedText(text.trim());
-    setSelectionRange({
-      text: text.trim(),
-      index: selection.index,
-      length: selection.length,
-      rect: {
-        top: editorRect.top + bounds.top,
-        left: editorRect.left + bounds.left,
-        width: bounds.width,
-        height: bounds.height,
-      }
-    });
-    setShowActionBar(true);
-  };
-
-  // Handle AI-powered actions
-  const handleAIAction = async (action: string, instructions?: string) => {
-    if (!selectedText || !projectId) return;
-
-    setIsProcessing(true);
-    setProcessingAction(action);
-
     try {
-      let prompt = '';
-      switch (action) {
-        case 'improve':
-          prompt = instructions 
-            ? `Please improve this text based on these instructions: "${instructions}"\n\nText: "${selectedText}"`
-            : `Please improve and refine this legal text for clarity and precision:\n\n"${selectedText}"`;
-          break;
-        case 'explain':
-          prompt = `Please explain this legal text in simple terms:\n\n"${selectedText}"`;
-          break;
-        case 'expand':
-          prompt = `Please expand on this legal text with more detail and context:\n\n"${selectedText}"`;
-          break;
-        case 'cite':
-          prompt = `Please suggest relevant legal citations and authorities for this text:\n\n"${selectedText}"`;
-          break;
-        default:
-          prompt = `Please analyze this legal text:\n\n"${selectedText}"`;
+      const editor = quillRef.current.getEditor();
+      const content = editor.getContents();
+      const htmlContent = editor.root.innerHTML;
+      const plainText = editor.getText();
+
+      const result = await saveCanvasDocument(projectId, content, htmlContent, plainText);
+      
+      if (result) {
+        addToast({ message: 'Document saved successfully', type: 'success' });
+      } else {
+        addToast({ message: 'Failed to save document', type: 'error' });
       }
-
-      // TODO: Implement AI request using project settings
-      // This would typically send a message to your AI service
-      // For now, just show success
-      addToast({ 
-        message: `AI ${action} request processed successfully`, 
-        type: 'success' 
-      });
-
-      setShowActionBar(false);
-      setShowImproveInput(false);
-      setImproveInstructions('');
-
     } catch (error) {
-      console.error(`Error with AI ${action}:`, error);
-      addToast({ 
-        message: `Failed to process AI ${action} request`, 
-        type: 'error' 
-      });
-    } finally {
-      setIsProcessing(false);
-      setProcessingAction('');
-    }
-  };
-
-  // Handle improve with custom instructions
-  const handleImproveWithInstructions = () => {
-    if (!improveInstructions.trim()) {
-      addToast({ message: 'Please provide improvement instructions', type: 'error' });
-      return;
-    }
-    handleAIAction('improve', improveInstructions);
-  };
-
-  // Handle document save
-  const handleSave = () => {
-    try {
-      localStorage.setItem(`legal_canvas_${projectId}`, canvasContent);
-      addToast({ message: 'Document saved successfully', type: 'success' });
-    } catch (error) {
+      console.error('Save error:', error);
       addToast({ message: 'Failed to save document', type: 'error' });
     }
+  };
+
+  // Handle content changes (no auto-save)
+  const handleContentChange = (content: string) => {
+    // Content changed - could add debounced indicators here if needed
   };
 
   // Handle document export
   const handleExport = () => {
     try {
+      const content = canvasDocument?.htmlContent || '';
       const element = document.createElement('a');
-      const file = new Blob([canvasContent], { type: 'text/html' });
+      const file = new Blob([content], { type: 'text/html' });
       element.href = URL.createObjectURL(file);
       element.download = `legal_document_${new Date().getTime()}.html`;
       document.body.appendChild(element);
@@ -231,15 +114,57 @@ const LegalCanvas: React.FC = () => {
     }
   };
 
-  // Load saved content on mount
+  // Fetch canvas document on mount
   useEffect(() => {
     if (projectId) {
-      const savedContent = localStorage.getItem(`legal_canvas_${projectId}`);
-      if (savedContent) {
-        setCanvasContent(savedContent);
+      fetchCanvasDocument(projectId);
+    }
+  }, [projectId, fetchCanvasDocument]);
+
+  // Load canvas document content when data is available
+  useEffect(() => {
+    if (canvasDocument?.content && quillRef.current) {
+      const editor = quillRef.current.getEditor();
+      const currentContent = editor.getContents();
+      
+      // Check if content actually changed (not just initial load)
+      const hasContentChanged = JSON.stringify(currentContent) !== JSON.stringify(canvasDocument.content);
+      
+      editor.setContents(canvasDocument.content);
+      
+      // Show update notification if content changed (likely from AI update)
+      if (hasContentChanged && currentContent.ops && currentContent.ops.length > 1) {
+        setShowUpdateNotification(true);
+        setTimeout(() => setShowUpdateNotification(false), 3000); // Hide after 3 seconds
       }
     }
-  }, [projectId]);
+  }, [canvasDocument]);
+
+  // Listen for canvas updates from chat (when AI updates the document)
+  useEffect(() => {
+    const handleCanvasUpdate = (event: any) => {
+      if (projectId && event.detail?.projectId === projectId) {
+        console.log('Canvas update triggered by chat');
+        refreshCanvasDocument(projectId); // Refresh canvas data when chat updates it
+      }
+    };
+
+    const handleFocusUpdate = () => {
+      if (projectId) {
+        refreshCanvasDocument(projectId);
+      }
+    };
+
+    // Listen for custom canvas update events from chat
+    window.addEventListener('canvasUpdate', handleCanvasUpdate);
+    // Also refresh on focus as backup
+    window.addEventListener('focus', handleFocusUpdate);
+    
+    return () => {
+      window.removeEventListener('canvasUpdate', handleCanvasUpdate);
+      window.removeEventListener('focus', handleFocusUpdate);
+    };
+  }, [projectId, refreshCanvasDocument]);
 
    // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
@@ -269,7 +194,19 @@ const LegalCanvas: React.FC = () => {
           .replace(/\s+/g, ' ')
           .trim();
         
-        setCanvasContent(cleanHtml);
+        // Save to API using store
+        const editor = quillRef.current?.getEditor();
+        if (editor) {
+          editor.root.innerHTML = cleanHtml;
+          const delta = editor.getContents();
+          const plainText = editor.getText();
+          
+          const result = await saveCanvasDocument(projectId, delta, cleanHtml, plainText);
+          if (!result) {
+            throw new Error('Failed to save template to canvas');
+          }
+        }
+        
         setShowTemplateModal(false);
         
         // Log any conversion messages for debugging
@@ -284,198 +221,77 @@ const LegalCanvas: React.FC = () => {
       
     } catch (error) {
       console.error('Error processing template:', error);
-      
-      // Fallback to sample templates based on filename if mammoth fails
-      const fileName = file.name.toLowerCase();
-      let fallbackContent = '';
-      
-      if (fileName.includes('memo') || fileName.includes('memorandum')) {
-        fallbackContent = `<h1>MEMORANDUM</h1>
-
-<p><strong>TO:</strong> [Client Name]<br>
-<strong>FROM:</strong> [Attorney Name]<br>
-<strong>DATE:</strong> [Date]<br>
-<strong>RE:</strong> [Matter Description]</p>
-
-<h2>EXECUTIVE SUMMARY</h2>
-
-<p>This memorandum provides an analysis of [legal issue] and recommends [recommended action]. Based on our review of applicable law and the facts presented, we conclude that [conclusion].</p>
-
-<h2>I. BACKGROUND</h2>
-
-<p>[Factual background of the matter]</p>
-
-<h2>II. LEGAL ANALYSIS</h2>
-
-<h3>A. Relevant Legal Framework</h3>
-
-<p>[Discussion of applicable statutes, regulations, and case law]</p>
-
-<h3>B. Application to Present Facts</h3>
-
-<p>[Analysis of how the law applies to the specific facts]</p>
-
-<h2>III. CONCLUSION AND RECOMMENDATIONS</h2>
-
-<p>Based on the foregoing analysis, we recommend [specific recommendations].</p>`;
-      } else if (fileName.includes('contract') || fileName.includes('agreement')) {
-        fallbackContent = `<h1>SERVICE AGREEMENT</h1>
-
-<p>This Service Agreement ("Agreement") is entered into on [Date] between [Company Name], a [State] corporation ("Company"), and [Client Name] ("Client").</p>
-
-<h2>1. SERVICES</h2>
-
-<p>Company agrees to provide the following services: [Description of Services]</p>
-
-<h2>2. TERM</h2>
-
-<p>This Agreement shall commence on [Start Date] and continue until [End Date], unless terminated earlier in accordance with the terms herein.</p>
-
-<h2>3. COMPENSATION</h2>
-
-<p>In consideration for the services, Client agrees to pay Company [Amount] according to the following schedule: [Payment Terms]</p>
-
-<h2>4. TERMINATION</h2>
-
-<p>Either party may terminate this Agreement with [Notice Period] written notice.</p>
-
-<h2>5. GOVERNING LAW</h2>
-
-<p>This Agreement shall be governed by the laws of [State/Jurisdiction].</p>
-
-<p><strong>Company:</strong> _____________________</p>
-<p><strong>Client:</strong> _____________________</p>`;
-      } else if (fileName.includes('brief') || fileName.includes('motion')) {
-        fallbackContent = `<h1>MOTION TO [RELIEF SOUGHT]</h1>
-
-<p><strong>TO THE HONORABLE COURT:</strong></p>
-
-<p>NOW COMES [Party Name], by and through undersigned counsel, and respectfully moves this Court for [relief sought] and in support thereof states as follows:</p>
-
-<h2>I. INTRODUCTION</h2>
-
-<p>[Brief introduction of the motion and relief sought]</p>
-
-<h2>II. STATEMENT OF FACTS</h2>
-
-<p>[Relevant factual background]</p>
-
-<h2>III. ARGUMENT</h2>
-
-<h3>A. Legal Standard</h3>
-
-<p>[Applicable legal standard and authorities]</p>
-
-<h3>B. Application</h3>
-
-<p>[Application of law to facts]</p>
-
-<h2>IV. CONCLUSION</h2>
-
-<p>For the foregoing reasons, [Party Name] respectfully requests that this Court grant the motion for [relief sought].</p>
-
-<p>Respectfully submitted,</p>
-<p>_____________________<br>
-[Attorney Name]<br>
-[Bar Number]<br>
-Attorney for [Party Name]</p>`;
-      } else {
-        fallbackContent = `<h1>[DOCUMENT TITLE]</h1>
-
-<p>[Document introduction and purpose]</p>
-
-<h2>SECTION 1</h2>
-
-<p>[Content for section 1]</p>
-
-<h2>SECTION 2</h2>
-
-<p>[Content for section 2]</p>
-
-<h2>SECTION 3</h2>
-
-<p>[Content for section 3]</p>
-
-<p><strong>Date:</strong> [Date]<br>
-<strong>Prepared by:</strong> [Attorney Name]</p>`;
-      }
-      
-      if (fallbackContent) {
-        setCanvasContent(fallbackContent);
-        setShowTemplateModal(false);
-        console.log('Used fallback template due to processing error');
-      }
+      addToast({ 
+        message: 'Failed to process template document', 
+        type: 'error' 
+      });
     } finally {
       setIsLoadingTemplate(false);
     }
   };
+  const handleTextSelection = (range: any) => {
+    // Handle text selection changes if needed
+    // This can be used to update UI or perform actions based on selection
+    console.log('Text selection changed:', range);
+  }
 
 
-  // Hide action bar when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (actionBarRef.current && !actionBarRef.current.contains(event.target as Node)) {
-        setShowActionBar(false);
-        setShowImproveInput(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-4 flex items-center justify-between bg-gray-50">
+      <div className="border-b border-gray-200 p-3 flex items-center justify-between bg-gray-50">
         <div className="flex items-center space-x-2">
-          <Scale className="h-5 w-5 text-primary-600" />
-          <h1 className="text-lg font-semibold text-gray-900">Legal Canvas</h1>
+          <span className="text-sm text-gray-600"></span>
+          {showUpdateNotification && (
+            <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs animate-pulse">
+              <CheckCircle className="h-3 w-3" />
+              <span>Document updated</span>
+            </div>
+          )}
         </div>
         
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={handleSave}
+            onClick={async () => {
+              const success = await deleteCanvasDocument(projectId);
+              if (success) {
+                if (quillRef.current) {
+                  quillRef.current.getEditor()?.setContents([]);
+                }
+                addToast({ message: 'Document cleared successfully', type: 'success' });
+              } else {
+                addToast({ message: 'Failed to clear document', type: 'error' });
+              }
+            }}
             className="flex items-center space-x-1"
           >
-            <Save className="h-4 w-4" />
-            <span>Save</span>
+            <X className="h-4 w-4" />
+            <span>Clear</span>
           </Button>
           
           <Button
             variant="outline"
             size="sm"
-            onClick={handleExport}
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center space-x-1"
+          >
+            <Save className="h-4 w-4" />
+            <span>{isSaving ? 'Saving...' : 'Save'}</span>
+          </Button>
+          
+           <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTemplateModal(true)}
             className="flex items-center space-x-1"
           >
             <Download className="h-4 w-4" />
-            <span>Export</span>
+            <span>Import Template</span>
           </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-1" />
-                Templates
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setShowTemplateModal(true)}>
-                <FileText className="h-4 w-4 mr-2" />
-                Contract Template
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowTemplateModal(true)}>
-                <BookOpen className="h-4 w-4 mr-2" />
-                Legal Brief
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowTemplateModal(true)}>
-                <Scale className="h-4 w-4 mr-2" />
-                Motion Template
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
@@ -484,124 +300,14 @@ Attorney for [Party Name]</p>`;
         <ReactQuill
           ref={quillRef}
           theme="snow"
-          value={canvasContent}
-          onChange={setCanvasContent}
-          onChangeSelection={handleTextSelection}
+          value={canvasDocument?.htmlContent || ''}
+          onChange={handleContentChange}
           modules={modules}
           formats={formats}
           style={{ height: '100%' }}
           className="h-full"
         />
 
-        {/* Floating Action Bar */}
-        {showActionBar && selectionRange && (
-          <div
-            ref={actionBarRef}
-            className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg p-2 flex items-center space-x-1"
-            style={{
-              top: selectionRange.rect.top - 60,
-              left: selectionRange.rect.left,
-              transform: selectionRange.rect.left > window.innerWidth - 300 
-                ? 'translateX(-100%)' 
-                : 'none'
-            }}
-          >
-            {!showImproveInput ? (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleAIAction('explain')}
-                  disabled={isProcessing}
-                  className="flex items-center space-x-1 text-xs"
-                >
-                  <Lightbulb className="h-3 w-3" />
-                  <span>Explain</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowImproveInput(true)}
-                  disabled={isProcessing}
-                  className="flex items-center space-x-1 text-xs"
-                >
-                  <Edit3 className="h-3 w-3" />
-                  <span>Improve</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleAIAction('expand')}
-                  disabled={isProcessing}
-                  className="flex items-center space-x-1 text-xs"
-                >
-                  <Plus className="h-3 w-3" />
-                  <span>Expand</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleAIAction('cite')}
-                  disabled={isProcessing}
-                  className="flex items-center space-x-1 text-xs"
-                >
-                  <BookOpen className="h-3 w-3" />
-                  <span>Cite</span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowActionBar(false)}
-                  className="text-xs"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Input
-                  ref={improveInputRef}
-                  placeholder="How should I improve this?"
-                  value={improveInstructions}
-                  onChange={(e) => setImproveInstructions(e.target.value)}
-                  className="text-xs"
-                  autoFocus
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleImproveWithInstructions}
-                  disabled={isProcessing || !improveInstructions.trim()}
-                  className="text-xs"
-                >
-                  <Send className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowImproveInput(false);
-                    setImproveInstructions('');
-                  }}
-                  className="text-xs"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-
-            {isProcessing && (
-              <div className="flex items-center space-x-1 text-xs text-blue-600">
-                <RefreshCw className="h-3 w-3 animate-spin" />
-                <span>Processing {processingAction}...</span>
-              </div>
-            )}
-          </div>
-        )}
       </div>
       {/* Template Upload Modal */}
       {showTemplateModal && (
@@ -716,6 +422,18 @@ Attorney for [Party Name]</p>`;
         .ql-container {
           border: none !important;
           font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;
+          height: calc(100vh - 200px) !important;
+          overflow-y: auto !important;
+         
+        }
+
+        .ql-container::-webkit-scrollbar {
+          display: none;
+        }
+
+        .ql-container {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
 
         .ql-editor .ql-syntax {

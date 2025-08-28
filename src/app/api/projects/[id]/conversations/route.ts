@@ -21,7 +21,6 @@ export async function GET(
     
     // Get user ID from request headers
     const userId = getUserIdFromRequest(request);
-    
     if (!userId) {
       return NextResponse.json(
         { 

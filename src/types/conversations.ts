@@ -11,6 +11,7 @@ export interface Conversation {
   messages: Message[];
   messageCount?: number;
   lastMessage?: string;
+  
 }
 
 
@@ -30,6 +31,7 @@ export interface Message {
   metadata?: any;
   processingStatus?: string;
   actionType?: string;
+  canvasUpdated?: boolean;
   user?: {
     id: string;
     name: string;

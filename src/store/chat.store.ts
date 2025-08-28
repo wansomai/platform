@@ -263,6 +263,28 @@ export const useChatStore = create<ChatState>((set, get) => ({
               });
               break;
               
+            case 'canvas_update':
+              // Handle canvas updates - finalize the chat message and trigger canvas refresh
+              get().finalizeStreamingMessage(streamingId, {
+                id: data.messageId || `canvas-${Date.now()}`,
+                conversationId,
+                content: data.content,
+                role: 'assistant',
+                timestamp: new Date().toISOString(),
+                isStreaming: false,
+                canvasUpdated: true
+              });
+              
+              // Trigger canvas refresh event with project context
+              window.dispatchEvent(new CustomEvent('canvasUpdate', { 
+                detail: { 
+                  projectId, 
+                  canvasContent: data.canvasContent,
+                  messageContent: data.content 
+                } 
+              }));
+              break;
+              
             case 'status':
               break;
               
