@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
 import { useCanvasStore, useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
 import { useChatStore } from '@/store/chat.store';
-import { CanvasStreamingOverlay } from './CanvasStreamingOverlay';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import * as mammoth from 'mammoth';
@@ -394,11 +393,11 @@ const LegalCanvas: React.FC = () => {
           
           {/* Canvas streaming status indicator */}
           {canvasStreamingStatus.show && (
-            <div className="flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs border border-blue-200">
+            <div className="flex items-center space-x-2 bg-blue-50 text-primary px-3 py-1 rounded-full text-xs border border-blue-200">
               <div className="flex space-x-1">
-                <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
               <span>{getStatusMessage(canvasStreamingStatus.status, canvasStreamingStatus.message)}</span>
             </div>
