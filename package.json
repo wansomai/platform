@@ -94,6 +94,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
+    "@types/html-docx-js": "^0.3.4",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
