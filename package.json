@@ -55,6 +55,7 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^11.14.4",
     "fs": "^0.0.1-security",
+    "html-docx-js": "^0.3.1",
     "jose": "^6.0.8",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",

@@ -7,7 +7,8 @@ import {
   FileText,
   RefreshCw,
   X,
-  CheckCircle
+  CheckCircle,
+  FileDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
@@ -146,7 +147,7 @@ const LegalCanvas: React.FC = () => {
     // Content changed - could add debounced indicators here if needed
   };
 
-  // Handle document export
+  // Handle document export as HTML
   const handleExport = () => {
     try {
       const content = canvasDocument?.htmlContent || '';
@@ -161,6 +162,50 @@ const LegalCanvas: React.FC = () => {
       addToast({ message: 'Document exported successfully', type: 'success' });
     } catch (error) {
       addToast({ message: 'Failed to export document', type: 'error' });
+    }
+  };
+
+  // Handle Word document export
+  const handleExportWord = async () => {
+    try {
+      if (!canvasDocument?.htmlContent) {
+        addToast({ message: 'No document content to export', type: 'error' });
+        return;
+      }
+
+      // Import html-docx-js dynamically to avoid SSR issues
+      const htmlDocx = await import('html-docx-js/dist/html-docx');
+      
+      // Clean and prepare HTML content for Word export
+      let cleanHtml = canvasDocument.htmlContent;
+      
+      // Basic HTML cleanup for better Word compatibility
+      cleanHtml = cleanHtml
+        // Ensure proper document structure
+        .replace(/^/, '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Legal Document</title></head><body>')
+        .replace(/$/, '</body></html>')
+        // Convert Quill classes to inline styles where needed
+        .replace(/class="ql-align-center"/g, 'style="text-align: center;"')
+        .replace(/class="ql-align-right"/g, 'style="text-align: right;"')
+        .replace(/class="ql-align-justify"/g, 'style="text-align: justify;"')
+        // Add basic styling
+        .replace('<body>', '<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 40px;">');
+
+      // Convert HTML to Word document
+      const docx = htmlDocx.asBlob(cleanHtml);
+      
+      // Create download link
+      const element = document.createElement('a');
+      element.href = URL.createObjectURL(docx);
+      element.download = `legal_document_${new Date().getTime()}.docx`;
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      
+      addToast({ message: 'Word document exported successfully', type: 'success' });
+    } catch (error) {
+      console.error('Word export error:', error);
+      addToast({ message: 'Failed to export Word document', type: 'error' });
     }
   };
 
@@ -397,6 +442,17 @@ const LegalCanvas: React.FC = () => {
           >
             <Save className="h-4 w-4" />
             <span>{isSaving ? 'Saving...' : 'Save'}</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportWord}
+            disabled={!canvasDocument?.htmlContent}
+            className="flex items-center space-x-1"
+          >
+            <FileDown className="h-4 w-4" />
+            <span>Export Word</span>
           </Button>
           
            <Button
