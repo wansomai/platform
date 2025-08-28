@@ -298,6 +298,27 @@ export async function getAllSlugs() {
 }
 
 
+export async function getPostBySlug({content_type, slug}: {content_type: string, slug: string}): Promise<DocumentTemplate | null> {
+  try {
+    const entries = await client.getEntries({
+      content_type: content_type,
+      'fields.slug': slug,
+      limit: 1
+    });
+console.log("Entries fetched for slug:", entries);
+    if (entries.items.length > 0) {
+      // Type cast the entry to DocumentTemplate
+      return entries.items[0] as unknown as DocumentTemplate;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching post by slug:", error);
+    throw error;
+  }
+}
+
+
 
 
 export async function fetchAllEntries( content_type: any ) {
