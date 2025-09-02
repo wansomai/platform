@@ -71,7 +71,7 @@ const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
     return <FileText className="h-5 w-5 text-red-500" />;
   } else if (["xlsx", "xls", "csv"].includes(type)) {
     return <FileSpreadsheet className="h-5 w-5 text-green-600" />;
-  } else if (["jpg", "jpeg", "png"].includes(type)) {
+  } else if (["jpg", "jpeg", "png", "gif", "bmp", "webp"].includes(type)) {
     return <FileImage className="h-5 w-5 text-blue-500" />;
   } else if (["doc", "docx"].includes(type)) {
     return <File className="h-5 w-5 text-blue-600" />;
@@ -120,12 +120,23 @@ export default function VaultPage() {
   const [fileType, setFileType] = useState<string | undefined>(undefined);
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth < 768 ? "grid" : "list";
-    }
-    return "grid";
-  });
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isClient, setIsClient] = useState(false);
+  
+  // Set responsive view mode on client
+  useEffect(() => {
+    setIsClient(true);
+    const handleResize = () => {
+      setViewMode(window.innerWidth < 768 ? "grid" : "list");
+    };
+    
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // Modal states
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -332,10 +343,10 @@ export default function VaultPage() {
   const fileTypeOptions = [
     { value: "all", label: "All Types" },
     { value: "pdf", label: "PDF Documents" },
-    { value: "doc", label: "Word Documents" },
-    { value: "xls", label: "Excel Spreadsheets" },
+    { value: "docx", label: "Word Documents" },
+    { value: "xlsx", label: "Excel Spreadsheets" },
     { value: "csv", label: "CSV Files" },
-    { value: "jpg", label: "Images" }
+    { value: "image", label: "Images" }
   ];
   
   // Sort options
