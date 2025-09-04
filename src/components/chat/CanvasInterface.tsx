@@ -110,7 +110,7 @@ const LegalCanvas: React.FC = () => {
   const formats = [
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
+    'list', 'indent',
     'link', 'image', 'video',
     'align', 'color', 'background',
     'script'
