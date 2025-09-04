@@ -378,16 +378,18 @@ const filteredDocuments = useMemo(() => {
 
 
       {/* Document Removal Confirmation */}
-      {documentToDelete && (
-        <RemoveConfirmationDialog
-           open={!!documentToDelete}
-        onOpenChange={(open) => !open && setDocumentToDelete(null)}
+      <RemoveConfirmationDialog
+        open={!!documentToDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDocumentToDelete(null);
+          }
+        }}
         onConfirm={handleRemoveDocument}
         itemName={documentToDelete?.name}
         contextName="this conversation"
         isLoading={isRemovingDocument}
-        />
-      )}
+      />
     </ScrollArea>
   );
 }

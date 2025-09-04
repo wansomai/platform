@@ -4,14 +4,21 @@ import * as XLSX from 'xlsx';
 import * as csv from 'csv-parse/sync';
 import * as mammoth from 'mammoth';
 import { Readable } from 'stream';
+import { ocrService } from './ocrService';
+import { ServerOCRService } from './serverOcrService';
 
 /**
  * Extract text from various file types
  * @param fileBuffer The file buffer
  * @param mimeType The MIME type of the file
+ * @param onProgress Optional progress callback for OCR
  * @returns Extracted text content
  */
-export async function extractTextFromFile(fileBuffer: Buffer, mimeType: string): Promise<string> {
+export async function extractTextFromFile(
+  fileBuffer: Buffer, 
+  mimeType: string,
+  onProgress?: (progress: number) => void
+): Promise<string> {
   switch (mimeType) {
     case 'application/pdf':
       return extractTextFromPdf(fileBuffer);
@@ -32,9 +39,11 @@ export async function extractTextFromFile(fileBuffer: Buffer, mimeType: string):
     
     case 'image/jpeg':
     case 'image/png':
-      // For images, you would need OCR service like Tesseract
-      // This is a placeholder - in production you'd integrate with an OCR service
-      return "Image content - text extraction requires OCR service";
+      // On server side, return placeholder. OCR will be handled client-side when needed.
+      if (typeof window === 'undefined') {
+        return "Image document uploaded. Text extraction will be performed when the AI analyzes this document.";
+      }
+      return extractTextFromImage(fileBuffer, onProgress);
     
     default:
       throw new Error(`Unsupported file type: ${mimeType}`);
@@ -140,6 +149,36 @@ function extractTextFromCsv(fileBuffer: Buffer): string {
   } catch (error) {
     console.error('Error extracting text from CSV:', error);
     throw error;
+  }
+}
+
+/**
+ * Extract text from images using OCR
+ */
+async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: number) => void): Promise<string> {
+  try {
+    // Use server-side Google Vision API for OCR
+    if (typeof window === 'undefined') {
+      // Server-side: Use Google Vision API
+      const text = await ServerOCRService.extractTextFromImage(fileBuffer);
+      return text;
+    } else {
+      // Client-side: Use browser-based tesseract.js as fallback
+      const blob = new Blob([fileBuffer]);
+      const text = await ocrService.extractTextFromImage(blob, {
+        onProgress,
+        language: 'eng'
+      });
+      
+      if (!text || text.trim().length === 0) {
+        return "No text could be extracted from this image. The image may not contain readable text or the text may be too unclear.";
+      }
+      
+      return text;
+    }
+  } catch (error) {
+    console.error('OCR extraction failed:', error);
+    return "Failed to extract text from image. The image may be corrupted or contain unreadable text.";
   }
 }
 

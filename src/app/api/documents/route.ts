@@ -57,7 +57,16 @@ export async function GET(request: NextRequest) {
     }
     
     if (fileType && fileType !== 'all') {
-      where.file_type = fileType;
+      // Handle special filter cases
+      if (fileType === 'image') {
+        where.file_type = { in: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'] };
+      } else if (fileType === 'docx') {
+        where.file_type = { in: ['doc', 'docx'] };
+      } else if (fileType === 'xlsx') {
+        where.file_type = { in: ['xls', 'xlsx'] };
+      } else {
+        where.file_type = fileType;
+      }
     }
     
     if (folderId === 'root') {

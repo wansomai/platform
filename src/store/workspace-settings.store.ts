@@ -26,6 +26,7 @@ const DEFAULT_SETTINGS: ProjectSettings = {
   suggestActions: true,
   webSearch: false,
   legalDrafting: false,
+  contractReview: false,
   model: 'gpt-4',
   temperature: 0.7,
   jurisdiction: undefined

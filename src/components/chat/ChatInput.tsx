@@ -75,6 +75,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   }, [input])
   // Handle direct prompt sending from external components
   useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
     const handlePromptSendEvent = (event: any) => {
       if (event.detail && event.detail.promptTemplate) {
         if (currentConversation) {
@@ -126,12 +128,25 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
     }
   }
 
-  // Handle setting changes
+  // Handle setting changes with exclusive logic for legal drafting and contract review
   const handleSettingChange = async (settingKey: keyof typeof settings, value: boolean) => {
     if (!currentConversation) return;
     
     try {
-      await updateSetting(projectId, settingKey, value);
+      let updatesToMake: Partial<typeof settings> = { [settingKey]: value };
+      
+      // Exclusive toggle logic: only one of legalDrafting or contractReview can be active
+      if (settingKey === 'legalDrafting' && value) {
+        updatesToMake.contractReview = false;
+      } else if (settingKey === 'contractReview' && value) {
+        updatesToMake.legalDrafting = false;
+      }
+      
+      // Update all settings that need to change
+      for (const [key, val] of Object.entries(updatesToMake)) {
+        await updateSetting(projectId, key as keyof typeof settings, val);
+      }
+      
       addToast({ message: `${settingKey} setting updated`, type: 'success' });
     } catch (error) {
       addToast({ message: `Failed to update ${settingKey} setting`, type: 'error' });
@@ -277,9 +292,10 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="contract-review" 
-                          checked={settings.legalDrafting}
-                             onCheckedChange={(checked) => {
-                            setShowProAccess(true)
+                          checked={settings.contractReview}
+                          disabled={isLoadingSettings}
+                          onCheckedChange={(checked) => {
+                            handleSettingChange('contractReview', checked);
                           }}
                         />
                       </div>

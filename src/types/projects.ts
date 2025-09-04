@@ -65,6 +65,7 @@ export interface ProjectSettings {
   suggestActions: boolean;
   webSearch: boolean;
   legalDrafting: boolean;
+  contractReview: boolean;
   model?: string;
   temperature?: number;
   jurisdiction?: {

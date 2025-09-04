@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import LegalCanvas from "@/components/chat/CanvasInterface"
 import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
+import { ContractChatSplitView } from "@/components/contract/ContractChatSplitView"
 import { ErrorState } from "@/components/commons/LoadingState"
 import { WorkspaceSkeleton } from "@/components/commons/WorkspaceSkeleton"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
@@ -65,17 +66,20 @@ export default function ProjectPage() {
   
   // Determine which interface to show based on settings
   const showLegalDrafting = settings?.legalDrafting || false
+  const showContractReview = settings?.contractReview || false
 
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 overflow-hidden">
           <div className="h-full">
-            {showLegalDrafting ? <CanvasChatSplitView /> : <ChatInterface />}
+            {showContractReview ? <ContractChatSplitView /> : 
+             showLegalDrafting ? <CanvasChatSplitView /> : 
+             <ChatInterface />}
           </div>
           <div className="border-t bg-white">
-          <ChatInput />
-        </div>
+            <ChatInput />
+          </div>
         </main>
         
       </div>

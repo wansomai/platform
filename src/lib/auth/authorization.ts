@@ -91,31 +91,6 @@ export function getUserIdFromRequest(request: NextRequest): string | null {
   }
 }
 
-/**
- * Checks if a user has access to a specific conversation
- * Access is determined by whether the user has access to the parent project
- * 
- * @param conversationId - The ID of the conversation to check access for
- * @param userId - The ID of the user requesting access
- * @returns boolean - True if the user has access, false otherwise
- */
-export async function checkConversationAccess(conversationId: string, userId: string): Promise<boolean> {
-  try {
-    // Get the project ID for this conversation
-    const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId },
-      select: { projectId: true }
-    });
-    
-    if (!conversation) return false;
-    
-    // Check if user has access to the parent project
-    return checkProjectAccess(conversation.projectId, userId);
-  } catch (error) {
-    console.error('Error checking conversation access:', error);
-    return false;
-  }
-}
 
 /**
  * Gets the projects that a user has access to
