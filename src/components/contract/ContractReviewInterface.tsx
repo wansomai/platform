@@ -100,9 +100,7 @@ export const ContractReviewInterface: React.FC = () => {
     })
     
     // Refresh project documents to keep vault in sync
-    if (currentConversation?.id) {
-      fetchProjectDocuments(currentConversation.id)
-    }
+    fetchProjectDocuments(projectId)
   }
 
   // Get risk level styling
@@ -113,12 +111,29 @@ export const ContractReviewInterface: React.FC = () => {
     return { label: 'High', color: 'bg-red-100 text-red-700' }
   }
 
+  // Handle removing the current document and allowing upload of a new one
+  const handleRemoveDocument = () => {
+    if (selectedContract) {
+      // Remove the selected contract from the list
+      setContracts(prev => prev.filter(contract => contract.id !== selectedContract.id))
+      // Clear the selected contract
+      setSelectedContract(null)
+      // Show upload modal to upload a new document
+      setShowUploadModal(true)
+      
+      addToast({
+        message: "Document removed. Upload a new document to continue.",
+        type: "success"
+      })
+    }
+  }
+
   if (selectedContract) {
     return (
       <div className="h-full">
         <DocumentViewer 
           contract={selectedContract}
-          onBack={() => setSelectedContract(null)}
+          onRemoveDocument={handleRemoveDocument}
         />
       </div>
     )

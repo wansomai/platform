@@ -22,6 +22,31 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config: any) => {
+    // Handle tesseract.js worker files
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'tesseract.js/dist/worker.min.js': 'tesseract.js/dist/worker.min.js',
+    };
+
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'webassembly/async',
+    });
+
+    // Disable node polyfills for client-side code
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+    };
+
+    return config;
+  },
+  // Experimental features for WebAssembly support
+  experimental: {
+    // Add supported experimental options here if needed
+  },
 };
 
 export default nextConfig;

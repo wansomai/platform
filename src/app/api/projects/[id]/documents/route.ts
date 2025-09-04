@@ -3,47 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
-import { getUserIdFromRequest } from '@/lib/auth/authorization';
+import { checkProjectAccess, getUserIdFromRequest } from '@/lib/auth/authorization';
 
 const prisma = new PrismaClient();
 
 // Set a longer timeout for file uploads
 export const maxDuration = 60;
 
-// Helper function to check project access
-async function checkProjectAccess(projectId: string, userId: string) {
-  const projectMember = await prisma.projectMember.findUnique({
-    where: {
-      userId_projectId: {
-        userId,
-        projectId
-      }
-    }
-  });
-  
-  if (!projectMember) {
-    // Check if user belongs to the organization that owns the project
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!user) {
-      return false;
-    }
-    
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { organizationId: true }
-    });
-    
-    if (!project || project.organizationId !== user.organizationId) {
-      return false;
-    }
-  }
-  
-  return true;
-}
 
 // GET handler - List all documents for a project
 export async function GET(
@@ -65,7 +31,6 @@ export async function GET(
         { status: 401 }
       );
     }
-    
     // Check if user has access to this project
     const hasAccess = await checkProjectAccess(projectId, userId);
     
@@ -81,7 +46,6 @@ export async function GET(
 
     // Get category filter
     const searchParams = request.nextUrl.searchParams;
-    const category = searchParams.get('category') || undefined;
      const projectDocuments = await prisma.projectDocument.findMany({
       where: { project_id: projectId },
       include: {
@@ -302,10 +266,22 @@ async function extractDocumentContent(documentId: string): Promise<boolean> {
     
     if (document.metadata) {
       try {
-        const metadata = JSON.parse(document.metadata.toString());
+        let metadata: any;
+        
+        // Handle both object and string metadata
+        if (typeof document.metadata === 'string') {
+          metadata = JSON.parse(document.metadata);
+        } else if (typeof document.metadata === 'object') {
+          metadata = document.metadata;
+        } else {
+          // If it's neither string nor object, convert to string and parse
+          metadata = JSON.parse(document.metadata.toString());
+        }
+        
         mimeType = metadata.mimeType || mimeType;
       } catch (error) {
         console.warn(`Could not parse metadata for document ${documentId}:`, error);
+        // Continue with default mime type inference from file extension
       }
     }
     

@@ -1,6 +1,6 @@
 // src/hooks/useDocuments.ts
 import { useState } from 'react'
-import api from '@/lib/api'
+import api, { apiService } from '@/lib/api'
 import { useDocumentsStore } from '@/store/documents.store'
 import { useProjectDocumentsStore } from '@/store/workspace-documents.store'
 import { useUIStore } from '@/store/ui.store'
@@ -61,8 +61,10 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get(`/projects/${projectId}/documents`);
-      setDocuments(response.data.data);
+      const response = await apiService.get(`/projects/${projectId}/documents`);
+      const res = response as { data: { data: any[] } };
+      setDocuments(res.data.data);
+
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch documents';
       setError(errorMessage);
