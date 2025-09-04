@@ -3,13 +3,7 @@
 
 import React, { useState } from 'react'
 import { 
-  ArrowLeft, 
-  FileText, 
-  AlertTriangle, 
-  CheckCircle, 
-  Info,
-  Clock,
-  X
+  ArrowLeft
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -129,7 +123,6 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack
             </Button>
             <div>
               <h1 className="text-lg font-semibold">{contract.title}</h1>
-              <p className="text-sm text-gray-600">{contract.fileName}</p>
             </div>
           </div>
           

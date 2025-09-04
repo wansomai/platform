@@ -7,9 +7,7 @@ import {
   FileText, 
   Loader2,
   File,
-  Image as ImageIcon,
-  Download,
-  Eye
+  Image as ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
@@ -118,7 +116,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack
             <h3 className="text-lg font-semibold mb-2">{fileTypeName}</h3>
             <p className="text-gray-600 mb-4">{contract.fileName}</p>
             <p className="text-sm text-gray-500 mb-6">
-              Preview not available in browser. Download to view the full document.
+              Preview not available in browser.
             </p>
           </div>
         </div>
@@ -133,13 +131,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack
           <h3 className="text-lg font-semibold mb-2">Document File</h3>
           <p className="text-gray-600 mb-2">{contract.fileName}</p>
           <p className="text-sm text-gray-500 mb-4">File Type: {contract.type}</p>
-          <Button
-            variant="outline"
-            onClick={() => window.open(contract.fileUrl, '_blank')}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download File
-          </Button>
         </div>
       </div>
     )
