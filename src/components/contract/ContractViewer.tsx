@@ -4,23 +4,14 @@
 import React, { useState } from 'react'
 import { 
   ArrowLeft, 
-  Download, 
   FileText, 
   AlertTriangle, 
   CheckCircle, 
   Info,
   Clock,
-  DollarSign,
-  Scale,
-  Shield,
-  Eye,
-  EyeOff,
   X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface Contract {
   id: string
@@ -114,12 +105,7 @@ const CLAUSE_ANALYSIS = {
 }
 
 export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack }) => {
-  const [selectedClause, setSelectedClause] = useState<string | null>(null)
   const [showAnnotations, setShowAnnotations] = useState(true)
-
-  const handleClauseClick = (clauseId: string) => {
-    setSelectedClause(selectedClause === clauseId ? null : clauseId)
-  }
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -130,20 +116,6 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack
     }
   }
 
-  const getRiskIcon = (risk: string) => {
-    switch (risk) {
-      case 'high': return <AlertTriangle className="w-4 h-4 text-red-500" />
-      case 'medium': return <Info className="w-4 h-4 text-yellow-500" />
-      case 'low': return <CheckCircle className="w-4 h-4 text-green-500" />
-      default: return <Info className="w-4 h-4 text-gray-500" />
-    }
-  }
-
-  const riskCounts = {
-    high: Object.values(CLAUSE_ANALYSIS).filter(c => c.risk === 'high').length,
-    medium: Object.values(CLAUSE_ANALYSIS).filter(c => c.risk === 'medium').length,
-    low: Object.values(CLAUSE_ANALYSIS).filter(c => c.risk === 'low').length,
-  }
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -161,48 +133,9 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAnnotations(!showAnnotations)}
-            >
-              {showAnnotations ? <EyeOff className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
-              {showAnnotations ? 'Hide' : 'Show'} Annotations
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-1" />
-              Export
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Risk Overview */}
-      {showAnnotations && (
-        <div className="border-b p-4 bg-gray-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">Risk Summary:</span>
-                <Badge variant="outline" className="bg-red-100 text-red-700">
-                  {riskCounts.high} High
-                </Badge>
-                <Badge variant="outline" className="bg-yellow-100 text-yellow-700">
-                  {riskCounts.medium} Medium
-                </Badge>
-                <Badge variant="outline" className="bg-green-100 text-green-700">
-                  {riskCounts.low} Low
-                </Badge>
-              </div>
-            </div>
-            
-            <div className="text-sm text-gray-600">
-              Overall Risk Score: <span className="font-semibold text-red-600">{contract.riskScore}/10</span>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="flex-1 overflow-auto">
         <div className="p-6">
@@ -213,94 +146,15 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack
                 /data-clause="([^"]+)" data-risk="([^"]+)"/g,
                 (match, clauseId, risk) => {
                   const baseClasses = showAnnotations 
-                    ? `cursor-pointer border-l-4 pl-3 py-2 my-2 transition-all hover:bg-gray-50 ${getRiskColor(risk)}`
+                    ? `border-l-4 pl-3 py-2 my-2 ${getRiskColor(risk)}`
                     : ''
                   
-                  return `onclick="handleClauseClick('${clauseId}')" class="${baseClasses}" data-clause="${clauseId}" data-risk="${risk}"`
+                  return `class="${baseClasses}" data-clause="${clauseId}" data-risk="${risk}"`
                 }
               )
             }}
-            onClick={(e) => {
-              const target = e.target as HTMLElement
-              const clauseId = target.getAttribute('data-clause')
-              if (clauseId && showAnnotations) {
-                // Send prompt to chat for clause analysis
-                const clauseData = CLAUSE_ANALYSIS[clauseId as keyof typeof CLAUSE_ANALYSIS];
-                if (clauseData) {
-                  const prompt = `Please analyze the ${clauseData.type.toLowerCase()} clause I clicked on in my contract. This clause has been flagged as ${clauseData.risk} risk. Please explain the risks and provide suggestions for improvement.`;
-                  
-                  // Dispatch custom event to send prompt to chat
-                  document.dispatchEvent(new CustomEvent('action-prompt-send', {
-                    detail: { promptTemplate: prompt }
-                  }));
-                }
-              }
-            }}
           />
           
-          {/* Quick Analysis Buttons */}
-          {showAnnotations && (
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">Quick Analysis</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    document.dispatchEvent(new CustomEvent('action-prompt-send', {
-                      detail: { promptTemplate: "Show me the high risk areas of this contract and explain why they are concerning." }
-                    }));
-                  }}
-                  className="justify-start"
-                >
-                  <AlertTriangle className="w-4 h-4 mr-2 text-red-500" />
-                  High Risk Areas
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    document.dispatchEvent(new CustomEvent('action-prompt-send', {
-                      detail: { promptTemplate: "Analyze the payment terms in this contract. Are they fair and favorable?" }
-                    }));
-                  }}
-                  className="justify-start"
-                >
-                  <DollarSign className="w-4 h-4 mr-2 text-green-500" />
-                  Payment Terms
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    document.dispatchEvent(new CustomEvent('action-prompt-send', {
-                      detail: { promptTemplate: "Review the termination and cancellation clauses. What are my options for ending this contract?" }
-                    }));
-                  }}
-                  className="justify-start"
-                >
-                  <X className="w-4 h-4 mr-2 text-orange-500" />
-                  Termination Terms
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    document.dispatchEvent(new CustomEvent('action-prompt-send', {
-                      detail: { promptTemplate: "Check this contract for compliance with relevant laws and regulations. Are there any compliance gaps?" }
-                    }));
-                  }}
-                  className="justify-start"
-                >
-                  <Shield className="w-4 h-4 mr-2 text-blue-500" />
-                  Compliance Check
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

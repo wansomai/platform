@@ -4,20 +4,14 @@
 import React, { useState, useEffect } from 'react'
 import { 
   ArrowLeft, 
-  Download, 
   FileText, 
-  AlertTriangle, 
-  Shield,
-  DollarSign,
-  X,
-  Eye,
-  EyeOff,
   Loader2,
   File,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Download,
+  Eye
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
 
 interface Contract {
@@ -39,30 +33,8 @@ interface DocumentViewerProps {
 }
 
 export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack }) => {
-  const [showQuickActions, setShowQuickActions] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Get risk level styling
-  const getRiskLevel = (score?: number) => {
-    if (!score) return { label: 'Unknown', color: 'bg-gray-100 text-gray-600' }
-    if (score <= 3) return { label: 'Low', color: 'bg-green-100 text-green-700' }
-    if (score <= 6) return { label: 'Medium', color: 'bg-yellow-100 text-yellow-700' }
-    return { label: 'High', color: 'bg-red-100 text-red-700' }
-  }
-
-  const riskLevel = getRiskLevel(contract.riskScore)
-  const riskCounts = {
-    high: 2, // Mock data - would come from actual analysis
-    medium: 3,
-    low: 4,
-  }
-
-  // Send prompt to chat
-  const sendPromptToChat = (prompt: string) => {
-    document.dispatchEvent(new CustomEvent('action-prompt-send', {
-      detail: { promptTemplate: prompt }
-    }));
-  }
 
   // Render appropriate viewer based on file type
   const renderDocumentViewer = () => {
@@ -101,16 +73,8 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack
             />
           </div>
           <div className="p-4 bg-gray-50 border-t">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center">
               <span className="text-sm text-gray-600">PDF Document</span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => window.open(contract.fileUrl, '_blank')}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Open in New Tab
-              </Button>
             </div>
           </div>
         </div>
@@ -156,32 +120,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack
             <p className="text-sm text-gray-500 mb-6">
               Preview not available in browser. Download to view the full document.
             </p>
-            <div className="space-y-2">
-              <Button
-                onClick={() => window.open(contract.fileUrl, '_blank')}
-                className="w-full"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download & Open
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  // Try to view using the system default application
-                  const link = document.createElement('a');
-                  link.href = contract.fileUrl ?? '';
-                  link.target = '_blank';
-                  link.download = contract.fileName;
-                  document.body.appendChild(link);          
-                  link.click();
-                  document.body.removeChild(link);
-                }}
-                className="w-full"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                Try to View
-              </Button>
-            </div>
           </div>
         </div>
       )
@@ -223,54 +161,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowQuickActions(!showQuickActions)}
-            >
-              {showQuickActions ? <EyeOff className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
-              {showQuickActions ? 'Hide' : 'Show'} Actions
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => contract.fileUrl && window.open(contract.fileUrl, '_blank')}
-            >
-              <Download className="w-4 h-4 mr-1" />
-              Download
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Risk Overview */}
-      {showQuickActions && (
-        <div className="border-b p-4 bg-gray-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">Risk Summary:</span>
-                <Badge variant="outline" className="bg-red-100 text-red-700">
-                  {riskCounts.high} High
-                </Badge>
-                <Badge variant="outline" className="bg-yellow-100 text-yellow-700">
-                  {riskCounts.medium} Medium
-                </Badge>
-                <Badge variant="outline" className="bg-green-100 text-green-700">
-                  {riskCounts.low} Low
-                </Badge>
-              </div>
-            </div>
-            
-            <div className="text-sm text-gray-600">
-              Overall Risk Score: <span className={`font-semibold ${riskLevel.color.includes('red') ? 'text-red-600' : riskLevel.color.includes('yellow') ? 'text-yellow-600' : 'text-green-600'}`}>
-                {contract.riskScore}/10
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="flex-1 relative">
         {/* Loading overlay */}
@@ -286,55 +179,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({ contract, onBack
         {/* Document Viewer */}
         {renderDocumentViewer()}
 
-        {/* Quick Action Panel - Overlay */}
-        {showQuickActions && (
-          <div className="absolute bottom-4 right-4 w-80">
-            <div className="bg-white rounded-lg shadow-lg border p-4">
-              <h3 className="text-lg font-semibold mb-3">Quick Analysis</h3>
-              <div className="grid grid-cols-1 gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => sendPromptToChat("Show me the high risk areas of this document and explain why they are concerning.")}
-                  className="justify-start"
-                >
-                  <AlertTriangle className="w-4 h-4 mr-2 text-red-500" />
-                  High Risk Areas
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => sendPromptToChat("Analyze the payment terms in this document. Are they fair and favorable?")}
-                  className="justify-start"
-                >
-                  <DollarSign className="w-4 h-4 mr-2 text-green-500" />
-                  Payment Terms
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => sendPromptToChat("Review the termination and cancellation clauses. What are my options for ending this agreement?")}
-                  className="justify-start"
-                >
-                  <X className="w-4 h-4 mr-2 text-orange-500" />
-                  Termination Terms
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => sendPromptToChat("Check this document for compliance with relevant laws and regulations. Are there any compliance gaps?")}
-                  className="justify-start"
-                >
-                  <Shield className="w-4 h-4 mr-2 text-blue-500" />
-                  Compliance Check
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
