@@ -41,6 +41,7 @@ interface SidebarLinkProps {
   active?: boolean;
   badge?: number;
   onClick?: () => void;
+  collapsed?: boolean;
 }
 
 // Sidebar Link Component
@@ -51,11 +52,13 @@ const SidebarLink = ({
   active,
   badge,
   onClick,
+  collapsed,
 }: SidebarLinkProps) => (
   <Link
     href={href}
     className={cn(
-      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100",
+      "flex items-center rounded-lg py-2 text-sm transition-all hover:bg-gray-100",
+      collapsed ? "gap-0 px-2 justify-center" : "gap-3 px-3",
       active ? "bg-gray-100 text-primary-600 font-medium" : "text-gray-600"
     )}
     onClick={onClick}
@@ -66,8 +69,8 @@ const SidebarLink = ({
         active ? "text-primary-600" : "text-gray-500"
       )}
     />
-    <span>{label}</span>
-    {badge !== undefined && badge > 0 && (
+    {!collapsed && <span>{label}</span>}
+    {!collapsed && badge !== undefined && badge > 0 && (
       <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-xs font-medium text-primary-600">
         {badge > 9 ? "9+" : badge}
       </span>
@@ -186,6 +189,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               label="Dashboard"
               active={pathname === "/dashboard"}
               onClick={isMobile ? handleMobileNavigation : undefined}
+              collapsed={collapsed && !isMobile}
             />
             <SidebarLink
               href="/vault"
@@ -193,6 +197,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               label="Vault"
               active={pathname === "/vault"}
               onClick={isMobile ? handleMobileNavigation : undefined}
+              collapsed={collapsed && !isMobile}
             />
             <SidebarLink
               href="/projects"
@@ -200,6 +205,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               label="Workspaces"
               active={pathname === "/projects"}
               onClick={isMobile ? handleMobileNavigation : undefined}
+              collapsed={collapsed && !isMobile}
             />
             <SidebarLink
               href="/workflows"
@@ -207,6 +213,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               label="Workflows"
               active={pathname === "/workflows"}
               onClick={isMobile ? handleMobileNavigation : undefined}
+              collapsed={collapsed && !isMobile}
             />
             <SidebarLink
               href="/business"
@@ -214,6 +221,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               label="Business"
               active={pathname === '/business'}
               onClick={isMobile ? handleMobileNavigation : undefined}
+              collapsed={collapsed && !isMobile}
             />
           </div>
 
@@ -234,6 +242,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     label={project.title}
                     active={pathname === `/projects/${project.id}`}
                     onClick={isMobile ? handleMobileNavigation : undefined}
+                    collapsed={collapsed && !isMobile}
                   />
                 ))
               ) : (

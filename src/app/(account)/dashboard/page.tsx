@@ -23,6 +23,7 @@ import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useNotifications } from "@/hooks/useNotifications";
+import { ChatInput } from "@/components/chat/ChatInput";
 // Quick Action Card Component
 interface QuickActionProps {
   icon: React.ElementType;
@@ -46,22 +47,26 @@ const QuickActionCard = ({
   disabled = false,
 }: QuickActionProps) => {
   const content = (
-    <div className={`block p-6 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-      <div className="flex items-start space-x-4">
-        <div className={`rounded-full p-3 ${color.replace("text", "bg")}/10 ${disabled ? 'opacity-50' : ''}`}>
+    <div className={`block p-3 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+      <div className="">
+        <div className=" flex flex-shrink-0">
+ <div className={`rounded-full p-3 ${color.replace("text", "bg")}/10 ${disabled ? 'opacity-50' : ''}`}>
           {loading ? (
             <Loader2 className={`h-6 w-6 animate-spin ${color}`} />
           ) : (
             <Icon className={`h-6 w-6 ${color}`} />
           )}
         </div>
-        <div className="space-y-1 flex-1">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">{title}</h3>
+            <div className="flex items-center justify-between">
+            <h3 className="font-medium text-sm">{title}</h3>
             {loading && (
               <span className="text-xs text-gray-500 animate-pulse">Creating...</span>
             )}
           </div>
+        </div>
+       
+        <div className="space-y-1 flex-1">
+      
           <p className="text-sm text-gray-500">{description}</p>
         </div>
       </div>
@@ -161,17 +166,38 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Welcome Banner */}
-    <WelcomeBanner />
+      <WelcomeBanner />
+
 
       {/* Quick Actions & Activity Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
         <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-2xl">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <h2 className="text-2xl">Start working with AI</h2>
+          
+      {/* AI Chat Input Section */}
+      <div className="w-full max-w-4xl mx-auto space-y-6">
+
+        <ChatInput 
+          homepageMode={true}
+          onWorkspaceCreated={(projectId) => {
+            // Optional: Handle workspace creation if needed
+            console.log('New workspace created:', projectId);
+          }}
+        />
+        
+        {/* Helper text */}
+        <div className="text-center">
+          <p className="text-sm text-gray-500">
+            Press <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Enter</kbd> to send, 
+            <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono ml-1">Shift+Enter</kbd> for new line
+          </p>
+        </div>
+      </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-2">
             <QuickActionCard
               icon={MessageSquare}
-              title="New AI Workspace"
+              title="New Workspace"
               description="Collaborate, organize your legal work into AI workspaces"
               onClick={handleQuickChatCreate}
               color="text-green-600"
@@ -191,14 +217,6 @@ export default function DashboardPage() {
               title="Upload Documents"
               description="Add contracts, pleadings, or evidence to your vault"
               href="/vault"
-              color="text-blue-600"
-              disabled={isCreatingQuickChat}
-            />
-              <QuickActionCard
-              icon={Briefcase}
-              title="Grow Your Legal Practice"
-              description="Get more clients for your legal business with AI"
-              href="/business"
               color="text-blue-600"
               disabled={isCreatingQuickChat}
             />
