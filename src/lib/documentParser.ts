@@ -39,10 +39,8 @@ export async function extractTextFromFile(
     
     case 'image/jpeg':
     case 'image/png':
-      // On server side, return placeholder. OCR will be handled client-side when needed.
-      if (typeof window === 'undefined') {
-        return "Image document uploaded. Text extraction will be performed when the AI analyzes this document.";
-      }
+      console.log('Processing image document for OCR, mimeType:', mimeType);
+      // Always attempt OCR for images, both server and client side
       return extractTextFromImage(fileBuffer, onProgress);
     
     default:
@@ -157,12 +155,17 @@ function extractTextFromCsv(fileBuffer: Buffer): string {
  */
 async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: number) => void): Promise<string> {
   try {
+    console.log('extractTextFromImage called, buffer size:', fileBuffer.length, 'bytes');
+    
     // Use server-side Google Vision API for OCR
     if (typeof window === 'undefined') {
+      console.log('Using server-side Google Vision API for OCR');
       // Server-side: Use Google Vision API
       const text = await ServerOCRService.extractTextFromImage(fileBuffer);
+      console.log('Server-side OCR result length:', text.length, 'characters');
       return text;
     } else {
+      console.log('Using client-side Tesseract.js for OCR');
       // Client-side: Use browser-based tesseract.js as fallback
       const blob = new Blob([fileBuffer]);
       const text = await ocrService.extractTextFromImage(blob, {
@@ -171,9 +174,11 @@ async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: 
       });
       
       if (!text || text.trim().length === 0) {
+        console.log('Client-side OCR returned empty text');
         return "No text could be extracted from this image. The image may not contain readable text or the text may be too unclear.";
       }
       
+      console.log('Client-side OCR result length:', text.length, 'characters');
       return text;
     }
   } catch (error) {

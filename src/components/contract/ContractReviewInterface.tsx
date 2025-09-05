@@ -78,7 +78,7 @@ export const DocumentReviewInterface: React.FC = () => {
       
       // Send automatic document overview to chat
       if (currentConversation && sendMessage) {
-        const overviewPrompt = `I've uploaded a document called "${firstDocument.title}" for review. Please provide an initial overview and analysis of this document, highlighting any key areas of concern, important points, and relevant insights I should be aware of.`
+        const overviewPrompt = `I've uploaded a document for review. The text content has been extracted and is available for analysis. Please provide an initial overview and analysis of this document, highlighting any key areas of concern, important points, and relevant insights I should be aware of.`
         
         try {
           await sendMessage(

@@ -16,10 +16,6 @@ export class ServerOCRService {
     if (!this.client) {
       // Initialize client with credentials from environment
       this.client = new ImageAnnotatorClient({
-        // Google Cloud will automatically find credentials from:
-        // 1. GOOGLE_APPLICATION_CREDENTIALS environment variable
-        // 2. Service account key file
-        // 3. Default service account (if running on Google Cloud)
         keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
         projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
       });
@@ -35,12 +31,21 @@ export class ServerOCRService {
     options: OCROptions = {}
   ): Promise<string> {
     try {
+      // Log environment variable status
+      console.log('OCR Environment Check:', {
+        hasGoogleCredentials: !!process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        hasGoogleProjectId: !!process.env.GOOGLE_CLOUD_PROJECT_ID,
+        credentialsPath: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        projectId: process.env.GOOGLE_CLOUD_PROJECT_ID
+      });
+
       if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.GOOGLE_CLOUD_PROJECT_ID) {
         console.warn('Google Vision API not configured, falling back to placeholder');
         return "Google Vision API is not configured. Please set up Google Cloud credentials to enable OCR text extraction from images.";
       }
 
       const client = this.getClient();
+      console.log('Google Vision client initialized successfully');
 
       // Configure the request
       const request = {
@@ -58,8 +63,10 @@ export class ServerOCRService {
         },
       };
 
+      console.log('Making OCR request to Google Vision API...');
       // Perform OCR
       const [result] = await client.annotateImage(request);
+      console.log('OCR request completed successfully');
       
       // Extract text from the response
       const textAnnotations = result.textAnnotations;
@@ -74,6 +81,7 @@ export class ServerOCRService {
       const cleanedText = fullText
         .replace(/\n\s*\n\s*\n/g, '\n\n') // Replace multiple newlines with double newlines
         .replace(/[ \t]+/g, ' ') // Replace multiple spaces/tabs with single space
+        .replace(/\{([^}]*)\}/g, '[$1]') // Replace curly braces with square brackets to avoid LangChain template conflicts
         .trim();
 
       if (!cleanedText || cleanedText.length < 10) {
@@ -83,6 +91,15 @@ export class ServerOCRService {
       return cleanedText;
     } catch (error) {
       console.error('Google Vision OCR extraction failed:', error);
+      
+      // Log detailed error information
+      console.error('OCR Error Details:', {
+        errorType: error?.constructor?.name,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined,
+        errorCode: (error as any)?.code,
+        errorDetails: (error as any)?.details
+      });
       
       // Return helpful error messages based on error type
       if (error instanceof Error) {

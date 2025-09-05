@@ -82,7 +82,14 @@ class OCRService {
         }
       });
 
-      return result.data.text;
+      // Clean up the extracted text to avoid LangChain template conflicts
+      const cleanedText = result.data.text
+        .replace(/\{([^}]*)\}/g, '[$1]') // Replace curly braces with square brackets
+        .replace(/\n\s*\n\s*\n/g, '\n\n') // Replace multiple newlines with double newlines
+        .replace(/[ \t]+/g, ' ') // Replace multiple spaces/tabs with single space
+        .trim();
+
+      return cleanedText;
     } catch (error) {
       console.error('OCR extraction failed:', error);
       throw new Error('Failed to extract text from image');
