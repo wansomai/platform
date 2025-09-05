@@ -49,9 +49,81 @@ export async function extractTextFromFile(
 }
 
 /**
- * Extract text from PDF files
+ * Extract text from PDF files with hybrid approach
+ * First tries traditional text extraction, falls back to OCR for scanned PDFs
  */
 async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
+  try {
+    console.log('Starting PDF text extraction...');
+    
+    // First attempt: Traditional text extraction for text-based PDFs
+    const textBasedResult = await extractTextFromPdfTraditional(fileBuffer);
+    
+    // Check if meaningful text was extracted
+    const cleanText = textBasedResult.replace(/[^\w\s]/g, '').trim();
+    const wordCount = cleanText.split(/\s+/).filter(word => word.length > 2).length;
+    
+    console.log(`Traditional PDF extraction: ${textBasedResult.length} chars, ${wordCount} meaningful words`);
+    
+    // If we got substantial meaningful text, use it
+    if (textBasedResult.length > 100 && wordCount > 10) {
+      console.log('PDF appears to contain extractable text, using traditional method');
+      return textBasedResult;
+    }
+    
+    // If minimal meaningful text, try OCR (likely scanned PDF)
+    console.log('PDF appears to be scanned or image-based, attempting OCR...');
+    
+    // Only attempt OCR on server-side where Google Vision API is available
+    if (typeof window === 'undefined') {
+      const ocrResult = await ServerOCRService.extractTextFromPdf(fileBuffer);
+      console.log(`OCR result received: "${ocrResult.substring(0, 100)}..." (${ocrResult.length} chars)`);
+      
+      // Check if OCR result is an error message
+      const isOcrError = ocrResult.startsWith('Google Vision API is not configured') || 
+                        ocrResult.startsWith('No readable text could be extracted') ||
+                        ocrResult.startsWith('No meaningful text could be extracted') ||
+                        ocrResult.startsWith('OCR service') ||
+                        ocrResult.startsWith('Text extraction from PDF failed') ||
+                        ocrResult.startsWith('PDF format is not supported');
+      
+      // If OCR was successful and returned meaningful content, use it
+      if (ocrResult && !isOcrError && ocrResult.length > 20) {
+        console.log(`OCR extraction successful: ${ocrResult.length} characters`);
+        return ocrResult;
+      } else {
+        console.log(`OCR failed or returned insufficient text. Is error: ${isOcrError}, Length: ${ocrResult.length}`);
+      }
+    }
+    
+    // If OCR failed or we're client-side, return the traditional result even if minimal
+    console.log('Using traditional extraction result as fallback');
+    return textBasedResult || "Unable to extract text from this PDF. The document may be an image-based or scanned PDF that requires OCR processing.";
+    
+  } catch (error) {
+    console.error('Error extracting text from PDF:', error);
+    
+    // Try OCR as last resort if traditional extraction completely failed
+    if (typeof window === 'undefined') {
+      try {
+        console.log('Traditional extraction failed, trying OCR as last resort...');
+        const ocrResult = await ServerOCRService.extractTextFromPdf(fileBuffer);
+        if (ocrResult && !ocrResult.startsWith('Google Vision API is not configured')) {
+          return ocrResult;
+        }
+      } catch (ocrError) {
+        console.error('OCR fallback also failed:', ocrError);
+      }
+    }
+    
+    throw error;
+  }
+}
+
+/**
+ * Extract text from PDF using traditional method (text-based PDFs)
+ */
+async function extractTextFromPdfTraditional(fileBuffer: Buffer): Promise<string> {
   try {
     const blob = new Blob([fileBuffer], { type: 'application/pdf' });
     const loader = new PDFLoader(blob);
@@ -60,8 +132,8 @@ async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
     // Combine all page contents
     return docs.map((doc: any) => doc.pageContent).join('\n\n');
   } catch (error) {
-    console.error('Error extracting text from PDF:', error);
-    throw error;
+    console.error('Traditional PDF extraction failed:', error);
+    return '';
   }
 }
 
@@ -162,7 +234,6 @@ async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: 
       console.log('Using server-side Google Vision API for OCR');
       // Server-side: Use Google Vision API
       const text = await ServerOCRService.extractTextFromImage(fileBuffer);
-      console.log('Server-side OCR result length:', text.length, 'characters');
       return text;
     } else {
       console.log('Using client-side Tesseract.js for OCR');

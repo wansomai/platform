@@ -20,6 +20,30 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+For full functionality, you'll need to set up the following environment variables:
+
+### Google Vision API (for OCR)
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
+GOOGLE_CLOUD_PROJECT_ID=your-google-cloud-project-id
+```
+
+### Google Cloud Storage (for PDF OCR)
+```bash
+GOOGLE_CLOUD_STORAGE_BUCKET=your-storage-bucket-name
+```
+
+**Note:** PDF OCR for scanned documents requires Google Cloud Storage for temporary file processing. The system will automatically fall back to traditional PDF text extraction if GCS is not configured.
+
+### Setup Instructions
+1. Create a Google Cloud Project
+2. Enable the Vision API and Cloud Storage API
+3. Create a service account and download the JSON key file
+4. Create a Cloud Storage bucket
+5. Set the environment variables above
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

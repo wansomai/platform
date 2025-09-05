@@ -139,6 +139,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
   // Enhanced delete function
   const deleteDocument = async (documentId: string) => {
     try {
+      setIsProcessing(true);
       setError(null);
       const success = await storeDeleteDocument(documentId);
       
@@ -155,6 +156,8 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       const errorMessage = error.response?.data?.message || error.message || 'Failed to delete document';
       handleError(errorMessage);
       throw error;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
