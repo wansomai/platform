@@ -128,41 +128,6 @@ export default function DashboardPage() {
     loadDashboardData();
   }, []);
 
-  const handleQuickChatCreate = async () => {
-    if (!session?.user?.organization?.id) {
-      notify.error('Something went wrong. Please try again.');
-      return;
-    }
-
-    setIsCreatingQuickChat(true);
-    
-    try {
-      // Generate a meaningful project name
-      const projectTitle = generateQuickChatProjectName();
-      
-      const payload = {
-        title: projectTitle,
-        description: 'Quick AI chat session',
-        organizationId: session.user.organization.id
-      };
-
-      const newProject = await createProject(payload);
-      
-      if (newProject) {
-        notify.success('AI workspace created successfully!');
-        // Navigate to the new project
-        router.push(`/projects/${newProject.id}`);
-      } else {
-        throw new Error('Failed to create project');
-      }
-    } catch (error: any) {
-      notify.error('Failed to create AI workspace. Please try again.');
-      console.error('Error creating quick chat:', error);
-    } finally {
-      setIsCreatingQuickChat(false);
-    }
-  };
-
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Welcome Banner */}
@@ -199,7 +164,7 @@ export default function DashboardPage() {
               icon={MessageSquare}
               title="New Workspace"
               description="Collaborate, organize your legal work into AI workspaces"
-              onClick={handleQuickChatCreate}
+              onClick={() => setShowProjectModal(true)}
               color="text-green-600"
               loading={isCreatingQuickChat}
               disabled={isCreatingQuickChat}
