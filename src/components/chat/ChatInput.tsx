@@ -1,7 +1,7 @@
 // src/components/chat/ChatInput.tsx
 "use client"
 import { useRef, useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useChatStore } from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
+import { useProjectStore } from "@/store/project.store"
+import { useNotifications } from "@/hooks/useNotifications"
 import { useSession } from "next-auth/react"
 import ProAccessModal from "../modals/ProAccess"
 import { UploadDocumentModal } from "../modals/UploadModal"
@@ -29,10 +31,13 @@ import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
+  homepageMode?: boolean;
+  onWorkspaceCreated?: (projectId: string) => void;
 }
 
-export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
+export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }: ChatInputProps) {
   const params = useParams()
+  const router = useRouter()
   const projectId = params.id as string
   
   const [input, setInput] = useState("")
@@ -45,6 +50,8 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   
   // Get state from stores
   const { addToast } = useUIStore()
+  const { notify } = useNotifications()
+  const { createProject } = useProjectStore()
   const { 
     currentConversation, 
     sendMessage
@@ -91,11 +98,73 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
       document.removeEventListener('action-prompt-send', handlePromptSendEvent);
     };
   }, [currentConversation]);
- 
+
+  // Helper function to generate meaningful project names
+  const generateQuickChatProjectName = (): string => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+    const dateStr = now.toLocaleDateString([], { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+    
+    return `Wansom - ${dateStr} ${timeStr}`;
+  };
+
   // Handle send message with streaming
   const handleSend = async (customMessage?: string) => {
     const messageToSend = customMessage || input;
-    if (!messageToSend.trim() || isSubmitting || !currentConversation) return;
+    if (!messageToSend.trim() || isSubmitting) return;
+
+    // Homepage mode - create new workspace first
+    if (homepageMode) {
+      if (!session?.user?.organization?.id) {
+        notify.error('Something went wrong. Please try again.');
+        return;
+      }
+
+      setIsSubmitting(true);
+      
+      try {
+        // Generate a meaningful project name
+        const projectTitle = generateQuickChatProjectName();
+        
+        const payload = {
+          title: projectTitle,
+          description: 'Quick AI chat session',
+          organizationId: session.user.organization.id
+        };
+
+        const newProject = await createProject(payload);
+        
+        if (newProject) {
+          notify.success('AI workspace created successfully!');
+          // Store the initial message in sessionStorage for the new project
+          sessionStorage.setItem('initialMessage', messageToSend);
+          
+          // Call callback if provided
+          onWorkspaceCreated?.(newProject.id);
+          
+          // Navigate to the new project
+          router.push(`/projects/${newProject.id}`);
+        } else {
+          throw new Error('Failed to create project');
+        }
+      } catch (error: any) {
+        notify.error('Failed to create AI workspace. Please try again.');
+        console.error('Error creating workspace:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    // Normal chat mode - requires existing conversation
+    if (!currentConversation) return;
     
     try {
       setIsSubmitting(true);
@@ -203,32 +272,55 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
   
   return (
     <>
-      {/* Floating Input Area with Embedded Tools */}
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[80vw]">
-        <div className="w-full max-w-3xl mx-auto">
+      {/* Input Area - Different styling for homepage vs chat mode */}
+      <div className={homepageMode 
+        ? "relative w-full max-w-4xl mx-auto" 
+        : "fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[80vw]"
+      }>
+        <div className={homepageMode ? "w-full" : "w-full max-w-3xl mx-auto"}>
           {/* Input Area with embedded icons */}
-          <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg focus-within:border-primary-300 transition-colors relative">
-            {/* Left side icons */}
-            <div className="absolute left-6 bottom-2 flex items-center gap-1 z-10 w-full">
+          <div className={`bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative ${
+            homepageMode 
+              ? "shadow-sm focus-within:shadow-md" 
+              : "shadow-lg"
+          }`}>
+            {/* Left side icons - show in all modes */}
+            <div className={`absolute flex items-center gap-1 z-10 w-full ${
+              homepageMode ? "left-6 bottom-3" : "left-6 bottom-2"
+            }`}>
               {/* Documents Tool */}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShowDocumentModal(true)}
-                className="h-8 w-8 p-0 hover:bg-gray-100 rounded-md"
-                title={`Documents (${conversationDocuments?.length || 0})`}
+                onClick={homepageMode ? undefined : () => setShowDocumentModal(true)}
+                className={`h-8 w-8 p-0 rounded-md ${
+                  homepageMode 
+                    ? "cursor-not-allowed opacity-60" 
+                    : "hover:bg-gray-100"
+                }`}
+                title={homepageMode 
+                  ? "Documents (available after creating workspace)" 
+                  : `Documents (${conversationDocuments?.length || 0})`
+                }
+                disabled={homepageMode}
               >
                 <Paperclip className="h-6 w-6 text-gray-500" />
               </Button>
 
               {/* Tools Dropdown */}
-              <DropdownMenu open={showToolsDropdown} onOpenChange={setShowToolsDropdown}>
+              <DropdownMenu 
+                open={showToolsDropdown} 
+                onOpenChange={setShowToolsDropdown}
+              >
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-fit px-2 hover:bg-gray-100 rounded-md"
-                    title="AI Tools" 
+                    className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
+                    title={homepageMode 
+                      ? "AI Tools (preview - will be configurable after creating workspace)" 
+                      : "AI Tools"
+                    }
                   >
                     <SlidersHorizontal className="h-6 w-6 text-gray-500" /> Tools
                   </Button>
@@ -240,7 +332,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-sm text-gray-500">Workspace Settings</h4>
+                      <h4 className="font-medium text-sm text-gray-500">
+                        {homepageMode ? "Available AI Tools" : "Workspace Settings"}
+                      </h4>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -250,6 +344,11 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
+                    {homepageMode && (
+                      <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                        Create a workspace to use Tools.
+                      </p>
+                    )}
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <Label htmlFor="web-search" className="font-medium text-sm">
@@ -259,9 +358,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="web-search" 
-                          checked={settings.webSearch}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
+                          checked={homepageMode ? false : settings.webSearch}
+                          disabled={homepageMode || isLoadingSettings}
+                          onCheckedChange={homepageMode ? undefined : (checked) => {
                             handleSettingChange('webSearch', checked);
                           }}
                         />
@@ -276,10 +375,10 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="legal-drafting" 
-                          checked={settings.legalDrafting}
-                            disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
-                              handleSettingChange('legalDrafting', checked);
+                          checked={homepageMode ? false : settings.legalDrafting}
+                          disabled={homepageMode || isLoadingSettings}
+                          onCheckedChange={homepageMode ? undefined : (checked) => {
+                            handleSettingChange('legalDrafting', checked);
                           }}
                         />
                       </div>
@@ -292,9 +391,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="contract-review" 
-                          checked={settings.contractReview}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
+                          checked={homepageMode ? false : settings.contractReview}
+                          disabled={homepageMode || isLoadingSettings}
+                          onCheckedChange={homepageMode ? undefined : (checked) => {
                             handleSettingChange('contractReview', checked);
                           }}
                         />
@@ -308,8 +407,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="case-preparation" 
-                          checked={settings.legalDrafting}
-                           onCheckedChange={(checked) => {
+                          checked={false}
+                          disabled={true}
+                          onCheckedChange={homepageMode ? undefined : (checked) => {
                             setShowProAccess(true)
                           }}
                         />
@@ -324,9 +424,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="cite-sources" 
-                          checked={settings.citeSources}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
+                          checked={homepageMode ? false : settings.citeSources}
+                          disabled={homepageMode || isLoadingSettings}
+                          onCheckedChange={homepageMode ? undefined : (checked) => {
                             handleSettingChange('citeSources', checked);
                           }}
                         />
@@ -341,9 +441,9 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                         </div>
                         <Switch 
                           id="suggest-actions" 
-                          checked={settings.suggestActions}
-                          disabled={isLoadingSettings}
-                          onCheckedChange={(checked) => {
+                          checked={homepageMode ? false : settings.suggestActions}
+                          disabled={homepageMode || isLoadingSettings}
+                          onCheckedChange={homepageMode ? undefined : (checked) => {
                             handleSettingChange('suggestActions', checked);
                           }}
                         />
@@ -354,9 +454,23 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-<button className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border" onClick={toggleSidebar}> <Settings className="h-4 w-4 text-gray-500 text-xs" />Settings</button>
               {/* Settings Button for Sidebar Toggle */}
-             
+              <button 
+                className={`h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border ${
+                  homepageMode 
+                    ? "cursor-not-allowed opacity-60" 
+                    : "hover:bg-gray-50"
+                }`} 
+                onClick={homepageMode ? undefined : toggleSidebar}
+                disabled={homepageMode}
+                title={homepageMode 
+                  ? "Settings (available after creating workspace)" 
+                  : "Settings"
+                }
+              > 
+                <Settings className="h-4 w-4 text-gray-500 text-xs" />
+                Settings
+              </button>
             </div>
 
             <Textarea
@@ -364,44 +478,55 @@ export function ChatInput({ onDocumentsAdded }: ChatInputProps) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Wansom..."
-              className="border-0 resize-none min-h-[90px] max-h-[180px] pl-6 pr-16 pt-4 pb-6 rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500"
+              placeholder={homepageMode 
+                ? "Ask anything legal-related... (e.g., 'Help me draft a contract', 'Explain liability law', 'Review this agreement')" 
+                : "Ask Wansom..."
+              }
+              className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 ${
+                homepageMode 
+                  ? "min-h-[100px] max-h-[200px] px-6 py-4 pr-16 text-base" 
+                  : "min-h-[90px] max-h-[180px] pl-6 pr-16 pt-4 pb-6"
+              }`}
               disabled={isSubmitting}
             />
             
             {/* Send button positioned inside textarea */}
-            <div className="absolute right-2 bottom-2">
+            <div className={homepageMode ? "absolute right-3 bottom-3" : "absolute right-2 bottom-2"}>
               <Button 
                 onClick={() => handleSend()} 
                 size="icon" 
-                className="h-8 w-8 rounded-lg bg-primary hover:bg-primary/90" 
+                className={`rounded-lg bg-primary hover:bg-primary/90 ${
+                  homepageMode ? "h-10 w-10 shadow-md" : "h-8 w-8"
+                }`} 
                 disabled={!input.trim() || isSubmitting}
               >
                 {isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  <Loader2 className={`animate-spin text-white ${homepageMode ? "h-5 w-5" : "h-4 w-4"}`} />
                 ) : (
-                  <Send className="h-4 w-4 text-white" />
+                  <Send className={`text-white ${homepageMode ? "h-5 w-5" : "h-4 w-4"}`} />
                 )}
               </Button>
             </div>
           </div>
         </div>
       </div>
-  <ProAccessModal 
+      {/* Modals */}
+      <ProAccessModal 
         isOpen={showProAcess}
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
         isLoading={isRequestingPro}
       />   
-      {/* Document Selection Modal */}
-    
+      {/* Document Selection Modal - only show in chat mode since it needs projectId */}
+      {!homepageMode && (
         <UploadDocumentModal
           open={showDocumentModal}
           mode="upload-and-attach"
           onOpenChange={setShowDocumentModal}
           projectId={projectId}
-         onDocumentsAdded={handleDocumentsAdded}
+          onDocumentsAdded={handleDocumentsAdded}
         />
+      )}
     
     </>
   )
