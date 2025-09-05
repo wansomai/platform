@@ -1,6 +1,6 @@
 // src/components/chat/ChatInput.tsx
 "use client"
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -80,6 +80,20 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
   }, [input])
+
+  // Restore pending message from homepage when in workspace mode
+  useEffect(() => {
+    if (!homepageMode && typeof window !== 'undefined') {
+      const pendingMessage = sessionStorage.getItem('pendingMessage');
+      if (pendingMessage && !input) {
+        // Restore the message to the input
+        setInput(pendingMessage);
+        // Clear the stored message to prevent it from being restored again
+        sessionStorage.removeItem('pendingMessage');
+      }
+    }
+  }, [homepageMode, input])
+
   // Handle direct prompt sending from external components
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -100,7 +114,7 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
   }, [currentConversation]);
 
   // Helper function to generate meaningful project names
-  const generateQuickChatProjectName = (): string => {
+  const generateQuickChatProjectName = useCallback((): string => {
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { 
       hour: '2-digit', 
@@ -113,14 +127,14 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
     });
     
     return `Wansom - ${dateStr} ${timeStr}`;
-  };
+  }, []);
 
   // Handle send message with streaming
-  const handleSend = async (customMessage?: string) => {
+  const handleSend = useCallback(async (customMessage?: string) => {
     const messageToSend = customMessage || input;
     if (!messageToSend.trim() || isSubmitting) return;
 
-    // Homepage mode - create new workspace first
+    // Homepage mode - create new workspace and navigate
     if (homepageMode) {
       if (!session?.user?.organization?.id) {
         notify.error('Something went wrong. Please try again.');
@@ -143,13 +157,14 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
         
         if (newProject) {
           notify.success('AI workspace created successfully!');
-          // Store the initial message in sessionStorage for the new project
-          sessionStorage.setItem('initialMessage', messageToSend);
+          
+          // Store the message in sessionStorage to preserve it across navigation
+          sessionStorage.setItem('pendingMessage', messageToSend);
           
           // Call callback if provided
           onWorkspaceCreated?.(newProject.id);
           
-          // Navigate to the new project
+          // Navigate to the new project - the message will be restored in the workspace
           router.push(`/projects/${newProject.id}`);
         } else {
           throw new Error('Failed to create project');
@@ -188,7 +203,20 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [
+    input, 
+    homepageMode, 
+    session?.user?.organization?.id, 
+    session?.user?.id,
+    generateQuickChatProjectName,
+    notify,
+    createProject,
+    router,
+    onWorkspaceCreated,
+    currentConversation,
+    projectId,
+    sendMessage
+  ]);
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
