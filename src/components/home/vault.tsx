@@ -1,38 +1,11 @@
 // components/VaultSection.tsx
 'use client';
-import { DocumentsVault } from '@/app/(landingpages)/ai-due-diligence/DueDiligence';
 import React,{useState} from 'react';
 import {
-  FileText,
-  Sparkles,
-  CheckCircle,
-  Play,
-  ArrowRight,
-  Brain,
-  Zap,
-  BookOpen,
   Shield,
-  AlertTriangle,
-  Eye,
-  Search,
-  Clock,
-  Target,
-  ThumbsUp,
-  X,
-  ClipboardCopy,
-  Clipboard,
-  ChevronDown,
-  ChevronUp,
-  Paperclip,
-  Send,
-  FolderOpen,
   BarChart3,
-  TrendingUp,
-  Users,
   Building,
-  FileSearch,
   Calendar,
-  CheckSquare,
   Folder,
   Lock,
   FolderLock,
@@ -60,16 +33,17 @@ const VaultSection: React.FC = () => {
     <section className="pt-12 bg-primary overflow-hidden md:-mt-24" id="document-vault">
       <div className="section-container flex flex-col md:flex-row gap-8">
          {/* Image Container with proper cropping */}
-        <div className='md:basis-2/3 w-full'>
-          <VaultDocs/>
+        <div className='md:basis-1/2'>
+          <img
+            src="/wansom-features.png"
+            alt="Document Vault"
+            className="h-full object-cover object-left-top"
+          />
         </div>
-        <div className=" mb-12 lg:mb-16">
-          <h2 className="text-heading-2 text-white mb-6">
-           Built to the highest security standards
-          </h2>
-          <p className="text-body-large text-dim max-w-5xl mx-auto">
-            Store, manage, and access your legal documents in one secure location built with enterprise-level security at its core, ensuring your firm's sensitive data remains confidential and protected.
-          </p>
+        <div className="md:basis-1/2 mb-12 lg:mb-16">
+          <h2 className="text-heading-4 text-white mb-6">
+            Wansom AI is built with enterprise-level security at its core, ensuring your firm's sensitive data remains confidential and protected.
+          </h2>    
                 <div className="mt-5">
               {securityFeatures.map((feature, index) => (
                 <div 
@@ -81,7 +55,7 @@ const VaultSection: React.FC = () => {
                       <feature.icon className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                       <h3 className="text-heading-4 text-gray-100">
+                       <h3 className="text-xl font-semibold text-gray-100">
                       {feature.title}
                     </h3>
                      <p className="text-md text-dim">
