@@ -80,7 +80,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         )}
         
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Project Title
             </Label>
@@ -94,7 +94,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             />
           </div>
           
-          <div className="grid grid-cols-4 items-start gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4">
             <Label htmlFor="description" className="text-right pt-2">
               Description
             </Label>
@@ -103,7 +103,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              className="col-span-3"
+              className="md:col-span-3"
               placeholder="Enter project description (optional)"
             />
           </div>
