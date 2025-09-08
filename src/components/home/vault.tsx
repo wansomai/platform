@@ -30,7 +30,7 @@ const VaultSection: React.FC = () => {
         description: "Deploy Wansom AI within your own infrastructure for maximum security control."
       }]
   return (
-    <section className="pt-12 bg-primary overflow-hidden md:-mt-24" id="document-vault">
+    <section className="pt-12 bg-primary overflow-hidden md:-mt-24" id="security">
       <div className="section-container flex flex-col md:flex-row gap-8">
          {/* Image Container with proper cropping */}
         <div className='md:basis-1/2'>
