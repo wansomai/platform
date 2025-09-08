@@ -1,22 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  ShieldCheck,
-  FolderLock,
-  Shield,
-  ExternalLink,
-  CheckCircle,
-  Globe,
-  Zap,
-  Target,
-  Sparkles,
-} from "lucide-react";
+import { CheckCircle, Globe, Zap, Target, Sparkles, Folder } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import HeroSection from "@/components/home/hero";
 import FeaturesSection from "@/components/home/features";
-import VaultSection from "@/components/home/vault";
+import VaultSection, { VaultDocs } from "@/components/home/vault";
 import CookieConsent, { Cookies } from "react-cookie-consent";
 import {
   ResearchInterfaceCards,
@@ -75,6 +63,8 @@ export default function Home() {
         <FeaturesSection />
         <LegalDraftingSection />
         <LegalResearchSection />
+        <DocumentReview />
+
         <AutomateProcesses />
         <VaultSection />
         <CreativeIntegrationsSection />
@@ -141,8 +131,9 @@ function LegalDraftingSection() {
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Wansom automatically detects the substance of your document to
-              draft relevant, ready to use clauses. Collaborate with AI to
-              achieve tasks faster.
+              draft relevant, ready to use clauses.Start from Scratch or upload
+              from a template library and collaborate with AI in an Inline
+              document editor. Save and export ready Word documents .
             </p>
 
             <div className="space-y-4">
@@ -181,12 +172,12 @@ function LegalResearchSection() {
       <div className="section-container pb-12">
         <div className="text-center mb-12 ">
           <h2 className="text-heading-2 text-gray-900">
-            Access millions of legal authorities in one intelligent search
+            Access verified legal authorities in one intelligent search
           </h2>
           <p className="text-body-large text-gray-600 max-w-3xl mx-auto">
             Get instant answers to complex legal questions with AI that searches
-            through millions of cases, statutes, and legal authorities in
-            seconds.
+            through cases, statutes, and legal authorities in seconds and return
+            verified results.
           </p>
         </div>
         {/* Add your AI Legal Research component here */}
@@ -257,6 +248,57 @@ function AutomateProcesses() {
             </div>
           </div>
           <ResearchSourcesWorkflow />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DocumentReview() {
+  return (
+    <section className="section-spacing bg-primary" id="legal-research">
+      <div className="section-container ">
+        <div className="grid lg:grid-cols-2 gap-10 items-center">
+          <VaultDocs />
+          <div>
+            <h2 className="text-heading-2 mb-4 text-white">
+              Securely store and manage all your legal documents in one place
+            </h2>
+            <p className="text-xl text-gray-100 mb-8">
+              Wansom's Document Vault offers a secure, organized repository for
+              all your legal documents, ensuring easy access and management
+              whenever you need them.
+            </p>
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center p-3">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-gray-100">
+                    Enhanced AI Document Review
+                  </h3>
+                  <p className="text-gray-100">
+                    Leverage advanced AI to review and analyze legal documents
+                    for accuracy, compliance, and risk assessment.Suport for both word,PDFs,Images and scanned documents.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center p-3">
+                  <Folder className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-gray-100">Document Folders</h3>
+                  <p className="text-gray-100">
+                    Organize documents into customizable folders and
+                    subfolders for easy retrieval and management.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
