@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Zap, ArrowRight } from 'lucide-react';
 
 const CreativeIntegrationsSection = () => {
-  const [currentVariant, setCurrentVariant] = useState(0);
   const [floatingIndex, setFloatingIndex] = useState(0);
 
   const integrations = [
@@ -56,7 +54,7 @@ const CreativeIntegrationsSection = () => {
 
   // Variant 3: Morphing Grid
   const MorphingGrid = () => (
-    <div className="relative">
+    <div className="relative" id='integrations'>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mx-auto">
         {integrations.map((integration, index) => {
           const delay = index * 100;

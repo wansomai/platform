@@ -354,18 +354,6 @@ const LegalResearchPage = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 p-3 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    4
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Trend Analysis</h3>
-                    <p className="text-gray-600">
-                      Identify emerging legal trends and shifts in judicial interpretation across time and jurisdictions.
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
