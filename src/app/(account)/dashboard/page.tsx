@@ -211,21 +211,44 @@ export default function DashboardPage() {
                   className="flex-1 overflow-auto p-0 m-0"
                 >
                   <div className="pt-2 divide-y divide-gray-100">
-                    {documents.map((a, i) => (
-                      <div
-                        className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-wrap overflow-hidden"
-                        key={i}
-                      >
-                        <div className={`rounded-full p-2 bg-green-100 mt-1`}>
-                          <FileText className={`h-4 w-4 text-primary`} />
-                        </div>
-                        <div className="space-y-1 flex-1">
-                          <div className="flex justify-between">
-                            <h4 className="text-sm font-medium">{a.title}</h4>
+                    {documentsLoading ? (
+                      <div className="p-6 text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                        <p className="text-sm text-gray-500 mt-2">
+                          Loading documents...
+                        </p>
+                      </div>
+                    ) : documents?.length === 0 ? (
+                      <div className="text-center p-6">
+                        <FileText className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                        <h3 className="text-lg font-medium">
+                          No documents yet
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-4">
+                          Upload your first document to get started
+                        </p>
+                        <Button onClick={() => router.push("/vault")}>
+                          <FileUp className="mr-2 h-4 w-4" />
+                          Upload Document
+                        </Button>
+                      </div>
+                    ) : (
+                      documents.map((a, i) => (
+                        <div
+                          className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-wrap overflow-hidden"
+                          key={i}
+                        >
+                          <div className={`rounded-full p-2 bg-green-100 mt-1`}>
+                            <FileText className={`h-4 w-4 text-primary`} />
+                          </div>
+                          <div className="space-y-1 flex-1">
+                            <div className="flex justify-between">
+                              <h4 className="text-sm font-medium">{a.title}</h4>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent
