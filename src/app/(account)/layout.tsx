@@ -20,6 +20,7 @@ import {
   Users2,
   TrendingUp,
   Briefcase,
+  UserCircleIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -216,10 +217,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               collapsed={collapsed && !isMobile}
             />
             <SidebarLink
-              href="/business"
-              icon={TrendingUp}
-              label="Business"
-              active={pathname === '/business'}
+              href="/profile"
+              icon={UserCircleIcon}
+              label="Account"
+              active={pathname === '/profile'}
               onClick={isMobile ? handleMobileNavigation : undefined}
               collapsed={collapsed && !isMobile}
             />
