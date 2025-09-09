@@ -110,7 +110,9 @@ async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
  */
 async function extractTextFromPdfTraditional(fileBuffer: Buffer): Promise<string> {
   try {
-    const blob = new Blob([fileBuffer], { type: 'application/pdf' });
+    const arrayBuffer = fileBuffer.buffer.slice(fileBuffer.byteOffset, fileBuffer.byteOffset + fileBuffer.byteLength);
+    const validArrayBuffer = arrayBuffer instanceof ArrayBuffer ? arrayBuffer : new Uint8Array(fileBuffer).buffer;
+    const blob = new Blob([validArrayBuffer], { type: 'application/pdf' });
     const loader = new PDFLoader(blob);
     const docs = await loader.load();
     
@@ -214,8 +216,7 @@ async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: 
       const text = await ServerOCRService.extractTextFromImage(fileBuffer);
       return text;
     } else {
-      // Client-side: Use browser-based tesseract.js as fallback
-      const blob = new Blob([fileBuffer]);
+      const blob = new Blob([new Uint8Array(fileBuffer)]);
       const text = await ocrService.extractTextFromImage(blob, {
         onProgress,
         language: 'eng'
