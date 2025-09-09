@@ -22,7 +22,9 @@ interface ApiResponse<T> {
 
 interface DocumentsState {
   documents: Document[];
+  documentsMap: Map<string, Document>;
   selectedDocuments: string[];
+  selectedDocumentsSet: Set<string>;
   isLoading: boolean;
   error: string | null;
   lastFetched: number | null; // Track when documents were last fetched
@@ -48,13 +50,28 @@ interface DocumentsState {
   setError: (error: string | null) => void;
   refreshDocuments: () => Promise<void>; // Force refresh current documents
   invalidateCache: () => void; // Clear cache to force next fetch
+  
+  // Optimized getters
+  getDocumentById: (id: string) => Document | undefined;
+  isDocumentSelected: (id: string) => boolean;
 }
+
+// Helper functions for optimized data structures
+const createDocumentsMap = (documents: Document[]): Map<string, Document> => {
+  return new Map(documents.map(doc => [doc.id, doc]));
+};
+
+const createSelectedDocumentsSet = (selectedDocuments: string[]): Set<string> => {
+  return new Set(selectedDocuments);
+};
 
 export const useDocumentsStore = create<DocumentsState>()(
   persist(
     (set, get) => ({
       documents: [],
+      documentsMap: new Map(),
       selectedDocuments: [],
+      selectedDocumentsSet: new Set(),
       isLoading: false,
       error: null,
       lastFetched: null,
@@ -98,6 +115,7 @@ export const useDocumentsStore = create<DocumentsState>()(
           
           set({ 
             documents, 
+            documentsMap: createDocumentsMap(documents),
             isLoading: false, 
             lastFetched: now,
             pagination: response.pagination || state.pagination
@@ -131,15 +149,19 @@ export const useDocumentsStore = create<DocumentsState>()(
           const newDocument = response.data.data; // Extract the document from the data wrapper
           
           // Add the new document to the store immediately
-          set((state) => ({
-            documents: [newDocument, ...state.documents],
-            pagination: {
-              ...state.pagination,
-              total: state.pagination.total + 1
-            },
-            isLoading: false,
-            lastFetched: Date.now() // Update cache timestamp
-          }));
+          set((state) => {
+            const newDocuments = [newDocument, ...state.documents];
+            return {
+              documents: newDocuments,
+              documentsMap: createDocumentsMap(newDocuments),
+              pagination: {
+                ...state.pagination,
+                total: state.pagination.total + 1
+              },
+              isLoading: false,
+              lastFetched: Date.now() // Update cache timestamp
+            };
+          });
           
           return newDocument;
         } catch (error: any) {
@@ -157,15 +179,21 @@ export const useDocumentsStore = create<DocumentsState>()(
           await apiService.delete(`/api/documents/${id}`);
           
           // Remove document from list
-          set((state) => ({
-            documents: state.documents.filter(d => d.id !== id),
-            selectedDocuments: state.selectedDocuments.filter(docId => docId !== id),
-            pagination: {
-              ...state.pagination,
-              total: Math.max(0, state.pagination.total - 1)
-            },
-            lastFetched: Date.now() // Update cache timestamp
-          }));
+          set((state) => {
+            const newDocuments = state.documents.filter(d => d.id !== id);
+            const newSelected = state.selectedDocuments.filter(docId => docId !== id);
+            return {
+              documents: newDocuments,
+              documentsMap: createDocumentsMap(newDocuments),
+              selectedDocuments: newSelected,
+              selectedDocumentsSet: createSelectedDocumentsSet(newSelected),
+              pagination: {
+                ...state.pagination,
+                total: Math.max(0, state.pagination.total - 1)
+              },
+              lastFetched: Date.now() // Update cache timestamp
+            };
+          });
           
           return true;
         } catch (error: any) {
@@ -176,60 +204,90 @@ export const useDocumentsStore = create<DocumentsState>()(
       
       // Document selection methods for UI
       selectDocument: (id) => {
-        set((state) => ({
-          selectedDocuments: [...state.selectedDocuments, id]
-        }));
+        set((state) => {
+          const newSelected = [...state.selectedDocuments, id];
+          return {
+            selectedDocuments: newSelected,
+            selectedDocumentsSet: createSelectedDocumentsSet(newSelected)
+          };
+        });
       },
       
       unselectDocument: (id) => {
-        set((state) => ({
-          selectedDocuments: state.selectedDocuments.filter(docId => docId !== id)
-        }));
+        set((state) => {
+          const newSelected = state.selectedDocuments.filter(docId => docId !== id);
+          return {
+            selectedDocuments: newSelected,
+            selectedDocumentsSet: createSelectedDocumentsSet(newSelected)
+          };
+        });
       },
       
       toggleDocumentSelection: (id) => {
         set((state) => {
-          if (state.selectedDocuments.includes(id)) {
-            return {
-              selectedDocuments: state.selectedDocuments.filter(docId => docId !== id)
-            };
+          let newSelected;
+          if (state.selectedDocumentsSet.has(id)) {
+            newSelected = state.selectedDocuments.filter(docId => docId !== id);
           } else {
-            return {
-              selectedDocuments: [...state.selectedDocuments, id]
-            };
+            newSelected = [...state.selectedDocuments, id];
           }
+          return {
+            selectedDocuments: newSelected,
+            selectedDocumentsSet: createSelectedDocumentsSet(newSelected)
+          };
         });
       },
       
       clearSelectedDocuments: () => {
-        set({ selectedDocuments: [] });
+        set({ 
+          selectedDocuments: [],
+          selectedDocumentsSet: new Set()
+        });
       },
       
       setDocuments: (documents) => set({ 
         documents, 
+        documentsMap: createDocumentsMap(documents),
         lastFetched: Date.now() 
       }),
       
-      addDocument: (document) => set((state) => ({ 
-        documents: [document, ...state.documents],
-        pagination: {
-          ...state.pagination,
-          total: state.pagination.total + 1
-        },
-        lastFetched: Date.now()
-      })),
+      addDocument: (document) => set((state) => {
+        const newDocuments = [document, ...state.documents];
+        return { 
+          documents: newDocuments,
+          documentsMap: createDocumentsMap(newDocuments),
+          pagination: {
+            ...state.pagination,
+            total: state.pagination.total + 1
+          },
+          lastFetched: Date.now()
+        };
+      }),
       
-      removeDocument: (id) => set((state) => ({ 
-        documents: state.documents.filter(d => d.id !== id),
-        pagination: {
-          ...state.pagination,
-          total: Math.max(0, state.pagination.total - 1)
-        },
-        lastFetched: Date.now()
-      })),
+      removeDocument: (id) => set((state) => {
+        const newDocuments = state.documents.filter(d => d.id !== id);
+        return { 
+          documents: newDocuments,
+          documentsMap: createDocumentsMap(newDocuments),
+          pagination: {
+            ...state.pagination,
+            total: Math.max(0, state.pagination.total - 1)
+          },
+          lastFetched: Date.now()
+        };
+      }),
       
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
+      
+      // Optimized getters using Map/Set for O(1) lookups
+      getDocumentById: (id) => {
+        return get().documentsMap.get(id);
+      },
+      
+      isDocumentSelected: (id) => {
+        return get().selectedDocumentsSet.has(id);
+      },
       
       // Force refresh current documents with same filters
       refreshDocuments: async () => {
@@ -255,7 +313,13 @@ export const useDocumentsStore = create<DocumentsState>()(
         lastFetched: state.lastFetched,
         pagination: state.pagination,
       }),
-
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Recreate Map and Set from persisted arrays
+          state.documentsMap = createDocumentsMap(state.documents);
+          state.selectedDocumentsSet = createSelectedDocumentsSet(state.selectedDocuments);
+        }
+      },
       version: 1,
     }
   )
