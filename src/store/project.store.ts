@@ -79,7 +79,7 @@ export const useProjectStore = create<ProjectState>()(
         } catch (error: any) {
           const state = get();
           set({ error: error.message || 'Failed to fetch projects', isLoading: false });
-          return state.projects; // Return cached data on error
+          return state.projects; 
         }
       },
       
@@ -113,7 +113,6 @@ export const useProjectStore = create<ProjectState>()(
           set({ currentProject: projectData, isLoading: false });
           return projectData;
         } catch (error: any) {
-          console.error('Error fetching project:', error);
           set({ 
             error: error.message || 'Failed to fetch project details', 
             isLoading: false 
@@ -135,7 +134,6 @@ export const useProjectStore = create<ProjectState>()(
           }
           return null;
         } catch (error: any) {
-          console.error('Error creating project:', error);
           set({ 
             error: error.message || 'Failed to create project', 
             isLoading: false 
@@ -162,7 +160,6 @@ export const useProjectStore = create<ProjectState>()(
           
           return updatedProject;
         } catch (error: any) {
-          console.error('Error updating project:', error);
           set({ 
             error: error.message || 'Failed to update project', 
             isLoading: false 
@@ -186,7 +183,6 @@ export const useProjectStore = create<ProjectState>()(
           
           return true;
         } catch (error: any) {
-          console.error('Error deleting project:', error);
           set({ 
             error: error.message || 'Failed to delete project', 
             isLoading: false 

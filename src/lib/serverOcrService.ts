@@ -36,7 +36,6 @@ export class ServerOCRService {
       }
 
       const client = this.getClient();
-      console.log('Google Vision client initialized successfully');
 
       // Configure the request
       const request = {
@@ -54,10 +53,8 @@ export class ServerOCRService {
         },
       };
 
-      console.log('Making OCR request to Google Vision API...');
       // Perform OCR
       const [result] = await client.annotateImage(request);
-      console.log('OCR request completed successfully');
       
       // Extract text from the response
       const textAnnotations = result.textAnnotations;
@@ -81,16 +78,6 @@ export class ServerOCRService {
 
       return cleanedText;
     } catch (error) {
-      console.error('Google Vision OCR extraction failed:', error);
-      
-      // Log detailed error information
-      console.error('OCR Error Details:', {
-        errorType: error?.constructor?.name,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        errorStack: error instanceof Error ? error.stack : undefined,
-        errorCode: (error as any)?.code,
-        errorDetails: (error as any)?.details
-      });
       
       // Return helpful error messages based on error type
       if (error instanceof Error) {
@@ -151,7 +138,6 @@ export class ServerOCRService {
 
       return { text, blocks };
     } catch (error) {
-      console.error('Google Vision detailed extraction failed:', error);
       return { text: '', blocks: [] };
     }
   }
@@ -171,7 +157,6 @@ export class ServerOCRService {
              !result.startsWith('No readable text') && 
              !result.startsWith('Google Vision API is not configured');
     } catch (error) {
-      console.error('Text detection failed:', error);
       return false;
     }
   }
@@ -186,15 +171,11 @@ export class ServerOCRService {
     options: OCROptions = {}
   ): Promise<string> {
     try {
-      console.log('Starting direct PDF OCR with Google Vision API (asyncBatchAnnotateFiles)');
-      
       if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.GOOGLE_CLOUD_PROJECT_ID) {
-        console.warn('Google Vision API not configured for PDF OCR');
         return "Google Vision API is not configured. Please set up Google Cloud credentials to enable OCR text extraction from scanned PDFs.";
       }
 
       if (!process.env.GOOGLE_CLOUD_STORAGE_BUCKET) {
-        console.warn('Google Cloud Storage bucket not configured for PDF OCR');
         return "Google Cloud Storage is not configured. PDF OCR requires a storage bucket for processing multi-page documents. Please set GOOGLE_CLOUD_STORAGE_BUCKET environment variable.";
       }
 
@@ -216,7 +197,6 @@ export class ServerOCRService {
       const inputFileName = `pdf-ocr/input-${timestamp}-${randomId}.pdf`;
       const outputPrefix = `pdf-ocr/output-${timestamp}-${randomId}/`;
 
-      console.log('Uploading PDF to Google Cloud Storage...');
       
       // Upload PDF to Google Cloud Storage
       const inputFile = bucket.file(inputFileName);
@@ -256,14 +236,9 @@ export class ServerOCRService {
         ],
       };
 
-      console.log('Making async PDF OCR request to Google Vision API...');
-      
       // Perform async OCR operation
       const [operation] = await client.asyncBatchAnnotateFiles(request);
-      console.log('Waiting for OCR operation to complete...');
       const [filesResponse] = await operation.promise();
-
-      console.log('PDF OCR operation completed successfully');
 
       // Download and parse results
       const [files] = await bucket.getFiles({ prefix: outputPrefix });
@@ -274,7 +249,6 @@ export class ServerOCRService {
       // Process all output files (one per page)
       for (const file of files) {
         if (file.name.endsWith('.json')) {
-          console.log(`Processing OCR result file: ${file.name}`);
           const [content] = await file.download();
           const result = JSON.parse(content.toString());
           
@@ -291,14 +265,13 @@ export class ServerOCRService {
       }
 
       // Clean up temporary files
-      console.log('Cleaning up temporary files...');
       try {
         await inputFile.delete();
         for (const file of files) {
           await file.delete();
         }
       } catch (cleanupError) {
-        console.warn('Some temporary files could not be cleaned up:', cleanupError);
+        // Some temporary files could not be cleaned up
       }
 
       // Process the extracted text
@@ -317,19 +290,9 @@ export class ServerOCRService {
         return "No meaningful text could be extracted from this PDF. The PDF may contain only images, symbols, or very short text that doesn't provide sufficient content for document analysis.";
       }
 
-      console.log(`PDF OCR extracted ${cleanedText.length} characters of text from ${pageCount} page(s)`);
       return cleanedText;
       
     } catch (error) {
-      console.error('Google Vision PDF OCR extraction failed:', error);
-      
-      // Log detailed error information
-      console.error('PDF OCR Error Details:', {
-        errorType: error?.constructor?.name,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        errorCode: (error as any)?.code,
-        errorDetails: (error as any)?.details
-      });
       
       // Return helpful error messages based on error type
       if (error instanceof Error) {

@@ -202,7 +202,7 @@ export default function VaultPage() {
         setDocumentToDelete(null);
       }
     } catch (error) {
-      console.error('Delete error:', error);
+      // Delete error occurred
     }
   };
   
@@ -211,7 +211,7 @@ export default function VaultPage() {
     try {
       await deleteSelectedDocuments();
     } catch (error) {
-      console.error('Bulk delete error:', error);
+      // Bulk delete error occurred
     }
   };
   
@@ -220,7 +220,7 @@ export default function VaultPage() {
     try {
       await downloadDocument(document.id, document.title);
     } catch (error) {
-      console.error('Download error:', error);
+      // Download error occurred
     }
   };
   

@@ -56,25 +56,20 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
     setProfileError(null);
     
     try {
-      console.log('Fetching profile for user:', session.user.id);
       const response = await fetch(`/api/user-profile?userId=${session.user.id}`);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Profile found:', data.userProfile);
         setProfile(data.userProfile);
       } else if (response.status === 404) {
         // Profile doesn't exist yet - this is normal for new users
-        console.log('No profile found for user - user needs to complete onboarding');
         setProfile(null);
       } else {
         // Other errors
         const errorData = await response.json();
-        console.error('Error fetching profile:', errorData);
         setProfileError(errorData.error || 'Failed to load profile');
       }
     } catch (error) {
-      console.error('Network error fetching user profile:', error);
       setProfileError(error instanceof Error ? error.message : 'Network error');
     } finally {
       setProfileLoading(false);

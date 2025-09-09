@@ -171,7 +171,7 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
         }
       } catch (error: any) {
         notify.error('Failed to create AI workspace. Please try again.');
-        console.error('Error creating workspace:', error);
+        
       } finally {
         setIsSubmitting(false);
       }
@@ -199,7 +199,7 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
         }
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      
     } finally {
       setIsSubmitting(false);
     }
@@ -289,7 +289,7 @@ export function ChatInput({ onDocumentsAdded, homepageMode, onWorkspaceCreated }
         await response.json();
         setShowProAccess(false);
       } catch (error) {
-        console.error('Error:', error);
+        
          setIsRequestingPro(false);
          setShowProAccess(false);
       } finally {

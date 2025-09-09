@@ -39,7 +39,7 @@ const decode = async (params: JWTDecodeParams): Promise<JWT | null> => {
 
     return decoded.payload as JWT;
   } catch (error) {
-    console.error('Token verification failed:', error);
+    
     return null;
   }
 };

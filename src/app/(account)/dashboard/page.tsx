@@ -108,19 +108,17 @@ const generateQuickChatProjectName = (): string => {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
-  const { notify } = useNotifications();
    const [isInitialLoad, setIsInitialLoad] = useState(true);
-    const { fetchProjects, projects, isLoading: projectsLoading ,createProject} = useProjectStore();
+    const { fetchProjects, projects, isLoading: projectsLoading } = useProjectStore();
   const { documents, fetchDocuments, isLoading: documentsLoading } = useDocumentsStore();
 
    useEffect(() => {
     const loadDashboardData = async () => {
       await Promise.all([
-        fetchProjects(), // This will be smart cached
-        fetchDocuments({ limit: 5 }) // Request fewer documents for dashboard
+        fetchProjects(), 
+        fetchDocuments({ limit: 5 })
       ]);
       setIsInitialLoad(false);
     };

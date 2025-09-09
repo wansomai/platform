@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error("Login error:", error);
+    
     return NextResponse.json(
       { message: "An error occurred during login", error: true },
       { status: 500 }

@@ -276,7 +276,6 @@ export function UploadDocumentModal({
       onOpenChange(false);
     } catch (error) {
       notify.error("Failed to add documents");
-      console.error("Error adding documents:", error);
     } finally {
       setIsAttachingDocuments(false);
     }

@@ -136,7 +136,7 @@ const LegalCanvas: React.FC = () => {
         addToast({ message: 'Failed to save document', type: 'error' });
       }
     } catch (error) {
-      console.error('Save error:', error);
+      
       addToast({ message: 'Failed to save document', type: 'error' });
     }
   };
@@ -203,7 +203,7 @@ const LegalCanvas: React.FC = () => {
       
       addToast({ message: 'Word document exported successfully', type: 'success' });
     } catch (error) {
-      console.error('Word export error:', error);
+      
       addToast({ message: 'Failed to export Word document', type: 'error' });
     }
   };
@@ -334,18 +334,16 @@ const LegalCanvas: React.FC = () => {
         
         setShowTemplateModal(false);
         
-        // Log any conversion messages for debugging
+        // Conversion messages handled internally
         if (result.messages && result.messages.length > 0) {
-          console.log('Mammoth conversion messages:', result.messages);
+          // Messages available but not logged
         }
-        
-        console.log('Template loaded successfully');
       } else {
         throw new Error('Failed to extract content from the document');
       }
       
     } catch (error) {
-      console.error('Error processing template:', error);
+      
       addToast({ 
         message: 'Failed to process template document', 
         type: 'error' 
@@ -357,7 +355,7 @@ const LegalCanvas: React.FC = () => {
   const handleTextSelection = (range: any) => {
     // Handle text selection changes if needed
     // This can be used to update UI or perform actions based on selection
-    console.log('Text selection changed:', range);
+    
   }
 
   // Helper function to get concise status messages

@@ -61,13 +61,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
     const mimeType = contract.mimeType?.toLowerCase() || "";
     const fileName = contract.fileName.toLowerCase();
 
-    // For development/debugging - show the URL and file info
-    console.log("Document viewer:", {
-      fileUrl: contract.fileUrl,
-      mimeType,
-      fileName,
-      contract,
-    });
 
     // PDF Viewer - try direct embed first, fallback to link
     if (mimeType.includes("pdf") || fileName.endsWith(".pdf")) {
@@ -80,7 +73,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               title={`PDF Viewer: ${contract.title}`}
               onLoad={() => setIsLoading(false)}
               onError={() => {
-                console.error("PDF iframe failed to load");
                 setIsLoading(false);
               }}
             />
@@ -111,7 +103,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 className="max-w-full max-h-full object-contain"
                 onLoad={() => setIsLoading(false)}
                 onError={() => {
-                  console.error("Image failed to load");
                   setIsLoading(false);
                 }}
               />
@@ -168,7 +159,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               title={`Word Viewer: ${contract.title}`}
               onLoad={() => setIsLoading(false)}
               onError={() => {
-                console.error("Word document iframe failed to load");
                 setIsLoading(false);
                 setViewerError(true);
               }}
@@ -232,7 +222,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               title={`Excel Viewer: ${contract.title}`}
               onLoad={() => setIsLoading(false)}
               onError={() => {
-                console.error("Excel document iframe failed to load");
                 setIsLoading(false);
                 setViewerError(true);
               }}

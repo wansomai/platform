@@ -121,7 +121,7 @@ export function ConfirmationDialog({
     try {
       await onConfirm();
     } catch (error) {
-      console.error('Confirmation action failed:', error);
+      // Confirmation action failed
     }
   };
 

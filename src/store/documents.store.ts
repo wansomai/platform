@@ -106,7 +106,6 @@ export const useDocumentsStore = create<DocumentsState>()(
           return documents;
           
         } catch (error: any) {
-          console.error('Error fetching documents:', error);
           set({ error: error.message || 'Failed to fetch documents', isLoading: false });
           // Return cached documents on error if available
           return state.documents;

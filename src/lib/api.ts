@@ -33,12 +33,10 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      console.error('Authentication error:', error.response?.data);
       
       try {
         await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
       } catch (signOutError) {
-        console.error('Error signing out:', signOutError);
         
         if (typeof window !== 'undefined') {
           window.location.href = '/login?session=expired';
@@ -209,13 +207,13 @@ export const apiService = {
             const data = JSON.parse(line);
             if (onMessage) onMessage(data);
           } catch (parseError) {
-            console.error('Error parsing streaming data:', parseError);
+            
             if (onError) onError(parseError);
           }
         }
       }
     } catch (error) {
-      console.error('Stream error:', error);
+      
       if (onError) onError(error);
       throw error;
     }

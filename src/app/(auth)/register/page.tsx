@@ -55,7 +55,6 @@ export default function RegisterPage() {
       // Registration successful, redirect to login
       router.push('/login?registered=true');
     } catch (error) {
-      console.error('Registration error:', error);
       setError(error instanceof Error ? error.message : 'Registration failed');
     } finally {
       setIsLoading(false);

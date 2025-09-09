@@ -156,7 +156,6 @@ export const useContentStore = create<ContentState>()(
             loading: false
           })
         } catch (error) {
-          console.error('Error fetching content:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to fetch content',
             loading: false
@@ -186,7 +185,6 @@ export const useContentStore = create<ContentState>()(
 
           return contentItem
         } catch (error) {
-          console.error('Error fetching content by ID:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to fetch content',
             loading: false
@@ -225,7 +223,6 @@ export const useContentStore = create<ContentState>()(
 
           return newContent
         } catch (error) {
-          console.error('Error creating content:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to create content',
             loading: false
@@ -266,7 +263,6 @@ export const useContentStore = create<ContentState>()(
 
           return updatedContent
         } catch (error) {
-          console.error('Error updating content:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to update content',
             loading: false
@@ -299,7 +295,6 @@ export const useContentStore = create<ContentState>()(
 
           return true
         } catch (error) {
-          console.error('Error deleting content:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to delete content',
             loading: false
@@ -333,7 +328,6 @@ export const useContentStore = create<ContentState>()(
 
           return true
         } catch (error) {
-          console.error('Error bulk deleting content:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to delete content',
             loading: false

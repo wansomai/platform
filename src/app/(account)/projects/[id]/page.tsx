@@ -37,7 +37,7 @@ export default function ProjectPage() {
     
   // Load project conversations
   useEffect(() => {
-    fetchConversation(projectId).catch(err => console.warn('Failed to load conversations:', err))
+    fetchConversation(projectId).catch(err => {})
   }, [projectId, fetchConversation]);
   
   // Show skeleton loading state if project is loading

@@ -39,7 +39,6 @@ export async function performWebSearch(query: string): Promise<string> {
             }
           } catch (e) {
             // Skip invalid JSON
-            console.warn("Invalid JSON in search results:", match[0]);
           }
         }
       }
@@ -62,14 +61,9 @@ export async function performWebSearch(query: string): Promise<string> {
         return `Web Search Results for "${query}":\n\n${rawResults}`;
       }
     } catch (error) {
-      console.error('Error formatting search results:', error);
       return `Web Search Results for "${query}":\n\n${rawResults}`;
     }
   } catch (error:any) {
-    // More detailed error logging
-    console.error('Google Search API error details:', {
-      message: error
-    });
     return "Unable to perform web search at this time.";
   }
 }

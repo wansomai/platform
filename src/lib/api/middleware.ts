@@ -11,7 +11,6 @@ export function withErrorHandler<T extends any[]>(
     try {
       return await handler(...args);
     } catch (error) {
-      console.error('API Error:', error);
       
       if (error instanceof AppError) {
         return createErrorResponse(error);

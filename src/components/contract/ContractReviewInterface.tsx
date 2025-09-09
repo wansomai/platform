@@ -89,7 +89,7 @@ export const DocumentReviewInterface: React.FC = () => {
             ''
           )
         } catch (error) {
-          console.error('Failed to send automatic overview:', error)
+          // Failed to send automatic overview
         }
       }
     }
