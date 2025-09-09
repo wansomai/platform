@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllBlogPosts, getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
-import { adaptBlogPost, adaptBlogPosts } from "@/lib/data/blogAdapter";
+import { adaptBlogPost, adaptBlogPosts, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "react-day-picker";
 import { Linkedin } from "lucide-react";
@@ -14,15 +14,6 @@ interface PageProps {
     slug: string;
     id: string;
   };
-}
-
-function createSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
 }
 
 

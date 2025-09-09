@@ -55,7 +55,7 @@ export async function sendEmail(options: EmailOptions) {
     
     // Send email
     const info = await transporter.sendMail({
-      from: from || `"LegalAssist" <${user}>`,
+      from: from || `"Wansom" <${user}>`,
       to,
       cc,
       bcc,
@@ -83,7 +83,7 @@ export async function sendEmail(options: EmailOptions) {
  */
 export function sendWelcomeEmail(user: { email: string; fullName?: string | null; }) {
   const name = user.fullName || 'there';
-  const subject = 'Welcome to LegalAssist - Your AI-powered Legal Workspace';
+  const subject = 'Welcome to Wansom - Your AI-powered Legal Workspace';
   
   // Create HTML email content
   const html = `
@@ -156,14 +156,14 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="color:white;">LegalAssist</h1>
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
         </div>
         <div class="content">
-          <h1>Welcome to LegalAssist, ${name}!</h1>
+          <h1>Welcome to Wansom, ${name}!</h1>
           
-          <p>Thank you for joining LegalAssist, your new AI-powered legal workspace. We're excited to help you automate routine legal tasks.</p>
+          <p>Thank you for joining Wansom, your new AI-powered legal workspace. We're excited to help you automate routine legal tasks.</p>
           
-          <p>Here's what you can do with LegalAssist:</p>
+          <p>Here's what you can do with Wansom:</p>
           
           <div class="feature">
             <h3>🤖 AI Assistant</h3>
@@ -171,32 +171,42 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           </div>
           
           <div class="feature">
-            <h3>🔒 Document Management</h3>
+            <h3>🔒 Vault</h3>
             <p>Securely upload, share, and perform semantic searches across all your important legal documents.</p>
           </div>
           
           <div class="feature">
-            <h3>👥 Team Collaboration</h3>
-            <p>Invite team members, manage their access levels, and collaborate effectively across multiple projects.</p>
+            <h3>⚙️ Workflows</h3>
+            <p>Automate repetitive tasks such as contract reviews, compliance checks, regulatory filings, email writing, and tax preparation.</p>
           </div>
           
           <div class="feature">
-            <h3>📂 Project Management</h3>
-            <p>Organize your work in projects, assign team members, and keep everything relevant in one place.</p>
+            <h3>🔄 Integrations</h3>
+            <p>Connect with Outlook, Google Calendar, ERP Databases, and other legal management tools to streamline your operations.</p>
+          </div>
+          
+          <div class="feature">
+            <h3>👥 Collaboration</h3>
+            <p>Enjoy multi-user access, shared comments, and AI-powered team coordination to keep everyone on the same page.</p>
           </div>
           
           <p>Ready to get started?</p>
           
-          <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.legalassist.com'}/dashboard" class="button">Enter Your Workspace</a></p>
+          <p><a href="https://wansom.ai/dashboard" class="button">Enter Your Workspace</a></p>
           
-          <p>If you have any questions or need assistance, our support team is ready to help. Simply reply to this email or contact us at support@legalassist.com.</p>
+          <p>If you have any questions or need assistance, our support team is ready to help. Simply reply to this email or contact us at law@wansom.ai</p>
           
           <p>Best regards,<br>
-          The LegalAssist Team</p>
+          The Wansom Team</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -317,8 +327,13 @@ export function sendInvitationEmail({
           <p>If you believe this invitation was sent in error, you can safely ignore it.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -426,8 +441,13 @@ export function sendInvitationAcceptedEmail({
           <p>Thank you for growing your team on LegalAssist!</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -548,8 +568,13 @@ export function sendProjectInvitationEmail({
           <p>If you're not already a member of ${organizationName}, you'll need to join the organization first.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>

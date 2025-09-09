@@ -1,8 +1,8 @@
 // app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { hash } from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
+import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 

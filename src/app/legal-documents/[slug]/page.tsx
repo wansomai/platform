@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { getAllDocumentTemplates } from '@/lib/data/contentful';
-import { adaptDocumentTemplate } from '@/lib/data/blogAdapter';
+import { adaptDocumentTemplate, createSlug } from '@/lib/data/blogAdapter';
 import DocDetailPageClient from './DocumentDetails';
 
 type Props = {
@@ -63,15 +63,6 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       description: 'legal document templates, Draft legal documments, legal insights',
     };
   }
-}
-
-function createSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
 }
 
 export default async function Page({ params }: Props) {

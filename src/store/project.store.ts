@@ -3,20 +3,15 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { apiService } from '@/lib/api'
 import { Project } from '@/types/projects'
+import { ApiResponse, ProjectState } from '@/types/store'
 
-interface ApiResponse<T> {
-  status: number;
-  message: string;
-  data: T;
-  error?: boolean;
-}
-
-interface ProjectState {  
+interface ExtendedProjectState extends ProjectState {  
   projects: Project[]
   projectsMap: Map<string, Project>
   currentProject: Project | null
   isLoading: boolean
   error: string | null
+  
   
   // Basic state setters
   setProjects: (projects: Project[]) => void
@@ -43,12 +38,14 @@ const createProjectsMap = (projects: Project[]): Map<string, Project> => {
   return new Map(projects.map(project => [project.id, project]));
 };
 
-export const useProjectStore = create<ProjectState>()(
+export const useProjectStore = create<ExtendedProjectState>()(
   persist(
     (set, get) => ({
       projects: [],
       projectsMap: new Map(),
       currentProject: null,
+      members: [],
+      invitations: [],
       isLoading: false,
       error: null,
       
@@ -97,7 +94,7 @@ export const useProjectStore = create<ProjectState>()(
           set({ isLoading: true, error: null });
           
           const response = await apiService.get<ApiResponse<Project[]>>(`/api/projects`);
-          const projects = response.data;
+          const projects = response.data ?? [];
           
           set({ 
             projects, 
@@ -110,7 +107,7 @@ export const useProjectStore = create<ProjectState>()(
         } catch (error: any) {
           const state = get();
           set({ error: error.message || 'Failed to fetch projects', isLoading: false });
-          return state.projects; 
+          return state.projects ?? [];
         }
       },
       
@@ -158,7 +155,7 @@ export const useProjectStore = create<ProjectState>()(
           const response = await apiService.post<ApiResponse<Project>>('/api/projects', data);
           
           if (response.status === 201) {
-            const project = response.data;
+            const project = response.data ?? null;
             set({ isLoading: false });
             get().fetchProjects();
             return project;
@@ -177,11 +174,11 @@ export const useProjectStore = create<ProjectState>()(
         try {
           set({ isLoading: true, error: null });
           const response = await apiService.put<ApiResponse<Project>>(`/api/projects/${projectId}`, data);
-          const updatedProject = response.data || response.data;
+          const updatedProject: Project | null = response.data ?? null;
           
           set((state) => {
             const newProjects = state.projects.map((p) => 
-              p.id === projectId ? updatedProject : p
+              p.id === projectId ? updatedProject! : p
             );
             return {
               projects: newProjects,

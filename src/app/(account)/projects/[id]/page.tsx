@@ -4,7 +4,6 @@
 import { useParams } from "next/navigation"
 import { useEffect } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
-import LegalCanvas from "@/components/chat/CanvasInterface"
 import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
 import { ContractChatSplitView } from "@/components/contract/ContractChatSplitView"
 import { ErrorState } from "@/components/commons/LoadingState"

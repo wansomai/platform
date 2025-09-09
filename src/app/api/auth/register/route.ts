@@ -1,10 +1,10 @@
 // app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { hash } from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { generateTokens } from '@/lib/auth/token-service';
-import { sendWelcomeEmail } from '@/lib/mail';
+import { sendWelcomeEmail } from '@/lib/email-service';
 
 const prisma = new PrismaClient();
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Hash password
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     
     // Create user
     const user = await prisma.user.create({
