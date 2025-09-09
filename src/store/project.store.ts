@@ -3,7 +3,8 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { apiService } from '@/lib/api'
 import { Project } from '@/types/projects'
-import { ApiResponse, ProjectState } from '@/types/store'
+import { ProjectState } from '@/types/store'
+import { ApiResponse } from '@/types'
 
 interface ExtendedProjectState extends ProjectState {  
   projects: Project[]

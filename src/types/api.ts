@@ -5,6 +5,7 @@ export interface ApiResponse<T = any> {
   message: string;
   error?: string;
   timestamp: string;
+  status: number;
 }
 
 export interface PaginatedApiResponse<T = any> extends ApiResponse<T[]> {
