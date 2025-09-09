@@ -17,8 +17,6 @@ import {
   PanelRight,
   Menu,
   X,
-  Users2,
-  TrendingUp,
   Briefcase,
   UserCircleIcon,
 } from "lucide-react";

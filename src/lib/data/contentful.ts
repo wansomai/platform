@@ -212,7 +212,6 @@ export async function getBlogPostById(id: string): Promise<BlogPost | null> {
     const response = await client.getEntry(id);
     return response as unknown as BlogPost;
   } catch (error) {
-    console.error("Error fetching blog post by ID:", error);
     return null;
   }
 }
@@ -232,7 +231,6 @@ export async function getBlogPostBySlug(
 
     return post || null;
   } catch (error) {
-    console.error("Error fetching blog post by slug:", error);
     return null;
   }
 }
@@ -312,7 +310,6 @@ export async function getPostBySlug({content_type, slug}: {content_type: string,
       return null;
     }
   } catch (error) {
-    console.error("Error fetching post by slug:", error);
     throw error;
   }
 }

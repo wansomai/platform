@@ -13,6 +13,7 @@ interface ApiResponse<T> {
 
 interface ProjectState {  
   projects: Project[]
+  projectsMap: Map<string, Project>
   currentProject: Project | null
   isLoading: boolean
   error: string | null
@@ -26,6 +27,9 @@ interface ProjectState {
   setLoading: (isLoading: boolean) => void
   setError: (error: string | null) => void
   
+  // Optimized getters
+  getProjectById: (projectId: string) => Project | undefined
+  
   // API operations
   fetchProjects: () => Promise<Project[]>
   fetchProjectById: (projectId: string) => Promise<Project | null>
@@ -34,32 +38,58 @@ interface ProjectState {
   removeProject: (projectId: string) => Promise<boolean>
 }
 
+// Helper function to create Map from projects array
+const createProjectsMap = (projects: Project[]): Map<string, Project> => {
+  return new Map(projects.map(project => [project.id, project]));
+};
+
 export const useProjectStore = create<ProjectState>()(
   persist(
     (set, get) => ({
       projects: [],
+      projectsMap: new Map(),
       currentProject: null,
       isLoading: false,
       error: null,
       
       // Basic state setters
-      setProjects: (projects) => set({ projects }),
+      setProjects: (projects) => set({ 
+        projects, 
+        projectsMap: createProjectsMap(projects)
+      }),
       setCurrentProject: (project) => set({ currentProject: project }),
-      addProject: (project) => set((state) => ({ 
-        projects: [...state.projects, project] 
-      })),
-      updateProject: (project) => set((state) => ({
-        projects: state.projects.map((p) => (p.id === project.id ? project : p)),
-        currentProject: state.currentProject?.id === project.id 
-          ? { ...state.currentProject, ...project } 
-          : state.currentProject
-      })),
-      deleteProject: (projectId) => set((state) => ({
-        projects: state.projects.filter((p) => p.id !== projectId),
-        currentProject: state.currentProject?.id === projectId ? null : state.currentProject
-      })),
+      addProject: (project) => set((state) => {
+        const newProjects = [...state.projects, project];
+        return { 
+          projects: newProjects,
+          projectsMap: createProjectsMap(newProjects)
+        };
+      }),
+      updateProject: (project) => set((state) => {
+        const newProjects = state.projects.map((p) => (p.id === project.id ? project : p));
+        return {
+          projects: newProjects,
+          projectsMap: createProjectsMap(newProjects),
+          currentProject: state.currentProject?.id === project.id 
+            ? { ...state.currentProject, ...project } 
+            : state.currentProject
+        };
+      }),
+      deleteProject: (projectId) => set((state) => {
+        const newProjects = state.projects.filter((p) => p.id !== projectId);
+        return {
+          projects: newProjects,
+          projectsMap: createProjectsMap(newProjects),
+          currentProject: state.currentProject?.id === projectId ? null : state.currentProject
+        };
+      }),
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
+      
+      // Optimized getters using Map for O(1) lookups
+      getProjectById: (projectId) => {
+        return get().projectsMap.get(projectId);
+      },
       
       // API operations
       fetchProjects: async () => {   
@@ -71,6 +101,7 @@ export const useProjectStore = create<ProjectState>()(
           
           set({ 
             projects, 
+            projectsMap: createProjectsMap(projects),
             isLoading: false
           });
           
@@ -79,15 +110,15 @@ export const useProjectStore = create<ProjectState>()(
         } catch (error: any) {
           const state = get();
           set({ error: error.message || 'Failed to fetch projects', isLoading: false });
-          return state.projects; // Return cached data on error
+          return state.projects; 
         }
       },
       
       fetchProjectById: async (projectId: string) => {
         const state = get();
         
-        // Check if we already have this project in our store
-        const cachedProject = state.projects.find(p => p.id === projectId);
+        // Check if we already have this project in our store using O(1) Map lookup
+        const cachedProject = state.projectsMap.get(projectId);
         if (cachedProject && !state.isLoading) {
           set({ currentProject: cachedProject });
           return cachedProject;
@@ -113,7 +144,6 @@ export const useProjectStore = create<ProjectState>()(
           set({ currentProject: projectData, isLoading: false });
           return projectData;
         } catch (error: any) {
-          console.error('Error fetching project:', error);
           set({ 
             error: error.message || 'Failed to fetch project details', 
             isLoading: false 
@@ -135,7 +165,6 @@ export const useProjectStore = create<ProjectState>()(
           }
           return null;
         } catch (error: any) {
-          console.error('Error creating project:', error);
           set({ 
             error: error.message || 'Failed to create project', 
             isLoading: false 
@@ -150,19 +179,22 @@ export const useProjectStore = create<ProjectState>()(
           const response = await apiService.put<ApiResponse<Project>>(`/api/projects/${projectId}`, data);
           const updatedProject = response.data || response.data;
           
-          set((state) => ({
-            projects: state.projects.map((p) => 
+          set((state) => {
+            const newProjects = state.projects.map((p) => 
               p.id === projectId ? updatedProject : p
-            ),
-            currentProject: state.currentProject?.id === projectId 
-              ? { ...state.currentProject, ...updatedProject }
-              : state.currentProject,
-            isLoading: false
-          }));
+            );
+            return {
+              projects: newProjects,
+              projectsMap: createProjectsMap(newProjects),
+              currentProject: state.currentProject?.id === projectId 
+                ? { ...state.currentProject, ...updatedProject }
+                : state.currentProject,
+              isLoading: false
+            };
+          });
           
           return updatedProject;
         } catch (error: any) {
-          console.error('Error updating project:', error);
           set({ 
             error: error.message || 'Failed to update project', 
             isLoading: false 
@@ -176,17 +208,20 @@ export const useProjectStore = create<ProjectState>()(
           set({ isLoading: true, error: null });
           await apiService.delete(`/api/projects/${projectId}`);
           
-          set((state) => ({
-            projects: state.projects.filter((p) => p.id !== projectId),
-            currentProject: state.currentProject?.id === projectId 
-              ? null 
-              : state.currentProject,
-            isLoading: false
-          }));
+          set((state) => {
+            const newProjects = state.projects.filter((p) => p.id !== projectId);
+            return {
+              projects: newProjects,
+              projectsMap: createProjectsMap(newProjects),
+              currentProject: state.currentProject?.id === projectId 
+                ? null 
+                : state.currentProject,
+              isLoading: false
+            };
+          });
           
           return true;
         } catch (error: any) {
-          console.error('Error deleting project:', error);
           set({ 
             error: error.message || 'Failed to delete project', 
             isLoading: false 
@@ -202,6 +237,12 @@ export const useProjectStore = create<ProjectState>()(
         projects: state.projects,
         currentProject: state.currentProject,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Recreate Map from persisted projects array
+          state.projectsMap = createProjectsMap(state.projects);
+        }
+      },
       version: 1,
     }
   )

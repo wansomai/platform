@@ -25,9 +25,6 @@ class OCRService {
       this.worker = await createWorker('eng', 1, {
         logger: m => {
           // Only log important messages in production
-          if (process.env.NODE_ENV === 'development') {
-            console.log(m);
-          }
         },
         // Use CDN for better reliability
         workerPath: 'https://unpkg.com/tesseract.js@6.0.1/dist/worker.min.js',
@@ -37,7 +34,6 @@ class OCRService {
 
       this.isInitialized = true;
     } catch (error) {
-      console.error('Failed to initialize OCR worker:', error);
       throw new Error('OCR initialization failed');
     }
   }
@@ -91,7 +87,6 @@ class OCRService {
 
       return cleanedText;
     } catch (error) {
-      console.error('OCR extraction failed:', error);
       throw new Error('Failed to extract text from image');
     }
   }
@@ -160,7 +155,6 @@ class OCRService {
         words: filteredWords
       };
     } catch (error) {
-      console.error('OCR extraction with confidence failed:', error);
       throw new Error('Failed to extract text with confidence from image');
     }
   }
@@ -177,7 +171,6 @@ class OCRService {
       const result = await this.extractTextWithConfidence(imageFile, { minConfidence: 30 });
       return result.words.length > 0 && result.text.trim().length > 10;
     } catch (error) {
-      console.error('Text detection failed:', error);
       return false;
     }
   }

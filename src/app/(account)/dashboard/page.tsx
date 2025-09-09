@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -36,7 +36,7 @@ interface QuickActionProps {
   disabled?: boolean;
 }
 
-const QuickActionCard = ({
+const QuickActionCard = React.memo(({
   icon: Icon,
   title,
   description,
@@ -88,7 +88,7 @@ const QuickActionCard = ({
       </div>
     </Card>
   );
-};
+});
 
 // Helper function to generate meaningful project names
 const generateQuickChatProjectName = (): string => {
@@ -108,25 +108,64 @@ const generateQuickChatProjectName = (): string => {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
-  const { notify } = useNotifications();
-   const [isInitialLoad, setIsInitialLoad] = useState(true);
-    const { fetchProjects, projects, isLoading: projectsLoading ,createProject} = useProjectStore();
+    const { fetchProjects, projects, isLoading: projectsLoading } = useProjectStore();
   const { documents, fetchDocuments, isLoading: documentsLoading } = useDocumentsStore();
+  const { notify } = useNotifications();
 
-   useEffect(() => {
-    const loadDashboardData = async () => {
-      await Promise.all([
-        fetchProjects(), // This will be smart cached
-        fetchDocuments({ limit: 5 }) // Request fewer documents for dashboard
-      ]);
-      setIsInitialLoad(false);
+  
+  // Load dashboard data on mount only
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          fetchProjects(),
+          fetchDocuments({ limit: 5 })
+        ]);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load dashboard data';
+        notify.error(errorMessage);
+      }
     };
 
-    loadDashboardData();
+    loadData();
+  }, []); // Only run on mount
+
+  // Memoized computed values for performance
+  const recentProjects = useMemo(() => 
+    projects?.slice(0, 3) || [], 
+    [projects]
+  );
+
+  const recentDocuments = useMemo(() => 
+    documents?.slice(0, 5) || [], 
+    [documents]
+  );
+
+  // Memoized event handlers
+  const handleShowProjectModal = useCallback(() => {
+    setShowProjectModal(true);
   }, []);
+
+  const handleCloseProjectModal = useCallback(() => {
+    setShowProjectModal(false);
+  }, []);
+
+  const handleWorkspaceCreated = useCallback((projectId: string) => {
+    // Optional: Handle workspace creation if needed
+  }, []);
+
+  // Memoized router navigation handlers
+  const navigateToVault = useCallback(() => {
+    router.push("/vault");
+  }, [router]);
+
+  const navigateToProjects = useCallback(() => {
+    router.push("/projects");
+  }, [router]);
+
+
 
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
@@ -145,10 +184,7 @@ export default function DashboardPage() {
 
         <ChatInput 
           homepageMode={true}
-          onWorkspaceCreated={(projectId) => {
-            // Optional: Handle workspace creation if needed
-            console.log('New workspace created:', projectId);
-          }}
+          onWorkspaceCreated={handleWorkspaceCreated}
         />
         
         {/* Helper text */}
@@ -164,7 +200,7 @@ export default function DashboardPage() {
               icon={MessageSquare}
               title="New Workspace"
               description="Collaborate, organize your legal work into AI workspaces"
-              onClick={() => setShowProjectModal(true)}
+              onClick={handleShowProjectModal}
               color="text-green-600"
               loading={isCreatingQuickChat}
               disabled={isCreatingQuickChat}
@@ -227,7 +263,7 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-500 mb-4">
                           Upload your first document to get started
                         </p>
-                        <Button onClick={() => router.push("/vault")}>
+                        <Button onClick={navigateToVault}>
                           <FileUp className="mr-2 h-4 w-4" />
                           Upload Document
                         </Button>
@@ -272,14 +308,14 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-500 mb-4">
                           Create your first workspace to get started
                         </p>
-                        <Button onClick={() => setShowProjectModal(true)}>
+                        <Button onClick={handleShowProjectModal}>
                           <FolderPlus className="mr-2 h-4 w-4" />
                           Create Workspace
                         </Button>
                       </div>
                     ) : (
                       <div className="divide-y">
-                        {projects?.slice(0, 3).map((project) => (
+                        {recentProjects.map((project) => (
                           <Link
                             key={project.id}
                             href={`/projects/${project.id}`}
@@ -316,7 +352,7 @@ export default function DashboardPage() {
               <Button
                 variant="ghost"
                 className="w-full"
-                onClick={() => router.push("/projects")}
+                onClick={navigateToProjects}
                 disabled={isCreatingQuickChat}
               >
                 View all Workspaces
@@ -329,7 +365,7 @@ export default function DashboardPage() {
       
       <CreateProjectModal
         open={showProjectModal}
-        onClose={() => setShowProjectModal(false)}
+        onClose={handleCloseProjectModal}
       />
     </div>
   );

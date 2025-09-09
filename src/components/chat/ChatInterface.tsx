@@ -1,7 +1,7 @@
 // src/components/chat/ChatInterface.tsx
 "use client"
 
-import { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { 
   Copy, 
@@ -61,11 +61,11 @@ export function ChatInterface() {
     }
   }, [error, addToast])
   
-  const copyMessageToClipboard = (content: string) => {
+  const copyMessageToClipboard = useCallback((content: string) => {
     navigator.clipboard.writeText(content)
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
-  }
+  }, [addToast])
 
   // Show empty state if no messages
   if (!currentConversation?.messages || currentConversation.messages.length === 0) {
@@ -83,12 +83,12 @@ export function ChatInterface() {
         `}</style>
         
         <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
-          {currentConversation?.messages.map((message) => (
+          {currentConversation?.messages.map((message, index) => (
             <ChatMessageItem 
-              key={message.id || message.tempId || `msg-${Math.random()}`} 
+              key={message.id || message.tempId || `temp-${message.timestamp}-${index}`} 
               message={message} 
               user={session?.user} 
-              onCopy={() => copyMessageToClipboard(message.content)}
+              onCopy={useCallback(() => copyMessageToClipboard(message.content), [message.content, copyMessageToClipboard])}
             />
           ))}
           <div ref={messagesEndRef} />
@@ -99,7 +99,7 @@ export function ChatInterface() {
 }
 
 // ChatMessageItem to handle streaming messages
-function ChatMessageItem({ 
+const ChatMessageItem = React.memo(({ 
   message, 
   user,
   onCopy 
@@ -107,7 +107,7 @@ function ChatMessageItem({
   message: Message, 
   user: any,
   onCopy: () => void
-}) {
+}) => {
   const isUser = message.role === 'user';
   
   // Format the message content
@@ -218,7 +218,7 @@ function ChatMessageItem({
       </div>
     </div>
   );
-}
+});
 
 // Simple function to remove system prefix
 function formatMessageContent(content: string): string {

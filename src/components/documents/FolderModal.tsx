@@ -67,7 +67,6 @@ export function FolderModal({
       onOpenChange(false);
     } catch (err) {
       setError('Failed to save folder');
-      console.error(err);
     } finally {
       setIsSaving(false);
     }

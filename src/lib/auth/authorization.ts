@@ -47,7 +47,7 @@ export async function checkProjectAccess(projectId: string, userId: string): Pro
     
     return true;
   } catch (error) {
-    console.error('Error checking project access:', error);
+    
     return false;
   }
 }
@@ -86,7 +86,7 @@ export function getUserIdFromRequest(request: NextRequest): string | null {
     // Return the user ID from the payload
     return payload.userId || null;
   } catch (error) {
-    console.error('Error extracting user ID from token:', error);
+    
     return null;
   }
 }
@@ -127,7 +127,7 @@ export async function getAccessibleProjectIds(userId: string): Promise<string[]>
     // Combine and deduplicate
     return [...new Set([...userProjectIds, ...orgProjectIds])];
   } catch (error) {
-    console.error('Error getting accessible projects:', error);
+    
     return [];
   }
 }

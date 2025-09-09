@@ -26,7 +26,7 @@ function createTransporter() {
   const port = parseInt(process.env.EMAIL_PORT || '587', 10);
   
   if (!user || !pass) {
-    console.warn('Email credentials not found in environment variables');
+    // Email credentials not found in environment variables
   }
   
   // Create a transporter
@@ -69,7 +69,6 @@ export async function sendEmail(options: EmailOptions) {
       messageId: info.messageId 
     };
   } catch (error) {
-    console.error('Error sending email:', error);
     return { 
       success: false, 
       error 

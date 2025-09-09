@@ -57,7 +57,6 @@ function LoginPageContent() {
       }
     } catch (err) {
       setError("An unexpected error occurred")
-      console.error(err)
     } finally {
       setIsLoading(false)
     }
@@ -69,7 +68,6 @@ function LoginPageContent() {
       await signIn('google', { callbackUrl })
     } catch (err) {
       setError("Google authentication failed")
-      console.error(err)
       setIsLoading(false)
     }
   }

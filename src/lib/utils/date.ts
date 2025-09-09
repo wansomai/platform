@@ -23,7 +23,6 @@ export function formatRelativeTime(date: string | Date | number): string {
     
     return formatDistanceToNow(dateObj, { addSuffix: true });
   } catch (error) {
-    console.warn('Error formatting relative time:', error);
     return 'Unknown time';
   }
 }
@@ -49,7 +48,6 @@ export function formatStandardDate(date: string | Date | number): string {
     
     return format(dateObj, 'MMM d, yyyy');
   } catch (error) {
-    console.warn('Error formatting standard date:', error);
     return 'Unknown date';
   }
 }
@@ -75,7 +73,6 @@ export function formatDateTime(date: string | Date | number): string {
     
     return format(dateObj, 'MMM d, yyyy \'at\' h:mm a');
   } catch (error) {
-    console.warn('Error formatting date time:', error);
     return 'Unknown date';
   }
 }
@@ -101,7 +98,6 @@ export function formatInputDate(date: string | Date | number): string {
     
     return format(dateObj, 'yyyy-MM-dd');
   } catch (error) {
-    console.warn('Error formatting input date:', error);
     return '';
   }
 }
@@ -127,7 +123,6 @@ export function formatTime(date: string | Date | number): string {
     
     return format(dateObj, 'h:mm a');
   } catch (error) {
-    console.warn('Error formatting time:', error);
     return 'Unknown time';
   }
 }
@@ -161,7 +156,6 @@ export function formatSmartDate(date: string | Date | number): string {
     // Use absolute date for older dates
     return formatStandardDate(dateObj);
   } catch (error) {
-    console.warn('Error formatting smart date:', error);
     return 'Unknown date';
   }
 }

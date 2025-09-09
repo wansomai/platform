@@ -39,7 +39,6 @@ export async function extractTextFromFile(
     
     case 'image/jpeg':
     case 'image/png':
-      console.log('Processing image document for OCR, mimeType:', mimeType);
       // Always attempt OCR for images, both server and client side
       return extractTextFromImage(fileBuffer, onProgress);
     
@@ -54,8 +53,6 @@ export async function extractTextFromFile(
  */
 async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
   try {
-    console.log('Starting PDF text extraction...');
-    
     // First attempt: Traditional text extraction for text-based PDFs
     const textBasedResult = await extractTextFromPdfTraditional(fileBuffer);
     
@@ -63,21 +60,16 @@ async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
     const cleanText = textBasedResult.replace(/[^\w\s]/g, '').trim();
     const wordCount = cleanText.split(/\s+/).filter(word => word.length > 2).length;
     
-    console.log(`Traditional PDF extraction: ${textBasedResult.length} chars, ${wordCount} meaningful words`);
-    
     // If we got substantial meaningful text, use it
     if (textBasedResult.length > 100 && wordCount > 10) {
-      console.log('PDF appears to contain extractable text, using traditional method');
       return textBasedResult;
     }
     
     // If minimal meaningful text, try OCR (likely scanned PDF)
-    console.log('PDF appears to be scanned or image-based, attempting OCR...');
     
     // Only attempt OCR on server-side where Google Vision API is available
     if (typeof window === 'undefined') {
       const ocrResult = await ServerOCRService.extractTextFromPdf(fileBuffer);
-      console.log(`OCR result received: "${ocrResult.substring(0, 100)}..." (${ocrResult.length} chars)`);
       
       // Check if OCR result is an error message
       const isOcrError = ocrResult.startsWith('Google Vision API is not configured') || 
@@ -89,30 +81,23 @@ async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
       
       // If OCR was successful and returned meaningful content, use it
       if (ocrResult && !isOcrError && ocrResult.length > 20) {
-        console.log(`OCR extraction successful: ${ocrResult.length} characters`);
         return ocrResult;
-      } else {
-        console.log(`OCR failed or returned insufficient text. Is error: ${isOcrError}, Length: ${ocrResult.length}`);
       }
     }
     
     // If OCR failed or we're client-side, return the traditional result even if minimal
-    console.log('Using traditional extraction result as fallback');
     return textBasedResult || "Unable to extract text from this PDF. The document may be an image-based or scanned PDF that requires OCR processing.";
     
   } catch (error) {
-    console.error('Error extracting text from PDF:', error);
-    
     // Try OCR as last resort if traditional extraction completely failed
     if (typeof window === 'undefined') {
       try {
-        console.log('Traditional extraction failed, trying OCR as last resort...');
         const ocrResult = await ServerOCRService.extractTextFromPdf(fileBuffer);
         if (ocrResult && !ocrResult.startsWith('Google Vision API is not configured')) {
           return ocrResult;
         }
       } catch (ocrError) {
-        console.error('OCR fallback also failed:', ocrError);
+        // OCR fallback also failed
       }
     }
     
@@ -132,7 +117,6 @@ async function extractTextFromPdfTraditional(fileBuffer: Buffer): Promise<string
     // Combine all page contents
     return docs.map((doc: any) => doc.pageContent).join('\n\n');
   } catch (error) {
-    console.error('Traditional PDF extraction failed:', error);
     return '';
   }
 }
@@ -147,7 +131,6 @@ async function extractTextFromDocx(fileBuffer: Buffer): Promise<string> {
     const result = await mammoth.extractRawText({ buffer: fileBuffer });
     return result.value;
   } catch (error) {
-    console.error('Error extracting text from DOCX:', error);
     throw error;
   }
 }
@@ -181,7 +164,6 @@ function extractTextFromExcel(fileBuffer: Buffer): string {
     
     return allText;
   } catch (error) {
-    console.error('Error extracting text from Excel:', error);
     throw error;
   }
 }
@@ -217,7 +199,6 @@ function extractTextFromCsv(fileBuffer: Buffer): string {
     
     return text;
   } catch (error) {
-    console.error('Error extracting text from CSV:', error);
     throw error;
   }
 }
@@ -227,16 +208,12 @@ function extractTextFromCsv(fileBuffer: Buffer): string {
  */
 async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: number) => void): Promise<string> {
   try {
-    console.log('extractTextFromImage called, buffer size:', fileBuffer.length, 'bytes');
-    
     // Use server-side Google Vision API for OCR
     if (typeof window === 'undefined') {
-      console.log('Using server-side Google Vision API for OCR');
       // Server-side: Use Google Vision API
       const text = await ServerOCRService.extractTextFromImage(fileBuffer);
       return text;
     } else {
-      console.log('Using client-side Tesseract.js for OCR');
       // Client-side: Use browser-based tesseract.js as fallback
       const blob = new Blob([fileBuffer]);
       const text = await ocrService.extractTextFromImage(blob, {
@@ -245,15 +222,12 @@ async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: 
       });
       
       if (!text || text.trim().length === 0) {
-        console.log('Client-side OCR returned empty text');
         return "No text could be extracted from this image. The image may not contain readable text or the text may be too unclear.";
       }
       
-      console.log('Client-side OCR result length:', text.length, 'characters');
       return text;
     }
   } catch (error) {
-    console.error('OCR extraction failed:', error);
     return "Failed to extract text from image. The image may be corrupted or contain unreadable text.";
   }
 }
