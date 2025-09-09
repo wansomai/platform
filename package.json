@@ -68,6 +68,7 @@
     "next-auth": "^4.24.7",
     "nodemailer": "^6.10.0",
     "openai": "^4.87.3",
+    "pdf-parse": "^1.1.1",
     "quill": "^2.0.3",
     "react": "^19.0.0",
     "react-calendly": "^4.3.1",
