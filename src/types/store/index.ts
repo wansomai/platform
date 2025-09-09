@@ -1,11 +1,5 @@
 // Store state interfaces and common store types
 
-export interface ApiResponse<T = any> {
-  status: number;
-  message: string;
-  data?: T;
-}
-
 export interface BaseState {
   isLoading: boolean;
   error: string | null;

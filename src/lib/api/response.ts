@@ -14,6 +14,7 @@ export function createApiResponse<T>(
       data,
       message,
       timestamp: new Date().toISOString(),
+      status,
     },
     { status }
   );
@@ -38,6 +39,7 @@ export function createPaginatedResponse<T>(
       message,
       pagination,
       timestamp: new Date().toISOString(),
+      status: 200,
     },
     { status: 200 }
   );

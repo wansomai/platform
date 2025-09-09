@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { apiService } from '@/lib/api';
 import { Document, DocumentFilters } from '@/types/documents';
-import { ApiResponse, DocumentsState } from '@/types/store';
+import { ApiResponse, DocumentsState } from '@/types';
 import { API_CONSTANTS } from '@/lib/utils/constants';
 
 // Extend ApiResponse to include pagination for documents
