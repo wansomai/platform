@@ -84,6 +84,7 @@ export async function sendEmail(options: EmailOptions) {
 export function sendWelcomeEmail(user: { email: string; fullName?: string | null; }) {
   const name = user.fullName || 'there';
   const subject = 'Welcome to Wansom - Your AI-powered Legal Workspace';
+  const email = user.email;
   
   // Create HTML email content
   const html = `
@@ -206,7 +207,7 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -333,7 +334,7 @@ export function sendInvitationEmail({
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -435,7 +436,7 @@ export function sendInvitationAcceptedEmail({
           <p>They now have access to your organization's projects and resources according to their role permissions.</p>
           
           <p style="text-align: center;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.legalassist.com'}/teams" class="button">Manage Team</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/teams" class="button">Manage Team</a>
           </p>
           
           <p>Thank you for growing your team on LegalAssist!</p>
@@ -447,7 +448,7 @@ export function sendInvitationAcceptedEmail({
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -574,7 +575,7 @@ export function sendProjectInvitationEmail({
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${user.email}">unsubscribe</a>.</p>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
