@@ -3,13 +3,11 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { apiService } from '@/lib/api';
 import { Document, DocumentFilters } from '@/types/documents';
+import { ApiResponse, DocumentsState } from '@/types/store';
 import { API_CONSTANTS } from '@/lib/utils/constants';
 
-interface ApiResponse<T> {
-  status: number;
-  message: string;
-  data: T;
-  error?: boolean;
+// Extend ApiResponse to include pagination for documents
+interface DocumentApiResponse<T> extends ApiResponse<T> {
   pagination?: {
     total: number;
     page: number;
@@ -20,7 +18,7 @@ interface ApiResponse<T> {
   };
 }
 
-interface DocumentsState {
+interface ExtendedDocumentsState extends DocumentsState {
   documents: Document[];
   documentsMap: Map<string, Document>;
   selectedDocuments: string[];
@@ -65,7 +63,7 @@ const createSelectedDocumentsSet = (selectedDocuments: string[]): Set<string> =>
   return new Set(selectedDocuments);
 };
 
-export const useDocumentsStore = create<DocumentsState>()(
+export const useDocumentsStore = create<ExtendedDocumentsState>()(
   persist(
     (set, get) => ({
       documents: [],
@@ -81,8 +79,11 @@ export const useDocumentsStore = create<DocumentsState>()(
         limit: 20,
         pages: 0,
       },
+      folders: [],
+      currentDocument: null,
+      uploadProgress: {},
       
-      fetchDocuments: async (filters: DocumentFilters = {}, forceRefresh = false) => {
+      fetchDocuments: async (filters: DocumentFilters = {}, forceRefresh = false): Promise<Document[]> => {
         const state = get();
         
         // OPTIMIZATION 1: Simple cache check
@@ -107,11 +108,11 @@ export const useDocumentsStore = create<DocumentsState>()(
           if (filters.page) params.append('page', filters.page.toString());
           if (filters.limit) params.append('limit', filters.limit.toString());
           
-          const response = await apiService.get<ApiResponse<Document[]>>(
+          const response = await apiService.get<DocumentApiResponse<Document[]>>(
             `/api/documents${params.toString() ? `?${params.toString()}` : ''}`
           );
           
-          const documents = response.data;
+          const documents = response.data ?? [];
           
           set({ 
             documents, 
@@ -125,8 +126,8 @@ export const useDocumentsStore = create<DocumentsState>()(
           
         } catch (error: any) {
           set({ error: error.message || 'Failed to fetch documents', isLoading: false });
-          // Return cached documents on error if available
-          return state.documents;
+          // Return cached documents on error if available, otherwise return empty array
+          return Array.isArray(state.documents) ? state.documents : [];
         }
       },
       

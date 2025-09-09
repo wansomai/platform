@@ -29,18 +29,10 @@ import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { useFolderStore } from "@/store/folder.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { formatFileSize, validateFile } from "@/lib/utils/file";
+import { Document } from "@/types";
 
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-// Types
-interface Document {
-  id: string;
-  title: string;
-  fileType: string;
-  fileSize: number;
-  createdAt: string;
-}
 
 interface UploadDocumentModalProps {
   open: boolean;

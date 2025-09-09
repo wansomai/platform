@@ -1,0 +1,575 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId], map: "idx_account_user")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_session_user")
+  @@index([sessionToken], map: "idx_session_token")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id                      String                  @id @default(cuid())
+  email                   String                  @unique
+  fullName                String?
+  password                String
+  role                    String                  @default("member")
+  organizationId          String
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  activeOrganizationId    String?
+  createdAIAssociates     AIAssociate[]
+  accounts                Account[]
+  actions                 ConversationAction[]
+  conversationDocuments   ConversationDocument[]
+  documents               Document[]
+  Folder                  Folder[]
+  sentInvitations         Invitation[]            @relation("InvitedBy")
+  messages                Message[]
+  projectDocuments        ProjectDocument[]
+  projectMembers          ProjectMember[]
+  sessions                Session[]
+  SharedMessage           SharedMessage[]
+  SharedWorkspace         SharedWorkspace[]
+  SharedWorkspaceAccess   SharedWorkspaceAccess[]
+  activeOrganization      Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
+  organization            Organization            @relation(fields: [organizationId], references: [id])
+  organizationMemberships UserOrganization[]
+
+  @@index([activeOrganizationId], map: "idx_user_active_org")
+}
+
+model Organization {
+  id                  String                @id @default(cuid())
+  name                String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  contactEmail        String                @default("")
+  contactPhone        String                @default("")
+  currentWebsite      String                @default("")
+  firmSize            String                @default("")
+  firmStory           String                @default("")
+  linkedinUrl         String                @default("")
+  onboardingCompleted Boolean               @default(false)
+  practiceAreas       String[]
+  primaryLocation     Json?
+  profileStatus       String                @default("pending")
+  serviceAreas        Json[]
+  yearsInPractice     Int                   @default(0)
+  aiAssociates        AIAssociate[]
+  documents           Document[]
+  Folder              Folder[]
+  invitations         Invitation[]
+  projects            Project[]
+  activeUsers         User[]                @relation("ActiveOrganization")
+  users               User[]
+  members             UserOrganization[]
+  content             Content[]
+  onboardingSteps     OnboardingAnalytics[]
+  subscription        Subscription?
+}
+
+model Content {
+  id              String           @id @default(cuid())
+  organizationId  String
+  title           String
+  slug            String
+  metaTitle       String?
+  metaDescription String?
+  excerpt         String?
+  practiceArea    String?
+  location        Json?
+  keywords        String[]
+  tags            String[]
+  views           Int              @default(0)
+  leads           Int              @default(0)
+  wordCount       Int?
+  seoScore        Float?
+  status          String           @default("draft")
+  publishedAt     DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sections        ContentSection[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, status])
+  @@index([organizationId, practiceArea])
+  @@map("content")
+}
+
+model ContentSection {
+  id         String   @id @default(cuid())
+  contentId  String
+  type       String
+  orderIndex Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId, orderIndex])
+  @@map("content_sections")
+}
+
+model Subscription {
+  id                     String       @id @default(cuid())
+  organizationId         String       @unique
+  paystackSubscriptionId String?      @unique
+  paystackCustomerId     String?
+  planName               String
+  planPrice              String?
+  billingCycle           String?
+  status                 String
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  payments               Payment[]
+  organization           Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                String       @id @default(cuid())
+  subscriptionId    String
+  paystackReference String       @unique
+  amount            Int
+  currency          String       @default("USD")
+  status            String
+  paymentMethod     String?
+  paidAt            DateTime?
+  metadata          Json?
+  createdAt         DateTime     @default(now())
+  subscription      Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model OnboardingAnalytics {
+  id             String       @id @default(cuid())
+  organizationId String
+  stepName       String
+  stepNumber     Int?
+  stepData       Json?
+  timeSpent      Int?
+  completedAt    DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_analytics")
+}
+
+model UserOrganization {
+  userId         String
+  organizationId String
+  role           String       @default("member")
+  joinedAt       DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, organizationId])
+  @@index([organizationId])
+  @@index([userId, organizationId], map: "idx_user_organization")
+  @@index([organizationId, role], map: "idx_user_org_role")
+}
+
+model Project {
+  id               String             @id @default(cuid())
+  title            String
+  description      String?
+  status           String             @default("active")
+  organizationId   String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  conversations    Conversation[]
+  documents        Document[]
+  events           Event[]
+  invitations      Invitation[]
+  knowledgeBase    KnowledgeBase?
+  canvasDocument   CanvasDocument?
+  organization     Organization       @relation(fields: [organizationId], references: [id])
+  associates       ProjectAssociate[]
+  projectDocuments ProjectDocument[]
+  members          ProjectMember[]
+  SharedWorkspace  SharedWorkspace[]
+}
+
+model ProjectMember {
+  userId    String
+  projectId String
+  role      String   @default("member")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  project   Project  @relation(fields: [projectId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, projectId])
+  @@index([userId, projectId], map: "idx_project_member_user")
+  @@index([projectId, role], map: "idx_project_member_project")
+}
+
+model Document {
+  id                     String                   @id @default(cuid())
+  project_id             String?                  @map("projectId")
+  organization_id        String                   @map("organizationId")
+  title                  String
+  description            Json?
+  file_url               String                   @map("fileUrl")
+  file_type              String                   @map("fileType")
+  file_size              Int                      @map("fileSize")
+  status                 String                   @default("active")
+  section                String                   @default("general")
+  created_by             String                   @map("createdBy")
+  metadata               Json?
+  content_extracted      Json?                    @map("contentExtracted")
+  created_at             DateTime                 @default(now()) @map("createdAt")
+  updated_at             DateTime                 @updatedAt @map("updatedAt")
+  folderId               String?
+  conversationReferences ConversationDocument[]
+  createdByUser          User                     @relation(fields: [created_by], references: [id])
+  folder                 Folder?                  @relation(fields: [folderId], references: [id])
+  organization           Organization             @relation(fields: [organization_id], references: [id])
+  project                Project?                 @relation(fields: [project_id], references: [id])
+  content                DocumentContent?
+  embeddings             Embedding[]
+  messageReferences      MessageReference[]
+  projectReferences      ProjectDocument[]
+  SharedMessageReference SharedMessageReference[]
+
+  @@index([organization_id])
+  @@index([organization_id, created_at(sort: Desc)], map: "idx_document_org_created")
+  @@index([organization_id, status], map: "idx_document_org_status")
+  @@index([project_id, created_at(sort: Desc)], map: "idx_document_project_created")
+  @@index([organization_id, folderId, created_at(sort: Desc)], map: "idx_document_org_folder_created")
+}
+
+model Folder {
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  parentId       String?
+  createdBy      String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  documents      Document[]
+  user           User         @relation(fields: [createdBy], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  parent         Folder?      @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children       Folder[]     @relation("FolderHierarchy")
+
+  @@index([organizationId, parentId], map: "idx_folder_org_parent")
+}
+
+model ProjectDocument {
+  project_id  String   @map("projectId")
+  document_id String   @map("documentId")
+  added_at    DateTime @default(now()) @map("addedAt")
+  added_by    String   @map("addedBy")
+  user        User     @relation(fields: [added_by], references: [id])
+  document    Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  project     Project  @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@id([project_id, document_id])
+  @@index([project_id], map: "idx_project_document_conv")
+  @@index([document_id], map: "idx_project_document_doc")
+}
+
+model ConversationDocument {
+  conversation_id String       @map("conversationId")
+  document_id     String       @map("documentId")
+  added_at        DateTime     @default(now()) @map("addedAt")
+  added_by        String       @map("addedBy")
+  user            User         @relation(fields: [added_by], references: [id])
+  conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  document        Document     @relation(fields: [document_id], references: [id], onDelete: Cascade)
+
+  @@id([conversation_id, document_id])
+  @@index([conversation_id], map: "idx_conversation_document_conv")
+  @@index([document_id], map: "idx_conversation_document_doc")
+}
+
+model DocumentContent {
+  documentId String   @id
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId], map: "idx_document_content_document")
+}
+
+model Embedding {
+  id         String   @id @default(cuid())
+  documentId String
+  vector     String
+  chunkText  String
+  chunkIndex Int
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId], map: "idx_embedding_document")
+  @@index([documentId, chunkIndex], map: "idx_embedding_document_chunk")
+}
+
+model Conversation {
+  id                 String                 @id @default(cuid())
+  title              String
+  projectId          String
+  isPinned           Boolean                @default(false)
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  aiAssociateId      String?
+  aiAssociate        AIAssociate?           @relation(fields: [aiAssociateId], references: [id])
+  project            Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actions            ConversationAction[]
+  documentReferences ConversationDocument[]
+  meta               ConversationMeta?
+  messages           Message[]
+  SharedWorkspace    SharedWorkspace[]
+
+  @@index([projectId, updatedAt(sort: Desc)], map: "idx_conversation_project_updated")
+  @@index([projectId], map: "idx_conversation_project_id")
+}
+
+model Message {
+  id             String             @id @default(cuid())
+  conversationId String
+  content        String
+  role           String             @default("user")
+  createdAt      DateTime           @default(now())
+  userId         String?
+  metadata       Json?
+  conversation   Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User?              @relation(fields: [userId], references: [id])
+  references     MessageReference[]
+
+  @@index([conversationId, createdAt], map: "idx_message_conversation_created")
+  @@index([conversationId, role], map: "idx_message_conversation_role")
+}
+
+model MessageReference {
+  id         String   @id @default(cuid())
+  messageId  String
+  documentId String
+  text       String
+  page       Int?
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  message    Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId], map: "idx_message_reference_message")
+  @@index([documentId], map: "idx_message_reference_document")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  date        DateTime
+  type        String   @default("meeting")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model KnowledgeBase {
+  id           String   @id @default(cuid())
+  projectId    String   @unique
+  instructions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  settings     Json?
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Invitation {
+  id             String       @id @default(uuid())
+  email          String
+  role           String
+  token          String       @unique
+  expiresAt      DateTime
+  projectId      String
+  organizationId String
+  invitedById    String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  invitedBy      User         @relation("InvitedBy", fields: [invitedById], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  project        Project      @relation(fields: [projectId], references: [id])
+}
+
+model ConversationMeta {
+  conversationId String       @id
+  instructions   String?
+  settings       Json?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model ConversationAction {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String?
+  actionType     String
+  title          String
+  parameters     String
+  status         String       @default("pending")
+  resultContent  String?
+  resultUrl      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id])
+}
+
+model SharedMessage {
+  id                     String                   @id
+  sharedWorkspaceId      String
+  sessionId              String
+  content                String
+  role                   String                   @default("user")
+  userName               String
+  userId                 String?
+  createdAt              DateTime                 @default(now())
+  SharedWorkspace        SharedWorkspace          @relation(fields: [sharedWorkspaceId], references: [id], onDelete: Cascade)
+  User                   User?                    @relation(fields: [userId], references: [id])
+  SharedMessageReference SharedMessageReference[]
+}
+
+model SharedMessageReference {
+  id            String        @id
+  messageId     String
+  documentId    String
+  text          String
+  page          Int?
+  createdAt     DateTime      @default(now())
+  Document      Document      @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  SharedMessage SharedMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+model SharedWorkspace {
+  id                    String                  @id
+  projectId             String
+  conversationId        String
+  createdBy             String
+  title                 String
+  description           String?
+  accessMode            String                  @default("read_only")
+  isActive              Boolean                 @default(true)
+  expiresAt             DateTime?
+  passcode              String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  SharedMessage         SharedMessage[]
+  Conversation          Conversation            @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  User                  User                    @relation(fields: [createdBy], references: [id])
+  Project               Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  SharedWorkspaceAccess SharedWorkspaceAccess[]
+}
+
+model SharedWorkspaceAccess {
+  id                String          @id
+  sharedWorkspaceId String
+  userId            String?
+  userEmail         String?
+  userName          String
+  accessTime        DateTime        @default(now())
+  SharedWorkspace   SharedWorkspace @relation(fields: [sharedWorkspaceId], references: [id], onDelete: Cascade)
+  User              User?           @relation(fields: [userId], references: [id])
+}
+
+model AIAssociate {
+  id             String             @id @default(cuid())
+  name           String
+  instructions   String
+  organizationId String
+  createdById    String
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      User               @relation(fields: [createdById], references: [id])
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+  steps          AssociateStep[]
+  tools          AssociateTool[]
+  conversations  Conversation[]
+  projects       ProjectAssociate[]
+}
+
+model AssociateStep {
+  id          String      @id @default(cuid())
+  associateId String
+  description String
+  stepOrder   Int
+  associate   AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+}
+
+model AssociateTool {
+  id          String      @id @default(cuid())
+  associateId String
+  toolId      String
+  associate   AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+}
+
+model ProjectAssociate {
+  associateId String
+  projectId   String
+  addedAt     DateTime    @default(now())
+  associate   AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([associateId, projectId])
+}
+
+model CanvasDocument {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  content     Json // Quill.js Delta format
+  htmlContent String   @db.Text // For display
+  plainText   String   @db.Text // For AI processing
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId], map: "idx_canvas_document_project")
+}

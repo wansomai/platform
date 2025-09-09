@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { getAllPractiseAreas } from '@/lib/data/contentful';
+import { createSlug } from '@/lib/data/blogAdapter';
 import PractiseAreaPage from './PratiseArea';
 import Link from 'next/link';
 
@@ -60,15 +61,6 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       description: 'common legal practice areas like family law, criminal defense, personal injury, and more. Understand what these fields entail and how lawyers help',
     };
   }
-}
-
-function createSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
 }
 
 export default async function Page({ params }: Props) {
