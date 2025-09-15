@@ -2,14 +2,14 @@ import { ArrowRight, FolderLock, Shield, ShieldCheck } from "lucide-react";
 
 const MoreFeatures = () => {
   return (
-    <section className="py-20 bg-white">
+    <section className="section-spacing bg-white">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-heading-2 mb-4 text-gray-900">
          Built to the highest security standards
         </h2>
 <p className="text-body-large text-gray-600 mb-12 max-w-3xl mx-auto">
          Wansom AI with enterprise-level security at its core, ensuring your firm's sensitive data remains confidential and protected.</p>
-        <div className=" grid grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className=" grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="text-center">
             <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
               <FolderLock className="w-8 h-8 text-white" />
@@ -41,7 +41,7 @@ const MoreFeatures = () => {
           </div>
         </div>
         <button
-          className="mt-12 bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg transition-colors"
+          className="mt-12 bg-[#d47b0f] hover:bg-[#355e66] text-white px-5 py-2 rounded-lg transition-colors"
           onClick={() => (window.location.href = "/login")}
         >
           Try Wansom AI For Free

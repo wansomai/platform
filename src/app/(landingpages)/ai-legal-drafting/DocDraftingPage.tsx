@@ -36,7 +36,7 @@ const LegalDraftingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="section-spacing bg-[#355e66] relative overflow-hidden">
+      <section className="pt-24 md:pt-20 pl-5 lg:pl-20 bg-[#355e66] relative overflow-hidden">
         <div className="absolute "></div>
         <div className="container mx-auto px-4 z-10 relative flex flex-col lg:flex-row items-center lg:items-start justify-between space-y-5 lg:space-y-0">
           <div className=" text-white lg:basis-1/2">      
@@ -147,7 +147,7 @@ const LegalDraftingPage = () => {
           </div>
 
          <div className="max-w-6xl mx-auto">
-          <div className='grid grid-cols-2 lg:grid-cols-3 gap-5 items-center'>
+          <div className='grid grid-cols-1 lg:grid-cols-3 gap-5 items-center'>
           
     <div className=''>
 
