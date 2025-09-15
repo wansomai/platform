@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getAllDocumentTemplates } from "@/lib/data/contentful";
 import {adaptDocumentTemplate, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
-import { Footer } from "react-day-picker";
+import Footer from "@/components/layout/Footer";
 
 interface PageProps {
   params: {
