@@ -88,7 +88,7 @@ export function ChatInterface() {
               key={message.id || message.tempId || `temp-${message.timestamp}-${index}`} 
               message={message} 
               user={session?.user} 
-              onCopy={useCallback(() => copyMessageToClipboard(message.content), [message.content, copyMessageToClipboard])}
+              onCopy={() => copyMessageToClipboard(message.content)}
             />
           ))}
           <div ref={messagesEndRef} />

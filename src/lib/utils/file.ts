@@ -214,7 +214,7 @@ export function validateFile(
   if (maxSize && file.size > maxSize) {
     return {
       isValid: false,
-      error: `File size ${formatFileSize(file.size)} exceeds limit of ${formatFileSize(maxSize)}`
+      error: `File size ${formatFileSize(file.size)} exceeds limit of ${formatFileSize(maxSize)} for Free plan`
     };
   }
   
