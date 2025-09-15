@@ -242,8 +242,7 @@ const LegalDraftingPage = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-                Draft from scratch or<br />
-                existing templates
+              Comprehensive Legal
               </h2>
               <p className="text-xl text-gray-100 mb-8">
                 Create new clauses and documents, or store your existing templates and Wansom will draft content to match.
