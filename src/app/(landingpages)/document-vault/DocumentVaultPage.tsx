@@ -6,31 +6,12 @@ import {
   CheckCircle,
   Play,
   ArrowRight,
-  Brain,
-  Zap,
-  BookOpen,
-  Shield,
-  AlertTriangle,
   Eye,
   Search,
-  Clock,
-  Target,
-  ThumbsUp,
-  X,
-  ClipboardCopy,
-  Clipboard,
-  ChevronDown,
-  ChevronUp,
-  Paperclip,
-  Send,
-  FolderOpen,
-  BarChart3,
-  TrendingUp,
+
   Users,
   Building,
   FileSearch,
-  Calendar,
-  CheckSquare,
   Folder,
   Lock,
   FolderLock,
@@ -43,15 +24,12 @@ import {
   Star,
   Tag,
   Upload,
-  Download,
   Share2,
-  Settings,
-  Plus
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
-import { Footer } from "react-day-picker";
 import { VaultDocs } from "@/components/home/vault";
+import Footer from "@/components/layout/Footer";
 
 const DocumentVaultPage = () => {
   const partnerLogos = [
