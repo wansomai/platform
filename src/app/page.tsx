@@ -188,7 +188,7 @@ function LegalResearchSection() {
 }
 function AutomateProcesses() {
   return (
-    <section className="section-spacing bg-gray-100">
+    <section className="section-spacing bg-gray-100" id="workflows">
       <div className="section-container pb-12">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
