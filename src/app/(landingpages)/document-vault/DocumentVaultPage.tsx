@@ -154,7 +154,7 @@ const DocumentVaultPage = () => {
                 Enterprise-Grade Security
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Your documents are protected with bank-level security, encryption, and compliance features designed for legal professionals.
+                Your documents are protected with enterprise-level security, encryption, and compliance features designed for legal professionals.
               </p>
 
               <div className="space-y-6">

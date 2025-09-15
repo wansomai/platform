@@ -158,7 +158,7 @@ const HireALawyerPage = ({
                 icon: Shield,
                 title: "Private and safe",
                 description:
-                  "Your information is protected with bank-level security. All communications with attorneys are confidential and secure.",
+                  "Your information is protected with enterprise-level security. All communications with attorneys are confidential and secure.",
               },
               {
                 icon: DollarSign,
