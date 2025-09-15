@@ -241,15 +241,15 @@ const LegalDraftingPage = () => {
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Comprehensive Legal
+              <h2 className="text-heading-2 mb-6 text-white">
+              Comprehensive Legal Template Library
               </h2>
               <p className="text-xl text-gray-100 mb-8">
-                Create new clauses and documents, or store your existing templates and Wansom will draft content to match.
+              Start from a professionally drafted legal template and customize it to your needs with Wansom's AI-powered drafting tools.
               </p>
               
-              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
-                Try Wansom Free
+              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
+                Explore Legal templates <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
               </button>
             </div>
 
