@@ -21,6 +21,7 @@ import {
   Loader,
   Circle,
   ChevronRight,
+  ArrowUpRight,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
@@ -74,10 +75,9 @@ const LegalResearchPage = () => {
 
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/1.png')] bg-cover bg-center bg-blend-multiply opacity-30"></div>
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
-            <div className="text-white max-w-4xl lg:basis-2/5">
+            <div className="text-white lg:basis-1/2 text-center lg:text-left">
               <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
                 <Search className="w-4 h-4 mr-2" />
                 <span className="text-sm font-medium">
@@ -89,15 +89,15 @@ const LegalResearchPage = () => {
               </div>
 
               <h1 className="text-heading-1 mb-4 text-shadow">
-                AI Legal Research
+                AI For Legal Research
               </h1>
 
               <p className="text-xl mb-8 text-gray-100">
-                Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.
+                Get instant answers to complex legal questions with AI that searches through verified cases, statutes, and legal authorities in seconds.
               </p>
 
               <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12">
-                Start Research Now
+                Start Research Now <ArrowUpRight className="inline-block ml-2 w-6 h-6" />
               </button>
 
               {/* Trusted by logos */}
@@ -137,11 +137,10 @@ const LegalResearchPage = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-heading-2 mb-6 text-gray-900">
-                Access millions of legal authorities
-                in one intelligent search
+                Access verified legal authorities in one intelligent search
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Our AI searches through millions of legal authorities in seconds, providing you with relevant cases, statutes, and expert analysis for any legal question.
+                Our AI searches through verified legal authorities in seconds, providing you with relevant cases, statutes, and expert analysis for any legal question.
               </p>
 
               <div className="space-y-6">

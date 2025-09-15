@@ -1,57 +1,16 @@
 "use client";
-import React, { useState } from "react";
 import {
-  FileText,
   Sparkles,
   CheckCircle,
-  Play,
   ArrowRight,
   Brain,
-  Zap,
-  BookOpen,
-  Shield,
-  AlertTriangle,
-  Eye,
-  Search,
-  Clock,
   Target,
-  ThumbsUp,
-  X,
-  ClipboardCopy,
-  Clipboard,
-  ChevronDown,
-  ChevronUp,
   Paperclip,
   Send,
-  FolderOpen,
-  BarChart3,
   TrendingUp,
-  Users,
-  Building,
   FileSearch,
-  Layers,
-  Database,
-  Filter,
-  Download,
-  Share,
-  Calendar,
-  CheckSquare,
-  Scale,
-  Gavel,
-  Library,
-  Globe,
-  Link,
-  Star,
-  Award,
-  Bookmark,
-  Activity,
-  PieChart,
   MessageSquare,
   Lightbulb,
-  Briefcase,
-  Calculator,
-  Timer,
-  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
@@ -59,44 +18,12 @@ import Footer from "@/components/layout/Footer";
 import MoreFeatures from "@/components/home/MoreFeatures";
 
 const CasePreparationPage = () => {
-  const [selectedStrategy, setSelectedStrategy] = useState("arguments");
 
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
     { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
     { src: "/logos/7.png", alt: "Riskhouse International" },
     { src: "/logos/4.png", alt: "Netsheria" },
-  ];
-
-  const caseStrategies = [
-    {
-      id: "arguments",
-      label: "Arguments",
-      count: 12,
-      color: "text-blue-600 bg-blue-100",
-      strength: 87,
-    },
-    {
-      id: "evidence",
-      label: "Evidence",
-      count: 34,
-      color: "text-green-600 bg-green-100",
-      strength: 92,
-    },
-    {
-      id: "precedents",
-      label: "Precedents",
-      count: 28,
-      color: "text-purple-600 bg-purple-100",
-      strength: 79,
-    },
-    {
-      id: "risks",
-      label: "Risk Factors",
-      count: 8,
-      color: "text-orange-600 bg-orange-100",
-      strength: 65,
-    },
   ];
 
   return (
@@ -109,16 +36,8 @@ const CasePreparationPage = () => {
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-2/5">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-                <Sparkles className="w-4 h-4 mr-2" />
-                <span className="text-sm font-medium">AI Case Preparation</span>
-                <span className="ml-3 bg-white/20 text-xs px-2 py-1 rounded">
-                  Beta
-                </span>
-              </div>
-
               <h1 className="text-heading-1 mb-4 text-shadow">
-                AI Case Preparation & Prediction
+                AI For Case Preparation & Prediction
               </h1>
 
               <p className="text-xl mb-8 text-gray-100">
@@ -222,13 +141,6 @@ const CasePreparationPage = () => {
                               "The termination was performance-based. Your
                               client had three documented warnings over six
                               months, well before any OSHA report was filed."
-                              <br />
-                              <span className="flex">
-                                <Lightbulb className="w-6 h-6 text-blue-600" />
-                              Counter with evidence of temporal proximity
-                              between the report and termination. Highlight any
-                              positive performance reviews before the complaint
-                              </span>
                             </p>
                           </div>
                         </div>
