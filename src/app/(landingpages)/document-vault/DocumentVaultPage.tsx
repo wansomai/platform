@@ -6,31 +6,12 @@ import {
   CheckCircle,
   Play,
   ArrowRight,
-  Brain,
-  Zap,
-  BookOpen,
-  Shield,
-  AlertTriangle,
   Eye,
   Search,
-  Clock,
-  Target,
-  ThumbsUp,
-  X,
-  ClipboardCopy,
-  Clipboard,
-  ChevronDown,
-  ChevronUp,
-  Paperclip,
-  Send,
-  FolderOpen,
-  BarChart3,
-  TrendingUp,
+
   Users,
   Building,
   FileSearch,
-  Calendar,
-  CheckSquare,
   Folder,
   Lock,
   FolderLock,
@@ -43,15 +24,12 @@ import {
   Star,
   Tag,
   Upload,
-  Download,
   Share2,
-  Settings,
-  Plus
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
-import { Footer } from "react-day-picker";
 import { VaultDocs } from "@/components/home/vault";
+import Footer from "@/components/layout/Footer";
 
 const DocumentVaultPage = () => {
   const partnerLogos = [
@@ -154,7 +132,7 @@ const DocumentVaultPage = () => {
                 Enterprise-Grade Security
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Your documents are protected with bank-level security, encryption, and compliance features designed for legal professionals.
+                Your documents are protected with enterprise-level security, encryption, and compliance features designed for legal professionals.
               </p>
 
               <div className="space-y-6">
