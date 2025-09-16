@@ -55,8 +55,8 @@ export function ChatInput({
   // Get state from stores
   const { addToast } = useUIStore();
   const { notify } = useNotifications();
-  const { createProject } = useProjectStore();
-  const { currentConversation, sendMessage } = useChatStore();
+  const { createProject, requiresUpgrade: projectRequiresUpgrade } = useProjectStore();
+  const { currentConversation, sendMessage, requiresUpgrade: chatRequiresUpgrade } = useChatStore();
 
   const {
     settings,
@@ -71,6 +71,13 @@ export function ChatInput({
   const { rightSidebarCollapsed, setRightSidebarCollapsed } = useUIStore();
 
   const { data: session } = useSession();
+
+  // Show Pro Access modal when upgrade is required
+  useEffect(() => {
+    if (projectRequiresUpgrade || chatRequiresUpgrade) {
+      setShowProAccess(true);
+    }
+  }, [projectRequiresUpgrade, chatRequiresUpgrade]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -183,13 +190,22 @@ export function ChatInput({
       try {
         setIsSubmitting(true);
 
-        await sendMessage(
-          projectId,
-          currentConversation.id,
-          messageToSend,
-          session?.user?.id,
-          ""
-        );
+        try {
+          await sendMessage(
+            projectId,
+            currentConversation.id,
+            messageToSend,
+            session?.user?.id,
+            ""
+          );
+        } catch (error: any) {
+          // Check if this is a subscription limit error
+          if (error.status === 403 && error.requiresUpgrade) {
+            setShowProAccess(true);
+            return; // Don't clear input if it's a subscription error
+          }
+          throw error; // Re-throw other errors
+        }
 
         if (!customMessage) {
           setInput("");
@@ -280,11 +296,13 @@ export function ChatInput({
   };
 
   // Handle Pro access request
-  const handleRequestProAccess = async () => {
+  const handleRequestProAccess = async (formData: { name: string; email: string; accountType: string }) => {
     setIsRequestingPro(true);
     const payload = {
-      email: session?.user.email,
-      name: session?.user.name,
+      email: formData.email,
+      name: formData.name,
+      account_type: formData.accountType,
+      request_type: "message_limit"
     };
     try {
       const response = await fetch("/api/prorequests", {
@@ -292,15 +310,16 @@ export function ChatInput({
         headers: {
           "Content-Type": "application/json",
         },
-
         body: JSON.stringify(payload),
       });
 
       await response.json();
       setShowProAccess(false);
+      notify.success('Pro access request submitted successfully');
     } catch (error) {
       setIsRequestingPro(false);
       setShowProAccess(false);
+      notify.error('Failed to submit Pro access request');
     } finally {
       setIsRequestingPro(false);
       setShowProAccess(false);
@@ -618,6 +637,12 @@ export function ChatInput({
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
         isLoading={isRequestingPro}
+        errorMessage="You have reached your message limit (5 messages per month). Request Pro access to send unlimited messages."
+        userData={{
+          name: session?.user?.name || '',
+          email: session?.user?.email || '',
+          accountType: 'personal' // Default to personal, user can change
+        }}
       />
       {/* Document Selection Modal - only show in chat mode since it needs projectId */}
       {!homepageMode && (

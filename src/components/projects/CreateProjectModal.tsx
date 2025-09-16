@@ -18,6 +18,7 @@ import { RefreshCw } from "lucide-react"
 import { useProjectStore } from '@/store/project.store'
 import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
+import ProAccessModal from '@/components/modals/ProAccess'
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -31,9 +32,11 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     title: '',
     description: '',
   })
-  
+  const [showProAccess, setShowProAccess] = useState(false)
+  const [isRequestingPro, setIsRequestingPro] = useState(false)
+
   const { notify } = useNotifications()
-  const { createProject } = useProjectStore()
+  const { createProject, requiresUpgrade } = useProjectStore()
   const { data: session } = useSession()
 
   const handleSubmit = async () => {
@@ -47,21 +50,65 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     }
 
     try {
-      await createProject({
+      const result = await createProject({
         ...formData,
         organizationId: session.user.organization.id
       })
 
-      notify.success('Project created successfully')
-      onClose()
-      setFormData({ title: '', description: '' })
+      if (result) {
+        notify.success('Project created successfully')
+        onClose()
+        setFormData({ title: '', description: '' })
+      }
+      // If result is null, check if it's due to subscription limits
+      else if (requiresUpgrade) {
+        setShowProAccess(true)
+      }
+      else {
+        setError('Failed to create project. Please try again.')
+      }
     } catch (error: any) {
-      notify.error('Failed to create project. Please try again.')
-      setError(error.message || 'Failed to create project. Please try again.')
+      // Check if this is a subscription limit error
+      if (error.status === 403 && error.requiresUpgrade) {
+        setShowProAccess(true)
+      } else {
+        notify.error('Failed to create project. Please try again.')
+        setError(error.message || 'Failed to create project. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
   }
+
+  // Handle Pro access request
+  const handleRequestProAccess = async (formData: { name: string; email: string; accountType: string }) => {
+    setIsRequestingPro(true);
+    try {
+      const response = await fetch('/api/prorequests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          name: formData.name,
+          account_type: formData.accountType,
+          request_type: 'project_limit'
+        })
+      });
+
+      await response.json();
+      setShowProAccess(false);
+      notify.success('Pro access request submitted successfully');
+    } catch (error) {
+      setIsRequestingPro(false);
+      setShowProAccess(false);
+      notify.error('Failed to submit Pro access request');
+    } finally {
+      setIsRequestingPro(false);
+      setShowProAccess(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -128,6 +175,20 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {/* Pro Access Modal */}
+      <ProAccessModal
+        isOpen={showProAccess}
+        onClose={() => setShowProAccess(false)}
+        onRequestAccess={handleRequestProAccess}
+        isLoading={isRequestingPro}
+        errorMessage="You have reached your project limit (1 project for free plan). Request Pro access to create unlimited projects."
+        userData={{
+          name: session?.user?.name || '',
+          email: session?.user?.email || '',
+          accountType: 'personal' // Default to personal, user can change
+        }}
+      />
     </Dialog>
   );
 }

@@ -1,22 +1,54 @@
 // components/ProAccessModal.tsx
-import React from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Check, AlertCircle, Crown } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertCircle, Crown } from "lucide-react";
 
 interface ProAccessModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onRequestAccess: () => void;
+  onRequestAccess: (formData: { name: string; email: string; accountType: string }) => void;
   isLoading?: boolean;
+  errorMessage?: string;
+  userData?: {
+    name?: string;
+    email?: string;
+    accountType?: string;
+  };
 }
 
 const ProAccessModal: React.FC<ProAccessModalProps> = ({
   isOpen,
   onClose,
   onRequestAccess,
-  isLoading = false
+  isLoading = false,
+  errorMessage = "You have reached your plan limits. Request Pro access to continue.",
+  userData
 }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    accountType: ''
+  });
+
+  // Pre-populate form when modal opens or user data changes
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        name: userData.name || '',
+        email: userData.email || '',
+        accountType: userData.accountType || ''
+      });
+    }
+  }, [userData, isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onRequestAccess(formData);
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -32,62 +64,75 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg">
             <h3 className="font-medium text-amber-800 mb-2 flex items-center">
               <AlertCircle className="h-4 w-4 mr-2" />
-              Grow you legal practice with Pro
+              Plan Limit Reached
             </h3>
             <p className="text-sm text-amber-700">
-            Get more clients for your legal practice with wansom Pro.Create cotent that get discovered by AI engines and convert chats to leads
+              {errorMessage}
             </p>
           </div>
-          
-          <div className="space-y-3">
-            <h3 className="font-medium">With Pro access, you'll get:</h3>
-            <ul className="space-y-2">
-             
-              <li className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Create unlimited  AI associates in your workspaces</span>
-              </li>
-              <li className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Unlimited vault storage and document processing</span>
-              </li>
-              <li className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Create unlimited project workspaces</span>
-              </li>
-               <li className="flex items-start">
-                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                <span>Connect more data sources and tools;Google Drive, Calendar,Private datastore</span>
-              </li>
-            </ul>
-          </div>
-          
-          {/* <div className="mt-2 p-4 border rounded-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-medium">Pro Plan</h3>
-                <p className="text-sm text-gray-500">All features unlocked</p>
+
+          <div className="space-y-4">
+            {/* Name and Email in a row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter your full name"
+                  required
+                />
               </div>
-              <div className="text-right">
-                <p className="font-bold text-lg">$39.00 <span className="text-sm font-normal text-gray-500">/month</span></p>
-                <p className="text-xs text-gray-500">Billed monthly</p>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter your email address"
+                  required
+                />
               </div>
             </div>
-          </div> */}
-        </div>
+
+            {/* Account Type Select */}
+            <div className="space-y-2">
+              <Label htmlFor="accountType">Account Type</Label>
+              <Select
+                value={formData.accountType}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, accountType: value }))}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="personal">Personal</SelectItem>
+                  <SelectItem value="enterprise">Enterprise</SelectItem>
+                  <SelectItem value="student">Student</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </form>
         
         <DialogFooter className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" onClick={onClose} className="sm:flex-1">
+          <Button variant="outline" onClick={onClose} className="sm:flex-1" disabled={isLoading}>
             Not Now
           </Button>
-          <Button 
-            onClick={onRequestAccess}
+          <Button
+            type="submit"
+            onClick={handleSubmit}
             className="sm:flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-            disabled={isLoading}
+            disabled={isLoading || !formData.name || !formData.email || !formData.accountType}
           >
             {isLoading ? "Processing..." : "Request Pro Access"}
           </Button>
