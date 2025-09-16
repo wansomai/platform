@@ -19,6 +19,7 @@ import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
 import LRUCache from 'lru-cache'
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { classifyWithContext } from '@/lib/intentClassification';
+import { canSendMessage } from '@/lib/subscription';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
@@ -107,6 +108,12 @@ export async function POST(
     
     // Start parallel operations immediately
     const accessCheckPromise = checkProjectAccess(projectId, userId);
+
+    // Get user's organization for subscription check
+    const userPromise = prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true }
+    });
     
     // Only fetch what we need based on query type
     const conversationPromise = prisma.conversation.findFirst({
@@ -169,9 +176,10 @@ export async function POST(
         });
     
     // Wait for essential checks first
-    const [hasAccess, conversation] = await Promise.all([
+    const [hasAccess, conversation, user] = await Promise.all([
       accessCheckPromise,
-      conversationPromise
+      conversationPromise,
+      userPromise
     ]);
     
     if (!hasAccess) {
@@ -186,6 +194,21 @@ export async function POST(
         { status: 404, message: "Conversation not found" },
         { status: 404 }
       );
+    }
+
+    // Check subscription limits before processing message
+    if (user?.organizationId) {
+      const messageLimitCheck = await canSendMessage(user.organizationId);
+      if (!messageLimitCheck.allowed) {
+        return NextResponse.json(
+          {
+            status: 403,
+            message: messageLimitCheck.reason,
+            requiresUpgrade: true
+          },
+          { status: 403 }
+        );
+      }
     }
     
     // Now that we've validated access, wait for the remaining data in parallel

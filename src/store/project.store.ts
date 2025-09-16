@@ -6,12 +6,13 @@ import { Project } from '@/types/projects'
 import { ProjectState } from '@/types/store'
 import { ApiResponse } from '@/types'
 
-interface ExtendedProjectState extends ProjectState {  
+interface ExtendedProjectState extends ProjectState {
   projects: Project[]
   projectsMap: Map<string, Project>
   currentProject: Project | null
   isLoading: boolean
   error: string | null
+  requiresUpgrade?: boolean
   
   
   // Basic state setters
@@ -154,7 +155,7 @@ export const useProjectStore = create<ExtendedProjectState>()(
         try {
           set({ isLoading: true, error: null });
           const response = await apiService.post<ApiResponse<Project>>('/api/projects', data);
-          
+
           if (response.status === 201) {
             const project = response.data ?? null;
             set({ isLoading: false });
@@ -163,11 +164,22 @@ export const useProjectStore = create<ExtendedProjectState>()(
           }
           return null;
         } catch (error: any) {
-          set({ 
-            error: error.message || 'Failed to create project', 
-            isLoading: false 
-          });
-          return null;
+          // Check if this is a subscription limit error
+          if (error.status === 403 && error.requiresUpgrade) {
+            set({
+              error: error.message || 'Subscription limit reached',
+              isLoading: false,
+              requiresUpgrade: true
+            });
+            // Re-throw the error so the component can handle it
+            throw error;
+          } else {
+            set({
+              error: error.message || 'Failed to create project',
+              isLoading: false
+            });
+            return null;
+          }
         }
       },
       

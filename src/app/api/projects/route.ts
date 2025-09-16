@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getUserIdFromRequest } from "@/lib/auth/authorization";
+import { canCreateProject } from "@/lib/subscription";
 
 const prisma = new PrismaClient();
 
@@ -135,6 +136,19 @@ export async function POST(request: NextRequest) {
     if (!user || user.organizationId !== organizationId) {
       return NextResponse.json(
         { status: 403, message: "You don't have permission to create projects in this organization" },
+        { status: 403 }
+      );
+    }
+
+    // Check subscription limits before creating project
+    const projectLimitCheck = await canCreateProject(organizationId);
+    if (!projectLimitCheck.allowed) {
+      return NextResponse.json(
+        {
+          status: 403,
+          message: projectLimitCheck.reason,
+          requiresUpgrade: true
+        },
         { status: 403 }
       );
     }

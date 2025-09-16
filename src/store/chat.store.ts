@@ -12,6 +12,7 @@ interface ChatState {
   currentConversation: Conversation | null;
   isLoading: boolean;
   error: string | null;
+  requiresUpgrade?: boolean;
   
   // Conversation management
   setConversations: (conversations: Conversation[]) => void;
@@ -314,14 +315,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
           }
         },
         (error) => {
-          set({ error: error.message || 'Failed to send message' });
+          // Check if this is a subscription limit error
+          if (error.status === 403 && error.requiresUpgrade) {
+            set({ error: error.message || 'Message limit reached', requiresUpgrade: true });
+            throw error; // Re-throw so component can handle it
+          } else {
+            set({ error: error.message || 'Failed to send message' });
+          }
         }
       );
       
     } catch (error: any) {
+      // Check if this is a subscription limit error
+      const isUpgradeRequired = error.status === 403 && error.requiresUpgrade;
+
       set((state) => {
         if (!state.currentConversation) return state;
-        
+
         return {
           currentConversation: {
             ...state.currentConversation,
@@ -329,9 +339,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
               (msg) => msg.id !== streamingId && msg.tempId !== streamingId
             )
           },
-          error: error.message || 'Failed to send message'
+          error: error.message || 'Failed to send message',
+          requiresUpgrade: isUpgradeRequired
         };
       });
+
+      // Re-throw subscription errors so components can handle them
+      if (isUpgradeRequired) {
+        throw error;
+      }
     }
   },
 

@@ -33,17 +33,27 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      
+
       try {
         await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
       } catch (signOutError) {
-        
+
         if (typeof window !== 'undefined') {
           window.location.href = '/login?session=expired';
         }
       }
     }
-    
+
+    // For 403 errors, preserve the response data which may contain requiresUpgrade flag
+    if (error.response?.status === 403) {
+      const responseData = error.response.data as any;
+      const customError = new Error(responseData?.message || 'Access denied') as any;
+      customError.status = 403;
+      customError.requiresUpgrade = responseData?.requiresUpgrade;
+      customError.response = error.response;
+      return Promise.reject(customError);
+    }
+
     return Promise.reject(error);
   }
 );
@@ -179,7 +189,16 @@ export const apiService = {
           await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
           return;
         }
-        
+
+        // Handle 403 with possible subscription limit errors
+        if (response.status === 403) {
+          const errorData = await response.json().catch(() => null);
+          const customError = new Error(errorData?.message || 'Access denied') as any;
+          customError.status = 403;
+          customError.requiresUpgrade = errorData?.requiresUpgrade;
+          throw customError;
+        }
+
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
