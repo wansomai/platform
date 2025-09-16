@@ -46,9 +46,10 @@ apiClient.interceptors.response.use(
 
     // For 403 errors, preserve the response data which may contain requiresUpgrade flag
     if (error.response?.status === 403) {
-      const customError = new Error(error.response.data?.message || 'Access denied') as any;
+      const responseData = error.response.data as any;
+      const customError = new Error(responseData?.message || 'Access denied') as any;
       customError.status = 403;
-      customError.requiresUpgrade = error.response.data?.requiresUpgrade;
+      customError.requiresUpgrade = responseData?.requiresUpgrade;
       customError.response = error.response;
       return Promise.reject(customError);
     }
