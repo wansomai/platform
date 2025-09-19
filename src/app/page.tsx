@@ -64,7 +64,7 @@ export default function Home() {
         <LegalDraftingSection />
         <LegalResearchSection />
         <DocumentReview />
-
+<DocumentAutomation />
         <AutomateProcesses />
         <VaultSection />
         <CreativeIntegrationsSection />
@@ -304,3 +304,60 @@ function DocumentReview() {
     </section>
   );
 }
+
+function DocumentAutomation() {
+  return (
+    <section className="section-spacing bg-gray-50" id="document-automation">   
+      <div className="section-container pb-12">
+          <h2 className="text-heading-2 mb-4 text-gray-900 text-center max-w-3xl mx-auto">
+              Upload, Review and Redline Contracts with Automated Document Workflows
+            </h2>
+        <div className="grid lg:grid-cols-3 gap-10 items-center pt-5">
+
+              <div className="space-y-4">
+                <img src="/images/upload-document.png" className=" rounded-lg" alt="document vault" />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-center">
+                    Upload &amp; Tag Documents
+                  </h3>
+                  <p className="text-gray-600 text-center">
+                    Select and upload documents,AI automaitcally analyses and tags them for easy organization and retrieval.
+                  </p>
+                </div>
+              </div>
+
+              
+              <div className="space-y-4">
+                <img src="/images/redline-contract.png" className=" rounded-lg" alt="redline contracts" />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-center">
+                    Review &amp; Redline Contracts
+                  </h3>
+                  <p className="text-gray-600 text-center">
+                   Get Deep insights from your documents in a unified chat interface and redline contracts with AI-powered suggestions.
+                  </p>
+                </div>
+              </div>
+
+              
+              <div className="space-y-4">
+                <img src="/images/legal-document-review.png" className=" rounded-lg" alt="review legal documents" />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2 text-center">
+                  Compare and Share Documents
+                  </h3>
+                  <p className="text-gray-600 text-center">
+                    Compare different versions of documents side by side and share securely with clients and colleagues.
+                  </p>
+                </div>
+              </div>
+            
+            
+          
+         
+        </div>
+      </div>
+    </section>
+  );
+} 
+

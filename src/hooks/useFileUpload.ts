@@ -60,7 +60,7 @@ export const useFileUpload = (options: FileUploadOptions = {}): FileUploadState 
   const validateFile = useCallback((file: File): string | null => {
     // Check file size
     if (file.size > maxFileSize) {
-      return `File size exceeds ${Math.round(maxFileSize / (1024 * 1024))}MB limit. Please upgrade your plan to upload larger files.`;
+      return `File size exceeds ${Math.round(maxFileSize / (1024 * 1024))}MB limit. Please select a smaller file.`;
     }
 
     // Check file type

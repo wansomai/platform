@@ -137,7 +137,7 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
           const file = fileData.get('file') as File;
           
           if (file && file.size > API_CONSTANTS.MAX_FILE_SIZE) {
-            const error = 'File size exceeds 5MB limit. Please upgrade your plan to upload larger files.';
+            const error = `File size exceeds ${Math.round(API_CONSTANTS.MAX_FILE_SIZE / (1024 * 1024))}MB limit. Please select a smaller file.`;
             set({ error, isLoading: false });
             throw new Error(error);
           }
