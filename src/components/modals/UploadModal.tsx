@@ -32,7 +32,7 @@ import { formatFileSize, validateFile } from "@/lib/utils/file";
 import { Document } from "@/types";
 
 // Constants
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
 interface UploadDocumentModalProps {
   open: boolean;
