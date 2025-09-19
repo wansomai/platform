@@ -18,7 +18,7 @@ export const PatnerLogoSection = () => {
             Powering Legal Success
           </h2>
           <p className="text-body-large text-gray-600 mb-8 max-w-3xl mx-auto capitalize">
-           Join 3000+  Advocates streamlining their legal processes with wansom.ai</p>
+           Join 3000+  Advocates streamlining their legal processes with wansom AI</p>
         </div>
       <div className="relative overflow-hidden">
         <div className="flex animate-scroll whitespace-nowrap">

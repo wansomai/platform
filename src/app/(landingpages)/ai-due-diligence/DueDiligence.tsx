@@ -553,36 +553,6 @@ const ComprehensiveAnalysisSection = () => {
   );
 };
 export const DocumentsVault=() => {
-   const dueDiligenceCategories = [
-    {
-      id: "financial",
-      label: "Financial",
-      count: 847,
-      color: "text-blue-600 bg-blue-100",
-      completed: 92,
-    },
-    {
-      id: "legal",
-      label: "Legal",
-      count: 234,
-      color: "text-purple-600 bg-purple-100",
-      completed: 78,
-    },
-    {
-      id: "operational",
-      label: "Operational",
-      count: 156,
-      color: "text-green-600 bg-green-100",
-      completed: 85,
-    },
-    {
-      id: "technical",
-      label: "Technical",
-      count: 89,
-      color: "text-orange-600 bg-orange-100",
-      completed: 65,
-    },
-  ];
     const documentCategories = [
     {
       title: "Financial Statements & Audits",

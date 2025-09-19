@@ -262,7 +262,7 @@ function DocumentReview() {
           <VaultDocs />
           <div>
             <h2 className="text-heading-2 mb-4 text-white">
-              Securely store and manage all your legal documents in one place
+              Secure Document Vault to store and manage all your legal documents in one place
             </h2>
             <p className="text-xl text-gray-100 mb-8">
               Wansom's Document Vault offers a secure, organized repository for
