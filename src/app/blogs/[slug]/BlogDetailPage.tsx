@@ -6,9 +6,7 @@ import Link from "next/link";
 import { getAllBlogPosts, getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
 import { adaptBlogPost, adaptBlogPosts, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
-import { Footer } from "react-day-picker";
-import { Linkedin } from "lucide-react";
-
+import Footer from "@/components/layout/Footer";
 interface PageProps {
   params: {
     slug: string;

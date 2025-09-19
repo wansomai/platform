@@ -2,9 +2,12 @@ import { Metadata } from 'next';
 import CareersPageClient from './CareersPage';
 
 export const metadata: Metadata = {
-  title: 'Careers at wansom AI | Join Our Legal Tech Team',
+  title: 'Careers at Wansom AI | Join Our Legal Tech Team',
   description: 'Join Wansom AI and help shape the future of legal technology. Explore exciting career opportunities in AI, legal tech, marketing, and software development in Nairobi.',
   keywords: 'legal tech careers, AI jobs, Wansom AI careers, tech jobs Nairobi, legal technology jobs',
+  alternates: {
+    canonical: '/careers',
+  },
   openGraph: {
     title: 'Careers at Wansom AI | Join Our Legal Tech Team',
     description: 'Join Wansom AI and help shape the future of legal technology. Explore exciting career opportunities in Nairobi.',
@@ -15,7 +18,7 @@ export const metadata: Metadata = {
         url: '/dashboard.jpg',
         width: 1200,
         height: 630,
-        alt: 'WakiliChat Careers - Legal Tech Jobs',
+        alt: 'Wansom AI Careers - Legal Tech Jobs',
       }
     ],
     locale: 'en_US',
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Join wansom AI - Legal Tech Careers',
     description: 'Shape the future of legal technology. View open positions at wansom AI.',
-    images: ['hero.png'],
+    images: ['/hero.png'],
   }
 };
 

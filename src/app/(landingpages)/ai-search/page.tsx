@@ -3,11 +3,14 @@ import { Metadata } from 'next';
 import AISearchPage from './AISearchPage';
 
 
-export const metadata: Metadata =  {
-    title: "Wansom AI Academy",
+export const metadata: Metadata = {
+    title: "Wansom AI Academy | Legal AI Search Platform",
     description: "Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.",
+    alternates: {
+      canonical: '/ai-search',
+    },
     openGraph: {
-      title: 'Wansom AI|Academy',
+      title: 'Wansom AI Academy',
       description: 'Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.',
       url: 'https://www.academy.wansom.ai/',
       siteName: 'Wansom AI',
@@ -24,7 +27,7 @@ export const metadata: Metadata =  {
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Wansom AI|Academy',
+      title: 'Wansom AI Academy',
       description: 'Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.',
       images: ['/images/features-2.png'],
     },
@@ -33,7 +36,7 @@ export const metadata: Metadata =  {
       'law firm AI software',
       'SEO automation',
       'legal tech',
-      "AI Lawyer",
+      'AI Lawyer',
       'AI assistant',
       'marketing automation'
     ],

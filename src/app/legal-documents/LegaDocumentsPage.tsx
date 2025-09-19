@@ -8,6 +8,7 @@ import Pagination from '@/components/home/pagination';
 import Navbar from '@/components/layout/Navbar';
 import { Sparkles, Search, X } from 'lucide-react';
 import LegalDocCard from '@/components/home/legal-documents';
+import Footer from '@/components/layout/Footer';
 
 const POSTS_PER_PAGE = 9; // 3x3 grid
 
@@ -187,6 +188,7 @@ const LegalDocumentsPageClient = () => {
           )}
         </div>
       </section>
+      <Footer/>
     </div>
   );
 };
