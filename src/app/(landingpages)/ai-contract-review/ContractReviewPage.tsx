@@ -13,10 +13,6 @@ import {
   Target,
   ThumbsUp,
   X,
-  ClipboardCopy,
-  Clipboard,
-  ChevronDown,
-  ChevronUp,
   Paperclip,
   Send,
 } from "lucide-react";
