@@ -15,7 +15,7 @@
   
   /* Section spacing */
   --section-padding-sm: 4rem;   /* 64px mobile */
-  --section-padding-lg: 6rem;   /* 96px desktop */
+  --section-padding-lg: 4rem;   /* 96px desktop */
   
   /* Container spacing */
   --container-padding: 1rem;    /* 16px mobile */

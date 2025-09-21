@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, Globe, Zap, Target, Sparkles, Folder } from "lucide-react";
+import { CheckCircle, Globe, Zap, Target, Sparkles, Folder, ArrowUpRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FeaturesSection from "@/components/home/features";
@@ -63,8 +63,9 @@ export default function Home() {
         <FeaturesSection />
         <LegalDraftingSection />
         <LegalResearchSection />
+        <DocumentAutomation />
         <DocumentReview />
-<DocumentAutomation />
+
         <AutomateProcesses />
         <VaultSection />
         <CreativeIntegrationsSection />
@@ -306,55 +307,81 @@ function DocumentReview() {
 }
 
 function DocumentAutomation() {
+  const [activeTab, setActiveTab] = useState(2);
+
+  const tabs = [
+    {
+      title: "Upload & Tag Documents",
+      image: "/images/upload-document.png",
+      alt: "document vault",
+      description: "Select and upload documents,AI automaitcally analyses and tags them for easy organization and retrieval."
+    },
+    {
+      title: "Review & Redline Contracts",
+      image: "/images/redline-contract.png",
+      alt: "redline contracts",
+      description: "Get Deep insights from your documents in a unified chat interface and redline contracts with AI-powered suggestions."
+    },
+    {
+      title: "Compare and Share Documents",
+      image: "/images/legal-document-review.png",
+      alt: "review legal documents",
+      description: "Compare different versions of documents side by side and share securely with clients and colleagues."
+    }
+  ];
+
   return (
-    <section className="section-spacing bg-gray-50" id="document-automation">   
+    <section className="section-spacing bg-white" id="document-automation">
       <div className="section-container pb-12">
-          <h2 className="text-heading-2 mb-4 text-gray-900 text-center max-w-3xl mx-auto">
-              Upload, Review and Redline Contracts with Automated Document Workflows
-            </h2>
-        <div className="grid lg:grid-cols-3 gap-10 items-center pt-5">
+        <h2 className="text-heading-2 mb-4 text-gray-900 text-center max-w-3xl mx-auto">
+          Upload, Review and Redline Contracts with Automated Document Workflows
+        </h2>
 
-              <div className="space-y-4">
-                <img src="/images/upload-document.png" className=" rounded-lg" alt="document vault" />
-                <div>
-                  <h3 className="font-semibold text-lg mb-2 text-center">
-                    Upload &amp; Tag Documents
-                  </h3>
-                  <p className="text-gray-600 text-center">
-                    Select and upload documents,AI automaitcally analyses and tags them for easy organization and retrieval.
-                  </p>
-                </div>
-              </div>
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-12 pt-5">
+          <div className="flex space-x-0 border-b border-gray-300">
+            {tabs.map((tab, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveTab(index)}
+                className={`px-8 py-4 font-medium transition-all relative ${
+                  activeTab === index
+                    ? "text-[#d47b0f] border-b-2 border-[#d47b0f]"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.title}
+              </button>
+            ))}
+          </div>
+        </div>
 
-              
-              <div className="space-y-4">
-                <img src="/images/redline-contract.png" className=" rounded-lg" alt="redline contracts" />
-                <div>
-                  <h3 className="font-semibold text-lg mb-2 text-center">
-                    Review &amp; Redline Contracts
-                  </h3>
-                  <p className="text-gray-600 text-center">
-                   Get Deep insights from your documents in a unified chat interface and redline contracts with AI-powered suggestions.
-                  </p>
-                </div>
-              </div>
-
-              
-              <div className="space-y-4">
-                <img src="/images/legal-document-review.png" className=" rounded-lg" alt="review legal documents" />
-                <div>
-                  <h3 className="font-semibold text-lg mb-2 text-center">
-                  Compare and Share Documents
-                  </h3>
-                  <p className="text-gray-600 text-center">
-                    Compare different versions of documents side by side and share securely with clients and colleagues.
-                  </p>
-                </div>
-              </div>
-            
-            
-          
-         
+        {/* Tab Content - Flex Layout */}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
+            <div className="flex-1 text-left order-2 lg:order-1">
+              <h3 className="font-semibold text-2xl mb-4 text-gray-900">
+                {tabs[activeTab].title}
+              </h3>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {tabs[activeTab].description}
+              </p>
+                   <button
+                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 my-5"
+                  onClick={() => (window.location.href = "/login")}
+                >
+                  Get Started{" "}
+                  <ArrowUpRight className="w-5 h-5 text-white" />
+                </button>
+            </div>
+            <div className="flex-1 lg:basis-1/3 order-1 lg:order-2">
+              <img
+                src={tabs[activeTab].image}
+                className="rounded-lg w-full h-auto"
+                alt={tabs[activeTab].alt}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>
