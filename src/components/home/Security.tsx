@@ -55,7 +55,7 @@ const CreativeIntegrationsSection = () => {
   // Variant 3: Morphing Grid
   const MorphingGrid = () => (
     <div className="relative" id='integrations'>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mx-auto">
+      <div className="grid grid-cols-3 lg:grid-cols-6 gap-4 mx-auto">
         {integrations.map((integration, index) => {
           const delay = index * 100;
           return (

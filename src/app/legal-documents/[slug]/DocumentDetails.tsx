@@ -1,12 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getAllDocumentTemplates } from "@/lib/data/contentful";
 import {adaptDocumentTemplate, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Send,
+  Loader2,
+  SlidersHorizontal,
+  X,
+  Paperclip,
+  Settings,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PageProps {
   params: {
@@ -18,10 +36,15 @@ interface PageProps {
 
 const DocDetailPageClient = ({ params }: PageProps) => {
   const { slug, id } = params;
+  const router = useRouter();
   const [blog, setBlog] = useState<any>(null);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [chatInput, setChatInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToolsDropdown, setShowToolsDropdown] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const fetchBlogPost = async () => {
@@ -47,15 +70,52 @@ const DocDetailPageClient = ({ params }: PageProps) => {
         
         const adaptedPost = adaptDocumentTemplate(blogPost);
         setBlog(adaptedPost);
+
+        // Pre-fill chat input with document title
+        setChatInput(`Help me draft a legal document based on this template`);
       } catch (err) {
-        console.error('Error fetching blog post:', err);
         setError('Failed to load legal document');
+
       } finally {
         setLoading(false);
       }
     };
     fetchBlogPost();
   }, [slug]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [chatInput]);
+
+  // Handle chat input send
+  const handleSend = async () => {
+    console.log('Send button clicked!', { chatInput, isSubmitting });
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      console.log('Navigating to register page...');
+      // Navigate to register page when send is clicked
+      router.push('/register');
+    } catch (error) {
+      console.error('Navigation error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   if (loading) {
     return (
@@ -102,36 +162,219 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Navbar />
+      <Navbar darkmode />
       {/* Header Section */}
-      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
-        
-        <div className="container mx-auto px-6 py-12 text-white">
-          <div className="grid  gap-12">
-            {/* Left Column - Contact Form */}
-            <div>
-              <h1 className="text-3xl  mb-4">
-                {blog.title}
-              </h1>
-              {/* Breadcrumb */}
-              <div className="container mx-auto px-4 py-4 text-sm ">
-                <div className="flex items-center">
-                  <Link href="/" className="hover:text-teal-600">
-                    Home
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <Link href="/legal-documents" className="hover:text-teal-600">
-                    Legal Documents
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <span className="truncate max-w-[200px]">
-                    {blog.title}
-                  </span>
+
+      {/* Chat Input Section */}
+      <section className="bg-gray-100 pb-12 pt-24 md:pt-32 lg:pt-40">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+              {blog.title}
+            </h1>
+            <p className="text-gray-600">
+              Draft entire legal documents and forms from scratch with AI or start with professional templates.
+            </p>
+          </div>
+
+          {/* Chat Input Area */}
+          <div className="relative w-full max-w-4xl mx-auto">
+            <div className="w-full">
+              <div className="bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative shadow-sm focus-within:shadow-md">
+
+                {/* Left side icons */}
+                <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
+                  {/* Documents Tool */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 rounded-md cursor-not-allowed opacity-60"
+                    title="Documents (available after registration)"
+                    disabled={true}
+                  >
+                    <Paperclip className="h-6 w-6 text-gray-500" />
+                  </Button>
+
+                  {/* Tools Dropdown */}
+                  <DropdownMenu
+                    open={showToolsDropdown}
+                    onOpenChange={setShowToolsDropdown}
+                  >
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
+                        title="AI Tools (preview - will be configurable after registration)"
+                      >
+                        <SlidersHorizontal className="h-6 w-6 text-gray-500" />{" "}
+                        Tools
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      className="w-72 p-4 mb-2"
+                      side="top"
+                    >
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium text-sm text-gray-500">
+                            Available AI Tools
+                          </h4>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowToolsDropdown(false)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="web-search"
+                              className="font-medium text-sm"
+                            >
+                              Deep Research
+                            </Label>
+                          </div>
+                          <Switch
+                            id="web-search"
+                            checked={false}
+                            disabled={true}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="legal-drafting"
+                              className="font-medium text-sm"
+                            >
+                              Legal drafting
+                            </Label>
+                          </div>
+                          <Switch
+                            id="legal-drafting"
+                            checked={false}
+                            disabled={true}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="contract-review"
+                              className="font-medium text-sm"
+                            >
+                              Contract Review
+                            </Label>
+                          </div>
+                          <Switch
+                            id="contract-review"
+                            checked={false}
+                            disabled={true}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="case-preparation"
+                              className="font-medium text-sm"
+                            >
+                              Case Preparation
+                            </Label>
+                          </div>
+                          <Switch
+                            id="case-preparation"
+                            checked={false}
+                            disabled={true}
+                          />
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                              <Label
+                                htmlFor="cite-sources"
+                                className="font-medium text-sm"
+                              >
+                                Cite sources
+                              </Label>
+                            </div>
+                            <Switch
+                              id="cite-sources"
+                              checked={false}
+                              disabled={true}
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-1">
+                              <Label
+                                htmlFor="suggest-actions"
+                                className="font-medium text-sm"
+                              >
+                                Suggest actions
+                              </Label>
+                            </div>
+                            <Switch
+                              id="suggest-actions"
+                              checked={false}
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  {/* Settings Button */}
+                  <button
+                    className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
+                    disabled={true}
+                    title="Settings (available after registration)"
+                  >
+                    <Settings className="h-4 w-4 text-gray-500 text-xs" />
+                    Settings
+                  </button>
                 </div>
-                <div className="flex items-center mt-2">
-                  <span className="mr-4">{blog.date}</span>
+
+                <Textarea
+                  ref={textareaRef}
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask anything about this document..."
+                  className="border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 min-h-[120px] max-h-[200px] px-6 py-4 pr-16 text-[13px] md:text-base"
+                  disabled={isSubmitting}
+                />
+
+                {/* Send button positioned inside textarea */}
+                <div className="absolute right-3 bottom-3 z-10">
+                  <Button
+                    className="bg-[#d47b0f] hover:bg-[#355e66] text-white z-10 shadow-md h-10 w-10 rounded-lg"
+                    disabled={isSubmitting}
+                    onClick={handleSend}
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="animate-spin text-white h-5 w-5" />
+                    ) : (
+                      <Send className="text-white h-5 w-5" />
+                    )}
+                  </Button>
                 </div>
               </div>
+            </div>
+
+            {/* Helper text */}
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-500">
+                Press <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Enter</kbd> to send,
+                <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono ml-1">Shift+Enter</kbd> for new line
+              </p>
             </div>
           </div>
         </div>
@@ -174,6 +417,23 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           
           {/* Main content column */}
           <div className="w-full lg:w-7/12">
+            {/* Breadcrumb */}
+              <div className="container mx-auto py-4 text-sm ">
+                <div className="flex items-center">
+                  <Link href="/" className="hover:text-teal-600">
+                    Home
+                  </Link>
+                  <span className="mx-2">/</span>
+                  <Link href="/legal-documents" className="hover:text-teal-600  whitespace-nowrap">
+                    Legal Documents
+                  </Link>
+                  <span className="mx-2">/</span>
+                  <span className="truncate text-teal-600">
+                    {blog.title}
+                  </span>
+                </div>
+                
+              </div>
             {/* Blog Content */}
             <div
               className="blog-content mb-12"
