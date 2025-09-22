@@ -93,171 +93,8 @@ const LegalResearchPage = () => {
       {/* Legal authorities database section */}
      <LegalResearchAssistant/>
 
-      {/* Research workflow section */}
-      <section className="section-spacing bg-[#355e66]">
-        <div className="section-container">
-          <h2 className="text-heading-2 text-center mb-12 text-white">
-            Complete Legal Research in Minutes
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white rounded-xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Search className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">
-                Natural Language Search
-              </h3>
-              <p className="text-gray-600">
-                Ask questions in plain English and get precise legal answers with relevant case citations and statutory analysis.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#d47b0f] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Brain className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">
-                AI Analysis & Synthesis
-              </h3>
-              <p className="text-gray-600">
-                Get synthesized answers that combine multiple authorities, highlighting conflicts and providing clear guidance.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 text-center">
-              <div className="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-6">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">
-                Instant Brief Generation
-              </h3>
-              <p className="text-gray-600">
-                Generate research memos and briefs with proper citations, ready for client delivery or court filing.
-              </p>
-            </div>
-          </div>
-
-          <div className="text-center">
-            <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
-              Try Legal Research Free
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Research sources section */}
-      <section className="section-spacing bg-gray-50">
-        <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative bg-primary rounded-xl shadow-xl overflow-hidden p-6">
-              <div className="bg-white rounded-xl shadow-xl border p-6">
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Search className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold text-gray-900">
-                      Legal Database Search
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Searching across 2.3M legal authorities for: "corporate liability for employee actions"
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <h4 className="font-medium mb-3">Search Results:</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between p-2 bg-white rounded">
-                      <div className="flex items-center space-x-2">
-                        <Gavel className="w-4 h-4 text-blue-500" />
-                        <span>Federal Cases</span>
-                      </div>
-                      <span className="font-medium">1,247</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white rounded">
-                      <div className="flex items-center space-x-2">
-                        <BookOpen className="w-4 h-4 text-green-500" />
-                        <span>State Statutes</span>
-                      </div>
-                      <span className="font-medium">89</span>
-                    </div>
-                    <div className="flex items-center justify-between p-2 bg-white rounded">
-                      <div className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-purple-500" />
-                        <span>Regulations</span>
-                      </div>
-                      <span className="font-medium">156</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-green-50 rounded-lg p-3 mb-4">
-                  <div className="text-sm text-green-800">
-                    <strong>Top Result:</strong> Respondeat superior doctrine - Employer liability established in 94% of similar cases
-                  </div>
-                </div>
-
-                <div className="flex space-x-2">
-                  <button className="flex-1 bg-[#355e66] text-white py-2 px-4 rounded hover:bg-[#2a4d54] transition-colors">
-                    View Results
-                  </button>
-                  <button className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors">
-                    <Bookmark className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-heading-2 mb-6 text-gray-900">
-                Research across all jurisdictions
-                and practice areas
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Whether you're researching federal constitutional law or local zoning ordinances, our AI has access to the most comprehensive legal database available.
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-[#355e66] p-3 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    1
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Multi-Jurisdictional Search</h3>
-                    <p className="text-gray-600">
-                      Search across federal, state, and local authorities simultaneously with jurisdiction-specific filtering.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-[#d47b0f] p-3 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    2
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Practice Area Intelligence</h3>
-                    <p className="text-gray-600">
-                      AI understands practice area context to surface the most relevant authorities for your specific legal question.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 p-3 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    3
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Citation Analysis</h3>
-                    <p className="text-gray-600">
-                      Automatic citation checking and Shepardizing to ensure you're relying on good law.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+       {/* workspace section */}  
+      <CollaborativeWorkspaces/>         
 
       {/* More features section */}
       <MoreFeatures/>
@@ -584,5 +421,136 @@ const LegalResearchAssistant = () => {
       </section>   
   );
 }
+
+const CollaborativeWorkspaces = () => {
+  const [expandedSections, setExpandedSections] = useState({
+    assistant: true,
+    documents: false,
+    web: false,
+    jurisdictional: false,
+    practice: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  return (
+   <section className="section-spacing bg-gray-100">
+        <div className="section-container">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <img
+              src="/images/collaborative-workspace.png"
+              alt="Collaborative Workspaces"
+              className="w-full rounded-2xl shadow-lg"
+            />
+            <div className="space-y-4">
+              {/* Main section - Your Legal Research Assistant */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('assistant')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-2 text-gray-900">
+                    Collaborate on Legal Projects
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.assistant ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.assistant ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Create secure, collaborative workspaces where legal teams can share documents, discuss strategies, and manage cases together.
+                  </p>
+                </div>
+              </div>
+
+              {/* Documents section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('documents')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                    Agentic workflows
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.documents ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.documents ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Add AI agents (Associates) to your legal projects to help with specialised tasks.
+                  </p>
+                </div>
+              </div>
+
+              {/* Web search section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('web')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                   Custom Project Instructions
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.web ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.web ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Tailor AI behavior for each project with custom instructions and guidelines.
+                  </p>
+                </div>
+              </div>
+
+              {/* Multi-Jurisdictional Search section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('jurisdictional')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                  Access Control & Permissions
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.jurisdictional ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.jurisdictional ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Control who can view, edit, and manage each workspace with granular permissions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          
+          </div>
+        </div>
+      </section>   
+  );
+}
+
+
 
 export default LegalResearchPage;
