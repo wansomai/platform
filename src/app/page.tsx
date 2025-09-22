@@ -46,16 +46,20 @@ export default function Home() {
                 <button
                   className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 mb-10"
                   onClick={() => (window.location.href = "/register")}
+                  aria-label="Try Wansom AI for free - Start your free trial"
                 >
                   TRY WANSOM FOR FREE{" "}
-                  <Sparkles className="w-5 h-5 text-white" />
+                  <Sparkles className="w-5 h-5 text-white" aria-hidden="true" />
                 </button>
               </div>
             </div>
 
-            {/* Right Side - Form */}
+            {/* Right Side - Image */}
             <div>
-              <img src="/law-office.jpg" />
+              <img
+                src="/law-office.jpg"
+                alt="Modern law office workspace showing professional legal environment with Wansom AI collaborative tools"
+              />
             </div>
           </div>
         </section>
@@ -100,13 +104,15 @@ function LegalDraftingSection() {
         <div className="grid lg:grid-cols-2 gap-10 ">
           <div className="bg-primary rounded-lg p-6 flex items-center justify-center order-2 lg:order-1">
             <div className="bg-white rounded-xl p-8 shadow-lg border max-w-md w-full">
-              <h3 className="text-lg font-semibold mb-6 text-gray-900">
+              <label htmlFor="jurisdiction-input" className="text-lg font-semibold mb-6 text-gray-900 block">
                 Jurisdiction
-              </h3>
+              </label>
               <input
+                id="jurisdiction-input"
                 type="text"
                 value="London, UK"
                 readOnly
+                aria-label="Selected jurisdiction: London, United Kingdom"
                 className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
               />
 
@@ -119,7 +125,10 @@ function LegalDraftingSection() {
                 <div>Clause Length: Standard</div>
               </div>
 
-              <button className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors">
+              <button
+                className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors"
+                aria-label="Generate document outline for Employment Agreement in London, UK jurisdiction"
+              >
                 Generate Document Outline
               </button>
             </div>
@@ -219,6 +228,9 @@ function AutomateProcesses() {
               <button
                 onClick={() => toggleSection('tax')}
                 className="w-full flex items-center justify-between text-left group"
+                aria-expanded={expandedSections.tax}
+                aria-controls="tax-content"
+                aria-label={`${expandedSections.tax ? 'Collapse' : 'Expand'} Tax Filings & Compliance section`}
               >
                 <h3 className="font-semibold text-lg text-gray-900">
                   Tax Filings & Compliance
@@ -227,11 +239,15 @@ function AutomateProcesses() {
                   className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
                     expandedSections.tax ? 'rotate-180' : ''
                   }`}
+                  aria-hidden="true"
                 />
               </button>
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedSections.tax ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-              }`}>
+              <div
+                id="tax-content"
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.tax ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}
+              >
                 <p className="text-gray-600">
                   Streamline tax preparation, automate regulatory filings, and
                   stay compliant with ever-changing legal requirements and
@@ -245,6 +261,9 @@ function AutomateProcesses() {
               <button
                 onClick={() => toggleSection('diligence')}
                 className="w-full flex items-center justify-between text-left group"
+                aria-expanded={expandedSections.diligence}
+                aria-controls="diligence-content"
+                aria-label={`${expandedSections.diligence ? 'Collapse' : 'Expand'} Due Diligence section`}
               >
                 <h3 className="font-semibold text-lg text-gray-900">
                   Due Diligence
@@ -253,11 +272,15 @@ function AutomateProcesses() {
                   className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
                     expandedSections.diligence ? 'rotate-180' : ''
                   }`}
+                  aria-hidden="true"
                 />
               </button>
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedSections.diligence ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-              }`}>
+              <div
+                id="diligence-content"
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.diligence ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}
+              >
                 <p className="text-gray-600">
                   Automate due diligence for mergers, acquisitions, and
                   investments with advanced document analysis and risk
@@ -271,6 +294,9 @@ function AutomateProcesses() {
               <button
                 onClick={() => toggleSection('appointments')}
                 className="w-full flex items-center justify-between text-left group"
+                aria-expanded={expandedSections.appointments}
+                aria-controls="appointments-content"
+                aria-label={`${expandedSections.appointments ? 'Collapse' : 'Expand'} Legal Appointments & Deadlines section`}
               >
                 <h3 className="font-semibold text-lg text-gray-900">
                   Legal Appointments & Deadlines
@@ -279,11 +305,15 @@ function AutomateProcesses() {
                   className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
                     expandedSections.appointments ? 'rotate-180' : ''
                   }`}
+                  aria-hidden="true"
                 />
               </button>
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedSections.appointments ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-              }`}>
+              <div
+                id="appointments-content"
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.appointments ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}
+              >
                 <p className="text-gray-600">
                   Automate scheduling, client onboarding, and deadline
                   tracking with smart reminders and calendar integration.
@@ -331,6 +361,9 @@ function DocumentReview() {
               <button
                 onClick={() => toggleSection('review')}
                 className="w-full flex items-center justify-between text-left group"
+                aria-expanded={expandedSections.review}
+                aria-controls="review-content"
+                aria-label={`${expandedSections.review ? 'Collapse' : 'Expand'} Enhanced AI Document Review section`}
               >
                 <h3 className="font-semibold text-lg text-gray-100">
                   Enhanced AI Document Review
@@ -339,11 +372,15 @@ function DocumentReview() {
                   className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
                     expandedSections.review ? 'rotate-180' : ''
                   }`}
+                  aria-hidden="true"
                 />
               </button>
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-              }`}>
+              <div
+                id="review-content"
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}
+              >
                 <p className="text-gray-100">
                   Leverage advanced AI to review and analyze legal documents
                   for accuracy, compliance, and risk assessment.Suport for both word,PDFs,Images and scanned documents.
@@ -356,6 +393,9 @@ function DocumentReview() {
               <button
                 onClick={() => toggleSection('folders')}
                 className="w-full flex items-center justify-between text-left group"
+                aria-expanded={expandedSections.folders}
+                aria-controls="folders-content"
+                aria-label={`${expandedSections.folders ? 'Collapse' : 'Expand'} Document Folders section`}
               >
                 <h3 className="font-semibold text-lg text-gray-100">
                   Document Folders
@@ -364,11 +404,15 @@ function DocumentReview() {
                   className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
                     expandedSections.folders ? 'rotate-180' : ''
                   }`}
+                  aria-hidden="true"
                 />
               </button>
-              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                expandedSections.folders ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-              }`}>
+              <div
+                id="folders-content"
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.folders ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}
+              >
                 <p className="text-gray-100">
                   Organize documents into customizable folders and
                   subfolders for easy retrieval and management.
