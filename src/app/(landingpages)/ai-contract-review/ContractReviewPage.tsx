@@ -15,14 +15,26 @@ import {
   X,
   Paperclip,
   Send,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import MoreFeatures from "@/components/home/MoreFeatures";
+import VaultSection from "@/components/home/vault";
 
 const ContractReviewPage = () => {
-  const [selectedRisk, setSelectedRisk] = useState("critical");
+  const [expandedSections, setExpandedSections] = useState({
+    risk: true,
+    redline: false,
+    review: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
@@ -31,27 +43,6 @@ const ContractReviewPage = () => {
     { src: "/logos/4.png", alt: "Netsheria" },
   ];
 
-  const riskCategories = [
-    {
-      id: "critical",
-      label: "Critical",
-      count: 3,
-      color: "text-red-600 bg-red-100",
-    },
-    {
-      id: "high",
-      label: "High",
-      count: 7,
-      color: "text-orange-600 bg-orange-100",
-    },
-    {
-      id: "medium",
-      label: "Medium",
-      count: 12,
-      color: "text-yellow-600 bg-yellow-100",
-    },
-    { id: "low", label: "Low", count: 5, color: "text-green-600 bg-green-100" },
-  ];
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -64,15 +55,7 @@ const ContractReviewPage = () => {
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-2/5">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-                <Eye className="w-4 h-4 mr-2" />
-                <span className="text-sm font-medium">
-                  AI-Powered Contract Review
-                </span>
-                <span className="ml-3 bg-white/20 text-xs px-2 py-1 rounded">
-                  Wansom
-                </span>
-              </div>
+            
 
               <h1 className="text-heading-1 mb-4 text-shadow">
                 Best AI For Contract Review
@@ -478,10 +461,10 @@ const ContractReviewPage = () => {
       <section className="section-spacing bg-gray-50">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
+            <div className="space-y-4">
               <h2 className="text-heading-2 mb-6 text-gray-900">
                 Find risks and errors
-              
+
                 buried in your docs
               </h2>
               <p className="text-xl text-gray-600 mb-8">
@@ -490,50 +473,78 @@ const ContractReviewPage = () => {
                 informed decisions faster.
               </p>
 
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center">
-                    <Search className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Instant Risk Detection
-                    </h3>
-                    <p className="text-gray-600">
-                      AI analyzes every clause to identify potential legal and
-                      business risks in real-time.
-                    </p>
-                  </div>
+              {/* Instant Risk Detection section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('risk')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Instant Risk Detection
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.risk ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.risk ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    AI analyzes every clause to identify potential legal and
+                    business risks in real-time.
+                  </p>
                 </div>
+              </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center">
-                    <AlertTriangle className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Smart Redline Suggestions
-                    </h3>
-                    <p className="text-gray-600">
-                      Get specific recommendations with alternative language to
-                      strengthen your position.
-                    </p>
-                  </div>
+              {/* Smart Redline Suggestions section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('redline')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Smart Redline Suggestions
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.redline ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.redline ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    Get specific recommendations with alternative language to
+                    strengthen your position.
+                  </p>
                 </div>
+              </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Review Time Cut by 80%
-                    </h3>
-                    <p className="text-gray-600">
-                      Complete thorough contract reviews in minutes instead of
-                      hours.
-                    </p>
-                  </div>
+              {/* Review Time Cut section */}
+              <div className="pb-4">
+                <button
+                  onClick={() => toggleSection('review')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Review Time Cut by 80%
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.review ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    Complete thorough contract reviews in minutes instead of
+                    hours.
+                  </p>
                 </div>
               </div>
             </div>
@@ -630,7 +641,7 @@ const ContractReviewPage = () => {
       </section>
 
       {/* More features section */}
-     <MoreFeatures/>
+     <VaultSection/>
 
   
       {/* Footer placeholder */}
