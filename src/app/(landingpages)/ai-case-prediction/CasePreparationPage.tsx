@@ -9,13 +9,13 @@ import {
   Send,
   TrendingUp,
   FileSearch,
-  MessageSquare,
-  Lightbulb,
+  MessageSquare
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MoreFeatures from "@/components/home/MoreFeatures";
+import VaultSection from "@/components/home/vault";
 
 const CasePreparationPage = () => {
 
@@ -366,8 +366,7 @@ const CasePreparationPage = () => {
 
 
       {/* More features section */}
-     <MoreFeatures/>
-
+     <VaultSection/>
       <Footer />
     </div>
   );

@@ -381,7 +381,7 @@ function DocumentReview() {
   );
 }
 
-function DocumentAutomation() {
+export function DocumentAutomation() {
   const [activeTab, setActiveTab] = useState(2);
 
   const tabs = [

@@ -1,23 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import {
-  FileText,
-  Sparkles,
   CheckCircle,
-  Brain,
-  Zap,
-  BookOpen,
-  Search,
-  Clock,
-  Target,
   Send,
-  Gavel,
-  Library,
-  Globe,
-  Link,
-  Star,
-  Award,
-  Bookmark,
   Loader,
   Circle,
   ChevronRight,
@@ -27,7 +12,7 @@ import {
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import MoreFeatures from "@/components/home/MoreFeatures";
+import VaultSection from "@/components/home/vault";
 
 const LegalResearchPage = () => {
   const partnerLogos = [
@@ -97,7 +82,7 @@ const LegalResearchPage = () => {
       <CollaborativeWorkspaces/>         
 
       {/* More features section */}
-      <MoreFeatures/>
+   <VaultSection/>
 
       <Footer />
     </div>
@@ -290,7 +275,7 @@ const LegalResearchAssistant = () => {
   };
 
   return (
-   <section className="section-spacing bg-gray-100">
+   <section className="section-spacing bg-gray-50">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-4">

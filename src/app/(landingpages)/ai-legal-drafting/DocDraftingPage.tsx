@@ -13,7 +13,7 @@ import {
 // Import existing components
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import MoreFeatures from '@/components/home/MoreFeatures';
+import VaultSection from '@/components/home/vault';
 
 const LegalDraftingPage = () => {
   const [formData, setFormData] = useState({
@@ -23,13 +23,6 @@ const LegalDraftingPage = () => {
     paymentTerms: 'Monthly'
   });
 
-    const partnerLogos = [
-    { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
-    { src: "/logos/7.png", alt: "Riskhouse International" },
-    { src: "/logos/4.png", alt: "Netsheria" },
- 
-  ];
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
@@ -292,7 +285,7 @@ const LegalDraftingPage = () => {
 
 
       {/* More spells section */}
-     <MoreFeatures/>
+  <VaultSection/>
       <Footer />
     </div>
   );
