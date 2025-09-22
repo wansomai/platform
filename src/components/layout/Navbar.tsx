@@ -54,8 +54,9 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   }, [])
 
   const aiPlatformItems = [
+    { name: 'AI Assistant', href: '/ai-legal-research' },
     { name: 'Legal Drafting', href: '/ai-legal-drafting' },
-    { name: 'Deep Research', href: '/ai-legal-research' },
+
     { name: 'Due Diligence', href: '/ai-due-diligence' },
     { name: 'Contract Reviews', href: '/ai-contract-review' },
     { name: 'Case Preparation', href: '/ai-case-prediction' },
@@ -130,12 +131,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
        
               </Link>
             </div>
-            <div className="relative group">
-              <Link href="/#integrations" className="font-semibold text-lg  flex items-center">
-                Integrations
-                
-              </Link>
-            </div>
+  
             <div className="relative group">
               <Link href="/#security" className="font-semibold text-lg flex items-center">
                 Security
@@ -201,13 +197,6 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                 onClick={() => setIsOpen(false)}
               >
                 Workflows
-              </Link>
-              <Link
-                href="/#integrations"
-                className="font-semibold text-lg text-gray-800 hover:text-green-600 py-2 border-b border-gray-100"
-                onClick={() => setIsOpen(false)}
-              >
-                Integrations
               </Link>
               <Link
                 href="/#security"

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, Globe, Zap, Target, Sparkles, Folder, ArrowUpRight } from "lucide-react";
+import { CheckCircle, Globe, Zap, Target, Sparkles, Folder, ArrowUpRight, ChevronDown } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FeaturesSection from "@/components/home/features";
@@ -68,7 +68,6 @@ export default function Home() {
 
         <AutomateProcesses />
         <VaultSection />
-        <CreativeIntegrationsSection />
       </main>
       <CookieConsent
         location="bottom"
@@ -188,11 +187,24 @@ function LegalResearchSection() {
   );
 }
 function AutomateProcesses() {
+  const [expandedSections, setExpandedSections] = useState({
+    tax: true,
+    diligence: false,
+    appointments: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   return (
     <section className="section-spacing bg-gray-100" id="workflows">
       <div className="section-container pb-12">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
+          <div className="space-y-4">
             <h2 className="text-heading-2 mb-6 text-gray-900">
               Automate Legal Workflows
             </h2>
@@ -201,50 +213,80 @@ function AutomateProcesses() {
               time by automating them.
             </p>
 
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center p-3">
-                  <Globe className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">
-                    Tax Filings & Compliance
-                  </h3>
-                  <p className="text-gray-600">
-                    Streamline tax preparation, automate regulatory filings, and
-                    stay compliant with ever-changing legal requirements and
-                    deadlines.
-                  </p>
-                </div>
+            {/* Tax Filings & Compliance section */}
+            <div className="border-b border-gray-200 pb-4">
+              <button
+                onClick={() => toggleSection('tax')}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h3 className="font-semibold text-lg text-gray-900">
+                  Tax Filings & Compliance
+                </h3>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                    expandedSections.tax ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedSections.tax ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+              }`}>
+                <p className="text-gray-600">
+                  Streamline tax preparation, automate regulatory filings, and
+                  stay compliant with ever-changing legal requirements and
+                  deadlines.
+                </p>
               </div>
+            </div>
 
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center p-3">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Due Diligence</h3>
-                  <p className="text-gray-600">
-                    Automate due diligence for mergers, acquisitions, and
-                    investments with advanced document analysis and risk
-                    assessment.
-                  </p>
-                </div>
+            {/* Due Diligence section */}
+            <div className="border-b border-gray-200 pb-4">
+              <button
+                onClick={() => toggleSection('diligence')}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h3 className="font-semibold text-lg text-gray-900">
+                  Due Diligence
+                </h3>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                    expandedSections.diligence ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedSections.diligence ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+              }`}>
+                <p className="text-gray-600">
+                  Automate due diligence for mergers, acquisitions, and
+                  investments with advanced document analysis and risk
+                  assessment.
+                </p>
               </div>
+            </div>
 
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center p-3">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">
-                    Legal Appointments & Deadlines
-                  </h3>
-                  <p className="text-gray-600">
-                    Automate scheduling, client onboarding, and deadline
-                    tracking with smart reminders and calendar integration.
-                  </p>
-                </div>
+            {/* Legal Appointments & Deadlines section */}
+            <div className="pb-4">
+              <button
+                onClick={() => toggleSection('appointments')}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h3 className="font-semibold text-lg text-gray-900">
+                  Legal Appointments & Deadlines
+                </h3>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                    expandedSections.appointments ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedSections.appointments ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+              }`}>
+                <p className="text-gray-600">
+                  Automate scheduling, client onboarding, and deadline
+                  tracking with smart reminders and calendar integration.
+                </p>
               </div>
             </div>
           </div>
@@ -256,12 +298,24 @@ function AutomateProcesses() {
 }
 
 function DocumentReview() {
+  const [expandedSections, setExpandedSections] = useState({
+    review: true,
+    folders: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   return (
     <section className="section-spacing bg-primary" id="legal-research">
       <div className="section-container ">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <VaultDocs />
-          <div>
+          <div className="space-y-4">
             <h2 className="text-heading-2 mb-4 text-white">
               Secure Document Vault to store and manage all your legal documents in one place
             </h2>
@@ -270,33 +324,54 @@ function DocumentReview() {
               all your legal documents, ensuring easy access and management
               whenever you need them.
             </p>
-            <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center p-3">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2 text-gray-100">
-                    Enhanced AI Document Review
-                  </h3>
-                  <p className="text-gray-100">
-                    Leverage advanced AI to review and analyze legal documents
-                    for accuracy, compliance, and risk assessment.Suport for both word,PDFs,Images and scanned documents.
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center p-3">
-                  <Folder className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-2 text-gray-100">Document Folders</h3>
-                  <p className="text-gray-100">
-                    Organize documents into customizable folders and
-                    subfolders for easy retrieval and management.
-                  </p>
-                </div>
+            {/* Enhanced AI Document Review section */}
+            <div className="border-b border-gray-400 pb-4">
+              <button
+                onClick={() => toggleSection('review')}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h3 className="font-semibold text-lg text-gray-100">
+                  Enhanced AI Document Review
+                </h3>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
+                    expandedSections.review ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+              }`}>
+                <p className="text-gray-100">
+                  Leverage advanced AI to review and analyze legal documents
+                  for accuracy, compliance, and risk assessment.Suport for both word,PDFs,Images and scanned documents.
+                </p>
+              </div>
+            </div>
+
+            {/* Document Folders section */}
+            <div className="pb-4">
+              <button
+                onClick={() => toggleSection('folders')}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <h3 className="font-semibold text-lg text-gray-100">
+                  Document Folders
+                </h3>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
+                    expandedSections.folders ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                expandedSections.folders ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+              }`}>
+                <p className="text-gray-100">
+                  Organize documents into customizable folders and
+                  subfolders for easy retrieval and management.
+                </p>
               </div>
             </div>
           </div>
