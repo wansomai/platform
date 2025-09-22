@@ -8,7 +8,6 @@ import {
   ArrowRight,
   Eye,
   Search,
-
   Users,
   Building,
   FileSearch,
@@ -25,13 +24,29 @@ import {
   Tag,
   Upload,
   Share2,
+  ArrowUpRight,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
-import { VaultDocs } from "@/components/home/vault";
+import VaultSection, { VaultDocs } from "@/components/home/vault";
 import Footer from "@/components/layout/Footer";
+import { DocumentAutomation } from "@/app/page";
 
 const DocumentVaultPage = () => {
+  const [expandedSections, setExpandedSections] = useState({
+    encryption: true,
+    access: false,
+    audit: false,
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
     { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
@@ -42,34 +57,27 @@ const DocumentVaultPage = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900">
       {/* Navbar placeholder */}
-    <Navbar/>
+      <Navbar />
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/1.png')] bg-cover bg-center bg-blend-multiply opacity-30"></div>
+      <section className="pt-24 md:pt-32 pb-16 bg-primary relative overflow-hidden">
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-3/5">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-                <Archive className="w-4 h-4 mr-2" />
-                <span className="text-sm font-medium">
-                  AI Powered Document Vault
-                </span>
-                <span className="ml-3 bg-white/20 text-xs px-2 py-1 rounded">
-                  Vault
-                </span>
-              </div>
-
               <h1 className="text-heading-1 font-bold mb-4 text-shadow">
                 Secure Document Vault
               </h1>
 
               <p className="text-xl mb-8 text-gray-100">
-                Capture, store, organize, and retrieve documents in a secure centralized repository powered by AI intelligence.
+                Capture, store, organize, and retrieve documents in a secure
+                centralized repository powered by AI intelligence.
               </p>
 
-              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12" onClick={() => window.location.href = '/login'}>
-               Try The Vault
-                <ArrowRight className="inline-block ml-2 w-4 h-4" />
+              <button
+                className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-5 py-3 rounded-lg font-semibold transition-colors mb-12"
+                onClick={() => (window.location.href = "/login")}
+              >
+                Try The Vault
+                <ArrowUpRight className="inline-block ml-2 w-6 h-6" />
               </button>
 
               {/* Trusted by logos */}
@@ -96,201 +104,130 @@ const DocumentVaultPage = () => {
 
             {/* Hero Diagram */}
             <div className="lg:basis-2/5 w-full max-w-lg">
-              <VaultDocs/>
+              <VaultDocs />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Smart Organization Section */}
-      <section className="section-spacing bg-gray-50">
-        <div className="section-container">
-          <div className="text-center mb-16">
-            <h2 className="text-heading-2 font-bold mb-6 text-gray-900">
-              Smart Document Organization
-            </h2>
-        
-          </div>
-
-             <div className="vault-image-container max-w-6xl mx-auto">
-          <img 
-            src="/wansom-vault.png" 
-            alt="Wansom AI Document Vault showing secure file management, folder organization, and document search capabilities for legal teams"
-            className="w-full h-full object-contain lg:object-cover object-top"
-            loading="lazy"
-          />
-        </div>
-        </div>
-      </section>
-
-      {/* Security Features Section */}
+      {/* Features section */}
       <section className="section-spacing bg-white">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
+            <div className="space-y-4">
               <h2 className="text-heading-2 font-bold mb-6 text-gray-900">
-                Enterprise-Grade Security
+                Smart Document Organization
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Your documents are protected with enterprise-level security, encryption, and compliance features designed for legal professionals.
+                Organize documents automatically with AI-powered tagging,
+                categorization, and metadata extraction.
               </p>
 
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      End-to-End Encryption
-                    </h3>
-                    <p className="text-gray-600">
-                      All documents are encrypted in transit and at rest with AES-256 encryption.
-                    </p>
-                  </div>
+              {/* End-to-End Encryption section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection("encryption")}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    AI-Powered Search
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.encryption ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    expandedSections.encryption
+                      ? "max-h-96 opacity-100 mt-6"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <p className="text-gray-600">
+                    Find any document instantly with intelligent search that
+                    understands context and content.
+                  </p>
                 </div>
+              </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center">
-                    <Lock className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Access Control
-                    </h3>
-                    <p className="text-gray-600">
-                      Granular permissions and role-based access ensure only authorized users can view sensitive documents.
-                    </p>
-                  </div>
+              {/* Access Control section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection("access")}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Team Collaboration
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.access ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    expandedSections.access
+                      ? "max-h-96 opacity-100 mt-6"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <p className="text-gray-600">
+                    Granular permissions and role-based access ensure only
+                    authorized users can view sensitive documents.
+                  </p>
                 </div>
+              </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center">
-                    <Archive className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Audit Trail
-                    </h3>
-                    <p className="text-gray-600">
-                      Complete audit logs track every document access, modification, and sharing activity.
-                    </p>
-                  </div>
+              {/* Audit Trail section */}
+              <div className="pb-4">
+                <button
+                  onClick={() => toggleSection("audit")}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Audit Trail
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.audit ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    expandedSections.audit
+                      ? "max-h-96 opacity-100 mt-6"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <p className="text-gray-600">
+                    Complete audit logs track every document access,
+                    modification, and sharing activity.
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="relative">
-              <SecurityVisualization />
+            <div className="bg-primary rounded-lg p-1  ">
+              <img
+                src="/wansom-vault.png"
+                alt="Wansom AI Document Vault showing secure file management, folder organization, and document search capabilities for legal teams"
+                className="w-full h-full object-contain object-top"
+                loading="lazy"
+              />
             </div>
           </div>
         </div>
       </section>
+      <DocumentAutomation />
 
-      {/* Features Grid Section */}
-      <section className="section-spacing bg-gray-100">
-        <div className="section-container">
-          <h2 className="text-4xl font-bold text-center mb-16 text-gray-900">
-            Complete Document Management
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl p-8 text-center shadow-lg">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Search className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">
-                AI-Powered Search
-              </h3>
-              <p className="text-gray-600">
-                Find any document instantly with intelligent search that understands context and content.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 text-center shadow-lg">
-              <div className="w-16 h-16 bg-[#d47b0f] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Tag className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">
-                Smart Categorization
-              </h3>
-              <p className="text-gray-600">
-                Documents are automatically tagged and categorized based on content, type, and importance.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 text-center shadow-lg">
-              <div className="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">
-                Team Collaboration
-              </h3>
-              <p className="text-gray-600">
-                Share documents securely with team members and clients with version control and comments.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* More Features Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-16 text-gray-900">
-            More features to explore
-          </h2>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Legal Drafting</h3>
-              <p className="text-gray-600 text-sm">
-                Draft correct legal documents and clauses quickly
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Contract Review</h3>
-              <p className="text-gray-600 text-sm">
-                Redline contracts and catch risks automatically
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileSearch className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Due Diligence</h3>
-              <p className="text-gray-600 text-sm">
-                Never be caught off guard during transactions
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold mb-2 text-gray-900">Legal Research</h3>
-              <p className="text-gray-600 text-sm">
-                Get instant answers to complex legal questions
-              </p>
-            </div>
-          </div>
-          <button className="mt-12 bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors" onClick={() => window.location.href = '/login'}>
-            Explore All Features
-            <ArrowRight className="inline-block ml-2 w-4 h-4" />
-            </button>
-        </div>
-      </section>
+    <VaultSection/>
 
       {/* Footer placeholder */}
-    <Footer/>
+      <Footer />
     </div>
   );
 };
@@ -388,12 +325,42 @@ const DocumentVaultDiagram = () => {
         </foreignObject>
 
         {/* Left side dots - UPLOAD */}
-        <circle cx="60" cy="120" r="4" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="40" cy="140" r="3" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="80" cy="100" r="3" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="30" cy="160" r="2" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="70" cy="80" r="2" fill="#60a5fa" className="animate-pulse" />
-        
+        <circle
+          cx="60"
+          cy="120"
+          r="4"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="40"
+          cy="140"
+          r="3"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="80"
+          cy="100"
+          r="3"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="30"
+          cy="160"
+          r="2"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="70"
+          cy="80"
+          r="2"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+
         {/* Left label */}
         <foreignObject x="10" y="180" width="80" height="30">
           <div className="text-center">
@@ -402,12 +369,42 @@ const DocumentVaultDiagram = () => {
         </foreignObject>
 
         {/* Right side dots - ACCESS */}
-        <circle cx="340" cy="120" r="4" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="360" cy="140" r="3" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="320" cy="100" r="3" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="370" cy="160" r="2" fill="#60a5fa" className="animate-pulse" />
-        <circle cx="330" cy="80" r="2" fill="#60a5fa" className="animate-pulse" />
-        
+        <circle
+          cx="340"
+          cy="120"
+          r="4"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="360"
+          cy="140"
+          r="3"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="320"
+          cy="100"
+          r="3"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="370"
+          cy="160"
+          r="2"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+        <circle
+          cx="330"
+          cy="80"
+          r="2"
+          fill="#60a5fa"
+          className="animate-pulse"
+        />
+
         {/* Right label */}
         <foreignObject x="310" y="180" width="80" height="30">
           <div className="text-center">
@@ -447,31 +444,41 @@ const VaultInterface = () => {
         {/* Sidebar */}
         <div className="bg-gray-50 border-r p-4">
           <div className="space-y-4">
-            <div className="text-sm font-medium text-gray-900 mb-4">Categories</div>
-            
+            <div className="text-sm font-medium text-gray-900 mb-4">
+              Categories
+            </div>
+
             <div className="space-y-2">
               <div className="flex items-center space-x-3 p-2 bg-white rounded-lg">
                 <Folder className="w-4 h-4 text-blue-600" />
                 <span className="text-sm">Contracts</span>
-                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">234</span>
+                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">
+                  234
+                </span>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer">
                 <Folder className="w-4 h-4 text-green-600" />
                 <span className="text-sm">Legal Briefs</span>
-                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">89</span>
+                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">
+                  89
+                </span>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer">
                 <Folder className="w-4 h-4 text-purple-600" />
                 <span className="text-sm">Financial</span>
-                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">156</span>
+                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">
+                  156
+                </span>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg cursor-pointer">
                 <Folder className="w-4 h-4 text-orange-600" />
                 <span className="text-sm">Compliance</span>
-                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">67</span>
+                <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">
+                  67
+                </span>
               </div>
             </div>
           </div>
@@ -504,14 +511,20 @@ const VaultInterface = () => {
                   <FileText className="w-5 h-5 text-red-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-gray-900 truncate">Employment Contract - Smith.pdf</h4>
+                  <h4 className="font-medium text-gray-900 truncate">
+                    Employment Contract - Smith.pdf
+                  </h4>
                   <p className="text-sm text-gray-500">2.3 MB • 2 hours ago</p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex space-x-1">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Contract</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Active</span>
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                    Contract
+                  </span>
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                    Active
+                  </span>
                 </div>
                 <button className="text-gray-400 hover:text-gray-600">
                   <Share2 className="w-4 h-4" />
@@ -525,14 +538,20 @@ const VaultInterface = () => {
                   <FileText className="w-5 h-5 text-blue-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-gray-900 truncate">Motion to Dismiss - Case 2024.docx</h4>
+                  <h4 className="font-medium text-gray-900 truncate">
+                    Motion to Dismiss - Case 2024.docx
+                  </h4>
                   <p className="text-sm text-gray-500">1.8 MB • 1 day ago</p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex space-x-1">
-                  <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">Legal Brief</span>
-                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Draft</span>
+                  <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                    Legal Brief
+                  </span>
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
+                    Draft
+                  </span>
                 </div>
                 <button className="text-gray-400 hover:text-gray-600">
                   <Share2 className="w-4 h-4" />
@@ -546,14 +565,20 @@ const VaultInterface = () => {
                   <FileText className="w-5 h-5 text-green-600" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-gray-900 truncate">Q4 Financial Report.xlsx</h4>
+                  <h4 className="font-medium text-gray-900 truncate">
+                    Q4 Financial Report.xlsx
+                  </h4>
                   <p className="text-sm text-gray-500">5.2 MB • 3 days ago</p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex space-x-1">
-                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Financial</span>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Final</span>
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                    Financial
+                  </span>
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                    Final
+                  </span>
                 </div>
                 <button className="text-gray-400 hover:text-gray-600">
                   <Share2 className="w-4 h-4" />
@@ -582,19 +607,25 @@ const SecurityVisualization = () => {
               <p className="text-sm text-gray-600">All systems protected</p>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Encryption</span>
-              <span className="text-sm font-medium text-green-600">AES-256 Active</span>
+              <span className="text-sm font-medium text-green-600">
+                AES-256 Active
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Access Control</span>
-              <span className="text-sm font-medium text-green-600">Role-based</span>
+              <span className="text-sm font-medium text-green-600">
+                Role-based
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Backup</span>
-              <span className="text-sm font-medium text-green-600">Automated</span>
+              <span className="text-sm font-medium text-green-600">
+                Automated
+              </span>
             </div>
           </div>
         </div>

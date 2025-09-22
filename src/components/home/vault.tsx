@@ -38,15 +38,15 @@ const VaultSection: React.FC = () => {
       className="overflow-hidden section-spacing bg-white"
       id="security"
     >
-      <div className="section-container gap-8">
+      <div className="section-container">
         <h2 className="text-heading-1 text-center max-w-4xl text-black mb-6 mx-auto">
           Wansom AI is built with enterprise-level security
           
         </h2>
         
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {securityFeatures.map((feature, index) => (
-              <div key={index} className="mb-5  rounded-lg space-y-3 p-6">
+              <div key={index} className="rounded-lg space-y-3 p-6">
                 <div className="flex flex-col items-center space-y-4 text-center">
                   <div className="p-4 bg-white/10 rounded-xl backdrop-blur-sm w-fit h-fit flex items-center justify-center border-black border-2 border-solid">
                     <feature.icon className="w-10 h-10 text-black" />
