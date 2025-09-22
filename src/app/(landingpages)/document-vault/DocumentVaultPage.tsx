@@ -8,9 +8,6 @@ import {
   ArrowRight,
   Eye,
   Search,
-  Users,
-  Building,
-  FileSearch,
   Folder,
   Lock,
   FolderLock,
@@ -113,8 +110,8 @@ const DocumentVaultPage = () => {
       {/* Features section */}
       <section className="section-spacing bg-white">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-4">
+          <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="space-y-4 lg:basis-[45%]">
               <h2 className="text-heading-2 font-bold mb-6 text-gray-900">
                 Smart Document Organization
               </h2>
@@ -211,7 +208,7 @@ const DocumentVaultPage = () => {
               </div>
             </div>
 
-            <div className="bg-primary rounded-lg p-1  ">
+            <div className="bg-primary rounded-lg p-1 lg:basis-[55%] ">
               <img
                 src="/wansom-vault.png"
                 alt="Wansom AI Document Vault showing secure file management, folder organization, and document search capabilities for legal teams"

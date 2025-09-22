@@ -2,28 +2,15 @@
 import React, { useState } from "react";
 import {
   FileText,
-  Sparkles,
   CheckCircle,
   Play,
   ArrowRight,
-  Brain,
-  Zap,
-  BookOpen,
-  Shield,
   AlertTriangle,
   Eye,
   Search,
   Clock,
-  Target,
-  ThumbsUp,
-  X,
-  ClipboardCopy,
-  Clipboard,
-  ChevronDown,
-  ChevronUp,
   Paperclip,
   Send,
-  FolderOpen,
   BarChart3,
   TrendingUp,
   Users,
@@ -31,13 +18,28 @@ import {
   FileSearch,
   Calendar,
   CheckSquare,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MoreFeatures from "@/components/home/MoreFeatures";
+import VaultSection from "@/components/home/vault";
 
 const DueDiligencePage = () => {
+  const [expandedSections, setExpandedSections] = useState({
+    upload: true,
+    analysis: false,
+    review: false,
+    report: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
 
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
@@ -58,15 +60,7 @@ const DueDiligencePage = () => {
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-3/5">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-                <FileSearch className="w-4 h-4 mr-2" />
-                <span className="text-sm font-medium">
-                  AI-Powered Due Diligence
-                </span>
-                <span className="ml-3 bg-white/20 text-xs px-2 py-1 rounded">
-                  Wansom
-                </span>
-              </div>
+   
 
               <h1 className="text-heading-1 mb-4 text-shadow">
                 #1 AI For Due Diligence
@@ -107,24 +101,19 @@ const DueDiligencePage = () => {
           </div>
         </div>
       </section>
-
-      {/* AI-Powered Analysis section */}
    
-
-      {/* Comprehensive analysis section */}
-     <ComprehensiveAnalysisSection/>
-
       {/* Never miss critical details section */}
-      <section className="section-spacing bg-[#355e66]">
+      <section className="section-spacing bg-white">
         <div className="section-container">
-          <h2 className="text-heading-2 text-center mb-12 text-white">
+          <h2 className="text-heading-2 text-center text-black mb-3">
             Never Miss Critical Details Again
           </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <p className="text-xl text-gray-600 mb-4 text-center mx-auto max-w-4xl">
+              Not only does AI flag what's missing; it explains why those terms matter, and suggests immediate improvements.</p>
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#355e66] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <Search className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 border-2 border-black rounded-lg flex items-center justify-center mx-auto mb-6">
+                <Search className="w-8 h-8 text-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-900">
                 Automated Document Review
@@ -135,8 +124,8 @@ const DueDiligencePage = () => {
             </div>
 
             <div className="bg-white rounded-xl p-8 text-center">
-              <div className="w-16 h-16 bg-[#d47b0f] rounded-lg flex items-center justify-center mx-auto mb-6">
-                <TrendingUp className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 border-2 border-black rounded-lg flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="w-8 h-8 text-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-900">
                 Pattern Recognition
@@ -147,8 +136,8 @@ const DueDiligencePage = () => {
             </div>
 
             <div className="bg-white rounded-xl p-8 text-center">
-              <div className="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-6">
-                <CheckSquare className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 border-2 border-black rounded-lg flex items-center justify-center mx-auto mb-6">
+                <CheckSquare className="w-8 h-8 text-black" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-gray-900">
                 Compliance Verification
@@ -158,175 +147,14 @@ const DueDiligencePage = () => {
               </p>
             </div>
           </div>
-
-          <div className="text-center">
-            <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors" onClick={() => window.location.href = '/login'}>
-              Start Your Due Diligence Review
-            </button>
-          </div>
         </div>
       </section>
 
       {/* Complete due diligence workflow section */}
-      <section className="section-spacing bg-white">
+      <section className="section-spacing bg-gray-50">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden border">
-                <div className="p-4 border-b bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 text-sm">Due Diligence Workflow</span>
-                    <div className="flex space-x-2">
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Active</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
-                      <CheckCircle className="w-6 h-6 text-green-500" />
-                      <div className="flex-1">
-                        <h4 className="font-medium">Document Collection</h4>
-                        <p className="text-sm text-gray-600">1,847 documents uploaded and organized</p>
-                      </div>
-                      <span className="text-sm text-green-600 font-medium">Complete</span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 p-3 bg-[#d47b0f]/20 rounded-lg border-l-4 border-[#d47b0f]">
-                      <div className="w-6 h-6 bg-[#d47b0f] rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">AI Analysis</h4>
-                        <p className="text-sm text-gray-600">Processing financial and legal documents</p>
-                      </div>
-                      <span className="text-sm text-blue-600 font-medium">85%</span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
-                      <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-500">Expert Review</h4>
-                        <p className="text-sm text-gray-500">Senior partner review of findings</p>
-                      </div>
-                      <span className="text-sm text-gray-500 font-medium">Pending</span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
-                      <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-500">Final Report</h4>
-                        <p className="text-sm text-gray-500">Comprehensive due diligence report</p>
-                      </div>
-                      <span className="text-sm text-gray-500 font-medium">Queued</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 pt-6 border-t">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-gray-600">Overall Progress</span>
-                      <span className="text-sm font-medium">85%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-[#355e66] h-2 rounded-full" style={{ width: '85%' }}></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">Estimated completion: 2 hours</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-heading-2 mb-6 text-gray-900">
-                Complete due diligence workflow
-                in hours, not weeks
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                From document collection to final report generation, Wansom AI streamlines your entire due diligence process with intelligent automation and expert oversight.
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-[#355e66] rounded-full flex items-center justify-center text-white text-sm font-bold p-4">
-                    1
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Upload & Organize</h3>
-                    <p className="text-gray-600">
-                      Bulk upload documents and let AI automatically categorize them by type and importance.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-[#d47b0f] rounded-full flex items-center justify-center text-white text-sm font-bold p-4">
-                    2
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">AI Analysis</h3>
-                    <p className="text-gray-600">
-                      Our AI performs comprehensive analysis, extracting key data and identifying potential risks and opportunities.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold p-4">
-                    3
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Review & Validate</h3>
-                    <p className="text-gray-600">
-                      Review AI findings, add expert insights, and validate critical discoveries with your team.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-sm font-bold p-4">
-                    4
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Generate Report</h3>
-                    <p className="text-gray-600">
-                      Create comprehensive, client-ready reports with executive summaries and detailed findings.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* More features section */}
-     <MoreFeatures/>
-
-      <Footer />
-    </div>
-  );
-};
-
-const ComprehensiveAnalysisSection = () => {
-
-
-  return (
-    <section className="section-spacing bg-gray-50">
-      <div className="section-container">
-        <div className="">
-          <div className="text-center">
-            <h2 className="text-heading-2 mb-6 text-gray-900">
-             Spot missing terms
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Not only does AI flag what's missing; it explains why those terms matter, and suggests immediate improvements.</p>
-          </div>
-  {/* Hero Demo Interface */}
-            <div className="relative col-span-3">
+          <div className="flex flex-col lg:flex-row gap-10 items-center">
+             <div className="relative lg:basis-3/5">
               <div className="bg-white rounded-xl shadow-2xl overflow-hidden border max-w-6xl mx-auto">
                 {/* Header with tabs */}
                 <div className="bg-gray-50 border-b">
@@ -546,12 +374,124 @@ const ComprehensiveAnalysisSection = () => {
                 </div>
               </div>
             </div>
-         
+
+            <div className="lg:basis-2/5 space-y-4">
+              <h2 className="text-heading-2 mb-6 text-gray-900 ">
+                Complete due diligence workflow
+                in hours, not weeks
+              </h2>
+              <p className="text-xl text-gray-600 mb-8">
+                From document collection to final report generation, Wansom AI streamlines your entire due diligence process with intelligent automation and expert oversight.
+              </p>
+
+              {/* Upload & Organize section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('upload')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Upload & Organize
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.upload ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.upload ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    Bulk upload documents and let AI automatically categorize them by type and importance.
+                  </p>
+                </div>
+              </div>
+
+              {/* AI Analysis section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('analysis')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    AI Analysis
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.analysis ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.analysis ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    Our AI performs comprehensive analysis, extracting key data and identifying potential risks and opportunities.
+                  </p>
+                </div>
+              </div>
+
+              {/* Review & Validate section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('review')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Review & Validate
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.review ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    Review AI findings, add expert insights, and validate critical discoveries with your team.
+                  </p>
+                </div>
+              </div>
+
+              {/* Generate Report section */}
+              <div className="pb-4">
+                <button
+                  onClick={() => toggleSection('report')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    Generate Report
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.report ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.report ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-gray-600">
+                    Create comprehensive, client-ready reports with executive summaries and detailed findings.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* More features section */}
+  <VaultSection/>
+      <Footer />
+    </div>
   );
 };
+
+
 export const DocumentsVault=() => {
     const documentCategories = [
     {
