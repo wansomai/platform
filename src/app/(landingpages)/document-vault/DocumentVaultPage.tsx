@@ -2,17 +2,12 @@
 import React, { useState } from "react";
 import {
   FileText,
-  Sparkles,
-  CheckCircle,
-  Play,
-  ArrowRight,
-  Eye,
+
   Search,
   Folder,
   Lock,
   FolderLock,
   ShieldCheck,
-  Database,
   Archive,
   HardDrive,
   Layers,
@@ -28,7 +23,7 @@ import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import VaultSection, { VaultDocs } from "@/components/home/vault";
 import Footer from "@/components/layout/Footer";
-import { DocumentAutomation } from "@/app/page";
+import DocumentAutomation from "@/components/home/DocumentAutomation";
 
 const DocumentVaultPage = () => {
   const [expandedSections, setExpandedSections] = useState({
