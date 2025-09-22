@@ -106,7 +106,7 @@ const ContractReviewPage = () => {
                 <div className="w-3 h-3 bg-green-400 rounded-full"></div>
               </div>
               {/* <span className="text-sm text-gray-600">Legal Workspace</span> */}
-              <img src="/logo.png" />
+              <img src="/logo.png" alt="Wansom AI Logo" />
             </div>
             <div className="w-8 h-8 bg-[#355e66] rounded-full text-center text-sm flex items-center justify-center text-white font-medium">
               WO
