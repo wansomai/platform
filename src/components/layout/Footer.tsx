@@ -8,7 +8,7 @@ const Footer = () => {
     <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
             <a href="/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse" aria-label="chat with a lawyer">
-                <Image src="/images/logo-dark.png" height={150} width={150} alt="Logo" />
+                <Image src="/images/logo-dark.png" height={60} width={210} alt="Logo" className="w-auto h-15 object-contain" />
             </a>
             <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-white sm:mb-0 gap-2">
             <li>

@@ -42,7 +42,7 @@ const DocumentAutomation = () => {
                 onClick={() => setActiveTab(index)}
                 className={`px-8 py-4 font-medium transition-all relative ${
                   activeTab === index
-                    ? "text-[#d47b0f] border-b-2 border-[#d47b0f]"
+                    ? "text-[#355e66] border-b-2 border-[#355e66]"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
@@ -63,7 +63,7 @@ const DocumentAutomation = () => {
                 {tabs[activeTab].description}
               </p>
                    <button
-                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 my-5"
+                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#355e66] hover:bg-[#2a4d54] rounded-md py-3 px-6 my-5"
                   onClick={() => (window.location.href = "/login")}
                 >
                   Get Started{" "}
@@ -75,6 +75,7 @@ const DocumentAutomation = () => {
                 src={tabs[activeTab].image}
                 className="rounded-lg w-full h-auto"
                 alt={tabs[activeTab].alt}
+                loading="lazy"
               />
             </div>
           </div>

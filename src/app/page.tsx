@@ -44,7 +44,7 @@ export default function Home() {
                   you can focus on high-impact work.
                 </p>
                 <button
-                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-[#d47b0f] hover:bg-[#355e66] rounded-md py-3 px-6 mb-10"
+                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
                   onClick={() => (window.location.href = "/register")}
                   aria-label="Try Wansom AI for free - Start your free trial"
                 >
