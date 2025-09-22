@@ -74,7 +74,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
         {/* Mobile menu button */}
         <button 
           className={`md:hidden z-50  focus:outline-none transition-transform duration-300 ${darkmode ? 'text-black' : 'text-white'}`}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen(!isOpen)}  aria-label="Mobile menu"
         >
           {isOpen ? <X className='text-black' size={24} /> : <Menu size={24} />}
         </button>
