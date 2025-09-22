@@ -68,7 +68,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
-          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={52} />
+          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>
 
         {/* Mobile menu button */}
@@ -82,7 +82,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
         <Link href="/">
-          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={52} />
+          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>
 
           <nav className="flex space-x-6 ">
@@ -147,7 +147,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </Link>
             <Link
               href="/login"
-              className="font-medium text-white bg-secondary hover:bg-yellow-600 rounded-md py-2 px-4"
+              className="font-medium text-white bg-black hover:bg-[#2a4d54] rounded-md py-2 px-4"
             >
               Start For Free
             </Link>

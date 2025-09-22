@@ -14,7 +14,6 @@ import {
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import MoreFeatures from "@/components/home/MoreFeatures";
 import VaultSection from "@/components/home/vault";
 
 const CasePreparationPage = () => {
@@ -32,7 +31,6 @@ const CasePreparationPage = () => {
 
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/1.png')] bg-cover bg-center bg-blend-multiply opacity-30"></div>
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-2/5">
