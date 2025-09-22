@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, Globe, Zap, Target, Sparkles, Folder, ArrowUpRight, ChevronDown } from "lucide-react";
+import { CheckCircle, Sparkles,ChevronDown } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FeaturesSection from "@/components/home/features";
@@ -11,7 +11,6 @@ import {
   ResearchSourcesWorkflow,
 } from "./(landingpages)/ai-legal-research/LegalResearchPage";
 import DocumentAutomation from "@/components/home/DocumentAutomation";
-import CreativeIntegrationsSection from "@/components/home/Security";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);

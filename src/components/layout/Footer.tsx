@@ -12,19 +12,17 @@ const Footer = () => {
             </a>
             <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-white sm:mb-0 gap-2">
             <li>
-                    <a href="/#ai-assistant" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Navigate to AI Assistant section">AI Assistant</a>
+                    <a href="/ai-legal-research" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Navigate to AI Assistant section">AI Assistant</a>
                 </li>
                 <li>
                     <a href="/#document-vault" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Navigate to Document Vault section">Document Vault</a>
                 </li>
-                {/* <li>
-                    <a href="/legal-documents" className="hover:underline me-4 md:me-6" aria-label="try evacare for individuals">Legal Documents</a>
-                </li> */}
+              
                 <li>
                     <a href="/#workflows" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Navigate to Workflows section">Workflows</a>
                 </li>
                 <li>
-                    <a href="/#integrations" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Navigate to Integrations section">Integrations</a>
+                    <a href="/blogs" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Navigate to Integrations section">Blogs</a>
                 </li>
                 <li>
                     <a href="mailto:law@wansom.ai" className="hover:underline px-3 py-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded" aria-label="Contact us via email at law@wansom.ai">law@wansom.ai</a>

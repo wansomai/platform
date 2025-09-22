@@ -2,8 +2,6 @@
 import React, { useState } from "react";
 import {
   FileText,
-  CheckCircle,
-  Play,
   ArrowRight,
   AlertTriangle,
   Eye,
@@ -15,7 +13,6 @@ import {
   TrendingUp,
   Users,
   Building,
-  FileSearch,
   Calendar,
   CheckSquare,
   ChevronDown,
@@ -23,7 +20,6 @@ import {
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import MoreFeatures from "@/components/home/MoreFeatures";
 import VaultSection from "@/components/home/vault";
 
 const DueDiligencePage = () => {
