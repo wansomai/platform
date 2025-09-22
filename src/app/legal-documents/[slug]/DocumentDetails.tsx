@@ -72,7 +72,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
         setBlog(adaptedPost);
 
         // Pre-fill chat input with document title
-        setChatInput(`Help me draft a legal document based on this template`);
+        setChatInput(`Help me customize this legal document template`);
       } catch (err) {
         setError('Failed to load legal document');
 

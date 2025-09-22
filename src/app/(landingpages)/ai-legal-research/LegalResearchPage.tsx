@@ -21,6 +21,7 @@ import {
   Loader,
   Circle,
   ChevronRight,
+  ChevronDown,
   ArrowUpRight,
 } from "lucide-react";
 import Image from "next/image";
@@ -29,44 +30,11 @@ import Footer from "@/components/layout/Footer";
 import MoreFeatures from "@/components/home/MoreFeatures";
 
 const LegalResearchPage = () => {
-  const [selectedSource, setSelectedSource] = useState("cases");
-
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
     { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
     { src: "/logos/7.png", alt: "Riskhouse International" },
     { src: "/logos/4.png", alt: "Netsheria" },
-  ];
-
-  const researchSources = [
-    {
-      id: "cases",
-      label: "Case Law",
-      count: 2847,
-      color: "text-blue-600 bg-blue-100",
-      relevance: 94,
-    },
-    {
-      id: "statutes",
-      label: "Statutes",
-      count: 567,
-      color: "text-green-600 bg-green-100",
-      relevance: 89,
-    },
-    {
-      id: "regulations",
-      label: "Regulations",
-      count: 234,
-      color: "text-purple-600 bg-purple-100",
-      relevance: 82,
-    },
-    {
-      id: "secondary",
-      label: "Secondary",
-      count: 156,
-      color: "text-orange-600 bg-orange-100",
-      relevance: 76,
-    },
   ];
 
   return (
@@ -78,26 +46,17 @@ const LegalResearchPage = () => {
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white lg:basis-1/2 text-center lg:text-left">
-              <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-                <Search className="w-4 h-4 mr-2" />
-                <span className="text-sm font-medium">
-                  AI-Powered Legal Research
-                </span>
-                <span className="ml-3 bg-white/20 text-xs px-2 py-1 rounded">
-                  Wansom
-                </span>
-              </div>
 
-              <h1 className="text-heading-1 mb-4 text-shadow">
-                AI For Legal Research
+              <h1 className="text-heading-1 mb-4 text-shadow font-serif">
+               AI Built for Lawyers
               </h1>
 
-              <p className="text-xl mb-8 text-gray-100">
+              <p className="text-xl mb-8 text-white">
                 Get instant answers to complex legal questions with AI that searches through verified cases, statutes, and legal authorities in seconds.
               </p>
 
-              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12">
-                Start Research Now <ArrowUpRight className="inline-block ml-2 w-6 h-6" />
+              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-5 py-2 rounded-lg font-semibold transition-colors mb-12">
+                Try Wansom For Free <ArrowUpRight className="inline-block ml-2 w-6 h-6" />
               </button>
 
               {/* Trusted by logos */}
@@ -132,66 +91,7 @@ const LegalResearchPage = () => {
    
 
       {/* Legal authorities database section */}
-      <section className="section-spacing bg-gray-100">
-        <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-heading-2 mb-6 text-gray-900">
-                Access verified legal authorities in one intelligent search
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Our AI searches through verified legal authorities in seconds, providing you with relevant cases, statutes, and expert analysis for any legal question.
-              </p>
-
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#355e66] rounded-lg flex items-center justify-center p-3">
-                    <Globe className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Comprehensive Coverage
-                    </h3>
-                    <p className="text-gray-600">
-                      Federal and state courts, administrative agencies, and secondary authorities all in one search.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-[#d47b0f] rounded-lg flex items-center justify-center p-3">
-                    <Zap className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Real-Time Updates
-                    </h3>
-                    <p className="text-gray-600">
-                      Stay current with new decisions and legislative changes updated within hours of publication.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center p-3">
-                    <Target className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">
-                      Relevance Ranking
-                    </h3>
-                    <p className="text-gray-600">
-                      AI-powered relevance scoring ensures the most pertinent authorities appear first in your results.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-  <ResearchSourcesWorkflow/>
-          
-          </div>
-        </div>
-      </section>
+     <LegalResearchAssistant/>
 
       {/* Research workflow section */}
       <section className="section-spacing bg-[#355e66]">
@@ -536,5 +436,153 @@ export const ResearchSourcesWorkflow = () => {
   );
 };
 
+const LegalResearchAssistant = () => {
+  const [expandedSections, setExpandedSections] = useState({
+    assistant: true,
+    documents: false,
+    web: false,
+    jurisdictional: false,
+    practice: false
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  return (
+   <section className="section-spacing bg-gray-100">
+        <div className="section-container">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-4">
+              {/* Main section - Your Legal Research Assistant */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('assistant')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-2 text-gray-900">
+                    Your Legal Research Assistant
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.assistant ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.assistant ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Our AI searches through verified legal authorities in seconds, providing you with relevant cases, statutes, and expert analysis for any legal question.
+                  </p>
+                </div>
+              </div>
+
+              {/* Documents section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('documents')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                    Search Across Your Documents
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.documents ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.documents ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Ask complex questions across multiple documents, unlocking insights in your firm's data.
+                  </p>
+                </div>
+              </div>
+
+              {/* Web search section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('web')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                    Search the Web for Verified Sources
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.web ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.web ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Get real-time answers with citations from trusted legal websites and databases.
+                  </p>
+                </div>
+              </div>
+
+              {/* Multi-Jurisdictional Search section */}
+              <div className="border-b border-gray-200 pb-4">
+                <button
+                  onClick={() => toggleSection('jurisdictional')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                    Multi-Jurisdictional Support
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.jurisdictional ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.jurisdictional ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    Search across federal, state, and local authorities simultaneously with jurisdiction-specific filtering.
+                  </p>
+                </div>
+              </div>
+
+              {/* Practice Area Intelligence section */}
+              <div className="pb-4">
+                <button
+                  onClick={() => toggleSection('practice')}
+                  className="w-full flex items-center justify-between text-left group"
+                >
+                  <h2 className="text-heading-4 text-gray-900">
+                    Practice Area Intelligence
+                  </h2>
+                  <ChevronDown
+                    className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
+                      expandedSections.practice ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.practice ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}>
+                  <p className="text-xl text-gray-600">
+                    AI understands practice area context to surface the most relevant authorities for your specific legal question.
+                  </p>
+                </div>
+              </div>
+            </div>
+  <ResearchSourcesWorkflow/>
+          
+          </div>
+        </div>
+      </section>   
+  );
+}
 
 export default LegalResearchPage;

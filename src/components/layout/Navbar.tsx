@@ -54,8 +54,9 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   }, [])
 
   const aiPlatformItems = [
+    { name: 'AI Assistant', href: '/ai-legal-research' },
     { name: 'Legal Drafting', href: '/ai-legal-drafting' },
-    { name: 'Deep Research', href: '/ai-legal-research' },
+
     { name: 'Due Diligence', href: '/ai-due-diligence' },
     { name: 'Contract Reviews', href: '/ai-contract-review' },
     { name: 'Case Preparation', href: '/ai-case-prediction' },
