@@ -51,7 +51,7 @@ const DueDiligencePage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
+      <section className="pt-24 md:pt-32 pb-16 bg-primary relative overflow-hidden">
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-3/5">

@@ -29,7 +29,7 @@ const LegalDraftingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-20 pl-5 lg:pl-20 bg-[#355e66] relative overflow-hidden">
+      <section className="pt-24 md:pt-20 pl-5 lg:pl-20 bg-primary relative overflow-hidden">
         <div className="absolute "></div>
         <div className="container mx-auto px-4 z-10 relative flex flex-col lg:flex-row items-center lg:items-start justify-between space-y-5 lg:space-y-0">
           <div className=" text-white lg:basis-1/2">      
@@ -47,7 +47,7 @@ const LegalDraftingPage = () => {
           </div>
 
           {/* Hero Demo Interface */}          
-            <div className="bg-[#355e66]  rounded-lg pb-4 px-4 relative overflow-hidden  md:min-w-[500px] w-full lg:basis-1/2">
+            <div className="bg-primary  rounded-lg pb-4 px-4 relative overflow-hidden  md:min-w-[500px] w-full lg:basis-1/2">
                  <div className="bg-white rounded-xl shadow-2xl overflow-hidden lg:w-[75%]">
                   <div className="flex items-center bg-gray-50 px-4 py-3 border-b ">
                     <div className="flex space-x-2">
