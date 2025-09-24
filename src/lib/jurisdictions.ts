@@ -1,6 +1,6 @@
 // src/lib/jurisdictions.ts
 
-import { Jurisdiction } from "@/types";
+import { Jurisdiction } from "../types/projects";
 
 
 export const JURISDICTIONS: Jurisdiction[] = [

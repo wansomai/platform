@@ -15,7 +15,7 @@ import {
 import { Document } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { performWebSearch, isWebSearchConfigured } from '@/lib/web-search';
+import { performWebSearch, isWebSearchConfigured, performEnhancedLegalSearch } from '@/lib/web-search';
 import LRUCache from 'lru-cache'
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { classifyWithContext } from '@/lib/intentClassification';
@@ -34,7 +34,8 @@ const DEFAULT_SETTINGS = {
   webSearch: false,
   model: 'gpt-4.1',
   temperature: 0.7,
-  legalDrafting: false // Added property to fix type error
+  legalDrafting: false,
+  jurisdiction: undefined // Added property for enhanced legal search
 };
 
 // Maximum size of content to include in context (characters)
@@ -412,20 +413,48 @@ export async function POST(
           let webSearchResults = "";
           if (settings.webSearch && !isSimpleQuery && isWebSearchConfigured()) {
             try {
-              // Start web search in parallel with other operations
-              const searchPromise = performWebSearch(content);
-              
+              // Extract jurisdiction from project settings for enhanced legal search
+              const jurisdictionObj = settings.jurisdiction && typeof settings.jurisdiction === 'object' && 'id' in settings.jurisdiction
+                ? settings.jurisdiction as { id: string; name: string }
+                : null;
+              const jurisdiction = jurisdictionObj?.id;
+
+              console.log('Web search debug:', {
+                hasJurisdiction: !!jurisdiction,
+                jurisdictionId: jurisdiction,
+                jurisdictionName: jurisdictionObj?.name,
+                userQuery: content
+              });
+
+              // Use enhanced legal search if jurisdiction is set, otherwise fall back to basic search
+              let searchPromise;
+              if (jurisdiction) {
+                searchPromise = performEnhancedLegalSearch(content, {
+                  jurisdiction: jurisdiction,
+                  includeSecondary: true,
+                  maxResults: 5
+                });
+              } else {
+                searchPromise = performWebSearch(content);
+              }
+
               // Set a timeout to ensure search doesn't slow down response too much
               const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Web search timeout')), 2000);
+                setTimeout(() => reject(new Error('Web search timeout')), 3000); // Slightly longer for enhanced search
               });
-              
+
               // Use the search results only if they come back quickly enough
               const searchResults = await Promise.race([searchPromise, timeoutPromise])
                 .catch(() => "Search timed out");
-              
+
               if (searchResults && searchResults !== "Search timed out") {
-                webSearchResults = sanitizeSearchResults(searchResults as string);
+                if (jurisdiction && typeof searchResults === 'object' && 'formattedOutput' in searchResults) {
+                  // Enhanced legal search result
+                  webSearchResults = searchResults.formattedOutput as string;
+                } else {
+                  // Basic search result
+                  webSearchResults = sanitizeSearchResults(searchResults as string);
+                }
               }
             } catch (error) {
               console.error("Web search error:", error);

@@ -637,7 +637,7 @@ export function ChatInput({
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
         isLoading={isRequestingPro}
-        errorMessage="You have reached your message limit (5 messages on free plan). Request Pro access to send unlimited messages."
+        errorMessage="You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
         userData={{
           name: session?.user?.name || '',
           email: session?.user?.email || '',
