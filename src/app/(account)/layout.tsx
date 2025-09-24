@@ -391,24 +391,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
             <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Assistant button */}
-              <Button
-                variant="outline"
-                onClick={() => router.push("/projects")}
-                className="hidden sm:flex"
-              >
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Quick AI Assistant
-              </Button>
-
-              {/* Mobile assistant icon */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push("/projects")}
-                className="sm:hidden"
-              >
-                <MessageSquare className="h-5 w-5" />
-              </Button>
 
               {/* User dropdown */}
               <div className="relative group">
