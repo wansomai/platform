@@ -1,6 +1,8 @@
-// Update to src/lib/webSearch.ts to return human-readable format directly
+// Enhanced web search with legal research capabilities
 
 import { GoogleCustomSearch } from "@langchain/community/tools/google_custom_search";
+import { performLegalWebSearch, LegalSearchOptions, LegalSearchResult } from './legal-research/enhancedWebSearch';
+import { extractCitations, formatCitationsDisplay } from './legal-research/citationParser';
 
 /**
  * Perform a web search for information related to a query using LangChain's GoogleCustomSearch tool
@@ -17,12 +19,12 @@ export async function performWebSearch(query: string): Promise<string> {
 
     // Execute the search
     const rawResults = await search.call({input: query});
-    
+
     // Check if we have results
     if (!rawResults || typeof rawResults !== 'string' || rawResults.trim() === '') {
       return "No relevant information found from web search.";
     }
-    
+
     // Process and format results for human readability
     try {
       // Try to parse as JSON if it looks like JSON
@@ -42,11 +44,11 @@ export async function performWebSearch(query: string): Promise<string> {
           }
         }
       }
-      
+
       // Format results in human-readable text
       if (results.length > 0) {
         let formattedResults = `Web Search Results for "${query}":\n\n`;
-        
+
         results.forEach((result, index) => {
           formattedResults += `Result ${index + 1}:\n`;
           formattedResults += `Title: ${result.title}\n`;
@@ -54,7 +56,7 @@ export async function performWebSearch(query: string): Promise<string> {
           if (result.snippet) formattedResults += `Summary: ${result.snippet}\n`;
           formattedResults += '\n';
         });
-        
+
         return formattedResults;
       } else {
         // Just return the raw results if we couldn't parse them
@@ -66,6 +68,19 @@ export async function performWebSearch(query: string): Promise<string> {
   } catch (error:any) {
     return "Unable to perform web search at this time.";
   }
+}
+
+/**
+ * Perform enhanced legal research with query processing, source filtering, and citation extraction
+ * @param query The search query
+ * @param options Legal search options including jurisdiction and practice area
+ * @returns Enhanced legal search results with citations and structured data
+ */
+export async function performEnhancedLegalSearch(
+  query: string,
+  options: LegalSearchOptions = {}
+): Promise<LegalSearchResult> {
+  return await performLegalWebSearch(query, options);
 }
 
 /**
