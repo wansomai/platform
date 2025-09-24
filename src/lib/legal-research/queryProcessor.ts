@@ -189,6 +189,8 @@ export function enhanceSearchQuery(query: string, context?: {
 function getJurisdictionDomains(jurisdiction: any): string[] {
   const domains: string[] = [];
 
+  console.log('Getting jurisdiction domains for:', jurisdiction);
+
   // Add government domains based on jurisdiction
   if (jurisdiction.country === 'United States') {
     domains.push('gov', 'uscourts.gov', 'supremecourt.gov');
@@ -200,10 +202,26 @@ function getJurisdictionDomains(jurisdiction: any): string[] {
     domains.push('gov.uk', 'judiciary.uk');
   } else if (jurisdiction.country === 'Canada') {
     domains.push('gc.ca', 'courts.ca');
+  } else if (jurisdiction.country === 'Kenya') {
+    domains.push('kenyalaw.org', 'judiciary.go.ke', 'parliament.go.ke');
+  } else if (jurisdiction.country === 'Nigeria') {
+    domains.push('lawpavilionplus.com', 'nigerialii.org', 'lawnigeria.com');
+  } else if (jurisdiction.country === 'South Africa') {
+    domains.push('justice.gov.za', 'saflii.org');
+  } else if (jurisdiction.country === 'Australia') {
+    domains.push('gov.au', 'hcourt.gov.au', 'fedcourt.gov.au');
+  } else {
+    // For other jurisdictions, use country code and generic legal domains
+    const countryCode = jurisdiction.id;
+    if (countryCode && countryCode.length === 2) {
+      domains.push(`${countryCode}`, `gov.${countryCode}`);
+    }
   }
 
-  // Add academic and legal research domains
+  // Add academic and legal research domains for all jurisdictions
   domains.push('edu', 'org');
+
+  console.log('Generated domains for', jurisdiction.country, ':', domains);
 
   return domains;
 }

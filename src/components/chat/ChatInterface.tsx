@@ -11,6 +11,7 @@ import { useChatStore} from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
+import { SourcesDisplay } from "./SourcesDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
@@ -178,17 +179,17 @@ const ChatMessageItem = React.memo(({
             )}
           </div>
           
-          {/* Display web search results if available */}
+          {/* Display sources if available */}
           {!isUser && message.webSearchResults && (
-            <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
-              <div className="flex items-center mb-2 text-blue-700">
+            <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center mb-3 text-blue-700">
                 <Search size={16} className="mr-2" />
-                <span className="font-medium">Web Search Results</span>
+                <span className="font-medium">Sources</span>
               </div>
-              <div className="max-h-60 overflow-y-auto">
-                <MessageDisplay 
-                  content={message.webSearchResults} 
-                  className="text-gray-700 text-xs" 
+              <div className="max-h-96 overflow-y-auto">
+                <SourcesDisplay
+                  content={message.webSearchResults}
+                  className="text-sm"
                 />
               </div>
             </div>

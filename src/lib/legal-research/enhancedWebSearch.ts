@@ -28,11 +28,24 @@ export async function performLegalWebSearch(
   options: LegalSearchOptions = {}
 ): Promise<LegalSearchResult> {
   try {
+    console.log('Enhanced legal search called with:', {
+      query,
+      jurisdiction: options.jurisdiction,
+      practiceArea: options.practiceArea
+    });
+
     // Process the legal query to enhance it
     const queryContext = processLegalQuery(query, {
       jurisdiction: options.jurisdiction,
       practiceArea: options.practiceArea,
       includeSecondary: options.includeSecondary
+    });
+
+    console.log('Query processing result:', {
+      originalQuery: queryContext.originalQuery,
+      enhancedQuery: queryContext.enhancedQuery,
+      detectedJurisdiction: queryContext.jurisdiction,
+      detectedPracticeArea: queryContext.practiceArea
     });
 
     // Initialize the Google Custom Search tool
