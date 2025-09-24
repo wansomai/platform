@@ -34,7 +34,8 @@ const DEFAULT_SETTINGS = {
   webSearch: false,
   model: 'gpt-4.1',
   temperature: 0.7,
-  legalDrafting: false // Added property to fix type error
+  legalDrafting: false,
+  jurisdiction: undefined // Added property for enhanced legal search
 };
 
 // Maximum size of content to include in context (characters)
@@ -413,12 +414,15 @@ export async function POST(
           if (settings.webSearch && !isSimpleQuery && isWebSearchConfigured()) {
             try {
               // Extract jurisdiction from project settings for enhanced legal search
-              const jurisdiction = settings.jurisdiction?.id;
+              const jurisdictionObj = settings.jurisdiction && typeof settings.jurisdiction === 'object' && 'id' in settings.jurisdiction
+                ? settings.jurisdiction as { id: string; name: string }
+                : null;
+              const jurisdiction = jurisdictionObj?.id;
 
               console.log('Web search debug:', {
                 hasJurisdiction: !!jurisdiction,
                 jurisdictionId: jurisdiction,
-                jurisdictionName: settings.jurisdiction?.name,
+                jurisdictionName: jurisdictionObj?.name,
                 userQuery: content
               });
 
@@ -446,7 +450,7 @@ export async function POST(
               if (searchResults && searchResults !== "Search timed out") {
                 if (jurisdiction && typeof searchResults === 'object' && 'formattedOutput' in searchResults) {
                   // Enhanced legal search result
-                  webSearchResults = searchResults.formattedOutput;
+                  webSearchResults = searchResults.formattedOutput as string;
                 } else {
                   // Basic search result
                   webSearchResults = sanitizeSearchResults(searchResults as string);
