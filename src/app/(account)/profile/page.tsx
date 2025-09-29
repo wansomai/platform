@@ -78,7 +78,7 @@ const Page = () => {
             email: session?.user?.email || '',
             role: 'admin',
             joinedAt: '2024-01-01',
-            avatar: session?.user?.image
+            avatar: session?.user?.image ?? undefined
           }
         ];
 
@@ -97,7 +97,7 @@ const Page = () => {
           email: session?.user?.email || '',
           role: 'admin',
           joinedAt: '2024-01-01',
-          avatar: session?.user?.image
+          avatar: session?.user?.image ?? undefined
         }
       ];
 
