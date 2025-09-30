@@ -21,7 +21,21 @@ const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 // Default settings if none exist
-const DEFAULT_SETTINGS = {
+type JurisdictionType = {
+  name: string;
+  country: string;
+  state?: string;
+} | string | undefined;
+
+const DEFAULT_SETTINGS: {
+  citeSources: boolean;
+  suggestActions: boolean;
+  webSearch: boolean;
+  model: string;
+  temperature: number;
+  legalDrafting: boolean;
+  jurisdiction?: JurisdictionType;
+} = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
@@ -324,9 +338,18 @@ export async function POST(
           }".
           ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
           ${settings.jurisdiction ? `
-          **JURISDICTION**: ${typeof settings.jurisdiction === 'object' && 'name' in settings.jurisdiction
-            ? `${settings.jurisdiction.name} (${settings.jurisdiction.country}${settings.jurisdiction.state ? ', ' + settings.jurisdiction.state : ''})`
-            : settings.jurisdiction}
+          **JURISDICTION**: ${
+            typeof settings.jurisdiction === 'object' &&
+            settings.jurisdiction !== null &&
+            'name' in settings.jurisdiction &&
+            'country' in settings.jurisdiction
+              ? `${settings.jurisdiction.name} (${settings.jurisdiction.country}${
+                  'state' in settings.jurisdiction && settings.jurisdiction.state
+                    ? ', ' + settings.jurisdiction.state
+                    : ''
+                })`
+              : settings.jurisdiction
+          }
           - Apply laws and regulations specific to this jurisdiction
           - Use appropriate legal terminology and citation styles for this jurisdiction
           - Consider local legal precedents and practices
