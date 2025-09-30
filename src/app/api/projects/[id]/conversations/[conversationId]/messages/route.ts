@@ -6,17 +6,7 @@ import {
   getUserIdFromRequest,
   checkProjectAccess,
 } from "@/lib/auth/authorization";
-import { ChatOpenAI } from "@langchain/openai";
-import {
-  ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  SystemMessagePromptTemplate,
-} from "@langchain/core/prompts";
-import { Document } from "@langchain/core/documents";
-import { OpenAIEmbeddings } from "@langchain/openai";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { performWebSearch, isWebSearchConfigured, performEnhancedLegalSearch } from '@/lib/web-search';
-import LRUCache from 'lru-cache'
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { classifyWithContext } from '@/lib/intentClassification';
 import { canSendMessage } from '@/lib/subscription';
@@ -27,64 +17,26 @@ export const maxDuration = 60;
 // Initialize Prisma with connection pooling
 const prisma = new PrismaClient();
 
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
 // Default settings if none exist
 const DEFAULT_SETTINGS = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  model: 'gpt-4.1',
+  model: 'gemini-2.0-flash-exp',
   temperature: 0.7,
   legalDrafting: false,
   jurisdiction: undefined // Added property for enhanced legal search
 };
-
-// Maximum size of content to include in context (characters)
-const MAX_DOCUMENT_CHUNK_SIZE = 1200; // Increased for better coverage
-const MAX_CHUNKS_PER_DOC = 4; // More chunks per document
-const MAX_TOTAL_CHUNKS = 12; // More total chunks
-const MAX_SYSTEM_MESSAGE_TOKENS = 4000; // Reserve space for user message and response
-const MAX_RELEVANT_CONTENT_CHARS = 6000; // More content for better context
 
 // Schema validation
 const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
 });
 
-// Document embedding cache - up to 100 documents, expire after 1 hour
-const embeddingCache = new LRUCache({
-  max: 100,
-  ttl: 1000 * 60 * 60, // 1 hour
-});
-
-// Simple function to determine if a message is a greeting
-function isSimpleGreeting(text: string): boolean {
-  const normalizedText = text.toLowerCase().trim();
-  const simplePatterns = [
-    /^hi+\b/, /^hello\b/, /^hey\b/, /^howdy\b/, /^greetings\b/,
-    /^good\s(morning|afternoon|evening|day)\b/, /^how are you/,
-    /^what can you do/, /^who are you/, /^what is your name/,
-    /^thanks/, /^thank you/, /^great/, /^awesome/, /^cool/,
-    /^nice/, /^ok\b/, /^okay\b/, /^\?{1,3}$/
-  ];
-  return simplePatterns.some(pattern => pattern.test(normalizedText)) || normalizedText.length < 20;
-}
-
-// Simple token estimation (1 token ≈ 4 characters for English text)
-function estimateTokens(text: string): number {
-  return Math.ceil(text.length / 4);
-}
-
-// Truncate content to fit within token limits
-function truncateToTokenLimit(content: string, maxTokens: number): string {
-  const estimatedTokens = estimateTokens(content);
-  if (estimatedTokens <= maxTokens) {
-    return content;
-  }
-  
-  // Calculate approximate character limit
-  const maxChars = maxTokens * 4;
-  return content.substring(0, maxChars) + "...";
-}
+// Removed isSimpleQuery optimization - Gemini handles all contexts efficiently
 
 // Encoder for streaming response
 const encoder = new TextEncoder();
@@ -103,9 +55,6 @@ export async function POST(
     if (!userId) {
       return NextResponse.json({ status: 401, message: "Authentication required" }, { status: 401 });
     }
-    
-    // Determine if this is a simple query that doesn't need full context
-    const isSimpleQuery = isSimpleGreeting(content);
     
     // Start parallel operations immediately
     const accessCheckPromise = checkProjectAccess(projectId, userId);
@@ -157,24 +106,22 @@ export async function POST(
     const canvasDocumentPromise = prisma.canvasDocument.findUnique({
       where: { projectId }
     });
-    
-    // Only load documents for non-simple queries
-    const documentsPromise = isSimpleQuery 
-      ? Promise.resolve([]) 
-      : prisma.projectDocument.findMany({
-          where: { project_id: projectId },
+
+    // Load all documents for context - Gemini handles large contexts efficiently
+    const documentsPromise = prisma.projectDocument.findMany({
+      where: { project_id: projectId },
+      select: {
+        document: {
           select: {
-            document: {
-              select: {
-                id: true,
-                title: true,
-                content: {
-                  select: { content: true }
-                }
-              }
+            id: true,
+            title: true,
+            content: {
+              select: { content: true }
             }
           }
-        });
+        }
+      }
+    });
     
     // Wait for essential checks first
     const [hasAccess, conversation, user] = await Promise.all([
@@ -304,30 +251,18 @@ export async function POST(
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
           
-          // Prepare document vectors for search - only if needed
+          // Prepare document content for Gemini (full documents, no chunking)
           let relevantContent = "";
-          const documentObjects: Document[] = [];
 
-          // Universal document processing - no manual detection needed
-          
           // Include canvas document if in drafting mode and analysis intent
           if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
-            // Add canvas document for analysis
-            documentObjects.push(new Document({
-              pageContent: canvasDocument.plainText || canvasDocument.htmlContent || '',
-              metadata: {
-                documentId: 'canvas-document',
-                title: 'Current Canvas Document',
-                chunkIndex: 0
-              }
-            }));
+            relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
           }
           
-          if (!isSimpleQuery && conversationDocuments.length > 0) {
-            // Universal document processing - always provide substantial content
-            console.log('Processing documents with universal approach');
+          if (conversationDocuments.length > 0) {
+            // Gemini can handle FULL documents (2M token context) - no truncation needed!
+            console.log('Processing documents with Gemini (full document support)');
             const contentParts: string[] = [];
-            let totalContentLength = 0;
 
             for (const docRef of conversationDocuments) {
               console.log('Document:', docRef.document.title, 'has content:', !!docRef.document.content?.content);
@@ -336,144 +271,77 @@ export async function POST(
               const documentContent = docRef.document.content.content;
               const docLength = documentContent.length;
 
-              console.log('Document length:', docLength, 'characters');
+              console.log('Document length:', docLength, 'characters - sending FULL document to Gemini');
 
-              if (docLength > 5000) {
-                // Large document - provide substantial content (increased from 8k to 15k)
-                const contentToProvide = Math.min(15000, docLength);
-                const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength/1000)}k characters) ###\n\n` +
-                  `**DOCUMENT CONTENT:**\n` +
-                  documentContent.substring(0, contentToProvide) +
-                  (docLength > contentToProvide ? '\n\n[... Document continues for ' + Math.round((docLength-contentToProvide)/1000) + 'k more characters. Ask for specific sections if needed.]' : '') + '\n\n';
+              // Send ENTIRE document - Gemini can handle up to 2M tokens (~4000 pages)
+              const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength/1000)}k characters, ${Math.round(docLength/2000)} pages) ###\n\n` +
+                `**FULL DOCUMENT CONTENT:**\n` +
+                documentContent + '\n\n';
 
-                contentParts.push(docSection);
-                totalContentLength += docSection.length;
-              } else {
-                // Smaller document - provide full content
-                const docSection = `### Document: ${docRef.document.title} ###\n${documentContent}\n\n`;
-                if (totalContentLength + docSection.length <= 20000) { // Increased limit
-                  contentParts.push(docSection);
-                  totalContentLength += docSection.length;
-                }
-              }
+              contentParts.push(docSection);
             }
 
             relevantContent = contentParts.join("\n");
-            console.log('Document processing complete, total content length:', relevantContent.length);
+            console.log('Document processing complete, total content length:', relevantContent.length, 'characters');
+            console.log('Estimated tokens:', Math.round(relevantContent.length / 4), '(Gemini supports up to 2M tokens)');
           }
 
-          // Get web search results if enabled and appropriate
-          let webSearchResults = "";
-          if (settings.webSearch && !isSimpleQuery && isWebSearchConfigured()) {
-            try {
-              // Extract jurisdiction from project settings for enhanced legal search
-              const jurisdictionObj = settings.jurisdiction && typeof settings.jurisdiction === 'object' && 'id' in settings.jurisdiction
-                ? settings.jurisdiction as { id: string; name: string }
-                : null;
-              const jurisdiction = jurisdictionObj?.id;
+          // Web search is now handled by Gemini's built-in Google Search grounding
+          // No need for separate API calls - Gemini will search when needed
+          const useGoogleSearch = settings.webSearch;
+          console.log('Google Search grounding enabled:', useGoogleSearch);
+          
+          // Format message history for Gemini
+          const conversationHistory = messageHistory.reverse().map((msg) => ({
+            role: msg.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: msg.content }],
+          }));
+          
+          // Create unified system message for all queries
+          const fullProject = project;
 
-              console.log('Web search debug:', {
-                hasJurisdiction: !!jurisdiction,
-                jurisdictionId: jurisdiction,
-                jurisdictionName: jurisdictionObj?.name,
-                userQuery: content
-              });
+          // Create context-aware system message for drafting mode
+          let draftingContext = '';
+          if (isDraftingMode && canvasDocument) {
+            draftingContext = `
 
-              // Use enhanced legal search if jurisdiction is set, otherwise fall back to basic search
-              let searchPromise;
-              if (jurisdiction) {
-                searchPromise = performEnhancedLegalSearch(content, {
-                  jurisdiction: jurisdiction,
-                  includeSecondary: true,
-                  maxResults: 5
-                });
-              } else {
-                searchPromise = performWebSearch(content);
-              }
+            CANVAS DOCUMENT CONTEXT: You are working with a legal document currently open in the canvas editor. The document content has been included below for your analysis.
 
-              // Set a timeout to ensure search doesn't slow down response too much
-              const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Web search timeout')), 3000); // Slightly longer for enhanced search
-              });
+            CURRENT DOCUMENT TITLE: "Current Canvas Document"
 
-              // Use the search results only if they come back quickly enough
-              const searchResults = await Promise.race([searchPromise, timeoutPromise])
-                .catch(() => "Search timed out");
+            IMPORTANT: Based on the user's message, you should ONLY provide analysis, suggestions, and recommendations in this chat response.
+            Do NOT make actual changes to the document unless the user explicitly requests edits with action words like "add", "update", "change", "modify", etc.
 
-              if (searchResults && searchResults !== "Search timed out") {
-                if (jurisdiction && typeof searchResults === 'object' && 'formattedOutput' in searchResults) {
-                  // Enhanced legal search result
-                  webSearchResults = searchResults.formattedOutput as string;
-                } else {
-                  // Basic search result
-                  webSearchResults = sanitizeSearchResults(searchResults as string);
-                }
-              }
-            } catch (error) {
-              console.error("Web search error:", error);
-            }
+            For analysis questions about the document (like "what clauses are missing?", "any issues?", "review this"), provide detailed analysis of the current canvas document and offer specific suggestions,
+            then ask if the user would like you to apply any changes to the document.
+
+            The canvas document content is included in the context below as "Current Canvas Document".
+            `;
           }
-          
-          // Format message history in correct order with token limits
-          const aiMessages = messageHistory.reverse().map((msg) => {
-            // Truncate individual messages if they're too long
-            const truncatedContent = truncateToTokenLimit(msg.content, 500); // Max 500 tokens per message
-            return {
-              role: msg.role as "user" | "assistant" | "system",
-              content: truncatedContent,
-            };
-          });
-          
-          // Create appropriate system message based on context
-          let systemMessage;
-          
-          if (isSimpleQuery) {
-            systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a legal project titled "${
-              project?.title
-            }".
-            Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
-            Get as many details as possible about the project before providing responses.Once you have all the details, provide a comprehensive response to the question asked and make sure that they response is accurate.
-            If you are unsure about something,ask for clarification and ask if they would want to research it first before you continue with the project.
-            ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}`;
-          } else {
-            const fullProject = project;
-            
-            // Create context-aware system message for drafting mode
-            let draftingContext = '';
-            if (isDraftingMode && canvasDocument) {
-              draftingContext = `
-              
-              CANVAS DOCUMENT CONTEXT: You are working with a legal document currently open in the canvas editor. The document content has been included below for your analysis.
-              
-              CURRENT DOCUMENT TITLE: "Current Canvas Document"
-              
-              IMPORTANT: Based on the user's message, you should ONLY provide analysis, suggestions, and recommendations in this chat response. 
-              Do NOT make actual changes to the document unless the user explicitly requests edits with action words like "add", "update", "change", "modify", etc.
-              
-              For analysis questions about the document (like "what clauses are missing?", "any issues?", "review this"), provide detailed analysis of the current canvas document and offer specific suggestions, 
-              then ask if the user would like you to apply any changes to the document.
-              
-              The canvas document content is included in the context below as "Current Canvas Document".
-              `;
-            }
 
-            systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
-              fullProject?.title
-            }".
-            ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
-            Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
-            Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
-            If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
-            ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
-            ${draftingContext}
+          const systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
+            fullProject?.title
+          }".
+          ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
+          ${settings.jurisdiction ? `
+          **JURISDICTION**: ${typeof settings.jurisdiction === 'object' && 'name' in settings.jurisdiction
+            ? `${settings.jurisdiction.name} (${settings.jurisdiction.country}${settings.jurisdiction.state ? ', ' + settings.jurisdiction.state : ''})`
+            : settings.jurisdiction}
+          - Apply laws and regulations specific to this jurisdiction
+          - Use appropriate legal terminology and citation styles for this jurisdiction
+          - Consider local legal precedents and practices
+          ` : ""}
+          Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
+          Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
+          If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
+          ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
+          ${draftingContext}
             
             ${relevantContent ?
-              `IMPORTANT: I'm providing you with document content for analysis.
-              For large documents (>5k chars), I provide substantial content from the beginning sections.
-              If you need specific sections not included, inform the user they can ask for those sections specifically.
-              Provide comprehensive analysis based on the content provided, and note if additional sections would be helpful.
+              `IMPORTANT: FULL document content is provided below for comprehensive analysis.
+              All pages and sections are available - analyze thoroughly.
 
-              Here are the documents for context:
+              Here are the complete documents for context:
               ${relevantContent}
 
               ${settings.citeSources ?
@@ -481,97 +349,68 @@ export async function POST(
                 :
                 "Use the document information when relevant to the query."
               }`
-              : 
+              :
               isDraftingMode && canvasDocument
                 ? `You are analyzing the current canvas document. The document content is available for your review and analysis.`
                 : conversationDocuments.length > 0
                   ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
                   : "No documents are currently attached to this conversation."
             }
-            
-            ${webSearchResults ? 
-              `I've also searched the web and found this relevant information: 
-              ${webSearchResults}
-              
-              Use this information if it's relevant to the query.`
-              : 
+
+            ${useGoogleSearch ?
+              `You have access to Google Search. When you need current information, legal precedents, or external sources, search for them automatically. Always cite your sources when using search results.`
+              :
               ""
             }
             
-            ${settings.suggestActions ? 
+            ${settings.suggestActions ?
               "If appropriate, suggest relevant actions based on the query."
-              : 
+              :
               ""
             }`;
-          }
-          
-          // Apply token limits to the system message
-          systemMessage = truncateToTokenLimit(systemMessage, MAX_SYSTEM_MESSAGE_TOKENS);
 
+          // No need to truncate - Gemini supports 2M token context!
           console.log('Final relevantContent length:', relevantContent.length);
           console.log('System message includes documents:', systemMessage.includes('Here are the documents'));
           if (relevantContent.length > 0) {
             console.log('Sample of relevant content:', relevantContent.substring(0, 200) + '...');
           }
-          
-          // Create the prompt template
-          const prompt = ChatPromptTemplate.fromPromptMessages([
-            SystemMessagePromptTemplate.fromTemplate(systemMessage),
-            ...aiMessages.map((msg) =>
-              msg.role === "user"
-                ? HumanMessagePromptTemplate.fromTemplate(msg.content)
-                : SystemMessagePromptTemplate.fromTemplate(msg.content)
-            ),
-            HumanMessagePromptTemplate.fromTemplate(content),
-          ]);
-          
-          // Configure the chat model for streaming
-          const chatModel = new ChatOpenAI({
-            openAIApiKey: process.env.OPENAI_API_KEY,
-            modelName: settings.model || process.env.OPENAI_MODEL || "gpt-3.5-turbo",
-            temperature: settings.temperature || 0.7,
-            streaming: true,
+
+          // Initialize Gemini model with settings and optional Google Search grounding
+          const modelConfig: any = {
+            model: settings.model || 'gemini-2.0-flash-exp',
+            generationConfig: {
+              temperature: settings.temperature || 0.7,
+              maxOutputTokens: 8192,
+            },
+            systemInstruction: systemMessage,
+          };
+
+          // Enable Google Search grounding if web search is enabled
+          if (useGoogleSearch) {
+            modelConfig.tools = [{
+              googleSearch: {}
+            }];
+            console.log('✓ Google Search grounding enabled - Gemini will search when needed');
+          }
+
+          const model = genAI.getGenerativeModel(modelConfig);
+
+          // Create chat session with history
+          const chat = model.startChat({
+            history: conversationHistory,
           });
-          
-          // Format the prompt
-          const formattedPrompt = await prompt.format({});
-          
+
           // Create a temporary assistant message to stream into
           const tempMessageId = `temp-${Date.now()}`;
           let fullContent = "";
           let documentReferences = new Set<string>();
-          
-          // Stream the response with token limit error handling
-          let responseStream;
-          try {
-            responseStream = await chatModel.stream(formattedPrompt);
-          } catch (streamError) {
-            if (streamError instanceof Error && streamError.message.includes('maximum context length')) {
-              
-              // Drastically reduce system message and try again
-              systemMessage = truncateToTokenLimit(systemMessage, 1500);
-              relevantContent = truncateToTokenLimit(relevantContent, 800);
-              
-              // Recreate prompt with reduced content
-              const reducedPrompt = ChatPromptTemplate.fromPromptMessages([
-                SystemMessagePromptTemplate.fromTemplate(systemMessage),
-                ...aiMessages.slice(-2).map((msg) => // Only use last 2 messages
-                  msg.role === "user"
-                    ? HumanMessagePromptTemplate.fromTemplate(msg.content)
-                    : SystemMessagePromptTemplate.fromTemplate(msg.content)
-                ),
-                HumanMessagePromptTemplate.fromTemplate(content),
-              ]);
-              
-              const reducedFormattedPrompt = await reducedPrompt.format({});
-              responseStream = await chatModel.stream(reducedFormattedPrompt);
-            } else {
-              throw streamError; // Re-throw other errors
-            }
-          }
-          
-          for await (const chunk of responseStream) {
-            const textContent = chunk.content.toString();
+
+          // Stream the response from Gemini
+          const result = await chat.sendMessageStream(content);
+
+          for await (const chunk of result.stream) {
+            const textContent = chunk.text();
             fullContent += textContent;
             
             // Send the text delta to the client
@@ -587,10 +426,10 @@ export async function POST(
             );
             
             // Check for document references during streaming
-            if (settings.citeSources && relevantContent) {
-              for (const doc of documentObjects) {
-                if (fullContent.includes(doc.metadata.title)) {
-                  documentReferences.add(doc.metadata.documentId);
+            if (settings.citeSources && relevantContent && conversationDocuments.length > 0) {
+              for (const docRef of conversationDocuments) {
+                if (fullContent.includes(docRef.document.title)) {
+                  documentReferences.add(docRef.document.id);
                 }
               }
             }
@@ -611,8 +450,8 @@ export async function POST(
               content: formattedContent,
               role: "assistant",
               conversationId,
-              metadata: webSearchResults ? 
-                JSON.stringify({ webSearchResults: true }) : 
+              metadata: useGoogleSearch ?
+                JSON.stringify({ googleSearchEnabled: true }) :
                 undefined
             }
           });
@@ -660,7 +499,7 @@ export async function POST(
                 messageId: assistantMessage.id,
                 tempMessageId,
                 content: formattedContent,
-                webSearchResults: webSearchResults && settings.webSearch ? webSearchResults : undefined,
+                googleSearchEnabled: useGoogleSearch,
                 references: completeMessage?.references.map((ref) => ({
                   id: ref.id,
                   documentId: ref.documentId,
@@ -726,59 +565,6 @@ export async function POST(
 }
 
 /**
- * Break document content into smaller chunks for better retrieval
- */
-function chunkDocumentContent(content: string, title: string, documentId: string): Document[] {
-  // Simple chunking by paragraphs - in production you'd want smarter chunking
-  const paragraphs = content.split(/\n\s*\n/);
-  const chunks: Document[] = [];
-  
-  // Create chunks with some overlap
-  let currentChunk = "";
-  let chunkIndex = 0;
-  
-  for (const paragraph of paragraphs) {
-    if (paragraph.trim().length === 0) continue;
-    
-    // If adding this paragraph would make chunk too large, create a new chunk
-    if (currentChunk.length + paragraph.length > MAX_DOCUMENT_CHUNK_SIZE && currentChunk.length > 0) {
-      chunks.push(new Document({
-        pageContent: currentChunk,
-        metadata: {
-          documentId,
-          title,
-          chunkIndex: chunkIndex++
-        }
-      }));
-      
-      currentChunk = "";
-      
-      // Limit chunks per document
-      if (chunks.length >= MAX_CHUNKS_PER_DOC) {
-        break;
-      }
-    }
-    
-    // Add paragraph to current chunk
-    currentChunk += (currentChunk ? "\n\n" : "") + paragraph;
-  }
-  
-  // Add the final chunk if not empty
-  if (currentChunk.trim().length > 0) {
-    chunks.push(new Document({
-      pageContent: currentChunk,
-      metadata: {
-        documentId,
-        title,
-        chunkIndex: chunkIndex
-      }
-    }));
-  }
-  
-  return chunks;
-}
-
-/**
  * Format AI message for better readability
  */
 function formatAIMessage(content: string): string {
@@ -792,25 +578,6 @@ function formatAIMessage(content: string): string {
   formattedContent = formattedContent.replace(/\n{3,}/g, '\n\n');
   
   return formattedContent;
-}
-
-/**
- * Sanitize web search results for inclusion in the prompt
- */
-function sanitizeSearchResults(rawResults: string): string {
-  try {
-    // Basic sanitization to remove problematic characters and format nicely
-    let cleanedResult = rawResults.replace(/\[\\\{/g, "");
-    cleanedResult = cleanedResult.replace(/\\\}\]/g, "");
-    cleanedResult = cleanedResult.replace(/\\"/g, '"');
-    cleanedResult = cleanedResult.replace(/{[^}]*}/g, "");
-    cleanedResult = cleanedResult.replace(/\\n/g, "\n");
-    
-    // Keep only essential information - truncate for speed
-    return cleanedResult.substring(0, 1000);
-  } catch (error) {
-    return "Web search results unavailable";
-  }
 }
 
 /**

@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS: ProjectSettings = {
   webSearch: false,
   legalDrafting: false,
   contractReview: false,
-  model: 'gpt-4',
+  model: 'gemini-2.0-flash-exp',
   temperature: 0.7,
   jurisdiction: undefined
 };
