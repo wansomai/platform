@@ -306,10 +306,14 @@ export async function POST(
           console.log('Google Search grounding enabled:', useGoogleSearch);
           
           // Format message history for Gemini
-          const conversationHistory = messageHistory.reverse().map((msg) => ({
-            role: msg.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: msg.content }],
-          }));
+          // Filter out 'system' role messages as Gemini doesn't support them in history
+          const conversationHistory = messageHistory
+            .filter((msg) => msg.role !== 'system')
+            .reverse()
+            .map((msg) => ({
+              role: msg.role === 'assistant' ? 'model' : 'user',
+              parts: [{ text: msg.content }],
+            }));
           
           // Create unified system message for all queries
           const fullProject = project;

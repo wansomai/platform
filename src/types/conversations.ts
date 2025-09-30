@@ -21,10 +21,10 @@ export interface Message {
   content: string;
   role: 'user' | 'assistant' | 'system';
   timestamp: string;
-  userId?: string; 
+  userId?: string;
   // Optional data
   references?: MessageReference[];
-  webSearchResults?: string;
+  webSearchSources?: Array<{title: string, uri: string}>;
   isStreaming?: boolean;
   isLoading?: boolean;
   tempId?: string;

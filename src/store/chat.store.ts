@@ -258,7 +258,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 role: 'assistant',
                 timestamp: new Date().toISOString(),
                 references: data.references,
-                webSearchResults: data.webSearchResults,
+                webSearchSources: data.webSearchSources,
                 isStreaming: false
               });
               break;
@@ -311,37 +311,43 @@ export const useChatStore = create<ChatState>((set, get) => ({
               break;
               
             case 'error':
+              // Update the streaming message to show the error
+              get().updateStreamingMessage(streamingId, {
+                content: `Error: ${data.error}`,
+                isStreaming: false,
+                isLoading: false
+              });
+              set({ error: data.error });
               throw new Error(data.error);
           }
         },
         (error) => {
+          // Update the streaming message to show the error
+          const errorMessage = error.message || 'Failed to send message';
+          get().updateStreamingMessage(streamingId, {
+            content: `Error: ${errorMessage}`,
+            isStreaming: false,
+            isLoading: false
+          });
+
           // Check if this is a subscription limit error
           if (error.status === 403 && error.requiresUpgrade) {
-            set({ error: error.message || 'Message limit reached', requiresUpgrade: true });
+            set({ error: errorMessage, requiresUpgrade: true });
             throw error; // Re-throw so component can handle it
           } else {
-            set({ error: error.message || 'Failed to send message' });
+            set({ error: errorMessage });
           }
         }
       );
       
     } catch (error: any) {
-      // Check if this is a subscription limit error
+      // Error message already displayed in the streaming message
+      // Just set the error state for the UI error display
       const isUpgradeRequired = error.status === 403 && error.requiresUpgrade;
 
-      set((state) => {
-        if (!state.currentConversation) return state;
-
-        return {
-          currentConversation: {
-            ...state.currentConversation,
-            messages: state.currentConversation.messages.filter(
-              (msg) => msg.id !== streamingId && msg.tempId !== streamingId
-            )
-          },
-          error: error.message || 'Failed to send message',
-          requiresUpgrade: isUpgradeRequired
-        };
+      set({
+        error: error.message || 'Failed to send message',
+        requiresUpgrade: isUpgradeRequired
       });
 
       // Re-throw subscription errors so components can handle them
