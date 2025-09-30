@@ -3,15 +3,15 @@
 
 import React, { useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { 
-  Copy, 
-  Search
+import {
+  Copy,
+  Search,
+  ExternalLink
 } from "lucide-react"
 import { useChatStore} from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
-import { SourcesDisplay } from "./SourcesDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
@@ -177,24 +177,7 @@ const ChatMessageItem = React.memo(({
                 
               />
             )}
-          </div>
-          
-          {/* Display sources if available */}
-          {!isUser && message.webSearchResults && (
-            <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center mb-3 text-blue-700">
-                <Search size={16} className="mr-2" />
-                <span className="font-medium">Sources</span>
-              </div>
-              <div className="max-h-96 overflow-y-auto">
-                <SourcesDisplay
-                  content={message.webSearchResults}
-                  className="text-sm"
-                />
-              </div>
-            </div>
-          )}
-          
+          </div>      
           {!isUser && !message.isLoading && !isStreaming && (
             <div className="flex gap-1 mt-2">
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>

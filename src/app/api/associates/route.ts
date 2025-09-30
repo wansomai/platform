@@ -182,20 +182,20 @@ export async function GET(request: NextRequest) {
     });
     
     // Format the response
-    const formattedAssociates = associates.map(associate => ({
+    const formattedAssociates = associates.map((associate: any) => ({
       id: associate.id,
       name: associate.name,
       instructions: associate.instructions,
       createdBy: associate.createdBy.fullName,
       createdAt: associate.createdAt.toISOString(),
       updatedAt: associate.updatedAt.toISOString(),
-      steps: associate.steps.map(step => ({
+      steps: associate.steps.map((step: { id: any; description: any; stepOrder: any; }) => ({
         id: step.id,
         description: step.description,
         order: step.stepOrder
       })),
-      tools: associate.tools.map(tool => tool.toolId),
-      projects: associate.projects.map(pa => ({
+      tools: associate.tools.map((tool: { toolId: any; }) => tool.toolId),
+      projects: associate.projects.map((pa: { project: { id: any; title: any; }; }) => ({
         id: pa.project.id,
         title: pa.project.title
       })),
