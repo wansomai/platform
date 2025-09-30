@@ -177,38 +177,7 @@ const ChatMessageItem = React.memo(({
                 
               />
             )}
-          </div>
-          
-          {/* Display Google Search sources if available */}
-          {!isUser && message.webSearchSources && message.webSearchSources.length > 0 && (
-            <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center mb-2 text-blue-700">
-                <Search size={16} className="mr-2" />
-                <span className="font-medium text-sm">Google Search Results ({message.webSearchSources.length})</span>
-              </div>
-              <div className="space-y-2">
-                {message.webSearchSources.map((source: {title: string, uri: string}, index: number) => (
-                  <a
-                    key={index}
-                    href={source.uri}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-start gap-2 p-2 bg-white rounded hover:bg-blue-100 transition-colors group"
-                  >
-                    <span className="text-xs text-blue-600 font-mono mt-0.5">[{index + 1}]</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-blue-900 group-hover:text-blue-700 line-clamp-1">
-                        {source.title}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">{source.uri}</p>
-                    </div>
-                    <ExternalLink size={14} className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-          
+          </div>      
           {!isUser && !message.isLoading && !isStreaming && (
             <div className="flex gap-1 mt-2">
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
