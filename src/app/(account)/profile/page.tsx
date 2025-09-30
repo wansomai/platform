@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Search, Plus, MoreHorizontal, UserPlus, Crown, Mail } from "lucide-react";
+import { apiService } from '@/lib/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,19 +59,17 @@ const Page = () => {
   const fetchTeamData = async () => {
     try {
       setMembersLoading(true);
-      const [membersRes, invitationsRes] = await Promise.all([
-        fetch('/api/organization/members'),
-        fetch('/api/organization/invitations')
-      ]);
 
-      if (membersRes.ok && invitationsRes.ok) {
-        const membersData = await membersRes.json();
-        const invitationsData = await invitationsRes.json();
+      // Fetch members and invitations separately to identify which one is failing
+      let membersData: { members: TeamMember[] } = { members: [] };
+      let invitationsData: { invitations: Invitation[] } = { invitations: [] };
 
-        setTeamMembers(membersData.members || []);
-        setInvitations(invitationsData.invitations || []);
-      } else {
-        // Fallback to mock data if API fails
+      try {
+        membersData = await apiService.get('/api/organization/members');
+        console.log('Members response:', membersData);
+      } catch (membersError) {
+        console.error('Error fetching members:', membersError);
+        // Use mock data for members if API fails
         const mockMembers: TeamMember[] = [
           {
             id: '1',
@@ -81,28 +80,21 @@ const Page = () => {
             avatar: session?.user?.image ?? undefined
           }
         ];
-
-        setTeamMembers(mockMembers);
-        setInvitations([]);
+        membersData = { members: mockMembers };
       }
-    } catch (error) {
-      console.error('Error fetching team data:', error);
-      toast.error('Failed to load team data');
 
-      // Fallback to mock data
-      const mockMembers: TeamMember[] = [
-        {
-          id: '1',
-          name: session?.user?.name || 'You',
-          email: session?.user?.email || '',
-          role: 'admin',
-          joinedAt: '2024-01-01',
-          avatar: session?.user?.image ?? undefined
-        }
-      ];
+      try {
+        invitationsData = await apiService.get('/api/organization/invitations');
+        console.log('Invitations response:', invitationsData);
+      } catch (invitationsError) {
+        console.error('Error fetching invitations:', invitationsError);
+        invitationsData = { invitations: [] };
+      }
 
-      setTeamMembers(mockMembers);
-      setInvitations([]);
+      setTeamMembers(membersData.members || []);
+      setInvitations(invitationsData.invitations || []);
+    } catch (generalError) {
+      console.error('General error fetching team data:', generalError);
     } finally {
       setMembersLoading(false);
     }
@@ -111,7 +103,11 @@ const Page = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      // Here you would implement the API call to update the user profile
+
+      // API call to update the user profile
+      await apiService.put('/api/profile', { name: fullName });
+
+      // Update session with new data
       await updateSession({
         ...session,
         user: {
@@ -137,25 +133,19 @@ const Page = () => {
 
     try {
       setIsInviting(true);
-      const response = await fetch('/api/organization/invite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: inviteEmail, role: inviteRole })
-      });
+      const data = await apiService.post('/api/organization/invite', {
+        email: inviteEmail,
+        role: inviteRole
+      }) as { success: boolean; invitation?: Invitation };
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success && data.invitation) {
-          setInvitations([...invitations, data.invitation]);
-          setInviteEmail('');
-          toast.success(`Invitation sent to ${inviteEmail}`);
-        }
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Failed to send invitation');
+      if (data.success && data.invitation) {
+        setInvitations([...invitations, data.invitation]);
+        setInviteEmail('');
+        toast.success(`Invitation sent to ${inviteEmail}`);
       }
-    } catch (error) {
-      toast.error('Failed to send invitation');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to send invitation';
+      toast.error(errorMessage);
       console.error('Error sending invitation:', error);
     } finally {
       setIsInviting(false);
@@ -164,40 +154,24 @@ const Page = () => {
 
   const handleRemoveMember = async (memberId: string) => {
     try {
-      const response = await fetch('/api/organization/members', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ memberId })
-      });
-
-      if (response.ok) {
-        setTeamMembers(teamMembers.filter(member => member.id !== memberId));
-        toast.success('Member removed successfully');
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Failed to remove member');
-      }
-    } catch (error) {
-      toast.error('Failed to remove member');
+      await apiService.delete(`/api/organization/members/${memberId}`);
+      setTeamMembers(teamMembers.filter(member => member.id !== memberId));
+      toast.success('Member removed successfully');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to remove member';
+      toast.error(errorMessage);
       console.error('Error removing member:', error);
     }
   };
 
   const handleCancelInvitation = async (invitationId: string) => {
     try {
-      const response = await fetch(`/api/organization/invitations/${invitationId}`, {
-        method: 'DELETE'
-      });
-
-      if (response.ok) {
-        setInvitations(invitations.filter(inv => inv.id !== invitationId));
-        toast.success('Invitation cancelled');
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Failed to cancel invitation');
-      }
-    } catch (error) {
-      toast.error('Failed to cancel invitation');
+      await apiService.delete(`/api/organization/invitations/${invitationId}`);
+      setInvitations(invitations.filter(inv => inv.id !== invitationId));
+      toast.success('Invitation cancelled');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to cancel invitation';
+      toast.error(errorMessage);
       console.error('Error cancelling invitation:', error);
     }
   };

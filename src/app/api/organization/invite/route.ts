@@ -10,6 +10,8 @@ const prisma = new PrismaClient();
 export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
   const { email, role = 'member' } = await request.json();
 
+  
+
   if (!email) {
     return NextResponse.json(
       { error: 'Email is required' },

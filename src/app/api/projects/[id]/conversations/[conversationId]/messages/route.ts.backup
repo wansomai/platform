@@ -39,11 +39,11 @@ const DEFAULT_SETTINGS = {
 };
 
 // Maximum size of content to include in context (characters)
-const MAX_DOCUMENT_CHUNK_SIZE = 1200; // Increased for better coverage
-const MAX_CHUNKS_PER_DOC = 4; // More chunks per document
-const MAX_TOTAL_CHUNKS = 12; // More total chunks
+const MAX_DOCUMENT_CHUNK_SIZE = 800;
+const MAX_CHUNKS_PER_DOC = 2;
+const MAX_TOTAL_CHUNKS = 6;
 const MAX_SYSTEM_MESSAGE_TOKENS = 4000; // Reserve space for user message and response
-const MAX_RELEVANT_CONTENT_CHARS = 6000; // More content for better context
+const MAX_RELEVANT_CONTENT_CHARS = 3000;
 
 // Schema validation
 const createMessageSchema = z.object({
@@ -308,7 +308,8 @@ export async function POST(
           let relevantContent = "";
           const documentObjects: Document[] = [];
 
-          // Universal document processing - no manual detection needed
+          // Check if this is a summary/analyze request that should get full document content
+          const isSummaryRequest = /\b(summarize|summary|analyze|analysis|review|overview)\b/i.test(content);
           
           // Include canvas document if in drafting mode and analysis intent
           if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
@@ -323,45 +324,129 @@ export async function POST(
             }));
           }
           
-          if (!isSimpleQuery && conversationDocuments.length > 0) {
-            // Universal document processing - always provide substantial content
-            console.log('Processing documents with universal approach');
-            const contentParts: string[] = [];
-            let totalContentLength = 0;
+          if (!isSimpleQuery && (conversationDocuments.length > 0 || documentObjects.length > 0)) {
+            try {
+              // Process only documents with content (skip extraction for speed)
+              console.log('Processing documents for vector search:', conversationDocuments.length);
+              for (const docRef of conversationDocuments) {
+                console.log('Document:', docRef.document.title, 'has content:', !!docRef.document.content?.content);
+                if (!docRef.document.content?.content) continue;
 
-            for (const docRef of conversationDocuments) {
-              console.log('Document:', docRef.document.title, 'has content:', !!docRef.document.content?.content);
-              if (!docRef.document.content?.content) continue;
+                const documentId = docRef.document.id;
+                const documentContent = docRef.document.content.content;
+                
+                // Create smaller chunks from document content for better relevance
+                const chunks = chunkDocumentContent(
+                  documentContent, 
+                  docRef.document.title,
+                  documentId
+                );
+                
+                documentObjects.push(...chunks);
+              }
+              
+              if (documentObjects.length > 0) {
+                // Initialize embeddings and vector store
+                const embeddings = new OpenAIEmbeddings({
+                  openAIApiKey: process.env.OPENAI_API_KEY,
+                  modelName: "text-embedding-ada-002",
+                  batchSize: 512,
+                  stripNewLines: true
+                });
+                
+                // Only search a reasonable number of documents
+                const docsToSearch = documentObjects.slice(0, MAX_TOTAL_CHUNKS);
+                
+                // Create vector store and search
+                const vectorStore = await MemoryVectorStore.fromDocuments(
+                  docsToSearch,
+                  embeddings
+                );
+                
+                // Find the most relevant documents
+                let queryResults;
+                if (isSummaryRequest) {
+                  // For summary requests, be more generous and return more results
+                  queryResults = await vectorStore.similaritySearch(
+                    content,
+                    Math.min(6, documentObjects.length), // Get more chunks for summaries
+                    (doc) => doc.pageContent.length > 20  // Lower threshold for summaries
+                  );
+                } else {
+                  queryResults = await vectorStore.similaritySearch(
+                    content,
+                    3,
+                    (doc) => doc.pageContent.length > 50
+                  );
+                }
 
-              const documentContent = docRef.document.content.content;
-              const docLength = documentContent.length;
+                console.log('Vector search results:', queryResults.length, 'for query:', content, 'isSummaryRequest:', isSummaryRequest);
+                
+                // Format relevant content with token limits
+                if (queryResults.length > 0) {
+                  let totalContentLength = 0;
+                  const contentParts: string[] = [];
 
-              console.log('Document length:', docLength, 'characters');
+                  for (const doc of queryResults) {
+                    const truncatedContent = doc.pageContent.substring(0, MAX_DOCUMENT_CHUNK_SIZE);
+                    const docSection = `### Document: ${doc.metadata.title} ###\n${truncatedContent}\n`;
 
-              if (docLength > 5000) {
-                // Large document - provide substantial content (increased from 8k to 15k)
-                const contentToProvide = Math.min(15000, docLength);
-                const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength/1000)}k characters) ###\n\n` +
-                  `**DOCUMENT CONTENT:**\n` +
-                  documentContent.substring(0, contentToProvide) +
-                  (docLength > contentToProvide ? '\n\n[... Document continues for ' + Math.round((docLength-contentToProvide)/1000) + 'k more characters. Ask for specific sections if needed.]' : '') + '\n\n';
+                    if (totalContentLength + docSection.length <= MAX_RELEVANT_CONTENT_CHARS) {
+                      contentParts.push(docSection);
+                      totalContentLength += docSection.length;
+                    } else {
+                      // Add partial content if there's room
+                      const remainingSpace = MAX_RELEVANT_CONTENT_CHARS - totalContentLength;
+                      if (remainingSpace > 100) { // Only add if meaningful space left
+                        const partialSection = docSection.substring(0, remainingSpace - 10) + "...";
+                        contentParts.push(partialSection);
+                      }
+                      break;
+                    }
+                  }
 
-                contentParts.push(docSection);
-                totalContentLength += docSection.length;
-              } else {
-                // Smaller document - provide full content
-                const docSection = `### Document: ${docRef.document.title} ###\n${documentContent}\n\n`;
-                if (totalContentLength + docSection.length <= 20000) { // Increased limit
-                  contentParts.push(docSection);
-                  totalContentLength += docSection.length;
+                  relevantContent = contentParts.join("\n\n");
+                  console.log('Set relevant content from vector search, length:', relevantContent.length);
+                } else if (documentObjects.length > 0) {
+                  // If no vector search results but we have document content, provide first few documents as fallback
+                  console.log('No vector search results, using fallback content from documents');
+                  const contentParts: string[] = [];
+                  let totalContentLength = 0;
+
+                  for (const doc of documentObjects.slice(0, 3)) { // Use first 3 chunks
+                    const truncatedContent = doc.pageContent.substring(0, MAX_DOCUMENT_CHUNK_SIZE);
+                    const docSection = `### Document: ${doc.metadata.title} ###\n${truncatedContent}\n`;
+
+                    if (totalContentLength + docSection.length <= MAX_RELEVANT_CONTENT_CHARS) {
+                      contentParts.push(docSection);
+                      totalContentLength += docSection.length;
+                    } else {
+                      break;
+                    }
+                  }
+
+                  relevantContent = contentParts.join("\n\n");
+                  console.log('Set fallback relevant content, length:', relevantContent.length);
                 }
               }
+            } catch (vectorError) {
+              console.error("Error in vector search:", vectorError);
+              
+              // Check if it's a token limit error and handle appropriately
+              if (vectorError instanceof Error && vectorError.message.includes('maximum context length')) {
+                // Use minimal relevant content as fallback
+                relevantContent = documentObjects.slice(0, 1)
+                  .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 300)}\n`)
+                  .join("\n\n");
+              } else {
+                // Other errors - use standard fallback
+                relevantContent = documentObjects.slice(0, 2)
+                  .map(doc => `### Document: ${doc.metadata.title} ###\n${doc.pageContent.substring(0, 500)}\n`)
+                  .join("\n\n");
+              }
             }
-
-            relevantContent = contentParts.join("\n");
-            console.log('Document processing complete, total content length:', relevantContent.length);
           }
-
+          
           // Get web search results if enabled and appropriate
           let webSearchResults = "";
           if (settings.webSearch && !isSimpleQuery && isWebSearchConfigured()) {
@@ -467,18 +552,22 @@ export async function POST(
             ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
             ${draftingContext}
             
-            ${relevantContent ?
-              `IMPORTANT: I'm providing you with document content for analysis.
-              For large documents (>5k chars), I provide substantial content from the beginning sections.
-              If you need specific sections not included, inform the user they can ask for those sections specifically.
-              Provide comprehensive analysis based on the content provided, and note if additional sections would be helpful.
-
-              Here are the documents for context:
+            ${relevantContent ? 
+              `${settings.citeSources ? 
+                "IMPORTANT: I'm providing you with documents that are relevant to this conversation. " +
+                "Use information from these documents to answer questions when possible. " +
+                "Cite document names when you reference information from them."
+                : 
+                "I'm providing you with documents that are relevant to this conversation. " +
+                "Use information from these documents to answer questions when possible."
+              }
+              
+              Here are the relevant documents for context:
               ${relevantContent}
-
-              ${settings.citeSources ?
+              
+              ${settings.citeSources ? 
                 "If you find information in the documents, tell the user which document it came from."
-                :
+                : 
                 "Use the document information when relevant to the query."
               }`
               : 
@@ -509,10 +598,7 @@ export async function POST(
           systemMessage = truncateToTokenLimit(systemMessage, MAX_SYSTEM_MESSAGE_TOKENS);
 
           console.log('Final relevantContent length:', relevantContent.length);
-          console.log('System message includes documents:', systemMessage.includes('Here are the documents'));
-          if (relevantContent.length > 0) {
-            console.log('Sample of relevant content:', relevantContent.substring(0, 200) + '...');
-          }
+          console.log('System message includes documents:', systemMessage.includes('Here are the relevant documents'));
           
           // Create the prompt template
           const prompt = ChatPromptTemplate.fromPromptMessages([

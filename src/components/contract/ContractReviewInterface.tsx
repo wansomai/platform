@@ -54,7 +54,7 @@ export const DocumentReviewInterface: React.FC = () => {
   // Handle documents uploaded through the modal
   const handleDocumentsAdded = async (documents: any[]) => {
     const count = documents.length
-    
+
     // Convert uploaded documents for display
     const newDocuments: ReviewDocument[] = documents.map(doc => ({
       id: doc.id || crypto.randomUUID(),
@@ -68,19 +68,25 @@ export const DocumentReviewInterface: React.FC = () => {
       fileUrl: doc.fileUrl || doc.url || doc.path,
       mimeType: doc.fileType || doc.mimeType || doc.contentType || doc.type
     }))
-    
+
     setDocuments(prev => [...newDocuments, ...prev])
-    
+
     // Automatically select the first uploaded document for display
     if (newDocuments.length > 0) {
       const firstDocument = newDocuments[0]
       setSelectedDocument(firstDocument)
-      
-      // Send automatic document overview to chat
+
+      // Refresh project documents to ensure attachment is complete
+      await fetchProjectDocuments(projectId)
+
+      // Send automatic document overview to chat - the document is now attached to the project and AI can access it
       if (currentConversation && sendMessage) {
-        const overviewPrompt = `I've uploaded a document for review. The text content has been extracted and is available for analysis. Please provide an initial overview and analysis of this document, highlighting any key areas of concern, important points, and relevant insights I should be aware of.`
-        
+        const overviewPrompt = `I've uploaded a document titled "${firstDocument.title}" for review. Please analyze this document and provide an initial overview highlighting any key areas of concern, important points, and relevant insights I should be aware of. Focus on legal risks, compliance issues, and actionable recommendations.`
+
         try {
+          // Add a small delay to ensure document attachment is processed
+          await new Promise(resolve => setTimeout(resolve, 1000))
+
           await sendMessage(
             projectId,
             currentConversation.id,
@@ -89,18 +95,19 @@ export const DocumentReviewInterface: React.FC = () => {
             ''
           )
         } catch (error) {
-          // Failed to send automatic overview
+          console.error('Failed to send automatic overview:', error)
+          addToast({
+            message: 'Document uploaded successfully, but failed to generate automatic analysis. You can manually ask for document review.',
+            type: "warning"
+          })
         }
       }
     }
-    
+
     addToast({
       message: `${count} document${count > 1 ? 's' : ''} added for review`,
       type: "success"
     })
-    
-    // Refresh project documents to keep vault in sync
-    fetchProjectDocuments(projectId)
   }
 
   // Get risk level styling
