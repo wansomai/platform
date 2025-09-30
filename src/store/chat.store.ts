@@ -259,6 +259,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 timestamp: new Date().toISOString(),
                 references: data.references,
                 webSearchResults: data.webSearchResults,
+                webSearchSources: data.webSearchSources,
                 isStreaming: false
               });
               break;

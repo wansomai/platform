@@ -428,6 +428,20 @@ export async function POST(
           const tempMessageId = `temp-${Date.now()}`;
           let fullContent = "";
           let documentReferences = new Set<string>();
+          let webSearchSources: Array<{title: string, uri: string}> = [];
+          let isSearching = false;
+
+          // Send initial status if web search is enabled
+          if (useGoogleSearch) {
+            controller.enqueue(
+              encoder.encode(
+                JSON.stringify({
+                  type: 'status',
+                  status: 'searching_web',
+                }) + '\n'
+              )
+            );
+          }
 
           // Stream the response from Gemini
           const result = await chat.sendMessageStream(content);
@@ -435,7 +449,50 @@ export async function POST(
           for await (const chunk of result.stream) {
             const textContent = chunk.text();
             fullContent += textContent;
-            
+
+            // Extract grounding metadata (Google Search sources)
+            if (useGoogleSearch && chunk.candidates && chunk.candidates[0]) {
+              const candidate = chunk.candidates[0];
+              if (candidate.groundingMetadata) {
+                const metadata = candidate.groundingMetadata;
+
+                // Extract search results
+                if (metadata.searchEntryPoint && !isSearching) {
+                  isSearching = true;
+                  controller.enqueue(
+                    encoder.encode(
+                      JSON.stringify({
+                        type: 'status',
+                        status: 'searching_web',
+                        message: 'Searching Google...',
+                      }) + '\n'
+                    )
+                  );
+                }
+
+                // Extract grounding supports (sources)
+                if (metadata.groundingSupports) {
+                  for (const support of metadata.groundingSupports) {
+                    if (support.groundingChunckIndices && metadata.groundingChunks) {
+                      for (const index of support.groundingChunckIndices) {
+                        const chunk = metadata.groundingChunks[index];
+                        if (chunk?.web) {
+                          const source = {
+                            title: chunk.web.title || 'Source',
+                            uri: chunk.web.uri || ''
+                          };
+                          // Avoid duplicates
+                          if (!webSearchSources.some(s => s.uri === source.uri)) {
+                            webSearchSources.push(source);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
             // Send the text delta to the client
             controller.enqueue(
               encoder.encode(
@@ -447,7 +504,7 @@ export async function POST(
                 }) + '\n'
               )
             );
-            
+
             // Check for document references during streaming
             if (settings.citeSources && relevantContent && conversationDocuments.length > 0) {
               for (const docRef of conversationDocuments) {
@@ -467,14 +524,17 @@ export async function POST(
             data: { updatedAt: new Date() },
           }).catch(console.error);
           
-          // Save the AI message to the database
+          // Save the AI message to the database with web sources if available
           const assistantMessage = await prisma.message.create({
             data: {
               content: formattedContent,
               role: "assistant",
               conversationId,
-              metadata: useGoogleSearch ?
-                JSON.stringify({ googleSearchEnabled: true }) :
+              metadata: (useGoogleSearch || webSearchSources.length > 0) ?
+                JSON.stringify({
+                  googleSearchEnabled: useGoogleSearch,
+                  webSearchSources: webSearchSources.length > 0 ? webSearchSources : undefined
+                }) :
                 undefined
             }
           });
@@ -523,6 +583,7 @@ export async function POST(
                 tempMessageId,
                 content: formattedContent,
                 googleSearchEnabled: useGoogleSearch,
+                webSearchSources: webSearchSources.length > 0 ? webSearchSources : undefined,
                 references: completeMessage?.references.map((ref) => ({
                   id: ref.id,
                   documentId: ref.documentId,
