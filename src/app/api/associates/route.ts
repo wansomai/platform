@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Create associate with steps and tools in a transaction
-    const associate = await prisma.$transaction(async (tx) => {
+    const associate = await prisma.$transaction(async (tx:any) => {
       // Create associate
       const newAssociate = await tx.aIAssociate.create({
         data: {
@@ -88,11 +88,11 @@ export async function POST(request: NextRequest) {
           select: { id: true }
         });
         
-        const validProjectIds = projects.map(p => p.id);
+        const validProjectIds = projects.map((p: { id: any; }) => p.id);
         
         // Create project associations
         if (validProjectIds.length > 0) {
-          await Promise.all(validProjectIds.map(projectId => 
+          await Promise.all(validProjectIds.map((projectId: any) => 
             tx.projectAssociate.create({
               data: {
                 associateId: newAssociate.id,
