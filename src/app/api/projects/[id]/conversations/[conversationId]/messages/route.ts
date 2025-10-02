@@ -621,34 +621,8 @@ export async function POST(
         } catch (error) {
           console.error('Error in stream processing:', error);
 
-          // Format error message for better user experience
-          let userFriendlyError = 'An error occurred while processing your request.';
-
-          if (error instanceof Error) {
-            const errorMessage = error.message;
-
-            // Handle Google AI API errors
-            if (errorMessage.includes('GoogleGenerativeAI Error')) {
-              if (errorMessage.includes('is not found for API version') || errorMessage.includes('is not supported')) {
-                // Extract model name if present
-                const modelMatch = errorMessage.match(/models\/([^\s]+)/);
-                const modelName = modelMatch ? modelMatch[1] : 'the selected model';
-                userFriendlyError = `The model "${modelName}" is not available with Google AI. Please check your project settings and select a valid Gemini model (e.g., gemini-2.0-flash-exp, gemini-1.5-pro).`;
-              } else if (errorMessage.includes('API key')) {
-                userFriendlyError = 'Invalid or missing API key. Please check your Google AI API configuration.';
-              } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
-                userFriendlyError = 'API rate limit exceeded. Please try again in a few moments.';
-              } else {
-                userFriendlyError = `Google AI Error: ${errorMessage.split(':').pop()?.trim() || errorMessage}`;
-              }
-            } else if (errorMessage.includes('timeout')) {
-              userFriendlyError = 'The request took too long to process. Please try again with a shorter message or fewer documents.';
-            } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-              userFriendlyError = 'Network error occurred. Please check your internet connection and try again.';
-            } else {
-              userFriendlyError = errorMessage;
-            }
-          }
+          // Simple user-friendly error message - log technical details only
+          const userFriendlyError = 'Could not generate message. Please try again.';
 
           controller.enqueue(
             encoder.encode(
@@ -1024,24 +998,8 @@ async function handleCanvasDraftingRequestWithStreaming(
   } catch (error) {
     console.error('Canvas drafting error:', error);
 
-    // Format error message
-    let errorMessage = 'Failed to process document request';
-    if (error instanceof Error) {
-      const msg = error.message;
-      if (msg.includes('GoogleGenerativeAI Error')) {
-        if (msg.includes('is not found for API version') || msg.includes('is not supported')) {
-          const modelMatch = msg.match(/models\/([^\s]+)/);
-          const modelName = modelMatch ? modelMatch[1] : 'selected model';
-          errorMessage = `Model "${modelName}" is not available. Please select a valid Gemini model in project settings.`;
-        } else if (msg.includes('API key')) {
-          errorMessage = 'Invalid API key. Please check your configuration.';
-        } else {
-          errorMessage = `AI Error: ${msg.split(':').pop()?.trim() || msg}`;
-        }
-      } else {
-        errorMessage = msg;
-      }
-    }
+    // Simple user-friendly error message
+    const errorMessage = 'Something went wrong creating your document. Please try again.';
 
     // Send error status
     controller.enqueue(
