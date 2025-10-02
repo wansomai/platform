@@ -404,8 +404,17 @@ export async function POST(
           }
 
           // Initialize Gemini model with settings and optional Google Search grounding
+          // Validate and fix model name - ensure it's a Gemini model
+          let modelName = settings.model || 'gemini-2.0-flash-exp';
+
+          // Check if someone accidentally set a non-Gemini model (e.g., gpt-4)
+          if (!modelName.toLowerCase().startsWith('gemini')) {
+            console.warn(`Invalid model "${modelName}" - falling back to gemini-2.0-flash-exp`);
+            modelName = 'gemini-2.0-flash-exp';
+          }
+
           const modelConfig: any = {
-            model: settings.model || 'gemini-2.0-flash-exp',
+            model: modelName,
             generationConfig: {
               temperature: settings.temperature || 0.7,
               maxOutputTokens: 8192,
@@ -611,12 +620,41 @@ export async function POST(
           );
         } catch (error) {
           console.error('Error in stream processing:', error);
-          
+
+          // Format error message for better user experience
+          let userFriendlyError = 'An error occurred while processing your request.';
+
+          if (error instanceof Error) {
+            const errorMessage = error.message;
+
+            // Handle Google AI API errors
+            if (errorMessage.includes('GoogleGenerativeAI Error')) {
+              if (errorMessage.includes('is not found for API version') || errorMessage.includes('is not supported')) {
+                // Extract model name if present
+                const modelMatch = errorMessage.match(/models\/([^\s]+)/);
+                const modelName = modelMatch ? modelMatch[1] : 'the selected model';
+                userFriendlyError = `The model "${modelName}" is not available with Google AI. Please check your project settings and select a valid Gemini model (e.g., gemini-2.0-flash-exp, gemini-1.5-pro).`;
+              } else if (errorMessage.includes('API key')) {
+                userFriendlyError = 'Invalid or missing API key. Please check your Google AI API configuration.';
+              } else if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+                userFriendlyError = 'API rate limit exceeded. Please try again in a few moments.';
+              } else {
+                userFriendlyError = `Google AI Error: ${errorMessage.split(':').pop()?.trim() || errorMessage}`;
+              }
+            } else if (errorMessage.includes('timeout')) {
+              userFriendlyError = 'The request took too long to process. Please try again with a shorter message or fewer documents.';
+            } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+              userFriendlyError = 'Network error occurred. Please check your internet connection and try again.';
+            } else {
+              userFriendlyError = errorMessage;
+            }
+          }
+
           controller.enqueue(
             encoder.encode(
               JSON.stringify({
                 type: 'error',
-                error: error instanceof Error ? error.message : 'Unknown error',
+                error: userFriendlyError,
               }) + '\n'
             )
           );
@@ -985,28 +1023,47 @@ async function handleCanvasDraftingRequestWithStreaming(
 
   } catch (error) {
     console.error('Canvas drafting error:', error);
-    
+
+    // Format error message
+    let errorMessage = 'Failed to process document request';
+    if (error instanceof Error) {
+      const msg = error.message;
+      if (msg.includes('GoogleGenerativeAI Error')) {
+        if (msg.includes('is not found for API version') || msg.includes('is not supported')) {
+          const modelMatch = msg.match(/models\/([^\s]+)/);
+          const modelName = modelMatch ? modelMatch[1] : 'selected model';
+          errorMessage = `Model "${modelName}" is not available. Please select a valid Gemini model in project settings.`;
+        } else if (msg.includes('API key')) {
+          errorMessage = 'Invalid API key. Please check your configuration.';
+        } else {
+          errorMessage = `AI Error: ${msg.split(':').pop()?.trim() || msg}`;
+        }
+      } else {
+        errorMessage = msg;
+      }
+    }
+
     // Send error status
     controller.enqueue(
       encoder.encode(
         JSON.stringify({
           type: 'canvas_status',
           status: 'error',
-          message: 'Failed to process document request',
+          message: errorMessage,
           conversationId: conversationId,
         }) + '\n'
       )
     );
-    
+
     controller.enqueue(
       encoder.encode(
         JSON.stringify({
           type: 'error',
-          error: 'Failed to process document request'
+          error: errorMessage
         }) + '\n'
       )
     );
-    
+
     safeClose();
     return true; // Still handled, even with error
   }
