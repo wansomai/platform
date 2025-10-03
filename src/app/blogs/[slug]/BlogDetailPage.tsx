@@ -114,6 +114,15 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Main content */}
           <div className="w-full lg:w-8/12">
+            {/* Breadcrumb - Mobile only */}
+            <div className="lg:hidden mb-4 text-sm text-gray-600">
+              <Link href="/" className="hover:text-teal-600">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/blogs" className="hover:text-teal-600">Articles</Link>
+              <span className="mx-2">/</span>
+              <span className="truncate max-w-[200px] inline-block align-bottom">{blog.title}</span>
+            </div>
+
             {/* Featured Image with overlay text */}
             {blog.image && (
               <div className="relative mb-6 rounded-lg overflow-hidden">
@@ -122,11 +131,11 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
                   alt={blog.title}
                   className="w-full h-auto object-cover"
                 />
-                {/* Dark overlay for text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                {/* Dark overlay for text visibility - Desktop only */}
+                <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
 
-                {/* Text content overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                {/* Text content overlay - Desktop only */}
+                <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 text-white">
                   {/* Breadcrumb */}
                   <div className="mb-3 text-sm">
                     <Link href="/" className="hover:text-gray-300">Home</Link>
@@ -146,6 +155,14 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
                 </div>
               </div>
             )}
+
+            {/* Title and Date - Mobile only */}
+            <div className="lg:hidden mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                {blog.title}
+              </h1>
+              <div className="text-sm text-gray-500">{blog.date}</div>
+            </div>
             {/* Blog Content */}
             <div
               className="blog-content mb-12"
