@@ -76,7 +76,7 @@ const BlogsPageClient = () => {
       
       {/* Blog Posts Section */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="section-container mx-auto px-4">
 
 
           {error && (
