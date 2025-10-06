@@ -155,15 +155,6 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
   // Generate social share URLs
   const pageUrl = typeof window !== "undefined" ? window.location.href : "";
-  const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-    pageUrl
-  )}&text=${encodeURIComponent(blog.title)}`;
-  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-    pageUrl
-  )}`;
-  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-    pageUrl
-  )}`;
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -196,6 +187,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     className="h-8 w-8 p-0 rounded-md cursor-not-allowed opacity-60"
                     title="Documents (available after registration)"
                     disabled={true}
+                    aria-labelledby="upload documents"
                   >
                     <Paperclip className="h-6 w-6 text-gray-600" />
                   </Button>
@@ -211,6 +203,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                         size="sm"
                         className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
                         title="AI Tools (preview - will be configurable after registration)"
+                        aria-labelledby="AI tools"
                       >
                         <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
                         Tools
@@ -231,6 +224,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                             size="sm"
                             onClick={() => setShowToolsDropdown(false)}
                             className="h-6 w-6 p-0"
+                            aria-labelledby="Close Tools"
                           >
                             <X className="h-3 w-3" />
                           </Button>
@@ -341,6 +335,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
                     disabled={true}
                     title="Settings (available after registration)"
+                    aria-labelledby="settings"
                   >
                     <Settings className="h-4 w-4 text-gray-700 text-xs" />
                     Settings
@@ -360,9 +355,10 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                 {/* Send button positioned inside textarea */}
                 <div className="absolute right-3 bottom-3 z-10">
                   <Button
-                    className="bg-[#d47b0f] hover:bg-[#355e66] text-white z-10 shadow-md h-10 w-10 rounded-lg"
+                    className="bg-primary hover:bg-[#d47b0f] text-white z-10 shadow-md h-10 w-10 rounded-lg"
                     disabled={isSubmitting}
                     onClick={handleSend}
+                    aria-label="Send message"
                   >
                     {isSubmitting ? (
                       <Loader2 className="animate-spin text-white h-5 w-5" />
@@ -416,7 +412,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                 />
                 <div className="flex justify-center mt-4 gap-2">
                   <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+                  <Link href={'/demo'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
                 </div>
               </div>
 

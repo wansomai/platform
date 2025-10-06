@@ -64,7 +64,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-      isScrolled || isOpen||darkmode ? 'bg-[#355e66] shadow-sm backdrop-filter lg:backdrop-blur-lg  text-white bg-opacity-40' : 'bg-transparent text-gray-300'
+      isScrolled || isOpen||darkmode ? 'bg-primary shadow-sm backdrop-filter lg:backdrop-blur-lg  text-white bg-opacity-40' : 'bg-transparent text-white'
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
@@ -82,7 +82,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
         <Link href="/">
-          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
+          <Image src={ `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>
 
           <nav className="flex space-x-6 ">
