@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
       keywords: adaptedPost.title || 'legal document templates, Draft legal documments, legal insights',
       alternates: {
-        canonical: `/legal-documents/${slug}`,
+        canonical: `https://wansom.ai/legal-documents/${slug}`,
       },
       openGraph: {
         title: adaptedPost.title,

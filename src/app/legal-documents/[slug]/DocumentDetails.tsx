@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { getAllDocumentTemplates } from "@/lib/data/contentful";
 import {adaptDocumentTemplate, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -25,6 +25,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+// Lazy load Footer component
+const Footer = dynamic(() => import("@/components/layout/Footer"), {
+  ssr: true,
+});
 
 interface PageProps {
   params: {
@@ -192,7 +197,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     title="Documents (available after registration)"
                     disabled={true}
                   >
-                    <Paperclip className="h-6 w-6 text-gray-500" />
+                    <Paperclip className="h-6 w-6 text-gray-600" />
                   </Button>
 
                   {/* Tools Dropdown */}
@@ -207,7 +212,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                         className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
                         title="AI Tools (preview - will be configurable after registration)"
                       >
-                        <SlidersHorizontal className="h-6 w-6 text-gray-500" />{" "}
+                        <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
                         Tools
                       </Button>
                     </DropdownMenuTrigger>
@@ -218,7 +223,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     >
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-sm text-gray-500">
+                          <h4 className="font-medium text-sm text-gray-700">
                             Available AI Tools
                           </h4>
                           <Button
@@ -337,7 +342,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                     disabled={true}
                     title="Settings (available after registration)"
                   >
-                    <Settings className="h-4 w-4 text-gray-500 text-xs" />
+                    <Settings className="h-4 w-4 text-gray-700 text-xs" />
                     Settings
                   </button>
                 </div>
@@ -348,7 +353,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Ask anything about this document..."
-                  className="border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 min-h-[120px] max-h-[200px] px-6 py-4 pr-16 text-[13px] md:text-base"
+                  className="border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-600 min-h-[120px] max-h-[200px] px-6 py-4 pr-16 text-[13px] md:text-base"
                   disabled={isSubmitting}
                 />
 
@@ -371,9 +376,9 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
             {/* Helper text */}
             <div className="text-center mt-4">
-              <p className="text-sm text-gray-500">
-                Press <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">Enter</kbd> to send,
-                <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono ml-1">Shift+Enter</kbd> for new line
+              <p className="text-sm text-gray-700">
+                Press <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono text-gray-900">Enter</kbd> to send,
+                <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono text-gray-900 ml-1">Shift+Enter</kbd> for new line
               </p>
             </div>
           </div>
@@ -385,10 +390,12 @@ const DocDetailPageClient = ({ params }: PageProps) => {
         {blog.image ? (
             <div className="block lg:hidden">
               <div className="">
-                <img
+                <Image
                   src={blog.image}
                   alt={blog.title}
-                
+                  width={800}
+                  height={600}
+                  priority
                   className="rounded-lg w-full h-auto object-cover"
                 />
               </div>
@@ -399,10 +406,12 @@ const DocDetailPageClient = ({ params }: PageProps) => {
             </div>
           ):  <div className="block lg:hidden">
               <div className="">
-                <img
+                <Image
                   src="/contract-sample.webp"
                   alt={blog.title}
-                
+                  width={800}
+                  height={600}
+                  priority
                   className="rounded-lg w-full h-auto object-cover"
                 />
                 <div className="flex justify-center mt-4 gap-2">
@@ -469,7 +478,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                         <h4 className="font-semibold text-gray-800 mb-2 group-hover:text-teal-600">
                           {post.title}
                         </h4>
-                        <p className="text-sm text-gray-500">{post.date}</p>
+                        <p className="text-sm text-gray-700">{post.date}</p>
                       </div>
                     </Link>
                   ))}
@@ -487,9 +496,11 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   alt={blog.title}
                   width={1200}
                   height={630}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 41.67vw"
                   className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
                 />
-                
+
                   <div className="flex justify-center mt-4 gap-2">
                   <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
                   <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
@@ -506,15 +517,17 @@ const DocDetailPageClient = ({ params }: PageProps) => {
                   alt={blog.title}
                   width={1200}
                   height={630}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 41.67vw"
                   className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
                 />
-                
+
                    <div className="flex justify-center mt-4 gap-2">
                   <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
                   <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
                 </div>
               </div>
-              
+
             </div>
           )}
         </div>
