@@ -471,7 +471,7 @@ body {
 }
 
 .blog-content a {
-  @apply text-[#b8690c] underline;
+  @apply text-teal-700 underline;
 }
 
 .blog-content ul,
