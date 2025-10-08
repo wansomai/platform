@@ -13,6 +13,7 @@ import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VaultSection from "@/components/home/vault";
+import KnowledgeBase from "@/components/home/Knowledgebase";
 
 const LegalResearchPage = () => {
   const partnerLogos = [
@@ -80,7 +81,7 @@ const LegalResearchPage = () => {
 
        {/* workspace section */}  
       <CollaborativeWorkspaces/>         
-
+<KnowledgeBase/>
       {/* More features section */}
    <VaultSection/>
 

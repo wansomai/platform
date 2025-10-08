@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: 'Explore expert insights on AI law, digital ethics, legal technology, and AI governance. Stay informed with the latest legal tech trends and developments.',
   keywords: 'legal tech blog, AI law, digital ethics, legal technology, AI governance, law firm technology, legal insights',
   alternates: {
-    canonical: '/blogs',
+    canonical: 'https://wansom.ai/blogs',
   },
   openGraph: {
     title: 'Legal Tech Blog | AI Law Insights & Resources | wansom AI',
