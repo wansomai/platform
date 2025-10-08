@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { getAllDocumentTemplates } from "@/lib/data/contentful";
-import {adaptDocumentTemplate, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,65 +26,22 @@ import {
 
 // Lazy load Footer component
 const Footer = dynamic(() => import("@/components/layout/Footer"), {
-  ssr: true,
+  ssr: false,
+  loading: () => null,
 });
 
 interface PageProps {
-  params: {
-    slug: string;
-    id: string;
-  };
+  blog: any | null;
 }
 
 
-const DocDetailPageClient = ({ params }: PageProps) => {
-  const { slug, id } = params;
+const DocDetailPageClient = ({ blog }: PageProps) => {
   const router = useRouter();
-  const [blog, setBlog] = useState<any>(null);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [chatInput, setChatInput] = useState("");
+  const [chatInput, setChatInput] = useState("Help me customize this legal document template");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    const fetchBlogPost = async () => {
-      try {
-        if (!slug || typeof slug !== 'string') {
-          throw new Error('Invalid blog slug');
-        }
-
-        setLoading(true);
-        
-        // Get all blog posts and find the one with matching slug
-        const allBlogPosts = await getAllDocumentTemplates();
-        
-        // Find the blog post with matching slug
-        const blogPost = allBlogPosts.find(post => {
-          const postSlug = createSlug(post.fields.title);
-          return postSlug === slug;
-        });
-        
-        if (!blogPost) {
-          throw new Error('Blog post not found');
-        }
-        
-        const adaptedPost = adaptDocumentTemplate(blogPost);
-        setBlog(adaptedPost);
-
-        // Pre-fill chat input with document title
-        setChatInput(`Help me customize this legal document template`);
-      } catch (err) {
-        setError('Failed to load legal document');
-
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBlogPost();
-  }, [slug]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -122,15 +77,7 @@ const DocDetailPageClient = ({ params }: PageProps) => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
-      </div>
-    );
-  }
-
-  if (error || !blog) {
+  if (!blog) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="text-center flex items-center flex-col gap-3 justify-center">
@@ -383,40 +330,23 @@ const DocDetailPageClient = ({ params }: PageProps) => {
 
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
-        {blog.image ? (
-            <div className="block lg:hidden">
-              <div className="">
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  width={800}
-                  height={600}
-                  priority
-                  className="rounded-lg w-full h-auto object-cover"
-                />
-              </div>
-                <div className="flex justify-center mt-4 gap-2">
-                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
-                </div>
+          <div className="block lg:hidden">
+            <div className="">
+              <Image
+                src={blog.image || "/contract-sample.webp"}
+                alt={blog.title}
+                width={800}
+                height={600}
+                priority
+                sizes="100vw"
+                className="rounded-lg w-full h-auto object-cover"
+              />
             </div>
-          ):  <div className="block lg:hidden">
-              <div className="">
-                <Image
-                  src="/contract-sample.webp"
-                  alt={blog.title}
-                  width={800}
-                  height={600}
-                  priority
-                  className="rounded-lg w-full h-auto object-cover"
-                />
-                <div className="flex justify-center mt-4 gap-2">
-                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-                  <Link href={'/demo'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
-                </div>
-              </div>
-
-            </div>}
+            <div className="flex justify-center mt-4 gap-2">
+              <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+              <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+            </div>
+          </div>
             
           
           
@@ -484,48 +414,24 @@ const DocDetailPageClient = ({ params }: PageProps) => {
           </div>
 
           {/* Fixed image column */}
-          {blog.image && (
-            <div className="hidden lg:block w-5/12">
-              <div className="sticky top-32">
+          <div className="hidden lg:block w-5/12">
+            <div className="sticky top-32">
               <Image
-                  src="/contract-sample.webp"
-                  alt={blog.title}
-                  width={1200}
-                  height={630}
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 41.67vw"
-                  className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
-                />
-
-                  <div className="flex justify-center mt-4 gap-2">
-                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
-                </div>
+                src={blog.image || "/contract-sample.webp"}
+                alt={blog.title}
+                width={600}
+                height={315}
+                priority
+                fetchPriority="high"
+                sizes="(max-width: 1024px) 100vw, 41.67vw"
+                className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
+              />
+              <div className="flex justify-center mt-4 gap-2">
+                <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
+                <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
               </div>
-
             </div>
-          )}
-          {!blog.image && (
-            <div className="hidden lg:block w-5/12">
-              <div className="sticky top-32">
-              <Image
-                  src="/contract-sample.webp"
-                  alt={blog.title}
-                  width={1200}
-                  height={630}
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 41.67vw"
-                  className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
-                />
-
-                   <div className="flex justify-center mt-4 gap-2">
-                  <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-                  <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
-                </div>
-              </div>
-
-            </div>
-          )}
+          </div>
         </div>
       </div>
       <Footer />
