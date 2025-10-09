@@ -76,7 +76,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   ]
       const resources = [
     { name: 'Articles ', href: '/blogs' },
-    { name: 'Legal Templates', href: '/legal-documents' },
+    // { name: 'Legal Templates', href: '/legal-documents' },
     { name: 'Newsletters', href: 'https://www.linkedin.com/newsletters/beyond-chatbots-legal-ai-7336011285697904642/' },
     //  { name: 'Priduct Guides', href: '/ai-contract-review' },
     // { name: 'Events', href: '/ai-due-diligence' },
