@@ -69,7 +69,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   ]
     const solutions = [
     { name: 'In-house counsels ', href: '/solutions/in-house-counsel' },
-    { name: 'Litigation Lawyers', href: '/ai-legal-drafting' },
+    { name: 'Litigation Lawyers', href: '/solutions/litigation-lawyers' },
     { name: 'M&A Lawyers', href: '/ai-contract-review' },
     { name: 'Judiciary & Courts', href: '/ai-due-diligence' },
     { name: 'Law Schools', href: '/document-vault' },

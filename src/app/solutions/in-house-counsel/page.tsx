@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/in-house-counsel.png',
+        url: '/images/in-house-counsel.jpg',
         width: 1200,
         height: 630,
         alt: 'Wansom AI for In-House Counsel',
