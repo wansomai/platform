@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, Sparkles,ChevronDown } from "lucide-react";
+import { CheckCircle, Sparkles,ChevronDown} from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FeaturesSection from "@/components/home/features";
@@ -11,6 +11,7 @@ import {
   ResearchSourcesWorkflow,
 } from "./(landingpages)/ai-legal-research/LegalResearchPage";
 import DocumentAutomation from "@/components/home/DocumentAutomation";
+import KnowledgeBase from "@/components/home/Knowledgebase";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -69,8 +70,9 @@ export default function Home() {
         <LegalResearchSection />
         <DocumentAutomation />
         <DocumentReview />
-
+ <KnowledgeBase />
         <AutomateProcesses />
+       
         <VaultSection />
       </main>
       <CookieConsent
@@ -180,8 +182,8 @@ function LegalResearchSection() {
     <section className="section-spacing bg-gray-50" id="legal-research">
       <div className="section-container pb-12">
         <div className="text-center mb-12 ">
-          <h2 className="text-heading-2 text-gray-900">
-            Access verified legal authorities in one intelligent search
+          <h2 className="text-heading-2 text-gray-900 mb-2">
+           Turn Days of Legal Research into Minutes 
           </h2>
           <p className="text-body-large text-gray-600 max-w-3xl mx-auto">
             Get instant answers to complex legal questions with AI that searches
@@ -424,6 +426,7 @@ function DocumentReview() {
     </section>
   );
 }
+
 
  
 
