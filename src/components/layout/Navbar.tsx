@@ -343,7 +343,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
               </div>
 
               {/* Mobile Programs Dropdown */}
-              <div className="border-b border-gray-100">
+              {/* <div className="border-b border-gray-100">
                 <button
                   onClick={() => setMobileDropdowns(prev => ({ ...prev, programs: !prev.programs }))}
                   className="w-full font-semibold text-lg text-gray-800 py-3 flex items-center justify-between"
@@ -365,7 +365,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Security Link */}
               <Link
