@@ -9,7 +9,6 @@ import {
   Gavel,
   Sparkles,
 } from "lucide-react";
-import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VaultSection from "@/components/home/vault";
@@ -36,7 +35,7 @@ const LitigationLawyersPage = () => {
             </div>
             {/* Hero image */}
             <img
-              src={"/images/litigation-lawyers.jpg"}
+              src={"/images/supreme-court.png"}
               alt="litigation lawyers"
               className="rounded-lg rounded-b-none "
             />

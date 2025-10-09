@@ -71,15 +71,15 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     { name: 'In-house counsels ', href: '/solutions/in-house-counsel' },
     { name: 'Litigation Lawyers', href: '/solutions/litigation-lawyers' },
     { name: 'M&A Lawyers', href: '/solutions/ma-lawyers' },
-    { name: 'Judiciary & Courts', href: '/ai-due-diligence' },
-    { name: 'Law Schools', href: '/document-vault' },
+    // { name: 'Judiciary & Courts', href: '/ai-due-diligence' },
+    // { name: 'Law Schools', href: '/document-vault' },
   ]
       const resources = [
-    { name: 'Articles ', href: '/ai-legal-research' },
-    { name: 'Legal Templates', href: '/ai-legal-drafting' },
-    { name: 'Newsletters', href: '/ai-contract-review' },
-     { name: 'Priduct Guides', href: '/ai-contract-review' },
-    { name: 'Events', href: '/ai-due-diligence' },
+    { name: 'Articles ', href: '/blogs' },
+    { name: 'Legal Templates', href: '/legal-documents' },
+    { name: 'Newsletters', href: 'https://www.linkedin.com/newsletters/beyond-chatbots-legal-ai-7336011285697904642/' },
+    //  { name: 'Priduct Guides', href: '/ai-contract-review' },
+    // { name: 'Events', href: '/ai-due-diligence' },
   ]
         const Programs = [
     { name: 'Research Program  ', href: '/ai-legal-research' },
@@ -206,7 +206,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </div>
 
             {/* Programs Dropdown */}
-            <div className="relative dropdown-container">
+            {/* <div className="relative dropdown-container">
               <button
                 className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'programs' ? null : 'programs')}
@@ -234,7 +234,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                   </Link>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Security Link */}
             <Link href="/#security" className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">

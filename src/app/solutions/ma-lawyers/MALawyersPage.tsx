@@ -11,7 +11,6 @@ import {
   Building2,
   Users,
 } from "lucide-react";
-import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VaultSection from "@/components/home/vault";
