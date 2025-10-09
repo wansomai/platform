@@ -10,6 +10,10 @@ import {
   Clock,
   Users,
   Search,
+  Zap,
+  BookOpen,
+  MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
@@ -30,36 +34,81 @@ const InHouseCounselPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 pb-16 bg-primary relative overflow-hidden">
-        <div className="container mx-auto px-4 z-10 relative">
+      <section className="pt-24 md:pt-32 bg-primary relative overflow-hidden">
+        <div className="container mx-auto px-5 z-10 relative">
           <div className="relative grid grid-cols-1 gap-12 items-center ">
             <div className="text-white lg:basis-1/2 text-center lg:text-left space-y-5">
-            <p className="text-body mb-2">For In-House Legal Teams </p>
+              <p className="text-body mb-2">AI For In-House Legal Teams </p>
               <h1 className="text-heading-1 text-shadow font-serif max-w-4xl">
-               Streamline Routine Legal Tasks so you focus on High Impact Work
+                Streamline Routine Legal Tasks so you focus on High Impact Work
               </h1>
-                 <button className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-gray-100 transition">
-  Get Started
-  <ArrowUpRight className="w-5 h-5 ml-2" />
-</button>
+              <button className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-primary transition">
+                Get Started
+                <ArrowUpRight className="w-5 h-5 ml-2" />
+              </button>
             </div>
-         
+            {/* Hero image */}
+            <img
+              src={"/images/in-house-counsel.jpg"}
+              alt="in house consel"
+              className="rounded-lg rounded-b-none "
+            />
+          </div>
+        </div>
+      </section>
+      <section className="section-spacing bg-white">
+        <div className="section-container flex flext-col justify-between lg:flex-row gap-16">
+          {/* Active Stats */}
+          <div className="text-left mb-8">
+            <p className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+              Get Immediate Return On Investment
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+            {/* Stat 1 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                30%
+              </h3>
+              <p className="text-md text-gray-600">
+                Average measured
+                <br />
+                boost in productivity
+              </p>
+            </div>
 
-            {/* Hero Features Cards */}
-<img src={'/images/in-house-counsel.jpg'} alt="in house consel" className="rounded-lg"/>
+            {/* Stat 2 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                +5hrs
+              </h3>
+              <p className="text-md text-gray-600">
+                Weekly time savings by
+                <br />
+                &gt;from routine tasks
+              </p>
+            </div>
 
+            {/* Stat 3 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                $2.3m
+              </h3>
+              <p className="text-md text-gray-600">
+                potential additional billing
+                <br />
+                per 100 lawyers annually
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Features Section */}
+      <FeaturesSection />
+
       {/* Key Capabilities Section */}
       <KeyCapabilities />
-
-      {/* Contract Management Section */}
-      <ContractManagementSection />
-
-      {/* Compliance & Risk Section */}
-      <ComplianceRiskSection />
 
       <KnowledgeBase />
       <VaultSection />
@@ -72,196 +121,160 @@ const InHouseCounselPage = () => {
   );
 };
 
-
-const KeyCapabilities = () => {
-  const [expandedSections, setExpandedSections] = useState({
-    efficiency: true,
-    risk: false,
-    visibility: false,
-    automation: false,
-  });
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
+const FeaturesSection = () => {
+  const features = [
+    {
+      icon: Zap,
+      title: "Quick-Start Drafting",
+      description:
+        "Jumpstart any legal document effortlessly with AI-powered drafting tools and a professional legal template library.",
+      href: "#",
+    },
+    {
+      icon: FileText,
+      title: "Document Automation",
+      description:
+        "Upload,Tag,and gain instant insights from you documents to save time, accelerate decision-making, and close deals faster.",
+      href: "#",
+    },
+    {
+      icon: Sparkles,
+      title: "Legal Research",
+      description:
+        "Get answers to complex legal questions with AI that searches through cases, statutes, and legal authorities in seconds.",
+      href: "#",
+    },
+    {
+      icon: MessageSquare,
+      title: "Team Collaboration",
+      description:
+        "Brainstorm and share ideas with your team in real-time. Wansom enhances the quality and efficiency of your team's work.",
+      href: "#",
+    },
+  ];
 
   return (
-    <section className="section-spacing bg-gray-50">
+    <section className="section-spacing bg-primary">
       <div className="section-container">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-4">
-            {/* Efficiency section */}
-            <div className="border-b border-gray-200 pb-4">
-              <button
-                onClick={() => toggleSection("efficiency")}
-                className="w-full flex items-center justify-between text-left group"
-              >
-                <h2 className="text-heading-2 text-gray-900">
-                  Increase Legal Department Efficiency
-                </h2>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.efficiency ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.efficiency
-                    ? "max-h-96 opacity-100 mt-6"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <p className="text-xl text-gray-600">
-                  Automate routine legal tasks, reduce turnaround times, and let your team focus
-                  on high-value strategic work that drives business results.
-                </p>
-              </div>
-            </div>
+        {/* Header */}
+        <div className="text-center lg:text-start mb-12">
+          <h2 className="text-heading-2 text-white capitalize tracking-wider">
+            Your teammate with AI superpowers
+          </h2>
+        </div>
 
-            {/* Risk Management section */}
-            <div className="border-b border-gray-200 pb-4">
-              <button
-                onClick={() => toggleSection("risk")}
-                className="w-full flex items-center justify-between text-left group"
-              >
-                <h2 className="text-heading-4 text-gray-900">
-                  Proactive Risk Management
-                </h2>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.risk ? "rotate-180" : ""
-                  }`}
+        {/* Feature Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="group relative bg-white border border-gray-200 rounded-xl py-6 px-3 hover:shadow-lg transition-all duration-300"
+            >
+              {/* Icon */}
+              <div className="mb-6">
+                <feature.icon
+                  className="w-12 h-12 text-primary"
+                  strokeWidth={1.5}
                 />
-              </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.risk
-                    ? "max-h-96 opacity-100 mt-6"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <p className="text-xl text-gray-600">
-                  Identify and mitigate legal risks before they become problems with AI-powered
-                  contract analysis and compliance monitoring.
-                </p>
               </div>
-            </div>
 
-            {/* Visibility section */}
-            <div className="border-b border-gray-200 pb-4">
-              <button
-                onClick={() => toggleSection("visibility")}
-                className="w-full flex items-center justify-between text-left group"
-              >
-                <h2 className="text-heading-4 text-gray-900">
-                  Enhanced Visibility & Reporting
-                </h2>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.visibility ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.visibility
-                    ? "max-h-96 opacity-100 mt-6"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <p className="text-xl text-gray-600">
-                  Track legal matters, generate insights, and demonstrate the value of your
-                  legal department to executive leadership.
-                </p>
-              </div>
-            </div>
+              {/* Content */}
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+                {feature.description}
+              </p>
 
-            {/* Automation section */}
-            <div className="pb-4">
-              <button
-                onClick={() => toggleSection("automation")}
-                className="w-full flex items-center justify-between text-left group"
+              {/* Arrow Link */}
+              <a
+                href={feature.href}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                aria-label={`Learn more about ${feature.title}`}
               >
-                <h2 className="text-heading-4 text-gray-900">
-                  Workflow Automation
-                </h2>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.automation ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.automation
-                    ? "max-h-96 opacity-100 mt-6"
-                    : "max-h-0 opacity-0"
-                }`}
-              >
-                <p className="text-xl text-gray-600">
-                  Create custom workflows for contract approvals, NDA generation,
-                  and other repetitive legal processes.
-                </p>
-              </div>
+                <ArrowUpRight className="w-5 h-5" />
+              </a>
             </div>
-          </div>
-
-          {/* Visualization */}
-          <EfficiencyVisualization />
+          ))}
         </div>
       </div>
     </section>
   );
 };
 
-const EfficiencyVisualization = () => {
+const KeyCapabilities = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  const tabs = [
+    {
+      title: "Negotiate Contracts Faster",
+      description:
+        "Automate contract review and redlining to speed up negotiations and close deals faster.",
+      image: "/images/collaborative-workspace.png",
+    },
+    {
+      title: "Risk Management",
+      description:
+        "Identify, track and mitigate legal risks before they become firm-wide problems.",
+      image: "/images/collaborative-workspace.png",
+    },
+    {
+      title: "Regulatory Compliance",
+      description:
+        "Monitor regulatory changes and ensure ongoing compliance across multiple jurisdictions.",
+      image: "/images/collaborative-workspace.png",
+    },
+    {
+      title: "Workflow Automation",
+      description:
+        "Create custom workflows for contract approvals, e-filling, and other repetitive legal processes.",
+      image: "/images/collaborative-workspace.png",
+    },
+  ];
+
   return (
-    <div className="max-w-lg mx-auto bg-white p-8 rounded-3xl shadow-lg">
-      <div className="space-y-6">
-        {/* Metric 1 */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-              <Clock className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Contract Review Time</p>
-              <p className="text-2xl font-bold text-gray-900">70% Faster</p>
-            </div>
+    <section className="section-spacing bg-gray-50">
+      <div className="section-container">
+        <h2 className="text-heading-2 text-gray-900 max-w-3xl mb-8 text-center mx-auto">
+          How In-House Teams Use Wansom AI
+        </h2>
+
+        {/* Tab Navigation */}
+        <div className="flex flex-wrap justify-center mb-12">
+          <div className="flex flex-wrap space-x-0 border-b border-gray-300">
+            {tabs.map((tab, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveTab(index)}
+                className={`px-6 py-4 font-medium transition-all relative ${
+                  activeTab === index
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.title}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Metric 2 */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#d47b0f] rounded-full flex items-center justify-center">
-              <BarChart3 className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Risk Detection Rate</p>
-              <p className="text-2xl font-bold text-gray-900">95% Accurate</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Metric 3 */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#355e66] rounded-full flex items-center justify-center">
-              <CheckCircle className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Compliance Coverage</p>
-              <p className="text-2xl font-bold text-gray-900">100+ Jurisdictions</p>
-            </div>
+        {/* Tab Content */}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col items-center gap-5 justify-center">
+            <p className="text-xl text-gray-600 leading-relaxed mb-6 max-w-4xl text-center mx-auto">
+              {tabs[activeTab].description}
+            </p>
+            <button
+              className="inline-flex items-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-hover transition mx-auto"
+              onClick={() => (window.location.href = "/register")}
+            >
+              Get Started
+              <ArrowUpRight className="w-5 h-5 ml-2" />
+            </button>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
@@ -314,8 +327,9 @@ const ContractManagementSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  AI analyzes contracts to identify risks, non-standard clauses, and missing provisions,
-                  helping you review agreements in minutes instead of hours.
+                  AI analyzes contracts to identify risks, non-standard clauses,
+                  and missing provisions, helping you review agreements in
+                  minutes instead of hours.
                 </p>
               </div>
             </div>
@@ -343,8 +357,8 @@ const ContractManagementSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Generate redlines based on your playbook standards and negotiate contracts
-                  faster with AI-suggested revisions.
+                  Generate redlines based on your playbook standards and
+                  negotiate contracts faster with AI-suggested revisions.
                 </p>
               </div>
             </div>
@@ -372,8 +386,8 @@ const ContractManagementSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Store, search, and manage all contracts in one secure location with advanced
-                  search capabilities and metadata extraction.
+                  Store, search, and manage all contracts in one secure location
+                  with advanced search capabilities and metadata extraction.
                 </p>
               </div>
             </div>
@@ -401,8 +415,8 @@ const ContractManagementSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Create and maintain a library of pre-approved templates that business teams
-                  can use for self-service contract generation.
+                  Create and maintain a library of pre-approved templates that
+                  business teams can use for self-service contract generation.
                 </p>
               </div>
             </div>
@@ -456,8 +470,9 @@ const ComplianceRiskSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Stay on top of regulatory changes across multiple jurisdictions and
-                  automatically assess impact on your business operations.
+                  Stay on top of regulatory changes across multiple
+                  jurisdictions and automatically assess impact on your business
+                  operations.
                 </p>
               </div>
             </div>
@@ -485,8 +500,8 @@ const ComplianceRiskSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Get notified of potential compliance issues, contract risks, and regulatory
-                  changes that affect your organization.
+                  Get notified of potential compliance issues, contract risks,
+                  and regulatory changes that affect your organization.
                 </p>
               </div>
             </div>
@@ -514,8 +529,8 @@ const ComplianceRiskSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Generate comprehensive compliance reports for stakeholders, auditors,
-                  and regulatory bodies with just a few clicks.
+                  Generate comprehensive compliance reports for stakeholders,
+                  auditors, and regulatory bodies with just a few clicks.
                 </p>
               </div>
             </div>
@@ -543,8 +558,8 @@ const ComplianceRiskSection = () => {
                 }`}
               >
                 <p className="text-xl text-gray-600">
-                  Never miss a deadline or obligation. Track renewals, terminations,
-                  and key dates across all your contracts.
+                  Never miss a deadline or obligation. Track renewals,
+                  terminations, and key dates across all your contracts.
                 </p>
               </div>
             </div>
@@ -560,7 +575,9 @@ const ComplianceRiskSection = () => {
 const ComplianceDashboard = () => {
   return (
     <div className="max-w-lg mx-auto bg-white p-8 rounded-3xl shadow-lg">
-      <h3 className="text-xl font-bold text-gray-900 mb-6">Compliance Dashboard</h3>
+      <h3 className="text-xl font-bold text-gray-900 mb-6">
+        Compliance Dashboard
+      </h3>
       <div className="space-y-4">
         {/* Compliance Item 1 - Good */}
         <div className="flex items-start gap-4 p-4 bg-green-50 border border-green-200 rounded-xl">
@@ -576,7 +593,9 @@ const ComplianceDashboard = () => {
           <Shield className="w-6 h-6 text-yellow-600 mt-1" />
           <div>
             <p className="font-semibold text-gray-900">Contract Renewals</p>
-            <p className="text-sm text-gray-600">5 contracts expiring in 30 days</p>
+            <p className="text-sm text-gray-600">
+              5 contracts expiring in 30 days
+            </p>
           </div>
         </div>
 
@@ -594,7 +613,9 @@ const ComplianceDashboard = () => {
           <BarChart3 className="w-6 h-6 text-blue-600 mt-1" />
           <div>
             <p className="font-semibold text-gray-900">Risk Assessment</p>
-            <p className="text-sm text-gray-600">23 contracts reviewed this month</p>
+            <p className="text-sm text-gray-600">
+              23 contracts reviewed this month
+            </p>
           </div>
         </div>
       </div>
@@ -608,24 +629,29 @@ const FAQSection = () => {
   const faqs = [
     {
       question: "Is Wansom secure?",
-      answer: "Yes, Wansom is built with enterprise-grade security. We use bank-level encryption (AES-256) for data at rest and in transit, maintain SOC 2 Type II compliance, and undergo regular third-party security audits. Your data is stored in secure, geographically distributed data centers with 99.9% uptime SLA. We never train our AI models on your confidential data, and you maintain complete ownership and control of your information."
+      answer:
+        "Yes, Wansom is built with enterprise-grade security. We use bank-level encryption (AES-256) for data at rest and in transit, maintain SOC 2 Type II compliance, and undergo regular third-party security audits. Your data is stored in secure, geographically distributed data centers with 99.9% uptime SLA. We never train our AI models on your confidential data, and you maintain complete ownership and control of your information.",
     },
     {
       question: "Can Wansom work across multiple jurisdictions?",
-      answer: "Absolutely. Wansom supports legal research and compliance monitoring across 100+ jurisdictions worldwide, including federal, state, and local laws. Our AI is trained on jurisdiction-specific legal databases and can simultaneously search across multiple regions. You can filter results by jurisdiction, compare laws across different territories, and receive compliance alerts tailored to the jurisdictions relevant to your business operations."
+      answer:
+        "Absolutely. Wansom supports legal research and compliance monitoring across 100+ jurisdictions worldwide, including federal, state, and local laws. Our AI is trained on jurisdiction-specific legal databases and can simultaneously search across multiple regions. You can filter results by jurisdiction, compare laws across different territories, and receive compliance alerts tailored to the jurisdictions relevant to your business operations.",
     },
     {
       question: "Does Wansom require additional training?",
-      answer: "No extensive training is required. Wansom is designed to be intuitive and user-friendly, with most legal professionals becoming productive within hours. We provide comprehensive onboarding materials, video tutorials, and in-app guidance. For enterprise clients, we offer optional personalized training sessions and dedicated customer success managers. The platform learns from your usage patterns and can be customized with your firm's templates, playbooks, and preferences."
+      answer:
+        "No extensive training is required. Wansom is designed to be intuitive and user-friendly, with most legal professionals becoming productive within hours. We provide comprehensive onboarding materials, video tutorials, and in-app guidance. For enterprise clients, we offer optional personalized training sessions and dedicated customer success managers. The platform learns from your usage patterns and can be customized with your firm's templates, playbooks, and preferences.",
     },
     {
       question: "How does Wansom AI accelerate deals?",
-      answer: "Wansom accelerates deals by automating time-consuming tasks: contract review that normally takes hours is completed in minutes with AI-powered risk detection; automated redlining based on your playbook standards speeds up negotiations; smart templates enable business teams to self-serve on standard agreements; real-time collaboration features keep all stakeholders aligned; and obligation tracking ensures nothing falls through the cracks. On average, our clients report 70% faster contract turnaround times."
+      answer:
+        "Wansom accelerates deals by automating time-consuming tasks: contract review that normally takes hours is completed in minutes with AI-powered risk detection; automated redlining based on your playbook standards speeds up negotiations; smart templates enable business teams to self-serve on standard agreements; real-time collaboration features keep all stakeholders aligned; and obligation tracking ensures nothing falls through the cracks. On average, our clients report 70% faster contract turnaround times.",
     },
     {
       question: "What is Wansom AI pricing?",
-      answer: "Wansom offers flexible pricing to suit organizations of all sizes. We have subscription plans based on the number of users and features needed, starting with a free tier for individual practitioners. Our Professional plan is ideal for small legal teams, while our Enterprise plan includes advanced features like custom integrations, dedicated support, and unlimited AI usage. We also offer custom pricing for large organizations with specific requirements. Contact our sales team for a personalized quote and demo tailored to your needs."
-    }
+      answer:
+        "Wansom offers flexible pricing to suit organizations of all sizes. We have subscription plans based on the number of users and features needed, starting with a free tier for individual practitioners. Our Professional plan is ideal for small legal teams, while our Enterprise plan includes advanced features like custom integrations, dedicated support, and unlimited AI usage. We also offer custom pricing for large organizations with specific requirements. Contact our sales team for a personalized quote and demo tailored to your needs.",
+    },
   ];
 
   const toggleFAQ = (index: number) => {
@@ -633,7 +659,7 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="section-spacing bg-white">
+    <section className="section-spacing bg-gray-50">
       <div className="section-container max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-heading-2 text-gray-900 mb-4">
@@ -646,10 +672,7 @@ const FAQSection = () => {
 
         <div>
           {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="border-b border-gray-200"
-            >
+            <div key={index} className="border-b border-gray-200">
               <button
                 onClick={() => toggleFAQ(index)}
                 className="w-full flex items-center justify-between py-6 text-left"
@@ -676,16 +699,6 @@ const FAQSection = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* CTA Button */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-6">
-            Still have questions? We're here to help.
-          </p>
-          <button className="bg-primary hover:bg-[#355e66] text-white px-8 py-3 rounded-lg font-semibold transition-colors">
-            Schedule a Demo
-          </button>
         </div>
       </div>
     </section>
