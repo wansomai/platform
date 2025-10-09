@@ -76,7 +76,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   ]
       const resources = [
     { name: 'Articles ', href: '/blogs' },
-    { name: 'Legal Templates', href: '/legal-documents' },
+    // { name: 'Legal Templates', href: '/legal-documents' },
     { name: 'Newsletters', href: 'https://www.linkedin.com/newsletters/beyond-chatbots-legal-ai-7336011285697904642/' },
     //  { name: 'Priduct Guides', href: '/ai-contract-review' },
     // { name: 'Events', href: '/ai-due-diligence' },
@@ -343,7 +343,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
               </div>
 
               {/* Mobile Programs Dropdown */}
-              <div className="border-b border-gray-100">
+              {/* <div className="border-b border-gray-100">
                 <button
                   onClick={() => setMobileDropdowns(prev => ({ ...prev, programs: !prev.programs }))}
                   className="w-full font-semibold text-lg text-gray-800 py-3 flex items-center justify-between"
@@ -365,7 +365,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                     ))}
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Security Link */}
               <Link
