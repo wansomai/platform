@@ -7,7 +7,6 @@ import {
   BookOpen,
   Users,
   Brain,
-  Trophy,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -21,9 +20,9 @@ const LawSchoolsPage = () => {
   const panels = [
     {
       icon: Users,
-      title: "For Students",
+      title: "Free Student Access",
       description:
-        "Students receive comprehensive access to Wansom AI throughout their academic journey, gaining practical experience with the same AI tools used in modern legal practice. The program builds both technical proficiency and ethical judgment around AI use, empowering students to conduct more efficient legal research, draft higher-quality documents, and prepare cases more effectively. This hands-on experience provides a significant advantage when entering the job market, as law firms increasingly seek graduates who can leverage AI to deliver better client outcomes.",
+        "Students receive comprehensive access to Wansom AI platform throughout their academic journey, gaining practical experience with the same AI tools used in modern legal practice. The program builds both technical proficiency and ethical judgment around AI use, empowering students to conduct more efficient legal research, draft higher-quality documents, and prepare cases more effectively. This hands-on experience provides a significant advantage when entering the job market, as law firms increasingly seek graduates who can leverage AI to deliver better client outcomes.",
     },
     {
       icon: BookOpen,
@@ -47,9 +46,9 @@ const LawSchoolsPage = () => {
             <div className="text-white lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For Law Schools</p>
               <h1 className="text-heading-1 text-shadow font-serif max-w-4xl">
-                Prepare Tomorrow's Lawyers with Skills that Matter Most
+                Preparing Tomorrow's Lawyers with Skills that Matter Most
               </h1>
-              <a href="/contact" className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-primary transition">
+              <a href="/school-program" className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-primary transition">
                 Join The Program
                 <ArrowUpRight className="w-5 h-5 ml-2" />
               </a>
@@ -130,7 +129,7 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: BookOpen,
-      title: "Effective Prompting",
+      title: "Leglal Research",
       description:
         "Students learn to craft effective prompts that improve case preparation, legal research, and document analysis, understanding how to guide AI to produce useful, accurate results.",
       href: "#",
@@ -164,7 +163,7 @@ const FeaturesSection = () => {
         {/* Header */}
         <div className="text-center lg:text-start mb-12">
           <h2 className="text-heading-2 text-white capitalize tracking-wider">
-            What Students Learn in the Program
+            How Wansom AI Boosts Learning
           </h2>
         </div>
 
@@ -193,7 +192,7 @@ const FeaturesSection = () => {
 
               {/* Arrow Link */}
               <a
-                href={feature.href}
+                href={'/school-program'}
                 className="inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300"
                 aria-label={`Learn more about ${feature.title}`}
               >
