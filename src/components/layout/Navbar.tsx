@@ -387,7 +387,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                 </Link>
                 <Link
                   href="/login"
-                  className="font-medium text-white bg-[#005c4d] hover:bg-[#2a4d54] rounded-md py-3 px-4 text-center"
+                  className="font-medium text-white bg-primary hover:bg-[#2a4d54] rounded-md py-3 px-4 text-center"
                   onClick={() => setIsOpen(false)}
                 >
                   Start For Free
