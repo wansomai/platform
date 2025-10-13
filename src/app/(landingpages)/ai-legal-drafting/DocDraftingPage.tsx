@@ -14,6 +14,7 @@ import {
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import VaultSection from '@/components/home/vault';
+import KnowledgeBase from '@/components/home/Knowledgebase';
 
 const LegalDraftingPage = () => {
   const [formData, setFormData] = useState({
@@ -29,8 +30,8 @@ const LegalDraftingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-20 pl-5 lg:pl-20 bg-primary relative overflow-hidden">
-        <div className="absolute "></div>
+      <section className="pt-24 pl-5 lg:pl-20 bg-primary relative overflow-hidden">
+        
         <div className="container mx-auto px-4 z-10 relative flex flex-col lg:flex-row items-center lg:items-start justify-between space-y-5 lg:space-y-0">
           <div className=" text-white lg:basis-1/2">      
             <h1 className="text-heading-2 mb-4 text-white text-shadow-2xs max-w-2xl">
@@ -230,7 +231,7 @@ const LegalDraftingPage = () => {
       </section>
 
       {/* Draft from scratch section */}
-      <section className="section-spacing bg-[#355e66]">
+      <section className="section-spacing bg-primary">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -283,6 +284,7 @@ const LegalDraftingPage = () => {
         </div>
       </section>
 
+<KnowledgeBase/>
 
       {/* More spells section */}
   <VaultSection/>
