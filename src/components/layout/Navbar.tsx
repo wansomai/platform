@@ -82,7 +82,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     // { name: 'Events', href: '/ai-due-diligence' },
   ]
      const Programs = [
-    { name: 'Student Program', href: '/programs/law-schools' },
+    { name: 'Law Schools', href: '/programs/law-schools' },
     // { name: 'Research Program  ', href: '/ai-legal-research' },
     // { name: 'Wansom Ambassador', href: '/ai-contract-review' },
   ]
