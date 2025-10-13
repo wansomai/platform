@@ -65,6 +65,7 @@ export default async function sitemap() {
     'solutions/in-house-counsel',
     'solutions/litigation-lawyers',
     'solutions/ma-lawyers',
+    'programs/law-schools',
   ].map((path) => ({
     url: `${baseUrl}/${path}`,
     lastModified: new Date(),

@@ -72,7 +72,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     { name: 'Litigation Lawyers', href: '/solutions/litigation-lawyers' },
     { name: 'M&A Lawyers', href: '/solutions/ma-lawyers' },
     // { name: 'Judiciary & Courts', href: '/ai-due-diligence' },
-    // { name: 'Law Schools', href: '/document-vault' },
+ 
   ]
       const resources = [
     { name: 'Articles ', href: '/blogs' },
@@ -81,10 +81,10 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     //  { name: 'Priduct Guides', href: '/ai-contract-review' },
     // { name: 'Events', href: '/ai-due-diligence' },
   ]
-        const Programs = [
-    { name: 'Research Program  ', href: '/ai-legal-research' },
-    { name: 'Student Program', href: '/ai-legal-drafting' },
-    { name: 'Wansom Ambassador', href: '/ai-contract-review' },
+     const Programs = [
+    { name: 'Student Program', href: '/programs/law-schools' },
+    // { name: 'Research Program  ', href: '/ai-legal-research' },
+    // { name: 'Wansom Ambassador', href: '/ai-contract-review' },
   ]
 
   return (
@@ -206,7 +206,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </div>
 
             {/* Programs Dropdown */}
-            {/* <div className="relative dropdown-container">
+            <div className="relative dropdown-container">
               <button
                 className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'programs' ? null : 'programs')}
@@ -234,7 +234,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                   </Link>
                 ))}
               </div>
-            </div> */}
+            </div>
 
             {/* Security Link */}
             <Link href="/#security" className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
@@ -343,7 +343,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
               </div>
 
               {/* Mobile Programs Dropdown */}
-              {/* <div className="border-b border-gray-100">
+              <div className="border-b border-gray-100">
                 <button
                   onClick={() => setMobileDropdowns(prev => ({ ...prev, programs: !prev.programs }))}
                   className="w-full font-semibold text-lg text-gray-800 py-3 flex items-center justify-between"
@@ -365,7 +365,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                     ))}
                   </div>
                 </div>
-              </div> */}
+              </div>
 
               {/* Security Link */}
               <Link
