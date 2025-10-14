@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Best AI for Legal Drafting Platform | Wansom AI',
   description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
   alternates: {
-    canonical: '/ai-legal-drafting',
+    canonical: 'https://www.wansom.ai/ai-legal-drafting',
   },
   openGraph: {
     title: 'Best AI for Legal Drafting Platform | Wansom AI',

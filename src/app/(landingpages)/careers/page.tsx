@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: 'Join Wansom AI and help shape the future of legal technology. Explore exciting career opportunities in AI, legal tech, marketing, and software development in Nairobi.',
   keywords: 'legal tech careers, AI jobs, Wansom AI careers, tech jobs Nairobi, legal technology jobs',
   alternates: {
-    canonical: '/careers',
+    canonical: 'https://www.wansom.ai/careers',
   },
   openGraph: {
     title: 'Careers at Wansom AI | Join Our Legal Tech Team',
     description: 'Join Wansom AI and help shape the future of legal technology. Explore exciting career opportunities in Nairobi.',
     type: 'website',
-    url: 'https://wansom.ai/careers',
+    url: 'https://www.wansom.ai/careers',
     images: [
       {
         url: '/dashboard.jpg',

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Best AI Legal Research Platform | Wansom AI',
   description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
   alternates: {
-    canonical: '/ai-legal-research',
+    canonical: 'https://www.wansom.ai/ai-legal-research',
   },
   openGraph: {
     title: 'Best AI Legal Research | Wansom AI',

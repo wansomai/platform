@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'AI Solutions for In-House Counsels | Wansom AI',
   description: 'Empower your legal department with AI-powered tools for contract management, compliance tracking, legal research, and workflow automation designed for in-house counsel.',
   alternates: {
-    canonical: 'https://wansom.ai/solutions/in-house-counsel',
+    canonical: 'https://www.wansom.ai/solutions/in-house-counsel',
   },
   openGraph: {
     title: 'AI Solutions for In-House Counsels | Wansom AI',
