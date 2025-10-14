@@ -501,6 +501,21 @@ exports.Prisma.CanvasDocumentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.EventRegistrationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  institution: 'institution',
+  email: 'email',
+  registrationType: 'registrationType',
+  competitions: 'competitions',
+  hasOptedIn: 'hasOptedIn',
+  optInToken: 'optInToken',
+  accountCreated: 'accountCreated',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -568,7 +583,8 @@ exports.Prisma.ModelName = {
   AssociateStep: 'AssociateStep',
   AssociateTool: 'AssociateTool',
   ProjectAssociate: 'ProjectAssociate',
-  CanvasDocument: 'CanvasDocument'
+  CanvasDocument: 'CanvasDocument',
+  EventRegistration: 'EventRegistration'
 };
 
 /**

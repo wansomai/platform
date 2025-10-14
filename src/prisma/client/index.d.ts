@@ -193,6 +193,11 @@ export type ProjectAssociate = $Result.DefaultSelection<Prisma.$ProjectAssociate
  * 
  */
 export type CanvasDocument = $Result.DefaultSelection<Prisma.$CanvasDocumentPayload>
+/**
+ * Model EventRegistration
+ * 
+ */
+export type EventRegistration = $Result.DefaultSelection<Prisma.$EventRegistrationPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -671,6 +676,16 @@ export class PrismaClient<
     * ```
     */
   get canvasDocument(): Prisma.CanvasDocumentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.eventRegistration`: Exposes CRUD operations for the **EventRegistration** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EventRegistrations
+    * const eventRegistrations = await prisma.eventRegistration.findMany()
+    * ```
+    */
+  get eventRegistration(): Prisma.EventRegistrationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1146,7 +1161,8 @@ export namespace Prisma {
     AssociateStep: 'AssociateStep',
     AssociateTool: 'AssociateTool',
     ProjectAssociate: 'ProjectAssociate',
-    CanvasDocument: 'CanvasDocument'
+    CanvasDocument: 'CanvasDocument',
+    EventRegistration: 'EventRegistration'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1165,7 +1181,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3833,6 +3849,80 @@ export namespace Prisma {
           }
         }
       }
+      EventRegistration: {
+        payload: Prisma.$EventRegistrationPayload<ExtArgs>
+        fields: Prisma.EventRegistrationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EventRegistrationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EventRegistrationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>
+          }
+          findFirst: {
+            args: Prisma.EventRegistrationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EventRegistrationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>
+          }
+          findMany: {
+            args: Prisma.EventRegistrationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>[]
+          }
+          create: {
+            args: Prisma.EventRegistrationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>
+          }
+          createMany: {
+            args: Prisma.EventRegistrationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.EventRegistrationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>[]
+          }
+          delete: {
+            args: Prisma.EventRegistrationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>
+          }
+          update: {
+            args: Prisma.EventRegistrationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>
+          }
+          deleteMany: {
+            args: Prisma.EventRegistrationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EventRegistrationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.EventRegistrationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>[]
+          }
+          upsert: {
+            args: Prisma.EventRegistrationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EventRegistrationPayload>
+          }
+          aggregate: {
+            args: Prisma.EventRegistrationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEventRegistration>
+          }
+          groupBy: {
+            args: Prisma.EventRegistrationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EventRegistrationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.EventRegistrationCountArgs<ExtArgs>
+            result: $Utils.Optional<EventRegistrationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3961,6 +4051,7 @@ export namespace Prisma {
     associateTool?: AssociateToolOmit
     projectAssociate?: ProjectAssociateOmit
     canvasDocument?: CanvasDocumentOmit
+    eventRegistration?: EventRegistrationOmit
   }
 
   /* Types for Logging */
@@ -46359,6 +46450,1088 @@ export namespace Prisma {
 
 
   /**
+   * Model EventRegistration
+   */
+
+  export type AggregateEventRegistration = {
+    _count: EventRegistrationCountAggregateOutputType | null
+    _min: EventRegistrationMinAggregateOutputType | null
+    _max: EventRegistrationMaxAggregateOutputType | null
+  }
+
+  export type EventRegistrationMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    institution: string | null
+    email: string | null
+    registrationType: string | null
+    hasOptedIn: boolean | null
+    optInToken: string | null
+    accountCreated: boolean | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EventRegistrationMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    institution: string | null
+    email: string | null
+    registrationType: string | null
+    hasOptedIn: boolean | null
+    optInToken: string | null
+    accountCreated: boolean | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type EventRegistrationCountAggregateOutputType = {
+    id: number
+    name: number
+    institution: number
+    email: number
+    registrationType: number
+    competitions: number
+    hasOptedIn: number
+    optInToken: number
+    accountCreated: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type EventRegistrationMinAggregateInputType = {
+    id?: true
+    name?: true
+    institution?: true
+    email?: true
+    registrationType?: true
+    hasOptedIn?: true
+    optInToken?: true
+    accountCreated?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EventRegistrationMaxAggregateInputType = {
+    id?: true
+    name?: true
+    institution?: true
+    email?: true
+    registrationType?: true
+    hasOptedIn?: true
+    optInToken?: true
+    accountCreated?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type EventRegistrationCountAggregateInputType = {
+    id?: true
+    name?: true
+    institution?: true
+    email?: true
+    registrationType?: true
+    competitions?: true
+    hasOptedIn?: true
+    optInToken?: true
+    accountCreated?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type EventRegistrationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EventRegistration to aggregate.
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventRegistrations to fetch.
+     */
+    orderBy?: EventRegistrationOrderByWithRelationInput | EventRegistrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EventRegistrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventRegistrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventRegistrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EventRegistrations
+    **/
+    _count?: true | EventRegistrationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EventRegistrationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EventRegistrationMaxAggregateInputType
+  }
+
+  export type GetEventRegistrationAggregateType<T extends EventRegistrationAggregateArgs> = {
+        [P in keyof T & keyof AggregateEventRegistration]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEventRegistration[P]>
+      : GetScalarType<T[P], AggregateEventRegistration[P]>
+  }
+
+
+
+
+  export type EventRegistrationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EventRegistrationWhereInput
+    orderBy?: EventRegistrationOrderByWithAggregationInput | EventRegistrationOrderByWithAggregationInput[]
+    by: EventRegistrationScalarFieldEnum[] | EventRegistrationScalarFieldEnum
+    having?: EventRegistrationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EventRegistrationCountAggregateInputType | true
+    _min?: EventRegistrationMinAggregateInputType
+    _max?: EventRegistrationMaxAggregateInputType
+  }
+
+  export type EventRegistrationGroupByOutputType = {
+    id: string
+    name: string
+    institution: string
+    email: string
+    registrationType: string
+    competitions: string[]
+    hasOptedIn: boolean
+    optInToken: string | null
+    accountCreated: boolean
+    userId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: EventRegistrationCountAggregateOutputType | null
+    _min: EventRegistrationMinAggregateOutputType | null
+    _max: EventRegistrationMaxAggregateOutputType | null
+  }
+
+  type GetEventRegistrationGroupByPayload<T extends EventRegistrationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EventRegistrationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EventRegistrationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EventRegistrationGroupByOutputType[P]>
+            : GetScalarType<T[P], EventRegistrationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EventRegistrationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    institution?: boolean
+    email?: boolean
+    registrationType?: boolean
+    competitions?: boolean
+    hasOptedIn?: boolean
+    optInToken?: boolean
+    accountCreated?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["eventRegistration"]>
+
+  export type EventRegistrationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    institution?: boolean
+    email?: boolean
+    registrationType?: boolean
+    competitions?: boolean
+    hasOptedIn?: boolean
+    optInToken?: boolean
+    accountCreated?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["eventRegistration"]>
+
+  export type EventRegistrationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    institution?: boolean
+    email?: boolean
+    registrationType?: boolean
+    competitions?: boolean
+    hasOptedIn?: boolean
+    optInToken?: boolean
+    accountCreated?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["eventRegistration"]>
+
+  export type EventRegistrationSelectScalar = {
+    id?: boolean
+    name?: boolean
+    institution?: boolean
+    email?: boolean
+    registrationType?: boolean
+    competitions?: boolean
+    hasOptedIn?: boolean
+    optInToken?: boolean
+    accountCreated?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type EventRegistrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "institution" | "email" | "registrationType" | "competitions" | "hasOptedIn" | "optInToken" | "accountCreated" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["eventRegistration"]>
+
+  export type $EventRegistrationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EventRegistration"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      institution: string
+      email: string
+      registrationType: string
+      competitions: string[]
+      hasOptedIn: boolean
+      optInToken: string | null
+      accountCreated: boolean
+      userId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["eventRegistration"]>
+    composites: {}
+  }
+
+  type EventRegistrationGetPayload<S extends boolean | null | undefined | EventRegistrationDefaultArgs> = $Result.GetResult<Prisma.$EventRegistrationPayload, S>
+
+  type EventRegistrationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EventRegistrationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EventRegistrationCountAggregateInputType | true
+    }
+
+  export interface EventRegistrationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EventRegistration'], meta: { name: 'EventRegistration' } }
+    /**
+     * Find zero or one EventRegistration that matches the filter.
+     * @param {EventRegistrationFindUniqueArgs} args - Arguments to find a EventRegistration
+     * @example
+     * // Get one EventRegistration
+     * const eventRegistration = await prisma.eventRegistration.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EventRegistrationFindUniqueArgs>(args: SelectSubset<T, EventRegistrationFindUniqueArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EventRegistration that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EventRegistrationFindUniqueOrThrowArgs} args - Arguments to find a EventRegistration
+     * @example
+     * // Get one EventRegistration
+     * const eventRegistration = await prisma.eventRegistration.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EventRegistrationFindUniqueOrThrowArgs>(args: SelectSubset<T, EventRegistrationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EventRegistration that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationFindFirstArgs} args - Arguments to find a EventRegistration
+     * @example
+     * // Get one EventRegistration
+     * const eventRegistration = await prisma.eventRegistration.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EventRegistrationFindFirstArgs>(args?: SelectSubset<T, EventRegistrationFindFirstArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EventRegistration that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationFindFirstOrThrowArgs} args - Arguments to find a EventRegistration
+     * @example
+     * // Get one EventRegistration
+     * const eventRegistration = await prisma.eventRegistration.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EventRegistrationFindFirstOrThrowArgs>(args?: SelectSubset<T, EventRegistrationFindFirstOrThrowArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EventRegistrations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EventRegistrations
+     * const eventRegistrations = await prisma.eventRegistration.findMany()
+     * 
+     * // Get first 10 EventRegistrations
+     * const eventRegistrations = await prisma.eventRegistration.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const eventRegistrationWithIdOnly = await prisma.eventRegistration.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EventRegistrationFindManyArgs>(args?: SelectSubset<T, EventRegistrationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EventRegistration.
+     * @param {EventRegistrationCreateArgs} args - Arguments to create a EventRegistration.
+     * @example
+     * // Create one EventRegistration
+     * const EventRegistration = await prisma.eventRegistration.create({
+     *   data: {
+     *     // ... data to create a EventRegistration
+     *   }
+     * })
+     * 
+     */
+    create<T extends EventRegistrationCreateArgs>(args: SelectSubset<T, EventRegistrationCreateArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EventRegistrations.
+     * @param {EventRegistrationCreateManyArgs} args - Arguments to create many EventRegistrations.
+     * @example
+     * // Create many EventRegistrations
+     * const eventRegistration = await prisma.eventRegistration.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EventRegistrationCreateManyArgs>(args?: SelectSubset<T, EventRegistrationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many EventRegistrations and returns the data saved in the database.
+     * @param {EventRegistrationCreateManyAndReturnArgs} args - Arguments to create many EventRegistrations.
+     * @example
+     * // Create many EventRegistrations
+     * const eventRegistration = await prisma.eventRegistration.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many EventRegistrations and only return the `id`
+     * const eventRegistrationWithIdOnly = await prisma.eventRegistration.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends EventRegistrationCreateManyAndReturnArgs>(args?: SelectSubset<T, EventRegistrationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a EventRegistration.
+     * @param {EventRegistrationDeleteArgs} args - Arguments to delete one EventRegistration.
+     * @example
+     * // Delete one EventRegistration
+     * const EventRegistration = await prisma.eventRegistration.delete({
+     *   where: {
+     *     // ... filter to delete one EventRegistration
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EventRegistrationDeleteArgs>(args: SelectSubset<T, EventRegistrationDeleteArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EventRegistration.
+     * @param {EventRegistrationUpdateArgs} args - Arguments to update one EventRegistration.
+     * @example
+     * // Update one EventRegistration
+     * const eventRegistration = await prisma.eventRegistration.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EventRegistrationUpdateArgs>(args: SelectSubset<T, EventRegistrationUpdateArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EventRegistrations.
+     * @param {EventRegistrationDeleteManyArgs} args - Arguments to filter EventRegistrations to delete.
+     * @example
+     * // Delete a few EventRegistrations
+     * const { count } = await prisma.eventRegistration.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EventRegistrationDeleteManyArgs>(args?: SelectSubset<T, EventRegistrationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EventRegistrations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EventRegistrations
+     * const eventRegistration = await prisma.eventRegistration.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EventRegistrationUpdateManyArgs>(args: SelectSubset<T, EventRegistrationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EventRegistrations and returns the data updated in the database.
+     * @param {EventRegistrationUpdateManyAndReturnArgs} args - Arguments to update many EventRegistrations.
+     * @example
+     * // Update many EventRegistrations
+     * const eventRegistration = await prisma.eventRegistration.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more EventRegistrations and only return the `id`
+     * const eventRegistrationWithIdOnly = await prisma.eventRegistration.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends EventRegistrationUpdateManyAndReturnArgs>(args: SelectSubset<T, EventRegistrationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one EventRegistration.
+     * @param {EventRegistrationUpsertArgs} args - Arguments to update or create a EventRegistration.
+     * @example
+     * // Update or create a EventRegistration
+     * const eventRegistration = await prisma.eventRegistration.upsert({
+     *   create: {
+     *     // ... data to create a EventRegistration
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EventRegistration we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EventRegistrationUpsertArgs>(args: SelectSubset<T, EventRegistrationUpsertArgs<ExtArgs>>): Prisma__EventRegistrationClient<$Result.GetResult<Prisma.$EventRegistrationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of EventRegistrations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationCountArgs} args - Arguments to filter EventRegistrations to count.
+     * @example
+     * // Count the number of EventRegistrations
+     * const count = await prisma.eventRegistration.count({
+     *   where: {
+     *     // ... the filter for the EventRegistrations we want to count
+     *   }
+     * })
+    **/
+    count<T extends EventRegistrationCountArgs>(
+      args?: Subset<T, EventRegistrationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EventRegistrationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EventRegistration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EventRegistrationAggregateArgs>(args: Subset<T, EventRegistrationAggregateArgs>): Prisma.PrismaPromise<GetEventRegistrationAggregateType<T>>
+
+    /**
+     * Group by EventRegistration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EventRegistrationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EventRegistrationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EventRegistrationGroupByArgs['orderBy'] }
+        : { orderBy?: EventRegistrationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EventRegistrationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventRegistrationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EventRegistration model
+   */
+  readonly fields: EventRegistrationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EventRegistration.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EventRegistrationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EventRegistration model
+   */
+  interface EventRegistrationFieldRefs {
+    readonly id: FieldRef<"EventRegistration", 'String'>
+    readonly name: FieldRef<"EventRegistration", 'String'>
+    readonly institution: FieldRef<"EventRegistration", 'String'>
+    readonly email: FieldRef<"EventRegistration", 'String'>
+    readonly registrationType: FieldRef<"EventRegistration", 'String'>
+    readonly competitions: FieldRef<"EventRegistration", 'String[]'>
+    readonly hasOptedIn: FieldRef<"EventRegistration", 'Boolean'>
+    readonly optInToken: FieldRef<"EventRegistration", 'String'>
+    readonly accountCreated: FieldRef<"EventRegistration", 'Boolean'>
+    readonly userId: FieldRef<"EventRegistration", 'String'>
+    readonly createdAt: FieldRef<"EventRegistration", 'DateTime'>
+    readonly updatedAt: FieldRef<"EventRegistration", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EventRegistration findUnique
+   */
+  export type EventRegistrationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * Filter, which EventRegistration to fetch.
+     */
+    where: EventRegistrationWhereUniqueInput
+  }
+
+  /**
+   * EventRegistration findUniqueOrThrow
+   */
+  export type EventRegistrationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * Filter, which EventRegistration to fetch.
+     */
+    where: EventRegistrationWhereUniqueInput
+  }
+
+  /**
+   * EventRegistration findFirst
+   */
+  export type EventRegistrationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * Filter, which EventRegistration to fetch.
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventRegistrations to fetch.
+     */
+    orderBy?: EventRegistrationOrderByWithRelationInput | EventRegistrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EventRegistrations.
+     */
+    cursor?: EventRegistrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventRegistrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventRegistrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EventRegistrations.
+     */
+    distinct?: EventRegistrationScalarFieldEnum | EventRegistrationScalarFieldEnum[]
+  }
+
+  /**
+   * EventRegistration findFirstOrThrow
+   */
+  export type EventRegistrationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * Filter, which EventRegistration to fetch.
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventRegistrations to fetch.
+     */
+    orderBy?: EventRegistrationOrderByWithRelationInput | EventRegistrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EventRegistrations.
+     */
+    cursor?: EventRegistrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventRegistrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventRegistrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EventRegistrations.
+     */
+    distinct?: EventRegistrationScalarFieldEnum | EventRegistrationScalarFieldEnum[]
+  }
+
+  /**
+   * EventRegistration findMany
+   */
+  export type EventRegistrationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * Filter, which EventRegistrations to fetch.
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EventRegistrations to fetch.
+     */
+    orderBy?: EventRegistrationOrderByWithRelationInput | EventRegistrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EventRegistrations.
+     */
+    cursor?: EventRegistrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EventRegistrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EventRegistrations.
+     */
+    skip?: number
+    distinct?: EventRegistrationScalarFieldEnum | EventRegistrationScalarFieldEnum[]
+  }
+
+  /**
+   * EventRegistration create
+   */
+  export type EventRegistrationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a EventRegistration.
+     */
+    data: XOR<EventRegistrationCreateInput, EventRegistrationUncheckedCreateInput>
+  }
+
+  /**
+   * EventRegistration createMany
+   */
+  export type EventRegistrationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EventRegistrations.
+     */
+    data: EventRegistrationCreateManyInput | EventRegistrationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EventRegistration createManyAndReturn
+   */
+  export type EventRegistrationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * The data used to create many EventRegistrations.
+     */
+    data: EventRegistrationCreateManyInput | EventRegistrationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * EventRegistration update
+   */
+  export type EventRegistrationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a EventRegistration.
+     */
+    data: XOR<EventRegistrationUpdateInput, EventRegistrationUncheckedUpdateInput>
+    /**
+     * Choose, which EventRegistration to update.
+     */
+    where: EventRegistrationWhereUniqueInput
+  }
+
+  /**
+   * EventRegistration updateMany
+   */
+  export type EventRegistrationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EventRegistrations.
+     */
+    data: XOR<EventRegistrationUpdateManyMutationInput, EventRegistrationUncheckedUpdateManyInput>
+    /**
+     * Filter which EventRegistrations to update
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * Limit how many EventRegistrations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EventRegistration updateManyAndReturn
+   */
+  export type EventRegistrationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * The data used to update EventRegistrations.
+     */
+    data: XOR<EventRegistrationUpdateManyMutationInput, EventRegistrationUncheckedUpdateManyInput>
+    /**
+     * Filter which EventRegistrations to update
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * Limit how many EventRegistrations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EventRegistration upsert
+   */
+  export type EventRegistrationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the EventRegistration to update in case it exists.
+     */
+    where: EventRegistrationWhereUniqueInput
+    /**
+     * In case the EventRegistration found by the `where` argument doesn't exist, create a new EventRegistration with this data.
+     */
+    create: XOR<EventRegistrationCreateInput, EventRegistrationUncheckedCreateInput>
+    /**
+     * In case the EventRegistration was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EventRegistrationUpdateInput, EventRegistrationUncheckedUpdateInput>
+  }
+
+  /**
+   * EventRegistration delete
+   */
+  export type EventRegistrationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+    /**
+     * Filter which EventRegistration to delete.
+     */
+    where: EventRegistrationWhereUniqueInput
+  }
+
+  /**
+   * EventRegistration deleteMany
+   */
+  export type EventRegistrationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EventRegistrations to delete
+     */
+    where?: EventRegistrationWhereInput
+    /**
+     * Limit how many EventRegistrations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EventRegistration without action
+   */
+  export type EventRegistrationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EventRegistration
+     */
+    select?: EventRegistrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EventRegistration
+     */
+    omit?: EventRegistrationOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -46859,6 +48032,24 @@ export namespace Prisma {
   };
 
   export type CanvasDocumentScalarFieldEnum = (typeof CanvasDocumentScalarFieldEnum)[keyof typeof CanvasDocumentScalarFieldEnum]
+
+
+  export const EventRegistrationScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    institution: 'institution',
+    email: 'email',
+    registrationType: 'registrationType',
+    competitions: 'competitions',
+    hasOptedIn: 'hasOptedIn',
+    optInToken: 'optInToken',
+    accountCreated: 'accountCreated',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type EventRegistrationScalarFieldEnum = (typeof EventRegistrationScalarFieldEnum)[keyof typeof EventRegistrationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -49722,6 +50913,93 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"CanvasDocument"> | Date | string
   }
 
+  export type EventRegistrationWhereInput = {
+    AND?: EventRegistrationWhereInput | EventRegistrationWhereInput[]
+    OR?: EventRegistrationWhereInput[]
+    NOT?: EventRegistrationWhereInput | EventRegistrationWhereInput[]
+    id?: StringFilter<"EventRegistration"> | string
+    name?: StringFilter<"EventRegistration"> | string
+    institution?: StringFilter<"EventRegistration"> | string
+    email?: StringFilter<"EventRegistration"> | string
+    registrationType?: StringFilter<"EventRegistration"> | string
+    competitions?: StringNullableListFilter<"EventRegistration">
+    hasOptedIn?: BoolFilter<"EventRegistration"> | boolean
+    optInToken?: StringNullableFilter<"EventRegistration"> | string | null
+    accountCreated?: BoolFilter<"EventRegistration"> | boolean
+    userId?: StringNullableFilter<"EventRegistration"> | string | null
+    createdAt?: DateTimeFilter<"EventRegistration"> | Date | string
+    updatedAt?: DateTimeFilter<"EventRegistration"> | Date | string
+  }
+
+  export type EventRegistrationOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    institution?: SortOrder
+    email?: SortOrder
+    registrationType?: SortOrder
+    competitions?: SortOrder
+    hasOptedIn?: SortOrder
+    optInToken?: SortOrderInput | SortOrder
+    accountCreated?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventRegistrationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    email?: string
+    optInToken?: string
+    AND?: EventRegistrationWhereInput | EventRegistrationWhereInput[]
+    OR?: EventRegistrationWhereInput[]
+    NOT?: EventRegistrationWhereInput | EventRegistrationWhereInput[]
+    name?: StringFilter<"EventRegistration"> | string
+    institution?: StringFilter<"EventRegistration"> | string
+    registrationType?: StringFilter<"EventRegistration"> | string
+    competitions?: StringNullableListFilter<"EventRegistration">
+    hasOptedIn?: BoolFilter<"EventRegistration"> | boolean
+    accountCreated?: BoolFilter<"EventRegistration"> | boolean
+    userId?: StringNullableFilter<"EventRegistration"> | string | null
+    createdAt?: DateTimeFilter<"EventRegistration"> | Date | string
+    updatedAt?: DateTimeFilter<"EventRegistration"> | Date | string
+  }, "id" | "email" | "optInToken">
+
+  export type EventRegistrationOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    institution?: SortOrder
+    email?: SortOrder
+    registrationType?: SortOrder
+    competitions?: SortOrder
+    hasOptedIn?: SortOrder
+    optInToken?: SortOrderInput | SortOrder
+    accountCreated?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: EventRegistrationCountOrderByAggregateInput
+    _max?: EventRegistrationMaxOrderByAggregateInput
+    _min?: EventRegistrationMinOrderByAggregateInput
+  }
+
+  export type EventRegistrationScalarWhereWithAggregatesInput = {
+    AND?: EventRegistrationScalarWhereWithAggregatesInput | EventRegistrationScalarWhereWithAggregatesInput[]
+    OR?: EventRegistrationScalarWhereWithAggregatesInput[]
+    NOT?: EventRegistrationScalarWhereWithAggregatesInput | EventRegistrationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"EventRegistration"> | string
+    name?: StringWithAggregatesFilter<"EventRegistration"> | string
+    institution?: StringWithAggregatesFilter<"EventRegistration"> | string
+    email?: StringWithAggregatesFilter<"EventRegistration"> | string
+    registrationType?: StringWithAggregatesFilter<"EventRegistration"> | string
+    competitions?: StringNullableListFilter<"EventRegistration">
+    hasOptedIn?: BoolWithAggregatesFilter<"EventRegistration"> | boolean
+    optInToken?: StringNullableWithAggregatesFilter<"EventRegistration"> | string | null
+    accountCreated?: BoolWithAggregatesFilter<"EventRegistration"> | boolean
+    userId?: StringNullableWithAggregatesFilter<"EventRegistration"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"EventRegistration"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"EventRegistration"> | Date | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -52566,6 +53844,111 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type EventRegistrationCreateInput = {
+    id?: string
+    name: string
+    institution: string
+    email: string
+    registrationType: string
+    competitions?: EventRegistrationCreatecompetitionsInput | string[]
+    hasOptedIn?: boolean
+    optInToken?: string | null
+    accountCreated?: boolean
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventRegistrationUncheckedCreateInput = {
+    id?: string
+    name: string
+    institution: string
+    email: string
+    registrationType: string
+    competitions?: EventRegistrationCreatecompetitionsInput | string[]
+    hasOptedIn?: boolean
+    optInToken?: string | null
+    accountCreated?: boolean
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventRegistrationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    registrationType?: StringFieldUpdateOperationsInput | string
+    competitions?: EventRegistrationUpdatecompetitionsInput | string[]
+    hasOptedIn?: BoolFieldUpdateOperationsInput | boolean
+    optInToken?: NullableStringFieldUpdateOperationsInput | string | null
+    accountCreated?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventRegistrationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    registrationType?: StringFieldUpdateOperationsInput | string
+    competitions?: EventRegistrationUpdatecompetitionsInput | string[]
+    hasOptedIn?: BoolFieldUpdateOperationsInput | boolean
+    optInToken?: NullableStringFieldUpdateOperationsInput | string | null
+    accountCreated?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventRegistrationCreateManyInput = {
+    id?: string
+    name: string
+    institution: string
+    email: string
+    registrationType: string
+    competitions?: EventRegistrationCreatecompetitionsInput | string[]
+    hasOptedIn?: boolean
+    optInToken?: string | null
+    accountCreated?: boolean
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type EventRegistrationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    registrationType?: StringFieldUpdateOperationsInput | string
+    competitions?: EventRegistrationUpdatecompetitionsInput | string[]
+    hasOptedIn?: BoolFieldUpdateOperationsInput | boolean
+    optInToken?: NullableStringFieldUpdateOperationsInput | string | null
+    accountCreated?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EventRegistrationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    registrationType?: StringFieldUpdateOperationsInput | string
+    competitions?: EventRegistrationUpdatecompetitionsInput | string[]
+    hasOptedIn?: BoolFieldUpdateOperationsInput | boolean
+    optInToken?: NullableStringFieldUpdateOperationsInput | string | null
+    accountCreated?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -54543,6 +55926,49 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedJsonFilter<$PrismaModel>
     _max?: NestedJsonFilter<$PrismaModel>
+  }
+
+  export type EventRegistrationCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    institution?: SortOrder
+    email?: SortOrder
+    registrationType?: SortOrder
+    competitions?: SortOrder
+    hasOptedIn?: SortOrder
+    optInToken?: SortOrder
+    accountCreated?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventRegistrationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    institution?: SortOrder
+    email?: SortOrder
+    registrationType?: SortOrder
+    hasOptedIn?: SortOrder
+    optInToken?: SortOrder
+    accountCreated?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EventRegistrationMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    institution?: SortOrder
+    email?: SortOrder
+    registrationType?: SortOrder
+    hasOptedIn?: SortOrder
+    optInToken?: SortOrder
+    accountCreated?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -57895,6 +59321,15 @@ export namespace Prisma {
     upsert?: ProjectUpsertWithoutCanvasDocumentInput
     connect?: ProjectWhereUniqueInput
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCanvasDocumentInput, ProjectUpdateWithoutCanvasDocumentInput>, ProjectUncheckedUpdateWithoutCanvasDocumentInput>
+  }
+
+  export type EventRegistrationCreatecompetitionsInput = {
+    set: string[]
+  }
+
+  export type EventRegistrationUpdatecompetitionsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
