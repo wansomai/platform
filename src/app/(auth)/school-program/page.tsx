@@ -59,7 +59,7 @@ export default function SchoolRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center bg-white">
+    <div className="min-h-screen flex items-center bg-white container mx-auto">
         <div className='grid grid-cols-1 lg:grid-cols-2 h-fit bg-gray-100 shadow-lg rounded-lg mx-4 lg:mx-20 my-10'>
     {/* Left Panel - Form */}
       <div className="flex flex-1 flex-col justify-center bg-gray-50 px-6 py-12 lg:px-20">
@@ -206,13 +206,6 @@ export default function SchoolRegisterPage() {
                   <div>
                     <h3 className="font-semibold mb-1">Document Drafting</h3>
                     <p className="text-sm text-white/80">Learn to draft professional legal documents efficiently</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Users className="w-6 h-6 flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-semibold mb-1">Ethical AI Use</h3>
-                    <p className="text-sm text-white/80">Understand professional responsibility in AI-enabled practice</p>
                   </div>
                 </div>
               </div>
