@@ -7,12 +7,13 @@ export const metadata: Metadata = {
   title: 'Best AI For Due Diligence Platform | Wansom AI',
   description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
   alternates: {
-    canonical: '/ai-due-diligence',
+    canonical: 'https://www.wansom.ai/ai-due-diligence',
   },
   openGraph: {
     title: 'Best AI For Due Diligence Platform | Wansom AI',
     description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
     type: 'website',
+    url:'https://www.wansom.ai/ai-due-diligence',
     images: [
       {
         url: '/legal-drafting.png',

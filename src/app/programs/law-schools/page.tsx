@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'AI Solutions for Law Schools | Wansom AI',
   description: 'Prepare tomorrow\'s lawyers with AI-powered legal education tools. Enhance legal research training, document drafting, moot court preparation, and clinical programs for law students.',
   alternates: {
-    canonical: 'https://wansom.ai/solutions/law-schools',
+    canonical: 'https://www.wansom.ai/solutions/law-schools',
   },
   openGraph: {
     title: 'AI Solutions for Law Schools | Wansom AI',

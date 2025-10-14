@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     title: `${entry.fields.title}`,
     description: entry.fields.metaDescription || 'Find the best lawyers in your area.',
     alternates: {
-      canonical: `https://wansom.ai/hire-a-lawyer/${slug}`
+      canonical: `https://www.wansom.ai/hire-a-lawyer/${slug}`
     },
     openGraph: {
       title: `${entry.fields.title}`,

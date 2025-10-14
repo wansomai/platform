@@ -33,13 +33,13 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       description: adaptedPost.preview || 'Read this article on legal technology and AI law insights from wansom AI.',
       keywords: adaptedPost.tags?.join(', ') || 'legal tech, AI law, legal insights',
       alternates: {
-        canonical: `/blogs/${slug}`,
+        canonical: `https://www.wansom.ai/blogs/${slug}`,
       },
       openGraph: {
         title: adaptedPost.title,
         description: adaptedPost.preview,
         type: 'article',
-        url: `https://wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
+        url: `https://www.wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
         images: [
           {
             url: adaptedPost.image || '/images/features-1.png',

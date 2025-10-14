@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'AI Solutions for M&A Lawyers | Wansom AI',
   description: 'Close deals faster with AI-powered due diligence, contract analysis, deal structuring, and post-merger integration tools designed for M&A lawyers.',
   alternates: {
-    canonical: 'https://wansom.ai/solutions/ma-lawyers',
+    canonical: 'https://www.wansom.ai/solutions/ma-lawyers',
   },
   openGraph: {
     title: 'AI Solutions for M&A Lawyers | Wansom AI',

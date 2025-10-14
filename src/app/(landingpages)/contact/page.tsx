@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   description: 'Get in touch with Wansom AI. Located at I&M House, Upper Hill, Nairobi. Connect with our legal team for inquiries, support, and consultations.',
   keywords: 'contact wansom AI, legal services contact, lawyer consultation, legal help nairobi, contact form',
   alternates: {
-    canonical: '/contact',
+    canonical: 'https://www.wansom.ai/contact',
   },
   openGraph: {
     title: 'Contact Us | Wansom AI - Legal Services',
     description: 'Get in touch with Wansom AI. Located at I&M House, Upper Hill, Nairobi. Connect with our legal team for inquiries, support, and consultations.',
     type: 'website',
-    url: 'https://wansom.ai/contact',
+    url: 'https://www.wansom.ai/contact',
     images: [
       {
         url: '/dashboard.jpg',
