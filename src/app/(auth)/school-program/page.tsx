@@ -213,8 +213,7 @@ export default function SchoolRegisterPage() {
           </div>
         </div>
       </div>
-        </div>
-  
+      </div>
     </div>
   );
 }

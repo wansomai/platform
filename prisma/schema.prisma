@@ -573,3 +573,22 @@ model CanvasDocument {
 
   @@index([projectId], map: "idx_canvas_document_project")
 }
+
+model EventRegistration {
+  id                String    @id @default(cuid())
+  name              String
+  institution       String
+  email             String    @unique
+  registrationType  String
+  competitions      String[]
+  hasOptedIn        Boolean   @default(false)
+  optInToken        String?   @unique
+  accountCreated    Boolean   @default(false)
+  userId            String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([email])
+  @@index([optInToken])
+  @@map("event_registrations")
+}
