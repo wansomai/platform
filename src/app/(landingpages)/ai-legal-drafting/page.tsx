@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     title: 'Best AI for Legal Drafting Platform | Wansom AI',
     description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
     type: 'website',
+    url: 'https://www.wansom.ai/ai-legal-drafting',
     images: [
       {
         url: '/legal-drafting.png',

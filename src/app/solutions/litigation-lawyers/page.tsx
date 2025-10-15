@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     title: 'AI Solutions for Litigation Lawyers | Wansom AI',
     description: 'Win more cases with AI-powered legal research, document discovery, brief drafting, and case strategy tools designed specifically for litigation lawyers.',
     type: 'website',
+    url: 'https://www.wansom.ai/solutions/litigation-lawyers',
     images: [
       {
         url: '/images/litigation-lawyers.jpg',

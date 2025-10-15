@@ -11,6 +11,8 @@ export const metadata: Metadata = {
     title: 'AI Solutions for M&A Lawyers | Wansom AI',
     description: 'Close deals faster with AI-powered due diligence, contract analysis, deal structuring, and post-merger integration tools designed for M&A lawyers.',
     type: 'website',
+    url: 'https://www.wansom.ai/solutions/ma-lawyers',
+    
     images: [
       {
         url: '/images/ma-lawyers.jpg',

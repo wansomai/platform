@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     title: 'AI Solutions for In-House Counsels | Wansom AI',
     description: 'Empower your legal department with AI-powered tools for contract management, compliance tracking, legal research, and workflow automation designed for in-house counsel.',
     type: 'website',
+    url: 'https://www.wansom.ai/solutions/in-house-counsel',
     images: [
       {
         url: '/images/in-house-counsel.jpg',
