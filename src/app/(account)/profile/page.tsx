@@ -192,6 +192,23 @@ const Page = () => {
     }
   };
 
+  const handleChangeRole = async (memberId: string, newRole: string) => {
+    try {
+      await apiService.patch(`/api/organization/members/${memberId}/role`, { role: newRole });
+
+      // Update the local state
+      setTeamMembers(teamMembers.map(member =>
+        member.id === memberId ? { ...member, role: newRole } : member
+      ));
+
+      toast.success('Role updated successfully');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to update role';
+      toast.error(errorMessage);
+      console.error('Error updating role:', error);
+    }
+  };
+
   const handleCancelInvitation = async (invitationId: string) => {
     try {
       await apiService.delete(`/api/organization/invitations/${invitationId}`);
@@ -224,19 +241,20 @@ const Page = () => {
           <p className="text-gray-600">Manage your organization.</p>
         </div>
 
-        <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="general" className="flex items-center gap-2">
-              <Crown className="h-4 w-4" />
-              General
-            </TabsTrigger>
-            <TabsTrigger value="members" className="flex items-center gap-2">
-              <UserPlus className="h-4 w-4" />
-              Members
-            </TabsTrigger>
-          </TabsList>
+        {(profile?.role === 'admin' || profile?.role === 'owner') ? (
+          <Tabs defaultValue="general" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2 max-w-md">
+              <TabsTrigger value="general" className="flex items-center gap-2">
+                <Crown className="h-4 w-4" />
+                General
+              </TabsTrigger>
+              <TabsTrigger value="members" className="flex items-center gap-2">
+                <UserPlus className="h-4 w-4" />
+                Members
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="general" className="space-y-6">
+            <TabsContent value="general" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Personal Information</CardTitle>
@@ -309,21 +327,21 @@ const Page = () => {
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
+            </TabsContent>
 
-          <TabsContent value="members" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Members</CardTitle>
-                    <CardDescription>
-                      Manage team members and invitations
-                    </CardDescription>
+            <TabsContent value="members" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Members</CardTitle>
+                      <CardDescription>
+                        Manage team members and invitations
+                      </CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                </CardHeader>
+                <CardContent className="space-y-6">
                 {/* Members and Invitations Tabs */}
                 <div className="flex items-center space-x-6 border-b">
                   <button
@@ -422,7 +440,9 @@ const Page = () => {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>Change Role</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')}>
+                                    {member.role === 'admin' ? 'Change to Member' : 'Change to Admin'}
+                                  </DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     className="text-red-600"
@@ -491,10 +511,87 @@ const Page = () => {
                     )}
                   </div>
                 )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          // For regular members, show just the general content without tabs
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Personal Information</CardTitle>
+                <CardDescription>
+                  Manage your personal information and account settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {profileLoading ? (
+                  <div className="text-center py-8 text-gray-500">Loading profile...</div>
+                ) : profile ? (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      {isEditing ? (
+                        <Input
+                          id="name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Enter your full name"
+                        />
+                      ) : (
+                        <p className="text-lg">{profile.fullName || 'Not set'}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <p className="text-lg">{profile.email}</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Organization</Label>
+                      <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Role</Label>
+                      <p className="text-lg capitalize">{profile.role || 'User'}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">Failed to load profile</div>
+                )}
+
+                <Separator className="my-4" />
+
+                <div className="flex justify-end space-x-4">
+                  {isEditing ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditing(false)}
+                        disabled={loading}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleSave}
+                        disabled={loading}
+                      >
+                        {loading ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button onClick={() => setIsEditing(true)}>
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   );

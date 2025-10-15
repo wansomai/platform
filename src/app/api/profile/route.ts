@@ -32,7 +32,28 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     );
   }
 
-  return NextResponse.json({ user });
+  // Get the role from UserOrganization for the current organization
+  const userOrganization = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId: user.id,
+        organizationId: user.organizationId
+      }
+    },
+    select: {
+      role: true
+    }
+  });
+
+  // Use the role from UserOrganization if it exists, otherwise fall back to User.role
+  const effectiveRole = userOrganization?.role || user.role;
+
+  return NextResponse.json({
+    user: {
+      ...user,
+      role: effectiveRole
+    }
+  });
 }));
 
 // Update user profile
