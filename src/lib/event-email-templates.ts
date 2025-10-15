@@ -15,7 +15,7 @@ export async function sendEventRegistrationEmail({
   institution: string;
   optInToken: string;
 }) {
-  const subject = "Wansom AI Student Program";
+  const subject = "Welcome To Wansom AI Student Program";
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const optInUrl = `${baseUrl}/api/events/opt-in?token=${optInToken}`;
 
@@ -178,15 +178,10 @@ export async function sendEventRegistrationEmail({
     </head>
     <body>
       <div class="container">
-        <div class="header">
-          <div class="logo">WANSOM.AI</div>
-          <h1>You now have early access to Wansom.AI Student Program</h1>
-        </div>
-
         <div class="content">
           <p class="greeting">Hi ${name},</p>
 
-          <p class="intro-text">Thank you for registering for <strong>AFRO-IP LAW & TECH 2025 Competitions</strong>. As part of your registration, you'll get exclusive unlimited access to wansom.ai — our AI legal platform for students.</p>
+          <p class="intro-text">Thank you for registering for <strong>AFRO-IP LAW & TECH 2025 Competitions</strong>. As part of your registration, you'll get exclusive unlimited access to wansom.ai — our AI legal platform for law school students.</p>
 
           <div class="features-box">
             <h2 class="features-title">Here's what you can do with Wansom</h2>
@@ -229,8 +224,7 @@ export async function sendEventRegistrationEmail({
         </div>
 
         <div class="footer">
-          <p class="footer-company">© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
+          <p class="footer-company">© 2025 Wansom AI Ltd. All rights reserved.</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>

@@ -80,23 +80,6 @@ function OptInContent() {
             {message}
           </p>
 
-          {/* Additional Info */}
-          {status === 'loading' && (
-            <div className="space-y-3 text-sm text-gray-500">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span>Creating your account</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-75"></div>
-                <span>Generating credentials</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-150"></div>
-                <span>Sending welcome email</span>
-              </div>
-            </div>
-          )}
 
           {status === 'success' && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
@@ -125,7 +108,7 @@ function OptInContent() {
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-xs text-gray-500">
-              © 2025 Wansom Ltd. All rights reserved.
+              © 2025 Wansom AI Ltd. All rights reserved.
             </p>
           </div>
         </div>
@@ -141,7 +124,7 @@ export default function OptInPage() {
         <div className="max-w-md w-full">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-primary">WANSOM.AI</h1>
+              <img src="/images/logo-lg.png" alt="wansom logo" />
             </div>
             <Loader2 className="w-16 h-16 text-primary mx-auto animate-spin mb-6" />
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h2>
