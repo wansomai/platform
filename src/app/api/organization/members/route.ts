@@ -9,13 +9,32 @@ const prisma = new PrismaClient();
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true, role: true }
+    select: { organizationId: true }
   });
 
   if (!user?.organizationId) {
     return NextResponse.json(
       { error: 'User organization not found' },
       { status: 404 }
+    );
+  }
+
+  // Get user's role from UserOrganization
+  const userOrganization = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId: userId,
+        organizationId: user.organizationId
+      }
+    },
+    select: { role: true }
+  });
+
+  // Check if user has permission to view members (must be admin or owner)
+  if (userOrganization?.role !== 'admin' && userOrganization?.role !== 'owner') {
+    return NextResponse.json(
+      { error: 'Insufficient permissions to view members' },
+      { status: 403 }
     );
   }
 
@@ -62,7 +81,7 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
 
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true, role: true }
+    select: { organizationId: true }
   });
 
   if (!currentUser?.organizationId) {
@@ -72,8 +91,19 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
     );
   }
 
+  // Get current user's role from UserOrganization
+  const currentUserOrganization = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId: userId,
+        organizationId: currentUser.organizationId
+      }
+    },
+    select: { role: true }
+  });
+
   // Check if current user has permission to remove members
-  if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
+  if (currentUserOrganization?.role !== 'admin' && currentUserOrganization?.role !== 'owner') {
     return NextResponse.json(
       { error: 'Insufficient permissions' },
       { status: 403 }
@@ -88,6 +118,61 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
     );
   }
 
+  // Check if member exists in this organization
+  const memberOrganization = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId: memberId,
+        organizationId: currentUser.organizationId
+      }
+    }
+  });
+
+  if (!memberOrganization) {
+    return NextResponse.json(
+      { error: 'Member not found in this organization' },
+      { status: 404 }
+    );
+  }
+
+  // Get the user being removed
+  const memberUser = await prisma.user.findUnique({
+    where: { id: memberId },
+    select: {
+      organizationId: true,
+      activeOrganizationId: true,
+      organizationMemberships: {
+        select: {
+          organizationId: true
+        }
+      }
+    }
+  });
+
+  if (!memberUser) {
+    return NextResponse.json(
+      { error: 'User not found' },
+      { status: 404 }
+    );
+  }
+
+  // Prevent removing from user's personal organization
+  // Personal organization is where the user is admin and organizationId matches
+  const personalOrgMembership = await prisma.userOrganization.findFirst({
+    where: {
+      userId: memberId,
+      organizationId: memberUser.organizationId,
+      role: 'admin'
+    }
+  });
+
+  if (personalOrgMembership && currentUser.organizationId === memberUser.organizationId) {
+    return NextResponse.json(
+      { error: 'Cannot remove a user from their personal organization' },
+      { status: 400 }
+    );
+  }
+
   // Remove the user from the organization
   await prisma.userOrganization.delete({
     where: {
@@ -98,5 +183,18 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
     }
   });
 
-  return NextResponse.json({ success: true });
+  // If this was the user's active organization, switch them back to their personal organization
+  if (memberUser.activeOrganizationId === currentUser.organizationId) {
+    await prisma.user.update({
+      where: { id: memberId },
+      data: {
+        activeOrganizationId: memberUser.organizationId // Fall back to personal org
+      }
+    });
+  }
+
+  return NextResponse.json({
+    success: true,
+    message: 'Member removed from organization. They have been switched back to their personal organization.'
+  });
 }));

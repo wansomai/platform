@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getUserIdFromRequest } from "@/lib/auth/authorization";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
+import { sendInvitationEmail } from "@/lib/email-service";
 import crypto from "crypto";
 
 const prisma = new PrismaClient();
@@ -21,7 +22,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
 
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true, role: true }
+    select: { organizationId: true }
   });
 
   if (!currentUser?.organizationId) {
@@ -31,8 +32,19 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // Check if current user has permission to invite members
-  if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
+  // Get current user's role from UserOrganization
+  const currentUserOrganization = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId: userId,
+        organizationId: currentUser.organizationId
+      }
+    },
+    select: { role: true }
+  });
+
+  // Check if current user has permission to invite members (must be admin or owner)
+  if (currentUserOrganization?.role !== 'admin' && currentUserOrganization?.role !== 'owner') {
     return NextResponse.json(
       { error: 'Insufficient permissions to invite members' },
       { status: 403 }
@@ -106,6 +118,17 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     projectId = defaultProject.id;
   }
 
+  // Get organization and inviter details for email
+  const organization = await prisma.organization.findUnique({
+    where: { id: currentUser.organizationId },
+    select: { name: true }
+  });
+
+  const inviter = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { fullName: true, email: true }
+  });
+
   // Create the invitation
   const invitation = await prisma.invitation.create({
     data: {
@@ -119,8 +142,22 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     }
   });
 
-  // TODO: Send invitation email here
-  // await sendInvitationEmail(email, token, organizationName);
+  // Send invitation email
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://wansom.ai';
+  const inviteUrl = `${baseUrl}/accept-invitation?token=${token}`;
+
+  try {
+    await sendInvitationEmail({
+      email,
+      inviterName: inviter?.fullName || inviter?.email || 'A team member',
+      organizationName: organization?.name || 'the organization',
+      role,
+      inviteUrl
+    });
+  } catch (emailError) {
+    console.error('Failed to send invitation email:', emailError);
+    // Don't fail the invitation creation if email fails
+  }
 
   return NextResponse.json({
     success: true,

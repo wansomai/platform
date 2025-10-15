@@ -8,12 +8,13 @@ import { sendWelcomeEmail } from '@/lib/email-service';
 
 const prisma = new PrismaClient();
 
-// Schema validation
+// Schema validation for normal registration
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   fullName: z.string().min(2, 'Name must be at least 2 characters').nonempty('Full name is required'),
-  organizationName: z.string().min(2, 'Organization name must be at least 2 characters')
+  organizationName: z.string().min(2, 'Organization name must be at least 2 characters').optional(),
+  invitationToken: z.string().optional()
 });
 
 const parseRequestBody = async (request: NextRequest) => {
@@ -24,36 +25,83 @@ const parseRequestBody = async (request: NextRequest) => {
 // POST handler for registration
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, fullName, organizationName } = await parseRequestBody(request);
-    
+    const { email, password, fullName, organizationName, invitationToken } = await parseRequestBody(request);
+
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
-    
+
     if (existingUser) {
       return NextResponse.json(
-        { 
+        {
           status: 400,
-          message: 'User with this email already exists' 
+          message: 'User with this email already exists'
         },
         { status: 400 }
       );
     }
-    
+
+    // If there's an invitation token, verify it and get the organization
+    let invitationOrganizationId: string | null = null;
+    if (invitationToken) {
+      const invitation = await prisma.invitation.findUnique({
+        where: { token: invitationToken },
+        select: {
+          organizationId: true,
+          email: true,
+          expiresAt: true
+        }
+      });
+
+      if (!invitation) {
+        return NextResponse.json(
+          {
+            status: 400,
+            message: 'Invalid invitation token'
+          },
+          { status: 400 }
+        );
+      }
+
+      if (new Date() > invitation.expiresAt) {
+        return NextResponse.json(
+          {
+            status: 400,
+            message: 'This invitation has expired'
+          },
+          { status: 400 }
+        );
+      }
+
+      if (invitation.email !== email) {
+        return NextResponse.json(
+          {
+            status: 400,
+            message: 'Email does not match the invitation'
+          },
+          { status: 400 }
+        );
+      }
+
+      invitationOrganizationId = invitation.organizationId;
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Create user
+
+    // ALWAYS create a personal organization for the user
+    const personalOrgName = organizationName || `${fullName}'s Organization`;
+
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         fullName: fullName || '',
-        role: 'admin',
+        role: 'admin', // Admin of their personal organization
         organization: {
           create: {
-            name: organizationName,
+            name: personalOrgName,
             contactEmail: "",
             contactPhone: "",
             currentWebsite: "",
@@ -72,6 +120,35 @@ export async function POST(request: NextRequest) {
         organization: true
       }
     });
+
+    // Create UserOrganization for the personal organization
+    await prisma.userOrganization.create({
+      data: {
+        userId: user.id,
+        organizationId: user.organizationId,
+        role: 'admin'
+      }
+    });
+
+    // If there's an invitation, also add them to that organization
+    if (invitationToken && invitationOrganizationId) {
+      // Create UserOrganization for the invited organization
+      await prisma.userOrganization.create({
+        data: {
+          userId: user.id,
+          organizationId: invitationOrganizationId,
+          role: 'member'
+        }
+      });
+
+      // Set the invited organization as the active one
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          activeOrganizationId: invitationOrganizationId
+        }
+      });
+    }
     
     // Send welcome email
     try {

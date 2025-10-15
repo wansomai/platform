@@ -204,7 +204,7 @@ function LoginPageContent() {
                 )}
               </Button>
               <p className="text-gray-600 text-center mt-4">
-                Don't have an account? <Link href="/register" className="text-[#005c4d] font-medium">Register</Link>
+                Don't have an account? <Link href={callbackUrl && callbackUrl !== '/dashboard' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/register"} className="text-[#005c4d] font-medium">Register</Link>
               </p>
             </div>
           </form>

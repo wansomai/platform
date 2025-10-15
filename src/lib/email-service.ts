@@ -239,8 +239,8 @@ export function sendInvitationEmail({
   role: string;
   inviteUrl: string;
 }) {
-  const subject = `Invitation to join ${organizationName} on LegalAssist`;
-  
+  const subject = `Invitation to join ${organizationName} on Wansom`;
+
   // Create HTML email content
   const html = `
     <!DOCTYPE html>
@@ -266,6 +266,10 @@ export function sendInvitationEmail({
           padding: 20px;
           text-align: center;
         }
+        .header img {
+          max-width: 200px;
+          height: auto;
+        }
         .content {
           padding: 20px;
         }
@@ -284,13 +288,14 @@ export function sendInvitationEmail({
           display: inline-block;
           background-color: #005c4d;
           color: white;
-          padding: 10px 20px;
+          padding: 12px 30px;
           text-decoration: none;
           border-radius: 4px;
           margin-top: 10px;
+          font-weight: 600;
         }
         .info-box {
-          background-color: #f5f5f5;
+          background-color: #f0f9ff;
           border-left: 4px solid #005c4d;
           padding: 15px;
           margin: 20px 0;
@@ -300,47 +305,47 @@ export function sendInvitationEmail({
     <body>
       <div class="container">
         <div class="header">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
           <h1>You've Been Invited!</h1>
         </div>
         <div class="content">
-          <h2>Join ${organizationName} on LegalAssist</h2>
-          
+          <h2>Join ${organizationName} on Wansom</h2>
+
           <p>Hello,</p>
-          
-          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on LegalAssist as a <strong>${role}</strong>.</p>
-          
+
+          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Wansom as a <strong>${role}</strong>.</p>
+
           <div class="info-box">
-            <p>LegalAssist is an AI-powered platform that helps legal professionals collaborate on projects, manage documents, and streamline workflows.</p>
+            <p>Wansom is an AI-powered legal workspace that helps legal professionals collaborate on projects, manage documents, automate workflows, and leverage AI for research and drafting.</p>
           </div>
-          
+
           <p>To accept this invitation, click the button below:</p>
-          
+
           <p style="text-align: center;">
             <a href="${inviteUrl}" class="button">Accept Invitation</a>
           </p>
-          
+
           <p>This invitation will expire in 7 days.</p>
-          
-          <p>If you already have a LegalAssist account, you'll be able to switch between organizations after accepting.</p>
-          
+
+          <p>If you already have a Wansom account, you'll be able to switch between organizations after accepting.</p>
+
           <p>If you don't have an account yet, you'll be able to create one when you accept the invitation.</p>
-          
+
           <p>If you believe this invitation was sent in error, you can safely ignore it.</p>
         </div>
         <div class="footer">
-          <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
+          <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${email}">unsubscribe</a>.</p>
+          <p>You're receiving this email because someone invited you to join their organization on Wansom.</p>
         </div>
       </div>
     </body>
     </html>
   `;
-  
+
   return sendEmail({
     to: email,
     subject,
@@ -366,7 +371,7 @@ export function sendInvitationAcceptedEmail({
   organizationName: string;
   role: string;
 }) {
-  const subject = `${newMemberName} has joined ${organizationName} on LegalAssist`;
+  const subject = `${newMemberName} has joined ${organizationName} on Wansom`;
   
   // Create HTML email content
   const html = `
@@ -439,7 +444,7 @@ export function sendInvitationAcceptedEmail({
             <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/teams" class="button">Manage Team</a>
           </p>
           
-          <p>Thank you for growing your team on LegalAssist!</p>
+          <p>Thank you for growing your team on Wansom!</p>
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
