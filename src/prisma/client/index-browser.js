@@ -516,6 +516,11 @@ exports.Prisma.EventRegistrationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PublicationsScalarFieldEnum = {
+  id: 'id',
+  title: 'title'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -584,7 +589,8 @@ exports.Prisma.ModelName = {
   AssociateTool: 'AssociateTool',
   ProjectAssociate: 'ProjectAssociate',
   CanvasDocument: 'CanvasDocument',
-  EventRegistration: 'EventRegistration'
+  EventRegistration: 'EventRegistration',
+  Publications: 'Publications'
 };
 
 /**

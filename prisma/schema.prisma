@@ -221,12 +221,12 @@ model Project {
   organizationId   String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  canvasDocument   CanvasDocument?
   conversations    Conversation[]
   documents        Document[]
   events           Event[]
   invitations      Invitation[]
   knowledgeBase    KnowledgeBase?
-  canvasDocument   CanvasDocument?
   organization     Organization       @relation(fields: [organizationId], references: [id])
   associates       ProjectAssociate[]
   projectDocuments ProjectDocument[]
@@ -564,9 +564,9 @@ model ProjectAssociate {
 model CanvasDocument {
   id          String   @id @default(cuid())
   projectId   String   @unique
-  content     Json     // Quill.js Delta format
-  htmlContent String   @db.Text // For display
-  plainText   String   @db.Text // For AI processing
+  content     Json
+  htmlContent String
+  plainText   String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -575,20 +575,25 @@ model CanvasDocument {
 }
 
 model EventRegistration {
-  id                String    @id @default(cuid())
-  name              String
-  institution       String
-  email             String    @unique
-  registrationType  String
-  competitions      String[]
-  hasOptedIn        Boolean   @default(false)
-  optInToken        String?   @unique
-  accountCreated    Boolean   @default(false)
-  userId            String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  institution      String
+  email            String   @unique
+  registrationType String
+  competitions     String[]
+  hasOptedIn       Boolean  @default(false)
+  optInToken       String?  @unique
+  accountCreated   Boolean  @default(false)
+  userId           String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@index([email])
   @@index([optInToken])
   @@map("event_registrations")
+}
+
+model Publications {
+  id    String @id @default(cuid())
+  title String
 }

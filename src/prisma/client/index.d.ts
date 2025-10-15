@@ -198,6 +198,11 @@ export type CanvasDocument = $Result.DefaultSelection<Prisma.$CanvasDocumentPayl
  * 
  */
 export type EventRegistration = $Result.DefaultSelection<Prisma.$EventRegistrationPayload>
+/**
+ * Model Publications
+ * 
+ */
+export type Publications = $Result.DefaultSelection<Prisma.$PublicationsPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -686,6 +691,16 @@ export class PrismaClient<
     * ```
     */
   get eventRegistration(): Prisma.EventRegistrationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.publications`: Exposes CRUD operations for the **Publications** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Publications
+    * const publications = await prisma.publications.findMany()
+    * ```
+    */
+  get publications(): Prisma.PublicationsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1162,7 +1177,8 @@ export namespace Prisma {
     AssociateTool: 'AssociateTool',
     ProjectAssociate: 'ProjectAssociate',
     CanvasDocument: 'CanvasDocument',
-    EventRegistration: 'EventRegistration'
+    EventRegistration: 'EventRegistration',
+    Publications: 'Publications'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1181,7 +1197,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3923,6 +3939,80 @@ export namespace Prisma {
           }
         }
       }
+      Publications: {
+        payload: Prisma.$PublicationsPayload<ExtArgs>
+        fields: Prisma.PublicationsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PublicationsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PublicationsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>
+          }
+          findFirst: {
+            args: Prisma.PublicationsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PublicationsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>
+          }
+          findMany: {
+            args: Prisma.PublicationsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>[]
+          }
+          create: {
+            args: Prisma.PublicationsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>
+          }
+          createMany: {
+            args: Prisma.PublicationsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PublicationsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>[]
+          }
+          delete: {
+            args: Prisma.PublicationsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>
+          }
+          update: {
+            args: Prisma.PublicationsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>
+          }
+          deleteMany: {
+            args: Prisma.PublicationsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PublicationsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PublicationsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>[]
+          }
+          upsert: {
+            args: Prisma.PublicationsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PublicationsPayload>
+          }
+          aggregate: {
+            args: Prisma.PublicationsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePublications>
+          }
+          groupBy: {
+            args: Prisma.PublicationsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PublicationsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PublicationsCountArgs<ExtArgs>
+            result: $Utils.Optional<PublicationsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4052,6 +4142,7 @@ export namespace Prisma {
     projectAssociate?: ProjectAssociateOmit
     canvasDocument?: CanvasDocumentOmit
     eventRegistration?: EventRegistrationOmit
+    publications?: PublicationsOmit
   }
 
   /* Types for Logging */
@@ -18265,12 +18356,12 @@ export namespace Prisma {
     organizationId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
     conversations?: boolean | Project$conversationsArgs<ExtArgs>
     documents?: boolean | Project$documentsArgs<ExtArgs>
     events?: boolean | Project$eventsArgs<ExtArgs>
     invitations?: boolean | Project$invitationsArgs<ExtArgs>
     knowledgeBase?: boolean | Project$knowledgeBaseArgs<ExtArgs>
-    canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     associates?: boolean | Project$associatesArgs<ExtArgs>
     projectDocuments?: boolean | Project$projectDocumentsArgs<ExtArgs>
@@ -18313,12 +18404,12 @@ export namespace Prisma {
 
   export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "organizationId" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
     conversations?: boolean | Project$conversationsArgs<ExtArgs>
     documents?: boolean | Project$documentsArgs<ExtArgs>
     events?: boolean | Project$eventsArgs<ExtArgs>
     invitations?: boolean | Project$invitationsArgs<ExtArgs>
     knowledgeBase?: boolean | Project$knowledgeBaseArgs<ExtArgs>
-    canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     associates?: boolean | Project$associatesArgs<ExtArgs>
     projectDocuments?: boolean | Project$projectDocumentsArgs<ExtArgs>
@@ -18336,12 +18427,12 @@ export namespace Prisma {
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
+      canvasDocument: Prisma.$CanvasDocumentPayload<ExtArgs> | null
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
       documents: Prisma.$DocumentPayload<ExtArgs>[]
       events: Prisma.$EventPayload<ExtArgs>[]
       invitations: Prisma.$InvitationPayload<ExtArgs>[]
       knowledgeBase: Prisma.$KnowledgeBasePayload<ExtArgs> | null
-      canvasDocument: Prisma.$CanvasDocumentPayload<ExtArgs> | null
       organization: Prisma.$OrganizationPayload<ExtArgs>
       associates: Prisma.$ProjectAssociatePayload<ExtArgs>[]
       projectDocuments: Prisma.$ProjectDocumentPayload<ExtArgs>[]
@@ -18750,12 +18841,12 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    canvasDocument<T extends Project$canvasDocumentArgs<ExtArgs> = {}>(args?: Subset<T, Project$canvasDocumentArgs<ExtArgs>>): Prisma__CanvasDocumentClient<$Result.GetResult<Prisma.$CanvasDocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     conversations<T extends Project$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, Project$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documents<T extends Project$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     events<T extends Project$eventsArgs<ExtArgs> = {}>(args?: Subset<T, Project$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     invitations<T extends Project$invitationsArgs<ExtArgs> = {}>(args?: Subset<T, Project$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     knowledgeBase<T extends Project$knowledgeBaseArgs<ExtArgs> = {}>(args?: Subset<T, Project$knowledgeBaseArgs<ExtArgs>>): Prisma__KnowledgeBaseClient<$Result.GetResult<Prisma.$KnowledgeBasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    canvasDocument<T extends Project$canvasDocumentArgs<ExtArgs> = {}>(args?: Subset<T, Project$canvasDocumentArgs<ExtArgs>>): Prisma__CanvasDocumentClient<$Result.GetResult<Prisma.$CanvasDocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     associates<T extends Project$associatesArgs<ExtArgs> = {}>(args?: Subset<T, Project$associatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectAssociatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projectDocuments<T extends Project$projectDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$projectDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -19193,6 +19284,25 @@ export namespace Prisma {
   }
 
   /**
+   * Project.canvasDocument
+   */
+  export type Project$canvasDocumentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CanvasDocument
+     */
+    select?: CanvasDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CanvasDocument
+     */
+    omit?: CanvasDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CanvasDocumentInclude<ExtArgs> | null
+    where?: CanvasDocumentWhereInput
+  }
+
+  /**
    * Project.conversations
    */
   export type Project$conversationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -19305,25 +19415,6 @@ export namespace Prisma {
      */
     include?: KnowledgeBaseInclude<ExtArgs> | null
     where?: KnowledgeBaseWhereInput
-  }
-
-  /**
-   * Project.canvasDocument
-   */
-  export type Project$canvasDocumentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the CanvasDocument
-     */
-    select?: CanvasDocumentSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the CanvasDocument
-     */
-    omit?: CanvasDocumentOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CanvasDocumentInclude<ExtArgs> | null
-    where?: CanvasDocumentWhereInput
   }
 
   /**
@@ -47532,6 +47623,962 @@ export namespace Prisma {
 
 
   /**
+   * Model Publications
+   */
+
+  export type AggregatePublications = {
+    _count: PublicationsCountAggregateOutputType | null
+    _min: PublicationsMinAggregateOutputType | null
+    _max: PublicationsMaxAggregateOutputType | null
+  }
+
+  export type PublicationsMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+  }
+
+  export type PublicationsMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+  }
+
+  export type PublicationsCountAggregateOutputType = {
+    id: number
+    title: number
+    _all: number
+  }
+
+
+  export type PublicationsMinAggregateInputType = {
+    id?: true
+    title?: true
+  }
+
+  export type PublicationsMaxAggregateInputType = {
+    id?: true
+    title?: true
+  }
+
+  export type PublicationsCountAggregateInputType = {
+    id?: true
+    title?: true
+    _all?: true
+  }
+
+  export type PublicationsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Publications to aggregate.
+     */
+    where?: PublicationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Publications to fetch.
+     */
+    orderBy?: PublicationsOrderByWithRelationInput | PublicationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PublicationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Publications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Publications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Publications
+    **/
+    _count?: true | PublicationsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PublicationsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PublicationsMaxAggregateInputType
+  }
+
+  export type GetPublicationsAggregateType<T extends PublicationsAggregateArgs> = {
+        [P in keyof T & keyof AggregatePublications]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePublications[P]>
+      : GetScalarType<T[P], AggregatePublications[P]>
+  }
+
+
+
+
+  export type PublicationsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PublicationsWhereInput
+    orderBy?: PublicationsOrderByWithAggregationInput | PublicationsOrderByWithAggregationInput[]
+    by: PublicationsScalarFieldEnum[] | PublicationsScalarFieldEnum
+    having?: PublicationsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PublicationsCountAggregateInputType | true
+    _min?: PublicationsMinAggregateInputType
+    _max?: PublicationsMaxAggregateInputType
+  }
+
+  export type PublicationsGroupByOutputType = {
+    id: string
+    title: string
+    _count: PublicationsCountAggregateOutputType | null
+    _min: PublicationsMinAggregateOutputType | null
+    _max: PublicationsMaxAggregateOutputType | null
+  }
+
+  type GetPublicationsGroupByPayload<T extends PublicationsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PublicationsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PublicationsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PublicationsGroupByOutputType[P]>
+            : GetScalarType<T[P], PublicationsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PublicationsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+  }, ExtArgs["result"]["publications"]>
+
+  export type PublicationsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+  }, ExtArgs["result"]["publications"]>
+
+  export type PublicationsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+  }, ExtArgs["result"]["publications"]>
+
+  export type PublicationsSelectScalar = {
+    id?: boolean
+    title?: boolean
+  }
+
+  export type PublicationsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title", ExtArgs["result"]["publications"]>
+
+  export type $PublicationsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Publications"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+    }, ExtArgs["result"]["publications"]>
+    composites: {}
+  }
+
+  type PublicationsGetPayload<S extends boolean | null | undefined | PublicationsDefaultArgs> = $Result.GetResult<Prisma.$PublicationsPayload, S>
+
+  type PublicationsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PublicationsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PublicationsCountAggregateInputType | true
+    }
+
+  export interface PublicationsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Publications'], meta: { name: 'Publications' } }
+    /**
+     * Find zero or one Publications that matches the filter.
+     * @param {PublicationsFindUniqueArgs} args - Arguments to find a Publications
+     * @example
+     * // Get one Publications
+     * const publications = await prisma.publications.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PublicationsFindUniqueArgs>(args: SelectSubset<T, PublicationsFindUniqueArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Publications that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PublicationsFindUniqueOrThrowArgs} args - Arguments to find a Publications
+     * @example
+     * // Get one Publications
+     * const publications = await prisma.publications.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PublicationsFindUniqueOrThrowArgs>(args: SelectSubset<T, PublicationsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Publications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsFindFirstArgs} args - Arguments to find a Publications
+     * @example
+     * // Get one Publications
+     * const publications = await prisma.publications.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PublicationsFindFirstArgs>(args?: SelectSubset<T, PublicationsFindFirstArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Publications that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsFindFirstOrThrowArgs} args - Arguments to find a Publications
+     * @example
+     * // Get one Publications
+     * const publications = await prisma.publications.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PublicationsFindFirstOrThrowArgs>(args?: SelectSubset<T, PublicationsFindFirstOrThrowArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Publications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Publications
+     * const publications = await prisma.publications.findMany()
+     * 
+     * // Get first 10 Publications
+     * const publications = await prisma.publications.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const publicationsWithIdOnly = await prisma.publications.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PublicationsFindManyArgs>(args?: SelectSubset<T, PublicationsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Publications.
+     * @param {PublicationsCreateArgs} args - Arguments to create a Publications.
+     * @example
+     * // Create one Publications
+     * const Publications = await prisma.publications.create({
+     *   data: {
+     *     // ... data to create a Publications
+     *   }
+     * })
+     * 
+     */
+    create<T extends PublicationsCreateArgs>(args: SelectSubset<T, PublicationsCreateArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Publications.
+     * @param {PublicationsCreateManyArgs} args - Arguments to create many Publications.
+     * @example
+     * // Create many Publications
+     * const publications = await prisma.publications.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PublicationsCreateManyArgs>(args?: SelectSubset<T, PublicationsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Publications and returns the data saved in the database.
+     * @param {PublicationsCreateManyAndReturnArgs} args - Arguments to create many Publications.
+     * @example
+     * // Create many Publications
+     * const publications = await prisma.publications.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Publications and only return the `id`
+     * const publicationsWithIdOnly = await prisma.publications.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PublicationsCreateManyAndReturnArgs>(args?: SelectSubset<T, PublicationsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Publications.
+     * @param {PublicationsDeleteArgs} args - Arguments to delete one Publications.
+     * @example
+     * // Delete one Publications
+     * const Publications = await prisma.publications.delete({
+     *   where: {
+     *     // ... filter to delete one Publications
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PublicationsDeleteArgs>(args: SelectSubset<T, PublicationsDeleteArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Publications.
+     * @param {PublicationsUpdateArgs} args - Arguments to update one Publications.
+     * @example
+     * // Update one Publications
+     * const publications = await prisma.publications.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PublicationsUpdateArgs>(args: SelectSubset<T, PublicationsUpdateArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Publications.
+     * @param {PublicationsDeleteManyArgs} args - Arguments to filter Publications to delete.
+     * @example
+     * // Delete a few Publications
+     * const { count } = await prisma.publications.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PublicationsDeleteManyArgs>(args?: SelectSubset<T, PublicationsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Publications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Publications
+     * const publications = await prisma.publications.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PublicationsUpdateManyArgs>(args: SelectSubset<T, PublicationsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Publications and returns the data updated in the database.
+     * @param {PublicationsUpdateManyAndReturnArgs} args - Arguments to update many Publications.
+     * @example
+     * // Update many Publications
+     * const publications = await prisma.publications.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Publications and only return the `id`
+     * const publicationsWithIdOnly = await prisma.publications.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PublicationsUpdateManyAndReturnArgs>(args: SelectSubset<T, PublicationsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Publications.
+     * @param {PublicationsUpsertArgs} args - Arguments to update or create a Publications.
+     * @example
+     * // Update or create a Publications
+     * const publications = await prisma.publications.upsert({
+     *   create: {
+     *     // ... data to create a Publications
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Publications we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PublicationsUpsertArgs>(args: SelectSubset<T, PublicationsUpsertArgs<ExtArgs>>): Prisma__PublicationsClient<$Result.GetResult<Prisma.$PublicationsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Publications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsCountArgs} args - Arguments to filter Publications to count.
+     * @example
+     * // Count the number of Publications
+     * const count = await prisma.publications.count({
+     *   where: {
+     *     // ... the filter for the Publications we want to count
+     *   }
+     * })
+    **/
+    count<T extends PublicationsCountArgs>(
+      args?: Subset<T, PublicationsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PublicationsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Publications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PublicationsAggregateArgs>(args: Subset<T, PublicationsAggregateArgs>): Prisma.PrismaPromise<GetPublicationsAggregateType<T>>
+
+    /**
+     * Group by Publications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PublicationsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PublicationsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PublicationsGroupByArgs['orderBy'] }
+        : { orderBy?: PublicationsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PublicationsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPublicationsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Publications model
+   */
+  readonly fields: PublicationsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Publications.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PublicationsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Publications model
+   */
+  interface PublicationsFieldRefs {
+    readonly id: FieldRef<"Publications", 'String'>
+    readonly title: FieldRef<"Publications", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Publications findUnique
+   */
+  export type PublicationsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * Filter, which Publications to fetch.
+     */
+    where: PublicationsWhereUniqueInput
+  }
+
+  /**
+   * Publications findUniqueOrThrow
+   */
+  export type PublicationsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * Filter, which Publications to fetch.
+     */
+    where: PublicationsWhereUniqueInput
+  }
+
+  /**
+   * Publications findFirst
+   */
+  export type PublicationsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * Filter, which Publications to fetch.
+     */
+    where?: PublicationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Publications to fetch.
+     */
+    orderBy?: PublicationsOrderByWithRelationInput | PublicationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Publications.
+     */
+    cursor?: PublicationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Publications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Publications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Publications.
+     */
+    distinct?: PublicationsScalarFieldEnum | PublicationsScalarFieldEnum[]
+  }
+
+  /**
+   * Publications findFirstOrThrow
+   */
+  export type PublicationsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * Filter, which Publications to fetch.
+     */
+    where?: PublicationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Publications to fetch.
+     */
+    orderBy?: PublicationsOrderByWithRelationInput | PublicationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Publications.
+     */
+    cursor?: PublicationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Publications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Publications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Publications.
+     */
+    distinct?: PublicationsScalarFieldEnum | PublicationsScalarFieldEnum[]
+  }
+
+  /**
+   * Publications findMany
+   */
+  export type PublicationsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * Filter, which Publications to fetch.
+     */
+    where?: PublicationsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Publications to fetch.
+     */
+    orderBy?: PublicationsOrderByWithRelationInput | PublicationsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Publications.
+     */
+    cursor?: PublicationsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Publications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Publications.
+     */
+    skip?: number
+    distinct?: PublicationsScalarFieldEnum | PublicationsScalarFieldEnum[]
+  }
+
+  /**
+   * Publications create
+   */
+  export type PublicationsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Publications.
+     */
+    data: XOR<PublicationsCreateInput, PublicationsUncheckedCreateInput>
+  }
+
+  /**
+   * Publications createMany
+   */
+  export type PublicationsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Publications.
+     */
+    data: PublicationsCreateManyInput | PublicationsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Publications createManyAndReturn
+   */
+  export type PublicationsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * The data used to create many Publications.
+     */
+    data: PublicationsCreateManyInput | PublicationsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Publications update
+   */
+  export type PublicationsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Publications.
+     */
+    data: XOR<PublicationsUpdateInput, PublicationsUncheckedUpdateInput>
+    /**
+     * Choose, which Publications to update.
+     */
+    where: PublicationsWhereUniqueInput
+  }
+
+  /**
+   * Publications updateMany
+   */
+  export type PublicationsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Publications.
+     */
+    data: XOR<PublicationsUpdateManyMutationInput, PublicationsUncheckedUpdateManyInput>
+    /**
+     * Filter which Publications to update
+     */
+    where?: PublicationsWhereInput
+    /**
+     * Limit how many Publications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Publications updateManyAndReturn
+   */
+  export type PublicationsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * The data used to update Publications.
+     */
+    data: XOR<PublicationsUpdateManyMutationInput, PublicationsUncheckedUpdateManyInput>
+    /**
+     * Filter which Publications to update
+     */
+    where?: PublicationsWhereInput
+    /**
+     * Limit how many Publications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Publications upsert
+   */
+  export type PublicationsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Publications to update in case it exists.
+     */
+    where: PublicationsWhereUniqueInput
+    /**
+     * In case the Publications found by the `where` argument doesn't exist, create a new Publications with this data.
+     */
+    create: XOR<PublicationsCreateInput, PublicationsUncheckedCreateInput>
+    /**
+     * In case the Publications was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PublicationsUpdateInput, PublicationsUncheckedUpdateInput>
+  }
+
+  /**
+   * Publications delete
+   */
+  export type PublicationsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+    /**
+     * Filter which Publications to delete.
+     */
+    where: PublicationsWhereUniqueInput
+  }
+
+  /**
+   * Publications deleteMany
+   */
+  export type PublicationsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Publications to delete
+     */
+    where?: PublicationsWhereInput
+    /**
+     * Limit how many Publications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Publications without action
+   */
+  export type PublicationsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Publications
+     */
+    select?: PublicationsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Publications
+     */
+    omit?: PublicationsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -48050,6 +49097,14 @@ export namespace Prisma {
   };
 
   export type EventRegistrationScalarFieldEnum = (typeof EventRegistrationScalarFieldEnum)[keyof typeof EventRegistrationScalarFieldEnum]
+
+
+  export const PublicationsScalarFieldEnum: {
+    id: 'id',
+    title: 'title'
+  };
+
+  export type PublicationsScalarFieldEnum = (typeof PublicationsScalarFieldEnum)[keyof typeof PublicationsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -49153,12 +50208,12 @@ export namespace Prisma {
     organizationId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
+    canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
     conversations?: ConversationListRelationFilter
     documents?: DocumentListRelationFilter
     events?: EventListRelationFilter
     invitations?: InvitationListRelationFilter
     knowledgeBase?: XOR<KnowledgeBaseNullableScalarRelationFilter, KnowledgeBaseWhereInput> | null
-    canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     associates?: ProjectAssociateListRelationFilter
     projectDocuments?: ProjectDocumentListRelationFilter
@@ -49174,12 +50229,12 @@ export namespace Prisma {
     organizationId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    canvasDocument?: CanvasDocumentOrderByWithRelationInput
     conversations?: ConversationOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
     events?: EventOrderByRelationAggregateInput
     invitations?: InvitationOrderByRelationAggregateInput
     knowledgeBase?: KnowledgeBaseOrderByWithRelationInput
-    canvasDocument?: CanvasDocumentOrderByWithRelationInput
     organization?: OrganizationOrderByWithRelationInput
     associates?: ProjectAssociateOrderByRelationAggregateInput
     projectDocuments?: ProjectDocumentOrderByRelationAggregateInput
@@ -49198,12 +50253,12 @@ export namespace Prisma {
     organizationId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
+    canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
     conversations?: ConversationListRelationFilter
     documents?: DocumentListRelationFilter
     events?: EventListRelationFilter
     invitations?: InvitationListRelationFilter
     knowledgeBase?: XOR<KnowledgeBaseNullableScalarRelationFilter, KnowledgeBaseWhereInput> | null
-    canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     associates?: ProjectAssociateListRelationFilter
     projectDocuments?: ProjectDocumentListRelationFilter
@@ -51000,6 +52055,43 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"EventRegistration"> | Date | string
   }
 
+  export type PublicationsWhereInput = {
+    AND?: PublicationsWhereInput | PublicationsWhereInput[]
+    OR?: PublicationsWhereInput[]
+    NOT?: PublicationsWhereInput | PublicationsWhereInput[]
+    id?: StringFilter<"Publications"> | string
+    title?: StringFilter<"Publications"> | string
+  }
+
+  export type PublicationsOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type PublicationsWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PublicationsWhereInput | PublicationsWhereInput[]
+    OR?: PublicationsWhereInput[]
+    NOT?: PublicationsWhereInput | PublicationsWhereInput[]
+    title?: StringFilter<"Publications"> | string
+  }, "id">
+
+  export type PublicationsOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    _count?: PublicationsCountOrderByAggregateInput
+    _max?: PublicationsMaxOrderByAggregateInput
+    _min?: PublicationsMinOrderByAggregateInput
+  }
+
+  export type PublicationsScalarWhereWithAggregatesInput = {
+    AND?: PublicationsScalarWhereWithAggregatesInput | PublicationsScalarWhereWithAggregatesInput[]
+    OR?: PublicationsScalarWhereWithAggregatesInput[]
+    NOT?: PublicationsScalarWhereWithAggregatesInput | PublicationsScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Publications"> | string
+    title?: StringWithAggregatesFilter<"Publications"> | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -52067,12 +53159,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -52088,12 +53180,12 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -52107,12 +53199,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -52128,12 +53220,12 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -53949,6 +55041,41 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PublicationsCreateInput = {
+    id?: string
+    title: string
+  }
+
+  export type PublicationsUncheckedCreateInput = {
+    id?: string
+    title: string
+  }
+
+  export type PublicationsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PublicationsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PublicationsCreateManyInput = {
+    id?: string
+    title: string
+  }
+
+  export type PublicationsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PublicationsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -54946,6 +56073,11 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type CanvasDocumentNullableScalarRelationFilter = {
+    is?: CanvasDocumentWhereInput | null
+    isNot?: CanvasDocumentWhereInput | null
+  }
+
   export type ConversationListRelationFilter = {
     every?: ConversationWhereInput
     some?: ConversationWhereInput
@@ -54961,11 +56093,6 @@ export namespace Prisma {
   export type KnowledgeBaseNullableScalarRelationFilter = {
     is?: KnowledgeBaseWhereInput | null
     isNot?: KnowledgeBaseWhereInput | null
-  }
-
-  export type CanvasDocumentNullableScalarRelationFilter = {
-    is?: CanvasDocumentWhereInput | null
-    isNot?: CanvasDocumentWhereInput | null
   }
 
   export type ProjectAssociateListRelationFilter = {
@@ -55969,6 +57096,21 @@ export namespace Prisma {
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type PublicationsCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type PublicationsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+  }
+
+  export type PublicationsMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -57373,6 +58515,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrganizationMembershipsInput, UserUpdateWithoutOrganizationMembershipsInput>, UserUncheckedUpdateWithoutOrganizationMembershipsInput>
   }
 
+  export type CanvasDocumentCreateNestedOneWithoutProjectInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
+    connect?: CanvasDocumentWhereUniqueInput
+  }
+
   export type ConversationCreateNestedManyWithoutProjectInput = {
     create?: XOR<ConversationCreateWithoutProjectInput, ConversationUncheckedCreateWithoutProjectInput> | ConversationCreateWithoutProjectInput[] | ConversationUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ConversationCreateOrConnectWithoutProjectInput | ConversationCreateOrConnectWithoutProjectInput[]
@@ -57405,12 +58553,6 @@ export namespace Prisma {
     create?: XOR<KnowledgeBaseCreateWithoutProjectInput, KnowledgeBaseUncheckedCreateWithoutProjectInput>
     connectOrCreate?: KnowledgeBaseCreateOrConnectWithoutProjectInput
     connect?: KnowledgeBaseWhereUniqueInput
-  }
-
-  export type CanvasDocumentCreateNestedOneWithoutProjectInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    connect?: CanvasDocumentWhereUniqueInput
   }
 
   export type OrganizationCreateNestedOneWithoutProjectsInput = {
@@ -57447,6 +58589,12 @@ export namespace Prisma {
     connect?: SharedWorkspaceWhereUniqueInput | SharedWorkspaceWhereUniqueInput[]
   }
 
+  export type CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
+    connect?: CanvasDocumentWhereUniqueInput
+  }
+
   export type ConversationUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ConversationCreateWithoutProjectInput, ConversationUncheckedCreateWithoutProjectInput> | ConversationCreateWithoutProjectInput[] | ConversationUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ConversationCreateOrConnectWithoutProjectInput | ConversationCreateOrConnectWithoutProjectInput[]
@@ -57481,12 +58629,6 @@ export namespace Prisma {
     connect?: KnowledgeBaseWhereUniqueInput
   }
 
-  export type CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    connect?: CanvasDocumentWhereUniqueInput
-  }
-
   export type ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<ProjectAssociateCreateWithoutProjectInput, ProjectAssociateUncheckedCreateWithoutProjectInput> | ProjectAssociateCreateWithoutProjectInput[] | ProjectAssociateUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: ProjectAssociateCreateOrConnectWithoutProjectInput | ProjectAssociateCreateOrConnectWithoutProjectInput[]
@@ -57513,6 +58655,16 @@ export namespace Prisma {
     connectOrCreate?: SharedWorkspaceCreateOrConnectWithoutProjectInput | SharedWorkspaceCreateOrConnectWithoutProjectInput[]
     createMany?: SharedWorkspaceCreateManyProjectInputEnvelope
     connect?: SharedWorkspaceWhereUniqueInput | SharedWorkspaceWhereUniqueInput[]
+  }
+
+  export type CanvasDocumentUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
+    upsert?: CanvasDocumentUpsertWithoutProjectInput
+    disconnect?: CanvasDocumentWhereInput | boolean
+    delete?: CanvasDocumentWhereInput | boolean
+    connect?: CanvasDocumentWhereUniqueInput
+    update?: XOR<XOR<CanvasDocumentUpdateToOneWithWhereWithoutProjectInput, CanvasDocumentUpdateWithoutProjectInput>, CanvasDocumentUncheckedUpdateWithoutProjectInput>
   }
 
   export type ConversationUpdateManyWithoutProjectNestedInput = {
@@ -57581,16 +58733,6 @@ export namespace Prisma {
     update?: XOR<XOR<KnowledgeBaseUpdateToOneWithWhereWithoutProjectInput, KnowledgeBaseUpdateWithoutProjectInput>, KnowledgeBaseUncheckedUpdateWithoutProjectInput>
   }
 
-  export type CanvasDocumentUpdateOneWithoutProjectNestedInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    upsert?: CanvasDocumentUpsertWithoutProjectInput
-    disconnect?: CanvasDocumentWhereInput | boolean
-    delete?: CanvasDocumentWhereInput | boolean
-    connect?: CanvasDocumentWhereUniqueInput
-    update?: XOR<XOR<CanvasDocumentUpdateToOneWithWhereWithoutProjectInput, CanvasDocumentUpdateWithoutProjectInput>, CanvasDocumentUncheckedUpdateWithoutProjectInput>
-  }
-
   export type OrganizationUpdateOneRequiredWithoutProjectsNestedInput = {
     create?: XOR<OrganizationCreateWithoutProjectsInput, OrganizationUncheckedCreateWithoutProjectsInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutProjectsInput
@@ -57653,6 +58795,16 @@ export namespace Prisma {
     update?: SharedWorkspaceUpdateWithWhereUniqueWithoutProjectInput | SharedWorkspaceUpdateWithWhereUniqueWithoutProjectInput[]
     updateMany?: SharedWorkspaceUpdateManyWithWhereWithoutProjectInput | SharedWorkspaceUpdateManyWithWhereWithoutProjectInput[]
     deleteMany?: SharedWorkspaceScalarWhereInput | SharedWorkspaceScalarWhereInput[]
+  }
+
+  export type CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
+    upsert?: CanvasDocumentUpsertWithoutProjectInput
+    disconnect?: CanvasDocumentWhereInput | boolean
+    delete?: CanvasDocumentWhereInput | boolean
+    connect?: CanvasDocumentWhereUniqueInput
+    update?: XOR<XOR<CanvasDocumentUpdateToOneWithWhereWithoutProjectInput, CanvasDocumentUpdateWithoutProjectInput>, CanvasDocumentUncheckedUpdateWithoutProjectInput>
   }
 
   export type ConversationUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -57719,16 +58871,6 @@ export namespace Prisma {
     delete?: KnowledgeBaseWhereInput | boolean
     connect?: KnowledgeBaseWhereUniqueInput
     update?: XOR<XOR<KnowledgeBaseUpdateToOneWithWhereWithoutProjectInput, KnowledgeBaseUpdateWithoutProjectInput>, KnowledgeBaseUncheckedUpdateWithoutProjectInput>
-  }
-
-  export type CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    upsert?: CanvasDocumentUpsertWithoutProjectInput
-    disconnect?: CanvasDocumentWhereInput | boolean
-    delete?: CanvasDocumentWhereInput | boolean
-    connect?: CanvasDocumentWhereUniqueInput
-    update?: XOR<XOR<CanvasDocumentUpdateToOneWithWhereWithoutProjectInput, CanvasDocumentUpdateWithoutProjectInput>, CanvasDocumentUncheckedUpdateWithoutProjectInput>
   }
 
   export type ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -61192,12 +62334,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
@@ -61211,12 +62353,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -62716,6 +63858,29 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type CanvasDocumentCreateWithoutProjectInput = {
+    id?: string
+    content: JsonNullValueInput | InputJsonValue
+    htmlContent: string
+    plainText: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CanvasDocumentUncheckedCreateWithoutProjectInput = {
+    id?: string
+    content: JsonNullValueInput | InputJsonValue
+    htmlContent: string
+    plainText: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CanvasDocumentCreateOrConnectWithoutProjectInput = {
+    where: CanvasDocumentWhereUniqueInput
+    create: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+  }
+
   export type ConversationCreateWithoutProjectInput = {
     id?: string
     title: string
@@ -62897,29 +64062,6 @@ export namespace Prisma {
     create: XOR<KnowledgeBaseCreateWithoutProjectInput, KnowledgeBaseUncheckedCreateWithoutProjectInput>
   }
 
-  export type CanvasDocumentCreateWithoutProjectInput = {
-    id?: string
-    content: JsonNullValueInput | InputJsonValue
-    htmlContent: string
-    plainText: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CanvasDocumentUncheckedCreateWithoutProjectInput = {
-    id?: string
-    content: JsonNullValueInput | InputJsonValue
-    htmlContent: string
-    plainText: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CanvasDocumentCreateOrConnectWithoutProjectInput = {
-    where: CanvasDocumentWhereUniqueInput
-    create: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-  }
-
   export type OrganizationCreateWithoutProjectsInput = {
     id?: string
     name: string
@@ -63091,6 +64233,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CanvasDocumentUpsertWithoutProjectInput = {
+    update: XOR<CanvasDocumentUpdateWithoutProjectInput, CanvasDocumentUncheckedUpdateWithoutProjectInput>
+    create: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+    where?: CanvasDocumentWhereInput
+  }
+
+  export type CanvasDocumentUpdateToOneWithWhereWithoutProjectInput = {
+    where?: CanvasDocumentWhereInput
+    data: XOR<CanvasDocumentUpdateWithoutProjectInput, CanvasDocumentUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type CanvasDocumentUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    htmlContent?: StringFieldUpdateOperationsInput | string
+    plainText?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CanvasDocumentUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    htmlContent?: StringFieldUpdateOperationsInput | string
+    plainText?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ConversationUpsertWithWhereUniqueWithoutProjectInput = {
     where: ConversationWhereUniqueInput
     update: XOR<ConversationUpdateWithoutProjectInput, ConversationUncheckedUpdateWithoutProjectInput>
@@ -63207,35 +64378,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     settings?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type CanvasDocumentUpsertWithoutProjectInput = {
-    update: XOR<CanvasDocumentUpdateWithoutProjectInput, CanvasDocumentUncheckedUpdateWithoutProjectInput>
-    create: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    where?: CanvasDocumentWhereInput
-  }
-
-  export type CanvasDocumentUpdateToOneWithWhereWithoutProjectInput = {
-    where?: CanvasDocumentWhereInput
-    data: XOR<CanvasDocumentUpdateWithoutProjectInput, CanvasDocumentUncheckedUpdateWithoutProjectInput>
-  }
-
-  export type CanvasDocumentUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: JsonNullValueInput | InputJsonValue
-    htmlContent?: StringFieldUpdateOperationsInput | string
-    plainText?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CanvasDocumentUncheckedUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: JsonNullValueInput | InputJsonValue
-    htmlContent?: StringFieldUpdateOperationsInput | string
-    plainText?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrganizationUpsertWithoutProjectsInput = {
@@ -63387,12 +64529,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -63407,12 +64549,12 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutProjectInput
@@ -63498,12 +64640,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -63518,12 +64660,12 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutProjectNestedInput
@@ -63768,11 +64910,11 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -63788,11 +64930,11 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -64120,11 +65262,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -64140,11 +65282,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -64825,12 +65967,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
@@ -64845,12 +65987,12 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutProjectInput
@@ -65001,12 +66143,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
@@ -65021,12 +66163,12 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutProjectNestedInput
@@ -65598,11 +66740,11 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -65618,11 +66760,11 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -65838,11 +66980,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -65858,11 +67000,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -66367,11 +67509,11 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -66387,11 +67529,11 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -66421,11 +67563,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -66441,11 +67583,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -66459,11 +67601,11 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -66479,11 +67621,11 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -66513,11 +67655,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -66533,11 +67675,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -66671,11 +67813,11 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -66691,11 +67833,11 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -66857,11 +67999,11 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -66877,11 +68019,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -67695,12 +68837,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     associates?: ProjectAssociateCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
@@ -67715,12 +68857,12 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     associates?: ProjectAssociateUncheckedCreateNestedManyWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
@@ -67893,12 +69035,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
@@ -67913,12 +69055,12 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
@@ -68749,12 +69891,12 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     organization: OrganizationCreateNestedOneWithoutProjectsInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutProjectInput
     members?: ProjectMemberCreateNestedManyWithoutProjectInput
@@ -68769,12 +69911,12 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
     knowledgeBase?: KnowledgeBaseUncheckedCreateNestedOneWithoutProjectInput
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutProjectInput
     members?: ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutProjectInput
@@ -68840,12 +69982,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutProjectsNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
@@ -68860,12 +70002,12 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutProjectNestedInput
@@ -69879,12 +71021,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUpdateManyWithoutProjectNestedInput
@@ -69898,12 +71040,12 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
     knowledgeBase?: KnowledgeBaseUncheckedUpdateOneWithoutProjectNestedInput
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     associates?: ProjectAssociateUncheckedUpdateManyWithoutProjectNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutProjectNestedInput
     members?: ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput

@@ -15,7 +15,7 @@ export async function sendEventRegistrationEmail({
   institution: string;
   optInToken: string;
 }) {
-  const subject = "You're Registered for the Law School AI Launch Event!";
+  const subject = "Wansom AI Student Program";
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const optInUrl = `${baseUrl}/api/events/opt-in?token=${optInToken}`;
 
@@ -27,171 +27,215 @@ export async function sendEventRegistrationEmail({
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
         body {
-          font-family: Arial, sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
           line-height: 1.6;
           color: #333333;
           margin: 0;
           padding: 0;
+          background-color: #f8f9fa;
         }
         .container {
           max-width: 600px;
           margin: 0 auto;
-          padding: 20px;
+          background-color: #ffffff;
         }
         .header {
-          background-color: #005c4d;
-          padding: 30px 20px;
+          background-color: #0a4b5e;
+          padding: 40px 30px;
           text-align: center;
-        }
-        .header img {
-          max-width: 200px;
-          height: auto;
         }
         .header h1 {
           color: white;
-          margin: 15px 0 0 0;
-          font-size: 24px;
+          margin: 20px 0 0 0;
+          font-size: 22px;
+          font-weight: 600;
+          line-height: 1.4;
+        }
+        .logo {
+          font-size: 32px;
+          color: white;
+          font-weight: bold;
+          letter-spacing: 1px;
         }
         .content {
-          padding: 30px 20px;
+          padding: 40px 30px;
           background-color: #ffffff;
         }
         .greeting {
-          font-size: 18px;
+          font-size: 16px;
           margin-bottom: 20px;
+          color: #1f2937;
         }
-        .highlight-box {
-          background: linear-gradient(135deg, #005c4d 0%, #007a63 100%);
+        .intro-text {
+          font-size: 15px;
+          line-height: 1.7;
+          color: #4b5563;
+          margin-bottom: 30px;
+        }
+        .features-box {
+          background-color: #f0f9ff;
           border-radius: 12px;
-          padding: 25px;
+          padding: 30px;
           margin: 30px 0;
-          color: white;
+        }
+        .features-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #0a4b5e;
+          margin: 0 0 20px 0;
           text-align: center;
         }
-        .highlight-box h2 {
-          margin: 0 0 15px 0;
-          font-size: 22px;
-          color: white;
+        .feature-item {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: 16px;
+          padding: 12px;
+          background-color: white;
+          border-radius: 8px;
         }
-        .highlight-box p {
-          margin: 0 0 20px 0;
-          font-size: 16px;
-          color: rgba(255, 255, 255, 0.9);
+        .feature-item:last-child {
+          margin-bottom: 0;
+        }
+        .feature-icon {
+          color: #0a4b5e;
+          font-size: 20px;
+          margin-right: 12px;
+          font-weight: bold;
+          flex-shrink: 0;
+        }
+        .feature-content {
+          flex: 1;
+        }
+        .feature-title {
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 4px;
+          font-size: 15px;
+        }
+        .feature-desc {
+          color: #6b7280;
+          font-size: 14px;
+          line-height: 1.5;
+          margin: 0;
+        }
+        .cta-container {
+          text-align: center;
+          margin: 35px 0;
         }
         .cta-button {
           display: inline-block;
           background-color: #f59e0b;
           color: white;
-          padding: 15px 35px;
+          padding: 16px 40px;
           text-decoration: none;
           border-radius: 8px;
-          font-weight: bold;
+          font-weight: 600;
           font-size: 16px;
-          margin-top: 10px;
           transition: background-color 0.3s;
+          box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
         }
         .cta-button:hover {
           background-color: #d97706;
         }
-        .benefits {
-          margin: 25px 0;
+        .closing {
+          margin-top: 30px;
+          font-size: 15px;
+          color: #4b5563;
         }
-        .benefit-item {
-          display: flex;
-          align-items: start;
-          margin-bottom: 15px;
-        }
-        .benefit-icon {
-          color: #005c4d;
-          font-size: 20px;
-          margin-right: 12px;
-          font-weight: bold;
-        }
-        .benefit-text {
-          flex: 1;
-          color: #333;
-        }
-        .event-details {
-          background-color: #f9fafb;
-          border-left: 4px solid #005c4d;
-          padding: 20px;
-          margin: 25px 0;
-          border-radius: 4px;
-        }
-        .event-details h3 {
-          margin: 0 0 15px 0;
-          color: #005c4d;
+        .signature {
+          margin-top: 20px;
+          font-size: 15px;
+          color: #1f2937;
         }
         .footer {
-          background-color: #f5f5f5;
-          padding: 20px;
+          background-color: #f9fafb;
+          padding: 30px;
           text-align: center;
-          font-size: 12px;
-          color: #666666;
+          font-size: 13px;
+          color: #6b7280;
+          border-top: 1px solid #e5e7eb;
+        }
+        .footer-company {
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 8px;
         }
         .social-links {
-          margin-top: 15px;
+          margin: 15px 0;
         }
         .social-links a {
-          margin: 0 10px;
+          margin: 0 8px;
           text-decoration: none;
-          color: #005c4d;
+          color: #0a4b5e;
+          font-weight: 500;
+        }
+        .footer-note {
+          margin-top: 15px;
+          font-size: 12px;
+          line-height: 1.5;
         }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
-          <h1>You now have early access to Wansom.AI Student Progam</h1>
+          <div class="logo">WANSOM.AI</div>
+          <h1>You now have early access to Wansom.AI Student Program</h1>
         </div>
 
         <div class="content">
           <p class="greeting">Hi ${name},</p>
 
-          <p>Thank you for registering for <strong>AFRO-IP LAW & TECH 2025 Competitons</strong> As part of your registration, you’ll get exclusive unlimited access to wansom.ai — our AI legal platform for students</p>
+          <p class="intro-text">Thank you for registering for <strong>AFRO-IP LAW & TECH 2025 Competitions</strong>. As part of your registration, you'll get exclusive unlimited access to wansom.ai — our AI legal platform for students.</p>
 
-          <div class="highlight-box">
-            <h2>🎁 Here's what you can do with wansom</h2>
-             <div class="benefit-item">
-              <span class="benefit-icon">✓</span>
-             <div class="benefit-text">
-                <strong>Legal Research</strong><br>
-                Access to the best legally trained AI models for help you research case law, statutes, and regulations across multiple jurisdictions
+          <div class="features-box">
+            <h2 class="features-title">Here's what you can do with Wansom</h2>
+
+            <div class="feature-item">
+              <span class="feature-icon">✓</span>
+              <div class="feature-content">
+                <div class="feature-title">Legal Research</div>
+                <p class="feature-desc">Access to the best legally trained AI models to help you research case law, statutes, and regulations across multiple jurisdictions</p>
               </div>
             </div>
-             <div class="benefit-item">
-              <span class="benefit-icon">✓</span>
-               <div class="benefit-text">
-                <strong>Drafting tools</strong><br>
-                Draft legal memoranda, contracts, and case briefs with AI assistance
+
+            <div class="feature-item">
+              <span class="feature-icon">✓</span>
+              <div class="feature-content">
+                <div class="feature-title">Drafting Tools</div>
+                <p class="feature-desc">Draft legal memoranda, contracts, and case briefs with AI assistance</p>
               </div>
             </div>
-             <div class="benefit-item">
-              <span class="benefit-icon">✓</span>
-              <div class="benefit-text">
-                <strong>Collaborative workspace</strong><br>
-                Collaborate with classmates on research projects,assignments and share resources seamlessly
+
+            <div class="feature-item">
+              <span class="feature-icon">✓</span>
+              <div class="feature-content">
+                <div class="feature-title">Collaborative Workspace</div>
+                <p class="feature-desc">Collaborate with classmates on research projects, assignments and share resources seamlessly</p>
               </div>
-              </div>
+            </div>
+          </div>
+
+          <div class="cta-container">
             <a href="${optInUrl}" class="cta-button">Activate Wansom Pro Access</a>
           </div>
 
-          <div class="benefits">
-          <p>We look forward to seeing you at the event!</p>
+          <p class="closing">We look forward to seeing you at the event!</p>
 
-          <p>Best regards,<br>
-          <strong>The Wansom Team</strong></p>
+          <div class="signature">
+            Best regards,<br>
+            <strong>The Wansom Team</strong>
+          </div>
         </div>
 
         <div class="footer">
-          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p class="footer-company">© 2025 Wansom Ltd. All rights reserved.</p>
           <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p style="margin-top: 15px;">You're receiving this email because you registered for the Law School AI Launch Event.</p>
+          <p class="footer-note">You're receiving this email because you registered for the AFRO-IP LAW & TECH 2025 Competitions.</p>
         </div>
       </div>
     </body>
