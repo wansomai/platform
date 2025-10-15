@@ -181,7 +181,7 @@ export async function sendEventRegistrationEmail({
         <div class="content">
           <p class="greeting">Hi ${name},</p>
 
-          <p class="intro-text">Thank you for registering for <strong>AFRO-IP LAW & TECH 2025 Competitions</strong>. As part of your registration, you'll get exclusive unlimited access to wansom.ai — our AI legal platform for students.</p>
+          <p class="intro-text">Thank you for registering for <strong>AFRO-IP LAW & TECH 2025 Competitions</strong>. As part of your registration, you'll get exclusive unlimited access to wansom.ai — our AI legal platform for law school students.</p>
 
           <div class="features-box">
             <h2 class="features-title">Here's what you can do with Wansom</h2>
