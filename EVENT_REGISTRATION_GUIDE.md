@@ -18,7 +18,7 @@ This system handles event registration for the Law School AI Launch Event and pr
 
 ### 1. Event Registration
 
-**Endpoint**: `POST /api/events/law-school-launch/register`
+**Endpoint**: `POST https://www.wansom.ai/api/events/law-school-launch/register`
 
 **Purpose**: Register a user for the law school launch event
 
@@ -63,32 +63,47 @@ This system handles event registration for the Law School AI Launch Event and pr
 
 ---
 
-### 2. Opt-In (Auto-Create Account)
+### 2. Opt-In Flow (Auto-Create Account)
 
-**Endpoint**: `GET /api/events/opt-in?token={optInToken}`
+**Entry Point**: `GET /api/events/opt-in?token={optInToken}`
 
-**Purpose**: Auto-create Wansom Pro account and login user
-
-**Parameters**:
-- `token` (query param): The unique opt-in token from the registration email
+**Purpose**: Redirect to opt-in page with loading UI
 
 **Flow**:
-1. Validates the opt-in token
-2. Checks if account already exists
-3. If new user:
+1. User clicks "Activate Wansom Pro Access" in email
+2. Redirects to `/events/opt-in?token={token}` (loading page)
+3. Loading page shows animated UI while calling activation API
+4. Activation API (`GET /api/events/opt-in/activate?token={token}`) processes:
+   - Validates the opt-in token
+   - Checks if account already exists
    - Generates secure random password (12 chars)
    - Creates User + Organization
    - Sends credentials email
-   - Auto-logs user in
-   - Redirects to `/dashboard`
-4. If existing user:
-   - Redirects to `/login?message=account_exists`
+   - Sets auth cookies
+   - Returns success
+5. User is automatically redirected to `/dashboard`
 
-**Redirects**:
-- Success: `/dashboard` (with auth cookies set)
-- Account exists: `/login?message=account_exists`
-- Invalid token: `/login?error=invalid_token`
-- Server error: `/login?error=server_error`
+**User Experience**:
+- ✅ Professional loading UI with animation
+- ✅ Clear status messages
+- ✅ Automatic redirect to dashboard
+- ✅ Email with credentials sent
+
+**API Response** (`/api/events/opt-in/activate`):
+```json
+{
+  "status": 200,
+  "message": "Account activated successfully!",
+  "data": {
+    "user": {
+      "id": "clx...",
+      "email": "user@university.edu",
+      "fullName": "John Doe",
+      "organizationName": "University Name"
+    }
+  }
+}
+```
 
 ---
 
@@ -254,13 +269,18 @@ curl -X POST http://localhost:3002/api/events/law-school-launch/register \
 
 ```
 src/
-├── app/api/events/
-│   ├── law-school-launch/register/route.ts  (Registration endpoint)
-│   └── opt-in/route.ts                      (Opt-in endpoint)
+├── app/
+│   ├── api/events/
+│   │   ├── law-school-launch/register/route.ts  (Registration endpoint)
+│   │   └── opt-in/
+│   │       ├── route.ts                         (Redirect to opt-in page)
+│   │       └── activate/route.ts                (Account activation API)
+│   └── events/opt-in/
+│       └── page.tsx                             (Opt-in loading page UI)
 ├── lib/
-│   └── event-email-templates.ts             (Email templates)
+│   └── event-email-templates.ts                 (Email templates)
 └── prisma/
-    └── schema.prisma                        (Updated with EventRegistration)
+    └── schema.prisma                            (Updated with EventRegistration)
 ```
 
 ---
