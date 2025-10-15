@@ -46,13 +46,13 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
       keywords: adaptedPost.title || 'legal document templates, Draft legal documments, legal insights',
       alternates: {
-        canonical: `https://wansom.ai/legal-documents/${slug}`,
+        canonical: `https://www.wansom.ai/legal-documents/${slug}`,
       },
       openGraph: {
         title: adaptedPost.title,
         description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
         type: 'article',
-        url: `https://wansom.ai/legal-documents/${slug}`, // Fix: Use slug instead of params
+        url: `https://ww.wansom.ai/legal-documents/${slug}`, 
         images: [
           {
             url: "/contract-sample.webp",

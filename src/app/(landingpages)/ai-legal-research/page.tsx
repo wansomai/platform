@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     title: 'Best AI Legal Research | Wansom AI',
     description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
     type: 'website',
+    url: 'https://www.wansom.ai/ai-legal-research',
     images: [
       {
         url: '/legal-research.png',

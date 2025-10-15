@@ -7,12 +7,13 @@ export const metadata: Metadata = {
   title: 'legal document templates | wansom AI',
   description: 'Download agreements, contracts, leases, wills and more legal documents. Access professional legal templates and create custom documents with AI assistance.',
   alternates: {
-    canonical: 'https://wansom.ai/legal-documents',
+    canonical: 'https://www.wansom.ai/legal-documents',
   },
   openGraph: {
     title: 'legal document templates | Wansom AI',
     description: 'Download legal document templates, agreements, contracts, leases, wills and more legal documents. Draft with AI assistance.',
     type: 'website',
+    url: 'https://www.wansom.ai/legal-documents',
     images: [
       {
         url: '/dashboard.jpg',

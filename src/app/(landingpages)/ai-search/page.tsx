@@ -7,12 +7,12 @@ export const metadata: Metadata = {
     title: "Wansom AI Academy | Legal AI Search Platform",
     description: "Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.",
     alternates: {
-      canonical: '/ai-search',
+      canonical: 'https://www.academy.wansom.ai/ai-search',
     },
     openGraph: {
       title: 'Wansom AI Academy',
       description: 'Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.',
-      url: 'https://www.academy.wansom.ai/',
+      url: 'https://www.academy.wansom.ai/ai-search',
       siteName: 'Wansom AI',
       images: [
         {

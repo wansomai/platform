@@ -38,10 +38,15 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     alternates: {
       canonical: `https://www.wansom.ai/hire-a-lawyer/${slug}`
     },
+
     openGraph: {
       title: `${entry.fields.title}`,
       description: entry.fields.metaDescription || 'Find the best lawyers in your area.',
       images: "/images/hero.png",
+      url: `https://www.wansom.ai/hire-a-lawyer/${slug}`,
+      siteName: 'Wansom AI',
+      locale: 'en-US',
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',

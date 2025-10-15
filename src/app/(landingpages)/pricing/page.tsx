@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Legal AI Assistant pricing for Wansom AI. Choose from our flexible plans designed for legal professionals.',
   keywords: 'pricing, legal ai, ai law, legal ai companies, legal software pricing',
   alternates: {
-    canonical: '/pricing',
+    canonical: 'https://www.wansom.ai/pricing',
   },
   openGraph: {
     title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
