@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-export default function OptInPage() {
+function OptInContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -131,5 +131,25 @@ export default function OptInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function OptInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-primary">WANSOM.AI</h1>
+            </div>
+            <Loader2 className="w-16 h-16 text-primary mx-auto animate-spin mb-6" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h2>
+          </div>
+        </div>
+      </div>
+    }>
+      <OptInContent />
+    </Suspense>
   );
 }
