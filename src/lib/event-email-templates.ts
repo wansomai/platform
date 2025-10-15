@@ -15,7 +15,7 @@ export async function sendEventRegistrationEmail({
   institution: string;
   optInToken: string;
 }) {
-  const subject = "Wansom AI Student Program";
+  const subject = "Welcome To Wansom AI Student Program";
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const optInUrl = `${baseUrl}/api/events/opt-in?token=${optInToken}`;
 
@@ -178,11 +178,6 @@ export async function sendEventRegistrationEmail({
     </head>
     <body>
       <div class="container">
-        <div class="header">
-          <div class="logo">WANSOM.AI</div>
-          <h1>You now have early access to Wansom.AI Student Program</h1>
-        </div>
-
         <div class="content">
           <p class="greeting">Hi ${name},</p>
 
@@ -229,8 +224,7 @@ export async function sendEventRegistrationEmail({
         </div>
 
         <div class="footer">
-          <p class="footer-company">© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
+          <p class="footer-company">© 2025 Wansom AI Ltd. All rights reserved.</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
