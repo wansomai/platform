@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Search, Plus, MoreHorizontal, UserPlus, Crown, Mail } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, Crown, Mail } from "lucide-react";
 import { apiService } from '@/lib/api';
 import {
   DropdownMenu,
@@ -37,11 +37,25 @@ interface Invitation {
   createdAt: string;
 }
 
+interface UserProfile {
+  id: string;
+  email: string;
+  fullName: string | null;
+  role: string;
+  organizationId: string;
+  organization: {
+    id: string;
+    name: string;
+  };
+}
+
 const Page = () => {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
-  const [fullName, setFullName] = useState(session?.user?.name || '');
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('member');
@@ -51,10 +65,29 @@ const Page = () => {
   const [membersLoading, setMembersLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'members' | 'invitations'>('members');
 
+  // Fetch user profile
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   // Fetch team members and invitations
   useEffect(() => {
     fetchTeamData();
   }, []);
+
+  const fetchProfile = async () => {
+    try {
+      setProfileLoading(true);
+      const data = await apiService.get('/api/profile') as { user: UserProfile };
+      setProfile(data.user);
+      setFullName(data.user.fullName || '');
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast.error('Failed to load profile');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
 
   const fetchTeamData = async () => {
     try {
@@ -66,7 +99,7 @@ const Page = () => {
 
       try {
         membersData = await apiService.get('/api/organization/members');
-        console.log('Members response:', membersData);
+
       } catch (membersError) {
         console.error('Error fetching members:', membersError);
         // Use mock data for members if API fails
@@ -107,14 +140,9 @@ const Page = () => {
       // API call to update the user profile
       await apiService.put('/api/profile', { name: fullName });
 
-      // Update session with new data
-      await updateSession({
-        ...session,
-        user: {
-          ...session?.user,
-          name: fullName,
-        },
-      });
+      // Refresh profile data from server
+      await fetchProfile();
+
       setIsEditing(false);
       toast.success("Profile updated successfully");
     } catch (error) {
@@ -217,36 +245,42 @@ const Page = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    {isEditing ? (
-                      <Input
-                        id="name"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Enter your full name"
-                      />
-                    ) : (
-                      <p className="text-lg">{session?.user?.name || 'Not set'}</p>
-                    )}
-                  </div>
+                {profileLoading ? (
+                  <div className="text-center py-8 text-gray-500">Loading profile...</div>
+                ) : profile ? (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      {isEditing ? (
+                        <Input
+                          id="name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Enter your full name"
+                        />
+                      ) : (
+                        <p className="text-lg">{profile.fullName || 'Not set'}</p>
+                      )}
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <p className="text-lg">{session?.user?.email}</p>
-                  </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <p className="text-lg">{profile.email}</p>
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label>Organization</Label>
-                    <p className="text-lg">{(session?.user as any)?.organization?.name || 'Not assigned'}</p>
-                  </div>
+                    <div className="space-y-2">
+                      <Label>Organization</Label>
+                      <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
+                    </div>
 
-                  <div className="space-y-2">
-                    <Label>Role</Label>
-                    <p className="text-lg capitalize">{(session?.user as any)?.role || 'User'}</p>
+                    <div className="space-y-2">
+                      <Label>Role</Label>
+                      <p className="text-lg capitalize">{profile.role || 'User'}</p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">Failed to load profile</div>
+                )}
 
                 <Separator className="my-4" />
 
