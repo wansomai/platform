@@ -64,6 +64,7 @@ model User {
   Folder                  Folder[]
   sentInvitations         Invitation[]            @relation("InvitedBy")
   messages                Message[]
+  ownedOrganizations      Organization[]          @relation("OrganizationOwner")
   projectDocuments        ProjectDocument[]
   projectMembers          ProjectMember[]
   sessions                Session[]
@@ -94,10 +95,13 @@ model Organization {
   profileStatus       String                @default("pending")
   serviceAreas        Json[]
   yearsInPractice     Int                   @default(0)
+  accountType         String                @default("personal")
+  ownerId             String?
   aiAssociates        AIAssociate[]
   documents           Document[]
   Folder              Folder[]
   invitations         Invitation[]
+  owner               User?                 @relation("OrganizationOwner", fields: [ownerId], references: [id])
   projects            Project[]
   activeUsers         User[]                @relation("ActiveOrganization")
   users               User[]
@@ -221,6 +225,7 @@ model Project {
   organizationId   String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  visibility       String             @default("organization")
   canvasDocument   CanvasDocument?
   conversations    Conversation[]
   documents        Document[]
@@ -432,6 +437,7 @@ model Invitation {
   projectId      String
   organizationId String
   invitedById    String
+  status         String       @default("pending")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   invitedBy      User         @relation("InvitedBy", fields: [invitedById], references: [id])

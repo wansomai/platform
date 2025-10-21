@@ -4,6 +4,13 @@ import { getUserIdFromRequest } from "@/lib/auth/authorization";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { sendInvitationEmail } from "@/lib/email-service";
 import crypto from "crypto";
+import {
+  hasOrganizationPermission,
+  canInviteMembers,
+  canAssignRole
+} from "@/lib/auth/permissions";
+import { OrganizationPermission } from "@/lib/constants/permissions";
+import { OrganizationRole } from "@/lib/constants/roles";
 
 const prisma = new PrismaClient();
 
@@ -32,21 +39,44 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // Get current user's role from UserOrganization
-  const currentUserOrganization = await prisma.userOrganization.findUnique({
-    where: {
-      userId_organizationId: {
-        userId: userId,
-        organizationId: currentUser.organizationId
-      }
-    },
-    select: { role: true }
-  });
+  const organizationId = currentUser.organizationId;
 
-  // Check if current user has permission to invite members (must be admin or owner)
-  if (currentUserOrganization?.role !== 'admin' && currentUserOrganization?.role !== 'owner') {
+  // Check if organization can invite members (enterprise check)
+  const { canInvite, reason: accountTypeReason } = await canInviteMembers(organizationId);
+  if (!canInvite) {
+    return NextResponse.json(
+      {
+        error: accountTypeReason || 'Cannot invite members',
+        requiresUpgrade: true
+      },
+      { status: 403 }
+    );
+  }
+
+  // Check if current user has permission to invite members
+  const hasPermission = await hasOrganizationPermission(
+    userId,
+    organizationId,
+    OrganizationPermission.INVITE_MEMBERS
+  );
+
+  if (!hasPermission) {
     return NextResponse.json(
       { error: 'Insufficient permissions to invite members' },
+      { status: 403 }
+    );
+  }
+
+  // Validate that user can assign the requested role
+  const { canAssign, reason: roleReason } = await canAssignRole(
+    userId,
+    role,
+    organizationId
+  );
+
+  if (!canAssign) {
+    return NextResponse.json(
+      { error: roleReason || 'Cannot assign this role' },
       { status: 403 }
     );
   }
@@ -61,7 +91,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
       where: {
         userId_organizationId: {
           userId: existingUser.id,
-          organizationId: currentUser.organizationId
+          organizationId: organizationId
         }
       }
     });
@@ -78,7 +108,8 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
   const existingInvitation = await prisma.invitation.findFirst({
     where: {
       email,
-      organizationId: currentUser.organizationId,
+      organizationId: organizationId,
+      status: 'pending',
       expiresAt: {
         gt: new Date()
       }
@@ -100,7 +131,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
   // We need a project ID for the invitation - let's get the first project or create a default one
   const firstProject = await prisma.project.findFirst({
     where: {
-      organizationId: currentUser.organizationId
+      organizationId: organizationId
     }
   });
 
@@ -112,7 +143,8 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
       data: {
         title: 'Default Workspace',
         description: 'Default workspace for the organization',
-        organizationId: currentUser.organizationId
+        organizationId: organizationId,
+        visibility: 'organization' // Organization-wide visibility by default
       }
     });
     projectId = defaultProject.id;
@@ -120,7 +152,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
 
   // Get organization and inviter details for email
   const organization = await prisma.organization.findUnique({
-    where: { id: currentUser.organizationId },
+    where: { id: organizationId },
     select: { name: true }
   });
 
@@ -136,9 +168,10 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
       role,
       token,
       expiresAt,
-      organizationId: currentUser.organizationId,
+      organizationId: organizationId,
       projectId,
-      invitedById: userId
+      invitedById: userId,
+      status: 'pending'
     }
   });
 

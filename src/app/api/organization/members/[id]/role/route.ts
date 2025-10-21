@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
+import {
+  canManageUser,
+  canAssignRole,
+  validateRoleChange
+} from "@/lib/auth/permissions";
+import { isValidOrganizationRole } from "@/lib/constants/roles";
 
 const prisma = new PrismaClient();
 
@@ -16,11 +22,10 @@ export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, user
     );
   }
 
-  // Validate role
-  const validRoles = ['admin', 'member', 'owner'];
-  if (!validRoles.includes(role)) {
+  // Validate role format
+  if (!isValidOrganizationRole(role)) {
     return NextResponse.json(
-      { error: 'Invalid role. Must be admin, member, or owner' },
+      { error: 'Invalid role. Must be owner, admin, or member' },
       { status: 400 }
     );
   }
@@ -38,39 +43,34 @@ export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, user
     );
   }
 
-  // Get current user's role from UserOrganization
-  const currentUserOrganization = await prisma.userOrganization.findUnique({
-    where: {
-      userId_organizationId: {
-        userId: userId,
-        organizationId: currentUser.organizationId
-      }
-    },
-    select: { role: true }
-  });
+  const organizationId = currentUser.organizationId;
 
-  // Check if current user has permission to change roles (must be admin or owner)
-  if (currentUserOrganization?.role !== 'admin' && currentUserOrganization?.role !== 'owner') {
+  // Check if current user can manage the target user (role hierarchy check)
+  const { canManage, reason: manageReason } = await canManageUser(userId, memberId, organizationId);
+
+  if (!canManage) {
     return NextResponse.json(
-      { error: 'Insufficient permissions to change roles' },
+      { error: manageReason || 'Cannot manage this user' },
       { status: 403 }
     );
   }
 
-  // Prevent changing your own role
-  if (memberId === userId) {
+  // Check if current user can assign the target role
+  const { canAssign, reason: assignReason } = await canAssignRole(userId, role, organizationId);
+
+  if (!canAssign) {
     return NextResponse.json(
-      { error: 'Cannot change your own role' },
-      { status: 400 }
+      { error: assignReason || 'Cannot assign this role' },
+      { status: 403 }
     );
   }
 
-  // Check if the member exists in the organization
+  // Get the member's current role
   const memberOrganization = await prisma.userOrganization.findUnique({
     where: {
       userId_organizationId: {
         userId: memberId,
-        organizationId: currentUser.organizationId
+        organizationId: organizationId
       }
     }
   });
@@ -82,12 +82,27 @@ export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, user
     );
   }
 
+  // Validate the role change is safe
+  const { isValid, reason: validationReason } = await validateRoleChange(
+    memberId,
+    memberOrganization.role,
+    role,
+    organizationId
+  );
+
+  if (!isValid) {
+    return NextResponse.json(
+      { error: validationReason || 'Role change is not valid' },
+      { status: 400 }
+    );
+  }
+
   // Update the role in UserOrganization
   await prisma.userOrganization.update({
     where: {
       userId_organizationId: {
         userId: memberId,
-        organizationId: currentUser.organizationId
+        organizationId: organizationId
       }
     },
     data: {
@@ -97,6 +112,11 @@ export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, user
 
   return NextResponse.json({
     success: true,
-    message: 'Role updated successfully'
+    message: `Role updated successfully from ${memberOrganization.role} to ${role}`,
+    data: {
+      userId: memberId,
+      oldRole: memberOrganization.role,
+      newRole: role
+    }
   });
 }));
