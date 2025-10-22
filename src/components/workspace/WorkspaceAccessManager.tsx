@@ -163,8 +163,9 @@ export function WorkspaceAccessManager({
 
   const handleRemoveMember = async (memberId: string) => {
     try {
+      // Axios .delete accepts a config object as the second argument; send payload using the `data` field
       await apiService.delete(`/api/workspace/${workspaceId}/members`, {
-        memberId
+        data: { memberId }
       });
 
       setMembers(members.filter(m => m.id !== memberId));
