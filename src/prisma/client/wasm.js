@@ -178,6 +178,8 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   serviceAreas: 'serviceAreas',
   yearsInPractice: 'yearsInPractice',
   accountType: 'accountType',
+  upgradeRequestToken: 'upgradeRequestToken',
+  upgradeRequestedAt: 'upgradeRequestedAt',
   ownerId: 'ownerId'
 };
 

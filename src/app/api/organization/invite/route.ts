@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { getUserIdFromRequest } from "@/lib/auth/authorization";
+import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { sendInvitationEmail } from "@/lib/email-service";
 import crypto from "crypto";
@@ -10,19 +9,24 @@ import {
   canAssignRole
 } from "@/lib/auth/permissions";
 import { OrganizationPermission } from "@/lib/constants/permissions";
-import { OrganizationRole } from "@/lib/constants/roles";
+import { isValidOrganizationRole } from "@/lib/constants/roles";
 
 const prisma = new PrismaClient();
 
 // Create an invitation
 export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
   const { email, role = 'member' } = await request.json();
-
-  
-
   if (!email) {
     return NextResponse.json(
       { error: 'Email is required' },
+      { status: 400 }
+    );
+  }
+
+  // Validate role format
+  if (!isValidOrganizationRole(role)) {
+    return NextResponse.json(
+      { error: 'Invalid role. Must be owner, admin, or member' },
       { status: 400 }
     );
   }

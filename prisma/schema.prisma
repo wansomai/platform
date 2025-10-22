@@ -96,6 +96,8 @@ model Organization {
   serviceAreas        Json[]
   yearsInPractice     Int                   @default(0)
   accountType         String                @default("personal")
+  upgradeRequestToken String?
+  upgradeRequestedAt  DateTime?
   ownerId             String?
   aiAssociates        AIAssociate[]
   documents           Document[]

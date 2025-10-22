@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 
 const prisma = new PrismaClient();
@@ -19,7 +19,10 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
       organization: {
         select: {
           id: true,
-          name: true
+          name: true,
+          accountType: true,
+          ownerId: true,
+          upgradeRequestedAt: true
         }
       }
     }
@@ -82,7 +85,10 @@ export const PUT = withErrorHandler(withAuth(async (request: NextRequest, userId
       organization: {
         select: {
           id: true,
-          name: true
+          name: true,
+          accountType: true,
+          ownerId: true,
+          upgradeRequestedAt: true
         }
       }
     }

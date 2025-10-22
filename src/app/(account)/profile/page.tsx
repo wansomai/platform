@@ -46,6 +46,9 @@ interface UserProfile {
   organization: {
     id: string;
     name: string;
+    accountType: string;
+    ownerId: string;
+    upgradeRequestedAt?: string | null;
   };
 }
 
@@ -64,6 +67,8 @@ const Page = () => {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [membersLoading, setMembersLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'members' | 'invitations'>('members');
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [isDowngrading, setIsDowngrading] = useState(false);
 
   // Fetch user profile
   useEffect(() => {
@@ -221,6 +226,51 @@ const Page = () => {
     }
   };
 
+  const handleUpgradeAccount = async () => {
+    if (!confirm('Request upgrade to Enterprise account? An admin will review and approve your request.')) {
+      return;
+    }
+
+    try {
+      setIsUpgrading(true);
+      const response = await apiService.post('/api/organization/upgrade', {}) as { success?: boolean; message?: string; status?: string; error?: string };
+
+      if (response.success) {
+        toast.success(response.message || 'Upgrade request submitted successfully!');
+        await fetchProfile(); // Refresh to show pending status
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to submit upgrade request';
+      toast.error(errorMessage);
+      console.error('Error requesting upgrade:', error);
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
+
+  const handleDowngradeAccount = async () => {
+    if (!confirm('Downgrade to Personal account? This will remove all team members and cancel pending invitations. This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setIsDowngrading(true);
+      const response = await apiService.delete('/api/organization/upgrade') as { success?: boolean; removedMembers?: number; error?: string };
+
+      if (response.success) {
+        toast.success(`Account downgraded. ${response.removedMembers || 0} members removed.`);
+        await fetchProfile(); // Refresh to show new account type
+        await fetchTeamData(); // Refresh team data
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to downgrade account';
+      toast.error(errorMessage);
+      console.error('Error downgrading account:', error);
+    } finally {
+      setIsDowngrading(false);
+    }
+  };
+
   const filteredMembers = teamMembers.filter(member =>
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -241,7 +291,8 @@ const Page = () => {
           <p className="text-gray-600">Manage your organization.</p>
         </div>
 
-        {(profile?.role === 'admin' || profile?.role === 'owner') ? (
+        {(profile?.role === 'admin' || profile?.role === 'owner') && profile?.organization?.accountType === 'enterprise' ? (
+          // Enterprise accounts - show tabs with Members
           <Tabs defaultValue="general" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
               <TabsTrigger value="general" className="flex items-center gap-2">
@@ -320,15 +371,39 @@ const Page = () => {
                       </Button>
                     </>
                   ) : (
-                    <Button onClick={() => setIsEditing(true)}>
-                      Edit Profile
-                    </Button>
+                    <>
+                      <Button onClick={() => setIsEditing(true)}>
+                        Edit Profile
+                      </Button>
+                      {profile?.role === 'owner' && (
+                        <>
+                          {profile.organization?.accountType !== 'enterprise' ? (
+                            <Button
+                              onClick={handleUpgradeAccount}
+                              disabled={isUpgrading}
+                            >
+                              <Crown className="h-4 w-4 mr-2" />
+                              {isUpgrading ? "Loading..." : "Switch to Enterprise"}
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleDowngradeAccount}
+                              disabled={isDowngrading}
+                              variant="destructive"
+                            >
+                              {isDowngrading ? "Switching..." : "Switch to Personal"}
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </>
                   )}
                 </div>
               </CardContent>
             </Card>
             </TabsContent>
 
+            {/* Members Tab Content */}
             <TabsContent value="members" className="space-y-6">
               <Card>
                 <CardHeader>
@@ -516,7 +591,7 @@ const Page = () => {
             </TabsContent>
           </Tabs>
         ) : (
-          // For regular members, show just the general content without tabs
+          // For personal accounts (owners/admins) or regular members - show content without tabs
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -583,9 +658,43 @@ const Page = () => {
                       </Button>
                     </>
                   ) : (
-                    <Button onClick={() => setIsEditing(true)}>
-                      Edit Profile
-                    </Button>
+                    <>
+                      <Button onClick={() => setIsEditing(true)}>
+                        Edit Profile
+                      </Button>
+                      {profile?.role === 'owner' && (
+                        <>
+                          {profile.organization?.accountType !== 'enterprise' ? (
+                            profile.organization?.upgradeRequestedAt ? (
+                              <Button
+                                disabled
+                                variant="outline"
+                              >
+                                <Crown className="h-4 w-4 mr-1" />
+                                Upgrade Pending
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={handleUpgradeAccount}
+                                disabled={isUpgrading}
+                                className='bg-secondary'
+                              >
+                                <Crown className="h-4 w-4 mr-1" />
+                                {isUpgrading ? "Requesting..." : "Upgrade to Enterprise"}
+                              </Button>
+                            )
+                          ) : (
+                            <Button
+                              onClick={handleDowngradeAccount}
+                              disabled={isDowngrading}
+                              variant="destructive"
+                            >
+                              {isDowngrading ? "Downgrading..." : "Downgrade to Personal"}
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </>
                   )}
                 </div>
               </CardContent>

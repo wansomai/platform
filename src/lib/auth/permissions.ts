@@ -3,10 +3,11 @@
  * Provides reusable functions for checking user permissions and managing access control
  */
 
-import { prisma } from '@/prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { OrganizationRole, RoleHierarchy, AccountType } from '@/lib/constants/roles';
 import { OrganizationPermission, roleHasPermission, type OrganizationPermissionType } from '@/lib/constants/permissions';
 
+const prisma = new PrismaClient();
 /**
  * Check if a user has a specific permission in an organization
  * @param userId - User ID to check
@@ -175,6 +176,15 @@ export async function canAssignRole(
   targetRole: string,
   organizationId: string
 ): Promise<{ canAssign: boolean; reason?: string }> {
+  // Validate that targetRole is a valid organization role
+  const validRoles = Object.values(OrganizationRole);
+  if (!validRoles.includes(targetRole as any)) {
+    return {
+      canAssign: false,
+      reason: `Invalid role: ${targetRole}. Must be one of: ${validRoles.join(', ')}`,
+    };
+  }
+
   // Prevent assigning owner role (must use transfer ownership instead)
   if (targetRole === OrganizationRole.OWNER) {
     return {
@@ -204,7 +214,7 @@ export async function canAssignRole(
 
   // Ensure actor cannot assign roles equal to or higher than their own
   const actorLevel = RoleHierarchy[actorRoleData.role as keyof typeof RoleHierarchy] || 0;
-  const targetLevel = RoleHierarchy[targetRole as keyof typeof RoleHierarchy] || 0;
+  const targetLevel = RoleHierarchy[targetRole as keyof typeof RoleHierarchy];
 
   if (targetLevel >= actorLevel) {
     return {

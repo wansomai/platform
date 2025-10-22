@@ -9800,6 +9800,8 @@ export namespace Prisma {
     profileStatus: string | null
     yearsInPractice: number | null
     accountType: string | null
+    upgradeRequestToken: string | null
+    upgradeRequestedAt: Date | null
     ownerId: string | null
   }
 
@@ -9818,6 +9820,8 @@ export namespace Prisma {
     profileStatus: string | null
     yearsInPractice: number | null
     accountType: string | null
+    upgradeRequestToken: string | null
+    upgradeRequestedAt: Date | null
     ownerId: string | null
   }
 
@@ -9839,6 +9843,8 @@ export namespace Prisma {
     serviceAreas: number
     yearsInPractice: number
     accountType: number
+    upgradeRequestToken: number
+    upgradeRequestedAt: number
     ownerId: number
     _all: number
   }
@@ -9867,6 +9873,8 @@ export namespace Prisma {
     profileStatus?: true
     yearsInPractice?: true
     accountType?: true
+    upgradeRequestToken?: true
+    upgradeRequestedAt?: true
     ownerId?: true
   }
 
@@ -9885,6 +9893,8 @@ export namespace Prisma {
     profileStatus?: true
     yearsInPractice?: true
     accountType?: true
+    upgradeRequestToken?: true
+    upgradeRequestedAt?: true
     ownerId?: true
   }
 
@@ -9906,6 +9916,8 @@ export namespace Prisma {
     serviceAreas?: true
     yearsInPractice?: true
     accountType?: true
+    upgradeRequestToken?: true
+    upgradeRequestedAt?: true
     ownerId?: true
     _all?: true
   }
@@ -10014,6 +10026,8 @@ export namespace Prisma {
     serviceAreas: JsonValue[]
     yearsInPractice: number
     accountType: string
+    upgradeRequestToken: string | null
+    upgradeRequestedAt: Date | null
     ownerId: string | null
     _count: OrganizationCountAggregateOutputType | null
     _avg: OrganizationAvgAggregateOutputType | null
@@ -10054,6 +10068,8 @@ export namespace Prisma {
     serviceAreas?: boolean
     yearsInPractice?: boolean
     accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
     ownerId?: boolean
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
@@ -10088,6 +10104,8 @@ export namespace Prisma {
     serviceAreas?: boolean
     yearsInPractice?: boolean
     accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
     ownerId?: boolean
     owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
@@ -10110,6 +10128,8 @@ export namespace Prisma {
     serviceAreas?: boolean
     yearsInPractice?: boolean
     accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
     ownerId?: boolean
     owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
@@ -10132,10 +10152,12 @@ export namespace Prisma {
     serviceAreas?: boolean
     yearsInPractice?: boolean
     accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
     ownerId?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "ownerId", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "upgradeRequestToken" | "upgradeRequestedAt" | "ownerId", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
@@ -10192,6 +10214,8 @@ export namespace Prisma {
       serviceAreas: Prisma.JsonValue[]
       yearsInPractice: number
       accountType: string
+      upgradeRequestToken: string | null
+      upgradeRequestedAt: Date | null
       ownerId: string | null
     }, ExtArgs["result"]["organization"]>
     composites: {}
@@ -10645,6 +10669,8 @@ export namespace Prisma {
     readonly serviceAreas: FieldRef<"Organization", 'Json[]'>
     readonly yearsInPractice: FieldRef<"Organization", 'Int'>
     readonly accountType: FieldRef<"Organization", 'String'>
+    readonly upgradeRequestToken: FieldRef<"Organization", 'String'>
+    readonly upgradeRequestedAt: FieldRef<"Organization", 'DateTime'>
     readonly ownerId: FieldRef<"Organization", 'String'>
   }
     
@@ -48788,6 +48814,8 @@ export namespace Prisma {
     serviceAreas: 'serviceAreas',
     yearsInPractice: 'yearsInPractice',
     accountType: 'accountType',
+    upgradeRequestToken: 'upgradeRequestToken',
+    upgradeRequestedAt: 'upgradeRequestedAt',
     ownerId: 'ownerId'
   };
 
@@ -49710,6 +49738,8 @@ export namespace Prisma {
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntFilter<"Organization"> | number
     accountType?: StringFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     ownerId?: StringNullableFilter<"Organization"> | string | null
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
@@ -49743,6 +49773,8 @@ export namespace Prisma {
     serviceAreas?: SortOrder
     yearsInPractice?: SortOrder
     accountType?: SortOrder
+    upgradeRequestToken?: SortOrderInput | SortOrder
+    upgradeRequestedAt?: SortOrderInput | SortOrder
     ownerId?: SortOrderInput | SortOrder
     aiAssociates?: AIAssociateOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
@@ -49779,6 +49811,8 @@ export namespace Prisma {
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntFilter<"Organization"> | number
     accountType?: StringFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     ownerId?: StringNullableFilter<"Organization"> | string | null
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
@@ -49812,6 +49846,8 @@ export namespace Prisma {
     serviceAreas?: SortOrder
     yearsInPractice?: SortOrder
     accountType?: SortOrder
+    upgradeRequestToken?: SortOrderInput | SortOrder
+    upgradeRequestedAt?: SortOrderInput | SortOrder
     ownerId?: SortOrderInput | SortOrder
     _count?: OrganizationCountOrderByAggregateInput
     _avg?: OrganizationAvgOrderByAggregateInput
@@ -49841,6 +49877,8 @@ export namespace Prisma {
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntWithAggregatesFilter<"Organization"> | number
     accountType?: StringWithAggregatesFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
     ownerId?: StringNullableWithAggregatesFilter<"Organization"> | string | null
   }
 
@@ -52606,6 +52644,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -52638,6 +52678,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -52670,6 +52712,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -52702,6 +52746,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -52734,6 +52780,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
   }
 
@@ -52755,6 +52803,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OrganizationUncheckedUpdateManyInput = {
@@ -52775,6 +52825,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -55760,6 +55812,17 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -55828,6 +55891,8 @@ export namespace Prisma {
     serviceAreas?: SortOrder
     yearsInPractice?: SortOrder
     accountType?: SortOrder
+    upgradeRequestToken?: SortOrder
+    upgradeRequestedAt?: SortOrder
     ownerId?: SortOrder
   }
 
@@ -55850,6 +55915,8 @@ export namespace Prisma {
     profileStatus?: SortOrder
     yearsInPractice?: SortOrder
     accountType?: SortOrder
+    upgradeRequestToken?: SortOrder
+    upgradeRequestedAt?: SortOrder
     ownerId?: SortOrder
   }
 
@@ -55868,6 +55935,8 @@ export namespace Prisma {
     profileStatus?: SortOrder
     yearsInPractice?: SortOrder
     accountType?: SortOrder
+    upgradeRequestToken?: SortOrder
+    upgradeRequestedAt?: SortOrder
     ownerId?: SortOrder
   }
 
@@ -55925,6 +55994,20 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -55934,17 +56017,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type ContentSectionListRelationFilter = {
@@ -56050,20 +56122,6 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type ContentScalarRelationFilter = {
@@ -58260,6 +58318,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type AIAssociateUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AIAssociateCreateWithoutOrganizationInput, AIAssociateUncheckedCreateWithoutOrganizationInput> | AIAssociateCreateWithoutOrganizationInput[] | AIAssociateUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutOrganizationInput | AIAssociateCreateOrConnectWithoutOrganizationInput[]
@@ -58614,10 +58676,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type OrganizationUpdateOneRequiredWithoutContentNestedInput = {
@@ -60882,6 +60940,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -60940,7 +61009,7 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -60948,7 +61017,10 @@ export namespace Prisma {
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -60965,20 +61037,6 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -61558,6 +61616,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -61589,6 +61649,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -61798,6 +61860,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -61829,6 +61893,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -61865,6 +61931,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -61896,6 +61964,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -62226,6 +62296,8 @@ export namespace Prisma {
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntFilter<"Organization"> | number
     accountType?: StringFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     ownerId?: StringNullableFilter<"Organization"> | string | null
   }
 
@@ -62429,6 +62501,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -62460,6 +62534,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -62502,6 +62578,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -62533,6 +62611,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63467,6 +63547,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -63498,6 +63580,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63571,6 +63655,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -63602,6 +63688,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63799,6 +63887,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -63830,6 +63920,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63909,6 +64001,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -63940,6 +64034,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -64047,6 +64143,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -64078,6 +64176,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -64125,6 +64225,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -64156,6 +64258,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -64187,6 +64291,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -64218,6 +64324,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -64324,6 +64432,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -64355,6 +64465,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -64657,6 +64769,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -64688,6 +64802,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -64990,6 +65106,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -65021,6 +65139,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -65453,6 +65573,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -65484,6 +65606,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -65807,6 +65931,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -65838,6 +65964,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -66160,6 +66288,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -66191,6 +66321,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -66378,6 +66510,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -66409,6 +66543,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -68412,6 +68548,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -68443,6 +68581,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
@@ -68600,6 +68740,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -68631,6 +68773,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -70044,6 +70188,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -70075,6 +70221,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     ownerId?: string | null
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -70287,6 +70435,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -70318,6 +70468,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -70919,6 +71071,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
     accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
   }
 
   export type ProjectDocumentCreateManyUserInput = {
@@ -71296,6 +71450,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -71327,6 +71483,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -71358,6 +71516,8 @@ export namespace Prisma {
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
     accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ProjectDocumentUpdateWithoutUserInput = {

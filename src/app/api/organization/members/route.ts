@@ -9,6 +9,7 @@ import {
   getOrganizationDetails
 } from "@/lib/auth/permissions";
 import { OrganizationPermission } from "@/lib/constants/permissions";
+import { sendMemberRemovedEmail } from "@/lib/email-service";
 
 const prisma = new PrismaClient();
 
@@ -163,7 +164,9 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
     where: { id: memberId },
     select: {
       organizationId: true,
-      activeOrganizationId: true
+      activeOrganizationId: true,
+      email: true,
+      fullName: true
     }
   });
 
@@ -173,6 +176,18 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
       { status: 404 }
     );
   }
+
+  // Get organization and current user details for email notification
+  const [organization, currentUserDetails] = await Promise.all([
+    prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { name: true }
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { fullName: true, email: true }
+    })
+  ]);
 
   // Remove the user from the organization
   await prisma.userOrganization.delete({
@@ -192,6 +207,21 @@ export const DELETE = withErrorHandler(withAuth(async (request: NextRequest, use
         activeOrganizationId: memberUser.organizationId // Fall back to personal org
       }
     });
+  }
+
+  // Send notification email (non-blocking)
+  if (organization && memberUser.email) {
+    try {
+      await sendMemberRemovedEmail({
+        memberEmail: memberUser.email,
+        memberName: memberUser.fullName || memberUser.email,
+        organizationName: organization.name,
+        removedByName: currentUserDetails?.fullName || currentUserDetails?.email || 'An administrator'
+      });
+    } catch (emailError) {
+      console.error('Failed to send member removal notification:', emailError);
+      // Don't fail the request if email fails
+    }
   }
 
   return NextResponse.json({

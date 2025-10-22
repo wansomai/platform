@@ -7,6 +7,7 @@ import {
   validateRoleChange
 } from "@/lib/auth/permissions";
 import { isValidOrganizationRole } from "@/lib/constants/roles";
+import { sendRoleChangeEmail } from "@/lib/email-service";
 
 const prisma = new PrismaClient();
 
@@ -97,6 +98,22 @@ export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, user
     );
   }
 
+  // Get member and organization details for email notification
+  const [member, organization, currentUserDetails] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: memberId },
+      select: { email: true, fullName: true }
+    }),
+    prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { name: true }
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { fullName: true, email: true }
+    })
+  ]);
+
   // Update the role in UserOrganization
   await prisma.userOrganization.update({
     where: {
@@ -109,6 +126,23 @@ export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, user
       role
     }
   });
+
+  // Send notification email (non-blocking)
+  if (member && organization) {
+    try {
+      await sendRoleChangeEmail({
+        memberEmail: member.email,
+        memberName: member.fullName || member.email,
+        organizationName: organization.name,
+        oldRole: memberOrganization.role,
+        newRole: role,
+        changedByName: currentUserDetails?.fullName || currentUserDetails?.email || 'An administrator'
+      });
+    } catch (emailError) {
+      console.error('Failed to send role change notification:', emailError);
+      // Don't fail the request if email fails
+    }
+  }
 
   return NextResponse.json({
     success: true,
