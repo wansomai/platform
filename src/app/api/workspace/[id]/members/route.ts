@@ -29,7 +29,7 @@ export const GET = withErrorHandler(
     // Get workspace members
     const members = await getWorkspaceMembers(projectId);
 
-    const formattedMembers = members.map(member => ({
+    const formattedMembers = members.map((member: { user: { id: any; email: any; fullName: any; }; role: any; createdAt: { toISOString: () => any; }; }) => ({
       id: member.user.id,
       email: member.user.email,
       name: member.user.fullName || member.user.email,

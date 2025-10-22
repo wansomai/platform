@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { canChangeWorkspaceVisibility } from "@/lib/auth/workspace-permissions";
 import { WorkspaceVisibility, isValidWorkspaceVisibility } from "@/lib/constants/roles";
