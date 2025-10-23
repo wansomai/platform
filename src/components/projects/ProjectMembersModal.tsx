@@ -69,6 +69,7 @@ export function ProjectMembersModal({
   const [availableMembers, setAvailableMembers] = useState<AvailableMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
   // Add member form state
   const [selectedMemberId, setSelectedMemberId] = useState<string>('');
@@ -89,8 +90,10 @@ export function ProjectMembersModal({
     try {
       const data = await apiService.get(`/api/projects/${projectId}/members`) as {
         members: Member[];
+        currentUserRole: string | null;
       };
       setMembers(data.members || []);
+      setCurrentUserRole(data.currentUserRole || null);
     } catch (error) {
       console.error('Error fetching members:', error);
       toast.error('Failed to load members');
@@ -166,11 +169,12 @@ export function ProjectMembersModal({
   };
 
   const selectedMember = availableMembers.find(m => m.id === selectedMemberId);
+  const isAdmin = currentUserRole === 'admin';
 
   const content = (
     <div className="space-y-6">
-      {/* Add Member Section */}
-      {availableMembers.length > 0 && (
+      {/* Add Member Section - Only visible to admin */}
+      {isAdmin && availableMembers.length > 0 && (
         <>
           <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center gap-2">
@@ -265,23 +269,25 @@ export function ProjectMembersModal({
                     {member.role === 'admin' && <Crown className="h-3 w-3" />}
                     {member.role}
                   </Badge>
-                  {member.canRemove !== false ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveMember(member.userId)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      title="Remove member"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <span
-                      className="text-xs text-gray-400 px-2"
-                      title="Workspace admin cannot be removed"
-                    >
-                      Admin
-                    </span>
+                  {isAdmin && (
+                    member.canRemove !== false ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveMember(member.userId)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Remove member"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <span
+                        className="text-xs text-gray-400 px-2"
+                        title="Workspace admin cannot be removed"
+                      >
+                        Admin
+                      </span>
+                    )
                   )}
                 </div>
               </div>
@@ -290,8 +296,8 @@ export function ProjectMembersModal({
         )}
       </div>
 
-      {/* No Available Members Message */}
-      {!loading && availableMembers.length === 0 && members.length > 0 && (
+      {/* No Available Members Message - Only visible to admin */}
+      {isAdmin && !loading && availableMembers.length === 0 && members.length > 0 && (
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
             All organization members have been added to this workspace.

@@ -55,6 +55,10 @@ export const GET = withErrorHandler(withAuth(async (
     }
   });
 
+  // Get current user's role in the project
+  const currentUserMember = projectMembers.find(member => member.userId === userId);
+  const currentUserRole = currentUserMember?.role || null;
+
   // Format the response
   const members = projectMembers.map(member => ({
     id: `${member.userId}-${member.projectId}`,
@@ -69,7 +73,8 @@ export const GET = withErrorHandler(withAuth(async (
 
   return NextResponse.json({
     members,
-    count: members.length
+    count: members.length,
+    currentUserRole
   });
 }));
 
