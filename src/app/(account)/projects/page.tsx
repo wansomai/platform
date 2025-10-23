@@ -6,6 +6,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Search,
@@ -13,10 +20,13 @@ import {
   ArrowRight,
   FolderPlus,
   ArrowUpDown,
+  MoreVertical,
+  Users,
 } from "lucide-react";
-import {  format } from "date-fns";
+import { format } from "date-fns";
 import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
+import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal";
 
 
 export default function ProjectsPage() {
@@ -31,6 +41,7 @@ export default function ProjectsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [favoriteProjects, setFavoriteProjects] = useState<string[]>([]);
+  const [selectedProjectForMembers, setSelectedProjectForMembers] = useState<{ id: string; title: string } | null>(null);
   
   // Fetch projects when component mounts
   useEffect(() => {
@@ -160,17 +171,53 @@ export default function ProjectsPage() {
         // Grid View
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sortedProjects.map((project) => (
-            <Card 
-              key={project.id} 
-              className="overflow-hidden hover:shadow-md transition-all"
-              onClick={() => router.push(`/projects/${project.id}`)}
+            <Card
+              key={project.id}
+              className="overflow-hidden hover:shadow-md transition-all cursor-pointer"
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex-1 truncate mr-2">{project.title}</CardTitle>
-           
+                  <CardTitle
+                    className="flex-1 truncate mr-2"
+                    onClick={() => router.push(`/projects/${project.id}`)}
+                  >
+                    {project.title}
+                  </CardTitle>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProjectForMembers({ id: project.id, title: project.title });
+                        }}
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Manage Members
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/projects/${project.id}`);
+                        }}
+                      >
+                        <ArrowRight className="h-4 w-4 mr-2" />
+                        Open Workspace
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
-                <CardDescription className="line-clamp-2">{project.description || "No description"}</CardDescription>
+                <CardDescription
+                  className="line-clamp-2"
+                  onClick={() => router.push(`/projects/${project.id}`)}
+                >
+                  {project.description || "No description"}
+                </CardDescription>
               </CardHeader>
 
               
@@ -191,6 +238,16 @@ export default function ProjectsPage() {
         <CreateProjectModal
           open={showCreateModal}
           onClose={() => setShowCreateModal(false)}
+        />
+      )}
+
+      {/* Members Modal */}
+      {selectedProjectForMembers && (
+        <ProjectMembersModal
+          projectId={selectedProjectForMembers.id}
+          projectTitle={selectedProjectForMembers.title}
+          isOpen={!!selectedProjectForMembers}
+          onClose={() => setSelectedProjectForMembers(null)}
         />
       )}
     </div>

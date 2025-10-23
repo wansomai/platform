@@ -2,7 +2,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
 import { ContractChatSplitView } from "@/components/contract/ContractChatSplitView"
@@ -11,27 +11,29 @@ import { WorkspaceSkeleton } from "@/components/commons/WorkspaceSkeleton"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
 import { useUIStore } from "@/store/ui.store"
 import { Button } from "@/components/ui/button"
-import { Briefcase, ChevronLeft, X } from "lucide-react"
+import { Briefcase, ChevronLeft, X, Users } from "lucide-react"
 import { ChatInput } from "@/components/chat/ChatInput"
 import { ConversationDetails } from "@/components/workspace/ConversationDetails"
 import { cn } from "@/lib/utils"
 import { useChatStore } from "@/store/chat.store"
 import { useProjectStore } from "@/store/project.store"
+import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal"
 
 export default function ProjectPage() {
   const params = useParams()
   const projectId = params.id as string
-  
+  const [showMembersModal, setShowMembersModal] = useState(false)
+
   // Get core workspace data (no settings)
   const { projects } = useProjectStore()
   const project = projects.find(p => p.id === projectId)
-  
+
   // Get settings from dedicated store
   const { settings } = useProjectSettingsStore()
-  const { 
-    rightSidebarCollapsed, 
-    setRightSidebarCollapsed 
-  } = useUIStore(); 
+  const {
+    rightSidebarCollapsed,
+    setRightSidebarCollapsed
+  } = useUIStore();
   const { fetchConversation, isLoading: chatLoading } = useChatStore();
     
   // Load project conversations
@@ -89,18 +91,29 @@ export default function ProjectPage() {
       )}>
         {/* Sidebar Header */}
         <div className="border-b p-4 flex items-center justify-between bg-gray-50">
-          <div className="flex items-center space-x-2">
-            <Briefcase className="h-4 w-4 text-gray-600" />
+          <div className="flex items-center space-x-2 flex-1 min-w-0">
+            <Briefcase className="h-4 w-4 text-gray-600 shrink-0" />
             <span className="font-medium text-sm truncate">{project.title}</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setRightSidebarCollapsed(true)}
-            className="h-6 w-6 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1 ml-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowMembersModal(true)}
+              className="h-8 w-8 p-0"
+              title="Manage members"
+            >
+              <Users className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setRightSidebarCollapsed(true)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Sidebar Content */}
@@ -120,6 +133,14 @@ export default function ProjectPage() {
           <ChevronLeft className="h-4 w-4" />
         </Button>
       )}
+
+      {/* Members Modal */}
+      <ProjectMembersModal
+        projectId={projectId}
+        projectTitle={project.title}
+        isOpen={showMembersModal}
+        onClose={() => setShowMembersModal(false)}
+      />
     </div>
-  ) 
+  )
 }

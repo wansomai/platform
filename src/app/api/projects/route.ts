@@ -13,19 +13,35 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true }
+    select: {
+      organizationId: true,
+      activeOrganizationId: true
+    }
   });
 
-  if (!user?.organizationId) {
+  if (!user) {
+    return NextResponse.json(
+      { error: 'User not found' },
+      { status: 404 }
+    );
+  }
+
+  // Use active organization if set, otherwise use primary organization
+  const currentOrgId = user.activeOrganizationId || user.organizationId;
+
+  if (!currentOrgId) {
     return NextResponse.json(
       { error: 'User organization not found' },
       { status: 404 }
     );
   }
 
+  // Get all projects where:
+  // 1. Project belongs to user's current organization
+  // 2. User is a member of the project
   const projects = await prisma.project.findMany({
     where: {
-      organizationId: user.organizationId,
+      organizationId: currentOrgId,
       members: {
         some: { userId: userId }
       }
