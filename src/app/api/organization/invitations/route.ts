@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getUserIdFromRequest } from "@/lib/auth/authorization";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 
 const prisma = new PrismaClient();

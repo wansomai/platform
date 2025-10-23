@@ -586,9 +586,370 @@ export function sendProjectInvitationEmail({
     </body>
     </html>
   `;
-  
+
   return sendEmail({
     to: email,
+    subject,
+    html,
+  });
+}
+
+/**
+ * Sends a notification email when a member's role is changed
+ * @param details Role change notification details
+ * @returns Result of sending the email
+ */
+export function sendRoleChangeEmail({
+  memberEmail,
+  memberName,
+  organizationName,
+  oldRole,
+  newRole,
+  changedByName
+}: {
+  memberEmail: string;
+  memberName: string;
+  organizationName: string;
+  oldRole: string;
+  newRole: string;
+  changedByName: string;
+}) {
+  const subject = `Your role in ${organizationName} has been updated`;
+
+  // Create HTML email content
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #005c4d;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .info-box {
+          background-color: #f0f9ff;
+          border-left: 4px solid #005c4d;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #005c4d;
+          color: white;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Role Updated</h2>
+        </div>
+        <div class="content">
+          <p>Hello ${memberName},</p>
+
+          <div class="info-box">
+            <p><strong>${changedByName}</strong> has updated your role in <strong>${organizationName}</strong>.</p>
+            <p><strong>Previous Role:</strong> ${oldRole}</p>
+            <p><strong>New Role:</strong> ${newRole}</p>
+          </div>
+
+          <p>Your permissions and access levels have been updated to reflect your new role.</p>
+
+          <p style="text-align: center;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/dashboard" class="button">Go to Dashboard</a>
+          </p>
+
+          <p>If you have questions about this change, please contact your organization administrator.</p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: memberEmail,
+    subject,
+    html,
+  });
+}
+
+/**
+ * Sends a notification email when a member is removed from an organization
+ * @param details Member removal notification details
+ * @returns Result of sending the email
+ */
+export function sendMemberRemovedEmail({
+  memberEmail,
+  memberName,
+  organizationName,
+  removedByName
+}: {
+  memberEmail: string;
+  memberName: string;
+  organizationName: string;
+  removedByName: string;
+}) {
+  const subject = `You have been removed from ${organizationName}`;
+
+  // Create HTML email content
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #005c4d;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .warning-box {
+          background-color: #fff3cd;
+          border-left: 4px solid #ffc107;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #005c4d;
+          color: white;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Access Removed</h2>
+        </div>
+        <div class="content">
+          <p>Hello ${memberName},</p>
+
+          <div class="warning-box">
+            <p><strong>${removedByName}</strong> has removed you from <strong>${organizationName}</strong>.</p>
+          </div>
+
+          <p>You no longer have access to this organization's projects and resources.</p>
+
+          <p>If you still have access to other organizations on Wansom, you can continue using your personal account or switch to another organization.</p>
+
+          <p style="text-align: center;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/dashboard" class="button">Go to Dashboard</a>
+          </p>
+
+          <p>If you believe this was done in error, please contact the organization administrator.</p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: memberEmail,
+    subject,
+    html,
+  });
+}
+/**
+ * Sends an email to admin for upgrade approval
+ * @param details Upgrade request details
+ * @returns Result of sending the email
+ */
+export function sendUpgradeApprovalEmail({
+  adminEmail,
+  organizationName,
+  requesterName,
+  requesterEmail,
+  approvalUrl
+}: {
+  adminEmail: string;
+  organizationName: string;
+  requesterName: string;
+  requesterEmail: string;
+  approvalUrl: string;
+}) {
+  const subject = `Upgrade Request: ${organizationName} wants to upgrade to Enterprise`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #005c4d;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .info-box {
+          background-color: #f0f9ff;
+          border-left: 4px solid #005c4d;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #005c4d;
+          color: white;
+          padding: 12px 30px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+          font-weight: 600;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Enterprise Upgrade Request</h2>
+        </div>
+        <div class="content">
+          <p>Hello Admin,</p>
+
+          <div class="info-box">
+            <p><strong>${requesterName}</strong> (${requesterEmail}) has requested to upgrade <strong>${organizationName}</strong> to Enterprise plan.</p>
+          </div>
+
+          <p><strong>Enterprise Features Include:</strong></p>
+          <ul>
+            <li>Invite unlimited team members</li>
+            <li>Role-based access control</li>
+            <li>Advanced collaboration features</li>
+            <li>Priority support</li>
+          </ul>
+
+          <p>To approve this upgrade request, click the button below:</p>
+
+          <p style="text-align: center;">
+            <a href="${approvalUrl}" class="button">Approve Upgrade</a>
+          </p>
+
+          <p style="font-size: 12px; color: #666;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${approvalUrl}">${approvalUrl}</a>
+          </p>
+
+          <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <strong>Organization Details:</strong><br>
+            Name: ${organizationName}<br>
+            Requested by: ${requesterName}<br>
+            Email: ${requesterEmail}
+          </p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>This is an automated notification from Wansom.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: adminEmail,
     subject,
     html,
   });

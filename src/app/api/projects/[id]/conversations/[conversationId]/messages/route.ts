@@ -1,11 +1,8 @@
 // app/api/projects/[id]/conversations/[conversationId]/messages/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { z } from "zod";
-import {
-  getUserIdFromRequest,
-  checkProjectAccess,
-} from "@/lib/auth/authorization";
+import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { classifyWithContext } from '@/lib/intentClassification';
@@ -50,8 +47,6 @@ const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
 });
 
-// Removed isSimpleQuery optimization - Gemini handles all contexts efficiently
-
 // Encoder for streaming response
 const encoder = new TextEncoder();
 
@@ -61,15 +56,19 @@ export async function POST(
   { params }: { params: Promise<{ id: string; conversationId: string }> }
 ) {
   try {
+    // Manual auth check (required for streaming endpoints)
+    const userId = await getUserIdFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
     const { content } = createMessageSchema.parse(body);
-    const userId = getUserIdFromRequest(request);
-    
-    if (!userId) {
-      return NextResponse.json({ status: 401, message: "Authentication required" }, { status: 401 });
-    }
-    
+
     // Start parallel operations immediately
     const accessCheckPromise = checkProjectAccess(projectId, userId);
 
@@ -78,12 +77,13 @@ export async function POST(
       where: { id: userId },
       select: { organizationId: true }
     });
-    
+
     // Only fetch what we need based on query type
     const conversationPromise = prisma.conversation.findFirst({
       where: { id: conversationId, projectId },
       select: { id: true } // Minimal select for faster query
     });
+
     // Create the user message in parallel with other operations
     const userMessagePromise = prisma.message.create({
       data: {
@@ -93,7 +93,7 @@ export async function POST(
         userId,
       }
     });
-    
+
     // Always get message history and metadata for proper context
     const messageHistoryPromise = prisma.message.findMany({
       where: { conversationId },
@@ -104,17 +104,17 @@ export async function POST(
         content: true,
       }
     });
-    
+
     const projectPromise = prisma.project.findUnique({
-          where: { id: projectId },
-          select: {
-            title: true,
-            description: true,
-            knowledgeBase: {
-              select: { instructions: true, settings: true }
-            }
-          }
-        });
+      where: { id: projectId },
+      select: {
+        title: true,
+        description: true,
+        knowledgeBase: {
+          select: { instructions: true, settings: true }
+        }
+      }
+    });
 
     // Check if project is in drafting mode - get canvas document if needed
     const canvasDocumentPromise = prisma.canvasDocument.findUnique({
@@ -136,24 +136,24 @@ export async function POST(
         }
       }
     });
-    
+
     // Wait for essential checks first
     const [hasAccess, conversation, user] = await Promise.all([
       accessCheckPromise,
       conversationPromise,
       userPromise
     ]);
-    
+
     if (!hasAccess) {
       return NextResponse.json(
-        { status: 403, message: "Permission denied" },
+        { error: "Permission denied" },
         { status: 403 }
       );
     }
-    
+
     if (!conversation) {
       return NextResponse.json(
-        { status: 404, message: "Conversation not found" },
+        { error: "Conversation not found" },
         { status: 404 }
       );
     }
@@ -164,15 +164,14 @@ export async function POST(
       if (!messageLimitCheck.allowed) {
         return NextResponse.json(
           {
-            status: 403,
-            message: messageLimitCheck.reason,
+            error: messageLimitCheck.reason,
             requiresUpgrade: true
           },
           { status: 403 }
         );
       }
     }
-    
+
     // Now that we've validated access, wait for the remaining data in parallel
     const [
       userMessage,
@@ -187,7 +186,7 @@ export async function POST(
       documentsPromise,
       canvasDocumentPromise
     ]);
-    
+
     // Create a stream for the response
     const stream = new ReadableStream({
       async start(controller) {
@@ -646,19 +645,18 @@ export async function POST(
         'Connection': 'keep-alive',
       },
     });
-    
   } catch (error) {
     console.error("Error processing message:", error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { status: 400, message: "Validation failed", errors: error.errors },
+        { error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
-      { status: 500, message: "Internal server error" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

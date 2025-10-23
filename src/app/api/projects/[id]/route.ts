@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
-import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization'
+import { checkProjectAccess } from '@/lib/auth/authorization'
+import { withAuth, withErrorHandler } from '@/lib/api/middleware'
 
 const prisma = new PrismaClient()
 
@@ -14,48 +15,32 @@ const updateProjectSchema = z.object({
 })
 
 // GET handler - Get project by ID
-export async function GET(
+export const GET = withErrorHandler(withAuth(async (
   request: NextRequest,
+  userId: string,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const projectId = (await params).id;
+) => {
+  const projectId = (await params).id;
+
+  // Check if user has access to this project
+  const hasAccess = await checkProjectAccess(projectId, userId);
+
+  if (!hasAccess) {
+    return NextResponse.json(
+      { error: 'You do not have permission to access this project' },
+      { status: 403 }
+    );
+  }
     
-    // Get user ID from request headers (use your existing auth function)
-    const userId = getUserIdFromRequest(request);
-    
-    if (!userId) {
-      return NextResponse.json(
-        { 
-          status: 401,
-          message: 'Authentication required' 
-        },
-        { status: 401 }
-      );
-    }
-    
-    // Check if user has access to this project (use your existing auth function)
-    const hasAccess = await checkProjectAccess(projectId, userId);
-    
-    if (!hasAccess) {
-      return NextResponse.json(
-        { 
-          status: 403,
-          message: 'You do not have permission to access this project' 
-        },
-        { status: 403 }
-      );
-    }
-    
-    // Get query parameters for workspace data customization
-    const { searchParams } = new URL(request.url);
-    
-    // Check if this is a workspace request
-    const isWorkspaceRequest = searchParams.get('workspace') === 'true';
-    const includeMessages = searchParams.get('include_messages') === 'true';
-    const messageLimit = Math.min(parseInt(searchParams.get('message_limit') || '50'), 100);
-    const includeDocuments = searchParams.get('include_documents') === 'true';
-    const includeSettings = searchParams.get('include_settings') === 'true';
+  // Get query parameters for workspace data customization
+  const { searchParams } = new URL(request.url);
+
+  // Check if this is a workspace request
+  const isWorkspaceRequest = searchParams.get('workspace') === 'true';
+  const includeMessages = searchParams.get('include_messages') === 'true';
+  const messageLimit = Math.min(parseInt(searchParams.get('message_limit') || '50'), 100);
+  const includeDocuments = searchParams.get('include_documents') === 'true';
+  const includeSettings = searchParams.get('include_settings') === 'true';
   if (isWorkspaceRequest) {
   // Enhanced workspace response - load everything in parallel with optimized queries
   const [project, conversations, projectDocuments] = await Promise.all([
@@ -149,10 +134,7 @@ export async function GET(
   
   if (!project) {
     return NextResponse.json(
-      { 
-        status: 404,
-        message: 'Project not found' 
-      },
+      { error: 'Project not found' },
       { status: 404 }
     );
   }
@@ -247,217 +229,137 @@ export async function GET(
         }
       });
       
-      if (!project) {
-        return NextResponse.json(
-          { 
-            status: 404,
-            message: 'Project not found' 
-          },
-          { status: 404 }
-        );
-      }
-      
-      return NextResponse.json({
-        status: 200,
-        message: 'Project retrieved successfully',
-        data: {
-          id: project.id,
-          title: project.title,
-          description: project.description,
-          status: project.status,
-          createdAt: project.createdAt.toISOString(),
-          updatedAt: project.updatedAt.toISOString(),
-          organization: project.organization,
-        }
-      });
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
     }
-    
-  } catch (error) {
-    console.error('Error loading project:', error);
-    
-    return NextResponse.json(
-      { 
-        status: 500,
-        message: 'Internal server error'
-      },
-      { status: 500 }
-    );
-  }
-}
 
-// PUT handler - Update project
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const projectId = (await params).id
-    
-    // Get user ID from request headers
-    const userId = getUserIdFromRequest(request);
-    
-    if (!userId) {
-      return NextResponse.json(
-        { 
-          status: 401,
-          message: 'Authentication required' 
-        },
-        { status: 401 }
-      );
-    }
-    
-    // Check if user has access to this project
-    const hasAccess = await checkProjectAccess(projectId, userId);
-    
-    if (!hasAccess) {
-      return NextResponse.json(
-        { 
-          status: 403,
-          message: 'You do not have permission to update this project' 
-        },
-        { status: 403 }
-      );
-    }
-    
-    // Parse and validate request body
-    const body = await request.json()
-    const { title, description, status } = updateProjectSchema.parse(body)
-    
-    // Update project
-    const updatedProject = await prisma.project.update({
-      where: { id: projectId },
-      data: {
-        ...(title && { title }),
-        ...(description !== undefined && { description }),
-        ...(status && { status })
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-        _count: {
-          select: {
-            members: true,
-            documents: true
-          }
-        }
-      }
-    })
-    
-    // Get message count
-    const messageCount = await prisma.message.count({
-      where: {
-        conversation: {
-          projectId
-        }
-      }
-    })
-    
-    // Format for response
-    const formattedProject = {
-      id: updatedProject.id,
-      title: updatedProject.title,
-      description: updatedProject.description,
-      status: updatedProject.status,
-      created_at: updatedProject.createdAt.toISOString(),
-      team_count: updatedProject._count?.members || 0,
-      documents_count: updatedProject._count?.documents || 0,
-      messages_count: messageCount || 0,
-      last_activity: updatedProject.updatedAt.toISOString()
-    }
-    
     return NextResponse.json({
       status: 200,
-      message: 'Project updated successfully',
-      data: formattedProject
-    })
-  } catch (error) {
-    console.error('Error updating project:', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          status: 400,
-          message: 'Validation failed', 
-          errors: error.errors 
-        },
-        { status: 400 }
-      )
-    }
-    
-    return NextResponse.json(
-      { 
-        status: 500,
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
-  }
-}
-
-// DELETE handler - Delete project
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const projectId = (await params).id
-    
-    // Get user ID from request headers
-    const userId = getUserIdFromRequest(request);
-    
-    if (!userId) {
-      return NextResponse.json(
-        { 
-          status: 401,
-          message: 'Authentication required' 
-        },
-        { status: 401 }
-      );
-    }
-    
-    // For deletion, we need to check if the user has admin rights
-    const projectMember = await prisma.projectMember.findUnique({
-      where: {
-        userId_projectId: {
-          userId,
-          projectId
-        }
+      message: 'Project retrieved successfully',
+      data: {
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        status: project.status,
+        createdAt: project.createdAt.toISOString(),
+        updatedAt: project.updatedAt.toISOString(),
+        organization: project.organization,
       }
     });
-    
-    // Only allow deletion if user is an admin
-    if (!projectMember || projectMember.role !== 'admin') {
-      return NextResponse.json(
-        { 
-          status: 403,
-          message: 'You do not have permission to delete this project' 
-        },
-        { status: 403 }
-      );
-    }
-    
-    // Delete project (with cascading deletes for related entities)
-    await prisma.project.delete({
-      where: { id: projectId }
-    })
-    
-    return NextResponse.json({
-      status: 200,
-      message: 'Project deleted successfully'
-    })
-  } catch (error) {
-    console.error('Error deleting project:', error)
-    
-    return NextResponse.json(
-      { 
-        status: 500,
-        message: 'Internal server error' 
-      },
-      { status: 500 }
-    )
   }
-}
+}));
+
+// PUT handler - Update project
+export const PUT = withErrorHandler(withAuth(async (
+  request: NextRequest,
+  userId: string,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const projectId = (await params).id;
+
+  // Check if user has access to this project
+  const hasAccess = await checkProjectAccess(projectId, userId);
+
+  if (!hasAccess) {
+    return NextResponse.json(
+      { error: 'You do not have permission to update this project' },
+      { status: 403 }
+    );
+  }
+
+  // Parse and validate request body
+  const body = await request.json();
+  const { title, description, status } = updateProjectSchema.parse(body);
+
+  // Update project
+  const updatedProject = await prisma.project.update({
+    where: { id: projectId },
+    data: {
+      ...(title && { title }),
+      ...(description !== undefined && { description }),
+      ...(status && { status })
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: {
+        select: {
+          members: true,
+          documents: true
+        }
+      }
+    }
+  });
+
+  // Get message count
+  const messageCount = await prisma.message.count({
+    where: {
+      conversation: {
+        projectId
+      }
+    }
+  });
+
+  // Format for response
+  const formattedProject = {
+    id: updatedProject.id,
+    title: updatedProject.title,
+    description: updatedProject.description,
+    status: updatedProject.status,
+    created_at: updatedProject.createdAt.toISOString(),
+    team_count: updatedProject._count?.members || 0,
+    documents_count: updatedProject._count?.documents || 0,
+    messages_count: messageCount || 0,
+    last_activity: updatedProject.updatedAt.toISOString()
+  };
+
+  return NextResponse.json({
+    status: 200,
+    message: 'Project updated successfully',
+    data: formattedProject
+  });
+}));
+
+// DELETE handler - Delete project
+export const DELETE = withErrorHandler(withAuth(async (
+  request: NextRequest,
+  userId: string,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const projectId = (await params).id;
+
+  // For deletion, we need to check if the user has admin rights
+  const projectMember = await prisma.projectMember.findUnique({
+    where: {
+      userId_projectId: {
+        userId,
+        projectId
+      }
+    }
+  });
+
+  // Only allow deletion if user is an admin
+  if (!projectMember || projectMember.role !== 'admin') {
+    return NextResponse.json(
+      { error: 'You do not have permission to delete this project' },
+      { status: 403 }
+    );
+  }
+
+  // Delete project (with cascading deletes for related entities)
+  await prisma.project.delete({
+    where: { id: projectId }
+  });
+
+  return NextResponse.json({
+    status: 200,
+    message: 'Project deleted successfully'
+  });
+}));

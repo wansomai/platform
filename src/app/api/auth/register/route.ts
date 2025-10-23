@@ -1,10 +1,11 @@
 // app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { z } from 'zod';
 import { generateTokens } from '@/lib/auth/token-service';
 import { sendWelcomeEmail } from '@/lib/email-service';
+import { OrganizationRole, AccountType } from '@/lib/constants/roles';
 
 const prisma = new PrismaClient();
 
@@ -93,15 +94,17 @@ export async function POST(request: NextRequest) {
     // ALWAYS create a personal organization for the user
     const personalOrgName = organizationName || `${fullName}'s Organization`;
 
+    // Create user and personal organization in a transaction
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         fullName: fullName || '',
-        role: 'admin', // Admin of their personal organization
+        role: 'admin', // Keep for backwards compatibility
         organization: {
           create: {
             name: personalOrgName,
+            accountType: AccountType.PERSONAL, // Personal account by default
             contactEmail: "",
             contactPhone: "",
             currentWebsite: "",
@@ -121,23 +124,37 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create UserOrganization for the personal organization
+    // Set the user as the owner of their personal organization
+    await prisma.organization.update({
+      where: { id: user.organizationId },
+      data: {
+        ownerId: user.id
+      }
+    });
+
+    // Create UserOrganization with OWNER role for the personal organization
     await prisma.userOrganization.create({
       data: {
         userId: user.id,
         organizationId: user.organizationId,
-        role: 'admin'
+        role: OrganizationRole.OWNER // Owner of their personal organization
       }
     });
 
     // If there's an invitation, also add them to that organization
     if (invitationToken && invitationOrganizationId) {
-      // Create UserOrganization for the invited organization
+      // Get the invitation to determine the role
+      const invitation = await prisma.invitation.findUnique({
+        where: { token: invitationToken },
+        select: { role: true }
+      });
+
+      // Create UserOrganization for the invited organization with the specified role
       await prisma.userOrganization.create({
         data: {
           userId: user.id,
           organizationId: invitationOrganizationId,
-          role: 'member'
+          role: invitation?.role || OrganizationRole.MEMBER
         }
       });
 
@@ -146,6 +163,14 @@ export async function POST(request: NextRequest) {
         where: { id: user.id },
         data: {
           activeOrganizationId: invitationOrganizationId
+        }
+      });
+
+      // Mark the invitation as accepted
+      await prisma.invitation.update({
+        where: { token: invitationToken },
+        data: {
+          status: 'accepted'
         }
       });
     }

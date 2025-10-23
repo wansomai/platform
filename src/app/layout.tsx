@@ -4,6 +4,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Notifications } from "@/components/ui/Notifications";
 import AuthProvider from "@/providers/AuthProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Script from 'next/script';
 
 
@@ -104,9 +105,10 @@ export default function RootLayout({
       </head>
       <body className={`${roboto.className} antialiased`}>
         <AuthProvider>
-          <Notifications />
-          {children}
-          
+          <ErrorBoundary>
+            <Notifications />
+            {children}
+          </ErrorBoundary>
         </AuthProvider>
       </body>
     </html>

@@ -4231,6 +4231,7 @@ export namespace Prisma {
     Folder: number
     sentInvitations: number
     messages: number
+    ownedOrganizations: number
     projectDocuments: number
     projectMembers: number
     sessions: number
@@ -4249,6 +4250,7 @@ export namespace Prisma {
     Folder?: boolean | UserCountOutputTypeCountFolderArgs
     sentInvitations?: boolean | UserCountOutputTypeCountSentInvitationsArgs
     messages?: boolean | UserCountOutputTypeCountMessagesArgs
+    ownedOrganizations?: boolean | UserCountOutputTypeCountOwnedOrganizationsArgs
     projectDocuments?: boolean | UserCountOutputTypeCountProjectDocumentsArgs
     projectMembers?: boolean | UserCountOutputTypeCountProjectMembersArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
@@ -4323,6 +4325,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOwnedOrganizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrganizationWhereInput
   }
 
   /**
@@ -8373,6 +8382,7 @@ export namespace Prisma {
     Folder?: boolean | User$FolderArgs<ExtArgs>
     sentInvitations?: boolean | User$sentInvitationsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
+    ownedOrganizations?: boolean | User$ownedOrganizationsArgs<ExtArgs>
     projectDocuments?: boolean | User$projectDocumentsArgs<ExtArgs>
     projectMembers?: boolean | User$projectMembersArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -8435,6 +8445,7 @@ export namespace Prisma {
     Folder?: boolean | User$FolderArgs<ExtArgs>
     sentInvitations?: boolean | User$sentInvitationsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
+    ownedOrganizations?: boolean | User$ownedOrganizationsArgs<ExtArgs>
     projectDocuments?: boolean | User$projectDocumentsArgs<ExtArgs>
     projectMembers?: boolean | User$projectMembersArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -8466,6 +8477,7 @@ export namespace Prisma {
       Folder: Prisma.$FolderPayload<ExtArgs>[]
       sentInvitations: Prisma.$InvitationPayload<ExtArgs>[]
       messages: Prisma.$MessagePayload<ExtArgs>[]
+      ownedOrganizations: Prisma.$OrganizationPayload<ExtArgs>[]
       projectDocuments: Prisma.$ProjectDocumentPayload<ExtArgs>[]
       projectMembers: Prisma.$ProjectMemberPayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
@@ -8888,6 +8900,7 @@ export namespace Prisma {
     Folder<T extends User$FolderArgs<ExtArgs> = {}>(args?: Subset<T, User$FolderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentInvitations<T extends User$sentInvitationsArgs<ExtArgs> = {}>(args?: Subset<T, User$sentInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedOrganizations<T extends User$ownedOrganizationsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedOrganizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projectDocuments<T extends User$projectDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projectMembers<T extends User$projectMembersArgs<ExtArgs> = {}>(args?: Subset<T, User$projectMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9523,6 +9536,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.ownedOrganizations
+   */
+  export type User$ownedOrganizationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Organization
+     */
+    select?: OrganizationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Organization
+     */
+    omit?: OrganizationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationInclude<ExtArgs> | null
+    where?: OrganizationWhereInput
+    orderBy?: OrganizationOrderByWithRelationInput | OrganizationOrderByWithRelationInput[]
+    cursor?: OrganizationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrganizationScalarFieldEnum | OrganizationScalarFieldEnum[]
+  }
+
+  /**
    * User.projectDocuments
    */
   export type User$projectDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9762,6 +9799,10 @@ export namespace Prisma {
     onboardingCompleted: boolean | null
     profileStatus: string | null
     yearsInPractice: number | null
+    accountType: string | null
+    upgradeRequestToken: string | null
+    upgradeRequestedAt: Date | null
+    ownerId: string | null
   }
 
   export type OrganizationMaxAggregateOutputType = {
@@ -9778,6 +9819,10 @@ export namespace Prisma {
     onboardingCompleted: boolean | null
     profileStatus: string | null
     yearsInPractice: number | null
+    accountType: string | null
+    upgradeRequestToken: string | null
+    upgradeRequestedAt: Date | null
+    ownerId: string | null
   }
 
   export type OrganizationCountAggregateOutputType = {
@@ -9797,6 +9842,10 @@ export namespace Prisma {
     profileStatus: number
     serviceAreas: number
     yearsInPractice: number
+    accountType: number
+    upgradeRequestToken: number
+    upgradeRequestedAt: number
+    ownerId: number
     _all: number
   }
 
@@ -9823,6 +9872,10 @@ export namespace Prisma {
     onboardingCompleted?: true
     profileStatus?: true
     yearsInPractice?: true
+    accountType?: true
+    upgradeRequestToken?: true
+    upgradeRequestedAt?: true
+    ownerId?: true
   }
 
   export type OrganizationMaxAggregateInputType = {
@@ -9839,6 +9892,10 @@ export namespace Prisma {
     onboardingCompleted?: true
     profileStatus?: true
     yearsInPractice?: true
+    accountType?: true
+    upgradeRequestToken?: true
+    upgradeRequestedAt?: true
+    ownerId?: true
   }
 
   export type OrganizationCountAggregateInputType = {
@@ -9858,6 +9915,10 @@ export namespace Prisma {
     profileStatus?: true
     serviceAreas?: true
     yearsInPractice?: true
+    accountType?: true
+    upgradeRequestToken?: true
+    upgradeRequestedAt?: true
+    ownerId?: true
     _all?: true
   }
 
@@ -9964,6 +10025,10 @@ export namespace Prisma {
     profileStatus: string
     serviceAreas: JsonValue[]
     yearsInPractice: number
+    accountType: string
+    upgradeRequestToken: string | null
+    upgradeRequestedAt: Date | null
+    ownerId: string | null
     _count: OrganizationCountAggregateOutputType | null
     _avg: OrganizationAvgAggregateOutputType | null
     _sum: OrganizationSumAggregateOutputType | null
@@ -10002,10 +10067,15 @@ export namespace Prisma {
     profileStatus?: boolean
     serviceAreas?: boolean
     yearsInPractice?: boolean
+    accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
+    ownerId?: boolean
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
     Folder?: boolean | Organization$FolderArgs<ExtArgs>
     invitations?: boolean | Organization$invitationsArgs<ExtArgs>
+    owner?: boolean | Organization$ownerArgs<ExtArgs>
     projects?: boolean | Organization$projectsArgs<ExtArgs>
     activeUsers?: boolean | Organization$activeUsersArgs<ExtArgs>
     users?: boolean | Organization$usersArgs<ExtArgs>
@@ -10033,6 +10103,11 @@ export namespace Prisma {
     profileStatus?: boolean
     serviceAreas?: boolean
     yearsInPractice?: boolean
+    accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
+    ownerId?: boolean
+    owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
   export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -10052,6 +10127,11 @@ export namespace Prisma {
     profileStatus?: boolean
     serviceAreas?: boolean
     yearsInPractice?: boolean
+    accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
+    ownerId?: boolean
+    owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
   export type OrganizationSelectScalar = {
@@ -10071,14 +10151,19 @@ export namespace Prisma {
     profileStatus?: boolean
     serviceAreas?: boolean
     yearsInPractice?: boolean
+    accountType?: boolean
+    upgradeRequestToken?: boolean
+    upgradeRequestedAt?: boolean
+    ownerId?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "upgradeRequestToken" | "upgradeRequestedAt" | "ownerId", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
     Folder?: boolean | Organization$FolderArgs<ExtArgs>
     invitations?: boolean | Organization$invitationsArgs<ExtArgs>
+    owner?: boolean | Organization$ownerArgs<ExtArgs>
     projects?: boolean | Organization$projectsArgs<ExtArgs>
     activeUsers?: boolean | Organization$activeUsersArgs<ExtArgs>
     users?: boolean | Organization$usersArgs<ExtArgs>
@@ -10088,8 +10173,12 @@ export namespace Prisma {
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type OrganizationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | Organization$ownerArgs<ExtArgs>
+  }
+  export type OrganizationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | Organization$ownerArgs<ExtArgs>
+  }
 
   export type $OrganizationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Organization"
@@ -10098,6 +10187,7 @@ export namespace Prisma {
       documents: Prisma.$DocumentPayload<ExtArgs>[]
       Folder: Prisma.$FolderPayload<ExtArgs>[]
       invitations: Prisma.$InvitationPayload<ExtArgs>[]
+      owner: Prisma.$UserPayload<ExtArgs> | null
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       activeUsers: Prisma.$UserPayload<ExtArgs>[]
       users: Prisma.$UserPayload<ExtArgs>[]
@@ -10123,6 +10213,10 @@ export namespace Prisma {
       profileStatus: string
       serviceAreas: Prisma.JsonValue[]
       yearsInPractice: number
+      accountType: string
+      upgradeRequestToken: string | null
+      upgradeRequestedAt: Date | null
+      ownerId: string | null
     }, ExtArgs["result"]["organization"]>
     composites: {}
   }
@@ -10521,6 +10615,7 @@ export namespace Prisma {
     documents<T extends Organization$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Folder<T extends Organization$FolderArgs<ExtArgs> = {}>(args?: Subset<T, Organization$FolderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     invitations<T extends Organization$invitationsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    owner<T extends Organization$ownerArgs<ExtArgs> = {}>(args?: Subset<T, Organization$ownerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     projects<T extends Organization$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activeUsers<T extends Organization$activeUsersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$activeUsersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     users<T extends Organization$usersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10573,6 +10668,10 @@ export namespace Prisma {
     readonly profileStatus: FieldRef<"Organization", 'String'>
     readonly serviceAreas: FieldRef<"Organization", 'Json[]'>
     readonly yearsInPractice: FieldRef<"Organization", 'Int'>
+    readonly accountType: FieldRef<"Organization", 'String'>
+    readonly upgradeRequestToken: FieldRef<"Organization", 'String'>
+    readonly upgradeRequestedAt: FieldRef<"Organization", 'DateTime'>
+    readonly ownerId: FieldRef<"Organization", 'String'>
   }
     
 
@@ -10822,6 +10921,10 @@ export namespace Prisma {
      */
     data: OrganizationCreateManyInput | OrganizationCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -10892,6 +10995,10 @@ export namespace Prisma {
      * Limit how many Organizations to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrganizationIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -11054,6 +11161,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InvitationScalarFieldEnum | InvitationScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.owner
+   */
+  export type Organization$ownerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -18194,6 +18320,7 @@ export namespace Prisma {
     organizationId: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    visibility: string | null
   }
 
   export type ProjectMaxAggregateOutputType = {
@@ -18204,6 +18331,7 @@ export namespace Prisma {
     organizationId: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    visibility: string | null
   }
 
   export type ProjectCountAggregateOutputType = {
@@ -18214,6 +18342,7 @@ export namespace Prisma {
     organizationId: number
     createdAt: number
     updatedAt: number
+    visibility: number
     _all: number
   }
 
@@ -18226,6 +18355,7 @@ export namespace Prisma {
     organizationId?: true
     createdAt?: true
     updatedAt?: true
+    visibility?: true
   }
 
   export type ProjectMaxAggregateInputType = {
@@ -18236,6 +18366,7 @@ export namespace Prisma {
     organizationId?: true
     createdAt?: true
     updatedAt?: true
+    visibility?: true
   }
 
   export type ProjectCountAggregateInputType = {
@@ -18246,6 +18377,7 @@ export namespace Prisma {
     organizationId?: true
     createdAt?: true
     updatedAt?: true
+    visibility?: true
     _all?: true
   }
 
@@ -18329,6 +18461,7 @@ export namespace Prisma {
     organizationId: string
     createdAt: Date
     updatedAt: Date
+    visibility: string
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -18356,6 +18489,7 @@ export namespace Prisma {
     organizationId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    visibility?: boolean
     canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
     conversations?: boolean | Project$conversationsArgs<ExtArgs>
     documents?: boolean | Project$documentsArgs<ExtArgs>
@@ -18378,6 +18512,7 @@ export namespace Prisma {
     organizationId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    visibility?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -18389,6 +18524,7 @@ export namespace Prisma {
     organizationId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    visibility?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -18400,9 +18536,10 @@ export namespace Prisma {
     organizationId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    visibility?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "organizationId" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "organizationId" | "createdAt" | "updatedAt" | "visibility", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
     conversations?: boolean | Project$conversationsArgs<ExtArgs>
@@ -18447,6 +18584,7 @@ export namespace Prisma {
       organizationId: string
       createdAt: Date
       updatedAt: Date
+      visibility: string
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -18888,6 +19026,7 @@ export namespace Prisma {
     readonly organizationId: FieldRef<"Project", 'String'>
     readonly createdAt: FieldRef<"Project", 'DateTime'>
     readonly updatedAt: FieldRef<"Project", 'DateTime'>
+    readonly visibility: FieldRef<"Project", 'String'>
   }
     
 
@@ -33178,6 +33317,7 @@ export namespace Prisma {
     projectId: string | null
     organizationId: string | null
     invitedById: string | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -33191,6 +33331,7 @@ export namespace Prisma {
     projectId: string | null
     organizationId: string | null
     invitedById: string | null
+    status: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -33204,6 +33345,7 @@ export namespace Prisma {
     projectId: number
     organizationId: number
     invitedById: number
+    status: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -33219,6 +33361,7 @@ export namespace Prisma {
     projectId?: true
     organizationId?: true
     invitedById?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -33232,6 +33375,7 @@ export namespace Prisma {
     projectId?: true
     organizationId?: true
     invitedById?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -33245,6 +33389,7 @@ export namespace Prisma {
     projectId?: true
     organizationId?: true
     invitedById?: true
+    status?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -33331,6 +33476,7 @@ export namespace Prisma {
     projectId: string
     organizationId: string
     invitedById: string
+    status: string
     createdAt: Date
     updatedAt: Date
     _count: InvitationCountAggregateOutputType | null
@@ -33361,6 +33507,7 @@ export namespace Prisma {
     projectId?: boolean
     organizationId?: boolean
     invitedById?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     invitedBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -33377,6 +33524,7 @@ export namespace Prisma {
     projectId?: boolean
     organizationId?: boolean
     invitedById?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     invitedBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -33393,6 +33541,7 @@ export namespace Prisma {
     projectId?: boolean
     organizationId?: boolean
     invitedById?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     invitedBy?: boolean | UserDefaultArgs<ExtArgs>
@@ -33409,11 +33558,12 @@ export namespace Prisma {
     projectId?: boolean
     organizationId?: boolean
     invitedById?: boolean
+    status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type InvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "role" | "token" | "expiresAt" | "projectId" | "organizationId" | "invitedById" | "createdAt" | "updatedAt", ExtArgs["result"]["invitation"]>
+  export type InvitationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "role" | "token" | "expiresAt" | "projectId" | "organizationId" | "invitedById" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["invitation"]>
   export type InvitationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     invitedBy?: boolean | UserDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -33446,6 +33596,7 @@ export namespace Prisma {
       projectId: string
       organizationId: string
       invitedById: string
+      status: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["invitation"]>
@@ -33882,6 +34033,7 @@ export namespace Prisma {
     readonly projectId: FieldRef<"Invitation", 'String'>
     readonly organizationId: FieldRef<"Invitation", 'String'>
     readonly invitedById: FieldRef<"Invitation", 'String'>
+    readonly status: FieldRef<"Invitation", 'String'>
     readonly createdAt: FieldRef<"Invitation", 'DateTime'>
     readonly updatedAt: FieldRef<"Invitation", 'DateTime'>
   }
@@ -48660,7 +48812,11 @@ export namespace Prisma {
     primaryLocation: 'primaryLocation',
     profileStatus: 'profileStatus',
     serviceAreas: 'serviceAreas',
-    yearsInPractice: 'yearsInPractice'
+    yearsInPractice: 'yearsInPractice',
+    accountType: 'accountType',
+    upgradeRequestToken: 'upgradeRequestToken',
+    upgradeRequestedAt: 'upgradeRequestedAt',
+    ownerId: 'ownerId'
   };
 
   export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -48769,7 +48925,8 @@ export namespace Prisma {
     status: 'status',
     organizationId: 'organizationId',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    visibility: 'visibility'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -48936,6 +49093,7 @@ export namespace Prisma {
     projectId: 'projectId',
     organizationId: 'organizationId',
     invitedById: 'invitedById',
+    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -49454,6 +49612,7 @@ export namespace Prisma {
     Folder?: FolderListRelationFilter
     sentInvitations?: InvitationListRelationFilter
     messages?: MessageListRelationFilter
+    ownedOrganizations?: OrganizationListRelationFilter
     projectDocuments?: ProjectDocumentListRelationFilter
     projectMembers?: ProjectMemberListRelationFilter
     sessions?: SessionListRelationFilter
@@ -49483,6 +49642,7 @@ export namespace Prisma {
     Folder?: FolderOrderByRelationAggregateInput
     sentInvitations?: InvitationOrderByRelationAggregateInput
     messages?: MessageOrderByRelationAggregateInput
+    ownedOrganizations?: OrganizationOrderByRelationAggregateInput
     projectDocuments?: ProjectDocumentOrderByRelationAggregateInput
     projectMembers?: ProjectMemberOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
@@ -49515,6 +49675,7 @@ export namespace Prisma {
     Folder?: FolderListRelationFilter
     sentInvitations?: InvitationListRelationFilter
     messages?: MessageListRelationFilter
+    ownedOrganizations?: OrganizationListRelationFilter
     projectDocuments?: ProjectDocumentListRelationFilter
     projectMembers?: ProjectMemberListRelationFilter
     sessions?: SessionListRelationFilter
@@ -49576,10 +49737,15 @@ export namespace Prisma {
     profileStatus?: StringFilter<"Organization"> | string
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntFilter<"Organization"> | number
+    accountType?: StringFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    ownerId?: StringNullableFilter<"Organization"> | string | null
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
     invitations?: InvitationListRelationFilter
+    owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     projects?: ProjectListRelationFilter
     activeUsers?: UserListRelationFilter
     users?: UserListRelationFilter
@@ -49606,10 +49772,15 @@ export namespace Prisma {
     profileStatus?: SortOrder
     serviceAreas?: SortOrder
     yearsInPractice?: SortOrder
+    accountType?: SortOrder
+    upgradeRequestToken?: SortOrderInput | SortOrder
+    upgradeRequestedAt?: SortOrderInput | SortOrder
+    ownerId?: SortOrderInput | SortOrder
     aiAssociates?: AIAssociateOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
     Folder?: FolderOrderByRelationAggregateInput
     invitations?: InvitationOrderByRelationAggregateInput
+    owner?: UserOrderByWithRelationInput
     projects?: ProjectOrderByRelationAggregateInput
     activeUsers?: UserOrderByRelationAggregateInput
     users?: UserOrderByRelationAggregateInput
@@ -49639,10 +49810,15 @@ export namespace Prisma {
     profileStatus?: StringFilter<"Organization"> | string
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntFilter<"Organization"> | number
+    accountType?: StringFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    ownerId?: StringNullableFilter<"Organization"> | string | null
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
     invitations?: InvitationListRelationFilter
+    owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     projects?: ProjectListRelationFilter
     activeUsers?: UserListRelationFilter
     users?: UserListRelationFilter
@@ -49669,6 +49845,10 @@ export namespace Prisma {
     profileStatus?: SortOrder
     serviceAreas?: SortOrder
     yearsInPractice?: SortOrder
+    accountType?: SortOrder
+    upgradeRequestToken?: SortOrderInput | SortOrder
+    upgradeRequestedAt?: SortOrderInput | SortOrder
+    ownerId?: SortOrderInput | SortOrder
     _count?: OrganizationCountOrderByAggregateInput
     _avg?: OrganizationAvgOrderByAggregateInput
     _max?: OrganizationMaxOrderByAggregateInput
@@ -49696,6 +49876,10 @@ export namespace Prisma {
     profileStatus?: StringWithAggregatesFilter<"Organization"> | string
     serviceAreas?: JsonNullableListFilter<"Organization">
     yearsInPractice?: IntWithAggregatesFilter<"Organization"> | number
+    accountType?: StringWithAggregatesFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableWithAggregatesFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    ownerId?: StringNullableWithAggregatesFilter<"Organization"> | string | null
   }
 
   export type ContentWhereInput = {
@@ -50208,6 +50392,7 @@ export namespace Prisma {
     organizationId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
+    visibility?: StringFilter<"Project"> | string
     canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
     conversations?: ConversationListRelationFilter
     documents?: DocumentListRelationFilter
@@ -50229,6 +50414,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    visibility?: SortOrder
     canvasDocument?: CanvasDocumentOrderByWithRelationInput
     conversations?: ConversationOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
@@ -50253,6 +50439,7 @@ export namespace Prisma {
     organizationId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
+    visibility?: StringFilter<"Project"> | string
     canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
     conversations?: ConversationListRelationFilter
     documents?: DocumentListRelationFilter
@@ -50274,6 +50461,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    visibility?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -50290,6 +50478,7 @@ export namespace Prisma {
     organizationId?: StringWithAggregatesFilter<"Project"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Project"> | Date | string
+    visibility?: StringWithAggregatesFilter<"Project"> | string
   }
 
   export type ProjectMemberWhereInput = {
@@ -51154,6 +51343,7 @@ export namespace Prisma {
     projectId?: StringFilter<"Invitation"> | string
     organizationId?: StringFilter<"Invitation"> | string
     invitedById?: StringFilter<"Invitation"> | string
+    status?: StringFilter<"Invitation"> | string
     createdAt?: DateTimeFilter<"Invitation"> | Date | string
     updatedAt?: DateTimeFilter<"Invitation"> | Date | string
     invitedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -51170,6 +51360,7 @@ export namespace Prisma {
     projectId?: SortOrder
     organizationId?: SortOrder
     invitedById?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     invitedBy?: UserOrderByWithRelationInput
@@ -51189,6 +51380,7 @@ export namespace Prisma {
     projectId?: StringFilter<"Invitation"> | string
     organizationId?: StringFilter<"Invitation"> | string
     invitedById?: StringFilter<"Invitation"> | string
+    status?: StringFilter<"Invitation"> | string
     createdAt?: DateTimeFilter<"Invitation"> | Date | string
     updatedAt?: DateTimeFilter<"Invitation"> | Date | string
     invitedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -51205,6 +51397,7 @@ export namespace Prisma {
     projectId?: SortOrder
     organizationId?: SortOrder
     invitedById?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: InvitationCountOrderByAggregateInput
@@ -51224,6 +51417,7 @@ export namespace Prisma {
     projectId?: StringWithAggregatesFilter<"Invitation"> | string
     organizationId?: StringWithAggregatesFilter<"Invitation"> | string
     invitedById?: StringWithAggregatesFilter<"Invitation"> | string
+    status?: StringWithAggregatesFilter<"Invitation"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Invitation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Invitation"> | Date | string
   }
@@ -52302,6 +52496,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -52331,6 +52526,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -52356,6 +52552,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -52385,6 +52582,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -52445,10 +52643,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -52475,6 +52677,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -52505,10 +52711,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -52535,6 +52745,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -52565,6 +52779,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
   }
 
   export type OrganizationUpdateManyMutationInput = {
@@ -52584,6 +52802,9 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OrganizationUncheckedUpdateManyInput = {
@@ -52603,6 +52824,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContentCreateInput = {
@@ -53159,6 +53384,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -53180,6 +53406,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -53199,6 +53426,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -53220,6 +53448,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -53240,6 +53469,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -53249,6 +53479,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProjectUncheckedUpdateManyInput = {
@@ -53259,6 +53490,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProjectMemberCreateInput = {
@@ -54110,6 +54342,7 @@ export namespace Prisma {
     role: string
     token: string
     expiresAt: Date | string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     invitedBy: UserCreateNestedOneWithoutSentInvitationsInput
@@ -54126,6 +54359,7 @@ export namespace Prisma {
     projectId: string
     organizationId: string
     invitedById: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -54136,6 +54370,7 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invitedBy?: UserUpdateOneRequiredWithoutSentInvitationsNestedInput
@@ -54152,6 +54387,7 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     invitedById?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -54165,6 +54401,7 @@ export namespace Prisma {
     projectId: string
     organizationId: string
     invitedById: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -54175,6 +54412,7 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -54188,6 +54426,7 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     invitedById?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -55354,6 +55593,12 @@ export namespace Prisma {
     none?: MessageWhereInput
   }
 
+  export type OrganizationListRelationFilter = {
+    every?: OrganizationWhereInput
+    some?: OrganizationWhereInput
+    none?: OrganizationWhereInput
+  }
+
   export type ProjectDocumentListRelationFilter = {
     every?: ProjectDocumentWhereInput
     some?: ProjectDocumentWhereInput
@@ -55435,6 +55680,10 @@ export namespace Prisma {
   }
 
   export type MessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OrganizationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -55563,6 +55812,22 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type ProjectListRelationFilter = {
     every?: ProjectWhereInput
     some?: ProjectWhereInput
@@ -55625,6 +55890,10 @@ export namespace Prisma {
     profileStatus?: SortOrder
     serviceAreas?: SortOrder
     yearsInPractice?: SortOrder
+    accountType?: SortOrder
+    upgradeRequestToken?: SortOrder
+    upgradeRequestedAt?: SortOrder
+    ownerId?: SortOrder
   }
 
   export type OrganizationAvgOrderByAggregateInput = {
@@ -55645,6 +55914,10 @@ export namespace Prisma {
     onboardingCompleted?: SortOrder
     profileStatus?: SortOrder
     yearsInPractice?: SortOrder
+    accountType?: SortOrder
+    upgradeRequestToken?: SortOrder
+    upgradeRequestedAt?: SortOrder
+    ownerId?: SortOrder
   }
 
   export type OrganizationMinOrderByAggregateInput = {
@@ -55661,6 +55934,10 @@ export namespace Prisma {
     onboardingCompleted?: SortOrder
     profileStatus?: SortOrder
     yearsInPractice?: SortOrder
+    accountType?: SortOrder
+    upgradeRequestToken?: SortOrder
+    upgradeRequestedAt?: SortOrder
+    ownerId?: SortOrder
   }
 
   export type OrganizationSumOrderByAggregateInput = {
@@ -55717,6 +55994,20 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -55726,17 +56017,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type ContentSectionListRelationFilter = {
@@ -55842,20 +56122,6 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type ContentScalarRelationFilter = {
@@ -56121,6 +56387,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    visibility?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -56131,6 +56398,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    visibility?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
@@ -56141,6 +56409,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    visibility?: SortOrder
   }
 
   export type ProjectScalarRelationFilter = {
@@ -56469,11 +56738,6 @@ export namespace Prisma {
     aiAssociateId?: SortOrder
   }
 
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
-  }
-
   export type MessageCountOrderByAggregateInput = {
     id?: SortOrder
     conversationId?: SortOrder
@@ -56609,6 +56873,7 @@ export namespace Prisma {
     projectId?: SortOrder
     organizationId?: SortOrder
     invitedById?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -56622,6 +56887,7 @@ export namespace Prisma {
     projectId?: SortOrder
     organizationId?: SortOrder
     invitedById?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -56635,6 +56901,7 @@ export namespace Prisma {
     projectId?: SortOrder
     organizationId?: SortOrder
     invitedById?: SortOrder
+    status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -57217,6 +57484,13 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type OrganizationCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<OrganizationCreateWithoutOwnerInput, OrganizationUncheckedCreateWithoutOwnerInput> | OrganizationCreateWithoutOwnerInput[] | OrganizationUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOwnerInput | OrganizationCreateOrConnectWithoutOwnerInput[]
+    createMany?: OrganizationCreateManyOwnerInputEnvelope
+    connect?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+  }
+
   export type ProjectDocumentCreateNestedManyWithoutUserInput = {
     create?: XOR<ProjectDocumentCreateWithoutUserInput, ProjectDocumentUncheckedCreateWithoutUserInput> | ProjectDocumentCreateWithoutUserInput[] | ProjectDocumentUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectDocumentCreateOrConnectWithoutUserInput | ProjectDocumentCreateOrConnectWithoutUserInput[]
@@ -57332,6 +57606,13 @@ export namespace Prisma {
     connectOrCreate?: MessageCreateOrConnectWithoutUserInput | MessageCreateOrConnectWithoutUserInput[]
     createMany?: MessageCreateManyUserInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type OrganizationUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<OrganizationCreateWithoutOwnerInput, OrganizationUncheckedCreateWithoutOwnerInput> | OrganizationCreateWithoutOwnerInput[] | OrganizationUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOwnerInput | OrganizationCreateOrConnectWithoutOwnerInput[]
+    createMany?: OrganizationCreateManyOwnerInputEnvelope
+    connect?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
   }
 
   export type ProjectDocumentUncheckedCreateNestedManyWithoutUserInput = {
@@ -57493,6 +57774,20 @@ export namespace Prisma {
     update?: MessageUpdateWithWhereUniqueWithoutUserInput | MessageUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutUserInput | MessageUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type OrganizationUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<OrganizationCreateWithoutOwnerInput, OrganizationUncheckedCreateWithoutOwnerInput> | OrganizationCreateWithoutOwnerInput[] | OrganizationUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOwnerInput | OrganizationCreateOrConnectWithoutOwnerInput[]
+    upsert?: OrganizationUpsertWithWhereUniqueWithoutOwnerInput | OrganizationUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: OrganizationCreateManyOwnerInputEnvelope
+    set?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    disconnect?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    delete?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    connect?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    update?: OrganizationUpdateWithWhereUniqueWithoutOwnerInput | OrganizationUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: OrganizationUpdateManyWithWhereWithoutOwnerInput | OrganizationUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: OrganizationScalarWhereInput | OrganizationScalarWhereInput[]
   }
 
   export type ProjectDocumentUpdateManyWithoutUserNestedInput = {
@@ -57723,6 +58018,20 @@ export namespace Prisma {
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
+  export type OrganizationUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<OrganizationCreateWithoutOwnerInput, OrganizationUncheckedCreateWithoutOwnerInput> | OrganizationCreateWithoutOwnerInput[] | OrganizationUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: OrganizationCreateOrConnectWithoutOwnerInput | OrganizationCreateOrConnectWithoutOwnerInput[]
+    upsert?: OrganizationUpsertWithWhereUniqueWithoutOwnerInput | OrganizationUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: OrganizationCreateManyOwnerInputEnvelope
+    set?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    disconnect?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    delete?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    connect?: OrganizationWhereUniqueInput | OrganizationWhereUniqueInput[]
+    update?: OrganizationUpdateWithWhereUniqueWithoutOwnerInput | OrganizationUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: OrganizationUpdateManyWithWhereWithoutOwnerInput | OrganizationUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: OrganizationScalarWhereInput | OrganizationScalarWhereInput[]
+  }
+
   export type ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ProjectDocumentCreateWithoutUserInput, ProjectDocumentUncheckedCreateWithoutUserInput> | ProjectDocumentCreateWithoutUserInput[] | ProjectDocumentUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ProjectDocumentCreateOrConnectWithoutUserInput | ProjectDocumentCreateOrConnectWithoutUserInput[]
@@ -57855,6 +58164,12 @@ export namespace Prisma {
     connectOrCreate?: InvitationCreateOrConnectWithoutOrganizationInput | InvitationCreateOrConnectWithoutOrganizationInput[]
     createMany?: InvitationCreateManyOrganizationInputEnvelope
     connect?: InvitationWhereUniqueInput | InvitationWhereUniqueInput[]
+  }
+
+  export type UserCreateNestedOneWithoutOwnedOrganizationsInput = {
+    create?: XOR<UserCreateWithoutOwnedOrganizationsInput, UserUncheckedCreateWithoutOwnedOrganizationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedOrganizationsInput
+    connect?: UserWhereUniqueInput
   }
 
   export type ProjectCreateNestedManyWithoutOrganizationInput = {
@@ -58003,6 +58318,10 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type AIAssociateUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AIAssociateCreateWithoutOrganizationInput, AIAssociateUncheckedCreateWithoutOrganizationInput> | AIAssociateCreateWithoutOrganizationInput[] | AIAssociateUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutOrganizationInput | AIAssociateCreateOrConnectWithoutOrganizationInput[]
@@ -58057,6 +58376,16 @@ export namespace Prisma {
     update?: InvitationUpdateWithWhereUniqueWithoutOrganizationInput | InvitationUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: InvitationUpdateManyWithWhereWithoutOrganizationInput | InvitationUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: InvitationScalarWhereInput | InvitationScalarWhereInput[]
+  }
+
+  export type UserUpdateOneWithoutOwnedOrganizationsNestedInput = {
+    create?: XOR<UserCreateWithoutOwnedOrganizationsInput, UserUncheckedCreateWithoutOwnedOrganizationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOwnedOrganizationsInput
+    upsert?: UserUpsertWithoutOwnedOrganizationsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOwnedOrganizationsInput, UserUpdateWithoutOwnedOrganizationsInput>, UserUncheckedUpdateWithoutOwnedOrganizationsInput>
   }
 
   export type ProjectUpdateManyWithoutOrganizationNestedInput = {
@@ -58347,10 +58676,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type OrganizationUpdateOneRequiredWithoutContentNestedInput = {
@@ -60615,6 +60940,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -60673,7 +61009,7 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
     notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -60681,7 +61017,10 @@ export namespace Prisma {
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -60698,20 +61037,6 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -60752,6 +61077,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -60780,6 +61106,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -60820,6 +61147,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -60848,6 +61176,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -60873,6 +61202,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
@@ -60901,6 +61231,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
@@ -60941,6 +61272,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
@@ -60969,6 +61301,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -61205,6 +61538,7 @@ export namespace Prisma {
     role: string
     token: string
     expiresAt: Date | string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutInvitationsInput
@@ -61219,6 +61553,7 @@ export namespace Prisma {
     expiresAt: Date | string
     projectId: string
     organizationId: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -61260,6 +61595,82 @@ export namespace Prisma {
 
   export type MessageCreateManyUserInputEnvelope = {
     data: MessageCreateManyUserInput | MessageCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrganizationCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
+    documents?: DocumentCreateNestedManyWithoutOrganizationInput
+    Folder?: FolderCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectCreateNestedManyWithoutOrganizationInput
+    activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
+    content?: ContentCreateNestedManyWithoutOrganizationInput
+    onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+    activeUsers?: UserUncheckedCreateNestedManyWithoutActiveOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    members?: UserOrganizationUncheckedCreateNestedManyWithoutOrganizationInput
+    content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
+    onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutOwnerInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutOwnerInput, OrganizationUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type OrganizationCreateManyOwnerInputEnvelope = {
+    data: OrganizationCreateManyOwnerInput | OrganizationCreateManyOwnerInput[]
     skipDuplicates?: boolean
   }
 
@@ -61448,10 +61859,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
     members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
@@ -61477,6 +61892,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -61511,10 +61930,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
@@ -61540,6 +61963,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -61798,6 +62225,7 @@ export namespace Prisma {
     projectId?: StringFilter<"Invitation"> | string
     organizationId?: StringFilter<"Invitation"> | string
     invitedById?: StringFilter<"Invitation"> | string
+    status?: StringFilter<"Invitation"> | string
     createdAt?: DateTimeFilter<"Invitation"> | Date | string
     updatedAt?: DateTimeFilter<"Invitation"> | Date | string
   }
@@ -61829,6 +62257,48 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Message"> | Date | string
     userId?: StringNullableFilter<"Message"> | string | null
     metadata?: JsonNullableFilter<"Message">
+  }
+
+  export type OrganizationUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: OrganizationWhereUniqueInput
+    update: XOR<OrganizationUpdateWithoutOwnerInput, OrganizationUncheckedUpdateWithoutOwnerInput>
+    create: XOR<OrganizationCreateWithoutOwnerInput, OrganizationUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type OrganizationUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: OrganizationWhereUniqueInput
+    data: XOR<OrganizationUpdateWithoutOwnerInput, OrganizationUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type OrganizationUpdateManyWithWhereWithoutOwnerInput = {
+    where: OrganizationScalarWhereInput
+    data: XOR<OrganizationUpdateManyMutationInput, OrganizationUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type OrganizationScalarWhereInput = {
+    AND?: OrganizationScalarWhereInput | OrganizationScalarWhereInput[]
+    OR?: OrganizationScalarWhereInput[]
+    NOT?: OrganizationScalarWhereInput | OrganizationScalarWhereInput[]
+    id?: StringFilter<"Organization"> | string
+    name?: StringFilter<"Organization"> | string
+    createdAt?: DateTimeFilter<"Organization"> | Date | string
+    updatedAt?: DateTimeFilter<"Organization"> | Date | string
+    contactEmail?: StringFilter<"Organization"> | string
+    contactPhone?: StringFilter<"Organization"> | string
+    currentWebsite?: StringFilter<"Organization"> | string
+    firmSize?: StringFilter<"Organization"> | string
+    firmStory?: StringFilter<"Organization"> | string
+    linkedinUrl?: StringFilter<"Organization"> | string
+    onboardingCompleted?: BoolFilter<"Organization"> | boolean
+    practiceAreas?: StringNullableListFilter<"Organization">
+    primaryLocation?: JsonNullableFilter<"Organization">
+    profileStatus?: StringFilter<"Organization"> | string
+    serviceAreas?: JsonNullableListFilter<"Organization">
+    yearsInPractice?: IntFilter<"Organization"> | number
+    accountType?: StringFilter<"Organization"> | string
+    upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
+    upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    ownerId?: StringNullableFilter<"Organization"> | string | null
   }
 
   export type ProjectDocumentUpsertWithWhereUniqueWithoutUserInput = {
@@ -62030,10 +62500,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
     members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
@@ -62059,6 +62533,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -62099,10 +62577,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
@@ -62128,6 +62610,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -62299,6 +62785,7 @@ export namespace Prisma {
     role: string
     token: string
     expiresAt: Date | string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     invitedBy: UserCreateNestedOneWithoutSentInvitationsInput
@@ -62313,6 +62800,7 @@ export namespace Prisma {
     expiresAt: Date | string
     projectId: string
     invitedById: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -62327,6 +62815,65 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserCreateWithoutOwnedOrganizationsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutOwnedOrganizationsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutOwnedOrganizationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOwnedOrganizationsInput, UserUncheckedCreateWithoutOwnedOrganizationsInput>
+  }
+
   export type ProjectCreateWithoutOrganizationInput = {
     id?: string
     title: string
@@ -62334,6 +62881,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -62353,6 +62901,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -62391,6 +62940,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -62418,6 +62968,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -62453,6 +63004,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -62480,6 +63032,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -62706,6 +63259,71 @@ export namespace Prisma {
     data: XOR<InvitationUpdateManyMutationInput, InvitationUncheckedUpdateManyWithoutOrganizationInput>
   }
 
+  export type UserUpsertWithoutOwnedOrganizationsInput = {
+    update: XOR<UserUpdateWithoutOwnedOrganizationsInput, UserUncheckedUpdateWithoutOwnedOrganizationsInput>
+    create: XOR<UserCreateWithoutOwnedOrganizationsInput, UserUncheckedCreateWithoutOwnedOrganizationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOwnedOrganizationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOwnedOrganizationsInput, UserUncheckedUpdateWithoutOwnedOrganizationsInput>
+  }
+
+  export type UserUpdateWithoutOwnedOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOwnedOrganizationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: ProjectWhereUniqueInput
     update: XOR<ProjectUpdateWithoutOrganizationInput, ProjectUncheckedUpdateWithoutOrganizationInput>
@@ -62733,6 +63351,7 @@ export namespace Prisma {
     organizationId?: StringFilter<"Project"> | string
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
+    visibility?: StringFilter<"Project"> | string
   }
 
   export type UserUpsertWithWhereUniqueWithoutActiveOrganizationInput = {
@@ -62927,10 +63546,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -62956,6 +63579,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63027,10 +63654,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -63056,6 +63687,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63251,10 +63886,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -63280,6 +63919,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63357,10 +64000,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -63386,6 +64033,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63491,10 +64142,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -63520,6 +64175,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63565,10 +64224,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -63594,6 +64257,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63623,10 +64290,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -63652,6 +64323,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63685,6 +64360,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -63713,6 +64389,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -63754,10 +64431,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -63783,6 +64464,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63822,6 +64507,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -63850,6 +64536,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -64013,6 +64700,7 @@ export namespace Prisma {
     role: string
     token: string
     expiresAt: Date | string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     invitedBy: UserCreateNestedOneWithoutSentInvitationsInput
@@ -64027,6 +64715,7 @@ export namespace Prisma {
     expiresAt: Date | string
     organizationId: string
     invitedById: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -64079,10 +64768,14 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
     members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
@@ -64108,6 +64801,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -64408,10 +65105,14 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
     members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
@@ -64437,6 +65138,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -64529,6 +65234,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -64549,6 +65255,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -64581,6 +65288,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
@@ -64609,6 +65317,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
@@ -64640,6 +65349,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -64660,6 +65370,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -64698,6 +65409,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
@@ -64726,6 +65438,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -64771,6 +65484,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -64799,6 +65513,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -64857,9 +65572,13 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -64886,6 +65605,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -64910,6 +65633,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -64930,6 +65654,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -65105,6 +65830,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -65133,6 +65859,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -65203,9 +65930,13 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -65232,6 +65963,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -65262,6 +65997,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -65282,6 +66018,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -65489,6 +66226,7 @@ export namespace Prisma {
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -65517,6 +66255,7 @@ export namespace Prisma {
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -65548,9 +66287,13 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -65577,6 +66320,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -65695,6 +66442,7 @@ export namespace Prisma {
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -65723,6 +66471,7 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -65760,9 +66509,13 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -65789,6 +66542,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -65866,6 +66623,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
@@ -65894,6 +66652,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
@@ -65967,6 +66726,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -65987,6 +66747,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -66030,6 +66791,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
@@ -66058,6 +66820,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
@@ -66143,6 +66906,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -66163,6 +66927,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -66189,6 +66954,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -66217,6 +66983,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -66343,6 +67110,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -66371,6 +67139,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -66740,6 +67509,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -66760,6 +67530,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -66980,6 +67751,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -67000,6 +67772,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -67148,6 +67921,7 @@ export namespace Prisma {
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -67176,6 +67950,7 @@ export namespace Prisma {
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -67281,6 +68056,7 @@ export namespace Prisma {
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -67309,6 +68085,7 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -67509,6 +68286,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -67529,6 +68307,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -67563,6 +68342,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -67583,6 +68363,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -67601,6 +68382,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -67621,6 +68403,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -67655,6 +68438,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -67675,6 +68459,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -67701,6 +68486,7 @@ export namespace Prisma {
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -67729,6 +68515,7 @@ export namespace Prisma {
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -67760,9 +68547,13 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -67789,6 +68580,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -67813,6 +68608,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -67833,6 +68629,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -67875,6 +68672,7 @@ export namespace Prisma {
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -67903,6 +68701,7 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -67940,9 +68739,13 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -67969,6 +68772,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -67999,6 +68806,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -68019,6 +68827,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -68150,6 +68959,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -68178,6 +68988,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -68257,6 +69068,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -68285,6 +69097,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -68347,6 +69160,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -68375,6 +69189,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -68484,6 +69299,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -68512,6 +69328,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -68789,6 +69606,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -68817,6 +69635,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -68837,6 +69656,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -68857,6 +69677,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -68981,6 +69802,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -69009,6 +69831,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -69035,6 +69858,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -69055,6 +69879,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -69135,6 +69960,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -69163,6 +69989,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -69246,6 +70073,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -69274,6 +70102,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -69297,6 +70126,7 @@ export namespace Prisma {
     Folder?: FolderCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -69325,6 +70155,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
     projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -69356,9 +70187,13 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
     projects?: ProjectCreateNestedManyWithoutOrganizationInput
     activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
     users?: UserCreateNestedManyWithoutOrganizationInput
@@ -69385,6 +70220,10 @@ export namespace Prisma {
     profileStatus?: string
     serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    ownerId?: string | null
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -69528,6 +70367,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -69556,6 +70396,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -69593,9 +70434,13 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
     projects?: ProjectUpdateManyWithoutOrganizationNestedInput
     activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
     users?: UserUpdateManyWithoutOrganizationNestedInput
@@ -69622,6 +70467,10 @@ export namespace Prisma {
     profileStatus?: StringFieldUpdateOperationsInput | string
     serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
     yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -69891,6 +70740,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
@@ -69911,6 +70761,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
@@ -69982,6 +70833,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -70002,6 +70854,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -70020,6 +70873,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -70040,6 +70894,7 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -70074,6 +70929,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -70094,6 +70950,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -70182,6 +71039,7 @@ export namespace Prisma {
     expiresAt: Date | string
     projectId: string
     organizationId: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -70193,6 +71051,28 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type OrganizationCreateManyOwnerInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
   }
 
   export type ProjectDocumentCreateManyUserInput = {
@@ -70490,6 +71370,7 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutInvitationsNestedInput
@@ -70504,6 +71385,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -70516,6 +71398,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -70547,6 +71430,94 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type OrganizationUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
+    documents?: DocumentUpdateManyWithoutOrganizationNestedInput
+    Folder?: FolderUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUpdateManyWithoutOrganizationNestedInput
+    activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
+    content?: ContentUpdateManyWithoutOrganizationNestedInput
+    onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+    activeUsers?: UserUncheckedUpdateManyWithoutActiveOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    members?: UserOrganizationUncheckedUpdateManyWithoutOrganizationNestedInput
+    content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
+    onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateManyWithoutOwnerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ProjectDocumentUpdateWithoutUserInput = {
@@ -70773,6 +71744,7 @@ export namespace Prisma {
     expiresAt: Date | string
     projectId: string
     invitedById: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -70784,6 +71756,7 @@ export namespace Prisma {
     status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    visibility?: string
   }
 
   export type UserCreateManyActiveOrganizationInput = {
@@ -70984,6 +71957,7 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invitedBy?: UserUpdateOneRequiredWithoutSentInvitationsNestedInput
@@ -70998,6 +71972,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
     invitedById?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -71010,6 +71985,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
     invitedById?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -71021,6 +71997,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
@@ -71040,6 +72017,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
@@ -71059,6 +72037,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserUpdateWithoutActiveOrganizationInput = {
@@ -71077,6 +72056,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -71104,6 +72084,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -71140,6 +72121,7 @@ export namespace Prisma {
     Folder?: FolderUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -71167,6 +72149,7 @@ export namespace Prisma {
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
     projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -71428,6 +72411,7 @@ export namespace Prisma {
     expiresAt: Date | string
     organizationId: string
     invitedById: string
+    status?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -71603,6 +72587,7 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     token?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invitedBy?: UserUpdateOneRequiredWithoutSentInvitationsNestedInput
@@ -71617,6 +72602,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
     invitedById?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -71629,6 +72615,7 @@ export namespace Prisma {
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
     invitedById?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
