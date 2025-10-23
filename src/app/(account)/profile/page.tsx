@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { Search, MoreHorizontal, UserPlus, Crown, Mail } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2, Check } from "lucide-react";
 import { apiService } from '@/lib/api';
 import {
   DropdownMenu,
@@ -20,6 +21,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TeamMember {
   id: string;
@@ -52,8 +60,17 @@ interface UserProfile {
   };
 }
 
+interface Organization {
+  id: string;
+  name: string;
+  accountType: string;
+  isPrimary: boolean;
+  role: string;
+}
+
 const Page = () => {
   const { data: session } = useSession();
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [fullName, setFullName] = useState('');
@@ -70,6 +87,12 @@ const Page = () => {
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [isDowngrading, setIsDowngrading] = useState(false);
 
+  // Organization switcher state
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [currentOrgId, setCurrentOrgId] = useState<string>('');
+  const [orgsLoading, setOrgsLoading] = useState(true);
+  const [switching, setSwitching] = useState(false);
+
   // Fetch user profile
   useEffect(() => {
     fetchProfile();
@@ -78,6 +101,11 @@ const Page = () => {
   // Fetch team members and invitations
   useEffect(() => {
     fetchTeamData();
+  }, []);
+
+  // Fetch organizations
+  useEffect(() => {
+    fetchOrganizations();
   }, []);
 
   const fetchProfile = async () => {
@@ -271,6 +299,60 @@ const Page = () => {
     }
   };
 
+  const fetchOrganizations = async () => {
+    try {
+      setOrgsLoading(true);
+      const data = await apiService.get('/api/organization/switch') as {
+        currentOrganizationId: string;
+        organizations: Organization[];
+      };
+
+      setOrganizations(data.organizations);
+      setCurrentOrgId(data.currentOrganizationId);
+    } catch (error) {
+      console.error('Error fetching organizations:', error);
+      // Don't show error toast, this is optional feature
+    } finally {
+      setOrgsLoading(false);
+    }
+  };
+
+  const handleSwitchOrganization = async (organizationId: string) => {
+    if (organizationId === currentOrgId) {
+      return;
+    }
+
+    try {
+      setSwitching(true);
+      const response = await apiService.post('/api/organization/switch', {
+        organizationId
+      }) as {
+        success: boolean;
+        organization: { id: string; name: string; accountType: string };
+        message: string;
+      };
+
+      if (response.success) {
+        toast.success(response.message);
+        setCurrentOrgId(organizationId);
+
+        // Force a page refresh to update session
+        router.refresh();
+
+        // Optionally redirect to dashboard
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 500);
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to switch organization';
+      toast.error(errorMessage);
+      console.error('Error switching organization:', error);
+    } finally {
+      setSwitching(false);
+    }
+  };
+
   const filteredMembers = teamMembers.filter(member =>
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -338,13 +420,38 @@ const Page = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Organization</Label>
-                      <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Role</Label>
-                      <p className="text-lg capitalize">{profile.role || 'User'}</p>
+                      <Label htmlFor="org-select">Organization</Label>
+                      {!orgsLoading && organizations.length > 1 ? (
+                        <Select
+                          value={currentOrgId}
+                          onValueChange={handleSwitchOrganization}
+                          disabled={switching}
+                        >
+                          <SelectTrigger id="org-select" className="w-full">
+                            <SelectValue placeholder="Select organization" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {organizations.map((org) => (
+                              <SelectItem key={org.id} value={org.id}>
+                                <div className="flex items-center gap-2">
+                                  <Building2 className="h-4 w-4 text-gray-400" />
+                                  <span className="font-medium">{org.name}</span>
+                                  <span className="text-xs text-gray-500 capitalize">
+                                    ({org.role} • {org.accountType}{org.isPrimary && ' - Personal'})
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
+                      )}
+                      {!orgsLoading && organizations.length > 1 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Switch between organizations you have access to
+                        </p>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -625,13 +732,38 @@ const Page = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Organization</Label>
-                      <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Role</Label>
-                      <p className="text-lg capitalize">{profile.role || 'User'}</p>
+                      <Label htmlFor="org-select">Organization</Label>
+                      {!orgsLoading && organizations.length > 1 ? (
+                        <Select
+                          value={currentOrgId}
+                          onValueChange={handleSwitchOrganization}
+                          disabled={switching}
+                        >
+                          <SelectTrigger id="org-select" className="w-full">
+                            <SelectValue placeholder="Select organization" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {organizations.map((org) => (
+                              <SelectItem key={org.id} value={org.id}>
+                                <div className="flex items-center gap-2">
+                                  <Building2 className="h-4 w-4 text-gray-400" />
+                                  <span className="font-medium">{org.name}</span>
+                                  <span className="text-xs text-gray-500 capitalize">
+                                    ({org.role} • {org.accountType}{org.isPrimary && ' - Personal'})
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
+                      )}
+                      {!orgsLoading && organizations.length > 1 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Switch between organizations you have access to
+                        </p>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -680,7 +812,7 @@ const Page = () => {
                                 className='bg-secondary'
                               >
                                 <Crown className="h-4 w-4 mr-1" />
-                                {isUpgrading ? "Requesting..." : "Upgrade to Enterprise"}
+                                {isUpgrading ? "Requesting..." : "Switch to Enterprise"}
                               </Button>
                             )
                           ) : (
@@ -689,7 +821,7 @@ const Page = () => {
                               disabled={isDowngrading}
                               variant="destructive"
                             >
-                              {isDowngrading ? "Downgrading..." : "Downgrade to Personal"}
+                              {isDowngrading ? "Downgrading..." : "Switch to Personal"}
                             </Button>
                           )}
                         </>

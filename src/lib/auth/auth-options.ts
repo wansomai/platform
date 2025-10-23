@@ -77,6 +77,7 @@ export const authOptions: NextAuthOptions = {
             },
             include: {
               organization: true,
+              activeOrganization: true,
             },
           });
 
@@ -93,18 +94,21 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          // Use active organization if set, otherwise use primary organization
+          const currentOrg = user.activeOrganization || user.organization;
+
           const authUser = {
             id: user.id,
             email: user.email,
             name: user.fullName || "", // Ensure name is never null
             role: user.role,
-            organizationId: user.organizationId,
+            organizationId: currentOrg.id,
             organization: {
-              id: user.organization.id,
-              name: user.organization.name
+              id: currentOrg.id,
+              name: currentOrg.name
             }
           } as CustomUser;
-          
+
           return authUser;
         } catch (error) {
           return null;
@@ -122,9 +126,12 @@ export const authOptions: NextAuthOptions = {
         if (account?.provider === 'google') {
           let dbUser = await prisma.user.findUnique({
             where: { email: user.email! },
-            include: { organization: true }
+            include: {
+              organization: true,
+              activeOrganization: true
+            }
           });
-          
+
           if (!dbUser) {
             const organization = await prisma.organization.create({
               data: {
@@ -142,7 +149,7 @@ export const authOptions: NextAuthOptions = {
                 yearsInPractice: 0
               }
             });
-            
+
             dbUser = await prisma.user.create({
               data: {
                 email: user.email!,
@@ -151,19 +158,25 @@ export const authOptions: NextAuthOptions = {
                 role: 'admin',
                 organizationId: organization.id
               },
-              include: { organization: true }
+              include: {
+                organization: true,
+                activeOrganization: true
+              }
             });
           }
-          
+
           user.id = dbUser.id;
-          
-          (user as any).organizationId = dbUser.organizationId;
+
+          // Use active organization if set, otherwise use primary organization
+          const currentOrg = dbUser.activeOrganization || dbUser.organization;
+
+          (user as any).organizationId = currentOrg.id;
           (user as any).organization = {
-            id: dbUser.organization.id,
-            name: dbUser.organization.name
+            id: currentOrg.id,
+            name: currentOrg.name
           };
           (user as any).role = dbUser.role;
-          
+
           return true;
         }
         
