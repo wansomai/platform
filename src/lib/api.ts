@@ -166,7 +166,7 @@ apiClient.interceptors.response.use(
 
     // Handle 403 Forbidden - preserve requiresUpgrade flag
     if (status === 403) {
-      const responseData = error.response.data as any;
+      const responseData = error.response?.data as any;
       const customError = new Error(responseData?.message || errorMessage) as any;
       customError.status = 403;
       customError.requiresUpgrade = responseData?.requiresUpgrade;
