@@ -1,6 +1,6 @@
 // app/api/projects/[id]/conversations/[conversationId]/messages/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import { z } from "zod";
 import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
 import { GoogleGenerativeAI } from '@google/generative-ai';
