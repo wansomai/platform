@@ -10,7 +10,7 @@
  * Run with: npx tsx src/scripts/migrate-account-types.ts
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { OrganizationRole, AccountType, WorkspaceVisibility } from '@/lib/constants/roles';
 
 const prisma = new PrismaClient();
@@ -135,7 +135,7 @@ async function main() {
 
     const workspacesUpdated = await prisma.project.updateMany({
       where: {
-        visibility: null, // Only update if not already set
+        visibility: null as any, // Only update if not already set
       },
       data: {
         visibility: WorkspaceVisibility.ORGANIZATION,
