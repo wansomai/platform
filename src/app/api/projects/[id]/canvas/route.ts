@@ -1,11 +1,10 @@
+
+// GET /api/projects/[id]/canvas
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma'
 import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization';
 
-
-
-
-// GET /api/projects/[id]/canvas - Get canvas document for project
+// Get canvas document for project
 export async function GET(
   request: NextRequest,
  { params }: { params: Promise<{ id: string }> }

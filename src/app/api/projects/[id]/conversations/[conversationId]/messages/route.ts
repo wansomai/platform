@@ -47,13 +47,10 @@ const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
 });
 
-// Removed isSimpleQuery optimization - Gemini handles all contexts efficiently
-
 // Encoder for streaming response
 const encoder = new TextEncoder();
 
 // POST handler - Send a message to the conversation with streaming
-// Note: This handler uses manual auth because it returns a streaming Response, not NextResponse
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; conversationId: string }> }
