@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Home, Mail } from 'lucide-react';
 import Link from 'next/link';
 
-export default function UpgradeErrorPage() {
+function UpgradeErrorContent() {
   const searchParams = useSearchParams();
   const reason = searchParams.get('reason');
 
@@ -122,5 +122,35 @@ export default function UpgradeErrorPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function UpgradeErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <Card className="max-w-2xl w-full">
+          <CardHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center animate-pulse">
+                <AlertCircle className="h-6 w-6 text-gray-400" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-6 w-48 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="h-20 bg-gray-100 rounded animate-pulse"></div>
+              <div className="h-32 bg-gray-100 rounded animate-pulse"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <UpgradeErrorContent />
+    </Suspense>
   );
 }
