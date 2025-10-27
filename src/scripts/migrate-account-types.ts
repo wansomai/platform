@@ -20,7 +20,6 @@ interface MigrationStats {
   organizationsUpdated: number;
   ownersAssigned: number;
   rolesUpdated: number;
-  workspacesUpdated: number;
   errors: string[];
 }
 
@@ -32,7 +31,6 @@ async function main() {
     organizationsUpdated: 0,
     ownersAssigned: 0,
     rolesUpdated: 0,
-    workspacesUpdated: 0,
     errors: [],
   };
 
@@ -131,19 +129,13 @@ async function main() {
     }
 
     // Step 5: Update workspace visibility (set default to 'organization')
-    console.log('📋 Step 4: Setting default workspace visibility...');
+    // Note: visibility field already has a default value in schema, so this step
+    // is only needed if there are old records without the field set
+    console.log('📋 Step 4: Ensuring workspace visibility is set...');
 
-    const workspacesUpdated = await prisma.project.updateMany({
-      where: {
-        visibility: null as any, // Only update if not already set
-      },
-      data: {
-        visibility: WorkspaceVisibility.ORGANIZATION,
-      },
-    });
-
-    stats.workspacesUpdated = workspacesUpdated.count;
-    console.log(`   ✅ Updated ${workspacesUpdated.count} workspaces\n`);
+    // Since visibility is not nullable in the schema and has a default,
+    // we'll skip this step as it's not needed
+    console.log(`   ✅ Skipped - visibility field already has default value in schema\n`);
 
     // Step 6: Print summary
     console.log('=' .repeat(60));
@@ -153,7 +145,6 @@ async function main() {
     console.log(`Organizations updated:    ${stats.organizationsUpdated}`);
     console.log(`Owners assigned:          ${stats.ownersAssigned}`);
     console.log(`Roles updated:            ${stats.rolesUpdated}`);
-    console.log(`Workspaces updated:       ${stats.workspacesUpdated}`);
     console.log(`Errors:                   ${stats.errors.length}`);
     console.log('=' .repeat(60));
 
