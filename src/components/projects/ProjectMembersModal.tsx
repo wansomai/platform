@@ -231,7 +231,7 @@ export function ProjectMembersModal({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-sm">Current Members</h3>
-          <Badge variant="secondary">{members.length}</Badge>
+          <Badge variant="secondary" className='text-white'>{members.length}</Badge>
         </div>
 
         {loading ? (
@@ -298,8 +298,8 @@ export function ProjectMembersModal({
 
       {/* No Available Members Message - Only visible to admin */}
       {isAdmin && !loading && availableMembers.length === 0 && members.length > 0 && (
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+          <p className="text-sm text-green-800">
             All organization members have been added to this workspace.
           </p>
         </div>
@@ -313,8 +313,8 @@ export function ProjectMembersModal({
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Workspace Members</SheetTitle>
-            <SheetDescription>{projectTitle}</SheetDescription>
+            <SheetTitle>{projectTitle}</SheetTitle>
+            {/* <SheetDescription>{projectTitle}</SheetDescription> */}
           </SheetHeader>
           <div className="mt-6">{content}</div>
         </SheetContent>
@@ -326,8 +326,8 @@ export function ProjectMembersModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Workspace Members</DialogTitle>
-          <DialogDescription>{projectTitle}</DialogDescription>
+          <DialogTitle>{projectTitle} Workspace</DialogTitle>
+          {/* <DialogDescription>{projectTitle}</DialogDescription> */}
         </DialogHeader>
         {content}
       </DialogContent>
