@@ -22,18 +22,32 @@ export async function GET(request: NextRequest) {
     
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { organizationId: true }
+      select: {
+        organizationId: true,
+        activeOrganizationId: true
+      }
     });
-    
-    if (!user?.organizationId) {
+
+    if (!user) {
+      return NextResponse.json(
+        { status: 404, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Use active organization if set, otherwise use primary organization
+    const currentOrgId = user.activeOrganizationId || user.organizationId;
+
+    if (!currentOrgId) {
       return NextResponse.json(
         { status: 404, message: 'User organization not found' },
         { status: 404 }
       );
     }
+
     const projects = await prisma.project.findMany({
       where: {
-        organizationId: user.organizationId,
+        organizationId: currentOrgId,
         members: {
           some: { userId: userId }
         }
@@ -127,16 +141,39 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify user belongs to the organization
+    // Check if user is the owner of the organization OR a member via UserOrganization
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { organizationId: true }
     });
 
-    if (!user || user.organizationId !== organizationId) {
+    if (!user) {
       return NextResponse.json(
-        { status: 403, message: "You don't have permission to create projects in this organization" },
-        { status: 403 }
+        { status: 404, message: "User not found" },
+        { status: 404 }
       );
+    }
+
+    // Check if this is the user's primary organization
+    const isPrimaryOrg = user.organizationId === organizationId;
+
+    // If not primary org, check if user is a member via UserOrganization
+    if (!isPrimaryOrg) {
+      const membership = await prisma.userOrganization.findUnique({
+        where: {
+          userId_organizationId: {
+            userId: userId,
+            organizationId: organizationId
+          }
+        }
+      });
+
+      if (!membership) {
+        return NextResponse.json(
+          { status: 403, message: "You don't have permission to create projects in this organization" },
+          { status: 403 }
+        );
+      }
     }
 
     // Use a transaction to ensure both project and conversation are created together
