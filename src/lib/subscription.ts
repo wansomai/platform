@@ -21,8 +21,8 @@ export interface UserPlanInfo {
 
 // Default limits for free plan
 const FREE_PLAN_LIMITS: SubscriptionLimits = {
-  maxProjects: 40,
-  maxMessages: 2000,
+  maxProjects: 2,
+  maxMessages: 10,
   hasProAccess: false,
 };
 

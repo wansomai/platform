@@ -199,16 +199,7 @@ export default function ProjectsPage() {
                         <Users className="h-4 w-4 mr-2" />
                         Manage Members
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/projects/${project.id}`);
-                        }}
-                      >
-                        <ArrowRight className="h-4 w-4 mr-2" />
-                        Open Workspace
-                      </DropdownMenuItem>
+                      <DropdownMenuSeparator /> 
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -223,7 +214,7 @@ export default function ProjectsPage() {
               
               <CardFooter className="border-t pt-4">
                 <p className="text-gray-600 text-sm">Created {format(new Date(project.createdAt), "PP")} </p>
-                <Button variant="ghost" size="sm" className="ml-auto">
+                <Button variant="ghost" size="sm" className="ml-auto"   onClick={() => router.push(`/projects/${project.id}`)}>
                   View Workspace
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
