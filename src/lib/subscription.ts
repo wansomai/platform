@@ -1,5 +1,5 @@
 // src/lib/subscription.ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -21,8 +21,8 @@ export interface UserPlanInfo {
 
 // Default limits for free plan
 const FREE_PLAN_LIMITS: SubscriptionLimits = {
-  maxProjects: 20,
-  maxMessages: 1000,
+  maxProjects: 2,
+  maxMessages: 4,
   hasProAccess: false,
 };
 
@@ -38,10 +38,16 @@ const PRO_PLAN_LIMITS: SubscriptionLimits = {
  */
 export async function getUserPlanInfo(organizationId: string): Promise<UserPlanInfo> {
   try {
-    // Get subscription information
-    const subscription = await prisma.subscription.findUnique({
-      where: { organizationId },
-    });
+    // Get both subscription information AND organization accountType
+    const [subscription, organization] = await Promise.all([
+      prisma.subscription.findUnique({
+        where: { organizationId },
+      }),
+      prisma.organization.findUnique({
+        where: { id: organizationId },
+        select: { accountType: true }
+      })
+    ]);
 
     // Get current usage
     const [projectCount, messageCount] = await Promise.all([
@@ -66,12 +72,21 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
     ]);
 
     // Determine plan and limits
-    const isProPlan = subscription &&
+    // Check both Subscription record AND organization accountType
+    const hasActiveSubscription = subscription &&
       subscription.status === 'active' &&
       ['professional', 'enterprise', 'pro'].includes(subscription.planName.toLowerCase());
 
-    const planName = subscription?.planName || 'free';
-    const status = subscription?.status || 'free';
+    const isEnterpriseAccount = organization?.accountType === 'enterprise';
+
+    const isProPlan = hasActiveSubscription || isEnterpriseAccount;
+
+    const planName = isEnterpriseAccount
+      ? 'enterprise'
+      : (subscription?.planName || 'free');
+    const status = isEnterpriseAccount
+      ? 'active'
+      : (subscription?.status || 'free');
     const limits = isProPlan ? PRO_PLAN_LIMITS : FREE_PLAN_LIMITS;
 
     return {
