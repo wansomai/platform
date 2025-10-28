@@ -848,7 +848,7 @@ const Page = () => {
             <AlertDialogTitle>Upgrade to Enterprise Account?</AlertDialogTitle>
             <AlertDialogDescription>
               You are requesting to upgrade your account to Enterprise. An admin will review and approve your request.
-              Enterprise accounts unlock team collaboration, role-based access control, and advanced features.
+              Enterprise accounts unlock team collaboration, role-based access control.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
