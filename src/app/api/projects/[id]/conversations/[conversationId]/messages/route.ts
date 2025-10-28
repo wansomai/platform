@@ -72,9 +72,9 @@ export async function POST(
     // Start parallel operations immediately
     const accessCheckPromise = checkProjectAccess(projectId, userId);
 
-    // Get user's organization for subscription check
-    const userPromise = prisma.user.findUnique({
-      where: { id: userId },
+    // Get project's organization for subscription check (not user's primary org)
+    const projectOrgPromise = prisma.project.findUnique({
+      where: { id: projectId },
       select: { organizationId: true }
     });
 
@@ -138,10 +138,10 @@ export async function POST(
     });
 
     // Wait for essential checks first
-    const [hasAccess, conversation, user] = await Promise.all([
+    const [hasAccess, conversation, projectOrg] = await Promise.all([
       accessCheckPromise,
       conversationPromise,
-      userPromise
+      projectOrgPromise
     ]);
 
     if (!hasAccess) {
@@ -159,8 +159,9 @@ export async function POST(
     }
 
     // Check subscription limits before processing message
-    if (user?.organizationId) {
-      const messageLimitCheck = await canSendMessage(user.organizationId);
+    // Use the project's organization (not user's primary org) for subscription limits
+    if (projectOrg?.organizationId) {
+      const messageLimitCheck = await canSendMessage(projectOrg.organizationId);
       if (!messageLimitCheck.allowed) {
         return NextResponse.json(
           {

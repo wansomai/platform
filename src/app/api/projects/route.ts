@@ -114,16 +114,39 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
   }
 
   // Verify user belongs to the organization
+  // Check if user is the owner of the organization OR a member via UserOrganization
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { organizationId: true }
   });
 
-  if (!user || user.organizationId !== organizationId) {
+  if (!user) {
     return NextResponse.json(
-      { error: "You don't have permission to create projects in this organization" },
-      { status: 403 }
+      { error: "User not found" },
+      { status: 404 }
     );
+  }
+
+  // Check if this is the user's primary organization
+  const isPrimaryOrg = user.organizationId === organizationId;
+
+  // If not primary org, check if user is a member via UserOrganization
+  if (!isPrimaryOrg) {
+    const membership = await prisma.userOrganization.findUnique({
+      where: {
+        userId_organizationId: {
+          userId: userId,
+          organizationId: organizationId
+        }
+      }
+    });
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: "You don't have permission to create projects in this organization" },
+        { status: 403 }
+      );
+    }
   }
 
   // Check subscription limits before creating project

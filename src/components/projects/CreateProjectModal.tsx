@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import { useState, useEffect } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +18,7 @@ import { RefreshCw } from "lucide-react"
 import { useProjectStore } from '@/store/project.store'
 import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
+import { apiService } from '@/lib/api'
 import ProAccessModal from '@/components/modals/ProAccess'
 
 interface CreateProjectModalProps {
@@ -34,16 +35,45 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   })
   const [showProAccess, setShowProAccess] = useState(false)
   const [isRequestingPro, setIsRequestingPro] = useState(false)
+  const [activeOrganizationId, setActiveOrganizationId] = useState<string>('')
 
   const { notify } = useNotifications()
   const { createProject, requiresUpgrade } = useProjectStore()
   const { data: session } = useSession()
 
+  // Fetch the user's active organization when modal opens
+  useEffect(() => {
+    if (open) {
+      fetchActiveOrganization()
+    }
+  }, [open])
+
+  const fetchActiveOrganization = async () => {
+    try {
+      const response = await apiService.get('/api/profile') as {
+        user: {
+          activeOrganizationId: string | null
+          organizationId: string
+          activeOrganization?: { id: string }
+        }
+      }
+      // Use activeOrganizationId if set, otherwise use organizationId
+      const orgId = response.user.activeOrganizationId || response.user.organizationId
+      setActiveOrganizationId(orgId)
+    } catch (error) {
+      console.error('Failed to fetch active organization:', error)
+      // Fallback to session organization if profile fetch fails
+      if (session?.user?.organization?.id) {
+        setActiveOrganizationId(session.user.organization.id)
+      }
+    }
+  }
+
   const handleSubmit = async () => {
     setIsLoading(true)
     setError('')
 
-    if (!session?.user?.organization?.id) {
+    if (!activeOrganizationId) {
       setError('Organization ID not found')
       setIsLoading(false)
       return
@@ -52,7 +82,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     try {
       const result = await createProject({
         ...formData,
-        organizationId: session.user.organization.id
+        organizationId: activeOrganizationId
       })
 
       if (result) {
