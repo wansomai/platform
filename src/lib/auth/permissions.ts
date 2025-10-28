@@ -20,6 +20,18 @@ export async function hasOrganizationPermission(
   organizationId: string,
   permission: OrganizationPermissionType
 ): Promise<boolean> {
+  // First, check if the user is the owner of the organization (primary org)
+  const organization = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { ownerId: true },
+  });
+
+  // If user is the owner of their primary organization, they have all permissions
+  if (organization?.ownerId === userId) {
+    return roleHasPermission(OrganizationRole.OWNER, permission);
+  }
+
+  // Otherwise, check UserOrganization table (for invited organizations)
   const userOrg = await prisma.userOrganization.findUnique({
     where: {
       userId_organizationId: { userId, organizationId },
@@ -65,21 +77,18 @@ export async function canManageUser(
     return { canManage: false, reason: 'Cannot manage organization owner' };
   }
 
-  // Get both user roles
-  const [actorRole, targetRole] = await Promise.all([
-    prisma.userOrganization.findUnique({
-      where: { userId_organizationId: { userId: actorUserId, organizationId } },
-      select: { role: true },
-    }),
-    prisma.userOrganization.findUnique({
-      where: { userId_organizationId: { userId: targetUserId, organizationId } },
-      select: { role: true },
-    }),
+  // Get both user roles using the helper function that handles primary org ownership
+  const [actorRoleStr, targetRoleStr] = await Promise.all([
+    getUserOrganizationRole(actorUserId, organizationId),
+    getUserOrganizationRole(targetUserId, organizationId),
   ]);
 
-  if (!actorRole || !targetRole) {
+  if (!actorRoleStr || !targetRoleStr) {
     return { canManage: false, reason: 'User not found in organization' };
   }
+
+  const actorRole = { role: actorRoleStr };
+  const targetRole = { role: targetRoleStr };
 
   // Check role hierarchy - actor must have higher role than target
   const actorLevel = RoleHierarchy[actorRole.role as keyof typeof RoleHierarchy] || 0;
@@ -132,6 +141,18 @@ export async function getUserOrganizationRole(
   userId: string,
   organizationId: string
 ): Promise<string | null> {
+  // First, check if the user is the owner of the organization (primary org)
+  const organization = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { ownerId: true },
+  });
+
+  // If user is the owner of their primary organization
+  if (organization?.ownerId === userId) {
+    return OrganizationRole.OWNER;
+  }
+
+  // Otherwise, check UserOrganization table (for invited organizations)
   const userOrg = await prisma.userOrganization.findUnique({
     where: {
       userId_organizationId: { userId, organizationId },
@@ -193,18 +214,16 @@ export async function canAssignRole(
     };
   }
 
-  const actorRoleData = await prisma.userOrganization.findUnique({
-    where: { userId_organizationId: { userId: actorUserId, organizationId } },
-    select: { role: true },
-  });
+  // Get actor's role using the helper function that handles primary org ownership
+  const actorRoleStr = await getUserOrganizationRole(actorUserId, organizationId);
 
-  if (!actorRoleData) {
+  if (!actorRoleStr) {
     return { canAssign: false, reason: 'You are not a member of this organization' };
   }
 
   // Check if actor has permission to change roles
   const hasPermission = roleHasPermission(
-    actorRoleData.role,
+    actorRoleStr,
     OrganizationPermission.CHANGE_MEMBER_ROLES
   );
 
@@ -213,7 +232,7 @@ export async function canAssignRole(
   }
 
   // Ensure actor cannot assign roles equal to or higher than their own
-  const actorLevel = RoleHierarchy[actorRoleData.role as keyof typeof RoleHierarchy] || 0;
+  const actorLevel = RoleHierarchy[actorRoleStr as keyof typeof RoleHierarchy] || 0;
   const targetLevel = RoleHierarchy[targetRole as keyof typeof RoleHierarchy];
 
   if (targetLevel >= actorLevel) {

@@ -28,6 +28,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface TeamMember {
   id: string;
@@ -86,6 +96,8 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState<'members' | 'invitations'>('members');
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [isDowngrading, setIsDowngrading] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [showDowngradeDialog, setShowDowngradeDialog] = useState(false);
 
   // Organization switcher state
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -255,12 +267,9 @@ const Page = () => {
   };
 
   const handleUpgradeAccount = async () => {
-    if (!confirm('Request upgrade to Enterprise account? An admin will review and approve your request.')) {
-      return;
-    }
-
     try {
       setIsUpgrading(true);
+      setShowUpgradeDialog(false);
       const response = await apiService.post('/api/organization/upgrade', {}) as { success?: boolean; message?: string; status?: string; error?: string };
 
       if (response.success) {
@@ -277,12 +286,9 @@ const Page = () => {
   };
 
   const handleDowngradeAccount = async () => {
-    if (!confirm('Downgrade to Personal account? This will remove all team members and cancel pending invitations. This action cannot be undone.')) {
-      return;
-    }
-
     try {
       setIsDowngrading(true);
+      setShowDowngradeDialog(false);
       const response = await apiService.delete('/api/organization/upgrade') as { success?: boolean; removedMembers?: number; error?: string };
 
       if (response.success) {
@@ -486,7 +492,7 @@ const Page = () => {
                         <>
                           {profile.organization?.accountType !== 'enterprise' ? (
                             <Button
-                              onClick={handleUpgradeAccount}
+                              onClick={() => setShowUpgradeDialog(true)}
                               disabled={isUpgrading}
                             >
                               <Crown className="h-4 w-4 mr-2" />
@@ -494,7 +500,7 @@ const Page = () => {
                             </Button>
                           ) : (
                             <Button
-                              onClick={handleDowngradeAccount}
+                              onClick={() => setShowDowngradeDialog(true)}
                               disabled={isDowngrading}
                               variant="destructive"
                             >
@@ -807,7 +813,7 @@ const Page = () => {
                               </Button>
                             ) : (
                               <Button
-                                onClick={handleUpgradeAccount}
+                                onClick={() => setShowUpgradeDialog(true)}
                                 disabled={isUpgrading}
                                 className='bg-secondary'
                               >
@@ -817,7 +823,7 @@ const Page = () => {
                             )
                           ) : (
                             <Button
-                              onClick={handleDowngradeAccount}
+                              onClick={() => setShowDowngradeDialog(true)}
                               disabled={isDowngrading}
                               variant="destructive"
                             >
@@ -834,6 +840,54 @@ const Page = () => {
           </div>
         )}
       </div>
+
+      {/* Upgrade Confirmation Dialog */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Upgrade to Enterprise Account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are requesting to upgrade your account to Enterprise. An admin will review and approve your request.
+              Enterprise accounts unlock team collaboration, role-based access control, and advanced features.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleUpgradeAccount}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Downgrade Confirmation Dialog */}
+      <AlertDialog open={showDowngradeDialog} onOpenChange={setShowDowngradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Downgrade to Personal Account?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p className="font-semibold text-destructive">Warning: This action cannot be undone.</p>
+              <p>
+                Downgrading to a Personal account will:
+              </p>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>Remove all team members from your organization</li>
+                <li>Cancel all pending invitations</li>
+                <li>Disable team collaboration features</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDowngradeAccount}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Downgrade Account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
