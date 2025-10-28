@@ -48,6 +48,22 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   // Get the active organization ID (use activeOrganizationId if set, otherwise fall back to organizationId)
   const activeOrgId = user.activeOrganizationId || user.organizationId;
 
+  // Auto-fix: Set activeOrganizationId if it's null (for legacy users)
+  if (!user.activeOrganizationId) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { activeOrganizationId: user.organizationId }
+    });
+  }
+
+  // Auto-fix: Set ownerId for the user's primary organization if it's null (for legacy organizations)
+  if (user.organization && !user.organization.ownerId) {
+    await prisma.organization.update({
+      where: { id: user.organizationId },
+      data: { ownerId: user.id }
+    });
+  }
+
   // Determine the user's role in the active organization
   let effectiveRole: string;
 
@@ -72,10 +88,14 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     effectiveRole = userOrganization?.role || user.role;
   }
 
+  // Ensure activeOrganization is always present in response (fallback to organization if null)
+  const activeOrganizationData = user.activeOrganization || user.organization;
+
   return NextResponse.json({
     user: {
       ...user,
-      role: effectiveRole
+      role: effectiveRole,
+      activeOrganization: activeOrganizationData
     }
   });
 }));
@@ -152,11 +172,15 @@ export const PUT = withErrorHandler(withAuth(async (request: NextRequest, userId
     effectiveRole = userOrganization?.role || updatedUser.role;
   }
 
+  // Ensure activeOrganization is always present in response (fallback to organization if null)
+  const activeOrganizationData = updatedUser.activeOrganization || updatedUser.organization;
+
   return NextResponse.json({
     success: true,
     user: {
       ...updatedUser,
-      role: effectiveRole
+      role: effectiveRole,
+      activeOrganization: activeOrganizationData
     }
   });
 }));
