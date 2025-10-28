@@ -115,7 +115,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             {/* AI Platform Dropdown */}
             <div className="relative dropdown-container">
               <button
-                className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
+                className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'aiPlatform' ? null : 'aiPlatform')}
                 onMouseEnter={() => setActiveDropdown('aiPlatform')}
               >
@@ -146,7 +146,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             {/* Solutions Dropdown */}
             <div className="relative dropdown-container">
               <button
-                className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
+                className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'solutions' ? null : 'solutions')}
                 onMouseEnter={() => setActiveDropdown('solutions')}
               >
@@ -177,7 +177,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             {/* Resources Dropdown */}
             <div className="relative dropdown-container">
               <button
-                className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
+                className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'resources' ? null : 'resources')}
                 onMouseEnter={() => setActiveDropdown('resources')}
               >
@@ -208,7 +208,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             {/* Programs Dropdown */}
             <div className="relative dropdown-container">
               <button
-                className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
+                className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'programs' ? null : 'programs')}
                 onMouseEnter={() => setActiveDropdown('programs')}
               >
@@ -237,7 +237,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </div>
 
             {/* Security Link */}
-            <Link href="/#security" className="font-semibold text-lg flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
+            <Link href="/#security" className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
               Security
             </Link>
           </nav>
