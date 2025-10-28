@@ -4,6 +4,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Notifications } from "@/components/ui/Notifications";
 import AuthProvider from "@/providers/AuthProvider";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Script from 'next/script';
 
 
@@ -76,6 +77,11 @@ export default function RootLayout({
         <meta name="theme-color" content="#355e66" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+        {/* Resource hints for performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         
         {/* Google Analytics */}
         <Script
@@ -99,9 +105,10 @@ export default function RootLayout({
       </head>
       <body className={`${roboto.className} antialiased`}>
         <AuthProvider>
-          <Notifications />
-          {children}
-          
+          <ErrorBoundary>
+            <Notifications />
+            {children}
+          </ErrorBoundary>
         </AuthProvider>
       </body>
     </html>

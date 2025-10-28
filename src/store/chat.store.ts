@@ -12,6 +12,7 @@ interface ChatState {
   currentConversation: Conversation | null;
   isLoading: boolean;
   error: string | null;
+  requiresUpgrade?: boolean;
   
   // Conversation management
   setConversations: (conversations: Conversation[]) => void;
@@ -149,7 +150,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
       try {
         set({ isLoading: true, error: null });
         const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
-        console.log(response.data,"found conversations")
         set({conversations: response.data, isLoading: false });
         return response.data;
       } catch (error: any) {
@@ -258,37 +258,102 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 role: 'assistant',
                 timestamp: new Date().toISOString(),
                 references: data.references,
-                webSearchResults: data.webSearchResults,
+                webSearchSources: data.webSearchSources,
                 isStreaming: false
               });
+              break;
+              
+            case 'canvas_status':
+              // Handle canvas processing status updates
+              get().updateStreamingMessage(streamingId, {
+                processingStatus: data.status,
+                canvasMessage: data.message
+              });
+              break;
+
+            case 'canvas_content_update':
+              // Handle real-time canvas content updates
+              window.dispatchEvent(new CustomEvent('canvasContentUpdate', {
+                detail: {
+                  projectId,
+                  partialContent: data.partialContent,
+                  currentSection: data.currentSection,
+                  actionType: data.actionType
+                }
+              }));
+              break;
+
+            case 'canvas_update':
+              // Handle canvas updates - finalize the chat message and trigger canvas refresh
+              get().finalizeStreamingMessage(streamingId, {
+                id: data.messageId || `canvas-${Date.now()}`,
+                conversationId,
+                content: data.content,
+                role: 'assistant',
+                timestamp: new Date().toISOString(),
+                isStreaming: false,
+                canvasUpdated: true,
+                actionType: data.actionType
+              });
+              
+              // Trigger canvas refresh event with project context
+              window.dispatchEvent(new CustomEvent('canvasUpdate', { 
+                detail: { 
+                  projectId, 
+                  canvasContent: data.canvasContent,
+                  messageContent: data.content,
+                  actionType: data.actionType
+                } 
+              }));
               break;
               
             case 'status':
               break;
               
             case 'error':
+              // Update the streaming message to show the error
+              get().updateStreamingMessage(streamingId, {
+                content: `Error: ${data.error}`,
+                isStreaming: false,
+                isLoading: false
+              });
+              set({ error: data.error });
               throw new Error(data.error);
           }
         },
         (error) => {
-          set({ error: error.message || 'Failed to send message' });
+          // Update the streaming message to show the error
+          const errorMessage = error.message || 'Failed to send message';
+          get().updateStreamingMessage(streamingId, {
+            content: `Error: ${errorMessage}`,
+            isStreaming: false,
+            isLoading: false
+          });
+
+          // Check if this is a subscription limit error
+          if (error.status === 403 && error.requiresUpgrade) {
+            set({ error: errorMessage, requiresUpgrade: true });
+            throw error; // Re-throw so component can handle it
+          } else {
+            set({ error: errorMessage });
+          }
         }
       );
       
     } catch (error: any) {
-      set((state) => {
-        if (!state.currentConversation) return state;
-        
-        return {
-          currentConversation: {
-            ...state.currentConversation,
-            messages: state.currentConversation.messages.filter(
-              (msg) => msg.id !== streamingId && msg.tempId !== streamingId
-            )
-          },
-          error: error.message || 'Failed to send message'
-        };
+      // Error message already displayed in the streaming message
+      // Just set the error state for the UI error display
+      const isUpgradeRequired = error.status === 403 && error.requiresUpgrade;
+
+      set({
+        error: error.message || 'Failed to send message',
+        requiresUpgrade: isUpgradeRequired
       });
+
+      // Re-throw subscription errors so components can handle them
+      if (isUpgradeRequired) {
+        throw error;
+      }
     }
   },
 

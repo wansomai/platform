@@ -176,9 +176,9 @@ const filteredDocuments = useMemo(() => {
         if (projectId) {
           // Parallel loading with error handling
           Promise.all([
-            fetchSettings(projectId).catch(err => console.warn('Failed to load settings:', err)),
-            fetchInstructions(projectId).catch(err => console.warn('Failed to load instructions:', err)),
-            fetchProjectDocuments(projectId).catch(err => console.warn('Failed to load documents:', err))
+            fetchSettings(projectId).catch(err => {}), 
+            fetchInstructions(projectId).catch(err => {}), 
+            fetchProjectDocuments(projectId).catch(err => {})
           ]);
         }
       }, [projectId, fetchSettings, fetchInstructions, fetchProjectDocuments]);
@@ -378,16 +378,18 @@ const filteredDocuments = useMemo(() => {
 
 
       {/* Document Removal Confirmation */}
-      {documentToDelete && (
-        <RemoveConfirmationDialog
-           open={!!documentToDelete}
-        onOpenChange={(open) => !open && setDocumentToDelete(null)}
+      <RemoveConfirmationDialog
+        open={!!documentToDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDocumentToDelete(null);
+          }
+        }}
         onConfirm={handleRemoveDocument}
         itemName={documentToDelete?.name}
         contextName="this conversation"
         isLoading={isRemovingDocument}
-        />
-      )}
+      />
     </ScrollArea>
   );
 }

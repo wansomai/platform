@@ -69,7 +69,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
             onClick={() => typeof page === 'number' ? onPageChange(page) : null}
             className={`flex items-center justify-center h-8 w-8 rounded ${
               page === currentPage 
-                ? 'bg-blue-600 text-white' 
+                ? 'bg-primary text-white' 
                 : page === '...' 
                   ? 'text-gray-700 cursor-default' 
                   : 'text-gray-700 hover:bg-gray-100'

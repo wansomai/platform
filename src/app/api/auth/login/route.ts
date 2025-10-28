@@ -1,6 +1,6 @@
 // app/api/auth/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/prisma/client";
 import bcrypt from "bcryptjs";
 import { COOKIE_OPTIONS } from "@/lib/auth/constants";
 import { generateTokens } from "@/lib/auth/token-service";
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error("Login error:", error);
+    
     return NextResponse.json(
       { message: "An error occurred during login", error: true },
       { status: 500 }

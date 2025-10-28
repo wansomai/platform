@@ -12,7 +12,7 @@ export const FILE_UPLOAD_CONFIG = {
   'image/png'
   ],
   
-  MAX_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_SIZE: 20 * 1024 * 1024, // 20MB
   CHUNK_SIZE: 1024, // For text chunking
 } as const;
 
@@ -41,7 +41,7 @@ export const API_CONSTANTS = {
   DEFAULT_PAGE_SIZE: 20,
   MAX_PAGE_SIZE: 100,
   CACHE_DURATION: 30000, // 30 seconds
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_FILE_SIZE: 20 * 1024 * 1024, // 20MB
   
   STATUS_CODES: {
     SUCCESS: 200,

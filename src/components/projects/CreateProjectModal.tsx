@@ -19,6 +19,10 @@ import { useProjectStore } from '@/store/project.store'
 import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
 import { apiService } from '@/lib/api'
+<<<<<<< HEAD
+=======
+import ProAccessModal from '@/components/modals/ProAccess'
+>>>>>>> 7689cf7ff27497642785d905be930cdafef21e31
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -32,10 +36,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     title: '',
     description: '',
   })
+<<<<<<< HEAD
+=======
+  const [showProAccess, setShowProAccess] = useState(false)
+  const [isRequestingPro, setIsRequestingPro] = useState(false)
+>>>>>>> 7689cf7ff27497642785d905be930cdafef21e31
   const [activeOrganizationId, setActiveOrganizationId] = useState<string>('')
 
   const { notify } = useNotifications()
-  const { createProject } = useProjectStore()
+  const { createProject, requiresUpgrade } = useProjectStore()
   const { data: session } = useSession()
 
   // Fetch the user's active organization when modal opens
@@ -71,27 +80,75 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     setError('')
 
     if (!activeOrganizationId) {
+<<<<<<< HEAD
       setError('Organization ID not found. Please try again.')
+=======
+      setError('Organization ID not found')
+>>>>>>> 7689cf7ff27497642785d905be930cdafef21e31
       setIsLoading(false)
       return
     }
 
     try {
-      await createProject({
+      const result = await createProject({
         ...formData,
         organizationId: activeOrganizationId
       })
 
-      notify.success('Project created successfully')
-      onClose()
-      setFormData({ title: '', description: '' })
+      if (result) {
+        notify.success('Project created successfully')
+        onClose()
+        setFormData({ title: '', description: '' })
+      }
+      // If result is null, check if it's due to subscription limits
+      else if (requiresUpgrade) {
+        setShowProAccess(true)
+      }
+      else {
+        setError('Failed to create project. Please try again.')
+      }
     } catch (error: any) {
-      notify.error('Failed to create project. Please try again.')
-      setError(error.message || 'Failed to create project. Please try again.')
+      // Check if this is a subscription limit error
+      if (error.status === 403 && error.requiresUpgrade) {
+        setShowProAccess(true)
+      } else {
+        notify.error('Failed to create project. Please try again.')
+        setError(error.message || 'Failed to create project. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
   }
+
+  // Handle Pro access request
+  const handleRequestProAccess = async (formData: { name: string; email: string; accountType: string }) => {
+    setIsRequestingPro(true);
+    try {
+      const response = await fetch('/api/prorequests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          name: formData.name,
+          account_type: formData.accountType,
+          request_type: 'project_limit'
+        })
+      });
+
+      await response.json();
+      setShowProAccess(false);
+      notify.success('Pro access request submitted successfully');
+    } catch (error) {
+      setIsRequestingPro(false);
+      setShowProAccess(false);
+      notify.error('Failed to submit Pro access request');
+    } finally {
+      setIsRequestingPro(false);
+      setShowProAccess(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -110,7 +167,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         )}
         
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Project Title
             </Label>
@@ -124,7 +181,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             />
           </div>
           
-          <div className="grid grid-cols-4 items-start gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4">
             <Label htmlFor="description" className="text-right pt-2">
               Description
             </Label>
@@ -133,7 +190,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-              className="col-span-3"
+              className="md:col-span-3"
               placeholder="Enter project description (optional)"
             />
           </div>
@@ -158,6 +215,20 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      {/* Pro Access Modal */}
+      <ProAccessModal
+        isOpen={showProAccess}
+        onClose={() => setShowProAccess(false)}
+        onRequestAccess={handleRequestProAccess}
+        isLoading={isRequestingPro}
+        errorMessage="You have reached your project limit (1 project for free plan). Request Pro access to create unlimited projects."
+        userData={{
+          name: session?.user?.name || '',
+          email: session?.user?.email || '',
+          accountType: 'personal' // Default to personal, user can change
+        }}
+      />
     </Dialog>
   );
 }

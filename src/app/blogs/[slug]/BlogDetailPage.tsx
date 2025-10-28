@@ -4,25 +4,14 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllBlogPosts, getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
-import { adaptBlogPost, adaptBlogPosts } from "@/lib/data/blogAdapter";
+import { adaptBlogPost, adaptBlogPosts, createSlug } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
-import { Footer } from "react-day-picker";
-import { Linkedin } from "lucide-react";
-
+import Footer from "@/components/layout/Footer";
 interface PageProps {
   params: {
     slug: string;
     id: string;
   };
-}
-
-function createSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
 }
 
 
@@ -43,22 +32,27 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
         }
 
         setLoading(true);
-        
+
         // Get all blog posts and find the one with matching slug
         const allBlogPosts = await getAllBlogPosts();
-        
+
         // Find the blog post with matching slug
         const blogPost = allBlogPosts.find(post => {
           const postSlug = createSlug(post.fields.title);
           return postSlug === slug;
         });
-        
+
         if (!blogPost) {
           throw new Error('Blog post not found');
         }
-        
+
         const adaptedPost = adaptBlogPost(blogPost);
         setBlog(adaptedPost);
+
+        // Get first 6 blog posts
+        const allAdapted = adaptBlogPosts(allBlogPosts);
+        const firstSix = allAdapted.slice(0, 6);
+        setRelatedPosts(firstSix);
       } catch (err) {
         console.error('Error fetching blog post:', err);
         setError('Failed to load blog post');
@@ -113,58 +107,62 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
   )}`;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <Navbar />
-      {/* Header Section */}
-      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
-        
-        <div className="container mx-auto px-6 py-12 text-white">
-          <div className="grid  gap-12">
-            {/* Left Column - Contact Form */}
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold  mb-4">
-                {blog.title}
-              </h1>
-              {/* Breadcrumb */}
-              <div className="container mx-auto px-4 py-4 text-sm ">
-                <div className="flex items-center">
-                  <Link href="/" className="hover:text-[#b8690c]">
-                    Home
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <Link href="/blogs" className="hover:text-[#b8690c]">
-                    Articles
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <span className="truncate max-w-[200px]">
-                    {blog.title}
-                  </span>
-                </div>
-                <div className="flex items-center mt-2">
-                  <span className="mr-4">{blog.date}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="bg-white min-h-screen">
+      <Navbar darkmode/>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 pt-24 pb-8 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
-        {blog.image && (
-            <div className="blcok lg:hidden">
-              <div className="">
+          {/* Left Column - Main content */}
+          <div className="w-full lg:w-8/12">
+            {/* Breadcrumb - Mobile only */}
+            <div className="lg:hidden mb-4 text-sm text-gray-600">
+              <Link href="/" className="hover:text-teal-600">Home</Link>
+              <span className="mx-2">/</span>
+              <Link href="/blogs" className="hover:text-teal-600">Articles</Link>
+              <span className="mx-2">/</span>
+              <span className="truncate max-w-[200px] inline-block align-bottom">{blog.title}</span>
+            </div>
+
+            {/* Featured Image with overlay text */}
+            {blog.image && (
+              <div className="relative mb-6 rounded-lg overflow-hidden">
                 <img
                   src={blog.image}
                   alt={blog.title}
-                
-                  className="rounded-lg w-full h-auto object-cover"
+                  className="w-full h-auto object-cover"
                 />
+                {/* Dark overlay for text visibility - Desktop only */}
+                <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+
+                {/* Text content overlay - Desktop only */}
+                <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 text-white">
+                  {/* Breadcrumb */}
+                  <div className="mb-3 text-sm">
+                    <Link href="/" className="hover:text-gray-300">Home</Link>
+                    <span className="mx-2">/</span>
+                    <Link href="/blogs" className="hover:text-gray-300">Articles</Link>
+                    <span className="mx-2">/</span>
+                    <span className="truncate max-w-[300px] inline-block align-bottom">{blog.title}</span>
+                  </div>
+
+                  {/* Title */}
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
+                    {blog.title}
+                  </h1>
+
+                  {/* Date */}
+                  <div className="text-sm text-gray-200">{blog.date}</div>
+                </div>
               </div>
+            )}
+
+            {/* Title and Date - Mobile only */}
+            <div className="lg:hidden mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                {blog.title}
+              </h1>
+              <div className="text-sm text-gray-500">{blog.date}</div>
             </div>
-          )}
-          {/* Main content column */}
-          <div className="w-full lg:w-7/12">
             {/* Blog Content */}
             <div
               className="blog-content mb-12"
@@ -188,41 +186,42 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
                 </div>
               </div>
             )}
+          </div>
 
-            {/* Related Posts */}
-            {relatedPosts.length > 0 && (
-              <div className="border-t border-gray-200 pt-8">
-                <h3 className="text-xl font-semibold mb-6">Related Articles</h3>
-                <div className="grid md:grid-cols-3 gap-6">
+          {/* Right sidebar - Latest Articles */}
+          <div className="w-full lg:w-4/12">
+            <div className="lg:sticky lg:top-24">
+              {relatedPosts.length > 0 && (
+                <div className="space-y-6">
                   {relatedPosts.map((post) => (
                     <Link key={post.id} href={post.link} className="block group">
-                      <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                        <h4 className="font-semibold text-gray-800 mb-2 group-hover:text-teal-600">
-                          {post.title}
-                        </h4>
-                        <p className="text-sm text-gray-500">{post.date}</p>
+                      <div className="bg-white rounded-lg overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-200">
+                        {post.image && (
+                          <div className="relative w-full h-48">
+                            <img
+                              src={post.image}
+                              alt={post.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="p-4">
+                          <h4 className="font-semibold text-gray-900 mb-3 group-hover:text-teal-600 line-clamp-2 text-base">
+                            {post.title}
+                          </h4>
+                          <div className="flex items-center justify-between mt-3">
+                            <span className="inline-flex items-center px-4 py-2 rounded text-xs font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-colors uppercase">
+                              Read More
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </Link>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-
-          {/* Fixed image column */}
-          {blog.image && (
-            <div className="hidden lg:block w-5/12">
-              <div className="sticky top-32">
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  width={1200}
-                  height={630}
-                  className="rounded-lg w-full h-auto object-cover max-h-[500px]"
-                />
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
       <Footer />

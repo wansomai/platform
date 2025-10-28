@@ -5,7 +5,7 @@ import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signIn, useSession } from "next-auth/react"
-import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -57,7 +57,6 @@ function LoginPageContent() {
       }
     } catch (err) {
       setError("An unexpected error occurred")
-      console.error(err)
     } finally {
       setIsLoading(false)
     }
@@ -69,13 +68,12 @@ function LoginPageContent() {
       await signIn('google', { callbackUrl })
     } catch (err) {
       setError("Google authentication failed")
-      console.error(err)
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen flex items-center justify-center bg-white">
+    <div className="flex min-h-screen items-center justify-center bg-white">
    
 
       {/* Form Side */}
@@ -206,7 +204,7 @@ function LoginPageContent() {
                 )}
               </Button>
               <p className="text-gray-600 text-center mt-4">
-                Don't have an account? <Link href="/register" className="text-[#005c4d] font-medium">Register</Link>
+                Don't have an account? <Link href={callbackUrl && callbackUrl !== '/dashboard' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/register"} className="text-[#005c4d] font-medium">Register</Link>
               </p>
             </div>
           </form>

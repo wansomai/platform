@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
-import { formatSearchQuery, validateFile } from '@/lib/utils';
+import { validateFile } from '@/lib/utils';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 
 // Set a reasonable timeout for document processing
@@ -57,7 +57,16 @@ export async function GET(request: NextRequest) {
     }
     
     if (fileType && fileType !== 'all') {
-      where.file_type = fileType;
+      // Handle special filter cases
+      if (fileType === 'image') {
+        where.file_type = { in: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'] };
+      } else if (fileType === 'docx') {
+        where.file_type = { in: ['doc', 'docx'] };
+      } else if (fileType === 'xlsx') {
+        where.file_type = { in: ['xls', 'xlsx'] };
+      } else {
+        where.file_type = fileType;
+      }
     }
     
     if (folderId === 'root') {
@@ -119,7 +128,7 @@ export async function GET(request: NextRequest) {
     ]);
     
     // OPTIMIZATION 5: Lightweight response for simple requests
-    const formattedDocuments = documents.map(doc => ({
+    const formattedDocuments = documents.map((doc): { description?: any; fileUrl?: any; updatedAt?: any; folderId?: any; id: string; title: string; fileType: string; fileSize: number; createdBy: string; createdById: string; createdAt: string; } => ({
       id: doc.id,
       title: doc.title,
       fileType: doc.file_type,

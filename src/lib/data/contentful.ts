@@ -212,7 +212,6 @@ export async function getBlogPostById(id: string): Promise<BlogPost | null> {
     const response = await client.getEntry(id);
     return response as unknown as BlogPost;
   } catch (error) {
-    console.error("Error fetching blog post by ID:", error);
     return null;
   }
 }
@@ -232,7 +231,6 @@ export async function getBlogPostBySlug(
 
     return post || null;
   } catch (error) {
-    console.error("Error fetching blog post by slug:", error);
     return null;
   }
 }
@@ -281,14 +279,6 @@ export async function getRelatedBlogPosts(
   return otherPosts.slice(0, limit);
 }
 
-export async function getAllLawyerPages(): Promise<LawyerPages[]> {
-  const response = await client.getEntries({
-    content_type: "lawyerPages",
-    order: ["-sys.createdAt"], // Get newest first
-  });
-
-  return response.items as unknown as LawyerPages[];
-}
 export async function getAllPractiseAreas(): Promise<practiseAreaPages[]> {
   const response = await client.getEntries({
     content_type: "practiseareas",
@@ -305,14 +295,40 @@ export async function getAllSlugs() {
   return res.items.map((i) => i.fields.slug);
 }
 
-export async function getLandingPage(slug: string,) {
-  const res = await client.getEntries({
-    content_type: "lawyerPages",
-    "fields.slug": slug,
-    include: 2,
-    limit: 1
-  });
-  return res.items[0]?.fields as any;
+
+export async function getPostBySlug({content_type, slug}: {content_type: string, slug: string}): Promise<DocumentTemplate | null> {
+  try {
+    const entries = await client.getEntries({
+      content_type: content_type,
+      'fields.slug': slug,
+      limit: 1
+    });
+    if (entries.items.length > 0) {
+      // Type cast the entry to DocumentTemplate
+      return entries.items[0] as unknown as DocumentTemplate;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw error;
+  }
 }
+
+
+
+
+export async function fetchAllEntries( content_type: any ) {
+  const pageSize = 1000; // Contentful hard max
+  let skip = 0;
+  let items: any[] = [];
+  while (true) {
+    const res = await client.getEntries({ content_type, order: ["-sys.createdAt"], skip, limit: pageSize });
+    items = items.concat(res.items);
+    if (skip + pageSize >= res.total) break;
+    skip += pageSize;
+  }
+  return items;
+}
+
 
 export default client;

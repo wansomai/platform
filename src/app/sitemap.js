@@ -62,6 +62,10 @@ export default async function sitemap() {
     'ai-legal-research',
     'ai-case-prediction',
     'document-vault',
+    'solutions/in-house-counsel',
+    'solutions/litigation-lawyers',
+    'solutions/ma-lawyers',
+    'programs/law-schools',
   ].map((path) => ({
     url: `${baseUrl}/${path}`,
     lastModified: new Date(),

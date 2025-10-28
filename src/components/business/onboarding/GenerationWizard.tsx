@@ -89,9 +89,7 @@ export default function GenerationWizard({ onComplete, userId }: GenerationWizar
           throw new Error(errorData.error || 'Failed to start generation');
         }
 
-        const startData = await startResponse.json();
-        console.log(`Starting generation of ${startData.estimatedPages} pages`);
-        
+        const startData = await startResponse.json();    
         setIsStarting(false);
       } catch (err) {
         console.error('Failed to start generation:', err);

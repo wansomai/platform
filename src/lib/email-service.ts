@@ -26,7 +26,7 @@ function createTransporter() {
   const port = parseInt(process.env.EMAIL_PORT || '587', 10);
   
   if (!user || !pass) {
-    console.warn('Email credentials not found in environment variables');
+    // Email credentials not found in environment variables
   }
   
   // Create a transporter
@@ -55,7 +55,7 @@ export async function sendEmail(options: EmailOptions) {
     
     // Send email
     const info = await transporter.sendMail({
-      from: from || `"LegalAssist" <${user}>`,
+      from: from || `"Wansom" <${user}>`,
       to,
       cc,
       bcc,
@@ -64,14 +64,11 @@ export async function sendEmail(options: EmailOptions) {
       attachments
     });
     
-    console.log(`Email sent to ${to}, message ID: ${info.messageId}`);
-    
     return { 
       success: true, 
       messageId: info.messageId 
     };
   } catch (error) {
-    console.error('Error sending email:', error);
     return { 
       success: false, 
       error 
@@ -86,7 +83,8 @@ export async function sendEmail(options: EmailOptions) {
  */
 export function sendWelcomeEmail(user: { email: string; fullName?: string | null; }) {
   const name = user.fullName || 'there';
-  const subject = 'Welcome to LegalAssist - Your AI-powered Legal Workspace';
+  const subject = 'Welcome to Wansom - Your AI-powered Legal Workspace';
+  const email = user.email;
   
   // Create HTML email content
   const html = `
@@ -159,14 +157,14 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
     <body>
       <div class="container">
         <div class="header">
-          <h1 style="color:white;">LegalAssist</h1>
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
         </div>
         <div class="content">
-          <h1>Welcome to LegalAssist, ${name}!</h1>
+          <h1>Welcome to Wansom, ${name}!</h1>
           
-          <p>Thank you for joining LegalAssist, your new AI-powered legal workspace. We're excited to help you automate routine legal tasks.</p>
+          <p>Thank you for joining Wansom, your new AI-powered legal workspace. We're excited to help you automate routine legal tasks.</p>
           
-          <p>Here's what you can do with LegalAssist:</p>
+          <p>Here's what you can do with Wansom:</p>
           
           <div class="feature">
             <h3>🤖 AI Assistant</h3>
@@ -174,32 +172,42 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           </div>
           
           <div class="feature">
-            <h3>🔒 Document Management</h3>
+            <h3>🔒 Vault</h3>
             <p>Securely upload, share, and perform semantic searches across all your important legal documents.</p>
           </div>
           
           <div class="feature">
-            <h3>👥 Team Collaboration</h3>
-            <p>Invite team members, manage their access levels, and collaborate effectively across multiple projects.</p>
+            <h3>⚙️ Workflows</h3>
+            <p>Automate repetitive tasks such as contract reviews, compliance checks, regulatory filings, email writing, and tax preparation.</p>
           </div>
           
           <div class="feature">
-            <h3>📂 Project Management</h3>
-            <p>Organize your work in projects, assign team members, and keep everything relevant in one place.</p>
+            <h3>🔄 Integrations</h3>
+            <p>Connect with Outlook, Google Calendar, ERP Databases, and other legal management tools to streamline your operations.</p>
+          </div>
+          
+          <div class="feature">
+            <h3>👥 Collaboration</h3>
+            <p>Enjoy multi-user access, shared comments, and AI-powered team coordination to keep everyone on the same page.</p>
           </div>
           
           <p>Ready to get started?</p>
           
-          <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.legalassist.com'}/dashboard" class="button">Enter Your Workspace</a></p>
+          <p><a href="https://wansom.ai/dashboard" class="button">Enter Your Workspace</a></p>
           
-          <p>If you have any questions or need assistance, our support team is ready to help. Simply reply to this email or contact us at support@legalassist.com.</p>
+          <p>If you have any questions or need assistance, our support team is ready to help. Simply reply to this email or contact us at law@wansom.ai</p>
           
           <p>Best regards,<br>
-          The LegalAssist Team</p>
+          The Wansom Team</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -231,8 +239,8 @@ export function sendInvitationEmail({
   role: string;
   inviteUrl: string;
 }) {
-  const subject = `Invitation to join ${organizationName} on LegalAssist`;
-  
+  const subject = `Invitation to join ${organizationName} on Wansom`;
+
   // Create HTML email content
   const html = `
     <!DOCTYPE html>
@@ -258,6 +266,10 @@ export function sendInvitationEmail({
           padding: 20px;
           text-align: center;
         }
+        .header img {
+          max-width: 200px;
+          height: auto;
+        }
         .content {
           padding: 20px;
         }
@@ -276,13 +288,14 @@ export function sendInvitationEmail({
           display: inline-block;
           background-color: #005c4d;
           color: white;
-          padding: 10px 20px;
+          padding: 12px 30px;
           text-decoration: none;
           border-radius: 4px;
           margin-top: 10px;
+          font-weight: 600;
         }
         .info-box {
-          background-color: #f5f5f5;
+          background-color: #f0f9ff;
           border-left: 4px solid #005c4d;
           padding: 15px;
           margin: 20px 0;
@@ -292,42 +305,47 @@ export function sendInvitationEmail({
     <body>
       <div class="container">
         <div class="header">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
           <h1>You've Been Invited!</h1>
         </div>
         <div class="content">
-          <h2>Join ${organizationName} on LegalAssist</h2>
-          
+          <h2>Join ${organizationName} on Wansom</h2>
+
           <p>Hello,</p>
-          
-          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on LegalAssist as a <strong>${role}</strong>.</p>
-          
+
+          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Wansom as a <strong>${role}</strong>.</p>
+
           <div class="info-box">
-            <p>LegalAssist is an AI-powered platform that helps legal professionals collaborate on projects, manage documents, and streamline workflows.</p>
+            <p>Wansom is an AI-powered legal workspace that helps legal professionals collaborate on projects, manage documents, automate workflows, and leverage AI for research and drafting.</p>
           </div>
-          
+
           <p>To accept this invitation, click the button below:</p>
-          
+
           <p style="text-align: center;">
             <a href="${inviteUrl}" class="button">Accept Invitation</a>
           </p>
-          
+
           <p>This invitation will expire in 7 days.</p>
-          
-          <p>If you already have a LegalAssist account, you'll be able to switch between organizations after accepting.</p>
-          
+
+          <p>If you already have a Wansom account, you'll be able to switch between organizations after accepting.</p>
+
           <p>If you don't have an account yet, you'll be able to create one when you accept the invitation.</p>
-          
+
           <p>If you believe this invitation was sent in error, you can safely ignore it.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because someone invited you to join their organization on Wansom.</p>
         </div>
       </div>
     </body>
     </html>
   `;
-  
+
   return sendEmail({
     to: email,
     subject,
@@ -353,7 +371,7 @@ export function sendInvitationAcceptedEmail({
   organizationName: string;
   role: string;
 }) {
-  const subject = `${newMemberName} has joined ${organizationName} on LegalAssist`;
+  const subject = `${newMemberName} has joined ${organizationName} on Wansom`;
   
   // Create HTML email content
   const html = `
@@ -423,14 +441,19 @@ export function sendInvitationAcceptedEmail({
           <p>They now have access to your organization's projects and resources according to their role permissions.</p>
           
           <p style="text-align: center;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.legalassist.com'}/teams" class="button">Manage Team</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/teams" class="button">Manage Team</a>
           </p>
           
-          <p>Thank you for growing your team on LegalAssist!</p>
+          <p>Thank you for growing your team on Wansom!</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -551,16 +574,382 @@ export function sendProjectInvitationEmail({
           <p>If you're not already a member of ${organizationName}, you'll need to join the organization first.</p>
         </div>
         <div class="footer">
-          <p>© ${new Date().getFullYear()} LegalAssist. All rights reserved.</p>
-          <p>This is an automated email. Please do not reply.</p>
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe?email=${email}">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
     </html>
   `;
-  
+
   return sendEmail({
     to: email,
+    subject,
+    html,
+  });
+}
+
+/**
+ * Sends a notification email when a member's role is changed
+ * @param details Role change notification details
+ * @returns Result of sending the email
+ */
+export function sendRoleChangeEmail({
+  memberEmail,
+  memberName,
+  organizationName,
+  oldRole,
+  newRole,
+  changedByName
+}: {
+  memberEmail: string;
+  memberName: string;
+  organizationName: string;
+  oldRole: string;
+  newRole: string;
+  changedByName: string;
+}) {
+  const subject = `Your role in ${organizationName} has been updated`;
+
+  // Create HTML email content
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #005c4d;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .info-box {
+          background-color: #f0f9ff;
+          border-left: 4px solid #005c4d;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #005c4d;
+          color: white;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Role Updated</h2>
+        </div>
+        <div class="content">
+          <p>Hello ${memberName},</p>
+
+          <div class="info-box">
+            <p><strong>${changedByName}</strong> has updated your role in <strong>${organizationName}</strong>.</p>
+            <p><strong>Previous Role:</strong> ${oldRole}</p>
+            <p><strong>New Role:</strong> ${newRole}</p>
+          </div>
+
+          <p>Your permissions and access levels have been updated to reflect your new role.</p>
+
+          <p style="text-align: center;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/dashboard" class="button">Go to Dashboard</a>
+          </p>
+
+          <p>If you have questions about this change, please contact your organization administrator.</p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: memberEmail,
+    subject,
+    html,
+  });
+}
+
+/**
+ * Sends a notification email when a member is removed from an organization
+ * @param details Member removal notification details
+ * @returns Result of sending the email
+ */
+export function sendMemberRemovedEmail({
+  memberEmail,
+  memberName,
+  organizationName,
+  removedByName
+}: {
+  memberEmail: string;
+  memberName: string;
+  organizationName: string;
+  removedByName: string;
+}) {
+  const subject = `You have been removed from ${organizationName}`;
+
+  // Create HTML email content
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #005c4d;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .warning-box {
+          background-color: #fff3cd;
+          border-left: 4px solid #ffc107;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #005c4d;
+          color: white;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Access Removed</h2>
+        </div>
+        <div class="content">
+          <p>Hello ${memberName},</p>
+
+          <div class="warning-box">
+            <p><strong>${removedByName}</strong> has removed you from <strong>${organizationName}</strong>.</p>
+          </div>
+
+          <p>You no longer have access to this organization's projects and resources.</p>
+
+          <p>If you still have access to other organizations on Wansom, you can continue using your personal account or switch to another organization.</p>
+
+          <p style="text-align: center;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/dashboard" class="button">Go to Dashboard</a>
+          </p>
+
+          <p>If you believe this was done in error, please contact the organization administrator.</p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: memberEmail,
+    subject,
+    html,
+  });
+}
+/**
+ * Sends an email to admin for upgrade approval
+ * @param details Upgrade request details
+ * @returns Result of sending the email
+ */
+export function sendUpgradeApprovalEmail({
+  adminEmail,
+  organizationName,
+  requesterName,
+  requesterEmail,
+  approvalUrl
+}: {
+  adminEmail: string;
+  organizationName: string;
+  requesterName: string;
+  requesterEmail: string;
+  approvalUrl: string;
+}) {
+  const subject = `Upgrade Request: ${organizationName} wants to upgrade to Enterprise`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #005c4d;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .info-box {
+          background-color: #f0f9ff;
+          border-left: 4px solid #005c4d;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #005c4d;
+          color: white;
+          padding: 12px 30px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+          font-weight: 600;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Enterprise Upgrade Request</h2>
+        </div>
+        <div class="content">
+          <p>Hello Admin,</p>
+
+          <div class="info-box">
+            <p><strong>${requesterName}</strong> (${requesterEmail}) has requested to upgrade <strong>${organizationName}</strong> to Enterprise plan.</p>
+          </div>
+
+          <p><strong>Enterprise Features Include:</strong></p>
+          <ul>
+            <li>Invite unlimited team members</li>
+            <li>Role-based access control</li>
+            <li>Advanced collaboration features</li>
+            <li>Priority support</li>
+          </ul>
+
+          <p>To approve this upgrade request, click the button below:</p>
+
+          <p style="text-align: center;">
+            <a href="${approvalUrl}" class="button">Approve Upgrade</a>
+          </p>
+
+          <p style="font-size: 12px; color: #666;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${approvalUrl}">${approvalUrl}</a>
+          </p>
+
+          <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <strong>Organization Details:</strong><br>
+            Name: ${organizationName}<br>
+            Requested by: ${requesterName}<br>
+            Email: ${requesterEmail}
+          </p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>This is an automated notification from Wansom.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: adminEmail,
     subject,
     html,
   });

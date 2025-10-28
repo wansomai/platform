@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { getAllBlogPosts } from '@/lib/data/contentful';
-import { adaptBlogPost } from '@/lib/data/blogAdapter';
+import { adaptBlogPost, createSlug } from '@/lib/data/blogAdapter';
 import BlogDetailPageClient from './BlogDetailPage';
 
 type Props = {
@@ -32,11 +32,14 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       title: `${adaptedPost.title} | wansom AI Blog`,
       description: adaptedPost.preview || 'Read this article on legal technology and AI law insights from wansom AI.',
       keywords: adaptedPost.tags?.join(', ') || 'legal tech, AI law, legal insights',
+      alternates: {
+        canonical: `https://www.wansom.ai/blogs/${slug}`,
+      },
       openGraph: {
         title: adaptedPost.title,
         description: adaptedPost.preview,
         type: 'article',
-        url: `https://wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
+        url: `https://www.wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
         images: [
           {
             url: adaptedPost.image || '/images/features-1.png',
@@ -63,15 +66,6 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       description: 'Legal technology and AI law insights from Wansom AI.',
     };
   }
-}
-
-function createSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
 }
 
 export default async function Page({ params }: Props) {

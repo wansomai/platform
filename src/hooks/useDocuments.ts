@@ -1,6 +1,6 @@
 // src/hooks/useDocuments.ts
 import { useState } from 'react'
-import api from '@/lib/api'
+import api, { apiService } from '@/lib/api'
 import { useDocumentsStore } from '@/store/documents.store'
 import { useProjectDocumentsStore } from '@/store/workspace-documents.store'
 import { useUIStore } from '@/store/ui.store'
@@ -61,8 +61,10 @@ export function useDocuments(options: UseDocumentsOptions = {}) {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get(`/projects/${projectId}/documents`);
-      setDocuments(response.data.data);
+      const response = await apiService.get(`/projects/${projectId}/documents`);
+      const res = response as { data: { data: any[] } };
+      setDocuments(res.data.data);
+
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch documents';
       setError(errorMessage);
@@ -137,6 +139,7 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
   // Enhanced delete function
   const deleteDocument = async (documentId: string) => {
     try {
+      setIsProcessing(true);
       setError(null);
       const success = await storeDeleteDocument(documentId);
       
@@ -153,6 +156,8 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       const errorMessage = error.response?.data?.message || error.message || 'Failed to delete document';
       handleError(errorMessage);
       throw error;
+    } finally {
+      setIsProcessing(false);
     }
   };
 

@@ -15,7 +15,7 @@
   
   /* Section spacing */
   --section-padding-sm: 4rem;   /* 64px mobile */
-  --section-padding-lg: 6rem;   /* 96px desktop */
+  --section-padding-lg: 4rem;   /* 96px desktop */
   
   /* Container spacing */
   --container-padding: 1rem;    /* 16px mobile */
@@ -23,11 +23,11 @@
   --container-padding-lg: 2rem; /* 32px desktop */
   
   /* Colors */
-  --color-primary: #355e66;
+  --color-primary: #0a4b5e;
   --color-primary-hover: #2a4d54;
   --color-primary-light: #4a7279;
-  --color-secondary: #d47b0f;
-  --color-secondary-hover: #b8690c;
+  --color-secondary: #F18F01;
+  --color-secondary-hover: #F18F01;
   --color-dark: #005c4d;
   --color-dark-hover: #004a40;
   --color-dim: #f3f4f4;
@@ -471,7 +471,7 @@ body {
 }
 
 .blog-content a {
-  @apply text-[#b8690c] underline;
+  @apply text-teal-700 underline;
 }
 
 .blog-content ul,

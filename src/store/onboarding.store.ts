@@ -418,7 +418,6 @@ export const useOnboardingStore = create<OnboardingState>()(
             localStorage.setItem(storageKey, JSON.stringify(parsed))
           }
         } catch (error) {
-          console.warn('Error marking onboarding as completed:', error)
         }
         
         // Clear the store state

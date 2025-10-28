@@ -3,23 +3,18 @@
 import React, { useState } from 'react';
 import { 
   FileText, 
-  Sparkles, 
   CheckCircle, 
   Play,
   ArrowRight,
-  Brain,
-  Zap,
   BookOpen,
-  Shield,
-  Target,
-  TrendingUp
+  ArrowUpRight,
 } from 'lucide-react';
 
 // Import existing components
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Image from 'next/image';
-import MoreFeatures from '@/components/home/MoreFeatures';
+import VaultSection from '@/components/home/vault';
+import KnowledgeBase from '@/components/home/Knowledgebase';
 
 const LegalDraftingPage = () => {
   const [formData, setFormData] = useState({
@@ -29,65 +24,32 @@ const LegalDraftingPage = () => {
     paymentTerms: 'Monthly'
   });
 
-    const partnerLogos = [
-    { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
-    { src: "/logos/7.png", alt: "Riskhouse International" },
-    { src: "/logos/4.png", alt: "Netsheria" },
- 
-  ];
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-[#355e66] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/1.png')] bg-cover bg-center bg-blend-multiply opacity-30"></div>
-        <div className="container mx-auto px-4 z-10 relative flex flex-wrap">
-          <div className="max-w-4xl text-white">
-            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-              <FileText className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Never Start From scratch </span>
-              <span  className="ml-3 bg-white/20 text-xs px-2 py-1 rounded">Wansom Draft</span>
-            </div>
-            
-            <h1 className="text-heading-1 mb-4 text-white text-shadow-2xs">
-              Draft Correct Legally formatted Documents and Clauses<br />
+      <section className="pt-24 pl-5 lg:pl-20 bg-primary relative overflow-hidden">
+        
+        <div className="container mx-auto px-4 z-10 relative flex flex-col lg:flex-row items-center lg:items-start justify-between space-y-5 lg:space-y-0">
+          <div className=" text-white lg:basis-1/2">      
+            <h1 className="text-heading-2 mb-4 text-white text-shadow-2xs max-w-2xl">
+              Draft Correct Legally formatted Documents and Clauses
               quickly with AI
             </h1>
+             <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8  text-[#f3f4f4]">
+                 Use Wansom's legally-trained AI to draft and redline faster than ever — Select from our professional template library or start from scratch and refine with AI.
+                </p>
             
-            <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-8 py-4 rounded-lg font-semibold transition-colors mb-12" onClick={() => window.location.href = '/login'}>
-              Start Drafting Now
+            <button className="bg-[#d47b0f] hover:bg-black text-white px-5 py-2 rounded-lg font-semibold transition-colors mb-12" onClick={() => window.location.href = '/login'}>
+              Start Drafting Now <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
             </button>
-
-            {/* Trusted by logos */}
-            <div className="mb-8">
-              <p className="text-gray-200 text-lg mb-4">Trusted by legal teams at:</p>
-              
-              <div className="flex items-center space-x-2">
-                   {partnerLogos.map((logo, index) => (
-                         
-                            <div key={index} className="flex-shrink-0">
-                                <Image
-                                    src={logo.src}
-                                    alt={logo.alt}
-                                    width={160}
-                                    height={120}
-                                    className="h-10 md:h-14 w-auto object-contain transition-all duration-300 hover:scale-105 brightness-0 invert"
-                                    loading="lazy"
-                                />
-                            </div>
-                            
-                          ))}
-              </div>
-            </div>
           </div>
 
-          {/* Hero Demo Interface */}
-          
-            <div className="bg-[#355e66]  rounded-lg p-4 relative overflow-hidden  md:min-w-[500px]">
-                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-[75%]">
+          {/* Hero Demo Interface */}          
+            <div className="bg-primary  rounded-lg pb-4 px-4 relative overflow-hidden  md:min-w-[500px] w-full lg:basis-1/2">
+                 <div className="bg-white rounded-xl shadow-2xl overflow-hidden lg:w-[75%]">
                   <div className="flex items-center bg-gray-50 px-4 py-3 border-b ">
                     <div className="flex space-x-2">
                       <div className="w-3 h-3 bg-red-400 rounded-full"></div>
@@ -172,168 +134,34 @@ const LegalDraftingPage = () => {
       {/* Quickly draft section */}
       <section className="section-spacing bg-gray-100">
         <div className="section-container">
-          <div className="text-start lg:text-cneter mb-16">
-            <h2 className="text-heading-2 mb-4">
-              Quickly draft relevant terms and clauses<br />
-              across multiple documents
+          <div className="text-start lg:text-cneter mb-16 max-w-3xl mx-auto">
+            <h2 className="text-heading-2 mb-4 text-center">
+              Automate documents, save time, and make clients happy — all in a unified workspace
             </h2>
           </div>
 
          <div className="max-w-6xl mx-auto">
-  <div className="bg-white rounded-xl shadow-2xl border overflow-hidden">
-    {/* Header */}
-    <div className="bg-gray-50 px-4 md:px-6 py-3 md:py-4 border-b">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 md:space-x-4">
-          <div className="flex space-x-1 md:space-x-2">
-            <div className="w-2 h-2 md:w-3 md:h-3 bg-red-400 rounded-full"></div>
-            <div className="w-2 h-2 md:w-3 md:h-3 bg-yellow-400 rounded-full"></div>
-            <div className="w-2 h-2 md:w-3 md:h-3 bg-green-400 rounded-full"></div>
-          </div>
-          <div className="text-xs md:text-sm text-gray-600 truncate">Employment Agreement - Final.pdf</div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="hidden md:inline text-xs bg-gray-200 px-2 py-1 rounded">Page 1 of 3</span>
-          <span className="text-xs md:text-sm text-gray-500">Wansom</span>
-        </div>
-      </div>
-    </div>
-    
-    <div className="p-4 md:p-8 bg-white">
-      <div className="grid lg:grid-cols-2 gap-4 md:gap-8">
-        {/* Document Section */}
-        <div className="bg-white border border-gray-300 rounded-lg p-3 md:p-6 shadow-sm" style={{fontFamily: 'Times, serif'}}>
-          {/* Document Header */}
-          <div className="text-center mb-4 md:mb-6">
-            <h1 className="text-sm md:text-lg font-bold text-gray-900 mb-1 md:mb-2">EMPLOYMENT AGREEMENT</h1>
-            <p className="text-xs md:text-sm text-gray-600">Innovate Tech Solutions LLC</p>
-            <hr className="mt-2 md:mt-4 border-gray-300" />
+          <div className='grid grid-cols-1 lg:grid-cols-3 gap-5 items-center'>
+          
+    <div className=''>
+
+    <h3 className="text-lg font-semibold mb-6 text-gray-900 text-center">Generate Drafts Instantly</h3>
+<p className='text-body text-center'>Wansom's legal template library of professional advocate reviewed documents allow you to accurately and reliably draft complex documents that are ready to go.</p>
+            </div>
+          
+            <div className=''>
+
+    <h3 className="text-lg font-semibold mb-6 text-gray-900 text-center">Smarter Redlining</h3>
+<p className='text-body text-center'> Wansom learns from your writing style, prior documents and guidelines to instantly mark up entire agreements according to your set instructions.</p>
+            </div>
+        
+  <div className=''>
+
+    <h3 className="text-lg font-semibold mb-6 text-gray-900 text-center">Revise With Precision</h3>
+<p className='text-body text-center'>Wansom AI helps you rewrite claues, format entire documents and insert rules all from a simple chat interface. Download in Word document format(.DOCX) once ready</p>
+            </div>
           </div>
 
-          {/* Document Content */}
-          <div className="space-y-2 md:space-y-4 text-xs md:text-sm leading-relaxed">
-            <div className="mb-2 md:mb-4">
-              <p className="font-semibold text-gray-900">3. COMPENSATION AND BENEFITS</p>
-            </div>
-            
-            <div className="space-y-2 md:space-y-3">
-              <p className="text-gray-700">
-                <span className="font-medium">3.1</span> Base salary of $120,000 annually, payable in accordance with Company's standard payroll practices.
-              </p>
-              
-              {/* Highlighted section */}
-              <div className="bg-yellow-200 px-2 py-1 rounded border-l-2 md:border-l-4 border-yellow-400">
-                <p className="text-gray-700">
-                  <span className="font-medium">3.2</span> <span className="bg-yellow-300 px-1">Employee shall be eligible for annual performance bonuses at the sole discretion of the Company, with targets to be established quarterly.</span>
-                </p>
-              </div>
-              
-              <p className="text-gray-700">
-                <span className="font-medium">3.3</span> Standard benefits package including health insurance, dental coverage, and 401(k) matching as outlined in the Employee Handbook.
-              </p>
-              
-              <div className="mt-3 md:mt-6">
-                <p className="font-semibold text-gray-900">4. CONFIDENTIALITY</p>
-              </div>
-              
-              <p className="text-gray-700">
-                <span className="font-medium">4.1</span> Employee acknowledges access to confidential information and agrees to maintain strict confidentiality during and after employment...
-              </p>
-            </div>
-          </div>
-          
-          {/* Page footer - hidden on mobile */}
-          <div className="hidden md:block mt-8 pt-4 border-t border-gray-300 text-center">
-            <p className="text-xs text-gray-500">Page 1</p>
-          </div>
-        </div>
-        
-        {/* Chat Interface Section */}
-        <div className="space-y-3 md:space-y-4 -mt-[70%] -mr-3 md:mt-0 w-[80%] md:w-full mx-auto md:max-w-md lg:max-w-lg">
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            {/* Chat Header */}
-            <div className="bg-[#355e66] px-3 md:px-4 py-2 md:py-3 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-xs md:text-sm font-medium">Wansom Assistant</span>
-                </div>
-                <span className="text-xs bg-white/20 px-1.5 md:px-2 py-0.5 md:py-1 rounded">Active</span>
-              </div>
-            </div>
-            
-            {/* Chat Messages */}
-            <div className="p-3 md:p-4 h-48 md:h-64 overflow-y-auto bg-gray-50">
-              <div className="space-y-3 md:space-y-4">
-                {/* AI Message */}
-                <div className="flex space-x-2">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-[#355e66] rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-white">AI</span>
-                  </div>
-                  <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm max-w-xs">
-                    <p className="text-xs md:text-sm text-gray-700">I notice you highlighted the bonus clause. Would you like me to suggest improvements?</p>
-                  </div>
-                </div>
-                
-                {/* User Message */}
-                <div className="flex space-x-2 justify-end">
-                  <div className="bg-[#355e66] text-white p-2 md:p-3 rounded-lg max-w-xs">
-                    <p className="text-xs md:text-sm">Yes, make it more specific with clear criteria and timeline</p>
-                  </div>
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-white">You</span>
-                  </div>
-                </div>
-                
-                {/* AI Response */}
-                <div className="flex space-x-2">
-                  <div className="w-5 h-5 md:w-6 md:h-6 bg-[#355e66] rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs text-white">AI</span>
-                  </div>
-                  <div className="bg-white p-2 md:p-3 rounded-lg shadow-sm max-w-xs">
-                    <p className="text-xs md:text-sm text-gray-700 mb-2">Here's a clearer version:</p>
-                    <div className="p-2 bg-green-50 border-l-2 border-green-400 text-xs">
-                      "Annual bonuses of 10-25% of base salary based on: (a) individual performance metrics, (b) company revenue targets. Decisions made by March 31st following performance year."
-                    </div>
-                    <button className="mt-2 text-xs bg-[#355e66] text-white px-2 py-1 rounded hover:bg-[#2a4d54] transition-colors">
-                      Apply Changes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Chat Input */}
-            <div className="p-2 md:p-3  border-t bg-white">
-              <div className="flex space-x-2">
-                <input 
-                  type="text" 
-                  placeholder="Ask me to revise this section..."
-                  className="flex-1 px-2 md:px-3 py-1.5 md:py-2 border border-gray-300 rounded-lg text-xs md:text-sm focus:ring-1 focus:ring-[#355e66] focus:border-transparent"
-                />
-                <button className="bg-[#355e66] text-white px-2 md:px-3 py-1.5 md:py-2 rounded-lg hover:bg-[#2a4d54] transition-colors">
-                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Quick Actions - Simplified for mobile */}
-          <div className="bg-white border border-gray-200 rounded-lg p-3 md:p-4">
-            <h3 className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">Quick Actions</h3>
-            <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
-              <button className="text-left p-2 text-xs md:text-sm bg-gray-50 rounded hover:bg-gray-100 transition-colors">
-                📝 Draft clause
-              </button>
-              <button className="text-left p-2 text-xs md:text-sm bg-gray-50 rounded hover:bg-gray-100 transition-colors">
-                🔍 Review risks
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
         </div>
       </section>
@@ -403,20 +231,19 @@ const LegalDraftingPage = () => {
       </section>
 
       {/* Draft from scratch section */}
-      <section className="section-spacing bg-[#355e66]">
+      <section className="section-spacing bg-primary">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-                Draft from scratch or<br />
-                existing templates
+              <h2 className="text-heading-2 mb-6 text-white">
+              Comprehensive Legal Template Library
               </h2>
               <p className="text-xl text-gray-100 mb-8">
-                Create new clauses and documents, or store your existing templates and Wansom will draft content to match.
+              Start from a professionally drafted legal template and customize it to your needs with Wansom's AI-powered drafting tools.
               </p>
               
-              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-8 py-4 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
-                Try Wansom Free
+              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
+                Explore Legal templates <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
               </button>
             </div>
 
@@ -457,9 +284,10 @@ const LegalDraftingPage = () => {
         </div>
       </section>
 
+<KnowledgeBase/>
 
       {/* More spells section */}
-     <MoreFeatures/>
+  <VaultSection/>
       <Footer />
     </div>
   );

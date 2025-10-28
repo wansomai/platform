@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,10 +17,15 @@ interface RegisterFormData {
   organizationName: string;
 }
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const invitationToken = searchParams.get('invitationToken');
+  const invitationEmail = searchParams.get('email');
+  const callbackUrl = searchParams.get('callbackUrl');
+
   const [formData, setFormData] = useState<RegisterFormData>({
-    email: '',
+    email: invitationEmail ? decodeURIComponent(invitationEmail) : '',
     password: '',
     fullName: '',
     organizationName: '',
@@ -38,24 +43,55 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
+
     try {
+      // Prepare registration data
+      const registrationData: any = {
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+      };
+
+      // Add invitationToken if present
+      if (invitationToken) {
+        registrationData.invitationToken = invitationToken;
+      } else {
+        // Only add organizationName if not invited
+        registrationData.organizationName = formData.organizationName;
+      }
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(registrationData),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
-      
-      // Registration successful, redirect to login
-      router.push('/login?registered=true');
+
+      // If there's a callback URL (from invitation), sign in and redirect there
+      if (callbackUrl) {
+        // Auto-sign in after registration
+        const signInResult = await signIn('credentials', {
+          redirect: false,
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (signInResult?.ok) {
+          router.push(decodeURIComponent(callbackUrl));
+        } else {
+          // If auto-signin fails, redirect to login
+          router.push(`/login?callbackUrl=${callbackUrl}`);
+        }
+      } else {
+        // Normal registration flow - redirect to login
+        router.push('/login?registered=true');
+      }
     } catch (error) {
-      console.error('Registration error:', error);
       setError(error instanceof Error ? error.message : 'Registration failed');
     } finally {
       setIsLoading(false);
@@ -68,14 +104,28 @@ export default function RegisterPage() {
   };
   
   return (
-    <div className="flex min-h-screen flex items-center justify-center bg-white">
-    
+    <div className=" min-h-screen flex items-center justify-center bg-white">
+
       {/* Form Side */}
       <div className="flex flex-1 flex-col justify-center bg-white px-4 py-12 lg:pt-24 md:px-12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 text-center">Create your account</h2>
           </div>
+
+          {invitationToken && (
+            <div className="mb-6 rounded-md bg-blue-50 border border-blue-200 p-4">
+              <div className="flex items-start gap-3">
+                <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-blue-700">You've been invited!</p>
+                  <p className="text-blue-600">
+                    Complete your registration to join the organization.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 rounded-md bg-red-50 p-4">
@@ -158,26 +208,34 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 className="mt-1"
                 placeholder="you@example.com"
-                disabled={isLoading}
+                disabled={isLoading || !!invitationEmail}
+                readOnly={!!invitationEmail}
               />
+              {invitationEmail && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Email is pre-filled from your invitation
+                </p>
+              )}
             </div>
 
-            <div>
-              <Label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
-                Organization Name
-              </Label>
-              <Input
-                id="organizationName"
-                name="organizationName"
-                type="text"
-                required
-                value={formData.organizationName}
-                onChange={handleChange}
-                className="mt-1"
-                placeholder="Your Company"
-                disabled={isLoading}
-              />
-            </div>
+            {!invitationToken && (
+              <div>
+                <Label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
+                  Organization Name
+                </Label>
+                <Input
+                  id="organizationName"
+                  name="organizationName"
+                  type="text"
+                  required={!invitationToken}
+                  value={formData.organizationName}
+                  onChange={handleChange}
+                  className="mt-1"
+                  placeholder="Your Company"
+                  disabled={isLoading}
+                />
+              </div>
+            )}
 
             <div>
               <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -236,5 +294,13 @@ export default function RegisterPage() {
       </div>
     
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }

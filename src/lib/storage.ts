@@ -22,7 +22,6 @@ export class BlobStorageService {
       
       return blob.url;
     } catch (error) {
-      console.error('Error uploading file to Blob storage:', error);
       throw error;
     }
   }
@@ -35,7 +34,6 @@ export class BlobStorageService {
     try {
       await del(url);
     } catch (error) {
-      console.error('Error deleting file from Blob storage:', error);
       throw error;
     }
   }
@@ -64,7 +62,6 @@ export class BlobStorageService {
       const arrayBuffer = await response.arrayBuffer();
       return Buffer.from(arrayBuffer);
     } catch (error) {
-      console.error('Error downloading file from Blob storage:', error);
       throw error;
     }
   }

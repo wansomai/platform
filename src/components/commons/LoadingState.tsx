@@ -1,4 +1,4 @@
-// components/commons/LoadingStates.tsx
+// components/commons/LoadingStates LoadingStates.tsx
 import React from 'react';
 import { Loader2, FileText, MessageSquare, Users, Briefcase } from 'lucide-react';
 import LogoAnimation from '@/components/commons/LogoAnimation';

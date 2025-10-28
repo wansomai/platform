@@ -47,7 +47,7 @@ export async function checkProjectAccess(projectId: string, userId: string): Pro
     
     return true;
   } catch (error) {
-    console.error('Error checking project access:', error);
+    
     return false;
   }
 }
@@ -86,36 +86,11 @@ export function getUserIdFromRequest(request: NextRequest): string | null {
     // Return the user ID from the payload
     return payload.userId || null;
   } catch (error) {
-    console.error('Error extracting user ID from token:', error);
+    
     return null;
   }
 }
 
-/**
- * Checks if a user has access to a specific conversation
- * Access is determined by whether the user has access to the parent project
- * 
- * @param conversationId - The ID of the conversation to check access for
- * @param userId - The ID of the user requesting access
- * @returns boolean - True if the user has access, false otherwise
- */
-export async function checkConversationAccess(conversationId: string, userId: string): Promise<boolean> {
-  try {
-    // Get the project ID for this conversation
-    const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId },
-      select: { projectId: true }
-    });
-    
-    if (!conversation) return false;
-    
-    // Check if user has access to the parent project
-    return checkProjectAccess(conversation.projectId, userId);
-  } catch (error) {
-    console.error('Error checking conversation access:', error);
-    return false;
-  }
-}
 
 /**
  * Gets the projects that a user has access to
@@ -152,7 +127,7 @@ export async function getAccessibleProjectIds(userId: string): Promise<string[]>
     // Combine and deduplicate
     return [...new Set([...userProjectIds, ...orgProjectIds])];
   } catch (error) {
-    console.error('Error getting accessible projects:', error);
+    
     return [];
   }
 }

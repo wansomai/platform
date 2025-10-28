@@ -1,9 +1,7 @@
 // app/hire-a-lawyer/[slug]/page.tsx
 import { Metadata, ResolvingMetadata } from 'next';
-import { draftMode } from 'next/headers'
-import { notFound } from 'next/navigation'
 import HireALawyerPage from './HireALawyerPage'
-import { getLandingPage, getAllSlugs, getAllLawyerPages, getAllPractiseAreas } from '@/lib/data/contentful'
+import { getAllSlugs, getAllPractiseAreas,fetchAllEntries } from '@/lib/data/contentful'
 import Link from 'next/link';
 
 
@@ -22,7 +20,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata>{
   try {
    const { slug } = await params;
-  const allEntries = await getAllLawyerPages()
+  const allEntries = await fetchAllEntries('lawyerPages' )
    const entry = allEntries.find((post) => {
       return post.fields.slug === slug;
     });
@@ -37,11 +35,18 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   return {
     title: `${entry.fields.title}`,
     description: entry.fields.metaDescription || 'Find the best lawyers in your area.',
-    alternates: { canonical: `https://wansom.ai/hire-a-lawyer/${slug}` },
+    alternates: {
+      canonical: `https://www.wansom.ai/hire-a-lawyer/${slug}`
+    },
+
     openGraph: {
       title: `${entry.fields.title}`,
       description: entry.fields.metaDescription || 'Find the best lawyers in your area.',
       images: "/images/hero.png",
+      url: `https://www.wansom.ai/hire-a-lawyer/${slug}`,
+      siteName: 'Wansom AI',
+      locale: 'en-US',
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
@@ -62,7 +67,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 // ❸  Page component
 export default async function Page({ params }: Props) {
    const { slug } = await params;
-    const allEntries = await getAllLawyerPages()
+    const allEntries = await fetchAllEntries('lawyerPages' )
     const allAreas = await getAllPractiseAreas();
         
    const entry = allEntries.find((post) => {

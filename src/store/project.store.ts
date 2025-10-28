@@ -3,19 +3,17 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { apiService } from '@/lib/api'
 import { Project } from '@/types/projects'
+import { ProjectState } from '@/types/store'
+import { ApiResponse } from '@/types'
 
-interface ApiResponse<T> {
-  status: number;
-  message: string;
-  data: T;
-  error?: boolean;
-}
-
-interface ProjectState {  
+interface ExtendedProjectState extends ProjectState {
   projects: Project[]
+  projectsMap: Map<string, Project>
   currentProject: Project | null
   isLoading: boolean
   error: string | null
+  requiresUpgrade?: boolean
+  
   
   // Basic state setters
   setProjects: (projects: Project[]) => void
@@ -26,6 +24,9 @@ interface ProjectState {
   setLoading: (isLoading: boolean) => void
   setError: (error: string | null) => void
   
+  // Optimized getters
+  getProjectById: (projectId: string) => Project | undefined
+  
   // API operations
   fetchProjects: () => Promise<Project[]>
   fetchProjectById: (projectId: string) => Promise<Project | null>
@@ -34,32 +35,60 @@ interface ProjectState {
   removeProject: (projectId: string) => Promise<boolean>
 }
 
-export const useProjectStore = create<ProjectState>()(
+// Helper function to create Map from projects array
+const createProjectsMap = (projects: Project[]): Map<string, Project> => {
+  return new Map(projects.map(project => [project.id, project]));
+};
+
+export const useProjectStore = create<ExtendedProjectState>()(
   persist(
     (set, get) => ({
       projects: [],
+      projectsMap: new Map(),
       currentProject: null,
+      members: [],
+      invitations: [],
       isLoading: false,
       error: null,
       
       // Basic state setters
-      setProjects: (projects) => set({ projects }),
+      setProjects: (projects) => set({ 
+        projects, 
+        projectsMap: createProjectsMap(projects)
+      }),
       setCurrentProject: (project) => set({ currentProject: project }),
-      addProject: (project) => set((state) => ({ 
-        projects: [...state.projects, project] 
-      })),
-      updateProject: (project) => set((state) => ({
-        projects: state.projects.map((p) => (p.id === project.id ? project : p)),
-        currentProject: state.currentProject?.id === project.id 
-          ? { ...state.currentProject, ...project } 
-          : state.currentProject
-      })),
-      deleteProject: (projectId) => set((state) => ({
-        projects: state.projects.filter((p) => p.id !== projectId),
-        currentProject: state.currentProject?.id === projectId ? null : state.currentProject
-      })),
+      addProject: (project) => set((state) => {
+        const newProjects = [...state.projects, project];
+        return { 
+          projects: newProjects,
+          projectsMap: createProjectsMap(newProjects)
+        };
+      }),
+      updateProject: (project) => set((state) => {
+        const newProjects = state.projects.map((p) => (p.id === project.id ? project : p));
+        return {
+          projects: newProjects,
+          projectsMap: createProjectsMap(newProjects),
+          currentProject: state.currentProject?.id === project.id 
+            ? { ...state.currentProject, ...project } 
+            : state.currentProject
+        };
+      }),
+      deleteProject: (projectId) => set((state) => {
+        const newProjects = state.projects.filter((p) => p.id !== projectId);
+        return {
+          projects: newProjects,
+          projectsMap: createProjectsMap(newProjects),
+          currentProject: state.currentProject?.id === projectId ? null : state.currentProject
+        };
+      }),
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
+      
+      // Optimized getters using Map for O(1) lookups
+      getProjectById: (projectId) => {
+        return get().projectsMap.get(projectId);
+      },
       
       // API operations
       fetchProjects: async () => {   
@@ -67,10 +96,11 @@ export const useProjectStore = create<ProjectState>()(
           set({ isLoading: true, error: null });
           
           const response = await apiService.get<ApiResponse<Project[]>>(`/api/projects`);
-          const projects = response.data;
+          const projects = response.data ?? [];
           
           set({ 
             projects, 
+            projectsMap: createProjectsMap(projects),
             isLoading: false
           });
           
@@ -79,15 +109,15 @@ export const useProjectStore = create<ProjectState>()(
         } catch (error: any) {
           const state = get();
           set({ error: error.message || 'Failed to fetch projects', isLoading: false });
-          return state.projects; // Return cached data on error
+          return state.projects ?? [];
         }
       },
       
       fetchProjectById: async (projectId: string) => {
         const state = get();
         
-        // Check if we already have this project in our store
-        const cachedProject = state.projects.find(p => p.id === projectId);
+        // Check if we already have this project in our store using O(1) Map lookup
+        const cachedProject = state.projectsMap.get(projectId);
         if (cachedProject && !state.isLoading) {
           set({ currentProject: cachedProject });
           return cachedProject;
@@ -113,7 +143,6 @@ export const useProjectStore = create<ProjectState>()(
           set({ currentProject: projectData, isLoading: false });
           return projectData;
         } catch (error: any) {
-          console.error('Error fetching project:', error);
           set({ 
             error: error.message || 'Failed to fetch project details', 
             isLoading: false 
@@ -126,21 +155,31 @@ export const useProjectStore = create<ProjectState>()(
         try {
           set({ isLoading: true, error: null });
           const response = await apiService.post<ApiResponse<Project>>('/api/projects', data);
-          
+
           if (response.status === 201) {
-            const project = response.data;
+            const project = response.data ?? null;
             set({ isLoading: false });
             get().fetchProjects();
             return project;
           }
           return null;
         } catch (error: any) {
-          console.error('Error creating project:', error);
-          set({ 
-            error: error.message || 'Failed to create project', 
-            isLoading: false 
-          });
-          return null;
+          // Check if this is a subscription limit error
+          if (error.status === 403 && error.requiresUpgrade) {
+            set({
+              error: error.message || 'Subscription limit reached',
+              isLoading: false,
+              requiresUpgrade: true
+            });
+            // Re-throw the error so the component can handle it
+            throw error;
+          } else {
+            set({
+              error: error.message || 'Failed to create project',
+              isLoading: false
+            });
+            return null;
+          }
         }
       },
       
@@ -148,21 +187,24 @@ export const useProjectStore = create<ProjectState>()(
         try {
           set({ isLoading: true, error: null });
           const response = await apiService.put<ApiResponse<Project>>(`/api/projects/${projectId}`, data);
-          const updatedProject = response.data || response.data;
+          const updatedProject: Project | null = response.data ?? null;
           
-          set((state) => ({
-            projects: state.projects.map((p) => 
-              p.id === projectId ? updatedProject : p
-            ),
-            currentProject: state.currentProject?.id === projectId 
-              ? { ...state.currentProject, ...updatedProject }
-              : state.currentProject,
-            isLoading: false
-          }));
+          set((state) => {
+            const newProjects = state.projects.map((p) => 
+              p.id === projectId ? updatedProject! : p
+            );
+            return {
+              projects: newProjects,
+              projectsMap: createProjectsMap(newProjects),
+              currentProject: state.currentProject?.id === projectId 
+                ? { ...state.currentProject, ...updatedProject }
+                : state.currentProject,
+              isLoading: false
+            };
+          });
           
           return updatedProject;
         } catch (error: any) {
-          console.error('Error updating project:', error);
           set({ 
             error: error.message || 'Failed to update project', 
             isLoading: false 
@@ -176,17 +218,20 @@ export const useProjectStore = create<ProjectState>()(
           set({ isLoading: true, error: null });
           await apiService.delete(`/api/projects/${projectId}`);
           
-          set((state) => ({
-            projects: state.projects.filter((p) => p.id !== projectId),
-            currentProject: state.currentProject?.id === projectId 
-              ? null 
-              : state.currentProject,
-            isLoading: false
-          }));
+          set((state) => {
+            const newProjects = state.projects.filter((p) => p.id !== projectId);
+            return {
+              projects: newProjects,
+              projectsMap: createProjectsMap(newProjects),
+              currentProject: state.currentProject?.id === projectId 
+                ? null 
+                : state.currentProject,
+              isLoading: false
+            };
+          });
           
           return true;
         } catch (error: any) {
-          console.error('Error deleting project:', error);
           set({ 
             error: error.message || 'Failed to delete project', 
             isLoading: false 
@@ -202,6 +247,12 @@ export const useProjectStore = create<ProjectState>()(
         projects: state.projects,
         currentProject: state.currentProject,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // Recreate Map from persisted projects array
+          state.projectsMap = createProjectsMap(state.projects);
+        }
+      },
       version: 1,
     }
   )

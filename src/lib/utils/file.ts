@@ -115,7 +115,7 @@ export function getFileExtension(fileName: string): string {
 /**
  * Validate file size against maximum allowed
  */
-export function validateFileSize(fileSize: number, maxSize: number = 5 * 1024 * 1024): {
+export function validateFileSize(fileSize: number, maxSize: number = 20 * 1024 * 1024): {
   isValid: boolean;
   error?: string;
 } {
@@ -125,7 +125,7 @@ export function validateFileSize(fileSize: number, maxSize: number = 5 * 1024 * 
       error: `File size exceeds ${formatFileSize(maxSize)} limit. Please select a smaller file or upgrade your plan.`
     };
   }
-  
+
   return { isValid: true };
 }
 
@@ -187,7 +187,7 @@ export function formatUploadProgress(progress: number): string {
  * Constants for file operations
  */
 export const FILE_CONSTANTS = {
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  MAX_FILE_SIZE: 20 * 1024 * 1024, // 20MB
   ALLOWED_TYPES: [
     'pdf', 'doc', 'docx', 'txt', 'rtf',
     'xls', 'xlsx', 'csv',

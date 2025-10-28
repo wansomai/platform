@@ -1,11 +1,12 @@
 // src/components/chat/ChatInterface.tsx
 "use client"
 
-import { useRef, useEffect } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { 
-  Copy, 
-  Search
+import {
+  Copy,
+  Search,
+  ExternalLink
 } from "lucide-react"
 import { useChatStore} from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
@@ -13,6 +14,7 @@ import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
+import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
 import { Message } from "@/types"
 
 // Empty state component for when there are no messages
@@ -60,11 +62,11 @@ export function ChatInterface() {
     }
   }, [error, addToast])
   
-  const copyMessageToClipboard = (content: string) => {
+  const copyMessageToClipboard = useCallback((content: string) => {
     navigator.clipboard.writeText(content)
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
-  }
+  }, [addToast])
 
   // Show empty state if no messages
   if (!currentConversation?.messages || currentConversation.messages.length === 0) {
@@ -82,9 +84,9 @@ export function ChatInterface() {
         `}</style>
         
         <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
-          {currentConversation?.messages.map((message) => (
+          {currentConversation?.messages.map((message, index) => (
             <ChatMessageItem 
-              key={message.id || message.tempId || `msg-${Math.random()}`} 
+              key={message.id || message.tempId || `temp-${message.timestamp}-${index}`} 
               message={message} 
               user={session?.user} 
               onCopy={() => copyMessageToClipboard(message.content)}
@@ -98,7 +100,7 @@ export function ChatInterface() {
 }
 
 // ChatMessageItem to handle streaming messages
-function ChatMessageItem({ 
+const ChatMessageItem = React.memo(({ 
   message, 
   user,
   onCopy 
@@ -106,7 +108,7 @@ function ChatMessageItem({
   message: Message, 
   user: any,
   onCopy: () => void
-}) {
+}) => {
   const isUser = message.role === 'user';
   
   // Format the message content
@@ -151,7 +153,12 @@ function ChatMessageItem({
                   </div>
                 ) : (
                   <div className="flex flex-col items-start">
-                    {message.processingStatus && message.processingStatus !== 'completed' ? (
+                    {message.processingStatus && isCanvasProcessingStatus(message.processingStatus) ? (
+                      <CanvasProcessingStatus 
+                        status={message.processingStatus} 
+                        message={message.canvasMessage}
+                      />
+                    ) : message.processingStatus && message.processingStatus !== 'completed' ? (
                       <ProcessingStatus status={message.processingStatus} />
                     ) : (
                       <div className="flex items-center">
@@ -170,24 +177,7 @@ function ChatMessageItem({
                 
               />
             )}
-          </div>
-          
-          {/* Display web search results if available */}
-          {!isUser && message.webSearchResults && (
-            <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
-              <div className="flex items-center mb-2 text-blue-700">
-                <Search size={16} className="mr-2" />
-                <span className="font-medium">Web Search Results</span>
-              </div>
-              <div className="max-h-60 overflow-y-auto">
-                <MessageDisplay 
-                  content={message.webSearchResults} 
-                  className="text-gray-700 text-xs" 
-                />
-              </div>
-            </div>
-          )}
-          
+          </div>      
           {!isUser && !message.isLoading && !isStreaming && (
             <div className="flex gap-1 mt-2">
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
@@ -195,7 +185,37 @@ function ChatMessageItem({
               </Button>
             </div>
           )}
-          
+
+          {/* Display Google Search sources if available */}
+          {!isUser && message.webSearchSources && message.webSearchSources.length > 0 && (
+            <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center mb-2 text-blue-700">
+                <Search size={16} className="mr-2" />
+                <span className="font-medium text-sm">Google Search Results ({message.webSearchSources.length})</span>
+              </div>
+              <div className="space-y-2">
+                {message.webSearchSources.map((source: {title: string, uri: string}, index: number) => (
+                  <a
+                    key={index}
+                    href={source.uri}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-2 p-2 bg-white rounded hover:bg-blue-100 transition-colors group"
+                  >
+                    <span className="text-xs text-blue-600 font-mono mt-0.5">[{index + 1}]</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-blue-900 group-hover:text-blue-700 line-clamp-1">
+                        {source.title}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">{source.uri}</p>
+                    </div>
+                    <ExternalLink size={14} className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Show any references/citations */}
           {message.references && message.references.length > 0 && (
             <div className="mt-2 space-y-1">
@@ -212,9 +232,23 @@ function ChatMessageItem({
       </div>
     </div>
   );
-}
+});
 
 // Simple function to remove system prefix
 function formatMessageContent(content: string): string {
   return content.replace(/^Wansom:\s*/i, '');
+}
+
+// Helper function to check if status is canvas-related
+function isCanvasProcessingStatus(status: string): boolean {
+  const canvasStatuses = [
+    'analyzing_request',
+    'processing_context', 
+    'generating_document',
+    'editing_document',
+    'saving_document',
+    'completed',
+    'error'
+  ];
+  return canvasStatuses.includes(status);
 }

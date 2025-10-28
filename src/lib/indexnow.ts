@@ -23,11 +23,9 @@ export async function submitToIndexNow(urlList: []) {
     });
 
     if (!res.ok) {
-      console.error('IndexNow submission failed', res.status);
-    } else {
-      console.log('Submitted to IndexNow:', urlList);
+      // IndexNow submission failed
     }
   } catch (err) {
-    console.error('IndexNow error:', err);
+    // IndexNow error occurred
   }
 }

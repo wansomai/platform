@@ -7,6 +7,7 @@ import { adaptBlogPosts } from '@/lib/data/blogAdapter';
 import PostCard from '@/components/home/blog-post';
 import Pagination from '@/components/home/pagination';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const POSTS_PER_PAGE = 9; // 3x3 grid
 
@@ -64,7 +65,7 @@ const BlogsPageClient = () => {
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-4xl font-bold mb-6">Blog & Resources</h1>
             <div className="text-sm  mb-6">
-              <Link href="/" className="hover:text-blue-600">Home</Link> / <span>Articles</span>
+              <Link href="/" className="hover:text-teal-800">Home</Link> / <span>Articles</span>
             </div>
             <p className="text-lg ">
             Explore our latest thoughts, research, and insights on ,AI Law, digital ethics, AI governance, and technology transformation.
@@ -75,7 +76,7 @@ const BlogsPageClient = () => {
       
       {/* Blog Posts Section */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="section-container mx-auto px-4">
 
 
           {error && (
@@ -128,6 +129,7 @@ const BlogsPageClient = () => {
           )}
         </div>
       </section>
+      <Footer/>
     </div>
   );
 };

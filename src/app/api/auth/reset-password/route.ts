@@ -1,6 +1,6 @@
 // src/app/api/auth/reset-password/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { hash } from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Hash new password
-    const hashedPassword = await hash(password, 10)
+    const hashedPassword = await bcrypt.hash(password, 10)
     
     // Update user
     await prisma.user.update({

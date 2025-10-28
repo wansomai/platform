@@ -43,7 +43,6 @@ export default function PodCastForm (){
         setIsSubmitting(false);
       } catch (error) {
         setError('An error occurred while submitting the form');
-        console.error('Error:', error);
       } finally {
         setIsSubmitting(false);
       }

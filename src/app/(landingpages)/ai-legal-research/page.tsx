@@ -4,18 +4,22 @@ import LegalResearchPage from './LegalResearchPage';
 
 
 export const metadata: Metadata = {
-  title: 'Best AI Legal Research platform| wansom AI',
+  title: 'Best AI Legal Research Platform | Wansom AI',
   description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
+  alternates: {
+    canonical: 'https://www.wansom.ai/ai-legal-research',
+  },
   openGraph: {
-    title: 'Best AI Legal Research| wansom AI',
+    title: 'Best AI Legal Research | Wansom AI',
     description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
     type: 'website',
+    url: 'https://www.wansom.ai/ai-legal-research',
     images: [
       {
         url: '/legal-research.png',
         width: 1200,
         height: 630,
-        alt: 'wansom AI Legal Drafting',
+        alt: 'Wansom AI Legal Research',
       },
     ],
   },

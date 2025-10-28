@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Create associate with steps and tools in a transaction
-    const associate = await prisma.$transaction(async (tx) => {
+    const associate = await prisma.$transaction(async (tx:any) => {
       // Create associate
       const newAssociate = await tx.aIAssociate.create({
         data: {
@@ -88,11 +88,11 @@ export async function POST(request: NextRequest) {
           select: { id: true }
         });
         
-        const validProjectIds = projects.map(p => p.id);
+        const validProjectIds = projects.map((p: { id: any; }) => p.id);
         
         // Create project associations
         if (validProjectIds.length > 0) {
-          await Promise.all(validProjectIds.map(projectId => 
+          await Promise.all(validProjectIds.map((projectId: any) => 
             tx.projectAssociate.create({
               data: {
                 associateId: newAssociate.id,
@@ -182,20 +182,20 @@ export async function GET(request: NextRequest) {
     });
     
     // Format the response
-    const formattedAssociates = associates.map(associate => ({
+    const formattedAssociates = associates.map((associate: any) => ({
       id: associate.id,
       name: associate.name,
       instructions: associate.instructions,
       createdBy: associate.createdBy.fullName,
       createdAt: associate.createdAt.toISOString(),
       updatedAt: associate.updatedAt.toISOString(),
-      steps: associate.steps.map(step => ({
+      steps: associate.steps.map((step: { id: any; description: any; stepOrder: any; }) => ({
         id: step.id,
         description: step.description,
         order: step.stepOrder
       })),
-      tools: associate.tools.map(tool => tool.toolId),
-      projects: associate.projects.map(pa => ({
+      tools: associate.tools.map((tool: { toolId: any; }) => tool.toolId),
+      projects: associate.projects.map((pa: { project: { id: any; title: any; }; }) => ({
         id: pa.project.id,
         title: pa.project.title
       })),
