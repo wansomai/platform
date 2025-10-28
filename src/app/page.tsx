@@ -30,7 +30,7 @@ export default function Home() {
     <>
       <Navbar />
       <main>
-        <section className=" pt-24 md:pt-20 pl-5 lg:pl-20 bg-primary relative overflow-hidden">
+        <section className=" pt-24 md:pt-20 pl-5 lg:pl-10 bg-primary relative overflow-hidden">
           <div className="container mx-auto grid lg:grid-cols-2 gap-5 items-center">
             {/* Left Side - Content */}
             <div className="text-left space-y-8">

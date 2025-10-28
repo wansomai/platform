@@ -243,12 +243,12 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Link href="/demo" className="font-medium text-white hover:text-[#F18F01]  border border-gray-300 rounded-md py-2 px-4">
-              Schedule a Demo
+            <Link href="/demo" className="font-medium text-md whitespace-nowrap text-white hover:text-[#F18F01]  border border-gray-300 rounded-md py-2 px-4">
+              Book A Demo
             </Link>
             <Link
               href="/login"
-              className="font-medium text-white bg-black hover:bg-[#2a4d54] rounded-md py-2 px-4"
+              className="font-medium text-md whitespace-nowrap text-white bg-black hover:bg-[#2a4d54] rounded-md py-2 px-4"
             >
               Start For Free
             </Link>
