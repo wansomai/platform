@@ -19,10 +19,7 @@ import { useProjectStore } from '@/store/project.store'
 import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
 import { apiService } from '@/lib/api'
-<<<<<<< HEAD
-=======
 import ProAccessModal from '@/components/modals/ProAccess'
->>>>>>> 7689cf7ff27497642785d905be930cdafef21e31
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -36,11 +33,8 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     title: '',
     description: '',
   })
-<<<<<<< HEAD
-=======
   const [showProAccess, setShowProAccess] = useState(false)
   const [isRequestingPro, setIsRequestingPro] = useState(false)
->>>>>>> 7689cf7ff27497642785d905be930cdafef21e31
   const [activeOrganizationId, setActiveOrganizationId] = useState<string>('')
 
   const { notify } = useNotifications()
@@ -80,11 +74,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     setError('')
 
     if (!activeOrganizationId) {
-<<<<<<< HEAD
-      setError('Organization ID not found. Please try again.')
-=======
-      setError('Organization ID not found')
->>>>>>> 7689cf7ff27497642785d905be930cdafef21e31
+      setError('Something went wrong. Please try again.')
       setIsLoading(false)
       return
     }
