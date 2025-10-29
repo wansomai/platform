@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         const projects = await tx.project.findMany({
           where: {
             id: { in: projectIds.filter(Boolean) }, // Filter out null/undefined values
-            organizationId: user.organizationId
+            organizationId: organizationId
           },
           select: { id: true }
         });
