@@ -115,6 +115,34 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     failed: [] as { memberId: string; reason: string }[]
   };
 
+  // ✅ OPTIMIZATION: Batch fetch all member data to avoid N+1 queries
+  const [memberOrganizations, memberDetails] = await Promise.all([
+    prisma.userOrganization.findMany({
+      where: {
+        userId: { in: memberIds },
+        organizationId: organizationId
+      },
+      select: {
+        userId: true,
+        role: true
+      }
+    }),
+    prisma.user.findMany({
+      where: { id: { in: memberIds } },
+      select: {
+        id: true,
+        organizationId: true,
+        activeOrganizationId: true,
+        email: true,
+        fullName: true
+      }
+    })
+  ]);
+
+  // Create lookup maps for O(1) access
+  const memberOrgMap = new Map(memberOrganizations.map(mo => [mo.userId, mo]));
+  const memberDetailsMap = new Map(memberDetails.map(m => [m.id, m]));
+
   // Process each member
   for (const memberId of memberIds) {
     try {
@@ -126,31 +154,16 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
         continue;
       }
 
-      // Check if member exists in organization
-      const memberOrganization = await prisma.userOrganization.findUnique({
-        where: {
-          userId_organizationId: {
-            userId: memberId,
-            organizationId: organizationId
-          }
-        }
-      });
+      // Check if member exists in organization (using map lookup)
+      const memberOrganization = memberOrgMap.get(memberId);
 
       if (!memberOrganization) {
         results.failed.push({ memberId, reason: 'Member not found in organization' });
         continue;
       }
 
-      // Get member details
-      const member = await prisma.user.findUnique({
-        where: { id: memberId },
-        select: {
-          organizationId: true,
-          activeOrganizationId: true,
-          email: true,
-          fullName: true
-        }
-      });
+      // Get member details (using map lookup)
+      const member = memberDetailsMap.get(memberId);
 
       if (!member) {
         results.failed.push({ memberId, reason: 'User not found' });

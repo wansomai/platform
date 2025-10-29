@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
+import { getUserOrganizationId } from '@/lib/api/org-helpers';
 import { blobStorageService } from '@/lib/storage';
 
 // Get document details
@@ -21,29 +22,19 @@ export async function GET(
       );
     }
     
-    // Check user's organization access
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!user) {
-      return NextResponse.json(
-        { message: 'User not found', error: true }, 
-        { status: 404 }
-      );
-    }
-    
+    // ✅ Check user's organization access
+    const organizationId = await getUserOrganizationId(userId);
+
     // Get query parameters
     const url = new URL(request.url);
     const searchParams = url.searchParams;
-    
+
     // Get document
     const includeContent = searchParams.get('includeContent') === 'true';
     const document = await prisma.document.findUnique({
       where: {
         id: documentId,
-        organization_id: user.organizationId // Ensure user has access
+        organization_id: organizationId // Ensure user has access
       },
       include: {
         createdByUser: {

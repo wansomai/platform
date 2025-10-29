@@ -1,7 +1,8 @@
-// app/api/documents/route.ts 
+// app/api/documents/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
+import { getUserOrganizationId } from '@/lib/api/org-helpers';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
@@ -30,22 +31,12 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const page = parseInt(searchParams.get('page') || '1');
     
-    //Single query to get user organization
-    const userWithOrg = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!userWithOrg?.organizationId) {
-      return NextResponse.json(
-        { message: 'User organization not found', error: true }, 
-        { status: 404 }
-      );
-    }
-    
+    // ✅ Use helper to get user organization
+    const organizationId = await getUserOrganizationId(userId);
+
     // Build query filters
     const where: any = {
-      organization_id: userWithOrg.organizationId,
+      organization_id: organizationId,
       status: 'active'
     };
     

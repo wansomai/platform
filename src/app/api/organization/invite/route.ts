@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { sendInvitationEmail } from "@/lib/email-service";
-import crypto from "crypto";
+import { generateInvitationToken } from "@/lib/utils/token-utils";
+import { getUserOrganizationId } from "@/lib/api/org-helpers";
 import {
   hasOrganizationPermission,
   canInviteMembers,
@@ -31,19 +32,8 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  const currentUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!currentUser?.organizationId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
-
-  const organizationId = currentUser.organizationId;
+  // ✅ Use helper to get organization ID
+  const organizationId = await getUserOrganizationId(userId);
 
   // Check if organization can invite members (enterprise check)
   const { canInvite, reason: accountTypeReason } = await canInviteMembers(organizationId);
@@ -127,10 +117,8 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // Create invitation token
-  const token = crypto.randomBytes(32).toString('hex');
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 7); // Expires in 7 days
+  // ✅ Use helper to create invitation token
+  const { token, expiresAt } = generateInvitationToken(7);
 
   // We need a project ID for the invitation - let's get the first project or create a default one
   const firstProject = await prisma.project.findFirst({

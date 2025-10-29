@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ErrorAlert } from '@/components/ui/error-alert';
+import { useAsyncOperation } from '@/hooks/useAsyncOperation';
 import { Folder } from 'lucide-react';
 
 interface FolderModalProps {
@@ -38,9 +40,8 @@ export function FolderModal({
 }: FolderModalProps) {
   const [folderName, setFolderName] = useState('');
   const [parentId, setParentId] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
-  
+  const { isLoading, error, execute, setError } = useAsyncOperation();
+
   // Reset form when modal opens/closes or editFolder changes
   useEffect(() => {
     if (open) {
@@ -51,39 +52,35 @@ export function FolderModal({
         setFolderName('');
         setParentId(null);
       }
-      setError('');
+      setError(null);
     }
-  }, [open, editFolder]);
-  
+  }, [open, editFolder, setError]);
+
   const handleSave = async () => {
     if (!folderName.trim()) {
       setError('Folder name is required');
       return;
     }
-    
-    try {
-      setIsSaving(true);
-      await onSave(folderName, parentId);
+
+    const result = await execute(async () => {
+      return onSave(folderName, parentId);
+    });
+
+    if (result !== null) {
       onOpenChange(false);
-    } catch (err) {
-      setError('Failed to save folder');
-    } finally {
-      setIsSaving(false);
     }
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
-          {error && (
-            <div className="text-sm text-red-500 mb-2">{error}</div>
-          )}
-          
+          <ErrorAlert error={error} onDismiss={() => setError(null)} />
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
               Name
@@ -96,7 +93,7 @@ export function FolderModal({
               placeholder="Enter folder name"
             />
           </div>
-          
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="parent" className="text-right">
               Parent
@@ -122,20 +119,20 @@ export function FolderModal({
             </Select>
           </div>
         </div>
-        
+
         <DialogFooter>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isSaving}
+            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isLoading}
           >
-            {isSaving ? 'Saving...' : editFolder ? 'Update Folder' : 'Create Folder'}
+            {isLoading ? 'Saving...' : editFolder ? 'Update Folder' : 'Create Folder'}
           </Button>
         </DialogFooter>
       </DialogContent>
