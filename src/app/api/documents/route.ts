@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     ]);
     
     // OPTIMIZATION 5: Lightweight response for simple requests
-    const formattedDocuments = documents.map((doc): { description?: any; fileUrl?: any; updatedAt?: any; folderId?: any; id: string; title: string; fileType: string; fileSize: number; createdBy: string; createdById: string; createdAt: string; } => ({
+    const formattedDocuments = documents.map((doc:any): { description?: any; fileUrl?: any; updatedAt?: any; folderId?: any; id: string; title: string; fileType: string; fileSize: number; createdBy: string; createdById: string; createdAt: string; } => ({
       id: doc.id,
       title: doc.title,
       fileType: doc.file_type,
