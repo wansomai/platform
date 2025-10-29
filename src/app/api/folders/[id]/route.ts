@@ -59,7 +59,7 @@ export const GET = withErrorHandler(withAuth(async (
   }
 
   // Format documents
-  const formattedDocuments = folder.documents.map(doc => ({
+  const formattedDocuments = folder.documents.map((doc: any) => ({
     id: doc.id,
     title: doc.title,
     description: doc.description || '',
