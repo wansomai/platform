@@ -588,6 +588,7 @@ export const useOrganization = () => {
   const switchOrganization = useProfileStore(state => state.switchOrganization);
   const requestUpgrade = useProfileStore(state => state.requestUpgrade);
   const downgradeAccount = useProfileStore(state => state.downgradeAccount);
+  const setUpgrading = useProfileStore(state => state.setUpgrading);
 
   return {
     organizations,
@@ -601,5 +602,6 @@ export const useOrganization = () => {
     switchOrganization,
     requestUpgrade,
     downgradeAccount,
+    setUpgrading,
   };
 };

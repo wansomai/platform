@@ -16,9 +16,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RefreshCw } from "lucide-react"
 import { useProjectStore } from '@/store/project.store'
+import { useProfile, useOrganization } from '@/store/profile.store'
 import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
-import { apiService } from '@/lib/api'
 import ProAccessModal from '@/components/modals/ProAccess'
 import { useRouter } from 'next/navigation'
 
@@ -35,47 +35,27 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     description: '',
   })
   const [showProAccess, setShowProAccess] = useState(false)
-  const [isRequestingPro, setIsRequestingPro] = useState(false)
-  const [activeOrganizationId, setActiveOrganizationId] = useState<string>('')
 
   const { notify } = useNotifications()
   const { createProject, requiresUpgrade } = useProjectStore()
+  const { user: profile, fetchProfile } = useProfile()
+  const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization()
   const { data: session } = useSession()
   const router = useRouter();
 
   // Fetch the user's active organization when modal opens
   useEffect(() => {
-    if (open) {
-      fetchActiveOrganization()
+    if (open && !profile) {
+      fetchProfile()
     }
-  }, [open])
-
-  const fetchActiveOrganization = async () => {
-    try {
-      const response = await apiService.get('/api/profile') as {
-        user: {
-          activeOrganizationId: string | null
-          organizationId: string
-          activeOrganization?: { id: string }
-        }
-      }
-      // Use activeOrganizationId if set, otherwise use organizationId
-      const orgId = response.user.activeOrganizationId || response.user.organizationId
-      setActiveOrganizationId(orgId)
-    } catch (error) {
-      console.error('Failed to fetch active organization:', error)
-      // Fallback to session organization if profile fetch fails
-      if (session?.user?.organization?.id) {
-        setActiveOrganizationId(session.user.organization.id)
-      }
-    }
-  }
+  }, [open, profile, fetchProfile])
 
   const handleSubmit = async () => {
     setIsLoading(true)
     setError('')
 
-    if (!activeOrganizationId) {
+    const organizationId = profile?.organizationId
+    if (!organizationId) {
       setError('Something went wrong. Please try again.')
       setIsLoading(false)
       return
@@ -84,7 +64,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     try {
       const result = await createProject({
         ...formData,
-        organizationId: activeOrganizationId
+        organizationId
       })
 
       if (result) {
@@ -113,25 +93,20 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   }
 
   // Handle Pro access request
-     const handleRequestProAccess = async () => {
-      try {
-    
-        const response = await apiService.post('/api/organization/upgrade', {}) as { success?: boolean; message?: string; status?: string; error?: string };
-  
-        if (response.success) {
-          setShowProAccess(false);
+  const handleRequestProAccess = async () => {
+    setUpgrading(true);
+
+    const success = await requestUpgrade();
+
+    if (success) {
       notify.success('Pro access request submitted successfully');
-      router.push('/profile');   
-        }
-      } catch (error: any) {
-        setIsRequestingPro(false);
-      setShowProAccess(false);
+      router.push('/profile');
+    } else {
       notify.error('Failed to submit Pro access request');
-      } finally {
-        setIsRequestingPro(false);
-      setShowProAccess(false);
-      }
-    };
+    }
+
+    setShowProAccess(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -204,7 +179,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
-        isLoading={isRequestingPro}
+        isLoading={isUpgrading}
         errorMessage="You have reached your project limit (1 project for free plan). Request Pro access to create unlimited projects."
         userData={{
           name: session?.user?.name || '',

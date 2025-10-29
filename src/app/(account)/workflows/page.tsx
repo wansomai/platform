@@ -242,43 +242,7 @@ export default function WorkflowsPage() {
 
   // Update the JSX to use filteredResults instead of filteredAssociates
   return (
-    <div className="container mx-auto p-6 space-y-6 max-w-7xl">
-      {/* "Header */}
-      {/* <div className="bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4 flex flex-col md:flex-row  items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="bg-amber-100 p-2 rounded-full hidden md:block">
-            <Crown className="h-5 w-5 text-amber-600" />
-          </div>
-          <div>
-            <h3 className="font-medium">What are AI Associates?</h3>
-            <p className="text-sm text-gray-600">
-              AI Associates are specialized assistants that help with specific legal tasks. They can be configured with
-              custom instructions and tools to assist with research, drafting, analysis, and more.
-            </p>
-          </div>
-        </div>
-        <Button
-          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-          onClick={() => setShowCreateModal(true)}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Associate
-        </Button>
-      </div> */}
-
-      {/* Search and Filter Bar */}
-      {/* <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search Associates..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </div> */}
-
+    <div className="container mx-auto p-6 space-y-6 max-w-7xl">    
       {/* Template Showcase */}
       <div>
         <h2 className="text-xl font-semibold mb-6">Workflow Templates</h2>
@@ -322,86 +286,6 @@ export default function WorkflowsPage() {
         </div>
       </div>
 
-      {/* Workflow Tabs and List */}
-      {/* <div>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Your Associates</h2>
-          </div>
-
-          <TabsContent value={activeTab} className="mt-0">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : filteredResults.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 border rounded-lg bg-gray-50">
-                <div className="p-4 bg-gray-100 rounded-full mb-4">
-                  <Zap className="h-8 w-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-medium">No Associates found</h3>
-                <p className="text-gray-500 mb-4">
-                  {searchTerm ? `No Associates match "${searchTerm}"` : "Create a new Associates to get more done."}
-                </p>
-                <Button onClick={() => setShowCreateModal(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Associate
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {filteredResults.map((associate) => (
-                  <Card
-                    key={associate.id}
-                    className="overflow-hidden border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="bg-blue-100 p-2 rounded-lg flex-shrink-0">
-                          <Sparkles className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-medium text-sm truncate">{associate.name}</h3>
-                            <div className="flex gap-1 ml-2">
-                              {associate.tools?.includes("documentSearch") && (
-                                <Badge variant="outline" className="text-xs px-1 py-0">
-                                  Docs
-                                </Badge>
-                              )}
-                              {associate.tools?.includes("webSearch") && (
-                                <Badge variant="outline" className="text-xs px-1 py-0">
-                                  Web
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <p className="text-xs text-gray-500 truncate mt-1">
-                            {associate.instructions.substring(0, 80)}...
-                          </p>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-gray-400">
-                              {new Date(associate.createdAt).toLocaleDateString()}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-xs px-2 py-1 h-auto text-green-600 hover:text-green-700"
-                              onClick={() => setShowProModal(true)}
-                            >
-                              Use
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      </div> */}
 
       {/* Workflow Details Dialog - This will never be actually shown as all clicks show Pro modal */}
       <Dialog open={showWorkflowDetails} onOpenChange={setShowWorkflowDetails}>

@@ -537,7 +537,7 @@ const LegalCanvas: React.FC = () => {
               )}
 
               <div className="text-xs text-gray-500">
-                <strong>Tip:</strong> You can also start with our built-in templates by uploading files named "memo.docx", "contract.docx", or "brief.docx" for different document types.
+                <strong>Tip:</strong> You can also start with our built-in professional templates to boost drafting.
               </div>
             </div>
           </div>

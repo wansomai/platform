@@ -22,13 +22,13 @@ import {
 import { useChatStore } from "@/store/chat.store";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
+import { useOrganization } from "@/store/profile.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useSession } from "next-auth/react";
 import ProAccessModal from "../modals/ProAccess";
 import { UploadDocumentModal } from "../modals/UploadModal";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
-import { apiService } from "@/lib/api";
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -51,13 +51,13 @@ export function ChatInput({
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
-  const [isRequestingPro, setIsRequestingPro] = useState(false);
 
   // Get state from stores
   const { addToast } = useUIStore();
   const { notify } = useNotifications();
   const { createProject, requiresUpgrade: projectRequiresUpgrade } = useProjectStore();
   const { currentConversation, sendMessage, requiresUpgrade: chatRequiresUpgrade } = useChatStore();
+  const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
 
   const {
     settings,
@@ -293,25 +293,20 @@ export function ChatInput({
     setRightSidebarCollapsed(!rightSidebarCollapsed);
   };
 
-    const handleRequestProAccess = async () => {
-      try {
-    
-        const response = await apiService.post('/api/organization/upgrade', {}) as { success?: boolean; message?: string; status?: string; error?: string };
-  
-        if (response.success) {
-          setShowProAccess(false);
+  const handleRequestProAccess = async () => {
+    setUpgrading(true);
+
+    const success = await requestUpgrade();
+
+    if (success) {
       notify.success('Pro access request submitted successfully');
-      router.push('/profile');   
-        }
-      } catch (error: any) {
-        setIsRequestingPro(false);
-      setShowProAccess(false);
+      router.push('/profile');
+    } else {
       notify.error('Failed to submit Pro access request');
-      } finally {
-        setIsRequestingPro(false);
-      setShowProAccess(false);
-      }
-    };
+    }
+
+    setShowProAccess(false);
+  };
 
   return (
     <>
@@ -623,7 +618,7 @@ export function ChatInput({
         isOpen={showProAcess}
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
-        isLoading={isRequestingPro}
+        isLoading={isUpgrading}
         errorMessage="You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
         userData={{
           name: session?.user?.name || '',

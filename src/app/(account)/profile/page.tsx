@@ -72,7 +72,8 @@ const Page = () => {
     fetchOrganizations,
     switchOrganization: switchOrg,
     requestUpgrade,
-    downgradeAccount: performDowngrade
+    downgradeAccount: performDowngrade,
+    setUpgrading
   } = useOrganization();
 
   // Local UI state only
@@ -151,14 +152,17 @@ const Page = () => {
   };
 
   const handleRequestProAccess = async () => {
+    setUpgrading(true);
+
     const success = await requestUpgrade();
-    setShowProAccess(false);
 
     if (success) {
       notify.success('Pro access request submitted successfully');
     } else {
       notify.error('Failed to submit Pro access request');
     }
+
+    setShowProAccess(false);
   };
 
   const handleDowngradeAccount = async () => {
