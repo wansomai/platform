@@ -298,7 +298,7 @@ export async function POST(request: NextRequest) {
           documentId: document.id,
           content: extractedText
         }
-      }).catch(err => {
+      }).catch((err: any) => {
         console.error('Error storing document content:', err);
         // Don't fail the upload if content storage fails
       });
