@@ -240,11 +240,6 @@ export default function WorkflowsPage() {
     }, 2000)
   }
 
-
-
-  const [filteredResults, setFilteredResults] = useState<any[]>([])
-
-
   // Update the JSX to use filteredResults instead of filteredAssociates
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">

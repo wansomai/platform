@@ -28,6 +28,7 @@ import ProAccessModal from "../modals/ProAccess";
 import { UploadDocumentModal } from "../modals/UploadModal";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
+import { apiService } from "@/lib/api";
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -241,9 +242,6 @@ export function ChatInput({
       handleSend();
     }
   };
-  const testSEnd = () => {
-    console.log("send clicked");
-  };
 
   // Handle setting changes with exclusive logic for legal drafting and contract review
   const handleSettingChange = async (
@@ -295,36 +293,25 @@ export function ChatInput({
     setRightSidebarCollapsed(!rightSidebarCollapsed);
   };
 
-  // Handle Pro access request
-  const handleRequestProAccess = async (formData: { name: string; email: string; accountType: string }) => {
-    setIsRequestingPro(true);
-    const payload = {
-      email: formData.email,
-      name: formData.name,
-      account_type: formData.accountType,
-      request_type: "message_limit"
-    };
-    try {
-      const response = await fetch("/api/prorequests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      await response.json();
-      setShowProAccess(false);
+    const handleRequestProAccess = async () => {
+      try {
+    
+        const response = await apiService.post('/api/organization/upgrade', {}) as { success?: boolean; message?: string; status?: string; error?: string };
+  
+        if (response.success) {
+          setShowProAccess(false);
       notify.success('Pro access request submitted successfully');
-    } catch (error) {
-      setIsRequestingPro(false);
+      router.push('/profile');   
+        }
+      } catch (error: any) {
+        setIsRequestingPro(false);
       setShowProAccess(false);
       notify.error('Failed to submit Pro access request');
-    } finally {
-      setIsRequestingPro(false);
+      } finally {
+        setIsRequestingPro(false);
       setShowProAccess(false);
-    }
-  };
+      }
+    };
 
   return (
     <>

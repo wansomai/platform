@@ -20,6 +20,7 @@ import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
 import { apiService } from '@/lib/api'
 import ProAccessModal from '@/components/modals/ProAccess'
+import { useRouter } from 'next/navigation'
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -40,6 +41,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const { notify } = useNotifications()
   const { createProject, requiresUpgrade } = useProjectStore()
   const { data: session } = useSession()
+  const router = useRouter();
 
   // Fetch the user's active organization when modal opens
   useEffect(() => {
@@ -111,34 +113,25 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   }
 
   // Handle Pro access request
-  const handleRequestProAccess = async (formData: { name: string; email: string; accountType: string }) => {
-    setIsRequestingPro(true);
-    try {
-      const response = await fetch('/api/prorequests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          name: formData.name,
-          account_type: formData.accountType,
-          request_type: 'project_limit'
-        })
-      });
-
-      await response.json();
-      setShowProAccess(false);
+     const handleRequestProAccess = async () => {
+      try {
+    
+        const response = await apiService.post('/api/organization/upgrade', {}) as { success?: boolean; message?: string; status?: string; error?: string };
+  
+        if (response.success) {
+          setShowProAccess(false);
       notify.success('Pro access request submitted successfully');
-    } catch (error) {
-      setIsRequestingPro(false);
+      router.push('/profile');   
+        }
+      } catch (error: any) {
+        setIsRequestingPro(false);
       setShowProAccess(false);
       notify.error('Failed to submit Pro access request');
-    } finally {
-      setIsRequestingPro(false);
+      } finally {
+        setIsRequestingPro(false);
       setShowProAccess(false);
-    }
-  };
+      }
+    };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

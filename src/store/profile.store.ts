@@ -7,16 +7,27 @@ import { API_CONSTANTS } from '../lib/utils/constants';
 // Types
 interface User {
   id: string;
-  name: string;
   email: string;
-  image?: string;
-  role?: string;
-  organization?: {
+  fullName: string | null;
+  role: string;
+  organizationId: string;
+  organization: {
     id: string;
     name: string;
+    accountType: string;
+    ownerId: string;
+    upgradeRequestedAt?: string | null;
   };
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  accountType: string;
+  isPrimary: boolean;
+  role: string;
 }
 
 interface TeamMember {
@@ -63,11 +74,17 @@ interface ProfileState {
   user: User | null;
   teamMembers: TeamMember[];
   invitations: Invitation[];
+  organizations: Organization[];
+  currentOrgId: string;
 
   // UI state
   isLoading: boolean;
   isSaving: boolean;
   isInviting: boolean;
+  isUpgrading: boolean;
+  isDowngrading: boolean;
+  isSwitching: boolean;
+  orgsLoading: boolean;
   error: string | null;
   lastFetched: number | null;
 
@@ -85,11 +102,20 @@ interface ProfileState {
   cancelInvitation: (invitationId: string) => Promise<boolean>;
   updateMemberRole: (memberId: string, role: string) => Promise<boolean>;
 
+  // Actions - Organization Management
+  fetchOrganizations: () => Promise<void>;
+  switchOrganization: (organizationId: string) => Promise<boolean>;
+  requestUpgrade: () => Promise<boolean>;
+  downgradeAccount: () => Promise<{ success: boolean; removedMembers?: number }>;
+
   // Actions - UI
   setSearchQuery: (query: string) => void;
   setLoading: (loading: boolean) => void;
   setSaving: (saving: boolean) => void;
   setInviting: (inviting: boolean) => void;
+  setUpgrading: (upgrading: boolean) => void;
+  setDowngrading: (downgrading: boolean) => void;
+  setSwitching: (switching: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
 
@@ -109,9 +135,15 @@ export const useProfileStore = create<ProfileState>()(
       user: null,
       teamMembers: [],
       invitations: [],
+      organizations: [],
+      currentOrgId: '',
       isLoading: false,
       isSaving: false,
       isInviting: false,
+      isUpgrading: false,
+      isDowngrading: false,
+      isSwitching: false,
+      orgsLoading: false,
       error: null,
       lastFetched: null,
       searchQuery: '',
@@ -131,8 +163,8 @@ export const useProfileStore = create<ProfileState>()(
         try {
           set({ isLoading: true, error: null });
 
-          const response = await apiService.get<ApiResponse<User>>('/api/profile');
-          const user = response.data;
+          const response = await apiService.get('/api/profile') as { user: User };
+          const user = response.user;
 
           set({
             user,
@@ -191,35 +223,42 @@ export const useProfileStore = create<ProfileState>()(
         try {
           set({ isLoading: true, error: null });
 
-          const [membersResponse, invitationsResponse] = await Promise.all([
-            apiService.get<ApiResponse<TeamMember[]>>('/api/organization/members'),
-            apiService.get<ApiResponse<Invitation[]>>('/api/organization/invitations')
-          ]);
+          // Fetch members and invitations separately
+          let membersData: { members: TeamMember[] } = { members: [] };
+          let invitationsData: { invitations: Invitation[] } = { invitations: [] };
+
+          try {
+            membersData = await apiService.get('/api/organization/members');
+          } catch (membersError) {
+            console.error('Error fetching members:', membersError);
+            // Use mock data for members if API fails
+            const mockMembers: TeamMember[] = state.user ? [{
+              id: '1',
+              name: state.user.fullName || 'You',
+              email: state.user.email,
+              role: 'admin',
+              joinedAt: new Date().toISOString()
+            }] : [];
+            membersData = { members: mockMembers };
+          }
+
+          try {
+            invitationsData = await apiService.get('/api/organization/invitations');
+          } catch (invitationsError) {
+            console.error('Error fetching invitations:', invitationsError);
+            invitationsData = { invitations: [] };
+          }
 
           set({
-            teamMembers: membersResponse.data || [],
-            invitations: invitationsResponse.data || [],
+            teamMembers: membersData.members || [],
+            invitations: invitationsData.invitations || [],
             isLoading: false,
             lastFetched: now
           });
         } catch (error: any) {
           console.error('Error fetching team data:', error);
-
-          // Fallback to mock data for development
-          const state = get();
-          const mockMembers: TeamMember[] = state.user ? [{
-            id: '1',
-            name: state.user.name,
-            email: state.user.email,
-            role: 'admin',
-            joinedAt: new Date().toISOString(),
-            avatar: state.user.image
-          }] : [];
-
           set({
-            teamMembers: mockMembers,
-            invitations: [],
-            error: null, // Don't show error for team data in development
+            error: null, // Don't show error for team data
             isLoading: false
           });
         }
@@ -295,13 +334,12 @@ export const useProfileStore = create<ProfileState>()(
         try {
           set({ error: null });
 
-          const response = await apiService.put<ApiResponse<TeamMember>>(`/api/organization/members/${memberId}`, { role });
-          const updatedMember = response.data;
+          await apiService.patch(`/api/organization/members/${memberId}/role`, { role });
 
           // Update member in list
           set((state) => ({
             teamMembers: state.teamMembers.map(member =>
-              member.id === memberId ? updatedMember : member
+              member.id === memberId ? { ...member, role } : member
             )
           }));
 
@@ -313,11 +351,135 @@ export const useProfileStore = create<ProfileState>()(
         }
       },
 
+      // Fetch organizations
+      fetchOrganizations: async (): Promise<void> => {
+        try {
+          set({ orgsLoading: true, error: null });
+
+          const data = await apiService.get('/api/organization/switch') as {
+            currentOrganizationId: string;
+            organizations: Organization[];
+          };
+
+          set({
+            organizations: data.organizations,
+            currentOrgId: data.currentOrganizationId,
+            orgsLoading: false
+          });
+        } catch (error: any) {
+          console.error('Error fetching organizations:', error);
+          set({ orgsLoading: false });
+        }
+      },
+
+      // Switch organization
+      switchOrganization: async (organizationId: string): Promise<boolean> => {
+        const state = get();
+
+        if (organizationId === state.currentOrgId) {
+          return false;
+        }
+
+        try {
+          set({ isSwitching: true, error: null });
+
+          const response = await apiService.post('/api/organization/switch', {
+            organizationId
+          }) as {
+            success: boolean;
+            organization: { id: string; name: string; accountType: string };
+            message: string;
+          };
+
+          if (response.success) {
+            set({ currentOrgId: organizationId, isSwitching: false });
+            return true;
+          }
+
+          set({ isSwitching: false });
+          return false;
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.error || error.message || 'Failed to switch organization';
+          set({
+            error: errorMessage,
+            isSwitching: false
+          });
+          return false;
+        }
+      },
+
+      // Request upgrade to enterprise
+      requestUpgrade: async (): Promise<boolean> => {
+        try {
+          set({ isUpgrading: true, error: null });
+
+          const response = await apiService.post('/api/organization/upgrade', {}) as {
+            success?: boolean;
+            message?: string;
+            status?: string;
+            error?: string
+          };
+
+          if (response.success) {
+            // Refresh profile to get updated organization data
+            await get().fetchProfile(true);
+            set({ isUpgrading: false });
+            return true;
+          }
+
+          set({ isUpgrading: false });
+          return false;
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.error || error.message || 'Failed to request upgrade';
+          set({
+            error: errorMessage,
+            isUpgrading: false
+          });
+          return false;
+        }
+      },
+
+      // Downgrade account
+      downgradeAccount: async (): Promise<{ success: boolean; removedMembers?: number }> => {
+        try {
+          set({ isDowngrading: true, error: null });
+
+          const response = await apiService.delete('/api/organization/upgrade') as {
+            success?: boolean;
+            removedMembers?: number;
+            error?: string
+          };
+
+          if (response.success) {
+            // Refresh profile and team data
+            await Promise.all([
+              get().fetchProfile(true),
+              get().fetchTeamData(true)
+            ]);
+            set({ isDowngrading: false });
+            return { success: true, removedMembers: response.removedMembers };
+          }
+
+          set({ isDowngrading: false });
+          return { success: false };
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.error || error.message || 'Failed to downgrade account';
+          set({
+            error: errorMessage,
+            isDowngrading: false
+          });
+          return { success: false };
+        }
+      },
+
       // UI Actions
       setSearchQuery: (query: string) => set({ searchQuery: query }),
       setLoading: (loading: boolean) => set({ isLoading: loading }),
       setSaving: (saving: boolean) => set({ isSaving: saving }),
       setInviting: (inviting: boolean) => set({ isInviting: inviting }),
+      setUpgrading: (upgrading: boolean) => set({ isUpgrading: upgrading }),
+      setDowngrading: (downgrading: boolean) => set({ isDowngrading: downgrading }),
+      setSwitching: (switching: boolean) => set({ isSwitching: switching }),
       setError: (error: string | null) => set({ error }),
       clearError: () => set({ error: null }),
 
@@ -359,9 +521,11 @@ export const useProfileStore = create<ProfileState>()(
         user: state.user,
         teamMembers: state.teamMembers,
         invitations: state.invitations,
+        organizations: state.organizations,
+        currentOrgId: state.currentOrgId,
         lastFetched: state.lastFetched,
       }),
-      version: 1,
+      version: 2,
     }
   )
 );
@@ -408,5 +572,34 @@ export const useTeamManagement = () => {
     cancelInvitation,
     updateMemberRole,
     setSearchQuery,
+  };
+};
+
+export const useOrganization = () => {
+  const organizations = useProfileStore(state => state.organizations);
+  const currentOrgId = useProfileStore(state => state.currentOrgId);
+  const orgsLoading = useProfileStore(state => state.orgsLoading);
+  const isSwitching = useProfileStore(state => state.isSwitching);
+  const isUpgrading = useProfileStore(state => state.isUpgrading);
+  const isDowngrading = useProfileStore(state => state.isDowngrading);
+  const error = useProfileStore(state => state.error);
+
+  const fetchOrganizations = useProfileStore(state => state.fetchOrganizations);
+  const switchOrganization = useProfileStore(state => state.switchOrganization);
+  const requestUpgrade = useProfileStore(state => state.requestUpgrade);
+  const downgradeAccount = useProfileStore(state => state.downgradeAccount);
+
+  return {
+    organizations,
+    currentOrgId,
+    orgsLoading,
+    isSwitching,
+    isUpgrading,
+    isDowngrading,
+    error,
+    fetchOrganizations,
+    switchOrganization,
+    requestUpgrade,
+    downgradeAccount,
   };
 };
