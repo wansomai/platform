@@ -39,7 +39,7 @@ export const GET = withErrorHandler(withAuth(async (
     }
   });
 
-  const formattedDocuments = projectDocuments.map((pd) => ({
+  const formattedDocuments = projectDocuments.map((pd:any) => ({
     id: pd.document.id,
     title: pd.document.title,
     description: pd.document.description || '',
