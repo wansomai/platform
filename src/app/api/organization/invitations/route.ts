@@ -37,7 +37,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     }
   });
 
-  const formattedInvitations = invitations.map(invitation => ({
+  const formattedInvitations = invitations.map((invitation:any) => ({
     id: invitation.id,
     email: invitation.email,
     role: invitation.role,

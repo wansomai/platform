@@ -75,7 +75,7 @@ export const GET = withErrorHandler(withAuth(async (
     createdAt: conversation.createdAt.toISOString(),
     updatedAt: conversation.updatedAt.toISOString(),
     isPinned: conversation.isPinned,
-    messages: conversation.messages.map(message => ({
+    messages: conversation.messages.map((message:any) => ({
       id: message.id,
       content: message.content,
       role: message.role,

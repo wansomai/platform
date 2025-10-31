@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Extract users from memberships
-    const orgMembers = orgMemberships.map(membership => membership.user);
+    const orgMembers = orgMemberships.map((membership:any) => membership.user);
 
     // If projectId is provided, filter out members already in the project
     let availableMembers = orgMembers;
@@ -71,13 +71,13 @@ export async function GET(request: NextRequest) {
         select: { userId: true }
       });
 
-      const projectMemberIds = new Set(projectMembers.map(m => m.userId));
+      const projectMemberIds = new Set(projectMembers.map((m:any) => m.userId));
 
       availableMembers = orgMembers.filter(member => !projectMemberIds.has(member.id));
     }
 
     // Format response
-    const formattedMembers = availableMembers.map(member => ({
+    const formattedMembers = availableMembers.map((member:any) => ({
       id: member.id,
       name: member.fullName || member.email || 'Unknown User',
       email: member.email,

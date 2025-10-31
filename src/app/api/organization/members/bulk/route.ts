@@ -140,8 +140,8 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
   ]);
 
   // Create lookup maps for O(1) access
-  const memberOrgMap = new Map(memberOrganizations.map(mo => [mo.userId, mo]));
-  const memberDetailsMap = new Map(memberDetails.map(m => [m.id, m]));
+  const memberOrgMap = new Map(memberOrganizations.map((mo:any) => [mo.userId, mo]));
+  const memberDetailsMap = new Map(memberDetails.map((m:any) => [m.id, m]));
 
   // Process each member
   for (const memberId of memberIds) {

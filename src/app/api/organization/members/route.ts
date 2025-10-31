@@ -54,7 +54,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     }
   });
 
-  const formattedMembers = members.map(member => ({
+  const formattedMembers = members.map((member:any) => ({
     id: member.user.id,
     name: member.user.fullName || member.user.email,
     email: member.user.email,

@@ -43,7 +43,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     }
   });
 
-  const formattedProjects = projects.map(project => ({
+  const formattedProjects = projects.map((project:any) => ({
     id: project.id,
     title: project.title,
     description: project.description || '',
