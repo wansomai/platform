@@ -27,12 +27,12 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   });
 
   // Format response
-  const formattedFolders = folders.map(folder => ({
+  const formattedFolders = folders.map((folder:any) => ({
     id: folder.id,
     name: folder.name,
     parentId: folder.parentId,
     documentCount: folder._count.documents,
-    children: folder.children.map(child => ({
+    children: folder.children.map((child:any) => ({
       id: child.id,
       name: child.name,
       documentCount: child._count.documents
