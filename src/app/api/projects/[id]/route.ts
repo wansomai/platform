@@ -166,7 +166,7 @@ export const GET = withErrorHandler(withAuth(async (
     
     // Messages from current conversation
     ...(includeMessages && {
-      messages: messages.map(message => ({
+      messages: messages.map((message:any) => ({
         id: message.id,
         content: message.content,
         role: message.role,
@@ -178,7 +178,7 @@ export const GET = withErrorHandler(withAuth(async (
     
     // Project documents (keeping original working structure)
     ...(includeDocuments && {
-      documents: projectDocuments.map(pd => ({
+      documents: projectDocuments.map((pd:any) => ({
         id: pd.document.id,
         title: pd.document.title,
         description: pd.document.description,
