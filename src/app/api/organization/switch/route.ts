@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         isPrimary: true,
         role: 'owner', // Primary org owner
       },
-      ...memberships.map(m => ({
+      ...memberships.map((m:any) => ({
         id: m.organization.id,
         name: m.organization.name,
         accountType: m.organization.accountType,

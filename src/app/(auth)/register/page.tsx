@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { ErrorAlert } from '@/components/ui/error-alert';
+import { useAsyncOperation, useFormState } from '@/hooks/useAsyncOperation';
 
 interface RegisterFormData {
   email: string;
@@ -24,27 +26,25 @@ function RegisterPageContent() {
   const invitationEmail = searchParams.get('email');
   const callbackUrl = searchParams.get('callbackUrl');
 
-  const [formData, setFormData] = useState<RegisterFormData>({
+  const { isLoading, error, execute, setError } = useAsyncOperation();
+  const { data: formData, updateField } = useFormState<RegisterFormData>({
     email: invitationEmail ? decodeURIComponent(invitationEmail) : '',
     password: '',
     fullName: '',
     organizationName: '',
   });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    updateField(name as keyof RegisterFormData, value);
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    setError(null);
 
-    try {
+    const result = await execute(async () => {
       // Prepare registration data
       const registrationData: any = {
         email: formData.email,
@@ -72,6 +72,10 @@ function RegisterPageContent() {
         throw new Error(data.message || 'Registration failed');
       }
 
+      return data;
+    });
+
+    if (result) {
       // If there's a callback URL (from invitation), sign in and redirect there
       if (callbackUrl) {
         // Auto-sign in after registration
@@ -91,18 +95,13 @@ function RegisterPageContent() {
         // Normal registration flow - redirect to login
         router.push('/login?registered=true');
       }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Registration failed');
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleGoogleSignUp = () => {
-    setIsLoading(true);
     signIn('google', { callbackUrl: '/dashboard' });
   };
-  
+
   return (
     <div className=" min-h-screen flex items-center justify-center bg-white">
 
@@ -127,20 +126,14 @@ function RegisterPageContent() {
             </div>
           )}
 
-          {error && (
-            <div className="mb-6 rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="text-sm text-red-700">{error}</div>
-              </div>
-            </div>
-          )}
+          <ErrorAlert error={error} onDismiss={() => setError(null)} />
 
           <div className="mt-6">
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="w-full" 
-              onClick={handleGoogleSignUp} 
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignUp}
               disabled={isLoading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -271,9 +264,9 @@ function RegisterPageContent() {
             </div>
 
             <div>
-              <Button 
-                type="submit" 
-                className="w-full bg-primary hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005c4d]" 
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005c4d]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -292,7 +285,7 @@ function RegisterPageContent() {
           </form>
         </div>
       </div>
-    
+
     </div>
   );
 }

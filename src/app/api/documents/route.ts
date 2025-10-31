@@ -1,7 +1,8 @@
-// app/api/documents/route.ts 
+// app/api/documents/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
+import { getUserOrganizationId } from '@/lib/api/org-helpers';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
@@ -30,22 +31,12 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const page = parseInt(searchParams.get('page') || '1');
     
-    //Single query to get user organization
-    const userWithOrg = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!userWithOrg?.organizationId) {
-      return NextResponse.json(
-        { message: 'User organization not found', error: true }, 
-        { status: 404 }
-      );
-    }
-    
+    // ✅ Use helper to get user organization
+    const organizationId = await getUserOrganizationId(userId);
+
     // Build query filters
     const where: any = {
-      organization_id: userWithOrg.organizationId,
+      organization_id: organizationId,
       status: 'active'
     };
     
@@ -128,7 +119,7 @@ export async function GET(request: NextRequest) {
     ]);
     
     // OPTIMIZATION 5: Lightweight response for simple requests
-    const formattedDocuments = documents.map((doc): { description?: any; fileUrl?: any; updatedAt?: any; folderId?: any; id: string; title: string; fileType: string; fileSize: number; createdBy: string; createdById: string; createdAt: string; } => ({
+    const formattedDocuments = documents.map((doc:any): { description?: any; fileUrl?: any; updatedAt?: any; folderId?: any; id: string; title: string; fileType: string; fileSize: number; createdBy: string; createdById: string; createdAt: string; } => ({
       id: doc.id,
       title: doc.title,
       fileType: doc.file_type,
@@ -307,7 +298,7 @@ export async function POST(request: NextRequest) {
           documentId: document.id,
           content: extractedText
         }
-      }).catch(err => {
+      }).catch((err: any) => {
         console.error('Error storing document content:', err);
         // Don't fail the upload if content storage fails
       });

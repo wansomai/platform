@@ -2,24 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
+import { getUserOrganizationId } from '@/lib/api/org-helpers';
 
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  // Get user's organization
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
+  // ✅ Get user's organization
+  const organizationId = await getUserOrganizationId(userId);
 
   // Get folders for the organization, with document counts
   const folders = await prisma.folder.findMany({
-    where: { organizationId: user.organizationId },
+    where: { organizationId },
     include: {
       _count: {
         select: { documents: true }
@@ -36,12 +27,12 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   });
 
   // Format response
-  const formattedFolders = folders.map(folder => ({
+  const formattedFolders = folders.map((folder:any) => ({
     id: folder.id,
     name: folder.name,
     parentId: folder.parentId,
     documentCount: folder._count.documents,
-    children: folder.children.map(child => ({
+    children: folder.children.map((child:any) => ({
       id: child.id,
       name: child.name,
       documentCount: child._count.documents

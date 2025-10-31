@@ -10,94 +10,84 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { ErrorAlert } from "@/components/ui/error-alert"
+import { useAsyncOperation, useFormState } from "@/hooks/useAsyncOperation"
 import Head from "next/head"
 
 // Create a separate component that uses useSearchParams
 function LoginPageContent() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const router = useRouter()
-  const { status } = useSession()
-  const searchParams = useSearchParams()
-  
-  const callbackUrl = searchParams?.get('callbackUrl') || '/dashboard'
+  const { isLoading, error, execute, setError } = useAsyncOperation();
+  const { data: formData, updateField } = useFormState({
+    email: "",
+    password: ""
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const { status } = useSession();
+  const searchParams = useSearchParams();
+
+  const callbackUrl = searchParams?.get('callbackUrl') || '/dashboard';
 
   // If already authenticated, redirect to callback URL
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push(callbackUrl)
+      router.push(callbackUrl);
     }
-  }, [status, router, callbackUrl])
+  }, [status, router, callbackUrl]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError(null);
 
-    if (!email || !password) {
-      setError("Please enter both email and password")
-      return
+    if (!formData.email || !formData.password) {
+      setError("Please enter both email and password");
+      return;
     }
 
-    try {
-      setIsLoading(true)
-
-      const result = await signIn('credentials', {
+    const result = await execute(async () => {
+      const res = await signIn('credentials', {
         redirect: false,
-        email,
-        password,
-      })
+        email: formData.email,
+        password: formData.password,
+      });
 
-      if (!result?.ok) {
-        setError(result?.error || 'Invalid email or password')
-      } else {
-        router.push(callbackUrl)
+      if (!res?.ok) {
+        throw new Error(res?.error || 'Invalid email or password');
       }
-    } catch (err) {
-      setError("An unexpected error occurred")
-    } finally {
-      setIsLoading(false)
+
+      return res;
+    });
+
+    if (result) {
+      router.push(callbackUrl);
     }
-  }
+  };
 
   const handleGoogleLogin = async () => {
     try {
-      setIsLoading(true)
-      await signIn('google', { callbackUrl })
+      await signIn('google', { callbackUrl });
     } catch (err) {
-      setError("Google authentication failed")
-      setIsLoading(false)
+      setError("Google authentication failed");
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white">
-   
-
       {/* Form Side */}
       <div className="flex flex-1 flex-col justify-center bg-white px-4 py-12 md:px-12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 text-center">Sign in to your account</h2>
-      
           </div>
 
-          {error && (
-            <div className="mb-6 rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="text-sm text-red-700">{error}</div>
-              </div>
-            </div>
-          )}
+          <ErrorAlert error={error} onDismiss={() => setError(null)} />
 
           <div className="mt-6">
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="w-full" 
-              onClick={handleGoogleLogin} 
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleLogin}
               disabled={isLoading}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -143,8 +133,8 @@ function LoginPageContent() {
                 type="email"
                 autoComplete="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => updateField('email', e.target.value)}
                 className="mt-1"
                 placeholder="you@example.com"
                 disabled={isLoading}
@@ -167,8 +157,8 @@ function LoginPageContent() {
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={(e) => updateField('password', e.target.value)}
                   className="pr-10"
                   placeholder="••••••••"
                   disabled={isLoading}
@@ -189,9 +179,9 @@ function LoginPageContent() {
             </div>
 
             <div>
-              <Button 
-                type="submit" 
-                className="w-full bg-primary hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005c4d]" 
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#005c4d]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -210,18 +200,17 @@ function LoginPageContent() {
           </form>
         </div>
       </div>
-         {/* Creative Side */}
-      
+      {/* Creative Side */}
     </div>
-  )
+  );
 }
 
 // Main component that wraps the content in Suspense
 export default function LoginPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-              <Head>
-            <title>Create Your Account | Wansom AI</title>
+      <Head>
+        <title>Create Your Account | Wansom AI</title>
         <meta name="description" content="create you wansom.ai account and start automating your legal processes" />
         <meta name="keywords" content="login wansom.ai, legal ai,ai law,legal ai companies " />
         <meta property="og:title" content="Create Your Account | Wansom AI"/>
@@ -231,8 +220,8 @@ export default function LoginPage() {
         <meta name="twitter:title" content="Create Your Account | Wansom AI" />
         <meta name="twitter:description" content="create you wansom.ai account and start automating your legal processes" />
         <meta name="twitter:image"  content="/images/features-2.png"/>
-            </Head>
+      </Head>
       <LoginPageContent />
     </Suspense>
-  )
+  );
 }

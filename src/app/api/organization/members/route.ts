@@ -9,27 +9,19 @@ import {
 } from "@/lib/auth/permissions";
 import { OrganizationPermission } from "@/lib/constants/permissions";
 import { sendMemberRemovedEmail } from "@/lib/email-service";
+import { getUserOrganizationId } from "@/lib/api/org-helpers";
 
 const prisma = new PrismaClient();
 
 // Get organization members
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!user?.organizationId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
+  // ✅ Use helper to get organization ID
+  const organizationId = await getUserOrganizationId(userId);
 
   // Check if user has permission to view members
   const hasPermission = await hasOrganizationPermission(
     userId,
-    user.organizationId,
+    organizationId,
     OrganizationPermission.VIEW_MEMBERS
   );
 
@@ -41,11 +33,11 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   }
 
   // Get organization details including owner info
-  const orgDetails = await getOrganizationDetails(user.organizationId);
+  const orgDetails = await getOrganizationDetails(organizationId);
 
   const members = await prisma.userOrganization.findMany({
     where: {
-      organizationId: user.organizationId
+      organizationId: organizationId
     },
     include: {
       user: {
@@ -62,7 +54,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     }
   });
 
-  const formattedMembers = members.map(member => ({
+  const formattedMembers = members.map((member:any) => ({
     id: member.user.id,
     name: member.user.fullName || member.user.email,
     email: member.user.email,

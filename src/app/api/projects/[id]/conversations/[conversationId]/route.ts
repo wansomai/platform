@@ -64,12 +64,12 @@ export const GET = withErrorHandler(withAuth(async (
   }
 
   // Format messages
-  const formattedMessages = conversation.messages.map((message) => ({
+  const formattedMessages = conversation.messages.map((message:any) => ({
     id: message.id,
     content: message.content,
     role: message.role,
     timestamp: message.createdAt.toISOString(),
-    references: message.references.map(ref => ({
+    references: message.references.map((ref:any) => ({
       id: ref.id,
       documentId: ref.documentId,
       documentName: ref.document?.title || 'Unknown Document',

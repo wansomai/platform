@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
+import { getUserOrganizationId } from '@/lib/api/org-helpers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,41 +10,31 @@ export async function POST(request: NextRequest) {
     const userId = getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
-        { message: 'Authentication required', error: true }, 
+        { message: 'Authentication required', error: true },
         { status: 401 }
       );
     }
-    
-    // Get user's organization
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!user) {
-      return NextResponse.json(
-        { message: 'User not found', error: true }, 
-        { status: 404 }
-      );
-    }
-    
+
+    // ✅ Get user's organization
+    const organizationId = await getUserOrganizationId(userId);
+
     // Parse request body
-    const { 
-      name, 
-      instructions, 
-      steps, 
+    const {
+      name,
+      instructions,
+      steps,
       tools,
       projectIds = [] // Provide a default empty array
     } = await request.json();
-    
+
     // Validate input
     if (!name || !instructions || !steps || !tools) {
       return NextResponse.json(
-        { message: 'Missing required fields', error: true }, 
+        { message: 'Missing required fields', error: true },
         { status: 400 }
       );
     }
-    
+
     // Create associate with steps and tools in a transaction
     const associate = await prisma.$transaction(async (tx:any) => {
       // Create associate
@@ -51,7 +42,7 @@ export async function POST(request: NextRequest) {
         data: {
           name,
           instructions,
-          organizationId: user.organizationId,
+          organizationId,
           createdById: userId
         }
       });
@@ -83,7 +74,7 @@ export async function POST(request: NextRequest) {
         const projects = await tx.project.findMany({
           where: {
             id: { in: projectIds.filter(Boolean) }, // Filter out null/undefined values
-            organizationId: user.organizationId
+            organizationId: organizationId
           },
           select: { id: true }
         });

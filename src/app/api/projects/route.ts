@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { canCreateProject } from "@/lib/subscription";
+import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 
 const prisma = new PrismaClient();
 
@@ -11,30 +12,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   const searchParams = request.nextUrl.searchParams;
   const limit = parseInt(searchParams.get('limit') || '20');
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      organizationId: true,
-      activeOrganizationId: true
-    }
-  });
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Use active organization if set, otherwise use primary organization
-  const currentOrgId = user.activeOrganizationId || user.organizationId;
-
-  if (!currentOrgId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
+  // ✅ Use helper to get active organization ID
+  const currentOrgId = await getActiveOrganizationId(userId);
 
   // Get all projects where:
   // 1. Project belongs to user's current organization
@@ -64,7 +43,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     }
   });
 
-  const formattedProjects = projects.map(project => ({
+  const formattedProjects = projects.map((project:any) => ({
     id: project.id,
     title: project.title,
     description: project.description || '',
@@ -113,8 +92,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // Verify user belongs to the organization
-  // Check if user is the owner of the organization OR a member via UserOrganization
+  // ✅ Verify user belongs to the organization
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { organizationId: true }

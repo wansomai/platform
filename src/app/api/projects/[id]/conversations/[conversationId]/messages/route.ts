@@ -232,7 +232,7 @@ export async function POST(
           
           if (isDraftingMode) {
             // Classify user intent to determine appropriate action
-            const recentMessages = messageHistory.slice(-3).map(msg => msg.content);
+            const recentMessages = messageHistory.slice(-3).map((msg:any) => msg.content);
             intentAnalysis = classifyWithContext(
               content, 
               !!canvasDocument,
@@ -310,7 +310,7 @@ export async function POST(
           const conversationHistory = messageHistory
             .filter((msg) => msg.role !== 'system')
             .reverse()
-            .map((msg) => ({
+            .map((msg:any) => ({
               role: msg.role === 'assistant' ? 'model' : 'user',
               parts: [{ text: msg.content }],
             }));
@@ -554,7 +554,7 @@ export async function POST(
           
           // Save references if needed
           if (settings.citeSources && documentReferences.size > 0) {
-            const refPromises = Array.from(documentReferences).map(docId => {
+            const refPromises = Array.from(documentReferences).map((docId:any) => {
               const doc = conversationDocuments.find(d => d.document.id === docId);
               if (!doc) return null;
               
@@ -597,7 +597,7 @@ export async function POST(
                 content: formattedContent,
                 googleSearchEnabled: useGoogleSearch,
                 webSearchSources: webSearchSources.length > 0 ? webSearchSources : undefined,
-                references: completeMessage?.references.map((ref) => ({
+                references: completeMessage?.references.map((ref:any) => ({
                   id: ref.id,
                   documentId: ref.documentId,
                   documentName: ref.document?.title || "Unknown Document",
@@ -698,7 +698,7 @@ async function handleCanvasDraftingRequest(
     const projectContext: ProjectContext = {
       jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
       instructions: project?.knowledgeBase?.instructions || '',
-      documents: conversationDocuments.map(doc => ({
+      documents: conversationDocuments.map((doc:any) => ({
         title: doc.document.title,
         content: doc.document.content?.content || ''
       }))
@@ -823,7 +823,7 @@ async function handleCanvasDraftingRequestWithStreaming(
     const projectContext: ProjectContext = {
       jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
       instructions: project?.knowledgeBase?.instructions || '',
-      documents: conversationDocuments.map(doc => ({
+      documents: conversationDocuments.map((doc:any) => ({
         title: doc.document.title,
         content: doc.document.content?.content || ''
       }))
