@@ -139,9 +139,22 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     })
   ]);
 
+  type MemberDetails = {
+    id: string;
+    organizationId: string;
+    activeOrganizationId: string | null;
+    email: string;
+    fullName: string | null;
+  };
+
+  type MemberOrg = {
+    userId: string;
+    role: string;
+  };
+
   // Create lookup maps for O(1) access
-  const memberOrgMap = new Map(memberOrganizations.map((mo:any) => [mo.userId, mo]));
-  const memberDetailsMap = new Map(memberDetails.map((m:any) => [m.id, m]));
+  const memberOrgMap = new Map<string, MemberOrg>(memberOrganizations.map((mo: MemberOrg) => [mo.userId, mo]));
+  const memberDetailsMap = new Map<string, MemberDetails>(memberDetails.map((m: MemberDetails) => [m.id, m]));
 
   // Process each member
   for (const memberId of memberIds) {
@@ -189,7 +202,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
         });
 
         // If this was the user's active organization, switch them back
-        if (member.activeOrganizationId === organizationId) {
+        if (member.activeOrganizationId && member.activeOrganizationId === organizationId) {
           await prisma.user.update({
             where: { id: memberId },
             data: {
