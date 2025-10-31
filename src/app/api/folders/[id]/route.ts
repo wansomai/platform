@@ -83,7 +83,7 @@ export const GET = withErrorHandler(withAuth(async (
     name: folder.name,
     parentId: folder.parentId,
     documents: formattedDocuments,
-    subfolders: folder.children.map(child => ({
+    subfolders: folder.children.map((child:any) => ({
       id: child.id,
       name: child.name,
       documentCount: child._count.documents
