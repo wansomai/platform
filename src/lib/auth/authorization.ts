@@ -77,7 +77,7 @@ export function getUserIdFromRequest(request: NextRequest): string | null {
     const jsonPayload = decodeURIComponent(
       atob(base64)
         .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .map((c:string) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
     
@@ -114,7 +114,7 @@ export async function getAccessibleProjectIds(userId: string): Promise<string[]>
       select: { projectId: true }
     });
     
-    const userProjectIds = userProjects.map(p => p.projectId);
+    const userProjectIds = userProjects.map((p:any) => p.projectId);
     
     // Get projects from user's organization
     const orgProjects = await prisma.project.findMany({
@@ -122,7 +122,7 @@ export async function getAccessibleProjectIds(userId: string): Promise<string[]>
       select: { id: true }
     });
     
-    const orgProjectIds = orgProjects.map(p => p.id);
+    const orgProjectIds = orgProjects.map((p:any) => p.id);
     
     // Combine and deduplicate
     return [...new Set([...userProjectIds, ...orgProjectIds])];
