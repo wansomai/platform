@@ -199,7 +199,7 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={MessageSquare}
               title="New Workspace"
-              description="Collaborate, organize your legal work into AI workspaces"
+              description="Create a dedicated workspace for each client matter or case."
               onClick={handleShowProjectModal}
               color="text-green-600"
               loading={isCreatingQuickChat}

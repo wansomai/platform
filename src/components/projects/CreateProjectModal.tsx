@@ -112,9 +112,9 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Create New Project Workspace</DialogTitle>
+          <DialogTitle>Create New Workspace</DialogTitle>
           <DialogDescription>
-            Create a new workspace to organize project documents and conversations.
+           Create a dedicated workspace for each client matter or case.
           </DialogDescription>
         </DialogHeader>
         
@@ -127,14 +127,14 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
-              Project Title
+              Name
             </Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
               className="col-span-3"
-              placeholder="Enter project title"
+              placeholder="Enter name for the workspace"
               required
             />
           </div>
@@ -149,7 +149,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
               value={formData.description}
               onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               className="md:col-span-3"
-              placeholder="Enter project description (optional)"
+              placeholder="Describe Client matter/case (optional)"
             />
           </div>
         </div>
