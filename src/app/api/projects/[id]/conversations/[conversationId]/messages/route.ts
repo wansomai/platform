@@ -252,7 +252,8 @@ export async function POST(
                 controller,
                 encoder,
                 conversation.id,
-                safeClose
+                safeClose,
+                recentMessages
               );
               
               if (canvasResult) {
@@ -691,7 +692,8 @@ async function handleCanvasDraftingRequest(
   controller: ReadableStreamDefaultController,
   encoder: TextEncoder,
   conversationId: string,
-  safeClose: () => void
+  safeClose: () => void,
+  recentMessages?: string[]
 ): Promise<boolean> {
   try {
     // Build project context for AI
@@ -701,7 +703,8 @@ async function handleCanvasDraftingRequest(
       documents: conversationDocuments.map((doc:any) => ({
         title: doc.document.title,
         content: doc.document.content?.content || ''
-      }))
+      })),
+      conversationHistory: recentMessages || []
     };
 
     let result;
@@ -804,7 +807,8 @@ async function handleCanvasDraftingRequestWithStreaming(
   controller: ReadableStreamDefaultController,
   encoder: TextEncoder,
   conversationId: string,
-  safeClose: () => void
+  safeClose: () => void,
+  recentMessages?: string[]
 ): Promise<boolean> {
   try {
     // Send initial status
@@ -826,7 +830,8 @@ async function handleCanvasDraftingRequestWithStreaming(
       documents: conversationDocuments.map((doc:any) => ({
         title: doc.document.title,
         content: doc.document.content?.content || ''
-      }))
+      })),
+      conversationHistory: recentMessages || []
     };
 
     // Send context processing status

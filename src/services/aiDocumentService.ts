@@ -18,6 +18,7 @@ export interface ProjectContext {
     title: string;
     content: string;
   }>;
+  conversationHistory?: string[];
 }
 
 export class AIDocumentService {
@@ -28,7 +29,7 @@ export class AIDocumentService {
 
     const prompt = this.buildGenerationPrompt(instruction, projectContext);
 
-    const systemInstruction = `You are a legal document drafting assistant. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate.`;
+    const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
     const fullPrompt = `${systemInstruction}\n\n${prompt}`;
 
@@ -47,7 +48,7 @@ export class AIDocumentService {
 
     const prompt = this.buildGenerationPrompt(instruction, projectContext);
 
-    const systemInstruction = `You are a legal document drafting assistant. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate.`;
+    const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
     const fullPrompt = `${systemInstruction}\n\n${prompt}`;
 
@@ -89,7 +90,7 @@ export class AIDocumentService {
 
     const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
 
-    const systemInstruction = `You are editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity.`;
+    const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
 
     const fullPrompt = `${systemInstruction}\n\n${prompt}`;
 
@@ -109,7 +110,7 @@ export class AIDocumentService {
 
     const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
 
-    const systemInstruction = `You are editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity.`;
+    const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
 
     const fullPrompt = `${systemInstruction}\n\n${prompt}`;
 
@@ -147,6 +148,13 @@ export class AIDocumentService {
     return `
 Generate a legal document based on this request: ${instruction}
 
+${context.conversationHistory && context.conversationHistory.length > 0 ? `
+Recent Conversation Context:
+${context.conversationHistory.map((msg, idx) => `${idx + 1}. ${msg}`).join('\n')}
+
+Use this conversation context to better understand the user's needs and requirements for the document.
+` : ''}
+
 Project Context:
 - Jurisdiction: ${context.jurisdiction || 'General'}
 - Instructions: ${context.instructions || 'None'}
@@ -159,17 +167,24 @@ ${context.documents.map(d => `### ${d.title} ###\n${d.content}`).join('\n\n')}
 
 Requirements:
 - Use proper legal language and structure
-- Include standard clauses where appropriate  
+- Include standard clauses where appropriate
 - Format in HTML with headings (h1, h2, h3), paragraphs, and lists
 - Make it comprehensive and professionally drafted
-- Include relevant legal disclaimers if needed
 - Structure should be logical and easy to read
+- Focus on the substantive legal content without meta-commentary about AI limitations
 `;
   }
   
   private static buildEditPrompt(instruction: string, currentContent: string, context: ProjectContext): string {
     return `
 Edit this legal document according to the instruction: ${instruction}
+
+${context.conversationHistory && context.conversationHistory.length > 0 ? `
+Recent Conversation Context:
+${context.conversationHistory.map((msg, idx) => `${idx + 1}. ${msg}`).join('\n')}
+
+Use this conversation context to understand what changes the user has discussed and requested.
+` : ''}
 
 Current Document Content:
 ${currentContent}
