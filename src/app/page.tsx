@@ -30,10 +30,10 @@ export default function Home() {
     <>
       <Navbar />
       <main>
-        <section className=" pt-24 md:pt-20 pl-5 lg:pl-10 bg-primary relative overflow-hidden">
-          <div className="container mx-auto grid lg:grid-cols-2 gap-5 items-center">
+        <section className=" pt-24 md:pt-28  px-5 bg-primary relative overflow-hidden">
+          <div className="container mx-auto grid lg:grid-cols-1 gap-5 items-center">
             {/* Left Side - Content */}
-            <div className="text-left space-y-8">
+            <div className="text-center space-y-8">
               <div className="space-y-6">
                 <h1 className=" text-heading-1 mb-4 text-white text-shadow-2xs">
                   Collaborative AI workspace for legal teams
@@ -44,7 +44,7 @@ export default function Home() {
                   you can focus on high-impact work.
                 </p>
                 <button
-                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10 mx-auto"
                   onClick={() => (window.location.href = "/register")}
                   aria-label="Try Wansom AI for free - Start your free trial"
                 >
@@ -55,9 +55,10 @@ export default function Home() {
             </div>
 
             {/* Right Side - Image */}
-            <div>
+            <div className=" -mb-1 md:-mb-4 max-w-7xl mx-auto ">
               <img
-                src="/law-office.jpg"
+                src="/home-demo.png"
+                className="rounded-lg"
                 alt="Modern law office workspace showing professional legal environment with Wansom AI collaborative tools"
               />
             </div>

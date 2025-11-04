@@ -83,10 +83,17 @@ export function ChatInput({
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
+      // Reset height to auto to get the correct scrollHeight
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+
+      // Get the max height based on mode
+      const maxHeight = homepageMode ? 400 : 300;
+      const newHeight = textareaRef.current.scrollHeight;
+
+      // Set height to scrollHeight, but respect max height
+      textareaRef.current.style.height = `${Math.min(newHeight, maxHeight)}px`;
     }
-  }, [input]);
+  }, [input, homepageMode]);
 
   // Restore pending message from homepage when in workspace mode
   useEffect(() => {
@@ -573,10 +580,10 @@ export function ChatInput({
                   ? "Ask anything legal-related... (e.g., 'Help me draft a contract','Review this agreement')"
                   : "Ask Wansom..."
               }
-              className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 ${
+              className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 overflow-y-auto ${
                 homepageMode
-                  ? "min-h-[120px]  max-h-[200px] px-6 py-4 pr-16 text-[13px] md:text-base"
-                  : "min-h-[100px] max-h-[180px] pl-6 pr-16 pt-4 pb-6"
+                  ? "min-h-[120px] max-h-[400px] px-6 pt-4 pb-16 pr-16 text-[13px] md:text-base"
+                  : "min-h-[100px] max-h-[300px] pl-6 pr-16 pt-4 pb-16"
               }`}
               disabled={isSubmitting}
             />
