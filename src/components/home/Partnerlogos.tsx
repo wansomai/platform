@@ -3,13 +3,16 @@ import Image from "next/image";
 export const PatnerLogoSection = () => {
   const partnerLogos = [
     { src: "/logos/1.png", alt: "CM Advocates" },
-    { src: "/logos/2.png", alt: "Akoth Odipo Advocates" },
-    { src: "/logos/3.png", alt: "Cymelle Arttoneys" },
-    { src: "/logos/4.png", alt: "Netsheria" },
-    { src: "/logos/5.png", alt: "Partner Law Firm 5" },
+    { src: "/logos/2.png", alt: "Mbulo and Partners Legal Practisioners" },
+    { src: "/logos/3.png", alt: "Cymbelle Attorneys" },
+    { src: "/logos/4.png", alt: "Akoth Odipo Advocates" },
+    { src: "/logos/5.png", alt: "Ooc Advocates" },
     { src: "/logos/6.png", alt: "Bellmac consulting" },
-    { src: "/logos/7.png", alt: "Riskhouse International" }
+    { src: "/logos/7.png", alt: "Riskhouse International" },
+    { src: "/logos/8.png", alt: "Netsheria International" },
+    { src: "/logos/9.png", alt: "Barizi Data Privacy Services" }
   ];
+
 
   return (
     <section className=" section-spacing">

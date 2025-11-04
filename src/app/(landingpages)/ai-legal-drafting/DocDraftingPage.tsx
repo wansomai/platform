@@ -30,7 +30,7 @@ const LegalDraftingPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 pl-5 lg:pl-20 bg-primary relative overflow-hidden">
+      <section className="pt-24 pl-5  bg-primary relative overflow-hidden">
         
         <div className="container mx-auto px-4 z-10 relative flex flex-col lg:flex-row items-center lg:items-start justify-between space-y-5 lg:space-y-0">
           <div className=" text-white lg:basis-1/2">      
@@ -158,16 +158,70 @@ const LegalDraftingPage = () => {
   <div className=''>
 
     <h3 className="text-lg font-semibold mb-6 text-gray-900 text-center">Revise With Precision</h3>
-<p className='text-body text-center'>Wansom AI helps you rewrite claues, format entire documents and insert rules all from a simple chat interface. Download in Word document format(.DOCX) once ready</p>
+<p className='text-body text-center'>Wansom AI helps you rewrite clauses, format entire documents and insert rules all from a simple chat interface. Download in Word document format(.DOCX) once ready</p>
             </div>
           </div>
 
 </div>
         </div>
       </section>
+      
+      {/* Draft from scratch section */}
+      <section className="section-spacing bg-primary">
+        <div className="section-container">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-heading-2 mb-6 text-white">
+              1000<sup>+</sup> Professional Legal Templates
+              </h2>
+              <p className="text-xl text-gray-100 mb-8">
+              Start from a professionally drafted legal template and customize it to your needs with Wansom's AI-powered drafting tools.
+              </p>
+              
+              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
+                Explore Legal templates <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
+              </button>
+            </div>
+
+            <div className="relative">
+              <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+                <div className="p-4 border-b bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 text-sm">1 of 4</span>
+                    <div className="flex space-x-2">
+                      <button className="p-1 text-gray-400 hover:text-gray-600">←</button>
+                      <button className="p-1 text-gray-400 hover:text-gray-600">→</button>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 bg-gray-100">
+                  <h3 className="font-bold text-gray-900 mb-4">
+                    CONFIDENTIALITY AND USE OF
+                    SUBCONTRACTORS
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                    Each party (the "Receiving Party") understands that the other party (the "Disclosing Party") has disclosed or may disclose business, technical, or financial information relating to the Disclosing Party's business (hereinafter referred to as "Proprietary Information"). The Receiving Party agrees to: (i) take reasonable precautions to protect such Proprietary Information...
+                  </p>
+                  <div className="flex space-x-2">
+                    <button className="p-2 border border-gray-200 rounded hover:bg-gray-50">
+                      <FileText className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button className="p-2 border border-gray-200 rounded hover:bg-gray-50">
+                      <BookOpen className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button className="bg-[#355e66] text-white px-4 py-2 rounded font-medium hover:bg-[#2a4d54] transition-colors">
+                      Continue Editing
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Wansom adapts section */}
-      <section className="section-spacing bg-gray-50">
+      <section className="section-spacing bg-white">
         <div className="section-container">
           <div className="grid lg:grid-cols-2 gap-10 ">
             <div>
@@ -230,59 +284,6 @@ const LegalDraftingPage = () => {
         </div>
       </section>
 
-      {/* Draft from scratch section */}
-      <section className="section-spacing bg-primary">
-        <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-heading-2 mb-6 text-white">
-              Comprehensive Legal Template Library
-              </h2>
-              <p className="text-xl text-gray-100 mb-8">
-              Start from a professionally drafted legal template and customize it to your needs with Wansom's AI-powered drafting tools.
-              </p>
-              
-              <button className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded-lg font-semibold transition-colors"  onClick={() => (window.location.href = "/login")}>
-                Explore Legal templates <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
-              </button>
-            </div>
-
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
-                <div className="p-4 border-b bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 text-sm">1 of 4</span>
-                    <div className="flex space-x-2">
-                      <button className="p-1 text-gray-400 hover:text-gray-600">←</button>
-                      <button className="p-1 text-gray-400 hover:text-gray-600">→</button>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-6 bg-gray-100">
-                  <h3 className="font-bold text-gray-900 mb-4">
-                    CONFIDENTIALITY AND USE OF
-                    SUBCONTRACTORS
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                    Each party (the "Receiving Party") understands that the other party (the "Disclosing Party") has disclosed or may disclose business, technical, or financial information relating to the Disclosing Party's business (hereinafter referred to as "Proprietary Information"). The Receiving Party agrees to: (i) take reasonable precautions to protect such Proprietary Information...
-                  </p>
-                  <div className="flex space-x-2">
-                    <button className="p-2 border border-gray-200 rounded hover:bg-gray-50">
-                      <FileText className="w-4 h-4 text-gray-600" />
-                    </button>
-                    <button className="p-2 border border-gray-200 rounded hover:bg-gray-50">
-                      <BookOpen className="w-4 h-4 text-gray-600" />
-                    </button>
-                    <button className="bg-[#355e66] text-white px-4 py-2 rounded font-medium hover:bg-[#2a4d54] transition-colors">
-                      Continue Editing
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
 <KnowledgeBase/>
 
