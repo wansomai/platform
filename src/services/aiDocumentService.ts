@@ -1,15 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { Delta } from 'quill/core';
 import { htmlToQuillDelta, stripHtml as utilStripHtml } from '@/lib/htmlToQuillDelta';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '');
-const model = genAI.getGenerativeModel({
-  model: 'gemini-2.0-flash-exp',
-  generationConfig: {
-    temperature: 0.3,
-    maxOutputTokens: 8192,
-  }
-});
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
 
 export interface ProjectContext {
   jurisdiction?: string;
@@ -25,80 +18,115 @@ export class AIDocumentService {
   static async generateDocument(
     instruction: string,
     projectContext: ProjectContext
-  ): Promise<{ content: string; delta: any }> {
+  ): Promise<{ success: boolean; htmlContent?: string; plainText?: string; error?: string }> {
 
-    const prompt = this.buildGenerationPrompt(instruction, projectContext);
+    try {
+      const prompt = this.buildGenerationPrompt(instruction, projectContext);
 
-    const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
+      const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
-    const fullPrompt = `${systemInstruction}\n\n${prompt}`;
+      const result = await genAI.models.generateContent({
+        model: 'gemini-2.0-flash-exp',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          systemInstruction,
+          temperature: 0.3,
+          maxOutputTokens: 8192
+        }
+      });
 
-    const result = await model.generateContent(fullPrompt);
-    const htmlContent = result.response.text() || '';
-    const delta = this.htmlToQuillDelta(htmlContent);
+      const htmlContent = result.text || '';
+      const plainText = this.stripHtml(htmlContent);
 
-    return { content: htmlContent, delta };
+      return { success: true, htmlContent, plainText };
+    } catch (error: any) {
+      console.error('Error generating document:', error);
+      return { success: false, error: error.message || 'Failed to generate document' };
+    }
   }
 
   static async generateDocumentStreaming(
     instruction: string,
     projectContext: ProjectContext,
     onProgress?: (partial: string, section: string) => void
-  ): Promise<{ content: string; delta: any }> {
+  ): Promise<{ success: boolean; htmlContent?: string; plainText?: string; error?: string }> {
 
-    const prompt = this.buildGenerationPrompt(instruction, projectContext);
+    try {
+      const prompt = this.buildGenerationPrompt(instruction, projectContext);
 
-    const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
+      const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
-    const fullPrompt = `${systemInstruction}\n\n${prompt}`;
+      const result = await genAI.models.generateContentStream({
+        model: 'gemini-2.0-flash-exp',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          systemInstruction,
+          temperature: 0.3,
+          maxOutputTokens: 8192
+        }
+      });
 
-    const result = await model.generateContentStream(fullPrompt);
+      let fullContent = '';
+      let currentSection = '';
 
-    let fullContent = '';
-    let currentSection = '';
+      for await (const chunk of result) {
+        const delta = chunk.text || '';
+        if (delta) {
+          fullContent += delta;
 
-    for await (const chunk of result.stream) {
-      const delta = chunk.text();
-      if (delta) {
-        fullContent += delta;
+          // Detect section headers for progress tracking
+          if (delta.includes('<h1') || delta.includes('<h2') || delta.includes('<h3')) {
+            const headerMatch = delta.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/);
+            if (headerMatch) {
+              currentSection = headerMatch[1];
+            }
+          }
 
-        // Detect section headers for progress tracking
-        if (delta.includes('<h1') || delta.includes('<h2') || delta.includes('<h3')) {
-          const headerMatch = delta.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/);
-          if (headerMatch) {
-            currentSection = headerMatch[1];
+          // Call progress callback if provided
+          if (onProgress) {
+            onProgress(fullContent, currentSection);
           }
         }
-
-        // Call progress callback if provided
-        if (onProgress) {
-          onProgress(fullContent, currentSection);
-        }
       }
+
+      const plainText = this.stripHtml(fullContent);
+
+      return { success: true, htmlContent: fullContent, plainText };
+    } catch (error: any) {
+      console.error('Error generating document:', error);
+      return { success: false, error: error.message || 'Failed to generate document' };
     }
-
-    const delta = this.htmlToQuillDelta(fullContent);
-
-    return { content: fullContent, delta };
   }
   
   static async editDocument(
     instruction: string,
     currentContent: string,
     projectContext: ProjectContext
-  ): Promise<{ content: string; delta: any }> {
+  ): Promise<{ success: boolean; htmlContent?: string; plainText?: string; error?: string }> {
 
-    const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
+    try {
+      const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
 
-    const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
+      const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
 
-    const fullPrompt = `${systemInstruction}\n\n${prompt}`;
+      const result = await genAI.models.generateContent({
+        model: 'gemini-2.0-flash-exp',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          systemInstruction,
+          temperature: 0.3,
+          maxOutputTokens: 8192
+        }
+      });
 
-    const result = await model.generateContent(fullPrompt);
-    const htmlContent = result.response.text() || '';
-    const delta = this.htmlToQuillDelta(htmlContent);
+      const htmlContent = result.text || '';
+      const plainText = this.stripHtml(htmlContent);
 
-    return { content: htmlContent, delta };
+      return { success: true, htmlContent, plainText };
+    } catch (error: any) {
+      console.error('Error editing document:', error);
+      return { success: false, error: error.message || 'Failed to edit document' };
+    }
   }
 
   static async editDocumentStreaming(
@@ -106,42 +134,53 @@ export class AIDocumentService {
     currentContent: string,
     projectContext: ProjectContext,
     onProgress?: (partial: string, section: string) => void
-  ): Promise<{ content: string; delta: any }> {
+  ): Promise<{ success: boolean; htmlContent?: string; plainText?: string; error?: string }> {
 
-    const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
+    try {
+      const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
 
-    const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
+      const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
 
-    const fullPrompt = `${systemInstruction}\n\n${prompt}`;
+      const result = await genAI.models.generateContentStream({
+        model: 'gemini-2.0-flash-exp',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          systemInstruction,
+          temperature: 0.3,
+          maxOutputTokens: 8192
+        }
+      });
 
-    const result = await model.generateContentStream(fullPrompt);
+      let fullContent = '';
+      let currentSection = '';
 
-    let fullContent = '';
-    let currentSection = '';
+      for await (const chunk of result) {
+        const delta = chunk.text || '';
+        if (delta) {
+          fullContent += delta;
 
-    for await (const chunk of result.stream) {
-      const delta = chunk.text();
-      if (delta) {
-        fullContent += delta;
+          // Detect section headers for progress tracking
+          if (delta.includes('<h1') || delta.includes('<h2') || delta.includes('<h3')) {
+            const headerMatch = delta.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/);
+            if (headerMatch) {
+              currentSection = headerMatch[1];
+            }
+          }
 
-        // Detect section headers for progress tracking
-        if (delta.includes('<h1') || delta.includes('<h2') || delta.includes('<h3')) {
-          const headerMatch = delta.match(/<h[1-3][^>]*>(.*?)<\/h[1-3]>/);
-          if (headerMatch) {
-            currentSection = headerMatch[1];
+          // Call progress callback if provided
+          if (onProgress) {
+            onProgress(fullContent, currentSection);
           }
         }
-
-        // Call progress callback if provided
-        if (onProgress) {
-          onProgress(fullContent, currentSection);
-        }
       }
+
+      const plainText = this.stripHtml(fullContent);
+
+      return { success: true, htmlContent: fullContent, plainText };
+    } catch (error: any) {
+      console.error('Error editing document:', error);
+      return { success: false, error: error.message || 'Failed to edit document' };
     }
-
-    const delta = this.htmlToQuillDelta(fullContent);
-
-    return { content: fullContent, delta };
   }
   
   private static buildGenerationPrompt(instruction: string, context: ProjectContext): string {

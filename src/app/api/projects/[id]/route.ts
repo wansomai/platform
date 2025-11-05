@@ -353,13 +353,80 @@ export const DELETE = withErrorHandler(withAuth(async (
     );
   }
 
-  // Delete project (with cascading deletes for related entities)
-  await prisma.project.delete({
-    where: { id: projectId }
-  });
+  // Delete all related records manually before deleting the project
+  // This is necessary because not all relations have onDelete: Cascade
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Delete project members
+      await tx.projectMember.deleteMany({
+        where: { projectId }
+      });
 
-  return NextResponse.json({
-    status: 200,
-    message: 'Project deleted successfully'
-  });
+      // Delete invitations
+      await tx.invitation.deleteMany({
+        where: { projectId }
+      });
+
+      // Delete shared workspaces
+      await tx.sharedWorkspace.deleteMany({
+        where: { projectId }
+      });
+
+      // Delete canvas document
+      await tx.canvasDocument.deleteMany({
+        where: { projectId }
+      });
+
+      // Delete knowledge base
+      await tx.knowledgeBase.deleteMany({
+        where: { projectId }
+      });
+
+      // Delete conversation metadata and messages (cascade will handle related records)
+      const conversations = await tx.conversation.findMany({
+        where: { projectId },
+        select: { id: true }
+      });
+
+      for (const conversation of conversations) {
+        // Delete conversation meta
+        await tx.conversationMeta.deleteMany({
+          where: { conversationId: conversation.id }
+        });
+
+        // Delete messages and their references
+        await tx.messageReference.deleteMany({
+          where: { message: { conversationId: conversation.id } }
+        });
+
+        await tx.message.deleteMany({
+          where: { conversationId: conversation.id }
+        });
+      }
+
+      // Delete conversations
+      await tx.conversation.deleteMany({
+        where: { projectId }
+      });
+
+      // Delete events
+      await tx.event.deleteMany({
+        where: { projectId }
+      });
+
+      // ProjectDocument and ProjectAssociate have cascade, so they'll be deleted automatically
+      // Finally, delete the project itself
+      await tx.project.delete({
+        where: { id: projectId }
+      });
+    });
+
+    return NextResponse.json({
+      status: 200,
+      message: 'Project deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('Error deleting project:', error);
+    throw error; // Let the error handler catch it
+  }
 }));

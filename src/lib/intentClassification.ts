@@ -10,9 +10,97 @@ export interface IntentAnalysis {
 /**
  * Classify user intent to determine if canvas should be updated
  */
-export function classifyUserIntent(message: string): IntentAnalysis {
+export function classifyUserIntent(message: string, isDraftingMode: boolean = false): IntentAnalysis {
   const lowerMessage = message.toLowerCase().trim();
-  
+
+  // In drafting mode, prioritize creation/editing patterns
+  // Check edit/creation patterns FIRST when in drafting mode
+
+  // Edit/Action patterns (SHOULD update canvas) - Check these first in drafting mode
+  const editPatterns = [
+    /add.*clause/i,
+    /insert.*section/i,
+    /update.*the/i,
+    /change.*this/i,
+    /modify.*the/i,
+    /remove.*this/i,
+    /delete.*the/i,
+    /replace.*with/i,
+    /generate.*new/i,
+    /create.*a/i,
+    /draft.*a/i,
+    /draft.*an/i,
+    /write.*a/i,
+    /write.*an/i,
+    /include.*the/i,
+    /apply.*changes/i,
+    /implement.*the/i,
+    /fix.*this/i,
+    /correct.*the/i,
+    /revise.*this/i,
+    /rewrite.*the/i,
+    /please.*add/i,
+    /can you.*add/i,
+    /can you.*create/i,
+    /can you.*draft/i,
+    /can you.*write/i,
+    /make.*it/i,
+    /put.*in/i,
+    /i need.*contract/i,
+    /i need.*agreement/i,
+    /i need.*document/i,
+    /help me.*draft/i,
+    /help me.*create/i,
+    /help me.*write/i
+  ];
+
+  // Template patterns (should create new canvas)
+  const templatePatterns = [
+    /create.*template/i,
+    /generate.*template/i,
+    /new.*contract/i,
+    /new.*agreement/i,
+    /draft.*agreement/i,
+    /draft.*contract/i,
+    /employment.*contract/i,
+    /nda.*template/i,
+    /service.*agreement/i,
+    /template.*for/i,
+    /memorandum.*of.*understanding/i,
+    /mou\b/i,
+    /partnership.*agreement/i,
+    /confidentiality.*agreement/i,
+    /license.*agreement/i,
+    /terms.*of.*service/i,
+    /privacy.*policy/i,
+    /operating.*agreement/i
+  ];
+
+  // Check edit/template patterns FIRST if in drafting mode
+  if (isDraftingMode) {
+    for (const pattern of templatePatterns) {
+      if (pattern.test(lowerMessage)) {
+        return {
+          intent: 'template',
+          confidence: 0.9,
+          reasoning: 'Drafting mode: Detected document creation pattern',
+          shouldUpdateCanvas: true
+        };
+      }
+    }
+
+    for (const pattern of editPatterns) {
+      if (pattern.test(lowerMessage)) {
+        return {
+          intent: 'edit',
+          confidence: 0.9,
+          reasoning: 'Drafting mode: Detected document editing pattern',
+          shouldUpdateCanvas: true
+        };
+      }
+    }
+  }
+
   // Analysis/Question patterns (should NOT update canvas)
   const analysisPatterns = [
     /what.*missing/i,
@@ -42,33 +130,6 @@ export function classifyUserIntent(message: string): IntentAnalysis {
     /interpretation.*of/i
   ];
 
-  // Edit/Action patterns (SHOULD update canvas) 
-  const editPatterns = [
-    /add.*clause/i,
-    /insert.*section/i,
-    /update.*the/i,
-    /change.*this/i,
-    /modify.*the/i,
-    /remove.*this/i,
-    /delete.*the/i,
-    /replace.*with/i,
-    /generate.*new/i,
-    /create.*a/i,
-    /draft.*a/i,
-    /write.*a/i,
-    /include.*the/i,
-    /apply.*changes/i,
-    /implement.*the/i,
-    /fix.*this/i,
-    /correct.*the/i,
-    /revise.*this/i,
-    /rewrite.*the/i,
-    /please.*add/i,
-    /can you.*add/i,
-    /make.*it/i,
-    /put.*in/i
-  ];
-
   // Research patterns (should respond in chat)
   const researchPatterns = [
     /find.*cases/i,
@@ -83,19 +144,7 @@ export function classifyUserIntent(message: string): IntentAnalysis {
     /jurisdiction.*rules/i
   ];
 
-  // Template patterns (should create new canvas)
-  const templatePatterns = [
-    /create.*template/i,
-    /generate.*template/i,
-    /new.*contract/i,
-    /draft.*agreement/i,
-    /employment.*contract/i,
-    /nda.*template/i,
-    /service.*agreement/i,
-    /template.*for/i
-  ];
-
-  // Check each pattern category
+  // Check each pattern category (order matters!)
   for (const pattern of analysisPatterns) {
     if (pattern.test(lowerMessage)) {
       return {
@@ -164,14 +213,37 @@ export function classifyUserIntent(message: string): IntentAnalysis {
  * Enhanced classification using context from existing document
  */
 export function classifyWithContext(
-  message: string, 
+  message: string,
   hasExistingDocument: boolean,
-  recentMessages: string[] = []
+  recentMessages: string[] = [],
+  isDraftingMode: boolean = false,
+  hasPendingDraft: boolean = false
 ): IntentAnalysis {
-  const baseClassification = classifyUserIntent(message);
-  
+  const baseClassification = classifyUserIntent(message, isDraftingMode);
+
+  // If there's a pending draft request, check if user is providing information
+  if (hasPendingDraft && isDraftingMode) {
+    // Patterns that indicate user is providing requested information
+    const isProvidingInfo =
+      // Short answers with entity names, dates, numbers
+      /^[A-Z][a-zA-Z\s&.,'-]+(?:and|,|&)[A-Za-z\s&.,'-]+$/.test(message.trim()) || // "ABC Corp and John Smith"
+      /\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}/.test(message) || // Contains dates
+      /\$[\d,]+|\d+(?:\.\d{2})?(?:\s*(?:dollars|USD|EUR|GBP))?/i.test(message) || // Contains money amounts
+      message.split(' ').length <= 15 || // Short response (likely answering a question)
+      /^(yes|no|sure|okay|ok|right|correct),?\s/i.test(message); // Starts with affirmation
+
+    if (isProvidingInfo) {
+      return {
+        intent: 'edit',
+        confidence: 0.9,
+        reasoning: 'User providing information for pending draft request',
+        shouldUpdateCanvas: true
+      };
+    }
+  }
+
   // Context-based adjustments
-  if (!hasExistingDocument) {
+  if (!hasExistingDocument && isDraftingMode) {
     // No existing document - more likely to be creation request
     if (baseClassification.intent === 'analysis' && baseClassification.confidence < 0.8) {
       return {
@@ -182,12 +254,12 @@ export function classifyWithContext(
       };
     }
   }
-  
+
   // Check recent context for confirmation patterns
-  const hasRecentConfirmation = recentMessages.some(msg => 
-    /yes|ok|sure|go ahead|apply|implement|add them|do it/i.test(msg)
+  const hasRecentConfirmation = recentMessages.some(msg =>
+    /yes|ok|sure|go ahead|apply|implement|add them|do it|proceed|continue/i.test(msg)
   );
-  
+
   if (hasRecentConfirmation && baseClassification.intent === 'analysis') {
     return {
       ...baseClassification,
@@ -196,6 +268,6 @@ export function classifyWithContext(
       reasoning: 'User confirmed action from recent context'
     };
   }
-  
+
   return baseClassification;
 }

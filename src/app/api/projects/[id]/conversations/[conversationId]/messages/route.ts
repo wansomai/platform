@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/prisma/client";
 import { z } from "zod";
 import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
-import { classifyWithContext } from '@/lib/intentClassification';
 import { canSendMessage } from '@/lib/subscription';
+import { legalDraftingTools } from '@/lib/geminiTools';
+import { executeFunctionCall } from '@/lib/functionExecutor';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
@@ -14,8 +15,8 @@ export const maxDuration = 60;
 // Initialize Prisma with connection pooling
 const prisma = new PrismaClient();
 
-// Initialize Gemini
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+// Initialize Gemini with the new API
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 // Default settings if none exist
 type JurisdictionType = {
@@ -81,7 +82,12 @@ export async function POST(
     // Only fetch what we need based on query type
     const conversationPromise = prisma.conversation.findFirst({
       where: { id: conversationId, projectId },
-      select: { id: true } // Minimal select for faster query
+      select: {
+        id: true,
+        meta: {
+          select: { settings: true }
+        }
+      }
     });
 
     // Create the user message in parallel with other operations
@@ -226,53 +232,44 @@ export async function POST(
             }
           }
 
-          // Check if project is in drafting mode and analyze user intent
+          // Check if project is in drafting mode
+          // With function calling enabled, the AI will decide when to draft documents vs ask questions
           const isDraftingMode = settings.legalDrafting === true;
-          let intentAnalysis = null;
-          
+
           if (isDraftingMode) {
-            // Classify user intent to determine appropriate action
-            const recentMessages = messageHistory.slice(-3).map((msg:any) => msg.content);
-            intentAnalysis = classifyWithContext(
-              content, 
-              !!canvasDocument,
-              recentMessages
-            );
-
-            console.log('Intent Analysis:', intentAnalysis);
-
-            // Only update canvas if user intends to make changes
-            if (intentAnalysis.shouldUpdateCanvas) {
-              const canvasResult = await handleCanvasDraftingRequestWithStreaming(
-                content,
-                projectId,
-                project,
-                conversationDocuments,
-                canvasDocument,
-                controller,
-                encoder,
-                conversation.id,
-                safeClose,
-                recentMessages
-              );
-              
-              if (canvasResult) {
-                return; // Canvas operation handled, exit stream
-              }
-            }
-            // If analysis/question intent, continue to normal chat response below
+            console.log('📝 Drafting mode active - AI will use function calling to manage document workflow');
           }
           
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
           
           // Prepare document content for Gemini (full documents, no chunking)
-          let relevantContent = "";
-
-          // Include canvas document if in drafting mode and analysis intent
-          if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
-            relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
-          }
+                    let relevantContent = "";
+          
+                    // Perform intent analysis in drafting mode to decide whether to update canvas
+                    let intentAnalysis: { shouldUpdateCanvas?: boolean } | undefined = undefined;
+                    if (isDraftingMode) {
+                      try {
+                        const recentMsgs = (messageHistory || []).slice(-3).map((m: any) => m.content);
+                        const analysis = await checkIfReadyToDraft(
+                          content,
+                          project,
+                          conversationDocuments,
+                          canvasDocument,
+                          recentMsgs
+                        );
+                        intentAnalysis = { shouldUpdateCanvas: analysis.readyToDraft };
+                        console.log('Drafting intent analysis:', intentAnalysis);
+                      } catch (err) {
+                        console.error('Error running intent analysis:', err);
+                        intentAnalysis = { shouldUpdateCanvas: false };
+                      }
+                    }
+          
+                    // Include canvas document if in drafting mode and analysis intent indicates not updating canvas
+                    if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
+                      relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
+                    }
           
           if (conversationDocuments.length > 0) {
             // Gemini can handle FULL documents (2M token context) - no truncation needed!
@@ -308,13 +305,31 @@ export async function POST(
           
           // Format message history for Gemini
           // Filter out 'system' role messages as Gemini doesn't support them in history
-          const conversationHistory = messageHistory
+          let conversationHistory = messageHistory
             .filter((msg) => msg.role !== 'system')
             .reverse()
             .map((msg:any) => ({
               role: msg.role === 'assistant' ? 'model' : 'user',
               parts: [{ text: msg.content }],
             }));
+
+          // Ensure first message is from 'user' - Gemini requirement
+          // Remove leading 'model' messages if any
+          while (conversationHistory.length > 0 && conversationHistory[0].role === 'model') {
+            conversationHistory.shift();
+          }
+
+          // Ensure messages alternate properly (user, model, user, model, ...)
+          // If consecutive messages have same role, keep only the last one
+          conversationHistory = conversationHistory.filter((msg, index, array) => {
+            if (index === 0) return true; // Keep first message
+            return msg.role !== array[index - 1].role;
+          });
+
+          // Final safety check: ensure we start with 'user'
+          if (conversationHistory.length > 0 && conversationHistory[0].role !== 'user') {
+            conversationHistory = [];
+          }
           
           // Create unified system message for all queries
           const fullProject = project;
@@ -324,17 +339,12 @@ export async function POST(
           if (isDraftingMode && canvasDocument) {
             draftingContext = `
 
-            CANVAS DOCUMENT CONTEXT: You are working with a legal document currently open in the canvas editor. The document content has been included below for your analysis.
+            CANVAS DOCUMENT CONTEXT: A legal document is currently open in the canvas editor.
 
-            CURRENT DOCUMENT TITLE: "Current Canvas Document"
+            - For analysis questions ("what's missing?", "review this", "any issues?"), provide analysis and suggestions in your response
+            - If the user requests changes ("add a clause", "update the terms", "modify section X"), use the editCanvasDocument tool
 
-            IMPORTANT: Based on the user's message, you should ONLY provide analysis, suggestions, and recommendations in this chat response.
-            Do NOT make actual changes to the document unless the user explicitly requests edits with action words like "add", "update", "change", "modify", etc.
-
-            For analysis questions about the document (like "what clauses are missing?", "any issues?", "review this"), provide detailed analysis of the current canvas document and offer specific suggestions,
-            then ask if the user would like you to apply any changes to the document.
-
-            The canvas document content is included in the context below as "Current Canvas Document".
+            The current canvas document content is included in the context below for your reference.
             `;
           }
 
@@ -362,6 +372,29 @@ export async function POST(
           Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
           Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
           If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
+
+          ${isDraftingMode ? `
+          **DRAFTING MODE ACTIVE**: You have access to special tools for legal document creation and editing:
+
+          🔧 **Available Tools**:
+          1. **draftNewDocument** - Creates a new legal document in the canvas editor
+             - ONLY call this when you have ALL required information (all parties, terms, conditions)
+             - If ANY critical information is missing, ask questions in your response instead
+
+          2. **editCanvasDocument** - Modifies the existing canvas document
+             - Use when user requests changes to the current document
+
+          3. **searchProjectDocuments** - Search through attached project documents
+             - Use when you need to find specific information or precedents
+
+          **Important Guidelines**:
+          - When a user requests a document (e.g., "create an NDA"), first assess what information you have
+          - If you're missing critical details (parties, key terms, dates, etc.), respond with questions - DO NOT call draftNewDocument yet
+          - Only call draftNewDocument once you have complete information for a professional legal document
+          - Be conversational and helpful - ask for information naturally in your responses
+          - After calling a function, explain what you've done in user-friendly language
+          ` : ''}
+
           ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
           ${draftingContext}
             
@@ -414,29 +447,49 @@ export async function POST(
             modelName = 'gemini-2.0-flash-exp';
           }
 
-          const modelConfig: any = {
-            model: modelName,
-            generationConfig: {
-              temperature: settings.temperature || 0.7,
-              maxOutputTokens: 8192,
-            },
-            systemInstruction: systemMessage,
-          };
+          // Configure tools based on mode
+          const tools: any[] = [];
 
-          // Enable Google Search grounding if web search is enabled
+          // Add Google Search grounding if web search is enabled
           if (useGoogleSearch) {
-            modelConfig.tools = [{
+            tools.push({
               googleSearch: {}
-            }];
+            });
             console.log('✓ Google Search grounding enabled - Gemini will search when needed');
           }
 
-          const model = genAI.getGenerativeModel(modelConfig);
+          // Add legal drafting function calling tools if in drafting mode
+          if (isDraftingMode) {
+            tools.push({
+              functionDeclarations: legalDraftingTools.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters
+              }))
+            });
+            console.log('✓ Legal drafting tools enabled - AI can call draftNewDocument, editCanvasDocument, searchProjectDocuments');
+          }
 
-          // Create chat session with history
-          const chat = model.startChat({
-            history: conversationHistory,
-          });
+          // Build the full conversation history including system message
+          const fullContents: any[] = [];
+
+          // Add system message as first user message if we have history, or include with current message
+          if (conversationHistory.length > 0) {
+            fullContents.push(...conversationHistory);
+          }
+
+          // Prepare the config for the new API
+          const generateConfig: any = {
+            temperature: settings.temperature || 0.7,
+            maxOutputTokens: 8192,
+          };
+
+          if (tools.length > 0) {
+            generateConfig.tools = tools;
+          }
+
+          // Add system instruction
+          generateConfig.systemInstruction = systemMessage;
 
           // Create a temporary assistant message to stream into
           const tempMessageId = `temp-${Date.now()}`;
@@ -457,12 +510,35 @@ export async function POST(
             );
           }
 
-          // Stream the response from Gemini
-          const result = await chat.sendMessageStream(content);
+          // Add current user message to contents
+          fullContents.push({
+            role: 'user',
+            parts: [{ text: content }]
+          });
 
-          for await (const chunk of result.stream) {
-            const textContent = chunk.text();
-            fullContent += textContent;
+          // Stream the response from Gemini using new API
+          const result = await genAI.models.generateContentStream({
+            model: modelName,
+            contents: fullContents,
+            config: generateConfig
+          });
+
+          // Check if the response contains function calls
+          let functionCalls: any[] = [];
+          let hasTextContent = false;
+
+          for await (const chunk of result) {
+            // Check for function calls in this chunk
+            if (chunk.functionCalls && chunk.functionCalls.length > 0) {
+              functionCalls.push(...chunk.functionCalls);
+            }
+
+            // Check for text content
+            const textContent = chunk.text || '';
+            if (textContent) {
+              hasTextContent = true;
+              fullContent += textContent;
+            }
 
             // Extract grounding metadata (Google Search sources)
             if (useGoogleSearch && chunk.candidates && chunk.candidates[0]) {
@@ -485,39 +561,41 @@ export async function POST(
                 }
 
                 // Extract grounding supports (sources)
-                if (metadata.groundingSupports) {
-                  for (const support of metadata.groundingSupports) {
-                    if (support.groundingChunckIndices && metadata.groundingChunks) {
-                      for (const index of support.groundingChunckIndices) {
-                        const chunk = metadata.groundingChunks[index];
-                        if (chunk?.web) {
-                          const source = {
-                            title: chunk.web.title || 'Source',
-                            uri: chunk.web.uri || ''
-                          };
-                          // Avoid duplicates
-                          if (!webSearchSources.some(s => s.uri === source.uri)) {
-                            webSearchSources.push(source);
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+                                if (metadata.groundingSupports) {
+                                  for (const support of metadata.groundingSupports) {
+                                    if (support.groundingChunkIndices && metadata.groundingChunks) {
+                                      for (const index of support.groundingChunkIndices) {
+                                        const groundingChunk = metadata.groundingChunks[index];
+                                        if (groundingChunk?.web) {
+                                          const source = {
+                                            title: groundingChunk.web.title || 'Source',
+                                            uri: groundingChunk.web.uri || ''
+                                          };
+                                          // Avoid duplicates
+                                          if (!webSearchSources.some(s => s.uri === source.uri)) {
+                                            webSearchSources.push(source);
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
               }
             }
 
-            // Send the text delta to the client
-            controller.enqueue(
-              encoder.encode(
-                JSON.stringify({
-                  type: 'delta',
-                  conversationId: conversation.id,
-                  messageId: tempMessageId,
-                  content: textContent,
-                }) + '\n'
-              )
-            );
+            // Send the text delta to the client (only if there's text)
+            if (textContent) {
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'delta',
+                    conversationId: conversation.id,
+                    messageId: tempMessageId,
+                    content: textContent,
+                  }) + '\n'
+                )
+              );
+            }
 
             // Check for document references during streaming
             if (settings.citeSources && relevantContent && conversationDocuments.length > 0) {
@@ -527,6 +605,94 @@ export async function POST(
                 }
               }
             }
+          }
+
+          // Handle function calls if any
+          if (functionCalls.length > 0) {
+            console.log(`🔧 Processing ${functionCalls.length} function call(s)...`);
+
+            // Send status update to client
+            controller.enqueue(
+              encoder.encode(
+                JSON.stringify({
+                  type: 'status',
+                  status: 'executing_functions',
+                  message: 'Executing requested actions...',
+                }) + '\n'
+              )
+            );
+
+            // Execute all function calls and collect results
+            const functionResponses = await Promise.all(
+              functionCalls.map(async (fc) => {
+                const result = await executeFunctionCall(
+                  fc,
+                  projectId,
+                  project,
+                  conversationDocuments,
+                  canvasDocument,
+                  messageHistory.slice(-3).map((msg: any) => msg.content),
+                  // Stream canvas updates in real-time
+                  (event) => {
+                    controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
+                  }
+                );
+
+                return {
+                  functionResponse: {
+                    name: fc.name,
+                    response: result
+                  }
+                };
+              })
+            );
+
+            // Send function results back to the model for a final response
+            console.log('📤 Sending function results back to model...');
+
+            // Add model response with function calls to history
+            fullContents.push({
+              role: 'model',
+              parts: functionCalls.map(fc => ({ functionCall: fc }))
+            });
+
+            // Add function responses
+            fullContents.push({
+              role: 'user',
+              parts: functionResponses.map(fr => ({ functionResponse: fr.functionResponse }))
+            });
+
+            // Get final response from model with function results
+            const finalResult = await genAI.models.generateContentStream({
+              model: modelName,
+              contents: fullContents,
+              config: generateConfig
+            });
+
+            // Reset fullContent to capture the final response
+            fullContent = "";
+
+            // Stream the final response
+            for await (const chunk of finalResult) {
+              const textContent = chunk.text || '';
+              if (textContent) {
+                fullContent += textContent;
+
+                // Send the text delta to the client
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: 'delta',
+                      conversationId: conversation.id,
+                      messageId: tempMessageId,
+                      content: textContent,
+                    }) + '\n'
+                  )
+                );
+              }
+            }
+
+            console.log('✅ Function calling workflow completed');
           }
 
           // Format the final content
@@ -681,6 +847,86 @@ function formatAIMessage(content: string): string {
 }
 
 /**
+ * Pre-flight check to determine if AI has enough information to draft
+ */
+async function checkIfReadyToDraft(
+  userRequest: string,
+  project: any,
+  conversationDocuments: any[],
+  canvasDocument: any,
+  recentMessages?: string[]
+): Promise<{ readyToDraft: boolean; reasoning?: string }> {
+  try {
+    const conversationContext = recentMessages && recentMessages.length > 0
+      ? `\n\nRECENT CONVERSATION CONTEXT:\n${recentMessages.map((msg, i) => `${i % 2 === 0 ? 'User' : 'Assistant'}: ${msg}`).join('\n')}`
+      : '';
+
+    const checkPrompt = `You are a legal document expert. Analyze if there's enough information to draft a complete, accurate legal document.
+
+CURRENT USER MESSAGE: "${userRequest}"
+${conversationContext}
+
+AVAILABLE CONTEXT:
+- Jurisdiction: ${project?.knowledgeBase?.settings?.jurisdiction ? JSON.stringify(project.knowledgeBase.settings.jurisdiction) : 'Not specified'}
+- Project Instructions: ${project?.knowledgeBase?.instructions || 'None'}
+- Available Documents: ${conversationDocuments.length > 0 ? conversationDocuments.map((d: any) => d.document.title).join(', ') : 'None'}
+- Existing Canvas Document: ${canvasDocument ? 'Yes (editing mode)' : 'No (new document)'}
+
+STRICT ANALYSIS CRITERIA:
+You must be STRICT. For legal documents, you NEED:
+1. Document type clearly specified (e.g., "NDA", "employment contract", "lease agreement")
+2. ALL parties/entities with full legal names (not just "two parties" or partial info)
+3. Critical terms:
+   - For NDAs: parties, confidentiality scope, duration
+   - For employment: employer, employee, role, salary, start date, benefits
+   - For service agreements: parties, services, payment terms, duration
+   - For amendments: specific clauses to modify and new language
+4. Key dates, amounts, and conditions (if applicable to document type)
+5. Any jurisdiction-specific requirements
+
+IMPORTANT RULES:
+- If user just said "ABC Corp and John Smith" but you don't know the document type → NEED_INFO
+- If user said "draft an NDA" but didn't specify parties → NEED_INFO
+- If user provided SOME but NOT ALL critical information → NEED_INFO
+- If this is a short response (< 20 words) to a follow-up question, check if it answers ALL your previous questions → likely NEED_INFO
+- Only say READY if you can draft a COMPLETE, professional legal document right now
+
+Respond with ONLY one of these:
+READY - ONLY if you have ALL information needed for a complete, professional legal document
+NEED_INFO - if ANY critical information is missing
+
+Then explain in 1 sentence what's missing or what you have.
+
+Format: [READY|NEED_INFO]: <one sentence explanation>`;
+
+    const result = await genAI.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: [{ role: 'user', parts: [{ text: checkPrompt }] }],
+      config: {
+        systemInstruction: 'You are a legal document expert analyzing whether sufficient information exists to draft legal documents. Be thorough and precise.',
+        temperature: 0.3
+      }
+    });
+
+    const response = result.text || '';
+
+    const isReady = response.trim().toUpperCase().startsWith('READY');
+    const reasoning = response.split(':')[1]?.trim() || '';
+
+    console.log('Pre-flight check result:', { isReady, reasoning });
+
+    return {
+      readyToDraft: isReady,
+      reasoning
+    };
+  } catch (error) {
+    console.error('Pre-flight check error:', error);
+    // On error, default to allowing drafting (fail open)
+    return { readyToDraft: true };
+  }
+}
+
+/**
  * Handle canvas drafting requests when in drafting mode
  */
 async function handleCanvasDraftingRequest(
@@ -729,14 +975,14 @@ async function handleCanvasDraftingRequest(
       where: { projectId },
       create: {
         projectId,
-        content: result.delta,
-        htmlContent: result.content,
-        plainText: AIDocumentService.stripHtml(result.content)
+        content: result.htmlContent || result.plainText || '',
+        htmlContent: result.htmlContent || result.plainText || '',
+        plainText: result.plainText || AIDocumentService.stripHtml(result.htmlContent || '')
       },
       update: {
-        content: result.delta,
-        htmlContent: result.content,
-        plainText: AIDocumentService.stripHtml(result.content),
+        content: result.htmlContent || result.plainText || '',
+        htmlContent: result.htmlContent || result.plainText || '',
+        plainText: result.plainText || AIDocumentService.stripHtml(result.htmlContent || ''),
         updatedAt: new Date()
       }
     });
@@ -758,7 +1004,7 @@ async function handleCanvasDraftingRequest(
           type: 'canvas_update',
           conversationId: conversationId,
           content: responseMessage,
-          canvasContent: result.content,
+          canvasContent: result.htmlContent || result.plainText || '',
           canvasUpdated: true
         }) + '\n'
       )
@@ -852,8 +1098,7 @@ async function handleCanvasDraftingRequestWithStreaming(
 
     if (!canvasDocument) {
       actionType = 'generating';
-      responseMessage = "I've generated the document and loaded it to your canvas.";
-      
+
       // Send generation status
       controller.enqueue(
         encoder.encode(
@@ -883,8 +1128,7 @@ async function handleCanvasDraftingRequestWithStreaming(
       });
     } else {
       actionType = 'editing';
-      responseMessage = "I've updated your document in the canvas.";
-      
+
       // Send editing status
       controller.enqueue(
         encoder.encode(
@@ -932,21 +1176,57 @@ async function handleCanvasDraftingRequestWithStreaming(
     );
 
     // Save to canvas document
-    await prisma.canvasDocument.upsert({
-      where: { projectId },
-      create: {
-        projectId,
-        content: result.delta,
-        htmlContent: result.content,
-        plainText: AIDocumentService.stripHtml(result.content)
-      },
-      update: {
-        content: result.delta,
-        htmlContent: result.content,
-        plainText: AIDocumentService.stripHtml(result.content),
-        updatedAt: new Date()
+        await prisma.canvasDocument.upsert({
+          where: { projectId },
+          create: {
+            projectId,
+            content: result.htmlContent || result.plainText || '',
+            htmlContent: result.htmlContent || result.plainText || '',
+            plainText: AIDocumentService.stripHtml(result.htmlContent || result.plainText || '')
+          },
+          update: {
+            content: result.htmlContent || result.plainText || '',
+            htmlContent: result.htmlContent || result.plainText || '',
+            plainText: AIDocumentService.stripHtml(result.htmlContent || result.plainText || ''),
+            updatedAt: new Date()
+          }
+        });
+
+    // Generate a natural conversational response explaining what was done
+    const explanationPrompt = actionType === 'generating'
+      ? `I just generated a new legal document based on the request: "${content}".
+
+         Provide a brief, natural response (2-3 sentences) explaining:
+         - What type of document you created
+         - Key sections or clauses you included
+         - Any important considerations or next steps
+
+         Be conversational and helpful. Don't use phrases like "I am an AI" or disclaimers.`
+      : `I just updated the legal document based on this request: "${content}".
+
+         Provide a brief, natural response (2-3 sentences) explaining:
+         - What specific changes you made
+         - Why these changes are important
+         - Any recommendations or questions you have for the user
+
+         Be conversational and helpful. Don't use phrases like "I am an AI" or disclaimers.`;
+
+    // Generate natural explanation using Gemini via the models.generateContent API
+    const explanationResult = await genAI.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: [{ role: 'user', parts: [{ text: explanationPrompt }] }],
+      config: {
+        systemInstruction: `You are Wansom, a senior lawyer. Provide brief, natural, conversational responses about legal document work. Be professional but friendly. Never use disclaimers or mention being an AI.`,
+        temperature: 0.3
       }
     });
+
+    // Safely extract text from the response (SDK may expose .text or nested output content)
+    responseMessage =
+      explanationResult?.text ||
+      (Array.isArray((explanationResult as any).output) &&
+        (explanationResult as any).output[0]?.content?.map((c: any) => c.text).join('')) ||
+      `I've ${actionType === 'generating' ? 'generated' : 'updated'} the document in your canvas.`;
 
     // Save AI response as message
     await prisma.message.create({
@@ -977,7 +1257,7 @@ async function handleCanvasDraftingRequestWithStreaming(
           type: 'canvas_update',
           conversationId: conversationId,
           content: responseMessage,
-          canvasContent: result.content,
+          canvasContent: result.htmlContent || result.plainText || '',
           canvasUpdated: true,
           actionType: actionType,
           streaming: false // Indicate streaming is complete
