@@ -13,6 +13,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import {
   Search,
@@ -22,26 +32,30 @@ import {
   ArrowUpDown,
   MoreVertical,
   Users,
+  Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal";
+import { useNotifications } from "@/hooks/useNotifications";
 
 
 export default function ProjectsPage() {
   const router = useRouter();
-  const { projects, fetchProjects, isLoading } = useProjectStore();
-  
+  const { projects, fetchProjects, isLoading, removeProject } = useProjectStore();
+  const { notify } = useNotifications();
+
   // State
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("updated");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [favoriteProjects, setFavoriteProjects] = useState<string[]>([]);
   const [selectedProjectForMembers, setSelectedProjectForMembers] = useState<{ id: string; title: string } | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Fetch projects when component mounts
   useEffect(() => {
@@ -104,6 +118,31 @@ export default function ProjectsPage() {
   // Handle project creation
   const handleCreateProject = () => {
     setShowCreateModal(true);
+  };
+
+  // Handle project deletion
+  const handleDeleteProject = async () => {
+    if (!projectToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const success = await removeProject(projectToDelete.id);
+
+      if (!success) {
+        throw new Error('Failed to delete workspace');
+      }
+
+      // Show success notification
+      notify.success('Workspace deleted successfully');
+
+      // Close dialog
+      setProjectToDelete(null);
+    } catch (error: any) {
+      console.error('Error deleting project:', error);
+      notify.error(error.message || 'Failed to delete workspace. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
   
   return (
@@ -199,7 +238,17 @@ export default function ProjectsPage() {
                         <Users className="h-4 w-4 mr-2" />
                         Manage Members
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator /> 
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setProjectToDelete({ id: project.id, title: project.title });
+                        }}
+                        className="text-red-600 focus:text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Workspace
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -241,6 +290,29 @@ export default function ProjectsPage() {
           onClose={() => setSelectedProjectForMembers(null)}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!projectToDelete} onOpenChange={() => setProjectToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Workspace</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{projectToDelete?.title}</strong>? This action cannot be undone.
+              All conversations, documents, and data associated with this workspace will be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteProject}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
