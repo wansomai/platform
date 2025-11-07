@@ -320,10 +320,59 @@ export const apiService = {
     }
   },
 
+  // Download file as blob
+  downloadFile: async (url: string): Promise<Blob> => {
+    const session = await getSession();
+
+    const fullUrl = url.startsWith('http')
+      ? url
+      : `${process.env.NEXT_PUBLIC_API_URL || 'https://wansom.ai'}${url}`;
+
+    const response = await fetch(fullUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': session?.accessToken ? `Bearer ${session.accessToken}` : '',
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      // Handle 401 specifically
+      if (response.status === 401) {
+        toast.error(ERROR_MESSAGES.UNAUTHORIZED);
+        await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
+        throw new Error(ERROR_MESSAGES.UNAUTHORIZED);
+      }
+
+      // Parse error message
+      let errorMessage = ERROR_MESSAGES.UNKNOWN;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData?.error || errorData?.message || errorMessage;
+      } catch {
+        switch (response.status) {
+          case 404:
+            errorMessage = ERROR_MESSAGES.NOT_FOUND;
+            break;
+          case 403:
+            errorMessage = ERROR_MESSAGES.FORBIDDEN;
+            break;
+          case 500:
+            errorMessage = ERROR_MESSAGES.SERVER_ERROR;
+            break;
+        }
+      }
+
+      throw new Error(errorMessage);
+    }
+
+    return await response.blob();
+  },
+
   postStream: async (
-    url: string, 
-    data?: any, 
-    onMessage?: (data: any) => void, 
+    url: string,
+    data?: any,
+    onMessage?: (data: any) => void,
     onError?: (error: any) => void
   ) => {
     try {

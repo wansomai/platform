@@ -740,7 +740,14 @@ export async function POST(
             )?.functionResponse?.response;
 
             if (reportMetadata) {
-              console.log('📊 Report metadata detected:', reportMetadata.reportId);
+              console.log('📊 Report metadata detected:', {
+                reportId: reportMetadata.reportId,
+                hasHtmlContent: !!reportMetadata.htmlContent,
+                hasDownloadUrls: !!reportMetadata.downloadUrls,
+                reportReady: reportMetadata.reportReady
+              });
+            } else {
+              console.log('⚠️ No report metadata found in function responses');
             }
           }
 
@@ -756,6 +763,8 @@ export async function POST(
           // Build metadata object
           const messageMetadata: any = {};
 
+          console.log('🔍 Building message metadata. reportMetadata exists?', !!reportMetadata);
+
           if (useGoogleSearch || webSearchSources.length > 0) {
             messageMetadata.googleSearchEnabled = useGoogleSearch;
             if (webSearchSources.length > 0) {
@@ -765,6 +774,7 @@ export async function POST(
 
           // Add report metadata if present (including full content for downloads)
           if (reportMetadata) {
+            console.log('✅ reportMetadata is available, adding to messageMetadata');
             messageMetadata.report = {
               reportId: reportMetadata.reportId,
               reportTitle: reportMetadata.reportTitle,
@@ -775,19 +785,34 @@ export async function POST(
               htmlContent: reportMetadata.htmlContent,
               plainText: reportMetadata.plainText,
             };
+            console.log('💾 Saving report metadata to database:', {
+              reportId: reportMetadata.reportId,
+              hasContent: !!reportMetadata.htmlContent
+            });
           }
 
           // Save the AI message to the database with metadata
+          const metadataToSave = Object.keys(messageMetadata).length > 0
+            ? JSON.stringify(messageMetadata)
+            : undefined;
+
+          console.log('💾 Saving message to database with metadata:', {
+            hasMetadata: !!metadataToSave,
+            metadataKeys: Object.keys(messageMetadata),
+            hasReport: !!messageMetadata.report,
+            reportId: messageMetadata.report?.reportId
+          });
+
           const assistantMessage = await prisma.message.create({
             data: {
               content: formattedContent,
               role: "assistant",
               conversationId,
-              metadata: Object.keys(messageMetadata).length > 0
-                ? JSON.stringify(messageMetadata)
-                : undefined
+              metadata: metadataToSave
             }
           });
+
+          console.log('✅ Message saved with ID:', assistantMessage.id);
           
           // Save references if needed
           if (settings.citeSources && documentReferences.size > 0) {

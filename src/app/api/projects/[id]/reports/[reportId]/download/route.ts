@@ -1,6 +1,6 @@
 // src/app/api/projects/[id]/reports/[reportId]/download/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { checkProjectAccess } from '@/lib/auth/authorization';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 
@@ -28,32 +28,48 @@ export const GET = withErrorHandler(withAuth(async (
 
   // Fetch the report from message metadata
   // Report ID format: report-{timestamp}, we need to find the message with this report
+  console.log('🔍 Looking for report:', reportId, 'in project:', projectId);
+
   const messages = await prisma.message.findMany({
     where: {
       conversation: {
         projectId: projectId
       },
-      role: 'assistant',
-      metadata: {
-        path: ['report', 'reportId'],
-        equals: reportId
-      }
+      role: 'assistant'
     },
     orderBy: {
       createdAt: 'desc'
     },
-    take: 1
+    take: 10 // Get last 10 messages to search through
   });
 
-  if (messages.length === 0) {
+  console.log('📋 Found', messages.length, 'messages to search');
+
+  // Find the message with matching report ID
+  const message = messages.find(msg => {
+    // Parse metadata if it's a JSON string
+    const metadata = typeof msg.metadata === 'string'
+      ? JSON.parse(msg.metadata)
+      : msg.metadata as any;
+    const hasReport = metadata?.report?.reportId === reportId;
+    console.log('Checking message', msg.id, 'has report:', hasReport, 'reportId:', metadata?.report?.reportId);
+    return hasReport;
+  });
+
+  if (!message) {
+    console.log('❌ No message found with reportId:', reportId);
     return NextResponse.json(
       { error: 'Report not found' },
       { status: 404 }
     );
   }
 
-  const message = messages[0];
-  const reportMetadata = (message.metadata as any)?.report;
+  console.log('✅ Found message with report:', message.id);
+  // Parse metadata if it's a JSON string
+  const parsedMetadata = typeof message.metadata === 'string'
+    ? JSON.parse(message.metadata)
+    : message.metadata as any;
+  const reportMetadata = parsedMetadata?.report;
 
   if (!reportMetadata || !reportMetadata.htmlContent) {
     return NextResponse.json(
