@@ -4,12 +4,9 @@ import {
   FileText,
   ChevronDown,
   ArrowUpRight,
-  Search,
-  Sparkles,
   TrendingUp,
   FileCheck,
-  Building2,
-  Users,
+  Building2
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -24,7 +21,7 @@ const MALawyersPage = () => {
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 bg-primary relative overflow-hidden">
         <div className="container mx-auto px-5 z-10 relative">
-          <div className="relative grid grid-cols-1 gap-12 items-center ">
+          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ">
             <div className="text-white lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For M&A Lawyers</p>
               <h1 className="text-heading-1 text-shadow font-serif max-w-4xl">

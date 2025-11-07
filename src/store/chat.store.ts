@@ -33,7 +33,7 @@ interface ChatState {
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
-  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any) => Promise<void>;
+  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any) => Promise<void>;
 
   // State management
   setLoading: (isLoading: boolean) => void;
@@ -204,7 +204,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
   
-  sendMessage: async (projectId, conversationId, content, userId, metadata) => {
+  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument) => {
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {
       id: tempId,
@@ -212,9 +212,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
       role: 'user',
       timestamp: new Date().toISOString()
     };
-    
+
     get().addMessage(userMessage);
-    
+
     const streamingId = `streaming-${Date.now()}`;
     const streamingMessage: Message = {
       id: streamingId,
@@ -224,18 +224,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
       timestamp: new Date().toISOString(),
       isStreaming: true
     };
-    
+
     get().addMessage(streamingMessage);
-    
+
     try {
       set({ error: null });
-      
+
       await apiService.postStream(
         `/api/projects/${projectId}/conversations/${conversationId}/messages`,
-        { 
+        {
           content,
           metadata,
-          streamingId 
+          streamingId,
+          previewDocument
         },
         (data) => {
           switch (data.type) {
@@ -251,6 +252,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
               break;
               
             case 'final':
+              // Debug: Log if report is present
+              if (data.report) {
+                console.log('📊 Report metadata received in chat store:', data.report);
+              }
+
               get().finalizeStreamingMessage(streamingId, {
                 id: data.messageId,
                 conversationId,
@@ -259,6 +265,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 timestamp: new Date().toISOString(),
                 references: data.references,
                 webSearchSources: data.webSearchSources,
+                report: data.report, // Include report metadata if present
+                metadata: data.report ? { report: data.report } : undefined, // Also add to metadata for UI
                 isStreaming: false
               });
               break;

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
-import { ContractChatSplitView } from "@/components/contract/ContractChatSplitView"
+import { DocumentPreviewSplitView } from "@/components/chat/DocumentPreviewSplitView"
 import { ErrorState } from "@/components/commons/LoadingState"
 import { WorkspaceSkeleton } from "@/components/commons/WorkspaceSkeleton"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
@@ -32,7 +32,8 @@ export default function ProjectPage() {
   const { settings } = useProjectSettingsStore()
   const {
     rightSidebarCollapsed,
-    setRightSidebarCollapsed
+    setRightSidebarCollapsed,
+    selectedPreviewDocument
   } = useUIStore();
   const { fetchConversation, isLoading: chatLoading } = useChatStore();
     
@@ -65,17 +66,17 @@ export default function ProjectPage() {
     )
   }
   
-  // Determine which interface to show based on settings
+  // Determine which interface to show based on settings and document selection
   const showLegalDrafting = settings?.legalDrafting || false
-  const showContractReview = settings?.contractReview || false
+  const showDocumentPreview = !!selectedPreviewDocument
 
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 overflow-hidden">
           <div className="h-full">
-            {showContractReview ? <ContractChatSplitView /> : 
-             showLegalDrafting ? <CanvasChatSplitView /> : 
+            {showDocumentPreview ? <DocumentPreviewSplitView /> :
+             showLegalDrafting ? <CanvasChatSplitView /> :
              <ChatInterface />}
           </div>
           <div className="border-t bg-white">

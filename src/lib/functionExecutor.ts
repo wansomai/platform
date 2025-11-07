@@ -17,6 +17,7 @@ export async function executeFunctionCall(
   project: any,
   conversationDocuments: any[],
   canvasDocument: any,
+  previewDocument: any,
   recentMessages: string[],
   streamCallback?: (event: any) => void
 ): Promise<any> {
@@ -247,6 +248,164 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           message: searchResults.length > 0
             ? `Found ${searchResults.length} relevant document(s).`
             : 'No matches found in the attached documents.'
+        };
+      }
+
+      case 'reviewDocument': {
+        const { documentIds, reviewFocus, specificInstructions } = functionCall.args as any;
+
+        console.log('📋 Reviewing documents with focus:', reviewFocus);
+
+        // Determine which documents to review
+        let documentsToReview: any[] = [];
+        let primaryDocumentName = '';
+
+        // Handle 'primary' - the document currently in focus (preview or canvas)
+        if (documentIds.includes('primary') || documentIds[0] === 'primary') {
+          // Priority 1: Preview document (if user is viewing a document)
+          if (previewDocument) {
+            documentsToReview = conversationDocuments.filter((doc: any) =>
+              doc.document.id === previewDocument.id
+            );
+            primaryDocumentName = previewDocument.title;
+            console.log('📋 Primary document is preview document:', primaryDocumentName);
+          }
+          // Priority 2: Canvas document (if user is in drafting mode)
+          else if (canvasDocument && canvasDocument.htmlContent) {
+            documentsToReview = [{
+              document: {
+                id: 'canvas',
+                title: 'Canvas Document',
+                content: {
+                  content: canvasDocument.plainText || canvasDocument.htmlContent
+                }
+              }
+            }];
+            primaryDocumentName = 'Canvas Document';
+            console.log('📋 Primary document is canvas document');
+          }
+          // Fallback: No primary document available
+          else {
+            return {
+              error: 'No primary document is currently in focus. Please open a document in preview or canvas mode, or specify which document to review.'
+            };
+          }
+        }
+        // Handle 'all' - review all project documents
+        else if (documentIds.includes('all') || documentIds[0] === 'all') {
+          if (conversationDocuments.length === 0) {
+            return {
+              error: 'No documents are available in this project to review. Please upload documents first.'
+            };
+          }
+          documentsToReview = conversationDocuments;
+          console.log('📋 Reviewing all project documents:', documentsToReview.length);
+        }
+        // Handle specific document IDs
+        else {
+          if (conversationDocuments.length === 0) {
+            return {
+              error: 'No documents are available in this project to review. Please upload documents first.'
+            };
+          }
+          documentsToReview = conversationDocuments.filter((doc: any) =>
+            documentIds.includes(doc.document.id)
+          );
+          console.log('📋 Reviewing specific documents:', documentsToReview.length);
+        }
+
+        if (documentsToReview.length === 0) {
+          return {
+            error: 'Could not find the specified documents to review.'
+          };
+        }
+
+        // Build project context
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || []
+        };
+
+        // Prepare documents for review
+        const documentsForReview = documentsToReview.map((doc: any) => ({
+          title: doc.document.title,
+          content: doc.document.content?.content || '',
+          id: doc.document.id
+        }));
+
+        const reviewInstruction = `Conduct a comprehensive ${reviewFocus} review of the following document(s):
+
+${documentsForReview.map((doc, idx) => `${idx + 1}. ${doc.title}`).join('\n')}
+
+${specificInstructions ? `Specific Instructions: ${specificInstructions}` : ''}
+
+Please provide a structured review report.`;
+
+        console.log('📝 Generating document review report');
+
+        // Send initial status (not canvas-related, just general processing)
+        if (streamCallback) {
+          streamCallback({
+            type: 'status',
+            status: 'processing',
+            message: `Reviewing ${documentsToReview.length} document(s)...`,
+            conversationId: projectId
+          });
+        }
+
+        // Generate the review report (no streaming to canvas)
+        const result = await AIDocumentService.generateDocumentReviewStreaming(
+          reviewInstruction,
+          documentsForReview,
+          reviewFocus,
+          projectContext,
+          undefined // No streaming callback - report will be in download buttons
+        );
+
+        if (!result.success) {
+          return { error: result.error || 'Failed to generate document review' };
+        }
+
+        // Generate report metadata - we'll store content in message metadata
+        // and generate downloads on-demand to avoid database conflicts
+        const reportTitle = `${reviewFocus.replace('-', ' ')} Review Report${primaryDocumentName ? ` - ${primaryDocumentName}` : ''}`;
+        const reportDate = new Date().toISOString().split('T')[0];
+
+        // Generate a unique report ID for this session
+        const reportId = `report-${Date.now()}`;
+
+        console.log('✅ Document review report generated:', reportId);
+
+        // Extract a brief summary from the report (first few paragraphs or executive summary)
+        const htmlText = result.htmlContent || result.plainText || '';
+        const summaryMatch = htmlText.match(/<h2[^>]*>Executive Summary<\/h2>\s*<p>(.*?)<\/p>/i);
+        const briefSummary = summaryMatch
+          ? summaryMatch[1].substring(0, 300) + '...'
+          : htmlText.substring(0, 300).replace(/<[^>]*>/g, '') + '...';
+
+        // Prepare download URL for Word format only
+        const baseUrl = `/api/projects/${projectId}/reports/${reportId}`;
+
+        return {
+          success: true,
+          reportReady: true,
+          reportId: reportId,
+          reportTitle,
+          documentName: primaryDocumentName || `${documentsToReview.length} document(s)`,
+          reviewFocus: reviewFocus.replace('-', ' '),
+          briefSummary,
+          // Include full content for storage in message metadata
+          htmlContent: result.htmlContent || '',
+          plainText: result.plainText || '',
+          downloadUrls: {
+            word: `${baseUrl}/download?format=word`,
+          },
+          message: `I've completed the ${reviewFocus.replace('-', ' ')} review of ${primaryDocumentName || `${documentsToReview.length} document(s)`}.\n\n${briefSummary}\n\n📄 Your detailed review report is ready for download.`
         };
       }
 

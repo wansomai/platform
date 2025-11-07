@@ -207,6 +207,19 @@ export const JURISDICTIONS: Jurisdiction[] = [
     isPopular: false
   },
 
+  // Malawi
+  {
+    id: 'mw',
+    name: 'Malawi',
+    country: 'Malawi',
+    region: 'Africa',
+    legalSystem: 'mixed',
+    citationStyle: 'local',
+    courtSystem: ['Supreme Court', 'High Court', 'Magistrate Courts'],
+    languages: ['English', 'Chichewa'],
+    isPopular: false
+  },
+
   // European Union
   {
     id: 'eu',

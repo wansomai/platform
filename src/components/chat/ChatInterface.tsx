@@ -10,11 +10,13 @@ import {
 } from "lucide-react"
 import { useChatStore} from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
+import { useProjectStore } from "@/store/project.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
+import { ReportDownloadCard } from "./ReportDownloadCard"
 import { Message } from "@/types"
 
 // Empty state component for when there are no messages
@@ -37,15 +39,16 @@ const EmptyState = () => (
 
 export function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  
+
   // Get state from stores
   const { addToast } = useUIStore()
-  const {   
-    currentConversation, 
+  const {
+    currentConversation,
     error
   } = useChatStore()
+  const { currentProject } = useProjectStore()
 
- 
+
   const {data: session} = useSession()
   
   // Scroll to bottom when messages change
@@ -85,10 +88,11 @@ export function ChatInterface() {
         
         <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
           {currentConversation?.messages.map((message, index) => (
-            <ChatMessageItem 
-              key={message.id || message.tempId || `temp-${message.timestamp}-${index}`} 
-              message={message} 
-              user={session?.user} 
+            <ChatMessageItem
+              key={message.id || message.tempId || `temp-${message.timestamp}-${index}`}
+              message={message}
+              user={session?.user}
+              projectId={currentProject?.id || ''}
               onCopy={() => copyMessageToClipboard(message.content)}
             />
           ))}
@@ -100,16 +104,23 @@ export function ChatInterface() {
 }
 
 // ChatMessageItem to handle streaming messages
-const ChatMessageItem = React.memo(({ 
-  message, 
+const ChatMessageItem = React.memo(({
+  message,
   user,
-  onCopy 
-}: { 
-  message: Message, 
+  projectId,
+  onCopy
+}: {
+  message: Message,
   user: any,
+  projectId: string,
   onCopy: () => void
 }) => {
   const isUser = message.role === 'user';
+
+  // Debug: Check if message has report
+  if (!isUser && (message.metadata?.report || message.report)) {
+    console.log('📄 Message has report:', message.id, message.metadata?.report || message.report);
+  }
   
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
@@ -188,12 +199,12 @@ const ChatMessageItem = React.memo(({
 
           {/* Display Google Search sources if available */}
           {!isUser && message.webSearchSources && message.webSearchSources.length > 0 && (
-            <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="mt-3 p-3">
               <div className="flex items-center mb-2 text-blue-700">
-                <Search size={16} className="mr-2" />
-                <span className="font-medium text-sm">Google Search Results ({message.webSearchSources.length})</span>
+                <img src="/favicon-dark.png" alt="Google" className="h-6 w-6 mr-2 rounded-full" />
+                <span className="font-medium text-sm">Research Sources ({message.webSearchSources.length})</span>
               </div>
-              <div className="space-y-2">
+              <div className="flex flex-wrap items-centerjustify-center gap-2">
                 {message.webSearchSources.map((source: {title: string, uri: string}, index: number) => (
                   <a
                     key={index}
@@ -207,7 +218,6 @@ const ChatMessageItem = React.memo(({
                       <p className="text-sm font-medium text-blue-900 group-hover:text-blue-700 line-clamp-1">
                         {source.title}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">{source.uri}</p>
                     </div>
                     <ExternalLink size={14} className="text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-1" />
                   </a>
@@ -227,6 +237,14 @@ const ChatMessageItem = React.memo(({
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Display Report Download Card if available */}
+          {!isUser && (message.metadata?.report || message.report) && (
+            <ReportDownloadCard
+              report={message.metadata?.report || message.report}
+              projectId={projectId}
+            />
           )}
         </div>
       </div>

@@ -53,7 +53,7 @@ export function ChatInput({
   const [showProAcess, setShowProAccess] = useState(false);
 
   // Get state from stores
-  const { addToast } = useUIStore();
+  const { addToast, selectedPreviewDocument } = useUIStore();
   const { notify } = useNotifications();
   const { createProject, requiresUpgrade: projectRequiresUpgrade } = useProjectStore();
   const { currentConversation, sendMessage, requiresUpgrade: chatRequiresUpgrade } = useChatStore();
@@ -204,7 +204,8 @@ export function ChatInput({
             currentConversation.id,
             messageToSend,
             session?.user?.id,
-            ""
+            "",
+            selectedPreviewDocument
           );
         } catch (error: any) {
           // Check if this is a subscription limit error
@@ -258,19 +259,8 @@ export function ChatInput({
     if (!currentConversation) return;
 
     try {
-      let updatesToMake: Partial<typeof settings> = { [settingKey]: value };
-
-      // Exclusive toggle logic: only one of legalDrafting or contractReview can be active
-      if (settingKey === "legalDrafting" && value) {
-        updatesToMake.contractReview = false;
-      } else if (settingKey === "contractReview" && value) {
-        updatesToMake.legalDrafting = false;
-      }
-
-      // Update all settings that need to change
-      for (const [key, val] of Object.entries(updatesToMake)) {
-        await updateSetting(projectId, key as keyof typeof settings, val);
-      }
+      // Update the setting directly
+      await updateSetting(projectId, settingKey, value);
 
       addToast({ message: `${settingKey} setting updated`, type: "success" });
     } catch (error) {
@@ -447,28 +437,6 @@ export function ChatInput({
                             ? undefined
                             : (checked) => {
                                 handleSettingChange("legalDrafting", checked);
-                              }
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label
-                          htmlFor="contract-review"
-                          className="font-medium text-sm"
-                        >
-                          Contract Review
-                        </Label>
-                      </div>
-                      <Switch
-                        id="contract-review"
-                        checked={homepageMode ? false : settings.contractReview}
-                        disabled={homepageMode || isLoadingSettings}
-                        onCheckedChange={
-                          homepageMode
-                            ? undefined
-                            : (checked) => {
-                                handleSettingChange("contractReview", checked);
                               }
                         }
                       />
