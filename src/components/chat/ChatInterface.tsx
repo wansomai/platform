@@ -202,7 +202,7 @@ const ChatMessageItem = React.memo(({
             <div className="mt-3 p-3">
               <div className="flex items-center mb-2 text-blue-700">
                 <img src="/favicon-dark.png" alt="Google" className="h-6 w-6 mr-2 rounded-full" />
-                <span className="font-medium text-sm">Research Results ({message.webSearchSources.length})</span>
+                <span className="font-medium text-sm">Research Sources ({message.webSearchSources.length})</span>
               </div>
               <div className="flex flex-wrap items-centerjustify-center gap-2">
                 {message.webSearchSources.map((source: {title: string, uri: string}, index: number) => (
