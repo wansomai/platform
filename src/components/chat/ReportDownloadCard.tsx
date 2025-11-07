@@ -1,8 +1,8 @@
 // src/components/chat/ReportDownloadCard.tsx
 'use client'
 
-import React from 'react'
-import { Download } from 'lucide-react'
+import React, { useState } from 'react'
+import { Download, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { apiService } from '@/lib/api'
@@ -24,17 +24,14 @@ interface ReportDownloadCardProps {
 }
 
 export const ReportDownloadCard: React.FC<ReportDownloadCardProps> = ({ report }) => {
+  const [isDownloading, setIsDownloading] = useState(false)
+
   const handleDownload = async () => {
     try {
-      // Fetch the file with credentials (session auth)
-      const response = (await apiService.get(report.downloadUrls.word)) as Response
+      setIsDownloading(true)
 
-      if (!response.ok) {
-        throw new Error('Failed to download report')
-      }
-
-      // Get the blob from response
-      const blob = await response.blob()
+      // Download the file as a blob
+      const blob = await apiService.downloadFile(report.downloadUrls.word)
 
       // Create a download link and trigger it
       const url = window.URL.createObjectURL(blob)
@@ -50,6 +47,8 @@ export const ReportDownloadCard: React.FC<ReportDownloadCardProps> = ({ report }
     } catch (error) {
       console.error('Download error:', error)
       toast.error('Failed to download report')
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -59,10 +58,20 @@ export const ReportDownloadCard: React.FC<ReportDownloadCardProps> = ({ report }
         variant="outline"
         size="sm"
         onClick={handleDownload}
+        disabled={isDownloading}
         className="gap-2"
       >
-        <Download className="h-4 w-4" />
-        Download Report
+        {isDownloading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Downloading...
+          </>
+        ) : (
+          <>
+            <Download className="h-4 w-4" />
+            Download Report
+          </>
+        )}
       </Button>
     </div>
   )
