@@ -4,7 +4,7 @@ import { PrismaClient } from "@/prisma/client";
 import { z } from "zod";
 import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
 import { GoogleGenAI } from '@google/genai';
-import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
+
 import { canSendMessage } from '@/lib/subscription';
 import { legalDraftingTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
@@ -46,6 +46,7 @@ const DEFAULT_SETTINGS: {
 // Schema validation
 const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
+  previewDocument: z.any().optional(), // Document currently in preview mode
 });
 
 // Encoder for streaming response
@@ -68,7 +69,7 @@ export async function POST(
 
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
-    const { content } = createMessageSchema.parse(body);
+    const { content, previewDocument } = createMessageSchema.parse(body);
 
     // Start parallel operations immediately
     const accessCheckPromise = checkProjectAccess(projectId, userId);
@@ -387,12 +388,47 @@ export async function POST(
           3. **searchProjectDocuments** - Search through attached project documents
              - Use when you need to find specific information or precedents
 
+          4. **reviewDocument** - Conducts comprehensive legal review of documents
+             - Use when user wants to review, analyze, or assess documents
+             - When user says "review this", they mean the PRIMARY document in focus
+
           **Important Guidelines**:
           - When a user requests a document (e.g., "create an NDA"), first assess what information you have
           - If you're missing critical details (parties, key terms, dates, etc.), respond with questions - DO NOT call draftNewDocument yet
           - Only call draftNewDocument once you have complete information for a professional legal document
           - Be conversational and helpful - ask for information naturally in your responses
           - After calling a function, explain what you've done in user-friendly language
+
+          ${previewDocument ? `
+          **🔍 PREVIEW MODE CONTEXT**:
+          The user is currently viewing "${previewDocument.title}" in preview mode.
+          This is the PRIMARY document they are focused on right now.
+
+          When the user says:
+          - "Review this" or "What are the risks here" → They mean "${previewDocument.title}"
+          - "What are the terms?" or "Summarize this" → They mean "${previewDocument.title}"
+          - Use documentIds: ['primary'] when calling reviewDocument for this document
+
+          Other project documents provide reference context only.
+          ` : canvasDocument && canvasDocument.htmlContent ? `
+          **📝 CANVAS MODE CONTEXT**:
+          The user is working on a document in the canvas editor.
+          This canvas document is the PRIMARY document they are editing and focused on.
+
+          When the user says:
+          - "Review this" or "What's missing?" → They mean the canvas document
+          - "Add a clause" or "Edit this" → They mean the canvas document
+          - Use documentIds: ['primary'] when calling reviewDocument for the canvas document
+
+          Other project documents provide reference context only.
+          ` : `
+          **💬 CHAT MODE CONTEXT**:
+          No specific document is currently in primary focus.
+          The user is in general workspace mode.
+
+          When the user asks for reviews, they likely mean all project documents.
+          After providing a review, you can offer to generate a formal report in the canvas by setting generateReport: true.
+          `}
           ` : ''}
 
           ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
@@ -467,7 +503,7 @@ export async function POST(
                 parameters: tool.parameters
               }))
             });
-            console.log('✓ Legal drafting tools enabled - AI can call draftNewDocument, editCanvasDocument, searchProjectDocuments');
+            console.log('✓ Legal drafting tools enabled - AI can call draftNewDocument, editCanvasDocument, searchProjectDocuments, reviewDocument');
           }
 
           // Build the full conversation history including system message
@@ -607,6 +643,9 @@ export async function POST(
             }
           }
 
+          // Variable to store report metadata from function responses
+          let reportMetadata: any = null;
+
           // Handle function calls if any
           if (functionCalls.length > 0) {
             console.log(`🔧 Processing ${functionCalls.length} function call(s)...`);
@@ -631,6 +670,7 @@ export async function POST(
                   project,
                   conversationDocuments,
                   canvasDocument,
+                  previewDocument,
                   messageHistory.slice(-3).map((msg: any) => msg.content),
                   // Stream canvas updates in real-time
                   (event) => {
@@ -693,29 +733,59 @@ export async function POST(
             }
 
             console.log('✅ Function calling workflow completed');
+
+            // Check if any function response contains report metadata
+            reportMetadata = functionResponses.find(
+              (fr: any) => fr.functionResponse?.response?.reportReady === true
+            )?.functionResponse?.response;
+
+            if (reportMetadata) {
+              console.log('📊 Report metadata detected:', reportMetadata.reportId);
+            }
           }
 
           // Format the final content
           const formattedContent = formatAIMessage(fullContent);
-          
+
           // Update conversation timestamp
           await prisma.conversation.update({
             where: { id: conversationId },
             data: { updatedAt: new Date() },
           }).catch(console.error);
-          
-          // Save the AI message to the database with web sources if available
+
+          // Build metadata object
+          const messageMetadata: any = {};
+
+          if (useGoogleSearch || webSearchSources.length > 0) {
+            messageMetadata.googleSearchEnabled = useGoogleSearch;
+            if (webSearchSources.length > 0) {
+              messageMetadata.webSearchSources = webSearchSources;
+            }
+          }
+
+          // Add report metadata if present (including full content for downloads)
+          if (reportMetadata) {
+            messageMetadata.report = {
+              reportId: reportMetadata.reportId,
+              reportTitle: reportMetadata.reportTitle,
+              documentName: reportMetadata.documentName,
+              reviewFocus: reportMetadata.reviewFocus,
+              briefSummary: reportMetadata.briefSummary,
+              downloadUrls: reportMetadata.downloadUrls,
+              htmlContent: reportMetadata.htmlContent,
+              plainText: reportMetadata.plainText,
+            };
+          }
+
+          // Save the AI message to the database with metadata
           const assistantMessage = await prisma.message.create({
             data: {
               content: formattedContent,
               role: "assistant",
               conversationId,
-              metadata: (useGoogleSearch || webSearchSources.length > 0) ?
-                JSON.stringify({
-                  googleSearchEnabled: useGoogleSearch,
-                  webSearchSources: webSearchSources.length > 0 ? webSearchSources : undefined
-                }) :
-                undefined
+              metadata: Object.keys(messageMetadata).length > 0
+                ? JSON.stringify(messageMetadata)
+                : undefined
             }
           });
           
@@ -753,7 +823,7 @@ export async function POST(
             },
           });
           
-          // Send the final message with references
+          // Send the final message with references and report metadata
           controller.enqueue(
             encoder.encode(
               JSON.stringify({
@@ -771,6 +841,7 @@ export async function POST(
                   text: ref.text,
                   page: ref.page,
                 })) || [],
+                report: messageMetadata.report, // Include report metadata if present
               }) + '\n'
             )
           );
@@ -813,18 +884,52 @@ export async function POST(
         'Connection': 'keep-alive',
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error processing message:", error);
 
+    // Validation errors
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation failed", details: error.errors },
+        { error: "Invalid request. Please check your input.", details: error.errors },
         { status: 400 }
       );
     }
 
+    // Network/API errors (e.g., when internet is down, Gemini API unavailable)
+    if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
+      return NextResponse.json(
+        { error: "Network connection failed. Please check your internet connection and try again." },
+        { status: 503 }
+      );
+    }
+
+    // Gemini API specific errors
+    if (error.message?.includes('API key') || error.message?.includes('GEMINI')) {
+      return NextResponse.json(
+        { error: "AI service is temporarily unavailable. Please try again later." },
+        { status: 503 }
+      );
+    }
+
+    // Timeout errors
+    if (error.code === 'ETIMEDOUT' || error.message?.includes('timeout')) {
+      return NextResponse.json(
+        { error: "Request timed out. Please try again." },
+        { status: 504 }
+      );
+    }
+
+    // Database errors
+    if (error.code?.startsWith('P')) { // Prisma error codes start with P
+      return NextResponse.json(
+        { error: "Database error occurred. Please try again later." },
+        { status: 500 }
+      );
+    }
+
+    // Generic fallback
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "An unexpected error occurred. Please try again." },
       { status: 500 }
     );
   }
@@ -923,391 +1028,6 @@ Format: [READY|NEED_INFO]: <one sentence explanation>`;
     console.error('Pre-flight check error:', error);
     // On error, default to allowing drafting (fail open)
     return { readyToDraft: true };
-  }
-}
-
-/**
- * Handle canvas drafting requests when in drafting mode
- */
-async function handleCanvasDraftingRequest(
-  content: string,
-  projectId: string,
-  project: any,
-  conversationDocuments: any[],
-  canvasDocument: any,
-  controller: ReadableStreamDefaultController,
-  encoder: TextEncoder,
-  conversationId: string,
-  safeClose: () => void,
-  recentMessages?: string[]
-): Promise<boolean> {
-  try {
-    // Build project context for AI
-    const projectContext: ProjectContext = {
-      jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-      instructions: project?.knowledgeBase?.instructions || '',
-      documents: conversationDocuments.map((doc:any) => ({
-        title: doc.document.title,
-        content: doc.document.content?.content || ''
-      })),
-      conversationHistory: recentMessages || []
-    };
-
-    let result;
-    let responseMessage;
-
-    if (!canvasDocument) {
-      // No canvas document exists, generate new document
-      result = await AIDocumentService.generateDocument(content, projectContext);
-      responseMessage = "I've generated the document and loaded it to your canvas.";
-    } else {
-      // Edit existing document
-      result = await AIDocumentService.editDocument(
-        content,
-        canvasDocument.htmlContent,
-        projectContext
-      );
-      responseMessage = "I've updated your document in the canvas.";
-    }
-
-    // Save to canvas document
-    await prisma.canvasDocument.upsert({
-      where: { projectId },
-      create: {
-        projectId,
-        content: result.htmlContent || result.plainText || '',
-        htmlContent: result.htmlContent || result.plainText || '',
-        plainText: result.plainText || AIDocumentService.stripHtml(result.htmlContent || '')
-      },
-      update: {
-        content: result.htmlContent || result.plainText || '',
-        htmlContent: result.htmlContent || result.plainText || '',
-        plainText: result.plainText || AIDocumentService.stripHtml(result.htmlContent || ''),
-        updatedAt: new Date()
-      }
-    });
-
-    // Save AI response as message
-    await prisma.message.create({
-      data: {
-        content: responseMessage,
-        role: "assistant",
-        conversationId,
-        metadata: JSON.stringify({ canvasUpdated: true })
-      }
-    });
-
-    // Send canvas update response
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_update',
-          conversationId: conversationId,
-          content: responseMessage,
-          canvasContent: result.htmlContent || result.plainText || '',
-          canvasUpdated: true
-        }) + '\n'
-      )
-    );
-
-    // Send completion status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'status',
-          status: 'completed',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    safeClose();
-    return true; // Handled as canvas operation
-
-  } catch (error) {
-    console.error('Canvas drafting error:', error);
-    
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'error',
-          error: 'Failed to process document request'
-        }) + '\n'
-      )
-    );
-    
-    safeClose();
-    return true; // Still handled, even with error
-  }
-}
-
-/**
- * Handle canvas drafting requests with streaming updates
- */
-async function handleCanvasDraftingRequestWithStreaming(
-  content: string,
-  projectId: string,
-  project: any,
-  conversationDocuments: any[],
-  canvasDocument: any,
-  controller: ReadableStreamDefaultController,
-  encoder: TextEncoder,
-  conversationId: string,
-  safeClose: () => void,
-  recentMessages?: string[]
-): Promise<boolean> {
-  try {
-    // Send initial status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'analyzing_request',
-          message: 'Analyzing your request...',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    // Build project context for AI
-    const projectContext: ProjectContext = {
-      jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-      instructions: project?.knowledgeBase?.instructions || '',
-      documents: conversationDocuments.map((doc:any) => ({
-        title: doc.document.title,
-        content: doc.document.content?.content || ''
-      })),
-      conversationHistory: recentMessages || []
-    };
-
-    // Send context processing status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'processing_context',
-          message: 'Processing project context and documents...',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    let result;
-    let responseMessage;
-    let actionType;
-
-    if (!canvasDocument) {
-      actionType = 'generating';
-
-      // Send generation status
-      controller.enqueue(
-        encoder.encode(
-          JSON.stringify({
-            type: 'canvas_status',
-            status: 'generating_document',
-            message: 'Generating new legal document...',
-            conversationId: conversationId,
-          }) + '\n'
-        )
-      );
-
-      // Generate new document with streaming updates
-      result = await AIDocumentService.generateDocumentStreaming(content, projectContext, (partialContent, section) => {
-        // Send streaming canvas content updates
-        controller.enqueue(
-          encoder.encode(
-            JSON.stringify({
-              type: 'canvas_content_update',
-              conversationId: conversationId,
-              partialContent: partialContent,
-              currentSection: section,
-              actionType: 'generating'
-            }) + '\n'
-          )
-        );
-      });
-    } else {
-      actionType = 'editing';
-
-      // Send editing status
-      controller.enqueue(
-        encoder.encode(
-          JSON.stringify({
-            type: 'canvas_status',
-            status: 'editing_document',
-            message: 'Updating existing document with your changes...',
-            conversationId: conversationId,
-          }) + '\n'
-        )
-      );
-
-      // Edit existing document with streaming updates
-      result = await AIDocumentService.editDocumentStreaming(
-        content,
-        canvasDocument.htmlContent,
-        projectContext,
-        (partialContent, section) => {
-          // Send streaming canvas content updates
-          controller.enqueue(
-            encoder.encode(
-              JSON.stringify({
-                type: 'canvas_content_update',
-                conversationId: conversationId,
-                partialContent: partialContent,
-                currentSection: section,
-                actionType: 'editing'
-              }) + '\n'
-            )
-          );
-        }
-      );
-    }
-
-    // Send saving status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'saving_document',
-          message: 'Saving changes to canvas...',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    // Save to canvas document
-        await prisma.canvasDocument.upsert({
-          where: { projectId },
-          create: {
-            projectId,
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || result.plainText || '',
-            plainText: AIDocumentService.stripHtml(result.htmlContent || result.plainText || '')
-          },
-          update: {
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || result.plainText || '',
-            plainText: AIDocumentService.stripHtml(result.htmlContent || result.plainText || ''),
-            updatedAt: new Date()
-          }
-        });
-
-    // Generate a natural conversational response explaining what was done
-    const explanationPrompt = actionType === 'generating'
-      ? `I just generated a new legal document based on the request: "${content}".
-
-         Provide a brief, natural response (2-3 sentences) explaining:
-         - What type of document you created
-         - Key sections or clauses you included
-         - Any important considerations or next steps
-
-         Be conversational and helpful. Don't use phrases like "I am an AI" or disclaimers.`
-      : `I just updated the legal document based on this request: "${content}".
-
-         Provide a brief, natural response (2-3 sentences) explaining:
-         - What specific changes you made
-         - Why these changes are important
-         - Any recommendations or questions you have for the user
-
-         Be conversational and helpful. Don't use phrases like "I am an AI" or disclaimers.`;
-
-    // Generate natural explanation using Gemini via the models.generateContent API
-    const explanationResult = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: [{ role: 'user', parts: [{ text: explanationPrompt }] }],
-      config: {
-        systemInstruction: `You are Wansom, a senior lawyer. Provide brief, natural, conversational responses about legal document work. Be professional but friendly. Never use disclaimers or mention being an AI.`,
-        temperature: 0.3
-      }
-    });
-
-    // Safely extract text from the response (SDK may expose .text or nested output content)
-    responseMessage =
-      explanationResult?.text ||
-      (Array.isArray((explanationResult as any).output) &&
-        (explanationResult as any).output[0]?.content?.map((c: any) => c.text).join('')) ||
-      `I've ${actionType === 'generating' ? 'generated' : 'updated'} the document in your canvas.`;
-
-    // Save AI response as message
-    await prisma.message.create({
-      data: {
-        content: responseMessage,
-        role: "assistant",
-        conversationId,
-        metadata: JSON.stringify({ canvasUpdated: true, actionType })
-      }
-    });
-
-    // Send final completion status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'completed',
-          message: `Document ${actionType === 'generating' ? 'generated' : 'updated'} successfully!`,
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    // Send canvas update response with streaming flag
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_update',
-          conversationId: conversationId,
-          content: responseMessage,
-          canvasContent: result.htmlContent || result.plainText || '',
-          canvasUpdated: true,
-          actionType: actionType,
-          streaming: false // Indicate streaming is complete
-        }) + '\n'
-      )
-    );
-
-    // Send completion status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'status',
-          status: 'completed',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    safeClose();
-    return true; // Handled as canvas operation
-
-  } catch (error) {
-    console.error('Canvas drafting error:', error);
-
-    // Simple user-friendly error message
-    const errorMessage = 'Something went wrong creating your document. Please try again.';
-
-    // Send error status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'error',
-          message: errorMessage,
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'error',
-          error: errorMessage
-        }) + '\n'
-      )
-    );
-
-    safeClose();
-    return true; // Still handled, even with error
   }
 }
 

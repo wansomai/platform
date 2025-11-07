@@ -4,12 +4,9 @@ import {
   FileText,
   ChevronDown,
   ArrowUpRight,
-  Search,
-  Sparkles,
   TrendingUp,
   FileCheck,
-  Building2,
-  Users,
+  Building2
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";

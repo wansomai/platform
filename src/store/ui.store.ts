@@ -23,6 +23,11 @@ export const useUIStore = create<UIState>((set,get) => ({
   rightSidebarCollapsed: false,
   toggleRightSidebar: () => set((state) => ({ rightSidebarCollapsed: !state.rightSidebarCollapsed })),
   setRightSidebarCollapsed: (collapsed) => set({ rightSidebarCollapsed: collapsed }),
+
+  // Document preview
+  selectedPreviewDocument: null,
+  setSelectedPreviewDocument: (document) => set({ selectedPreviewDocument: document }),
+  clearPreviewDocument: () => set({ selectedPreviewDocument: null }),
   
   // Active tab in workspace - set default to 'overview'
   activeWorkspaceTab: 'chat',

@@ -63,7 +63,7 @@ export function ConversationDetails() {
     fetchInstructions
   } = useProjectInstructionsStore();
   
-  const { addToast } = useUIStore();
+  const { addToast, setSelectedPreviewDocument } = useUIStore();
   
   // Update temp instructions when instructions change
   useEffect(() => {
@@ -314,7 +314,8 @@ const filteredDocuments = useMemo(() => {
                   filteredDocuments.map((doc) => (
                     <div
                       key={doc.id}
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
+                      onClick={() => setSelectedPreviewDocument(doc)}
                     >
                       <FileText className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -325,7 +326,12 @@ const filteredDocuments = useMemo(() => {
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

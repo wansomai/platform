@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  Trash2,
+  X,
   Upload,
   FileText,
   Loader2,
@@ -271,10 +271,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               variant="ghost"
               size="sm"
               onClick={onRemoveDocument}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
             >
-              <Trash2 className="w-4 h-4 mr-1" />
-              Remove Document
+              <X className="w-4 h-4 mr-1" />
+              Close Preview
             </Button>
       </div>
 

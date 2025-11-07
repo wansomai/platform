@@ -364,8 +364,38 @@ export const apiService = {
           throw customError;
         }
 
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        // Parse error response
+        let errorMessage = ERROR_MESSAGES.UNKNOWN;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData?.error || errorData?.message || errorMessage;
+        } catch {
+          // If JSON parsing fails, use status-based message
+          switch (response.status) {
+            case 400:
+              errorMessage = ERROR_MESSAGES.BAD_REQUEST;
+              break;
+            case 404:
+              errorMessage = ERROR_MESSAGES.NOT_FOUND;
+              break;
+            case 500:
+              errorMessage = ERROR_MESSAGES.SERVER_ERROR;
+              break;
+            case 502:
+              errorMessage = ERROR_MESSAGES.BAD_GATEWAY;
+              break;
+            case 503:
+              errorMessage = ERROR_MESSAGES.SERVICE_UNAVAILABLE;
+              break;
+            case 504:
+              errorMessage = ERROR_MESSAGES.GATEWAY_TIMEOUT;
+              break;
+          }
+        }
+
+        const customError = new Error(errorMessage) as any;
+        customError.status = response.status;
+        throw customError;
       }
       
       const reader = response.body?.getReader();
@@ -396,8 +426,23 @@ export const apiService = {
           }
         }
       }
-    } catch (error) {
-      
+    } catch (error: any) {
+      // Handle network errors (internet down, fetch failed)
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        const networkError = new Error(ERROR_MESSAGES.NETWORK_ERROR) as any;
+        networkError.isNetworkError = true;
+        if (onError) onError(networkError);
+        throw networkError;
+      }
+
+      // Handle timeout errors
+      if (error.name === 'AbortError' || error.message?.includes('timeout')) {
+        const timeoutError = new Error(ERROR_MESSAGES.TIMEOUT) as any;
+        if (onError) onError(timeoutError);
+        throw timeoutError;
+      }
+
+      // Pass through already formatted errors
       if (onError) onError(error);
       throw error;
     }

@@ -112,13 +112,61 @@ export const searchProjectDocumentsTool = {
   }
 };
 
+export const reviewDocumentTool = {
+  name: "reviewDocument",
+  description: `Conducts a comprehensive legal review of one or more documents in the project.
+
+  Use this when the user wants to:
+  - Review documents for legal compliance or regulatory issues
+  - Identify potential risks, liabilities, or problematic clauses
+  - Analyze document clarity, readability, or structure
+  - Check consistency across multiple documents
+  - Perform clause-by-clause analysis
+  - Get a general assessment of document quality
+
+  CONTEXT AWARENESS:
+  - If the user says "review this", "review this document", "what are the risks here", they are referring to the PRIMARY document currently in focus (either the previewed document or the canvas document - the system will determine this automatically).
+  - If the user specifies a document by name (e.g., "review the NDA"), look for that specific document.
+  - If the user says "review all documents" or "review my documents", review all project documents.
+
+  Before calling this function, ensure you know:
+  1. What they want you to focus on in the review (compliance, risks, clarity, specific clauses, etc.)
+  2. Any specific instructions (e.g., jurisdiction for compliance, specific terms to focus on)
+
+  The document selection will be handled automatically based on context.
+  A downloadable review report will always be generated for the user.`,
+
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      documentIds: {
+        type: Type.ARRAY,
+        description: "Array of document IDs to review. Special values: 'primary' (review the primary document in focus - canvas or preview), 'all' (review all project documents). Otherwise, use actual document IDs from the project.",
+        items: {
+          type: Type.STRING
+        }
+      },
+      reviewFocus: {
+        type: Type.STRING,
+        description: "Primary focus of the review. Options: 'compliance' (legal/regulatory compliance), 'risk-assessment' (identify liabilities and risks), 'clarity' (readability and language), 'clause-analysis' (detailed clause review), 'consistency-check' (across multiple documents), 'custom' (user-defined focus)"
+      },
+      specificInstructions: {
+        type: Type.STRING,
+        description: "Additional specific instructions such as: jurisdiction for compliance review, specific clauses to examine, particular concerns to address, industry-specific requirements, etc."
+      }
+    },
+    required: ["documentIds", "reviewFocus"]
+  }
+};
+
 /**
  * All available tools for legal drafting mode
  */
 export const legalDraftingTools = [
   draftNewDocumentTool,
   editCanvasDocumentTool,
-  searchProjectDocumentsTool
+  searchProjectDocumentsTool,
+  reviewDocumentTool
 ];
 
 /**

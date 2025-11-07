@@ -43,7 +43,12 @@ export interface UIState {
   rightSidebarCollapsed: boolean;
   toggleRightSidebar: () => void;
   setRightSidebarCollapsed: (collapsed: boolean) => void;
-  
+
+  // Document preview
+  selectedPreviewDocument: any | null;
+  setSelectedPreviewDocument: (document: any | null) => void;
+  clearPreviewDocument: () => void;
+
   // Active tab in workspace
   activeWorkspaceTab: string;
   setActiveWorkspaceTab: (tab: string) => void;

@@ -25,6 +25,16 @@ export interface Message {
   // Optional data
   references?: MessageReference[];
   webSearchSources?: Array<{title: string, uri: string}>;
+  report?: {
+    reportId: string;
+    reportTitle: string;
+    documentName: string;
+    reviewFocus: string;
+    briefSummary: string;
+    downloadUrls: {
+      word: string;
+    };
+  };
   isStreaming?: boolean;
   isLoading?: boolean;
   tempId?: string;
