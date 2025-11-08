@@ -557,7 +557,7 @@ export function ChatInput({
                     </div>
 
                     {/* Google Calendar */}
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="font-medium text-sm">
                           Google Calendar
@@ -595,9 +595,9 @@ export function ChatInput({
                           </Button>
                         )}
                       </div>
-                    </div>
+                    </div> */}
                        {/* Gmail */}
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="font-medium text-sm">
                           Gmail
@@ -635,18 +635,8 @@ export function ChatInput({
                           </Button>
                         )}
                       </div>
-                      {/* Show connection status below */}
-                      {/* {!homepageMode && googleConnectionStatus?.hasGmailAccess && (
-                        <div className="ml-0 text-xs flex items-center justify-between">
-                          <button
-                            onClick={handleDisconnectGoogle}
-                            className="text-red-600 hover:text-red-700 underline text-xs"
-                          >
-                            Disconnect
-                          </button>
-                        </div>
-                      )} */}
-                    </div>
+                  
+                    </div> */}
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label
