@@ -153,12 +153,6 @@ export function ChatInput({
       try {
         const response = await apiService.get<{ data: any }>("/api/auth/google-connection/status");
         setGoogleConnectionStatus(response.data);
-        if(response.data.hasCalendarAccess) {
-        updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
-        }
-        if(response.data.hasGmailAccess) {
-        updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
-        }
       } catch (error) {
         console.error("Error checking Google connection:", error);
       } finally {
@@ -642,7 +636,7 @@ export function ChatInput({
                         )}
                       </div>
                       {/* Show connection status below */}
-                      {!homepageMode && googleConnectionStatus?.hasGmailAccess && (
+                      {/* {!homepageMode && googleConnectionStatus?.hasGmailAccess && (
                         <div className="ml-0 text-xs flex items-center justify-between">
                           <button
                             onClick={handleDisconnectGoogle}
@@ -651,7 +645,7 @@ export function ChatInput({
                             Disconnect
                           </button>
                         </div>
-                      )}
+                      )} */}
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
