@@ -10,6 +10,8 @@ const DEFAULT_SETTINGS = {
   suggestActions: true,
   webSearch: false,
   legalDrafting: false,
+  googleCalendar: false,
+  gmail: false,
   model: 'gemini-2.0-flash-exp',
   temperature: 0.7,
   jurisdiction: undefined
@@ -93,6 +95,8 @@ export const PUT = withErrorHandler(withAuth(async (
     suggestActions: typeof settings.suggestActions === 'boolean' ? settings.suggestActions : DEFAULT_SETTINGS.suggestActions,
     webSearch: typeof settings.webSearch === 'boolean' ? settings.webSearch : DEFAULT_SETTINGS.webSearch,
     legalDrafting: typeof settings.legalDrafting === 'boolean' ? settings.legalDrafting : DEFAULT_SETTINGS.legalDrafting,
+    googleCalendar: typeof settings.googleCalendar === 'boolean' ? settings.googleCalendar : DEFAULT_SETTINGS.googleCalendar,
+    gmail: typeof settings.gmail === 'boolean' ? settings.gmail : DEFAULT_SETTINGS.gmail,
     model: typeof settings.model === 'string' ? settings.model : DEFAULT_SETTINGS.model,
     temperature: typeof settings.temperature === 'number' ? settings.temperature : DEFAULT_SETTINGS.temperature,
     jurisdiction: settings.jurisdiction && typeof settings.jurisdiction === 'object' ? {

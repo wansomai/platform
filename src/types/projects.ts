@@ -65,6 +65,8 @@ export interface ProjectSettings {
   suggestActions: boolean;
   webSearch: boolean;
   legalDrafting: boolean;
+  googleCalendar?: boolean;
+  gmail?: boolean;
   model?: string;
   temperature?: number;
   jurisdiction?: {

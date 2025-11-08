@@ -90,21 +90,6 @@ const QuickActionCard = React.memo(({
   );
 });
 
-// Helper function to generate meaningful project names
-const generateQuickChatProjectName = (): string => {
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
-  });
-  const dateStr = now.toLocaleDateString([], { 
-    month: 'short', 
-    day: 'numeric' 
-  });
-  
-  return `Wansom - ${dateStr} ${timeStr}`;
-};
 
 export default function DashboardPage() {
   const router = useRouter();

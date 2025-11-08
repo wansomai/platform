@@ -1,8 +1,8 @@
 // app/projects/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 
 export default function ProjectsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { projects, fetchProjects, isLoading, removeProject } = useProjectStore();
   const { notify } = useNotifications();
 
@@ -56,12 +57,50 @@ export default function ProjectsPage() {
   const [selectedProjectForMembers, setSelectedProjectForMembers] = useState<{ id: string; title: string } | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<{ id: string; title: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
+  // Track if we've already handled the connection notification
+  const connectionHandledRef = useRef(false);
+
   // Fetch projects when component mounts
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
-  
+
+  // Handle Google connection notifications
+  useEffect(() => {
+    // Only run once
+    if (connectionHandledRef.current) return;
+
+    const connection = searchParams.get('connection');
+    const message = searchParams.get('message');
+
+    // Only handle if there's actually a connection param
+    if (!connection) return;
+
+    connectionHandledRef.current = true;
+
+    if (connection === 'success') {
+      notify.success('Google account connected successfully! You can now use Calendar and Gmail features.');
+    } else if (connection === 'error') {
+      const errorMessage = message === 'missing_parameters'
+        ? 'Connection failed: Missing parameters'
+        : message === 'no_access_token'
+        ? 'Connection failed: Could not obtain access token'
+        : message === 'callback_failed'
+        ? 'Connection failed: Please try again'
+        : 'Failed to connect Google account';
+
+      notify.error(errorMessage);
+    } else if (connection === 'cancelled') {
+      notify.info('Google account connection cancelled');
+    }
+
+    // Remove query params from URL after a short delay
+    setTimeout(() => {
+      router.replace('/projects');
+    }, 100);
+  }, [searchParams, router, notify]);
+
   // Filter and sort projects
   const filteredProjects = projects
     ? projects.filter((project) => {

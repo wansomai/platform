@@ -3,6 +3,8 @@
 
 import { PrismaClient } from '@/prisma/client';
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
+import { GoogleCalendarService } from '@/services/googleCalendarService';
+import { GmailService } from '@/services/gmailService';
 
 const prisma = new PrismaClient();
 
@@ -19,7 +21,8 @@ export async function executeFunctionCall(
   canvasDocument: any,
   previewDocument: any,
   recentMessages: string[],
-  streamCallback?: (event: any) => void
+  streamCallback?: (event: any) => void,
+  userId?: string
 ): Promise<any> {
   console.log('🔧 Executing function call:', functionCall.name, functionCall.args);
 
@@ -407,6 +410,301 @@ Please provide a structured review report.`;
           },
           message: `I've completed the ${reviewFocus.replace('-', ' ')} review of ${primaryDocumentName || `${documentsToReview.length} document(s)`}.\n\n${briefSummary}\n\n📄 Your detailed review report is ready for download.`
         };
+      }
+
+      case 'createCalendarEvent': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Calendar features.' };
+        }
+
+        const { summary, description, startDateTime, endDateTime, attendees, location, timeZone } = functionCall.args as any;
+
+        console.log('📅 Creating calendar event:', summary);
+
+        try {
+          const event = await GoogleCalendarService.createEvent(userId, {
+            summary,
+            description,
+            startDateTime,
+            endDateTime,
+            attendees,
+            location,
+            timeZone
+          });
+
+          if (!event) {
+            return { error: 'Failed to create calendar event. Please check your Google Calendar connection.' };
+          }
+
+          const formattedStart = new Date(startDateTime).toLocaleString();
+          const formattedEnd = new Date(endDateTime).toLocaleString();
+
+          console.log('✅ Calendar event created:', event.id);
+
+          return {
+            success: true,
+            event: {
+              id: event.id,
+              summary: event.summary,
+              description: event.description,
+              start: formattedStart,
+              end: formattedEnd,
+              location: event.location,
+              attendees: event.attendees?.map(a => a.email),
+              link: event.htmlLink
+            },
+            message: `Successfully created calendar event "${summary}" on ${formattedStart}.${event.htmlLink ? `\n\nView event: ${event.htmlLink}` : ''}`
+          };
+        } catch (error: any) {
+          console.error('❌ Error creating calendar event:', error);
+          return { error: error.message || 'Failed to create calendar event' };
+        }
+      }
+
+      case 'searchCalendarEvents': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Calendar features.' };
+        }
+
+        const { startDate, endDate, query, maxResults } = functionCall.args as any;
+
+        console.log('🔍 Searching calendar events from', startDate, 'to', endDate);
+
+        try {
+          const events = await GoogleCalendarService.searchEvents(userId, {
+            startDate,
+            endDate,
+            query,
+            maxResults
+          });
+
+          console.log(`✅ Found ${events.length} calendar events`);
+
+          if (events.length === 0) {
+            return {
+              success: true,
+              events: [],
+              message: query
+                ? `No events found matching "${query}" between ${new Date(startDate).toLocaleDateString()} and ${new Date(endDate).toLocaleDateString()}.`
+                : `No events found between ${new Date(startDate).toLocaleDateString()} and ${new Date(endDate).toLocaleDateString()}.`
+            };
+          }
+
+          const formattedEvents = events.map(event => ({
+            id: event.id,
+            summary: event.summary,
+            description: event.description,
+            start: new Date(event.start.dateTime).toLocaleString(),
+            end: new Date(event.end.dateTime).toLocaleString(),
+            location: event.location,
+            attendees: event.attendees?.map(a => a.email),
+            link: event.htmlLink
+          }));
+
+          return {
+            success: true,
+            events: formattedEvents,
+            message: `Found ${events.length} event(s) in your calendar.`
+          };
+        } catch (error: any) {
+          console.error('❌ Error searching calendar events:', error);
+          return { error: error.message || 'Failed to search calendar events' };
+        }
+      }
+
+      case 'updateCalendarEvent': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Calendar features.' };
+        }
+
+        const { eventId, updates } = functionCall.args as any;
+
+        console.log('✏️  Updating calendar event:', eventId);
+
+        try {
+          const updatedEvent = await GoogleCalendarService.updateEvent(userId, eventId, updates);
+
+          if (!updatedEvent) {
+            return { error: 'Failed to update calendar event. Event may not exist.' };
+          }
+
+          console.log('✅ Calendar event updated:', updatedEvent.id);
+
+          return {
+            success: true,
+            event: {
+              id: updatedEvent.id,
+              summary: updatedEvent.summary,
+              description: updatedEvent.description,
+              start: new Date(updatedEvent.start.dateTime).toLocaleString(),
+              end: new Date(updatedEvent.end.dateTime).toLocaleString(),
+              location: updatedEvent.location,
+              attendees: updatedEvent.attendees?.map(a => a.email),
+              link: updatedEvent.htmlLink
+            },
+            message: `Successfully updated calendar event "${updatedEvent.summary}".${updatedEvent.htmlLink ? `\n\nView event: ${updatedEvent.htmlLink}` : ''}`
+          };
+        } catch (error: any) {
+          console.error('❌ Error updating calendar event:', error);
+          return { error: error.message || 'Failed to update calendar event' };
+        }
+      }
+
+      case 'getCalendarAvailability': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Calendar features.' };
+        }
+
+        const { startDateTime, endDateTime, timeZone } = functionCall.args as any;
+
+        console.log('📊 Checking calendar availability from', startDateTime, 'to', endDateTime);
+
+        try {
+          const availability = await GoogleCalendarService.getAvailability(userId, {
+            startDateTime,
+            endDateTime,
+            timeZone
+          });
+
+          console.log(`✅ Found ${availability.busyTimes.length} busy periods and ${availability.freeTimes.length} free periods`);
+
+          const formatTimeRange = (start: string, end: string) => {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            return `${startDate.toLocaleTimeString()} - ${endDate.toLocaleTimeString()}`;
+          };
+
+          return {
+            success: true,
+            availability: {
+              busyTimes: availability.busyTimes.map(bt => ({
+                start: new Date(bt.start!).toLocaleString(),
+                end: new Date(bt.end!).toLocaleString(),
+                range: formatTimeRange(bt.start!, bt.end!)
+              })),
+              freeTimes: availability.freeTimes.map(ft => ({
+                start: new Date(ft.start).toLocaleString(),
+                end: new Date(ft.end).toLocaleString(),
+                range: formatTimeRange(ft.start, ft.end)
+              }))
+            },
+            message: availability.busyTimes.length === 0
+              ? `You're completely free between ${new Date(startDateTime).toLocaleString()} and ${new Date(endDateTime).toLocaleString()}.`
+              : `You have ${availability.busyTimes.length} busy period(s) and ${availability.freeTimes.length} free period(s) in the requested time range.`
+          };
+        } catch (error: any) {
+          console.error('❌ Error checking calendar availability:', error);
+          return { error: error.message || 'Failed to check calendar availability' };
+        }
+      }
+
+      case 'searchEmails': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Gmail features.' };
+        }
+
+        const { query, maxResults } = functionCall.args as any;
+
+        console.log('📧 Searching emails with query:', query);
+
+        try {
+          const emails = await GmailService.searchEmails(userId, {
+            query,
+            maxResults
+          });
+
+          console.log(`✅ Found ${emails.length} emails`);
+
+          if (emails.length === 0) {
+            return {
+              success: true,
+              emails: [],
+              message: `No emails found matching "${query}".`
+            };
+          }
+
+          const formattedEmails = emails.map(email => ({
+            id: email.id,
+            from: email.from,
+            subject: email.subject,
+            snippet: email.snippet,
+            date: email.date,
+            labels: email.labels
+          }));
+
+          return {
+            success: true,
+            emails: formattedEmails,
+            message: `Found ${emails.length} email(s) matching your search.`
+          };
+        } catch (error: any) {
+          console.error('❌ Error searching emails:', error);
+          return { error: error.message || 'Failed to search emails' };
+        }
+      }
+
+      case 'readEmail': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Gmail features.' };
+        }
+
+        const { emailId } = functionCall.args as any;
+
+        console.log('📬 Reading email:', emailId);
+
+        try {
+          const email = await GmailService.readEmail(userId, emailId);
+
+          console.log('✅ Email read successfully');
+
+          return {
+            success: true,
+            email: {
+              id: email.id,
+              from: email.from,
+              to: email.to,
+              subject: email.subject,
+              body: email.body,
+              date: email.date,
+              labels: email.labels
+            },
+            message: `Email from ${email.from} - Subject: ${email.subject}`
+          };
+        } catch (error: any) {
+          console.error('❌ Error reading email:', error);
+          return { error: error.message || 'Failed to read email' };
+        }
+      }
+
+      case 'draftEmail': {
+        if (!userId) {
+          return { error: 'User not authenticated. Please sign in to use Gmail features.' };
+        }
+
+        const { to, subject, body, cc, bcc } = functionCall.args as any;
+
+        console.log('✏️  Creating draft email to:', to);
+
+        try {
+          const result = await GmailService.draftEmail(userId, {
+            to,
+            subject,
+            body,
+            cc,
+            bcc
+          });
+
+          console.log('✅ Draft email created:', result.draftId);
+
+          return {
+            success: true,
+            draftId: result.draftId,
+            message: `Draft email created successfully.\n\nTo: ${to.join(', ')}\nSubject: ${subject}\n\nThe draft has been saved in your Gmail Drafts folder. You can review and send it from Gmail.`
+          };
+        } catch (error: any) {
+          console.error('❌ Error creating draft email:', error);
+          return { error: error.message || 'Failed to create draft email' };
+        }
       }
 
       default:

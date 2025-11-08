@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/prisma/client";
 import bcrypt from "bcryptjs";
-import { COOKIE_OPTIONS } from "@/lib/auth/constants";
 import { generateTokens } from "@/lib/auth/token-service";
 import { z } from "zod";
 
@@ -78,12 +77,6 @@ export async function POST(request: NextRequest) {
         id: user.organization.id,
         name: user.organization.name,
       }
-    };
-
-    // Set cookies
-    const cookieOptions = {
-      ...COOKIE_OPTIONS,
-      maxAge: rememberMe ? 7 * 24 * 60 * 60 : 24 * 60 * 60 // 7 days or 1 day
     };
 
     // Create the response with the exact structure expected by the client
