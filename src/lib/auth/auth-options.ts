@@ -37,7 +37,7 @@ interface CustomUser extends User {
 const generateAccessToken = async (user: CustomUser) => {
   const jwtSecret = process.env.NEXTAUTH_SECRET;
   const encodedSecret = new TextEncoder().encode(jwtSecret);
-  
+
   const token = await new jose.SignJWT({
     userId: user.id,
     email: user.email,
@@ -49,15 +49,79 @@ const generateAccessToken = async (user: CustomUser) => {
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('1h')
     .sign(encodedSecret);
-  
+
   return token;
 };
+
+// Refresh Google OAuth access token
+async function refreshGoogleAccessToken(token: any) {
+  try {
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_AUTH_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_AUTH_CLIENT_SECRET!,
+        grant_type: 'refresh_token',
+        refresh_token: token.googleRefreshToken,
+      }),
+    });
+
+    const refreshedTokens = await response.json();
+
+    if (!response.ok) {
+      throw refreshedTokens;
+    }
+
+    // Update the account in the database with new tokens
+    await prisma.account.updateMany({
+      where: {
+        userId: token.userId as string,
+        provider: 'google',
+      },
+      data: {
+        access_token: refreshedTokens.access_token,
+        expires_at: Math.floor(Date.now() / 1000 + refreshedTokens.expires_in),
+        refresh_token: refreshedTokens.refresh_token ?? token.googleRefreshToken,
+      },
+    });
+
+    return {
+      ...token,
+      googleAccessToken: refreshedTokens.access_token,
+      googleTokenExpires: Math.floor(Date.now() / 1000 + refreshedTokens.expires_in),
+      googleRefreshToken: refreshedTokens.refresh_token ?? token.googleRefreshToken,
+    };
+  } catch (error) {
+    console.error('Error refreshing Google access token:', error);
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError',
+    };
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_Auth_CLIENT_ID!,
+      clientId: process.env.GOOGLE_AUTH_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: [
+            'openid',
+            'email',
+            'profile',
+            'https://www.googleapis.com/auth/calendar',
+            'https://www.googleapis.com/auth/gmail.readonly',
+            'https://www.googleapis.com/auth/gmail.compose'
+          ].join(' '),
+          access_type: 'offline',
+          prompt: 'consent'
+        }
+      }
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -165,6 +229,38 @@ export const authOptions: NextAuthOptions = {
             });
           }
 
+          // Save or update OAuth account tokens
+          await prisma.account.upsert({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId
+              }
+            },
+            create: {
+              userId: dbUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              refresh_token: account.refresh_token,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: account.session_state
+            },
+            update: {
+              refresh_token: account.refresh_token,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: account.session_state
+            }
+          });
+
           user.id = dbUser.id;
 
           // Use active organization if set, otherwise use primary organization
@@ -179,35 +275,51 @@ export const authOptions: NextAuthOptions = {
 
           return true;
         }
-        
+
         return true;
       } catch (error) {
         return false;
       }
     },
 
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, account }) {
+      // Initial sign in - save Google OAuth tokens to JWT
+      if (account && user) {
         const accessToken = await generateAccessToken(user as CustomUser);
-        
+
         const updatedToken = {
           ...token,
           userId: user.id,
           email: user.email,
           name: user.name,
-          role: (user as CustomUser).role || 'user', 
-          organizationId: (user as any).organizationId, 
+          role: (user as CustomUser).role || 'user',
+          organizationId: (user as any).organizationId,
           organization: (user as any).organization,
-          accessToken
+          accessToken,
+          // Store Google OAuth tokens
+          googleAccessToken: account.access_token,
+          googleRefreshToken: account.refresh_token,
+          googleTokenExpires: account.expires_at,
         };
-        
+
         return updatedToken;
       }
-      
+
+      // Check if Google OAuth token needs refresh (5 minutes before expiry)
+      if (token.googleTokenExpires && token.googleRefreshToken) {
+        const shouldRefreshTime = (token.googleTokenExpires as number) - 5 * 60; // 5 minutes before expiry
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if (currentTime > shouldRefreshTime) {
+          token = await refreshGoogleAccessToken(token);
+        }
+      }
+
+      // Check if custom access token needs refresh (15 minutes before expiry)
       const tokenExpiry = token.exp as number;
       const currentTime = Math.floor(Date.now() / 1000);
       const timeRemaining = tokenExpiry - currentTime;
-      
+
       if (timeRemaining < 15 * 60) {
         const user = {
           id: token.userId as string,
@@ -220,15 +332,15 @@ export const authOptions: NextAuthOptions = {
             name: string;
           }
         } as CustomUser;
-        
+
         const newAccessToken = await generateAccessToken(user);
-        
+
         return {
           ...token,
           accessToken: newAccessToken
         };
       }
-      
+
       return token;
     },
     async session({ session, token }) {

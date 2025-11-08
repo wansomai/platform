@@ -13,6 +13,7 @@ import {
   X,
   Paperclip,
   Settings,
+  ArrowUpRightFromSquare,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ import ProAccessModal from "../modals/ProAccess";
 import { UploadDocumentModal } from "../modals/UploadModal";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
+import { apiService } from "@/lib/api";
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -52,11 +54,26 @@ export function ChatInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
 
+  // Google connection state
+  const [googleConnectionStatus, setGoogleConnectionStatus] = useState<{
+    connected: boolean;
+    email: string | null;
+    hasCalendarAccess: boolean;
+    hasGmailAccess: boolean;
+  } | null>(null);
+  const [isCheckingConnection, setIsCheckingConnection] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const { notify } = useNotifications();
+
   // Get state from stores
   const { addToast, selectedPreviewDocument } = useUIStore();
-  const { notify } = useNotifications();
-  const { createProject, requiresUpgrade: projectRequiresUpgrade } = useProjectStore();
-  const { currentConversation, sendMessage, requiresUpgrade: chatRequiresUpgrade } = useChatStore();
+  const { createProject, requiresUpgrade: projectRequiresUpgrade } =
+    useProjectStore();
+  const {
+    currentConversation,
+    sendMessage,
+    requiresUpgrade: chatRequiresUpgrade,
+  } = useChatStore();
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
 
   const {
@@ -126,6 +143,108 @@ export function ChatInput({
       document.removeEventListener("action-prompt-send", handlePromptSendEvent);
     };
   }, [currentConversation]);
+
+  // Check Google connection status
+  useEffect(() => {
+    const checkGoogleConnection = async () => {
+      if (homepageMode) return;
+
+      setIsCheckingConnection(true);
+      try {
+        const response = await apiService.get<{ data: any }>("/api/auth/google-connection/status");
+        setGoogleConnectionStatus(response.data);
+      } catch (error) {
+        console.error("Error checking Google connection:", error);
+      } finally {
+        setIsCheckingConnection(false);
+      }
+    };
+
+    checkGoogleConnection();
+  }, [homepageMode]);
+
+  // Listen for Google connection success event and refresh status
+  useEffect(() => {
+    const handleConnectionSuccess = async () => {
+      if (homepageMode) return;
+
+      // Refresh connection status
+      setIsCheckingConnection(true);
+      try {
+        const response = await apiService.get<{ data: any }>("/api/auth/google-connection/status");
+        setGoogleConnectionStatus(response.data);
+         if(response.data.hasCalendarAccess) {
+        updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
+        }
+        if(response.data.hasGmailAccess) {
+        updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
+        }
+      } catch (error) {
+        console.error("Error checking Google connection:", error);
+      } finally {
+        setIsCheckingConnection(false);
+      }
+    };
+
+    window.addEventListener('googleConnectionSuccess', handleConnectionSuccess);
+
+    return () => {
+      window.removeEventListener('googleConnectionSuccess', handleConnectionSuccess);
+    };
+  }, [homepageMode]);
+
+  // Handle Google account connection
+  const handleConnectGoogle = (
+    type: "calendar" | "gmail"
+  ) => {
+    setIsConnecting(true);
+
+    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+      type
+    )}`;
+    // Redirect to Google OAuth (will redirect back to app after authorization)
+    window.location.href = url;
+  };
+
+  // Handle Google account disconnection
+  const handleDisconnectGoogle = async () => {
+    if (
+      !confirm(
+        "Are you sure you want to disconnect your Google account? This will disable Calendar and Gmail features."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/google-connection/disconnect", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        setGoogleConnectionStatus({
+          connected: false,
+          email: null,
+          hasCalendarAccess: false,
+          hasGmailAccess: false,
+        });
+        notify.success("Google account disconnected");
+
+        // Disable Calendar and Gmail settings
+        if (settings.googleCalendar) {
+          await updateSetting(projectId, "googleCalendar", false);
+        }
+        if (settings.gmail) {
+          await updateSetting(projectId, "gmail", false);
+        }
+      } else {
+        notify.error("Failed to disconnect Google account");
+      }
+    } catch (error) {
+      console.error("Error disconnecting Google:", error);
+      notify.error("Failed to disconnect Google account");
+    }
+  };
 
   // Helper function to generate meaningful project names
   const generateQuickChatProjectName = useCallback((): string => {
@@ -296,10 +415,10 @@ export function ChatInput({
     const success = await requestUpgrade();
 
     if (success) {
-      notify.success('Pro access request submitted successfully');
-      router.push('/profile');
+      notify.success("Pro access request submitted successfully");
+      router.push("/profile");
     } else {
-      notify.error('Failed to submit Pro access request');
+      notify.error("Failed to submit Pro access request");
     }
 
     setShowProAccess(false);
@@ -391,11 +510,6 @@ export function ChatInput({
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
-                    {homepageMode && (
-                      <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                        Create a workspace to use Tools.
-                      </p>
-                    )}
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label
@@ -441,6 +555,98 @@ export function ChatInput({
                         }
                       />
                     </div>
+
+                    {/* Google Calendar */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium text-sm">
+                          Google Calendar
+                        </Label>
+                        {googleConnectionStatus?.hasCalendarAccess ? (
+                          <Switch
+                            id="google-calendar"
+                            checked={
+                              homepageMode
+                                ? false
+                                : settings.googleCalendar || false
+                            }
+                            disabled={homepageMode || isLoadingSettings}
+                            onCheckedChange={
+                              homepageMode
+                                ? undefined
+                                : (checked) => {
+                                    handleSettingChange(
+                                      "googleCalendar",
+                                      checked
+                                    );
+                                  }
+                            }
+                          />
+                        ) : (
+                          <Button
+                            onClick={() => handleConnectGoogle("calendar")}
+                            variant="ghost"
+                            size="sm"
+                            disabled={homepageMode || isConnecting}
+                            className="flex items-center gap-1 h-7 px-2"
+                          >
+                            {isConnecting ? "Connecting..." : "Connect"}
+                            <ArrowUpRightFromSquare className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                       {/* Gmail */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="font-medium text-sm">
+                          Gmail
+                        </Label>
+                        {googleConnectionStatus?.hasGmailAccess ? (
+                          <Switch
+                            id="gmail"
+                            checked={
+                              homepageMode
+                                ? false
+                                : settings.gmail || false
+                            }
+                            disabled={homepageMode || isLoadingSettings}
+                            onCheckedChange={
+                              homepageMode
+                                ? undefined
+                                : (checked) => {
+                                    handleSettingChange(
+                                      "gmail",
+                                      checked
+                                    );
+                                  }
+                            }
+                          />
+                        ) : (
+                          <Button
+                            onClick={() => handleConnectGoogle("gmail")}
+                            variant="ghost"
+                            size="sm"
+                            disabled={homepageMode || isConnecting}
+                            className="flex items-center gap-1 h-7 px-2"
+                          >
+                            {isConnecting ? "Connecting..." : "Connect"}
+                            <ArrowUpRightFromSquare className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                      {/* Show connection status below */}
+                      {/* {!homepageMode && googleConnectionStatus?.hasGmailAccess && (
+                        <div className="ml-0 text-xs flex items-center justify-between">
+                          <button
+                            onClick={handleDisconnectGoogle}
+                            className="text-red-600 hover:text-red-700 underline text-xs"
+                          >
+                            Disconnect
+                          </button>
+                        </div>
+                      )} */}
+                    </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label
@@ -463,6 +669,7 @@ export function ChatInput({
                         }
                       />
                     </div>
+                    <div className="h-[1px] bg-gray-300 w-full"></div>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
@@ -555,7 +762,7 @@ export function ChatInput({
               }`}
               disabled={isSubmitting}
             />
- 
+
             {/* Send button positioned inside textarea */}
             <div
               className={
@@ -564,26 +771,25 @@ export function ChatInput({
                   : "absolute right-2 bottom-2"
               }
             >
-                         <Button
-              className="primary text-white z-10 absolute right-3 bottom-3 shadow-md h-10 w-10 rounded-lg"
-              disabled={!input.trim() || isSubmitting}
-              onClick={() => handleSend()}
-            > 
-              {isSubmitting ? (
-                <Loader2
-                  className={`animate-spin text-white ${
-                    homepageMode ? "h-5 w-5" : "h-4 w-4"
-                  }`}
-                />
-              ) : (
-                <Send
-                  className={`text-white ${
-                    homepageMode ? "h-5 w-5" : "h-4 w-4"
-                  }`}
-                />
-              )}
-            </Button>
-          
+              <Button
+                className="primary text-white z-10 absolute right-3 bottom-3 shadow-md h-10 w-10 rounded-lg"
+                disabled={!input.trim() || isSubmitting}
+                onClick={() => handleSend()}
+              >
+                {isSubmitting ? (
+                  <Loader2
+                    className={`animate-spin text-white ${
+                      homepageMode ? "h-5 w-5" : "h-4 w-4"
+                    }`}
+                  />
+                ) : (
+                  <Send
+                    className={`text-white ${
+                      homepageMode ? "h-5 w-5" : "h-4 w-4"
+                    }`}
+                  />
+                )}
+              </Button>
             </div>
           </div>
         </div>
@@ -596,9 +802,9 @@ export function ChatInput({
         isLoading={isUpgrading}
         errorMessage="You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
         userData={{
-          name: session?.user?.name || '',
-          email: session?.user?.email || '',
-          accountType: 'personal' // Default to personal, user can change
+          name: session?.user?.name || "",
+          email: session?.user?.email || "",
+          accountType: "personal", // Default to personal, user can change
         }}
       />
       {/* Document Selection Modal - only show in chat mode since it needs projectId */}

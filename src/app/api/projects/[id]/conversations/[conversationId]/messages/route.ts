@@ -6,7 +6,7 @@ import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorizati
 import { GoogleGenAI } from '@google/genai';
 
 import { canSendMessage } from '@/lib/subscription';
-import { legalDraftingTools } from '@/lib/geminiTools';
+import { legalDraftingTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 
 // Set a reasonable timeout
@@ -30,6 +30,8 @@ const DEFAULT_SETTINGS: {
   suggestActions: boolean;
   webSearch: boolean;
   model: string;
+  googleCalendar?: boolean;
+  gmail?: boolean;
   temperature: number;
   legalDrafting: boolean;
   jurisdiction?: JurisdictionType;
@@ -40,7 +42,9 @@ const DEFAULT_SETTINGS: {
   model: 'gemini-2.0-flash-exp',
   temperature: 0.7,
   legalDrafting: false,
-  jurisdiction: undefined // Added property for enhanced legal search
+  googleCalendar: false,
+  gmail: false,
+  jurisdiction: undefined 
 };
 
 // Schema validation
@@ -303,7 +307,15 @@ export async function POST(
           // No need for separate API calls - Gemini will search when needed
           const useGoogleSearch = settings.webSearch;
           console.log('Google Search grounding enabled:', useGoogleSearch);
-          
+
+          // Check if Google Calendar integration is enabled
+          const useGoogleCalendar = settings.googleCalendar === true;
+          console.log('Google Calendar integration enabled:', useGoogleCalendar);
+
+          // Check if Gmail integration is enabled
+          const useGmail = settings.gmail === true;
+          console.log('Gmail integration enabled:', useGmail);
+
           // Format message history for Gemini
           // Filter out 'system' role messages as Gemini doesn't support them in history
           let conversationHistory = messageHistory
@@ -506,6 +518,30 @@ export async function POST(
             console.log('✓ Legal drafting tools enabled - AI can call draftNewDocument, editCanvasDocument, searchProjectDocuments, reviewDocument');
           }
 
+          // Add Google Calendar tools if enabled
+          if (useGoogleCalendar) {
+            tools.push({
+              functionDeclarations: googleCalendarTools.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters
+              }))
+            });
+            console.log('✓ Google Calendar tools enabled - AI can call createCalendarEvent, searchCalendarEvents, updateCalendarEvent, getCalendarAvailability');
+          }
+
+          // Add Gmail tools if enabled
+          if (useGmail) {
+            tools.push({
+              functionDeclarations: gmailTools.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters
+              }))
+            });
+            console.log('✓ Gmail tools enabled - AI can call searchEmails, readEmail, draftEmail');
+          }
+
           // Build the full conversation history including system message
           const fullContents: any[] = [];
 
@@ -675,7 +711,8 @@ export async function POST(
                   // Stream canvas updates in real-time
                   (event) => {
                     controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
-                  }
+                  },
+                  userId
                 );
 
                 return {

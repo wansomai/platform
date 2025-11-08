@@ -1,8 +1,8 @@
 // app/projects/[id]/page.tsx
 "use client"
 
-import { useParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState, useRef } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
 import { DocumentPreviewSplitView } from "@/components/chat/DocumentPreviewSplitView"
@@ -18,18 +18,26 @@ import { cn } from "@/lib/utils"
 import { useChatStore } from "@/store/chat.store"
 import { useProjectStore } from "@/store/project.store"
 import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal"
+import { useNotifications } from "@/hooks/useNotifications"
+import { apiService } from "@/lib/api"
 
 export default function ProjectPage() {
   const params = useParams()
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const projectId = params.id as string
   const [showMembersModal, setShowMembersModal] = useState(false)
+  const { notify } = useNotifications()
+
+  // Track if we've already handled the connection notification
+  const connectionHandledRef = useRef(false)
 
   // Get core workspace data (no settings)
   const { projects } = useProjectStore()
   const project = projects.find(p => p.id === projectId)
 
   // Get settings from dedicated store
-  const { settings } = useProjectSettingsStore()
+  const { settings, updateSetting } = useProjectSettingsStore()
   const {
     rightSidebarCollapsed,
     setRightSidebarCollapsed,
@@ -41,7 +49,69 @@ export default function ProjectPage() {
   useEffect(() => {
     fetchConversation(projectId).catch(err => {})
   }, [projectId, fetchConversation]);
-  
+
+  // Handle Google connection notifications
+  useEffect(() => {
+    // Only run once
+    if (connectionHandledRef.current) return;
+
+    const connection = searchParams.get('connection');
+    const message = searchParams.get('message');
+
+    // Only handle if there's actually a connection param
+    if (!connection) return;
+
+    connectionHandledRef.current = true;
+
+    if (connection === 'success') {
+      notify.success('Google account connected successfully! You can now use Calendar and Gmail features.');
+
+      // Auto-enable the setting and refresh connection status
+      const enableSettings = async () => {
+        try {
+          // Fetch latest connection status to see what was connected
+          const response: { data: { hasCalendarAccess?: boolean; hasGmailAccess?: boolean  } } = await apiService.get('/api/auth/google-connection/status');
+          console.log('Google connection status:', response.data);
+           // Auto-enable Calendar if it was just connected and not already enabled
+            if (response.data.hasCalendarAccess && !settings.googleCalendar) {
+              await updateSetting(projectId, 'googleCalendar', true);
+            }
+
+            // Auto-enable Gmail if it was just connected and not already enabled
+            if (response.data.hasGmailAccess && !settings.gmail) {
+              await updateSetting(projectId, 'gmail', true);
+            }
+
+          // Trigger a refresh of the ChatInput connection status
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('googleConnectionSuccess'));
+          }
+        } catch (error) {
+          console.error('Error enabling Google settings:', error);
+        }
+      };
+
+      enableSettings();
+    } else if (connection === 'error') {
+      const errorMessage = message === 'missing_parameters'
+        ? 'Connection failed: Missing parameters'
+        : message === 'no_access_token'
+        ? 'Connection failed: Could not obtain access token'
+        : message === 'callback_failed'
+        ? 'Connection failed: Please try again'
+        : 'Failed to connect Google account';
+
+      notify.error(errorMessage);
+    } else if (connection === 'cancelled') {
+      notify.info('Google account connection cancelled');
+    }
+
+    // Remove query params from URL after a short delay
+    setTimeout(() => {
+      router.replace(`/projects/${projectId}`);
+    }, 100);
+  }, [searchParams, router, notify, projectId, updateSetting, settings]);
+
   // Show skeleton loading state if project is loading
   if (chatLoading || (!project && projectId)) {
     return (
