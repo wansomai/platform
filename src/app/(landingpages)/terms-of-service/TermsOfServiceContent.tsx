@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
@@ -9,7 +8,7 @@ const TermsOfServiceContent = () => {
   return (
     <div className="">
       <Navbar darkmode />
-      <div className="container mx-auto py-16 lg:py-24 ">
+      <div className="container mx-auto py-24 lg:py-24  lg:px-24 px-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
         <p className="text-sm text-gray-600 mb-8">
           <strong>Last Updated:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -342,7 +341,7 @@ const TermsOfServiceContent = () => {
 
             <h3 className="text-xl font-semibold text-gray-900 mb-3">14.2 Dispute Resolution</h3>
             <p className="text-gray-700 mb-4">
-              In the event of any dispute, claim, or controversy arising out of or relating to these Terms or the Services, you agree to first contact us at <a href="mailto:legal@wansom.ai" className="text-blue-600 hover:underline">legal@wansom.ai</a> to attempt to resolve the dispute informally.
+              In the event of any dispute, claim, or controversy arising out of or relating to these Terms or the Services, you agree to first contact us at <a href="mailto:law@wansom.ai" className="text-blue-600 hover:underline">law@wansom.ai</a> to attempt to resolve the dispute informally.
             </p>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-3">14.3 Arbitration</h3>

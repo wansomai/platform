@@ -9,7 +9,7 @@ const PrivacyPolicyContent = () => {
   return (
     <div className=" ">
       <Navbar darkmode/>
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-8xl py-24 lg:px-24 px-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
         <p className="text-sm text-gray-600 mb-8">
           <strong>Last Updated:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -94,7 +94,7 @@ const PrivacyPolicyContent = () => {
               Our Services utilize artificial intelligence to provide legal assistance. Here's how your data is processed:
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700 space-y-2">
-              <li><strong>AI Model Processing:</strong> Your queries and documents are processed by AI models (including Google's Gemini) to generate responses and insights</li>
+              <li><strong>AI Model Processing:</strong> Your queries and documents are processed by AI models to generate responses and insights</li>
               <li><strong>Training Data:</strong> We do not use your personal documents or queries to train AI models without your explicit consent</li>
               <li><strong>Quality Improvement:</strong> We may use aggregated, anonymized data to improve our AI models and Services</li>
               <li><strong>Third-Party AI Providers:</strong> We work with trusted AI service providers who process data in accordance with strict confidentiality and security standards</li>
