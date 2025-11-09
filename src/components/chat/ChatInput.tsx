@@ -415,9 +415,12 @@ setShowProAccess(true);
 
     if (success) {
       notify.success("Pro access request submitted successfully");
+      setIsConnecting(false);
       router.push("/profile");
+
     } else {
       notify.error("Failed to submit Pro access request");
+       setIsConnecting(false);
     }
 
     setShowProAccess(false);
