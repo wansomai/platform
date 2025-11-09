@@ -198,12 +198,11 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-
-    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-      type
-    )}`;
-    // Redirect to Google OAuth (will redirect back to app after authorization)
-    window.location.href = url;
+setShowProAccess(true);
+    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+    //   type
+    // )}`;
+    // window.location.href = url;
   };
 
   // Handle Google account disconnection
