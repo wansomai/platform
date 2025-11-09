@@ -8,7 +8,7 @@ const TermsOfServiceContent = () => {
   return (
     <div className="">
       <Navbar darkmode />
-      <div className="container mx-auto py-16 lg:py-24  lg:px-24 px-4">
+      <div className="container mx-auto py-24 lg:py-24  lg:px-24 px-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
         <p className="text-sm text-gray-600 mb-8">
           <strong>Last Updated:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
