@@ -85,7 +85,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 Create Unlimited Workspaces
               </h2>
               <p className="text-sm text-gray-600">
-                Collaborate more with your team,unlimited project workspaces and messages
+                Collaborate more with your team,unlimited client/matter workspaces and messages
               </p>
             </div>
             <div>

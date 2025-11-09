@@ -198,12 +198,11 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-
-    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-      type
-    )}`;
-    // Redirect to Google OAuth (will redirect back to app after authorization)
-    window.location.href = url;
+setShowProAccess(true);
+    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+    //   type
+    // )}`;
+    // window.location.href = url;
   };
 
   // Handle Google account disconnection
@@ -416,9 +415,12 @@ export function ChatInput({
 
     if (success) {
       notify.success("Pro access request submitted successfully");
+      setIsConnecting(false);
       router.push("/profile");
+
     } else {
       notify.error("Failed to submit Pro access request");
+       setIsConnecting(false);
     }
 
     setShowProAccess(false);
@@ -559,8 +561,8 @@ export function ChatInput({
                     {/* Google Calendar */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="font-medium text-sm">
-                          Google Calendar
+                        <Label className="font-medium text-sm flex items-center gap-1">
+                          <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
                         </Label>
                         {googleConnectionStatus?.hasCalendarAccess ? (
                           <Switch
@@ -599,8 +601,8 @@ export function ChatInput({
                        {/* Gmail */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="font-medium text-sm">
-                          Gmail
+                        <Label className="font-medium text-sm flex items-center gap-1">
+                         <img src={'/icons/gmail.svg'} className="w-6 h-6"/> Gmail
                         </Label>
                         {googleConnectionStatus?.hasGmailAccess ? (
                           <Switch
