@@ -1,6 +1,6 @@
 // src/app/api/auth/reset-password-request/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@/prisma/client'
 import { z } from 'zod'
 import crypto from 'crypto'
 

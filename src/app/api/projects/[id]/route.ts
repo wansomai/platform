@@ -1,6 +1,6 @@
 // src/app/api/projects/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@/prisma/client'
 import { z } from 'zod'
 import { checkProjectAccess } from '@/lib/auth/authorization'
 import { withAuth, withErrorHandler } from '@/lib/api/middleware'
