@@ -1,10 +1,7 @@
 // src/app/api/events/opt-in/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from '@/prisma/client';
 import crypto from 'crypto';
-import { generateTokens } from '@/lib/auth/token-service';
-import { sendWansomProCredentialsEmail } from '@/lib/event-email-templates';
 
 const prisma = new PrismaClient();
 
