@@ -356,7 +356,7 @@ export const DELETE = withErrorHandler(withAuth(async (
   // Delete all related records manually before deleting the project
   // This is necessary because not all relations have onDelete: Cascade
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx:any) => {
       // Delete project members
       await tx.projectMember.deleteMany({
         where: { projectId }
