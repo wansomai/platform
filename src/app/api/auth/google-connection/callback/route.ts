@@ -88,11 +88,57 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     // Redirect back to app with success message
     // Use stored return URL or default to projects page
     const returnPath = request.cookies.get('googleOAuthReturnUrl')?.value || '/projects';
-    const redirectUrl = new URL(returnPath, process.env.NEXTAUTH_URL!);
-    redirectUrl.searchParams.set('connection', 'success');
+
+    // Return an HTML page that dispatches the event and redirects
+    const successHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Connected Successfully</title>
+          <style>
+            body {
+              font-family: system-ui, -apple-system, sans-serif;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              margin: 0;
+              background: #f5f5f5;
+            }
+            .message {
+              text-align: center;
+              padding: 2rem;
+              background: white;
+              border-radius: 8px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+          </style>
+          <script>
+            // Dispatch event to notify the app
+            window.dispatchEvent(new CustomEvent('googleConnectionSuccess'));
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = '${returnPath}';
+            }, 1000);
+          </script>
+        </head>
+        <body>
+          <div class="message">
+            <h2>✓ Connected Successfully!</h2>
+            <p>Redirecting you back...</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const response = new NextResponse(successHtml, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html',
+      },
+    });
 
     // Clear the cookie
-    const response = NextResponse.redirect(redirectUrl);
     response.cookies.delete('googleOAuthReturnUrl');
 
     return response;
