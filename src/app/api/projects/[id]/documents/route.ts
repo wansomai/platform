@@ -1,6 +1,6 @@
 // src/app/api/projects/[id]/documents/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
 import { checkProjectAccess } from '@/lib/auth/authorization';

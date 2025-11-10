@@ -1,6 +1,6 @@
 // src/lib/googleOAuth.ts
 import { google } from 'googleapis';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 
 const prisma = new PrismaClient();
 

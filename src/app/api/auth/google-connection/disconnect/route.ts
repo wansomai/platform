@@ -1,6 +1,6 @@
 // src/app/api/auth/google-connection/disconnect/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/prisma/client';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 
 const prisma = new PrismaClient();
