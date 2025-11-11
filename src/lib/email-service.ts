@@ -107,7 +107,7 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
         }
@@ -126,19 +126,19 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           color: #666666;
         }
         h1 {
-          color: #005c4d;
+          color: #0a4b5e;
           margin-top: 0;
         }
         .feature {
           margin-bottom: 20px;
         }
         .feature h3 {
-          color: #005c4d;
+          color: #0a4b5e;
           margin-bottom: 5px;
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -286,7 +286,7 @@ export function sendInvitationEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 12px 30px;
           text-decoration: none;
@@ -296,7 +296,7 @@ export function sendInvitationEmail({
         }
         .info-box {
           background-color: #f0f9ff;
-          border-left: 4px solid #005c4d;
+          border-left: 4px solid #0a4b5e;
           padding: 15px;
           margin: 20px 0;
         }
@@ -416,7 +416,7 @@ export function sendInvitationAcceptedEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -508,7 +508,7 @@ export function sendProjectInvitationEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
         }
@@ -528,7 +528,7 @@ export function sendProjectInvitationEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -635,7 +635,7 @@ export function sendRoleChangeEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -652,13 +652,13 @@ export function sendRoleChangeEmail({
         }
         .info-box {
           background-color: #f0f9ff;
-          border-left: 4px solid #005c4d;
+          border-left: 4px solid #0a4b5e;
           padding: 15px;
           margin: 20px 0;
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -691,7 +691,6 @@ export function sendRoleChangeEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -748,7 +747,7 @@ export function sendMemberRemovedEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -771,7 +770,7 @@ export function sendMemberRemovedEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -804,7 +803,6 @@ export function sendMemberRemovedEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -861,7 +859,7 @@ export function sendUpgradeApprovalEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -878,13 +876,13 @@ export function sendUpgradeApprovalEmail({
         }
         .info-box {
           background-color: #f0f9ff;
-          border-left: 4px solid #005c4d;
+          border-left: 4px solid #0a4b5e;
           padding: 15px;
           margin: 20px 0;
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 12px 30px;
           text-decoration: none;
