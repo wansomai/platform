@@ -495,22 +495,22 @@ const Page = () => {
                       </div>
                     ) : (
                       invitations.map((invitation) => (
-                        <div key={invitation.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
+                        <div key={invitation?.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
                           <div className="col-span-4 flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
                               <Mail className="h-4 w-4 text-gray-400" />
                             </div>
                             <div>
-                              <div className="font-medium">{invitation.email}</div>
+                              <div className="font-medium">{invitation?.email}</div>
                               <div className="text-sm text-gray-500">Invitation pending</div>
                             </div>
                           </div>
                           <div className="col-span-3 text-sm text-gray-600">
-                            {new Date(invitation.createdAt).toLocaleDateString()}
+                            {new Date(invitation?.createdAt).toLocaleDateString()}
                           </div>
                           <div className="col-span-3">
                             <Badge variant="outline" className="capitalize">
-                              {invitation.role}
+                              {invitation?.role}
                             </Badge>
                           </div>
                           <div className="col-span-2">
