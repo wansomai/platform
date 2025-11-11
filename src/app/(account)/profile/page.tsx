@@ -11,8 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
-import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2, Check } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +43,6 @@ import { useProfile, useTeamManagement, useOrganization } from '@/store/profile.
 const Page = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const { notify } = useNotifications();
 
   // Zustand stores
   const { user: profile, isLoading: profileLoading, isSaving, fetchProfile, updateProfile } = useProfile();
@@ -85,6 +83,8 @@ const Page = () => {
   const [showDowngradeDialog, setShowDowngradeDialog] = useState(false);
   const [showProAccess, setShowProAccess] = useState(false);
 
+ const { notify } = useNotifications();
+
   // Fetch data on mount
   useEffect(() => {
     fetchProfile();
@@ -103,51 +103,52 @@ const Page = () => {
     const result = await updateProfile({ name: fullName });
     if (result) {
       setIsEditing(false);
-      toast.success("Profile updated successfully");
+      notify.success("Profile updated successfully");
     } else {
-      toast.error("Failed to update profile");
+      notify.error("Failed to update profile");
     }
   };
 
   const handleInviteMember = async () => {
     if (!inviteEmail.trim()) {
-      toast.error('Please enter an email address');
+      notify.error('Please enter an email address');
       return;
     }
 
     const success = await inviteMember({ email: inviteEmail, role: inviteRole });
     if (success) {
       setInviteEmail('');
-      toast.success(`Invitation sent to ${inviteEmail}`);
+      notify.success(`Invitation sent to ${inviteEmail}`);
+
     } else {
-      toast.error('Failed to send invitation');
+      notify.error("failed to send Inviation");
     }
   };
 
   const handleRemoveMember = async (memberId: string) => {
     const success = await removeMember(memberId);
     if (success) {
-      toast.success('Member removed successfully');
+      notify.success('Member removed successfully');
     } else {
-      toast.error('Failed to remove member');
+      notify.error('Failed to remove member');
     }
   };
 
   const handleChangeRole = async (memberId: string, newRole: string) => {
     const success = await updateMemberRole(memberId, newRole);
     if (success) {
-      toast.success('Role updated successfully');
+      notify.success('Role updated successfully');
     } else {
-      toast.error('Failed to update role');
+      notify.error('Failed to update role');
     }
   };
 
   const handleCancelInvitation = async (invitationId: string) => {
     const success = await cancelInvitation(invitationId);
     if (success) {
-      toast.success('Invitation cancelled');
+      notify.success('Invitation cancelled');
     } else {
-      toast.error('Failed to cancel invitation');
+      notify.error('Failed to cancel invitation');
     }
   };
 
@@ -170,9 +171,9 @@ const Page = () => {
     const result = await performDowngrade();
 
     if (result.success) {
-      toast.success(`Account downgraded. ${result.removedMembers || 0} members removed.`);
+      notify.success(`Account downgraded. ${result.removedMembers || 0} members removed.`);
     } else {
-      toast.error('Failed to downgrade account');
+      notify.error('Failed to downgrade account');
     }
   };
 
@@ -180,14 +181,14 @@ const Page = () => {
     const success = await switchOrg(organizationId);
 
     if (success) {
-      toast.success('Organization switched successfully');
+      notify.success('Organization switched successfully');
       router.refresh();
 
       setTimeout(() => {
         router.push('/dashboard');
       }, 500);
     } else {
-      toast.error('Failed to switch organization');
+      notify.error('Failed to switch organization');
     }
   };
 
@@ -495,22 +496,22 @@ const Page = () => {
                       </div>
                     ) : (
                       invitations.map((invitation) => (
-                        <div key={invitation.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
+                        <div key={invitation?.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
                           <div className="col-span-4 flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
                               <Mail className="h-4 w-4 text-gray-400" />
                             </div>
                             <div>
-                              <div className="font-medium">{invitation.email}</div>
+                              <div className="font-medium">{invitation?.email}</div>
                               <div className="text-sm text-gray-500">Invitation pending</div>
                             </div>
                           </div>
                           <div className="col-span-3 text-sm text-gray-600">
-                            {new Date(invitation.createdAt).toLocaleDateString()}
+                            {new Date(invitation?.createdAt).toLocaleDateString()}
                           </div>
                           <div className="col-span-3">
                             <Badge variant="outline" className="capitalize">
-                              {invitation.role}
+                              {invitation?.role}
                             </Badge>
                           </div>
                           <div className="col-span-2">

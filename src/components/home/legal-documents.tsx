@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-
 const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm group h-full flex flex-col">

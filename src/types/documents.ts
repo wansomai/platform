@@ -21,7 +21,6 @@ export interface Document {
   lastAccessed?: string;
 }
 
-
 export interface DocumentFilters {
   search?: string;
   type?: string;
@@ -35,7 +34,6 @@ export interface DocumentFilters {
     end: string;
   };
 }
-
 
 export interface Folder {
   id: string;

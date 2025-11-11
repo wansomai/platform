@@ -169,8 +169,7 @@ const filteredDocuments = useMemo(() => {
    const currentJurisdiction = settings?.jurisdiction ? 
     getJurisdictionById(settings.jurisdiction.id) : 
     null;
-     
-        
+
       // Load project settings and instructions only when component mounts
       useEffect(() => {
         if (projectId) {
@@ -381,7 +380,6 @@ const filteredDocuments = useMemo(() => {
         projectId={projectId}
         onDocumentsAdded={handleDocumentsAdded}
       />
-
 
       {/* Document Removal Confirmation */}
       <RemoveConfirmationDialog

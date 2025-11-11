@@ -83,8 +83,6 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       }
     });
 
-    console.log('✅ Google account connected successfully for user:', userId);
-
     // Redirect back to app with success message
     // Use stored return URL or default to projects page
     const returnPath = request.cookies.get('googleOAuthReturnUrl')?.value || '/projects';

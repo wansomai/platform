@@ -2,16 +2,12 @@
 import slugify from "slugify";
 import { useState } from "react";
 
-
-
 interface PractiseAreasComponentProps {
   areas: any[];
 }
 
 const PractiseAreasComponent = ({ areas }: PractiseAreasComponentProps) => {
 
-
-       
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(0);
 
     return (<div className="bg-primary">

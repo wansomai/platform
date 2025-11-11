@@ -197,7 +197,6 @@ export class ServerOCRService {
       const inputFileName = `pdf-ocr/input-${timestamp}-${randomId}.pdf`;
       const outputPrefix = `pdf-ocr/output-${timestamp}-${randomId}/`;
 
-      
       // Upload PDF to Google Cloud Storage
       const inputFile = bucket.file(inputFileName);
       await inputFile.save(pdfBuffer, {

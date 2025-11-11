@@ -60,7 +60,6 @@ import { ComponentLoading, EmptyDocuments } from "@/components/commons/LoadingSt
 import { UploadDocumentModal } from "@/components/modals/UploadModal"
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog"
 
-
 // Document Type Icons component
 const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
   const type = fileType.toLowerCase();
@@ -150,7 +149,6 @@ export default function VaultPage() {
   const [showMoveFolderDialog, setShowMoveFolderDialog] = useState(false);
   const [targetFolder, setTargetFolder] = useState<string | null>(null);
 
-  
   // Fetch documents and folders on mount
   useEffect(() => {
     fetchFolders();
@@ -187,8 +185,7 @@ export default function VaultPage() {
   useEffect(() => {
     clearSelectedDocuments();
   }, [viewMode, clearSelectedDocuments]);
- 
-  
+
   // Handle document deletion
   const handleDeleteDocument = async () => {
     if (!documentToDelete) return;

@@ -273,7 +273,6 @@ export function UploadDocumentModal({
     }
   };
 
-
   // Render functions
   const renderUploadTab = () => (
     <div className="space-y-4">

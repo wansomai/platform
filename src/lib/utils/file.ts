@@ -18,7 +18,6 @@ export function formatFileSize(bytes: number, decimals: number = 1): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-
 /**
  * Get file icon component based on file type/extension
  */
@@ -48,8 +47,6 @@ export function getFileIcon(fileType: string, className: string = "h-4 w-4"): Re
       return React.createElement(FileIcon, { className: `${className} text-gray-500` });
   }
 }
-
-
 
 /**
  * Get file type color class for styling

@@ -116,8 +116,6 @@ const LegalCanvas: React.FC = () => {
     'script'
   ];
 
-
-
   // Handle manual save
   const handleSave = async () => {
     if (!quillRef.current) return;
@@ -380,8 +378,6 @@ const LegalCanvas: React.FC = () => {
     }
   };
 
-
-
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Toolbar */}
@@ -616,6 +612,5 @@ const LegalCanvas: React.FC = () => {
     </div>
   );
 };
-
 
 export default LegalCanvas;

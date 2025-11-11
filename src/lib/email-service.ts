@@ -107,7 +107,7 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
         }
@@ -126,19 +126,19 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           color: #666666;
         }
         h1 {
-          color: #005c4d;
+          color: #0a4b5e;
           margin-top: 0;
         }
         .feature {
           margin-bottom: 20px;
         }
         .feature h3 {
-          color: #005c4d;
+          color: #0a4b5e;
           margin-bottom: 5px;
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -262,7 +262,7 @@ export function sendInvitationEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
         }
@@ -286,7 +286,7 @@ export function sendInvitationEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 12px 30px;
           text-decoration: none;
@@ -296,7 +296,7 @@ export function sendInvitationEmail({
         }
         .info-box {
           background-color: #f0f9ff;
-          border-left: 4px solid #005c4d;
+          border-left: 4px solid #0a4b5e;
           padding: 15px;
           margin: 20px 0;
         }
@@ -306,17 +306,16 @@ export function sendInvitationEmail({
       <div class="container">
         <div class="header">
           <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
-          <h1>You've Been Invited!</h1>
         </div>
         <div class="content">
-          <h2>Join ${organizationName} on Wansom</h2>
+          <h2>Join ${organizationName} on Wansom AI</h2>
 
           <p>Hello,</p>
 
-          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Wansom as a <strong>${role}</strong>.</p>
+          <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Wansom AI as a <strong>${role}</strong>.</p>
 
           <div class="info-box">
-            <p>Wansom is an AI-powered legal workspace that helps legal professionals collaborate on projects, manage documents, automate workflows, and leverage AI for research and drafting.</p>
+            <p>Wansom is an AI-powered legal workspace that helps legal professionals collaborate on client/case matters, manage documents, automate workflows, and leverage AI for research and drafting.</p>
           </div>
 
           <p>To accept this invitation, click the button below:</p>
@@ -371,7 +370,7 @@ export function sendInvitationAcceptedEmail({
   organizationName: string;
   role: string;
 }) {
-  const subject = `${newMemberName} has joined ${organizationName} on Wansom`;
+  const subject = `${newMemberName} has joined ${organizationName} on Wansom AI`;
   
   // Create HTML email content
   const html = `
@@ -394,7 +393,7 @@ export function sendInvitationAcceptedEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -417,7 +416,7 @@ export function sendInvitationAcceptedEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -441,19 +440,18 @@ export function sendInvitationAcceptedEmail({
           <p>They now have access to your organization's projects and resources according to their role permissions.</p>
           
           <p style="text-align: center;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/teams" class="button">Manage Team</a>
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai'}/profile" class="button">Manage Team</a>
           </p>
           
           <p>Thank you for growing your team on Wansom!</p>
         </div>
         <div class="footer">
-          <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
+          <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
-          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/unsubscribe">unsubscribe</a>.</p>
+          <p>You're receiving this email because you signed up for Wansom. If you prefer not to receive emails, you can <a href="https://wansom.ai/contact">unsubscribe</a>.</p>
         </div>
       </div>
     </body>
@@ -510,7 +508,7 @@ export function sendProjectInvitationEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
         }
@@ -530,7 +528,7 @@ export function sendProjectInvitationEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -637,7 +635,7 @@ export function sendRoleChangeEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -654,13 +652,13 @@ export function sendRoleChangeEmail({
         }
         .info-box {
           background-color: #f0f9ff;
-          border-left: 4px solid #005c4d;
+          border-left: 4px solid #0a4b5e;
           padding: 15px;
           margin: 20px 0;
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -693,7 +691,6 @@ export function sendRoleChangeEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -750,7 +747,7 @@ export function sendMemberRemovedEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -773,7 +770,7 @@ export function sendMemberRemovedEmail({
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 10px 20px;
           text-decoration: none;
@@ -806,7 +803,6 @@ export function sendMemberRemovedEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -863,7 +859,7 @@ export function sendUpgradeApprovalEmail({
           padding: 20px;
         }
         .header {
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           padding: 20px;
           text-align: center;
           color: white;
@@ -880,13 +876,13 @@ export function sendUpgradeApprovalEmail({
         }
         .info-box {
           background-color: #f0f9ff;
-          border-left: 4px solid #005c4d;
+          border-left: 4px solid #0a4b5e;
           padding: 15px;
           margin: 20px 0;
         }
         .button {
           display: inline-block;
-          background-color: #005c4d;
+          background-color: #0a4b5e;
           color: white;
           padding: 12px 30px;
           text-decoration: none;

@@ -58,7 +58,6 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
     onRequestAccess(formData);
   };
 
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">

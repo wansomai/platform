@@ -15,8 +15,6 @@ const FeaturesSection: React.FC = () => {
 
   // Partner logos data
 
-
-
   return (
     <div className=" bg-white">
      
@@ -75,8 +73,7 @@ const PartnerSupportSection: React.FC = () => {
             <p className="text-body text-dim mb-8">
               Whether your goal is to streamline operations, improve legal outcomes, or handle complex matters, we ensure AI delivers measurable value for your practice and your clients.
             </p>
-           
-           
+
           </div>
           
           {/* Right Column - Image */}

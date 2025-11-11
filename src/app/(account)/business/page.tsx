@@ -12,7 +12,6 @@ const Dashboard = () => {
 
   const competitorData : any = [
 
-
   ];
 
   const keywordData : any = [
@@ -21,37 +20,30 @@ const Dashboard = () => {
 
   // Handlers for AiPagesTable
   const handleCreateNew = () => {
-    console.log('Create new content');
     // Redirect to content creation page or open modal
   };
 
   const handleDelete = (page: any) => {
-    console.log('Delete page:', page);
     // Show confirmation modal and handle deletion
   };
 
   const handleView = (page: any) => {
-    console.log('View page:', page);
     // Open page in new tab or redirect
   };
 
   const handleTimeRangeChange = (range: string) => {
-    console.log('Time range changed to:', range);
     // Handle time range change - fetch new data, etc.
   };
 
   const handleExport = () => {
-    console.log('Export data');
     // Handle data export
   };
 
   const handleViewFullReport = () => {
-    console.log('View full competitor report');
     // Navigate to full competitor report page
   };
 
   const handleViewAllMessages = () => {
-    console.log('View all messages');
     // Navigate to messages page
   };
 

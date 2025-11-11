@@ -3,10 +3,6 @@ import { create } from 'zustand'
 import { apiService } from '@/lib/api'
 import { Message, Conversation } from '@/types/conversations';
 
-
-
-
-
 interface ChatState {
   conversations: Conversation[];
   currentConversation: Conversation | null;
@@ -252,11 +248,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
               break;
               
             case 'final':
-              // Debug: Log if report is present
-              if (data.report) {
-                console.log('📊 Report metadata received in chat store:', data.report);
-              }
-
               get().finalizeStreamingMessage(streamingId, {
                 id: data.messageId,
                 conversationId,
@@ -365,7 +356,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  
   // State management
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error })

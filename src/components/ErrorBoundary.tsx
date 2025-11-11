@@ -84,12 +84,14 @@ class ErrorBoundary extends Component<Props, State> {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm font-medium text-red-900 mb-1">Error Details:</p>
-                <p className="text-sm text-red-700">
-                  {this.state.error?.message || 'Unknown error occurred'}
-                </p>
-              </div>
+              {process.env.NODE_ENV === 'development' && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm font-medium text-red-900 mb-1">Error Details:</p>
+                  <p className="text-sm text-red-700">
+                    {this.state.error?.message || 'Unknown error occurred'}
+                  </p>
+                </div>
+              )}
 
               {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
                 <details className="p-4 bg-gray-100 rounded-lg cursor-pointer">

@@ -61,7 +61,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
     const mimeType = contract.mimeType?.toLowerCase() || "";
     const fileName = contract.fileName.toLowerCase();
 
-
     // PDF Viewer - try direct embed first, fallback to link
     if (mimeType.includes("pdf") || fileName.endsWith(".pdf")) {
       return (

@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import LegalResearchPage from './LegalResearchPage';
 
-
 export const metadata: Metadata = {
   title: 'Best AI Legal Research Platform | Wansom AI',
   description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
@@ -26,9 +25,6 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">

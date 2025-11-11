@@ -112,8 +112,6 @@ const LawSchoolsPage = () => {
       {/* Features Section */}
       <FeaturesSection />
 
-
-
       <KnowledgeBase />
       <VaultSection />
 

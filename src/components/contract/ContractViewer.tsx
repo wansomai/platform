@@ -110,7 +110,6 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack
     }
   }
 
-
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
@@ -128,7 +127,6 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({ contract, onBack
           
         </div>
       </div>
-
 
       <div className="flex-1 overflow-auto">
         <div className="p-6">

@@ -119,7 +119,6 @@ const PractiseAreaPage = ({
 
             </div>
 
-        
           </div>
 
           {/* Right Side - Form */}
@@ -127,8 +126,7 @@ const PractiseAreaPage = ({
             <img src="/law-office.jpg"/>
 
           </div>
-          
-        
+
       </div>
     </section>
   {/* Statistics Section */}
@@ -307,10 +305,8 @@ const PractiseAreaPage = ({
         </div>
       </section>
 
-    
       {/* Why Choose Section */}
    <PractiseAreasComponent areas={practiceAreas ?? []}/>
-
 
       {/* Final CTA Section */}
       <FaqSection faqRichText={faq}/>
@@ -344,6 +340,5 @@ const PractiseAreaPage = ({
     </div>
   );
 };
-
 
 export default PractiseAreaPage;

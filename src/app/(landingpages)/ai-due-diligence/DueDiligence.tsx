@@ -44,8 +44,6 @@ const DueDiligencePage = () => {
     { src: "/logos/4.png", alt: "Netsheria" },
   ];
 
- 
-
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
@@ -55,7 +53,6 @@ const DueDiligencePage = () => {
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-3/5">
-   
 
               <h1 className="text-heading-1 mb-4 text-shadow">
                 #1 AI For Due Diligence
@@ -485,7 +482,6 @@ const DueDiligencePage = () => {
     </div>
   );
 };
-
 
 export const DocumentsVault=() => {
     const documentCategories = [

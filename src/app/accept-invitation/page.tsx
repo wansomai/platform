@@ -153,8 +153,38 @@ function AcceptInvitationContent() {
     )
   }
 
-  // Show error state
+  // Show error state (but handle "already a member" specially)
   if (error) {
+    const isAlreadyMember = error.includes("already a member") || error.includes("already member");
+
+    if (isAlreadyMember) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+          <Card className="w-full max-w-md border-green-200">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">
+                <CheckCircle className="h-12 w-12 text-green-500" />
+              </div>
+              <CardTitle>Already a Member</CardTitle>
+              <CardDescription className="text-green-600">
+                You're already part of this organization
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center text-sm text-muted-foreground">
+                You have already accepted this invitation and are now a member of the organization.
+              </p>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={() => router.push("/dashboard")}>
+                Go to Dashboard
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Card className="w-full max-w-md border-red-200">

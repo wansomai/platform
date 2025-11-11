@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import DueDiligencePage from './DueDiligence';
 
-
 export const metadata: Metadata = {
   title: 'Best AI For Due Diligence Platform | Wansom AI',
   description: 'Accelerate your due diligence process with AI that automatically analyzes, categorizes, and flags critical issues across thousands of documents in minutes.',
@@ -26,9 +25,6 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">

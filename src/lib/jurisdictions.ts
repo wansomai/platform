@@ -2,7 +2,6 @@
 
 import { Jurisdiction } from "../types/projects";
 
-
 export const JURISDICTIONS: Jurisdiction[] = [
   // United States
   {

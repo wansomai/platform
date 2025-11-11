@@ -71,8 +71,9 @@ export default function ProjectPage() {
         try {
           // Fetch latest connection status to see what was connected
           const response: { data: { hasCalendarAccess?: boolean; hasGmailAccess?: boolean  } } = await apiService.get('/api/auth/google-connection/status');
-          console.log('Google connection status:', response.data);
-           // Auto-enable Calendar if it was just connected and not already enabled
+          // Safely check if data exists before accessing properties
+          if (response && response.data) {
+            // Auto-enable Calendar if it was just connected and not already enabled
             if (response.data.hasCalendarAccess && !settings.googleCalendar) {
               await updateSetting(projectId, 'googleCalendar', true);
             }
@@ -81,6 +82,7 @@ export default function ProjectPage() {
             if (response.data.hasGmailAccess && !settings.gmail) {
               await updateSetting(projectId, 'gmail', true);
             }
+          }
 
           // Trigger a refresh of the ChatInput connection status
           if (typeof window !== 'undefined') {
