@@ -178,9 +178,9 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   serviceAreas: 'serviceAreas',
   yearsInPractice: 'yearsInPractice',
   accountType: 'accountType',
+  ownerId: 'ownerId',
   upgradeRequestToken: 'upgradeRequestToken',
-  upgradeRequestedAt: 'upgradeRequestedAt',
-  ownerId: 'ownerId'
+  upgradeRequestedAt: 'upgradeRequestedAt'
 };
 
 exports.Prisma.ContentScalarFieldEnum = {
@@ -397,9 +397,9 @@ exports.Prisma.InvitationScalarFieldEnum = {
   projectId: 'projectId',
   organizationId: 'organizationId',
   invitedById: 'invitedById',
-  status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  status: 'status'
 };
 
 exports.Prisma.ConversationMetaScalarFieldEnum = {
