@@ -495,7 +495,7 @@ const Page = () => {
                       </div>
                     ) : (
                       invitations.map((invitation) => (
-                        <div key={invitation.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
+                        <div key={invitation?.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
                           <div className="col-span-4 flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
                               <Mail className="h-4 w-4 text-gray-400" />
