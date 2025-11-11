@@ -152,9 +152,27 @@ export function ChatInput({
       setIsCheckingConnection(true);
       try {
         const response = await apiService.get<{ data: any }>("/api/auth/google-connection/status");
-        setGoogleConnectionStatus(response.data);
+        // Safely access nested data with fallback
+        if (response && response.data) {
+          setGoogleConnectionStatus(response.data);
+        } else {
+          // Fallback for unexpected response structure
+          setGoogleConnectionStatus({
+            connected: false,
+            email: null,
+            hasCalendarAccess: false,
+            hasGmailAccess: false,
+          });
+        }
       } catch (error) {
         console.error("Error checking Google connection:", error);
+        // Set safe default state on error
+        setGoogleConnectionStatus({
+          connected: false,
+          email: null,
+          hasCalendarAccess: false,
+          hasGmailAccess: false,
+        });
       } finally {
         setIsCheckingConnection(false);
       }
@@ -172,12 +190,15 @@ export function ChatInput({
       setIsCheckingConnection(true);
       try {
         const response = await apiService.get<{ data: any }>("/api/auth/google-connection/status");
-        setGoogleConnectionStatus(response.data);
-         if(response.data.hasCalendarAccess) {
-        updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
-        }
-        if(response.data.hasGmailAccess) {
-        updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
+        // Safely access nested data
+        if (response && response.data) {
+          setGoogleConnectionStatus(response.data);
+          if(response.data.hasCalendarAccess) {
+            updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
+          }
+          if(response.data.hasGmailAccess) {
+            updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
+          }
         }
       } catch (error) {
         console.error("Error checking Google connection:", error);

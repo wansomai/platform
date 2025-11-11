@@ -501,16 +501,16 @@ const Page = () => {
                               <Mail className="h-4 w-4 text-gray-400" />
                             </div>
                             <div>
-                              <div className="font-medium">{invitation.email}</div>
+                              <div className="font-medium">{invitation?.email}</div>
                               <div className="text-sm text-gray-500">Invitation pending</div>
                             </div>
                           </div>
                           <div className="col-span-3 text-sm text-gray-600">
-                            {new Date(invitation.createdAt).toLocaleDateString()}
+                            {new Date(invitation?.createdAt).toLocaleDateString()}
                           </div>
                           <div className="col-span-3">
                             <Badge variant="outline" className="capitalize">
-                              {invitation.role}
+                              {invitation?.role}
                             </Badge>
                           </div>
                           <div className="col-span-2">

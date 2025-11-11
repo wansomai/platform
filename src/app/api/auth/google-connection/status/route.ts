@@ -37,11 +37,14 @@ export const GET = withErrorHandler(withAuth(async (
 
     if (!account || !account.access_token) {
       return NextResponse.json({
-        connected: false,
-        email: null,
-        hasCalendarAccess: false,
-        hasGmailAccess: false,
-        message: 'No Google account connected'
+        status: 200,
+        message: 'No Google account connected',
+        data: {
+          connected: false,
+          email: null,
+          hasCalendarAccess: false,
+          hasGmailAccess: false
+        }
       });
     }
 
