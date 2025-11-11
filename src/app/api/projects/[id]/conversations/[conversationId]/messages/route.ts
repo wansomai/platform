@@ -615,6 +615,11 @@ export async function POST(
             }
           }
 
+          // Ensure result was successfully assigned
+          if (!result) {
+            throw new Error('Failed to get response from AI after retries');
+          }
+
           // Check if the response contains function calls
           let functionCalls: any[] = [];
           let hasTextContent = false;
@@ -801,6 +806,11 @@ export async function POST(
                 const delay = 1000 * Math.pow(2, finalRetryCount - 1);
                 await new Promise(resolve => setTimeout(resolve, delay));
               }
+            }
+
+            // Ensure finalResult was successfully assigned
+            if (!finalResult) {
+              throw new Error('Failed to get final response from AI after retries');
             }
 
             // Reset fullContent to capture the final response
