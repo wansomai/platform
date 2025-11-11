@@ -4,7 +4,6 @@ import { PrismaClient } from "@/prisma/client";
 import { z } from "zod";
 import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
 import { GoogleGenAI } from '@google/genai';
-import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { canSendMessage } from '@/lib/subscription';
 import { legalDraftingTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
@@ -69,7 +68,7 @@ export async function POST(
 
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
-    const { content, previewDocument } = createMessageSchema.parse(body);
+    const { content,previewDocument } = createMessageSchema.parse(body);
 
     // Start parallel operations immediately
     const accessCheckPromise = checkProjectAccess(projectId, userId);
@@ -166,7 +165,6 @@ export async function POST(
     }
 
     // Check subscription limits before processing message
-    // Use the project's organization (not user's primary org) for subscription limits
     if (projectOrg?.organizationId) {
       const messageLimitCheck = await canSendMessage(projectOrg.organizationId);
       if (!messageLimitCheck.allowed) {
@@ -208,6 +206,7 @@ export async function POST(
         };
         
         try {
+
           // Send initial status to client immediately
           controller.enqueue(
             encoder.encode(
@@ -233,12 +232,8 @@ export async function POST(
             }
           }
 
-          // Check if project is in drafting mode
-          // With function calling enabled, the AI will decide when to draft documents vs ask questions
+          // Check if project is in drafting modes
           const isDraftingMode = settings.legalDrafting === true;
-
-          if (isDraftingMode) {
-            }
           
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
@@ -272,7 +267,6 @@ export async function POST(
           
           if (conversationDocuments.length > 0) {
             // Gemini can handle FULL documents (2M token context) - no truncation needed!
-            ');
             const contentParts: string[] = [];
 
             for (const docRef of conversationDocuments) {
@@ -288,13 +282,10 @@ export async function POST(
 
               contentParts.push(docSection);
             }
-
             relevantContent = contentParts.join("\n");
-            , '(Gemini supports up to 2M tokens)');
           }
 
           // Web search is now handled by Gemini's built-in Google Search grounding
-          // No need for separate API calls - Gemini will search when needed
           const useGoogleSearch = settings.webSearch;
           // Format message history for Gemini
           // Filter out 'system' role messages as Gemini doesn't support them in history
@@ -341,7 +332,7 @@ export async function POST(
             `;
           }
 
-          const systemMessage = `You are wansom, a senior lawyer collaborating with other lawyers working on a project titled "${
+          const systemMessage = `You are wansom, a collaborating with other lawyer teamamtes working on a project titled "${
             fullProject?.title
           }".
           ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
@@ -457,13 +448,6 @@ export async function POST(
               :
               ""
             }`;
-
-          // No need to truncate - Gemini supports 2M token context!
-          );
-          if (relevantContent.length > 0) {
-            + '...');
-          }
-
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
           let modelName = settings.model || 'gemini-2.0-flash-exp';
@@ -632,9 +616,7 @@ export async function POST(
           }
 
           // Handle function calls if any
-          if (functionCalls.length > 0) {
-            ...`);
-
+          if (functionCalls.length > 0) {      
             // Send status update to client
             controller.enqueue(
               encoder.encode(
@@ -943,391 +925,6 @@ Format: [READY|NEED_INFO]: <one sentence explanation>`;
     console.error('Pre-flight check error:', error);
     // On error, default to allowing drafting (fail open)
     return { readyToDraft: true };
-  }
-}
-
-/**
- * Handle canvas drafting requests when in drafting mode
- */
-async function handleCanvasDraftingRequest(
-  content: string,
-  projectId: string,
-  project: any,
-  conversationDocuments: any[],
-  canvasDocument: any,
-  controller: ReadableStreamDefaultController,
-  encoder: TextEncoder,
-  conversationId: string,
-  safeClose: () => void,
-  recentMessages?: string[]
-): Promise<boolean> {
-  try {
-    // Build project context for AI
-    const projectContext: ProjectContext = {
-      jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-      instructions: project?.knowledgeBase?.instructions || '',
-      documents: conversationDocuments.map((doc:any) => ({
-        title: doc.document.title,
-        content: doc.document.content?.content || ''
-      })),
-      conversationHistory: recentMessages || []
-    };
-
-    let result;
-    let responseMessage;
-
-    if (!canvasDocument) {
-      // No canvas document exists, generate new document
-      result = await AIDocumentService.generateDocument(content, projectContext);
-      responseMessage = "I've generated the document and loaded it to your canvas.";
-    } else {
-      // Edit existing document
-      result = await AIDocumentService.editDocument(
-        content,
-        canvasDocument.htmlContent,
-        projectContext
-      );
-      responseMessage = "I've updated your document in the canvas.";
-    }
-
-    // Save to canvas document
-    await prisma.canvasDocument.upsert({
-      where: { projectId },
-      create: {
-        projectId,
-        content: result.htmlContent || result.plainText || '',
-        htmlContent: result.htmlContent || result.plainText || '',
-        plainText: result.plainText || AIDocumentService.stripHtml(result.htmlContent || '')
-      },
-      update: {
-        content: result.htmlContent || result.plainText || '',
-        htmlContent: result.htmlContent || result.plainText || '',
-        plainText: result.plainText || AIDocumentService.stripHtml(result.htmlContent || ''),
-        updatedAt: new Date()
-      }
-    });
-
-    // Save AI response as message
-    await prisma.message.create({
-      data: {
-        content: responseMessage,
-        role: "assistant",
-        conversationId,
-        metadata: JSON.stringify({ canvasUpdated: true })
-      }
-    });
-
-    // Send canvas update response
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_update',
-          conversationId: conversationId,
-          content: responseMessage,
-          canvasContent: result.htmlContent || result.plainText || '',
-          canvasUpdated: true
-        }) + '\n'
-      )
-    );
-
-    // Send completion status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'status',
-          status: 'completed',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    safeClose();
-    return true; // Handled as canvas operation
-
-  } catch (error) {
-    console.error('Canvas drafting error:', error);
-    
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'error',
-          error: 'Failed to process document request'
-        }) + '\n'
-      )
-    );
-    
-    safeClose();
-    return true; // Still handled, even with error
-  }
-}
-
-/**
- * Handle canvas drafting requests with streaming updates
- */
-async function handleCanvasDraftingRequestWithStreaming(
-  content: string,
-  projectId: string,
-  project: any,
-  conversationDocuments: any[],
-  canvasDocument: any,
-  controller: ReadableStreamDefaultController,
-  encoder: TextEncoder,
-  conversationId: string,
-  safeClose: () => void,
-  recentMessages?: string[]
-): Promise<boolean> {
-  try {
-    // Send initial status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'analyzing_request',
-          message: 'Analyzing your request...',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    // Build project context for AI
-    const projectContext: ProjectContext = {
-      jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-      instructions: project?.knowledgeBase?.instructions || '',
-      documents: conversationDocuments.map((doc:any) => ({
-        title: doc.document.title,
-        content: doc.document.content?.content || ''
-      })),
-      conversationHistory: recentMessages || []
-    };
-
-    // Send context processing status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'processing_context',
-          message: 'Processing project context and documents...',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    let result;
-    let responseMessage;
-    let actionType;
-
-    if (!canvasDocument) {
-      actionType = 'generating';
-
-      // Send generation status
-      controller.enqueue(
-        encoder.encode(
-          JSON.stringify({
-            type: 'canvas_status',
-            status: 'generating_document',
-            message: 'Generating new legal document...',
-            conversationId: conversationId,
-          }) + '\n'
-        )
-      );
-
-      // Generate new document with streaming updates
-      result = await AIDocumentService.generateDocumentStreaming(content, projectContext, (partialContent, section) => {
-        // Send streaming canvas content updates
-        controller.enqueue(
-          encoder.encode(
-            JSON.stringify({
-              type: 'canvas_content_update',
-              conversationId: conversationId,
-              partialContent: partialContent,
-              currentSection: section,
-              actionType: 'generating'
-            }) + '\n'
-          )
-        );
-      });
-    } else {
-      actionType = 'editing';
-
-      // Send editing status
-      controller.enqueue(
-        encoder.encode(
-          JSON.stringify({
-            type: 'canvas_status',
-            status: 'editing_document',
-            message: 'Updating existing document with your changes...',
-            conversationId: conversationId,
-          }) + '\n'
-        )
-      );
-
-      // Edit existing document with streaming updates
-      result = await AIDocumentService.editDocumentStreaming(
-        content,
-        canvasDocument.htmlContent,
-        projectContext,
-        (partialContent, section) => {
-          // Send streaming canvas content updates
-          controller.enqueue(
-            encoder.encode(
-              JSON.stringify({
-                type: 'canvas_content_update',
-                conversationId: conversationId,
-                partialContent: partialContent,
-                currentSection: section,
-                actionType: 'editing'
-              }) + '\n'
-            )
-          );
-        }
-      );
-    }
-
-    // Send saving status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'saving_document',
-          message: 'Saving changes to canvas...',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    // Save to canvas document
-        await prisma.canvasDocument.upsert({
-          where: { projectId },
-          create: {
-            projectId,
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || result.plainText || '',
-            plainText: AIDocumentService.stripHtml(result.htmlContent || result.plainText || '')
-          },
-          update: {
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || result.plainText || '',
-            plainText: AIDocumentService.stripHtml(result.htmlContent || result.plainText || ''),
-            updatedAt: new Date()
-          }
-        });
-
-    // Generate a natural conversational response explaining what was done
-    const explanationPrompt = actionType === 'generating'
-      ? `I just generated a new legal document based on the request: "${content}".
-
-         Provide a brief, natural response (2-3 sentences) explaining:
-         - What type of document you created
-         - Key sections or clauses you included
-         - Any important considerations or next steps
-
-         Be conversational and helpful. Don't use phrases like "I am an AI" or disclaimers.`
-      : `I just updated the legal document based on this request: "${content}".
-
-         Provide a brief, natural response (2-3 sentences) explaining:
-         - What specific changes you made
-         - Why these changes are important
-         - Any recommendations or questions you have for the user
-
-         Be conversational and helpful. Don't use phrases like "I am an AI" or disclaimers.`;
-
-    // Generate natural explanation using Gemini via the models.generateContent API
-    const explanationResult = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: [{ role: 'user', parts: [{ text: explanationPrompt }] }],
-      config: {
-        systemInstruction: `You are Wansom, a senior lawyer. Provide brief, natural, conversational responses about legal document work. Be professional but friendly. Never use disclaimers or mention being an AI.`,
-        temperature: 0.3
-      }
-    });
-
-    // Safely extract text from the response (SDK may expose .text or nested output content)
-    responseMessage =
-      explanationResult?.text ||
-      (Array.isArray((explanationResult as any).output) &&
-        (explanationResult as any).output[0]?.content?.map((c: any) => c.text).join('')) ||
-      `I've ${actionType === 'generating' ? 'generated' : 'updated'} the document in your canvas.`;
-
-    // Save AI response as message
-    await prisma.message.create({
-      data: {
-        content: responseMessage,
-        role: "assistant",
-        conversationId,
-        metadata: JSON.stringify({ canvasUpdated: true, actionType })
-      }
-    });
-
-    // Send final completion status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'completed',
-          message: `Document ${actionType === 'generating' ? 'generated' : 'updated'} successfully!`,
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    // Send canvas update response with streaming flag
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_update',
-          conversationId: conversationId,
-          content: responseMessage,
-          canvasContent: result.htmlContent || result.plainText || '',
-          canvasUpdated: true,
-          actionType: actionType,
-          streaming: false // Indicate streaming is complete
-        }) + '\n'
-      )
-    );
-
-    // Send completion status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'status',
-          status: 'completed',
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    safeClose();
-    return true; // Handled as canvas operation
-
-  } catch (error) {
-    console.error('Canvas drafting error:', error);
-
-    // Simple user-friendly error message
-    const errorMessage = 'Something went wrong creating your document. Please try again.';
-
-    // Send error status
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'canvas_status',
-          status: 'error',
-          message: errorMessage,
-          conversationId: conversationId,
-        }) + '\n'
-      )
-    );
-
-    controller.enqueue(
-      encoder.encode(
-        JSON.stringify({
-          type: 'error',
-          error: errorMessage
-        }) + '\n'
-      )
-    );
-
-    safeClose();
-    return true; // Still handled, even with error
   }
 }
 
