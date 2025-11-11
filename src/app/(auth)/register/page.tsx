@@ -76,9 +76,25 @@ function RegisterPageContent() {
     });
 
     if (result) {
-      // If there's a callback URL (from invitation), sign in and redirect there
-      if (callbackUrl) {
+      // If there's an invitation token, the invitation was already accepted during registration
+      // Redirect to dashboard instead of back to accept-invitation page
+      if (invitationToken) {
         // Auto-sign in after registration
+        const signInResult = await signIn('credentials', {
+          redirect: false,
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (signInResult?.ok) {
+          // Redirect to dashboard since invitation is already accepted
+          router.push('/dashboard?invited=true');
+        } else {
+          // If auto-signin fails, redirect to login
+          router.push('/login');
+        }
+      } else if (callbackUrl) {
+        // Other callback URL scenarios (not invitation)
         const signInResult = await signIn('credentials', {
           redirect: false,
           email: formData.email,
@@ -88,7 +104,6 @@ function RegisterPageContent() {
         if (signInResult?.ok) {
           router.push(decodeURIComponent(callbackUrl));
         } else {
-          // If auto-signin fails, redirect to login
           router.push(`/login?callbackUrl=${callbackUrl}`);
         }
       } else {

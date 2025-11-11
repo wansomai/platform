@@ -269,14 +269,19 @@ export const useProfileStore = create<ProfileState>()(
         try {
           set({ isInviting: true, error: null });
 
-          const response = await apiService.post<ApiResponse<Invitation>>('/api/organization/invite', data);
-          const newInvitation = response.data;
+          await apiService.post('/api/organization/invite', data);
 
-          // Add to invitations list
-          set((state) => ({
-            invitations: [...state.invitations, newInvitation],
-            isInviting: false
-          }));
+          // Refresh invitations list from server to get complete data
+          try {
+            const invitationsData = await apiService.get('/api/organization/invitations') as { invitations: Invitation[] };
+            set({
+              invitations: invitationsData.invitations || [],
+              isInviting: false
+            });
+          } catch (fetchError) {
+            console.error('Error refreshing invitations:', fetchError);
+            set({ isInviting: false });
+          }
 
           return true;
         } catch (error: any) {
