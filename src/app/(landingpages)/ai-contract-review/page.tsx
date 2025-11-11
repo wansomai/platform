@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import ContractReviewPage from './ContractReviewPage';
 
-
 export const metadata: Metadata = {
   title: 'Best AI for Contract Review Platform | Wansom AI',
   description: 'Review and redline your contracts within a collaborative AI workspace',
@@ -26,9 +25,6 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">

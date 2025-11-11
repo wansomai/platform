@@ -112,8 +112,7 @@ const HeroSection: React.FC = () => {
           TRY WANSOM FOR FREE <Sparkles className='w-5 h-5 text-white' />
         </button>
         <AnimatedLegalInterface/>
-  
- 
+
       </div>
     </section>
   );

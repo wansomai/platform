@@ -240,10 +240,6 @@ export async function POST(
           // Check if project is in drafting mode
           // With function calling enabled, the AI will decide when to draft documents vs ask questions
           const isDraftingMode = settings.legalDrafting === true;
-
-          if (isDraftingMode) {
-            console.log('📝 Drafting mode active - AI will use function calling to manage document workflow');
-          }
           
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
@@ -264,7 +260,6 @@ export async function POST(
                           recentMsgs
                         );
                         intentAnalysis = { shouldUpdateCanvas: analysis.readyToDraft };
-                        console.log('Drafting intent analysis:', intentAnalysis);
                       } catch (err) {
                         console.error('Error running intent analysis:', err);
                         intentAnalysis = { shouldUpdateCanvas: false };
@@ -278,17 +273,13 @@ export async function POST(
           
           if (conversationDocuments.length > 0) {
             // Gemini can handle FULL documents (2M token context) - no truncation needed!
-            console.log('Processing documents with Gemini (full document support)');
             const contentParts: string[] = [];
 
             for (const docRef of conversationDocuments) {
-              console.log('Document:', docRef.document.title, 'has content:', !!docRef.document.content?.content);
               if (!docRef.document.content?.content) continue;
 
               const documentContent = docRef.document.content.content;
               const docLength = documentContent.length;
-
-              console.log('Document length:', docLength, 'characters - sending FULL document to Gemini');
 
               // Send ENTIRE document - Gemini can handle up to 2M tokens (~4000 pages)
               const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength/1000)}k characters, ${Math.round(docLength/2000)} pages) ###\n\n` +
@@ -299,22 +290,17 @@ export async function POST(
             }
 
             relevantContent = contentParts.join("\n");
-            console.log('Document processing complete, total content length:', relevantContent.length, 'characters');
-            console.log('Estimated tokens:', Math.round(relevantContent.length / 4), '(Gemini supports up to 2M tokens)');
           }
 
           // Web search is now handled by Gemini's built-in Google Search grounding
           // No need for separate API calls - Gemini will search when needed
           const useGoogleSearch = settings.webSearch;
-          console.log('Google Search grounding enabled:', useGoogleSearch);
 
           // Check if Google Calendar integration is enabled
           const useGoogleCalendar = settings.googleCalendar === true;
-          console.log('Google Calendar integration enabled:', useGoogleCalendar);
 
           // Check if Gmail integration is enabled
           const useGmail = settings.gmail === true;
-          console.log('Gmail integration enabled:', useGmail);
 
           // Format message history for Gemini
           // Filter out 'system' role messages as Gemini doesn't support them in history
@@ -478,20 +464,12 @@ export async function POST(
               ""
             }`;
 
-          // No need to truncate - Gemini supports 2M token context!
-          console.log('Final relevantContent length:', relevantContent.length);
-          console.log('System message includes documents:', systemMessage.includes('Here are the documents'));
-          if (relevantContent.length > 0) {
-            console.log('Sample of relevant content:', relevantContent.substring(0, 200) + '...');
-          }
-
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
           let modelName = settings.model || 'gemini-2.0-flash-exp';
 
           // Check if someone accidentally set a non-Gemini model (e.g., gpt-4)
           if (!modelName.toLowerCase().startsWith('gemini')) {
-            console.warn(`Invalid model "${modelName}" - falling back to gemini-2.0-flash-exp`);
             modelName = 'gemini-2.0-flash-exp';
           }
 
@@ -503,7 +481,6 @@ export async function POST(
             tools.push({
               googleSearch: {}
             });
-            console.log('✓ Google Search grounding enabled - Gemini will search when needed');
           }
 
           // Add legal drafting function calling tools if in drafting mode
@@ -515,7 +492,6 @@ export async function POST(
                 parameters: tool.parameters
               }))
             });
-            console.log('✓ Legal drafting tools enabled - AI can call draftNewDocument, editCanvasDocument, searchProjectDocuments, reviewDocument');
           }
 
           // Add Google Calendar tools if enabled
@@ -527,7 +503,6 @@ export async function POST(
                 parameters: tool.parameters
               }))
             });
-            console.log('✓ Google Calendar tools enabled - AI can call createCalendarEvent, searchCalendarEvents, updateCalendarEvent, getCalendarAvailability');
           }
 
           // Add Gmail tools if enabled
@@ -539,7 +514,6 @@ export async function POST(
                 parameters: tool.parameters
               }))
             });
-            console.log('✓ Gmail tools enabled - AI can call searchEmails, readEmail, draftEmail');
           }
 
           // Build the full conversation history including system message
@@ -588,12 +562,58 @@ export async function POST(
             parts: [{ text: content }]
           });
 
-          // Stream the response from Gemini using new API
-          const result = await genAI.models.generateContentStream({
-            model: modelName,
-            contents: fullContents,
-            config: generateConfig
-          });
+          // Stream the response from Gemini using new API with retry logic
+          let result;
+          let retryCount = 0;
+          const MAX_RETRIES = 2; // 3 total attempts (1 initial + 2 retries)
+
+          while (retryCount <= MAX_RETRIES) {
+            try {
+              result = await genAI.models.generateContentStream({
+                model: modelName,
+                contents: fullContents,
+                config: generateConfig
+              });
+              break; // Success - exit retry loop
+            } catch (genAIError: any) {
+              retryCount++;
+              const isLastRetry = retryCount > MAX_RETRIES;
+
+              // Check if error is retryable (network, timeout, rate limit, server errors)
+              const isRetryable =
+                genAIError.code === 'ECONNREFUSED' ||
+                genAIError.code === 'ETIMEDOUT' ||
+                genAIError.code === 'ENOTFOUND' ||
+                genAIError.code === 'ERR_NETWORK' ||
+                genAIError.message?.includes('timeout') ||
+                genAIError.message?.includes('network') ||
+                genAIError.message?.includes('503') ||
+                genAIError.message?.includes('429') ||
+                genAIError.message?.includes('500') ||
+                genAIError.message?.includes('502') ||
+                genAIError.message?.includes('504');
+
+              if (!isRetryable || isLastRetry) {
+                // Non-retryable error or max retries reached - throw to outer catch
+                throw genAIError;
+              }
+
+              // Send retry status to client
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'status',
+                    status: 'retrying',
+                    message: `Connection issue detected. Retrying... (${retryCount}/${MAX_RETRIES})`,
+                  }) + '\n'
+                )
+              );
+
+              // Exponential backoff: 1s, 2s
+              const delay = 1000 * Math.pow(2, retryCount - 1);
+              await new Promise(resolve => setTimeout(resolve, delay));
+            }
+          }
 
           // Check if the response contains function calls
           let functionCalls: any[] = [];
@@ -684,8 +704,6 @@ export async function POST(
 
           // Handle function calls if any
           if (functionCalls.length > 0) {
-            console.log(`🔧 Processing ${functionCalls.length} function call(s)...`);
-
             // Send status update to client
             controller.enqueue(
               encoder.encode(
@@ -725,8 +743,6 @@ export async function POST(
             );
 
             // Send function results back to the model for a final response
-            console.log('📤 Sending function results back to model...');
-
             // Add model response with function calls to history
             fullContents.push({
               role: 'model',
@@ -739,12 +755,53 @@ export async function POST(
               parts: functionResponses.map(fr => ({ functionResponse: fr.functionResponse }))
             });
 
-            // Get final response from model with function results
-            const finalResult = await genAI.models.generateContentStream({
-              model: modelName,
-              contents: fullContents,
-              config: generateConfig
-            });
+            // Get final response from model with function results (with retry logic)
+            let finalResult;
+            let finalRetryCount = 0;
+
+            while (finalRetryCount <= MAX_RETRIES) {
+              try {
+                finalResult = await genAI.models.generateContentStream({
+                  model: modelName,
+                  contents: fullContents,
+                  config: generateConfig
+                });
+                break; // Success
+              } catch (genAIError: any) {
+                finalRetryCount++;
+                const isLastRetry = finalRetryCount > MAX_RETRIES;
+
+                const isRetryable =
+                  genAIError.code === 'ECONNREFUSED' ||
+                  genAIError.code === 'ETIMEDOUT' ||
+                  genAIError.code === 'ENOTFOUND' ||
+                  genAIError.code === 'ERR_NETWORK' ||
+                  genAIError.message?.includes('timeout') ||
+                  genAIError.message?.includes('network') ||
+                  genAIError.message?.includes('503') ||
+                  genAIError.message?.includes('429') ||
+                  genAIError.message?.includes('500') ||
+                  genAIError.message?.includes('502') ||
+                  genAIError.message?.includes('504');
+
+                if (!isRetryable || isLastRetry) {
+                  throw genAIError;
+                }
+
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: 'status',
+                      status: 'retrying',
+                      message: `Retrying... (${finalRetryCount}/${MAX_RETRIES})`,
+                    }) + '\n'
+                  )
+                );
+
+                const delay = 1000 * Math.pow(2, finalRetryCount - 1);
+                await new Promise(resolve => setTimeout(resolve, delay));
+              }
+            }
 
             // Reset fullContent to capture the final response
             fullContent = "";
@@ -769,23 +826,10 @@ export async function POST(
               }
             }
 
-            console.log('✅ Function calling workflow completed');
-
             // Check if any function response contains report metadata
             reportMetadata = functionResponses.find(
               (fr: any) => fr.functionResponse?.response?.reportReady === true
             )?.functionResponse?.response;
-
-            if (reportMetadata) {
-              console.log('📊 Report metadata detected:', {
-                reportId: reportMetadata.reportId,
-                hasHtmlContent: !!reportMetadata.htmlContent,
-                hasDownloadUrls: !!reportMetadata.downloadUrls,
-                reportReady: reportMetadata.reportReady
-              });
-            } else {
-              console.log('⚠️ No report metadata found in function responses');
-            }
           }
 
           // Format the final content
@@ -800,8 +844,6 @@ export async function POST(
           // Build metadata object
           const messageMetadata: any = {};
 
-          console.log('🔍 Building message metadata. reportMetadata exists?', !!reportMetadata);
-
           if (useGoogleSearch || webSearchSources.length > 0) {
             messageMetadata.googleSearchEnabled = useGoogleSearch;
             if (webSearchSources.length > 0) {
@@ -811,7 +853,6 @@ export async function POST(
 
           // Add report metadata if present (including full content for downloads)
           if (reportMetadata) {
-            console.log('✅ reportMetadata is available, adding to messageMetadata');
             messageMetadata.report = {
               reportId: reportMetadata.reportId,
               reportTitle: reportMetadata.reportTitle,
@@ -822,23 +863,12 @@ export async function POST(
               htmlContent: reportMetadata.htmlContent,
               plainText: reportMetadata.plainText,
             };
-            console.log('💾 Saving report metadata to database:', {
-              reportId: reportMetadata.reportId,
-              hasContent: !!reportMetadata.htmlContent
-            });
           }
 
           // Save the AI message to the database with metadata
           const metadataToSave = Object.keys(messageMetadata).length > 0
             ? JSON.stringify(messageMetadata)
             : undefined;
-
-          console.log('💾 Saving message to database with metadata:', {
-            hasMetadata: !!metadataToSave,
-            metadataKeys: Object.keys(messageMetadata),
-            hasReport: !!messageMetadata.report,
-            reportId: messageMetadata.report?.reportId
-          });
 
           const assistantMessage = await prisma.message.create({
             data: {
@@ -849,8 +879,6 @@ export async function POST(
             }
           });
 
-          console.log('✅ Message saved with ID:', assistantMessage.id);
-          
           // Save references if needed
           if (settings.citeSources && documentReferences.size > 0) {
             const refPromises = Array.from(documentReferences).map((docId:any) => {
@@ -1080,8 +1108,6 @@ Format: [READY|NEED_INFO]: <one sentence explanation>`;
     const isReady = response.trim().toUpperCase().startsWith('READY');
     const reasoning = response.split(':')[1]?.trim() || '';
 
-    console.log('Pre-flight check result:', { isReady, reasoning });
-
     return {
       readyToDraft: isReady,
       reasoning
@@ -1092,5 +1118,4 @@ Format: [READY|NEED_INFO]: <one sentence explanation>`;
     return { readyToDraft: true };
   }
 }
-
 

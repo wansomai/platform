@@ -11,7 +11,6 @@ const prisma = new PrismaClient();
 // Set a longer timeout for file uploads
 export const maxDuration = 60;
 
-
 // GET handler - List all documents for a project
 export const GET = withErrorHandler(withAuth(async (
   request: NextRequest,
@@ -241,7 +240,6 @@ async function extractDocumentContent(documentId: string): Promise<boolean> {
         
         mimeType = metadata.mimeType || mimeType;
       } catch (error) {
-        console.warn(`Could not parse metadata for document ${documentId}:`, error);
         // Continue with default mime type inference from file extension
       }
     }

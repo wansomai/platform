@@ -13,8 +13,7 @@ interface ExtendedProjectState extends ProjectState {
   isLoading: boolean
   error: string | null
   requiresUpgrade?: boolean
-  
-  
+
   // Basic state setters
   setProjects: (projects: Project[]) => void
   setCurrentProject: (project: Project | null) => void

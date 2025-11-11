@@ -80,8 +80,6 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({
     { clicks: 0, content: 0, messages: 0 }
   );
 
-
-
   // Updated metrics array - changed from position to messages
   const metrics = [
     {

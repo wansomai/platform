@@ -48,7 +48,6 @@ export function ChatInterface() {
   } = useChatStore()
   const { currentProject } = useProjectStore()
 
-
   const {data: session} = useSession()
   
   // Scroll to bottom when messages change
@@ -119,8 +118,7 @@ const ChatMessageItem = React.memo(({
 
   // Debug: Check if message has report
   if (!isUser && (message.metadata?.report || message.report)) {
-    console.log('📄 Message has report:', message.id, message.metadata?.report || message.report);
-  }
+    }
   
   // Format the message content
   const formattedContent = formatMessageContent(message.content);

@@ -238,8 +238,7 @@ export async function POST(
           const isDraftingMode = settings.legalDrafting === true;
 
           if (isDraftingMode) {
-            console.log('📝 Drafting mode active - AI will use function calling to manage document workflow');
-          }
+            }
           
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
@@ -260,8 +259,7 @@ export async function POST(
                           recentMsgs
                         );
                         intentAnalysis = { shouldUpdateCanvas: analysis.readyToDraft };
-                        console.log('Drafting intent analysis:', intentAnalysis);
-                      } catch (err) {
+                        } catch (err) {
                         console.error('Error running intent analysis:', err);
                         intentAnalysis = { shouldUpdateCanvas: false };
                       }
@@ -274,17 +272,14 @@ export async function POST(
           
           if (conversationDocuments.length > 0) {
             // Gemini can handle FULL documents (2M token context) - no truncation needed!
-            console.log('Processing documents with Gemini (full document support)');
+            ');
             const contentParts: string[] = [];
 
             for (const docRef of conversationDocuments) {
-              console.log('Document:', docRef.document.title, 'has content:', !!docRef.document.content?.content);
               if (!docRef.document.content?.content) continue;
 
               const documentContent = docRef.document.content.content;
               const docLength = documentContent.length;
-
-              console.log('Document length:', docLength, 'characters - sending FULL document to Gemini');
 
               // Send ENTIRE document - Gemini can handle up to 2M tokens (~4000 pages)
               const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength/1000)}k characters, ${Math.round(docLength/2000)} pages) ###\n\n` +
@@ -295,15 +290,12 @@ export async function POST(
             }
 
             relevantContent = contentParts.join("\n");
-            console.log('Document processing complete, total content length:', relevantContent.length, 'characters');
-            console.log('Estimated tokens:', Math.round(relevantContent.length / 4), '(Gemini supports up to 2M tokens)');
+            , '(Gemini supports up to 2M tokens)');
           }
 
           // Web search is now handled by Gemini's built-in Google Search grounding
           // No need for separate API calls - Gemini will search when needed
           const useGoogleSearch = settings.webSearch;
-          console.log('Google Search grounding enabled:', useGoogleSearch);
-          
           // Format message history for Gemini
           // Filter out 'system' role messages as Gemini doesn't support them in history
           let conversationHistory = messageHistory
@@ -467,10 +459,9 @@ export async function POST(
             }`;
 
           // No need to truncate - Gemini supports 2M token context!
-          console.log('Final relevantContent length:', relevantContent.length);
-          console.log('System message includes documents:', systemMessage.includes('Here are the documents'));
+          );
           if (relevantContent.length > 0) {
-            console.log('Sample of relevant content:', relevantContent.substring(0, 200) + '...');
+            + '...');
           }
 
           // Initialize Gemini model with settings and optional Google Search grounding
@@ -479,7 +470,6 @@ export async function POST(
 
           // Check if someone accidentally set a non-Gemini model (e.g., gpt-4)
           if (!modelName.toLowerCase().startsWith('gemini')) {
-            console.warn(`Invalid model "${modelName}" - falling back to gemini-2.0-flash-exp`);
             modelName = 'gemini-2.0-flash-exp';
           }
 
@@ -491,8 +481,7 @@ export async function POST(
             tools.push({
               googleSearch: {}
             });
-            console.log('✓ Google Search grounding enabled - Gemini will search when needed');
-          }
+            }
 
           // Add legal drafting function calling tools if in drafting mode
           if (isDraftingMode) {
@@ -503,8 +492,7 @@ export async function POST(
                 parameters: tool.parameters
               }))
             });
-            console.log('✓ Legal drafting tools enabled - AI can call draftNewDocument, editCanvasDocument, searchProjectDocuments, reviewDocument');
-          }
+            }
 
           // Build the full conversation history including system message
           const fullContents: any[] = [];
@@ -645,7 +633,7 @@ export async function POST(
 
           // Handle function calls if any
           if (functionCalls.length > 0) {
-            console.log(`🔧 Processing ${functionCalls.length} function call(s)...`);
+            ...`);
 
             // Send status update to client
             controller.enqueue(
@@ -685,8 +673,6 @@ export async function POST(
             );
 
             // Send function results back to the model for a final response
-            console.log('📤 Sending function results back to model...');
-
             // Add model response with function calls to history
             fullContents.push({
               role: 'model',
@@ -729,8 +715,7 @@ export async function POST(
               }
             }
 
-            console.log('✅ Function calling workflow completed');
-          }
+            }
 
           // Format the final content
           const formattedContent = formatAIMessage(fullContent);
@@ -949,8 +934,6 @@ Format: [READY|NEED_INFO]: <one sentence explanation>`;
 
     const isReady = response.trim().toUpperCase().startsWith('READY');
     const reasoning = response.split(':')[1]?.trim() || '';
-
-    console.log('Pre-flight check result:', { isReady, reasoning });
 
     return {
       readyToDraft: isReady,
@@ -1347,5 +1330,4 @@ async function handleCanvasDraftingRequestWithStreaming(
     return true; // Still handled, even with error
   }
 }
-
 

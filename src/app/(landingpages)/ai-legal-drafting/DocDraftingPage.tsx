@@ -24,7 +24,6 @@ const LegalDraftingPage = () => {
     paymentTerms: 'Monthly'
   });
 
-
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
@@ -283,7 +282,6 @@ const LegalDraftingPage = () => {
           </div>
         </div>
       </section>
-
 
 <KnowledgeBase/>
 

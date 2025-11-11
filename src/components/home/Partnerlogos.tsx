@@ -13,7 +13,6 @@ export const PatnerLogoSection = () => {
     { src: "/logos/9.png", alt: "Barizi Data Privacy Services" }
   ];
 
-
   return (
     <section className=" section-spacing">
            <div className="text-center">

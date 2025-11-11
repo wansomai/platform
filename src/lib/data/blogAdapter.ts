@@ -3,7 +3,6 @@ import { BlogPost,DocumentTemplate } from './contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
 
-
 export function createSlug(title: string): string {
   return title
     .toLowerCase()
@@ -12,7 +11,6 @@ export function createSlug(title: string): string {
     .replace(/-+/g, '-') // Remove consecutive hyphens
     .trim(); // Trim any leading/trailing spaces or hyphens
 }
-
 
 // HTML renderer options for Contentful Rich Text
 const htmlRenderOptions = {

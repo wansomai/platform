@@ -28,8 +28,6 @@ export const GET = withErrorHandler(withAuth(async (
 
   // Fetch the report from message metadata
   // Report ID format: report-{timestamp}, we need to find the message with this report
-  console.log('🔍 Looking for report:', reportId, 'in project:', projectId);
-
   const messages = await prisma.message.findMany({
     where: {
       conversation: {
@@ -43,8 +41,6 @@ export const GET = withErrorHandler(withAuth(async (
     take: 10 // Get last 10 messages to search through
   });
 
-  console.log('📋 Found', messages.length, 'messages to search');
-
   // Find the message with matching report ID
   const message = messages.find(msg => {
     // Parse metadata if it's a JSON string
@@ -52,19 +48,15 @@ export const GET = withErrorHandler(withAuth(async (
       ? JSON.parse(msg.metadata)
       : msg.metadata as any;
     const hasReport = metadata?.report?.reportId === reportId;
-    console.log('Checking message', msg.id, 'has report:', hasReport, 'reportId:', metadata?.report?.reportId);
     return hasReport;
   });
 
   if (!message) {
-    console.log('❌ No message found with reportId:', reportId);
     return NextResponse.json(
       { error: 'Report not found' },
       { status: 404 }
     );
   }
-
-  console.log('✅ Found message with report:', message.id);
   // Parse metadata if it's a JSON string
   const parsedMetadata = typeof message.metadata === 'string'
     ? JSON.parse(message.metadata)

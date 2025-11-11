@@ -78,7 +78,6 @@ const BlogsPageClient = () => {
       <section className="py-16">
         <div className="section-container mx-auto px-4">
 
-
           {error && (
             <div className="text-center py-8 text-red-600 bg-red-50 rounded-md">
               <p className="font-medium">{error}</p>

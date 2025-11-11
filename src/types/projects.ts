@@ -34,7 +34,6 @@ export interface Project {
   loadedAt: string;
 }
 
-
 export interface ProjectMember {
   userId: string;
   projectId: string;
@@ -58,7 +57,6 @@ export interface Jurisdiction {
   languages: string[];
   isPopular?: boolean;
 }
-
 
 export interface ProjectSettings {
   citeSources: boolean;

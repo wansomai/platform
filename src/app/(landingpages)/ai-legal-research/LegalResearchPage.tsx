@@ -68,13 +68,10 @@ const LegalResearchPage = () => {
             </div>
               {/* Hero Demo Interface */}
 <ResearchInterfaceCards/>
-          
-            
+
           </div>
         </div>
       </section>
-
-   
 
       {/* Legal authorities database section */}
      <LegalResearchAssistant/>
@@ -146,9 +143,7 @@ export const ResearchInterfaceCards = () => {
             Case Law
           </h3>
           </div>
-          
-          
-          
+
           <div className="space-y-2">
             <div className="h-2 bg-gray-200 rounded-full w-full"></div>
             <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
@@ -164,9 +159,7 @@ export const ResearchInterfaceCards = () => {
             Statutes
           </h3>
           </div>
-          
-          
-          
+
           <div className="space-y-2">
             <div className="h-2 bg-gray-200 rounded-full w-full"></div>
             <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
@@ -183,9 +176,7 @@ export const ResearchInterfaceCards = () => {
             Regulations
           </h3>
           </div>
-          
-          
-          
+
           <div className="space-y-2">
             <div className="h-2 bg-gray-200 rounded-full w-full"></div>
             <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
@@ -536,7 +527,5 @@ const CollaborativeWorkspaces = () => {
       </section>   
   );
 }
-
-
 
 export default LegalResearchPage;

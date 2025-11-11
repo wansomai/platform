@@ -71,8 +71,6 @@ export default function ProjectPage() {
         try {
           // Fetch latest connection status to see what was connected
           const response: { data: { hasCalendarAccess?: boolean; hasGmailAccess?: boolean  } } = await apiService.get('/api/auth/google-connection/status');
-          console.log('Google connection status:', response.data);
-
           // Safely check if data exists before accessing properties
           if (response && response.data) {
             // Auto-enable Calendar if it was just connected and not already enabled

@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import CasePreparationPage from './CasePreparationPage';
 
-
 export const metadata: Metadata = {
   title: 'AI for Case Prediction Platform | Wansom AI',
   description: 'Prepare winning cases with AI that analyzes your arguments, predicts outcomes, and simulates opposing counsel strategies to strengthen your position.',
@@ -26,9 +25,6 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">

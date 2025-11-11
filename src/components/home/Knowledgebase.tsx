@@ -32,7 +32,6 @@ const KnowledgeBase=() =>{
       setIsSubmitting(true);
   
       try {
-        console.log('Navigating to register page...');
         // Navigate to register page when send is clicked
         router.push('/register');
       } catch (error) {

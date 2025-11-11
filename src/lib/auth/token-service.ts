@@ -60,7 +60,3 @@ export const generateTokens = (user: User) => {
   };
 };
 
-
-
-
-

@@ -29,8 +29,6 @@ export const POST = withErrorHandler(withAuth(async (
       );
     }
 
-    console.log('✅ Google account disconnected for user:', userId);
-
     return NextResponse.json({
       success: true,
       message: 'Google account disconnected successfully'

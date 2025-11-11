@@ -252,5 +252,4 @@ const LocationsStep = () => {
   );
 };
 
-
 export { LocationsStep };

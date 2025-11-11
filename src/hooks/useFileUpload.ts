@@ -35,7 +35,6 @@ export interface FileUploadActions {
   setUploading: (uploading: boolean) => void;
 }
 
-
 export const useFileUpload = (options: FileUploadOptions = {}): FileUploadState & FileUploadActions => {
   const {
     maxFileSize = FILE_UPLOAD_CONFIG.MAX_SIZE,

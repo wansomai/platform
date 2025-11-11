@@ -9,7 +9,6 @@ import { formatRelativeTime } from '@/lib/utils/date'
 import { cleanTextContent, formatSearchQuery, containsSearchTerm } from '@/lib/utils/text'
 import {ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG} from '@/lib/utils/constants'
 
-
 export interface UseDocumentsOptions {
   projectId?: string;
   conversationId?: string;
@@ -105,7 +104,6 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       setIsProcessing(false);
     }
   };
-
 
   // Upload and attach to conversation
   const uploadAndAttach = async (file: File, targetConversationId?: string, folderId?: string) => {

@@ -92,7 +92,6 @@ export default function ContactPageClient() {
           <div className="flex items-center justify-center gap-12 ">
             {/* Left Column - Contact Form */}
             <div>
-          
 
               <h2 className="font-marcellus text-2xl mb-8">
                 Send us a message

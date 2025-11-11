@@ -34,7 +34,6 @@ interface PageProps {
   blog: any | null;
 }
 
-
 const DocDetailPageClient = ({ blog }: PageProps) => {
   const router = useRouter();
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
@@ -53,14 +52,11 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
 
   // Handle chat input send
   const handleSend = async () => {
-    console.log('Send button clicked!', { chatInput, isSubmitting });
-
     if (isSubmitting) return;
 
     setIsSubmitting(true);
 
     try {
-      console.log('Navigating to register page...');
       // Navigate to register page when send is clicked
       router.push('/register');
     } catch (error) {
@@ -347,9 +343,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
               <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
             </div>
           </div>
-            
-          
-          
+
           {/* Main content column */}
           <div className="w-full lg:w-7/12">
             {/* Breadcrumb */}

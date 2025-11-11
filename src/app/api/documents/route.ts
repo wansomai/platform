@@ -11,7 +11,6 @@ import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 // Set a reasonable timeout for document processing
 export const maxDuration = 60;
 
-
 export async function GET(request: NextRequest) {
   try {
     const userId = getUserIdFromRequest(request);

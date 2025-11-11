@@ -90,7 +90,6 @@ const QuickActionCard = React.memo(({
   );
 });
 
-
 export default function DashboardPage() {
   const router = useRouter();
   const [showProjectModal, setShowProjectModal] = useState(false);
@@ -99,7 +98,6 @@ export default function DashboardPage() {
   const { documents, fetchDocuments, isLoading: documentsLoading } = useDocumentsStore();
   const { notify } = useNotifications();
 
-  
   // Load dashboard data on mount only
   useEffect(() => {
     const loadData = async () => {
@@ -150,13 +148,10 @@ export default function DashboardPage() {
     router.push("/projects");
   }, [router]);
 
-
-
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-7xl">
       {/* Welcome Banner */}
       <WelcomeBanner />
-
 
       {/* Quick Actions & Activity Feed */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -206,8 +201,7 @@ export default function DashboardPage() {
               color="text-blue-600"
               disabled={isCreatingQuickChat}
             />
-            
-            
+
           </div>
         </div>
 

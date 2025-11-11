@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import AISearchPage from './AISearchPage';
 
-
 export const metadata: Metadata = {
     title: "Wansom AI Academy | Legal AI Search Platform",
     description: "Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.",
@@ -55,9 +54,6 @@ export const metadata: Metadata = {
   };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">
