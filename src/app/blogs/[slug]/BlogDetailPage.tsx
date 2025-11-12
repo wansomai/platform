@@ -14,15 +14,12 @@ interface PageProps {
   };
 }
 
-
 const BlogDetailPageClient = ({ params }: PageProps) => {
   const { slug, id } = params;
   const [blog, setBlog] = useState<any>(null);
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-
 
   useEffect(() => {
     const fetchBlogPost = async () => {

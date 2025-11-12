@@ -7,7 +7,6 @@ import AuthProvider from "@/providers/AuthProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Script from 'next/script';
 
-
 // Configure Roboto with multiple weights for professional use
 const roboto = Roboto({ 
   weight: ["300", "400", "500", "700", "900"],

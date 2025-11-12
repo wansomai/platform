@@ -43,7 +43,6 @@ const CreativeIntegrationsSection = () => {
 
   ];
 
-
   // Floating animation effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,8 +87,6 @@ const CreativeIntegrationsSection = () => {
       </div>
     </div>
   );
-
- 
 
   return (
     <section className="py-20 bg-gradient-to-b from-white to-gray-50" id='integrations'>

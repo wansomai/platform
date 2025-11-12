@@ -24,8 +24,6 @@ export async function executeFunctionCall(
   streamCallback?: (event: any) => void,
   userId?: string
 ): Promise<any> {
-  console.log('🔧 Executing function call:', functionCall.name, functionCall.args);
-
   try {
     switch (functionCall.name) {
       case 'draftNewDocument': {
@@ -54,8 +52,6 @@ ${partiesText}
 Terms: ${termsText}
 
 ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
-
-        console.log('📝 Generating document with streaming:', documentType);
 
         // Send initial status
         if (streamCallback) {
@@ -105,8 +101,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           }
         });
 
-        console.log('✅ Document created successfully in canvas');
-
         // Send final canvas update
         if (streamCallback) {
           streamCallback({
@@ -145,8 +139,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
         const editRequest = targetSection
           ? `In the ${targetSection} section: ${changeDescription}`
           : changeDescription;
-
-        console.log('✏️  Editing canvas document with streaming:', editRequest);
 
         // Send initial status
         if (streamCallback) {
@@ -191,8 +183,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           }
         });
 
-        console.log('✅ Document updated successfully in canvas');
-
         // Send final canvas update
         if (streamCallback) {
           streamCallback({
@@ -222,8 +212,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           };
         }
 
-        console.log('🔍 Searching project documents for:', query);
-
         // Simple search through document contents
         const searchResults: any[] = [];
         for (const docRef of conversationDocuments) {
@@ -243,8 +231,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           }
         }
 
-        console.log(`✅ Search complete: found ${searchResults.length} matches`);
-
         return {
           success: true,
           results: searchResults,
@@ -256,8 +242,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
 
       case 'reviewDocument': {
         const { documentIds, reviewFocus, specificInstructions } = functionCall.args as any;
-
-        console.log('📋 Reviewing documents with focus:', reviewFocus);
 
         // Determine which documents to review
         let documentsToReview: any[] = [];
@@ -271,8 +255,7 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
               doc.document.id === previewDocument.id
             );
             primaryDocumentName = previewDocument.title;
-            console.log('📋 Primary document is preview document:', primaryDocumentName);
-          }
+            }
           // Priority 2: Canvas document (if user is in drafting mode)
           else if (canvasDocument && canvasDocument.htmlContent) {
             documentsToReview = [{
@@ -285,8 +268,7 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
               }
             }];
             primaryDocumentName = 'Canvas Document';
-            console.log('📋 Primary document is canvas document');
-          }
+            }
           // Fallback: No primary document available
           else {
             return {
@@ -302,8 +284,7 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
             };
           }
           documentsToReview = conversationDocuments;
-          console.log('📋 Reviewing all project documents:', documentsToReview.length);
-        }
+          }
         // Handle specific document IDs
         else {
           if (conversationDocuments.length === 0) {
@@ -314,8 +295,7 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           documentsToReview = conversationDocuments.filter((doc: any) =>
             documentIds.includes(doc.document.id)
           );
-          console.log('📋 Reviewing specific documents:', documentsToReview.length);
-        }
+          }
 
         if (documentsToReview.length === 0) {
           return {
@@ -349,8 +329,6 @@ ${specificInstructions ? `Specific Instructions: ${specificInstructions}` : ''}
 
 Please provide a structured review report.`;
 
-        console.log('📝 Generating document review report');
-
         // Send initial status (not canvas-related, just general processing)
         if (streamCallback) {
           streamCallback({
@@ -381,8 +359,6 @@ Please provide a structured review report.`;
 
         // Generate a unique report ID for this session
         const reportId = `report-${Date.now()}`;
-
-        console.log('✅ Document review report generated:', reportId);
 
         // Extract a brief summary from the report (first few paragraphs or executive summary)
         const htmlText = result.htmlContent || result.plainText || '';
@@ -419,8 +395,6 @@ Please provide a structured review report.`;
 
         const { summary, description, startDateTime, endDateTime, attendees, location, timeZone } = functionCall.args as any;
 
-        console.log('📅 Creating calendar event:', summary);
-
         try {
           const event = await GoogleCalendarService.createEvent(userId, {
             summary,
@@ -438,8 +412,6 @@ Please provide a structured review report.`;
 
           const formattedStart = new Date(startDateTime).toLocaleString();
           const formattedEnd = new Date(endDateTime).toLocaleString();
-
-          console.log('✅ Calendar event created:', event.id);
 
           return {
             success: true,
@@ -468,8 +440,6 @@ Please provide a structured review report.`;
 
         const { startDate, endDate, query, maxResults } = functionCall.args as any;
 
-        console.log('🔍 Searching calendar events from', startDate, 'to', endDate);
-
         try {
           const events = await GoogleCalendarService.searchEvents(userId, {
             startDate,
@@ -477,8 +447,6 @@ Please provide a structured review report.`;
             query,
             maxResults
           });
-
-          console.log(`✅ Found ${events.length} calendar events`);
 
           if (events.length === 0) {
             return {
@@ -519,16 +487,12 @@ Please provide a structured review report.`;
 
         const { eventId, updates } = functionCall.args as any;
 
-        console.log('✏️  Updating calendar event:', eventId);
-
         try {
           const updatedEvent = await GoogleCalendarService.updateEvent(userId, eventId, updates);
 
           if (!updatedEvent) {
             return { error: 'Failed to update calendar event. Event may not exist.' };
           }
-
-          console.log('✅ Calendar event updated:', updatedEvent.id);
 
           return {
             success: true,
@@ -557,16 +521,12 @@ Please provide a structured review report.`;
 
         const { startDateTime, endDateTime, timeZone } = functionCall.args as any;
 
-        console.log('📊 Checking calendar availability from', startDateTime, 'to', endDateTime);
-
         try {
           const availability = await GoogleCalendarService.getAvailability(userId, {
             startDateTime,
             endDateTime,
             timeZone
           });
-
-          console.log(`✅ Found ${availability.busyTimes.length} busy periods and ${availability.freeTimes.length} free periods`);
 
           const formatTimeRange = (start: string, end: string) => {
             const startDate = new Date(start);
@@ -605,15 +565,11 @@ Please provide a structured review report.`;
 
         const { query, maxResults } = functionCall.args as any;
 
-        console.log('📧 Searching emails with query:', query);
-
         try {
           const emails = await GmailService.searchEmails(userId, {
             query,
             maxResults
           });
-
-          console.log(`✅ Found ${emails.length} emails`);
 
           if (emails.length === 0) {
             return {
@@ -650,12 +606,8 @@ Please provide a structured review report.`;
 
         const { emailId } = functionCall.args as any;
 
-        console.log('📬 Reading email:', emailId);
-
         try {
           const email = await GmailService.readEmail(userId, emailId);
-
-          console.log('✅ Email read successfully');
 
           return {
             success: true,
@@ -683,8 +635,6 @@ Please provide a structured review report.`;
 
         const { to, subject, body, cc, bcc } = functionCall.args as any;
 
-        console.log('✏️  Creating draft email to:', to);
-
         try {
           const result = await GmailService.draftEmail(userId, {
             to,
@@ -693,8 +643,6 @@ Please provide a structured review report.`;
             cc,
             bcc
           });
-
-          console.log('✅ Draft email created:', result.draftId);
 
           return {
             success: true,

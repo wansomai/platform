@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import LegalDraftingPage from './DocDraftingPage';
 
-
 export const metadata: Metadata = {
   title: 'Best AI for Legal Drafting Platform | Wansom AI',
   description: 'Draft Correct Legally formatted Documents and Clauses quickly with AI',
@@ -26,9 +25,6 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">

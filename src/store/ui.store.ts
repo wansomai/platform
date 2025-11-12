@@ -3,8 +3,6 @@ import { create } from 'zustand'
 import { v4 as uuidv4 } from 'uuid'
 import { UIState } from '@/types'
 
-
-
 export const useUIStore = create<UIState>((set,get) => ({
   // Sidebar state
   sidebarOpen: false,

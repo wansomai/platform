@@ -72,8 +72,7 @@ const CareersPageClient = () => {
                       At Wansom, we're building the future of legal AI solutions. Join our talented team and help shape the next generation of legal technology. We give equal opportunity to all applicants.
                       </p>
                     </div>
-                   
-                
+
                   </div>
       
                   {/* Right Column - Map */}
@@ -92,9 +91,7 @@ const CareersPageClient = () => {
                 </div>
               </div>
       </section>
-      
-   
-      
+
       {/* Available Opportunities Section */}
       <div className="p-6 md:p-16">
         <h2 className="text-2xl font-bold mb-8">Available Opportunities</h2>

@@ -4,11 +4,9 @@ import HireALawyerPage from './HireALawyerPage'
 import { getAllSlugs, getAllPractiseAreas,fetchAllEntries } from '@/lib/data/contentful'
 import Link from 'next/link';
 
-
 type Props = {
   params: Promise<{ slug: string, id: string }>;
 }
-
 
 // ❶  Generate all pages at build‑time
 export async function generateStaticParams() {

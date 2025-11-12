@@ -205,8 +205,6 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
   return allItems;
 }
 
-
-
 export async function getBlogPostById(id: string): Promise<BlogPost | null> {
   try {
     const response = await client.getEntry(id);
@@ -295,7 +293,6 @@ export async function getAllSlugs() {
   return res.items.map((i) => i.fields.slug);
 }
 
-
 export async function getPostBySlug({content_type, slug}: {content_type: string, slug: string}): Promise<DocumentTemplate | null> {
   try {
     const entries = await client.getEntries({
@@ -314,9 +311,6 @@ export async function getPostBySlug({content_type, slug}: {content_type: string,
   }
 }
 
-
-
-
 export async function fetchAllEntries( content_type: any ) {
   const pageSize = 1000; // Contentful hard max
   let skip = 0;
@@ -329,6 +323,5 @@ export async function fetchAllEntries( content_type: any ) {
   }
   return items;
 }
-
 
 export default client;

@@ -21,6 +21,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   const invitations = await prisma.invitation.findMany({
     where: {
       organizationId: user.organizationId,
+      status: 'pending', // Only show pending invitations
       expiresAt: {
         gt: new Date()
       }

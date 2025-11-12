@@ -2,7 +2,6 @@
 import { Metadata } from 'next';
 import DocumetsVault from './DocumentVaultPage';
 
-
 export const metadata: Metadata = {
   title: 'AI Electronic Document Management System | Vault | Wansom AI',
   description: 'Capture, store, organize, and retrieve documents in a secure centralized repository',
@@ -25,9 +24,6 @@ export const metadata: Metadata = {
 };
 
 const Page = () => {
-
-
-
 
   return (
     <div className="bg-gray-50 min-h-screen">

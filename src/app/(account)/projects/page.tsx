@@ -40,7 +40,6 @@ import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal";
 import { useNotifications } from "@/hooks/useNotifications";
 
-
 export default function ProjectsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -153,7 +152,6 @@ export default function ProjectsPage() {
     return sortOrder === "asc" ? -result : result;
   });
 
-  
   // Handle project creation
   const handleCreateProject = () => {
     setShowCreateModal(true);
@@ -299,7 +297,6 @@ export default function ProjectsPage() {
                 </CardDescription>
               </CardHeader>
 
-              
               <CardFooter className="border-t pt-4">
                 <p className="text-gray-600 text-sm">Created {format(new Date(project.createdAt), "PP")} </p>
                 <Button variant="ghost" size="sm" className="ml-auto"   onClick={() => router.push(`/projects/${project.id}`)}>

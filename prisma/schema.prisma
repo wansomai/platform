@@ -96,9 +96,9 @@ model Organization {
   serviceAreas        Json[]
   yearsInPractice     Int                   @default(0)
   accountType         String                @default("personal")
+  ownerId             String?
   upgradeRequestToken String?
   upgradeRequestedAt  DateTime?
-  ownerId             String?
   aiAssociates        AIAssociate[]
   documents           Document[]
   Folder              Folder[]
@@ -439,9 +439,9 @@ model Invitation {
   projectId      String
   organizationId String
   invitedById    String
-  status         String       @default("pending")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  status         String       @default("pending")
   invitedBy      User         @relation("InvitedBy", fields: [invitedById], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])
   project        Project      @relation(fields: [projectId], references: [id])

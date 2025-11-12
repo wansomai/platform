@@ -305,7 +305,6 @@ const CasePreparationPage = () => {
         </div>
       </section>
 
-
       {/* Case preparation workflow section */}
       <section className="section-spacing bg-[#355e66]">
         <div className="section-container">
@@ -362,14 +361,12 @@ const CasePreparationPage = () => {
         </div>
       </section>
 
-
       {/* More features section */}
      <VaultSection/>
       <Footer />
     </div>
   );
 };
-
 
 const CasePreparationInterface = () => {
   return (

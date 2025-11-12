@@ -40,7 +40,6 @@ export default function Home() {
   );
 }
 
-
 function AutomateSeo() {
   return (
     <section className="section-spacing" id="whyjoin">
@@ -191,8 +190,7 @@ function TeamSection(){
 }
 
 function HeroSection(){
- 
- 
+
   return (
     <section
     className="  pt-24 md:pt-20 pl-5  bg-primary relative overflow-hidden"
@@ -217,7 +215,6 @@ function HeroSection(){
       </button>
           </div>
 
-      
         </div>
 
         {/* Right Side - Form */}
@@ -225,13 +222,11 @@ function HeroSection(){
           <img src="/law-office.jpg"/>
 
         </div>
-        
-      
+
     </div>
   </section>
   );
 };
-
 
 function HowITWorksSection () {
   const features = [
@@ -390,7 +385,6 @@ function HowITWorksSection () {
     </section>
   );
 };
-
 
 function PricingSection () {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annually'>('monthly');

@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import api from '@/lib/api'
 import { Project } from '@/types/projects'
 
-
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)

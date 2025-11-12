@@ -116,7 +116,6 @@ const HireALawyerPage = ({
 
             </div>
 
-        
           </div>
 
           {/* Right Side - Form */}
@@ -124,8 +123,7 @@ const HireALawyerPage = ({
             <img src="/law-office.jpg"/>
 
           </div>
-          
-        
+
       </div>
     </section>
   {/* Statistics Section */}
@@ -195,8 +193,7 @@ const HireALawyerPage = ({
                 <h2 className="text-xl font-semibold text-white  text-center">
                  Ask a Lawyer
                 </h2>
-              
-              
+
               </div>
              <div className="bg-white rounded-b-2xl shadow-2xl p-8 max-w-3xl w-full mx-auto ">
          
@@ -364,10 +361,8 @@ const HireALawyerPage = ({
         </div>
       </section>
 
-    
       {/* Why Choose Section */}
    <PractiseAreasComponent areas={areas ?? []}/>
-
 
       {/* Final CTA Section */}
       <FaqSection faqRichText={faq}/>
@@ -401,6 +396,5 @@ const HireALawyerPage = ({
     </div>
   );
 };
-
 
 export default HireALawyerPage;

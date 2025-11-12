@@ -286,7 +286,6 @@ export default function WorkflowsPage() {
         </div>
       </div>
 
-
       {/* Workflow Details Dialog - This will never be actually shown as all clicks show Pro modal */}
       <Dialog open={showWorkflowDetails} onOpenChange={setShowWorkflowDetails}>
         <DialogContent className="sm:max-w-[700px]">

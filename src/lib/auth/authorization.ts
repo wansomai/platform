@@ -91,7 +91,6 @@ export function getUserIdFromRequest(request: NextRequest): string | null {
   }
 }
 
-
 /**
  * Gets the projects that a user has access to
  * 

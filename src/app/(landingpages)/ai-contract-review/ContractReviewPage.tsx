@@ -40,7 +40,6 @@ const ContractReviewPage = () => {
     { src: "/logos/4.png", alt: "Netsheria" },
   ];
 
-
   return (
     <div className="min-h-screen bg-white text-gray-900">
       {/* Navbar placeholder */}
@@ -51,7 +50,6 @@ const ContractReviewPage = () => {
         <div className="container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-white max-w-4xl lg:basis-2/5">
-            
 
               <h1 className="text-heading-1 mb-4 text-shadow">
                 Best AI For Contract Review
@@ -639,7 +637,6 @@ const ContractReviewPage = () => {
       {/* More features section */}
      <VaultSection/>
 
-  
       {/* Footer placeholder */}
       <Footer/>
     </div>
