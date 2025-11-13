@@ -223,11 +223,11 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-// setShowProAccess(true);
-    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-      type
-    )}`;
-    window.location.href = url;
+setShowProAccess(true);
+    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+    //   type
+    // )}`;
+    // window.location.href = url;
   };
 
   // Handle Google account disconnection
@@ -624,7 +624,7 @@ export function ChatInput({
                       </div>
                     </div>
                        {/* Gmail */}
-                    {/* <div className="space-y-2">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="font-medium text-sm flex items-center gap-1">
                          <img src={'/icons/gmail.svg'} className="w-6 h-6"/> Gmail
@@ -663,7 +663,7 @@ export function ChatInput({
                         )}
                       </div>
                   
-                    </div> */}
+                    </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label
