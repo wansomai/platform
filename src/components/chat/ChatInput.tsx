@@ -195,15 +195,19 @@ export function ChatInput({
           setGoogleConnectionStatus(response.data);
           if(response.data.hasCalendarAccess) {
             updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
+            setIsConnecting(false);
           }
           if(response.data.hasGmailAccess) {
             updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
+            setIsConnecting(false);
           }
         }
       } catch (error) {
         console.error("Error checking Google connection:", error);
+        setIsConnecting(false);
       } finally {
         setIsCheckingConnection(false);
+        setIsConnecting(false);
       }
     };
 
