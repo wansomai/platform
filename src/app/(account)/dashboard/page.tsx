@@ -1,10 +1,8 @@
 // app/dashboard/page.tsx
 "use client";
-
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -248,7 +246,7 @@ export default function DashboardPage() {
                         </Button>
                       </div>
                     ) : (
-                      documents.map((a, i) => (
+                      recentDocuments.map((a, i) => (
                         <div
                           className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors text-wrap overflow-hidden"
                           key={i}

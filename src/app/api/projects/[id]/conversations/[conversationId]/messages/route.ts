@@ -474,46 +474,149 @@ export async function POST(
           }
 
           // Configure tools based on mode
+          // WORKAROUND: Since Gemini API doesn't support mixing googleSearch with functionDeclarations
+          // in the standard API, we create separate "agent tools" for each capability and let a root
+          // agent orchestrate them. This allows all tools to be enabled simultaneously.
+
           const tools: any[] = [];
+          const agentTools: any[] = [];
 
-          // Add Google Search grounding if web search is enabled
+          // Create agent for Google Search (Deep Research)
           if (useGoogleSearch) {
-            tools.push({
-              googleSearch: {}
+            agentTools.push({
+              name: 'searchAgent',
+              description: 'A specialist agent for conducting web searches using Google Search. Use this when you need current information, legal precedents, case law, recent regulations, or any external sources from the web.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  query: {
+                    type: 'string',
+                    description: 'The search query or research question to investigate'
+                  }
+                },
+                required: ['query']
+              }
             });
           }
 
-          // Add legal drafting function calling tools if in drafting mode
+          // Create agent for Legal Drafting
           if (isDraftingMode) {
-            tools.push({
-              functionDeclarations: legalDraftingTools.map(tool => ({
-                name: tool.name,
-                description: tool.description,
-                parameters: tool.parameters
-              }))
+            agentTools.push({
+              name: 'legalDraftingAgent',
+              description: 'A specialist agent for legal document creation and editing. Use this when you need to draft new documents, edit existing documents, review documents, or search through project documents.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  action: {
+                    type: 'string',
+                    description: 'The action to perform',
+                    enum: ['draft', 'edit', 'review', 'search']
+                  },
+                  details: {
+                    type: 'string',
+                    description: 'Detailed instructions for the legal drafting agent'
+                  }
+                },
+                required: ['action', 'details']
+              }
             });
           }
 
-          // Add Google Calendar tools if enabled
+          // Create agent for Google Calendar
           if (useGoogleCalendar) {
-            tools.push({
-              functionDeclarations: googleCalendarTools.map(tool => ({
-                name: tool.name,
-                description: tool.description,
-                parameters: tool.parameters
-              }))
+            agentTools.push({
+              name: 'calendarAgent',
+              description: 'A specialist agent for managing Google Calendar. Use this when you need to create events, check availability, list upcoming events, or manage calendar entries.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  action: {
+                    type: 'string',
+                    description: 'The calendar action to perform',
+                    enum: ['create_event', 'list_events', 'check_availability']
+                  },
+                  details: {
+                    type: 'string',
+                    description: 'Detailed instructions for the calendar operation'
+                  }
+                },
+                required: ['action', 'details']
+              }
             });
           }
 
-          // Add Gmail tools if enabled
+          // Create agent for Gmail
           if (useGmail) {
-            tools.push({
-              functionDeclarations: gmailTools.map(tool => ({
-                name: tool.name,
-                description: tool.description,
-                parameters: tool.parameters
-              }))
+            agentTools.push({
+              name: 'gmailAgent',
+              description: 'A specialist agent for managing Gmail. Use this when you need to send emails, read emails, search inbox, or manage email communications.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  action: {
+                    type: 'string',
+                    description: 'The Gmail action to perform',
+                    enum: ['send_email', 'read_email', 'search_inbox']
+                  },
+                  details: {
+                    type: 'string',
+                    description: 'Detailed instructions for the Gmail operation'
+                  }
+                },
+                required: ['action', 'details']
+              }
             });
+          }
+
+          // If we have multiple tool types, use the agent orchestration pattern
+          // Otherwise, use direct tool access for better performance
+          const hasMultipleToolTypes = [useGoogleSearch, isDraftingMode, useGoogleCalendar, useGmail].filter(Boolean).length > 1;
+
+          if (hasMultipleToolTypes && agentTools.length > 0) {
+            // Use agent orchestration pattern - root agent calls specialized agents
+            tools.push({
+              functionDeclarations: agentTools
+            });
+          } else {
+            // Single tool type - use direct access for better performance
+            if (useGoogleSearch) {
+              tools.push({
+                googleSearch: {}
+              });
+            } else {
+              // Collect all function declarations into a single array
+              const allFunctionDeclarations: any[] = [];
+
+              if (isDraftingMode) {
+                allFunctionDeclarations.push(...legalDraftingTools.map(tool => ({
+                  name: tool.name,
+                  description: tool.description,
+                  parameters: tool.parameters
+                })));
+              }
+
+              if (useGoogleCalendar) {
+                allFunctionDeclarations.push(...googleCalendarTools.map(tool => ({
+                  name: tool.name,
+                  description: tool.description,
+                  parameters: tool.parameters
+                })));
+              }
+
+              if (useGmail) {
+                allFunctionDeclarations.push(...gmailTools.map(tool => ({
+                  name: tool.name,
+                  description: tool.description,
+                  parameters: tool.parameters
+                })));
+              }
+
+              if (allFunctionDeclarations.length > 0) {
+                tools.push({
+                  functionDeclarations: allFunctionDeclarations
+                });
+              }
+            }
           }
 
           // Build the full conversation history including system message
@@ -723,27 +826,69 @@ export async function POST(
             // Execute all function calls and collect results
             const functionResponses = await Promise.all(
               functionCalls.map(async (fc) => {
-                const result = await executeFunctionCall(
-                  fc,
-                  projectId,
-                  project,
-                  conversationDocuments,
-                  canvasDocument,
-                  previewDocument,
-                  messageHistory.slice(-3).map((msg: any) => msg.content),
-                  // Stream canvas updates in real-time
-                  (event) => {
-                    controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
-                  },
-                  userId
-                );
+                // Check if this is an agent call (orchestration pattern)
+                if (hasMultipleToolTypes && (
+                  fc.name === 'searchAgent' ||
+                  fc.name === 'legalDraftingAgent' ||
+                  fc.name === 'calendarAgent' ||
+                  fc.name === 'gmailAgent'
+                )) {
+                  // Execute agent call by making a sub-request with the specific tool
+                  const result = await executeAgentCall(
+                    fc,
+                    genAI,
+                    modelName,
+                    systemMessage,
+                    content,
+                    projectId,
+                    project,
+                    conversationDocuments,
+                    canvasDocument,
+                    previewDocument,
+                    messageHistory.slice(-3).map((msg: any) => msg.content),
+                    userId
+                  );
 
-                return {
-                  functionResponse: {
-                    name: fc.name,
-                    response: result
+                  // Extract search sources from searchAgent results
+                  if (fc.name === 'searchAgent' && result.searchSources) {
+                    // Merge search sources into the global webSearchSources array
+                    for (const source of result.searchSources) {
+                      if (!webSearchSources.some(s => s.uri === source.uri)) {
+                        webSearchSources.push(source);
+                      }
+                    }
                   }
-                };
+
+                  return {
+                    functionResponse: {
+                      name: fc.name,
+                      response: result
+                    }
+                  };
+                } else {
+                  // Regular function call execution
+                  const result = await executeFunctionCall(
+                    fc,
+                    projectId,
+                    project,
+                    conversationDocuments,
+                    canvasDocument,
+                    previewDocument,
+                    messageHistory.slice(-3).map((msg: any) => msg.content),
+                    // Stream canvas updates in real-time
+                    (event) => {
+                      controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
+                    },
+                    userId
+                  );
+
+                  return {
+                    functionResponse: {
+                      name: fc.name,
+                      response: result
+                    }
+                  };
+                }
               })
             );
 
@@ -1032,6 +1177,166 @@ export async function POST(
       { error: "An unexpected error occurred. Please try again." },
       { status: 500 }
     );
+  }
+}
+
+/**
+ * Execute an agent call (orchestration pattern for multi-tool support)
+ */
+async function executeAgentCall(
+  functionCall: any,
+  genAI: any,
+  modelName: string,
+  systemMessage: string,
+  userQuery: string,
+  projectId: string,
+  project?: any,
+  conversationDocuments?: any[],
+  canvasDocument?: any,
+  previewDocument?: any,
+  recentMessages?: string[],
+  userId?: string
+): Promise<any> {
+  try {
+    const agentName = functionCall.name;
+    const args = functionCall.args || {};
+
+    // Determine which tool this agent needs
+    let agentTools: any[] = [];
+    let agentInstruction = systemMessage;
+
+    switch (agentName) {
+      case 'searchAgent':
+        agentTools.push({ googleSearch: {} });
+        agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${systemMessage}`;
+        break;
+
+      case 'legalDraftingAgent':
+        agentTools.push({
+          functionDeclarations: legalDraftingTools.map(tool => ({
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters
+          }))
+        });
+        agentInstruction = `You are a legal document specialist. ${systemMessage}`;
+        break;
+
+      case 'calendarAgent':
+        agentTools.push({
+          functionDeclarations: googleCalendarTools.map(tool => ({
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters
+          }))
+        });
+        agentInstruction = `You are a calendar management specialist. ${systemMessage}`;
+        break;
+
+      case 'gmailAgent':
+        agentTools.push({
+          functionDeclarations: gmailTools.map(tool => ({
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters
+          }))
+        });
+        agentInstruction = `You are an email management specialist. ${systemMessage}`;
+        break;
+
+      default:
+        return { success: false, error: `Unknown agent: ${agentName}` };
+    }
+
+    // Build the query for the specialist agent
+    const agentQuery = args.query || args.details || JSON.stringify(args);
+
+    // Execute the agent with its specialized tool
+    const agentResult = await genAI.models.generateContent({
+      model: modelName,
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: agentQuery }]
+        }
+      ],
+      config: {
+        systemInstruction: agentInstruction,
+        temperature: 0.7,
+        maxOutputTokens: 8192,
+        tools: agentTools
+      }
+    });
+
+    // Check if the agent made function calls (for legal drafting, calendar, gmail agents)
+    const candidate = agentResult.candidates?.[0];
+    const agentFunctionCalls = candidate?.content?.parts?.filter((part: any) => part.functionCall).map((part: any) => part.functionCall) || [];
+    let responseText = agentResult.text || '';
+
+    // Extract grounding metadata for searchAgent (web search sources)
+    let searchSources: Array<{title: string, uri: string}> = [];
+    if (agentName === 'searchAgent' && candidate?.groundingMetadata) {
+      const metadata = candidate.groundingMetadata;
+
+      // Extract grounding supports (sources)
+      if (metadata.groundingSupports) {
+        for (const support of metadata.groundingSupports) {
+          if (support.groundingChunkIndices && metadata.groundingChunks) {
+            for (const index of support.groundingChunkIndices) {
+              const groundingChunk = metadata.groundingChunks[index];
+              if (groundingChunk?.web) {
+                const source = {
+                  title: groundingChunk.web.title || 'Source',
+                  uri: groundingChunk.web.uri || ''
+                };
+                // Avoid duplicates
+                if (!searchSources.some(s => s.uri === source.uri)) {
+                  searchSources.push(source);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // If the specialist agent made function calls, execute them
+    if (agentFunctionCalls.length > 0 && (agentName === 'legalDraftingAgent' || agentName === 'calendarAgent' || agentName === 'gmailAgent')) {
+      // Execute the function calls made by the specialist agent
+      const { executeFunctionCall } = await import('@/lib/functionExecutor');
+
+      for (const fc of agentFunctionCalls) {
+        const functionResult = await executeFunctionCall(
+          fc,
+          projectId,
+          project,
+          conversationDocuments || [],
+          canvasDocument,
+          previewDocument,
+          recentMessages || [],
+          () => {}, // No event streaming for sub-agents
+          userId
+        );
+
+        // Append function result to response
+        responseText += `\n\nFunction ${fc.name} executed: ${JSON.stringify(functionResult)}`;
+      }
+    }
+
+    return {
+      success: true,
+      agent: agentName,
+      result: responseText,
+      query: agentQuery,
+      searchSources: searchSources.length > 0 ? searchSources : undefined
+    };
+  } catch (error: any) {
+    console.error(`Error executing ${functionCall.name}:`, error);
+    return {
+      success: false,
+      agent: functionCall.name,
+      error: error.message || 'Agent execution failed'
+    };
   }
 }
 
