@@ -195,15 +195,19 @@ export function ChatInput({
           setGoogleConnectionStatus(response.data);
           if(response.data.hasCalendarAccess) {
             updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
+            setIsConnecting(false);
           }
           if(response.data.hasGmailAccess) {
             updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
+            setIsConnecting(false);
           }
         }
       } catch (error) {
         console.error("Error checking Google connection:", error);
+        setIsConnecting(false);
       } finally {
         setIsCheckingConnection(false);
+        setIsConnecting(false);
       }
     };
 
@@ -219,11 +223,11 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-setShowProAccess(true);
-    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-    //   type
-    // )}`;
-    // window.location.href = url;
+// setShowProAccess(true);
+    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+      type
+    )}`;
+    window.location.href = url;
   };
 
   // Handle Google account disconnection
