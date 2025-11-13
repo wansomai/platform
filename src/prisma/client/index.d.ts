@@ -8198,6 +8198,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     activeOrganizationId: string | null
+    resetToken: string | null
+    resetTokenExpiry: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -8210,6 +8212,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     activeOrganizationId: string | null
+    resetToken: string | null
+    resetTokenExpiry: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -8222,6 +8226,8 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     activeOrganizationId: number
+    resetToken: number
+    resetTokenExpiry: number
     _all: number
   }
 
@@ -8236,6 +8242,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     activeOrganizationId?: true
+    resetToken?: true
+    resetTokenExpiry?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -8248,6 +8256,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     activeOrganizationId?: true
+    resetToken?: true
+    resetTokenExpiry?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -8260,6 +8270,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     activeOrganizationId?: true
+    resetToken?: true
+    resetTokenExpiry?: true
     _all?: true
   }
 
@@ -8345,6 +8357,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     activeOrganizationId: string | null
+    resetToken: string | null
+    resetTokenExpiry: Date | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -8374,6 +8388,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     activeOrganizationId?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
@@ -8405,6 +8421,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     activeOrganizationId?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -8419,6 +8437,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     activeOrganizationId?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -8433,9 +8453,11 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     activeOrganizationId?: boolean
+    resetToken?: boolean
+    resetTokenExpiry?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId" | "resetToken" | "resetTokenExpiry", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -8498,6 +8520,8 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       activeOrganizationId: string | null
+      resetToken: string | null
+      resetTokenExpiry: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -8948,6 +8972,8 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly activeOrganizationId: FieldRef<"User", 'String'>
+    readonly resetToken: FieldRef<"User", 'String'>
+    readonly resetTokenExpiry: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -48790,7 +48816,9 @@ export namespace Prisma {
     organizationId: 'organizationId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    activeOrganizationId: 'activeOrganizationId'
+    activeOrganizationId: 'activeOrganizationId',
+    resetToken: 'resetToken',
+    resetTokenExpiry: 'resetTokenExpiry'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -49604,6 +49632,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     activeOrganizationId?: StringNullableFilter<"User"> | string | null
+    resetToken?: StringNullableFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAIAssociates?: AIAssociateListRelationFilter
     accounts?: AccountListRelationFilter
     actions?: ConversationActionListRelationFilter
@@ -49634,6 +49664,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     activeOrganizationId?: SortOrderInput | SortOrder
+    resetToken?: SortOrderInput | SortOrder
+    resetTokenExpiry?: SortOrderInput | SortOrder
     createdAIAssociates?: AIAssociateOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     actions?: ConversationActionOrderByRelationAggregateInput
@@ -49667,6 +49699,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     activeOrganizationId?: StringNullableFilter<"User"> | string | null
+    resetToken?: StringNullableFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAIAssociates?: AIAssociateListRelationFilter
     accounts?: AccountListRelationFilter
     actions?: ConversationActionListRelationFilter
@@ -49697,6 +49731,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     activeOrganizationId?: SortOrderInput | SortOrder
+    resetToken?: SortOrderInput | SortOrder
+    resetTokenExpiry?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -49715,6 +49751,8 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     activeOrganizationId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    resetToken?: StringNullableWithAggregatesFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type OrganizationWhereInput = {
@@ -52488,6 +52526,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -52518,6 +52558,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -52544,6 +52586,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -52574,6 +52618,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -52602,6 +52648,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -52612,6 +52660,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -52624,6 +52674,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OrganizationCreateInput = {
@@ -55545,6 +55597,17 @@ export namespace Prisma {
     expires?: SortOrder
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type AIAssociateListRelationFilter = {
     every?: AIAssociateWhereInput
     some?: AIAssociateWhereInput
@@ -55725,6 +55788,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     activeOrganizationId?: SortOrder
+    resetToken?: SortOrder
+    resetTokenExpiry?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -55737,6 +55802,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     activeOrganizationId?: SortOrder
+    resetToken?: SortOrder
+    resetTokenExpiry?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -55749,6 +55816,22 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     activeOrganizationId?: SortOrder
+    resetToken?: SortOrder
+    resetTokenExpiry?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -55810,17 +55893,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -55992,20 +56064,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type FloatNullableFilter<$PrismaModel = never> = {
@@ -57664,6 +57722,10 @@ export namespace Prisma {
     connect?: UserOrganizationWhereUniqueInput | UserOrganizationWhereUniqueInput[]
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type AIAssociateUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -58316,10 +58378,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type AIAssociateUpdateManyWithoutOrganizationNestedInput = {
@@ -60935,11 +60993,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -60949,6 +61002,25 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -61009,20 +61081,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -61070,6 +61128,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -61099,6 +61159,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -61140,6 +61202,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -61169,6 +61233,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -61194,6 +61260,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -61223,6 +61291,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -61264,6 +61334,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -61293,6 +61365,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -62823,6 +62897,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -62852,6 +62928,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -62932,6 +63010,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -62960,6 +63040,8 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -62996,6 +63078,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -63024,6 +63108,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -63278,6 +63364,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -63307,6 +63395,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -63383,6 +63473,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     activeOrganizationId?: StringNullableFilter<"User"> | string | null
+    resetToken?: StringNullableFilter<"User"> | string | null
+    resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
   }
 
   export type UserUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -64352,6 +64444,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -64381,6 +64475,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -64499,6 +64595,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -64528,6 +64626,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -65280,6 +65380,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -65309,6 +65411,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -65401,6 +65505,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -65430,6 +65536,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -65477,6 +65585,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -65506,6 +65616,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -65823,6 +65935,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -65852,6 +65966,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -66219,6 +66335,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -66248,6 +66366,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -66435,6 +66555,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -66464,6 +66586,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -66615,6 +66739,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -66644,6 +66770,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -66783,6 +66911,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -66812,6 +66942,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -66947,6 +67079,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -66976,6 +67110,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -67103,6 +67239,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -67132,6 +67270,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -67914,6 +68054,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -67943,6 +68085,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -68049,6 +68193,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -68078,6 +68224,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -68479,6 +68627,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -68508,6 +68658,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -68665,6 +68817,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -68694,6 +68848,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -68952,6 +69108,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -68981,6 +69139,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -69061,6 +69221,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -69090,6 +69252,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -69152,6 +69316,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -69181,6 +69347,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -69291,6 +69459,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -69320,6 +69490,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -69598,6 +69770,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -69627,6 +69801,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -69794,6 +69970,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -69823,6 +70001,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -69952,6 +70132,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -69981,6 +70163,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -70065,6 +70249,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -70094,6 +70280,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -70119,6 +70307,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -70148,6 +70338,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -70360,6 +70552,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -70389,6 +70583,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -71768,6 +71964,8 @@ export namespace Prisma {
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
   }
 
   export type UserCreateManyOrganizationInput = {
@@ -71779,6 +71977,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
   }
 
   export type UserOrganizationCreateManyOrganizationInput = {
@@ -72048,6 +72248,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -72076,6 +72278,8 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -72103,6 +72307,8 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUpdateWithoutOrganizationInput = {
@@ -72113,6 +72319,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -72141,6 +72349,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -72168,6 +72378,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserOrganizationUpdateWithoutOrganizationInput = {
