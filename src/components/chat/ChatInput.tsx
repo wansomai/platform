@@ -624,7 +624,7 @@ export function ChatInput({
                       </div>
                     </div>
                        {/* Gmail */}
-                    {/* <div className="space-y-2">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="font-medium text-sm flex items-center gap-1">
                          <img src={'/icons/gmail.svg'} className="w-6 h-6"/> Gmail
@@ -663,7 +663,7 @@ export function ChatInput({
                         )}
                       </div>
                   
-                    </div> */}
+                    </div>
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label
