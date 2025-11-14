@@ -9,7 +9,6 @@ const prisma = new PrismaClient();
 const REQUIRED_SCOPES = {
   calendar: 'https://www.googleapis.com/auth/calendar',
   gmail: 'https://www.googleapis.com/auth/gmail.readonly',
-  gmailCompose: 'https://www.googleapis.com/auth/gmail.compose'
 };
 
 /**
