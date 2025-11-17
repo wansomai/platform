@@ -17,12 +17,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { token, password } = resetPasswordSchema.parse(body)
-    
-    // In a real app, you would verify the token and get the user
-    // For this implementation, we'll simulate success
-    
-    // In a real app, this would be the actual implementation:
-    /*
+
+    // Verify the token and get the user
     const user = await prisma.user.findFirst({
       where: {
         resetToken: token,
@@ -31,21 +27,21 @@ export async function POST(request: NextRequest) {
         }
       }
     })
-    
+
     if (!user) {
       return NextResponse.json(
-        { 
+        {
           status: 400,
-          message: 'Invalid or expired token' 
+          message: 'Invalid or expired token'
         },
         { status: 400 }
       )
     }
-    
+
     // Hash new password
     const hashedPassword = await bcrypt.hash(password, 10)
-    
-    // Update user
+
+    // Update user password and clear reset token
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -54,30 +50,29 @@ export async function POST(request: NextRequest) {
         resetTokenExpiry: null
       }
     })
-    */
-    
+
     return NextResponse.json({
       status: 200,
       message: 'Password reset successfully'
     })
   } catch (error) {
     console.error('Reset password error:', error)
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
+        {
           status: 400,
-          message: 'Validation failed', 
-          errors: error.errors 
+          message: 'Validation failed',
+          errors: error.errors
         },
         { status: 400 }
       )
     }
-    
+
     return NextResponse.json(
-      { 
+      {
         status: 500,
-        message: 'Internal server error' 
+        message: 'Internal server error'
       },
       { status: 500 }
     )

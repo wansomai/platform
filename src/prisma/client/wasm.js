@@ -157,7 +157,9 @@ exports.Prisma.UserScalarFieldEnum = {
   organizationId: 'organizationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId'
+  activeOrganizationId: 'activeOrganizationId',
+  resetToken: 'resetToken',
+  resetTokenExpiry: 'resetTokenExpiry'
 };
 
 exports.Prisma.OrganizationScalarFieldEnum = {
