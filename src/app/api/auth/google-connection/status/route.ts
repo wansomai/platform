@@ -9,7 +9,6 @@ const prisma = new PrismaClient();
 const REQUIRED_SCOPES = {
   calendar: 'https://www.googleapis.com/auth/calendar',
   gmail: 'https://www.googleapis.com/auth/gmail.readonly',
-  gmailCompose: 'https://www.googleapis.com/auth/gmail.compose'
 };
 
 /**
@@ -51,8 +50,8 @@ export const GET = withErrorHandler(withAuth(async (
     // Check scopes
     const scopes = account.scope?.split(' ') || [];
     const hasCalendarAccess = scopes.includes(REQUIRED_SCOPES.calendar);
-    const hasGmailAccess = scopes.includes(REQUIRED_SCOPES.gmail) ||
-                          scopes.includes(REQUIRED_SCOPES.gmailCompose);
+    const hasGmailAccess = scopes.includes(REQUIRED_SCOPES.gmail) 
+                          
 
     // Get user email from Google account
     const user = await prisma.user.findUnique({

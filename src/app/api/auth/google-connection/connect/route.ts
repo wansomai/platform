@@ -58,7 +58,6 @@ export async function GET(request: NextRequest) {
 
     if (type === 'gmail' || type === 'both') {
       scopes.push('https://www.googleapis.com/auth/gmail.readonly');
-      scopes.push('https://www.googleapis.com/auth/gmail.compose');
     }
 
     // Generate authorization URL
