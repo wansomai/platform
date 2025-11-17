@@ -224,10 +224,10 @@ export function ChatInput({
   ) => {
     setIsConnecting(true);
 // setShowProAccess(true);
-    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-      type
-    )}`;
-    window.location.href = url;
+    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+    //   type
+    // )}`;
+    // window.location.href = url;
   };
 
   // Handle Google account disconnection
