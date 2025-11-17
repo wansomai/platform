@@ -950,3 +950,125 @@ export function sendUpgradeApprovalEmail({
     html,
   });
 }
+
+/**
+ * Sends a password reset email to the user
+ * @param details Password reset email details
+ * @returns Result of sending the email
+ */
+export function sendPasswordResetEmail({
+  email,
+  fullName,
+  resetUrl
+}: {
+  email: string;
+  fullName?: string | null;
+  resetUrl: string;
+}) {
+  const name = fullName || 'there';
+  const subject = 'Reset Your Password - Wansom';
+
+  // Create HTML email content
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background-color: #0a4b5e;
+          padding: 20px;
+          text-align: center;
+          color: white;
+        }
+        .content {
+          padding: 20px;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px;
+          text-align: center;
+          font-size: 12px;
+          color: #666666;
+        }
+        .warning-box {
+          background-color: #fff3cd;
+          border-left: 4px solid #ffc107;
+          padding: 15px;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background-color: #0a4b5e;
+          color: white;
+          padding: 12px 30px;
+          text-decoration: none;
+          border-radius: 4px;
+          margin-top: 10px;
+          font-weight: 600;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>Password Reset Request</h2>
+        </div>
+        <div class="content">
+          <p>Hello ${name},</p>
+
+          <p>We received a request to reset your password for your Wansom account.</p>
+
+          <p>To reset your password, click the button below:</p>
+
+          <p style="text-align: center;">
+            <a href="${resetUrl}" class="button">Reset Password</a>
+          </p>
+
+          <div class="warning-box">
+            <p><strong>Security Notice:</strong> This link will expire in 1 hour for your protection. If you didn't request a password reset, you can safely ignore this email.</p>
+          </div>
+
+          <p style="font-size: 12px; color: #666; margin-top: 30px;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${resetUrl}">${resetUrl}</a>
+          </p>
+
+          <p style="margin-top: 30px;">
+            Best regards,<br>
+            The Wansom Team
+          </p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>Nairobi, Kenya</p>
+          <div class="social-links">
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because a password reset was requested for your account.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+  });
+}

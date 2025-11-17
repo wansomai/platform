@@ -223,7 +223,7 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-// setShowProAccess(true);
+setShowProAccess(true);
     // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
     //   type
     // )}`;
