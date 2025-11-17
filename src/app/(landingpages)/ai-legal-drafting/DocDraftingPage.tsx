@@ -23,7 +23,6 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VaultSection from "@/components/home/vault";
-import KnowledgeBase from "@/components/home/Knowledgebase";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -124,7 +123,7 @@ const LegalDraftingPage = () => {
                     <div>Clause Length: Standard</div>
                   </div>
 
-                  <button className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors">
+                  <button className="w-full bg-primary text-white py-3 rounded-lg font-medium mt-6 hover:bg-black transition-colors">
                     Generate Document Outline
                   </button>
                 </div>
@@ -376,7 +375,7 @@ const DraftPlus = () => {
                         </div>
                         <Switch
                           id="legal-drafting"
-                          checked={false}
+                          checked={true}
                           disabled={true}
                         />
                       </div>
@@ -385,9 +384,9 @@ const DraftPlus = () => {
                         <div className="space-y-1">
                           <Label
                             htmlFor="contract-review"
-                            className="font-medium text-sm"
+                            className="font-medium text-sm flex items-center gap-2"
                           >
-                            Contract Review
+                           <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
                           </Label>
                         </div>
                         <Switch
@@ -401,9 +400,9 @@ const DraftPlus = () => {
                         <div className="space-y-1">
                           <Label
                             htmlFor="case-preparation"
-                            className="font-medium text-sm"
-                          >
-                            Case Preparation
+                            className="font-medium text-sm flex items-center gap-2"
+                          > <img src={'/icons/gmail.svg'} className="w-6 h-6"/>
+                            Gmail
                           </Label>
                         </div>
                         <Switch
@@ -436,7 +435,7 @@ const DraftPlus = () => {
                               htmlFor="suggest-actions"
                               className="font-medium text-sm"
                             >
-                              Suggest actions
+                              Switch Jurisdiction
                             </Label>
                           </div>
                           <Switch
@@ -587,6 +586,7 @@ const DraftPlus = () => {
 function DraftFeatures() {
   const [expandedSections, setExpandedSections] = useState({
     review: true,
+    drafts: false,
     folders: false
   });
 
@@ -728,7 +728,36 @@ function DraftFeatures() {
                 </p>
               </div>
             </div>
-
+ {/* Document Folders section */}
+            <div className="pb-4">
+              <button
+                onClick={() => toggleSection('drafts')}
+                className="w-full flex items-center justify-between text-left group"
+                aria-expanded={expandedSections.drafts}
+                aria-controls="draft-content"
+                aria-label={`${expandedSections.drafts ? 'Collapse' : 'Expand'} Document Review section`}
+              >
+                <h3 className="font-semibold text-lg text-gray-100">
+                Review with Precision
+                </h3>
+                <ChevronDown
+                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
+                    expandedSections.drafts ? 'rotate-180' : ''
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+              <div
+                id="folders-content"
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  expandedSections.drafts ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
+                }`}
+              >
+                <p className="text-gray-100">
+                  Leverage AI to identify risks, suggest improvements, and ensure compliance with legal standards in your documents.
+                </p>
+              </div>
+            </div>
             {/* Document Folders section */}
             <div className="pb-4">
               <button
