@@ -236,9 +236,9 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </div>
 
             {/* Security Link */}
-            <Link href="/#security" className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
+            {/* <Link href="/#security" className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
               Security
-            </Link>
+            </Link> */}
           </nav>
 
           <div className="flex items-center space-x-4">
