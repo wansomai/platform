@@ -147,7 +147,7 @@ const KnowledgeBase = () => {
                             htmlFor="legal-drafting"
                             className="font-medium text-sm"
                           >
-                            Legal drafting
+                            Draft & Review
                           </Label>
                         </div>
                         <Switch
@@ -156,18 +156,33 @@ const KnowledgeBase = () => {
                           disabled={true}
                         />
                       </div>
-
-                      <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <Label
                             htmlFor="contract-review"
-                            className="font-medium text-sm"
+                            className="font-medium text-sm flex items-center gap-2"
                           >
-                            Contract Review
+                           <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
                           </Label>
                         </div>
                         <Switch
                           id="contract-review"
+                          checked={false}
+                          disabled={true}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="case-preparation"
+                            className="font-medium text-sm flex items-center gap-2"
+                          > <img src={'/icons/gmail.svg'} className="w-6 h-6"/>
+                            Gmail
+                          </Label>
+                        </div>
+                        <Switch
+                          id="case-preparation"
                           checked={false}
                           disabled={true}
                         />
