@@ -566,7 +566,7 @@ export function ChatInput({
                           htmlFor="legal-drafting"
                           className="font-medium text-sm"
                         >
-                          Legal drafting
+                          Draft & Review
                         </Label>
                       </div>
                       <Switch
