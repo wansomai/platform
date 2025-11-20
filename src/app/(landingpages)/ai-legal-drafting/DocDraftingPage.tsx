@@ -10,7 +10,6 @@ import {
   Paperclip,
   SlidersHorizontal,
   X,
-  Settings,
   Loader2,
   Send,
   Plus,

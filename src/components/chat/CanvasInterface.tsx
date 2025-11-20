@@ -89,20 +89,16 @@ const LegalCanvas: React.FC = () => {
     }
   }, [currentConversation?.messages]);
 
-  // Quill.js configuration
+  // Quill.js configuration - Clean but functional toolbar
   const modules = {
     toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'header': [1, 2, 3, false] }],
       ['bold', 'italic', 'underline', 'strike'],
       [{ 'color': [] }, { 'background': [] }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
       [{ 'indent': '-1'}, { 'indent': '+1' }],
-      [{ 'direction': 'rtl' }],
       [{ 'align': [] }],
-      ['link', 'image', 'video'],
+      ['link', 'image'],
       ['clean']
     ],
   };
@@ -381,31 +377,31 @@ const LegalCanvas: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-3 flex items-center justify-between bg-gray-50">
-        <div className="flex items-center space-x-2">
+      <div className="border-b border-gray-200 p-2 md:p-3 flex items-center justify-between bg-gray-50 flex-wrap gap-1 md:gap-2">
+        <div className="flex items-center space-x-1 md:space-x-2">
           <span className="text-sm text-gray-600"></span>
           
           {/* Canvas streaming status indicator */}
           {canvasStreamingStatus.show && (
-            <div className="flex items-center space-x-2 bg-blue-50 text-primary px-3 py-1 rounded-full text-xs border border-blue-200">
-              <div className="flex space-x-1">
+            <div className="flex items-center space-x-1 md:space-x-2 bg-green-50 text-primary px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs border border-blue-200">
+              <div className="flex space-x-0.5 md:space-x-1">
                 <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                 <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                 <div className="w-1 h-1 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
-              <span>{getStatusMessage(canvasStreamingStatus.status, canvasStreamingStatus.message)}</span>
+              <span className="hidden sm:inline">{getStatusMessage(canvasStreamingStatus.status, canvasStreamingStatus.message)}</span>
             </div>
           )}
-          
+
           {showUpdateNotification && (
-            <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs animate-pulse">
-              <CheckCircle className="h-3 w-3" />
-              <span>Document updated</span>
+            <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs animate-pulse">
+              <CheckCircle className="h-2.5 w-2.5 md:h-3 md:w-3" />
+              <span className="hidden sm:inline">Document updated</span>
             </div>
           )}
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1 md:space-x-2 flex-wrap">
           <Button
             variant="outline"
             size="sm"
@@ -420,42 +416,42 @@ const LegalCanvas: React.FC = () => {
                 addToast({ message: 'Failed to clear document', type: 'error' });
               }
             }}
-            className="flex items-center space-x-1"
+            className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
           >
-            <X className="h-4 w-4" />
-            <span>Clear</span>
+            <X className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Clear</span>
           </Button>
-          
+
           <Button
             variant="outline"
             size="sm"
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center space-x-1"
+            className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
           >
-            <Save className="h-4 w-4" />
-            <span>{isSaving ? 'Saving...' : 'Save'}</span>
+            <Save className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
           </Button>
-          
+
           <Button
             variant="outline"
             size="sm"
             onClick={handleExportWord}
             disabled={!canvasDocument?.htmlContent}
-            className="flex items-center space-x-1"
+            className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
           >
-            <FileDown className="h-4 w-4" />
-            <span>Export Word</span>
+            <FileDown className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Export</span>
           </Button>
-          
+
            <Button
             variant="outline"
             size="sm"
             onClick={() => setShowTemplateModal(true)}
-            className="flex items-center space-x-1"
+            className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
           >
-            <Download className="h-4 w-4" />
-            <span>Import Template</span>
+            <Download className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Import</span>
           </Button>
         </div>
       </div>
@@ -579,11 +575,114 @@ const LegalCanvas: React.FC = () => {
         
         .ql-toolbar {
           border: none !important;
-          padding: 8px 16px !important;
-          background: #f9fafb !important;
+          padding: 8px 12px !important;
+          background: #ffffff !important;
           border-bottom: 1px solid #e5e7eb !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 2px !important;
         }
-        
+
+        .ql-toolbar .ql-formats {
+          margin-right: 6px !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 1px !important;
+        }
+
+        .ql-toolbar button {
+          width: 28px !important;
+          height: 28px !important;
+          padding: 3px !important;
+          border-radius: 3px !important;
+          transition: background-color 0.15s !important;
+        }
+
+        .ql-toolbar button:hover {
+          background-color: #f3f4f6 !important;
+        }
+
+        .ql-toolbar button.ql-active {
+          background-color: #e0e7ff !important;
+          color: #4f46e5 !important;
+        }
+
+        .ql-toolbar .ql-picker {
+          height: 28px !important;
+          border-radius: 3px !important;
+        }
+
+        .ql-toolbar .ql-picker-label {
+          padding: 3px 6px !important;
+          border: 1px solid #e5e7eb !important;
+          border-radius: 3px !important;
+          transition: border-color 0.15s, background-color 0.15s !important;
+          font-size: 13px !important;
+        }
+
+        .ql-toolbar .ql-picker-label:hover {
+          background-color: #f9fafb !important;
+          border-color: #d1d5db !important;
+        }
+
+        .ql-toolbar .ql-stroke {
+          stroke: #374151 !important;
+        }
+
+        .ql-toolbar .ql-fill {
+          fill: #374151 !important;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          .ql-toolbar {
+            padding: 6px 8px !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+
+          .ql-toolbar::-webkit-scrollbar {
+            height: 4px !important;
+          }
+
+          .ql-toolbar::-webkit-scrollbar-thumb {
+            background: #d1d5db !important;
+            border-radius: 2px !important;
+          }
+
+          .ql-toolbar .ql-formats {
+            margin-right: 4px !important;
+            flex-shrink: 0 !important;
+          }
+
+          .ql-toolbar button {
+            width: 36px !important;
+            height: 36px !important;
+            padding: 6px !important;
+          }
+
+          .ql-toolbar .ql-picker {
+            height: 36px !important;
+          }
+
+          .ql-toolbar .ql-picker-label {
+            padding: 6px 8px !important;
+            font-size: 14px !important;
+          }
+
+          .ql-editor {
+            padding: 1rem !important;
+            font-size: 15px !important;
+          }
+
+          .ql-container {
+            height: calc(100vh - 180px) !important;
+          }
+        }
+
+
         .ql-container {
           border: none !important;
           font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif !important;

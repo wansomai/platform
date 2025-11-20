@@ -3,6 +3,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+import { FileText, MessageSquare } from 'lucide-react'
 
 interface SplitViewProps {
   left: React.ReactNode
@@ -23,7 +24,21 @@ export const SplitView: React.FC<SplitViewProps> = ({
 }) => {
   const [leftWidth, setLeftWidth] = useState(defaultLeftWidth)
   const [isDragging, setIsDragging] = useState(false)
+  const [mobileActiveTab, setMobileActiveTab] = useState<'canvas' | 'chat'>('canvas')
+  const [isDesktop, setIsDesktop] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Check if desktop on mount and resize
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024)
+    }
+
+    checkDesktop()
+    window.addEventListener('resize', checkDesktop)
+
+    return () => window.removeEventListener('resize', checkDesktop)
+  }, [])
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true)
@@ -64,37 +79,76 @@ export const SplitView: React.FC<SplitViewProps> = ({
   }, [isDragging])
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className={cn("flex h-full", className)}
+      className={cn("flex flex-col h-full", className)}
     >
-      {/* Left Panel */}
-      <div 
-        className="flex flex-col min-w-0 bg-white"
-        style={{ width: `${leftWidth}%` }}
-      >
-        {left}
+      {/* Mobile Tab Navigation */}
+      <div className="lg:hidden flex border-b border-gray-200 bg-white sticky top-0 z-10">
+        <button
+          onClick={() => setMobileActiveTab('canvas')}
+          className={cn(
+            "relative flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs sm:text-sm font-medium transition-colors",
+            mobileActiveTab === 'canvas'
+              ? "text-primary border-b-2 border-primary bg-blue-50"
+              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          )}
+        >
+          <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span>Document</span>
+        </button>
+        <button
+          onClick={() => setMobileActiveTab('chat')}
+          className={cn(
+            "relative flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs sm:text-sm font-medium transition-colors",
+            mobileActiveTab === 'chat'
+              ? "text-primary border-b-2 border-primary bg-blue-50"
+              : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          )}
+        >
+          <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span>Chat</span>
+        </button>
       </div>
 
-      {/* Resizable Divider */}
-      <div
-        className={cn(
-          "w-1 bg-gray-200 hover:bg-gray-300 cursor-col-resize flex-shrink-0 transition-colors",
-          isDragging && "bg-blue-400"
-        )}
-        onMouseDown={handleMouseDown}
-      >
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-0.5 h-8 bg-gray-400 rounded-full opacity-50" />
+      {/* Desktop Split View / Mobile Single View */}
+      <div className="flex h-full flex-1 overflow-hidden">
+        {/* Left Panel (Canvas) */}
+        <div
+          className={cn(
+            "flex flex-col min-w-0 bg-white",
+            "lg:flex", // Always visible on desktop
+            mobileActiveTab === 'canvas' ? "flex w-full" : "hidden" // Toggle on mobile, full width
+          )}
+          style={isDesktop ? { width: `${leftWidth}%` } : undefined}
+        >
+          {left}
         </div>
-      </div>
 
-      {/* Right Panel */}
-      <div 
-        className="flex flex-col min-w-0 bg-gray-50 border-l"
-        style={{ width: `${100 - leftWidth}%` }}
-      >
-        {right}
+        {/* Resizable Divider - Desktop Only */}
+        <div
+          className={cn(
+            "hidden lg:block w-1 bg-gray-200 hover:bg-gray-300 cursor-col-resize flex-shrink-0 transition-colors",
+            isDragging && "bg-blue-400"
+          )}
+          onMouseDown={handleMouseDown}
+        >
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-0.5 h-8 bg-gray-400 rounded-full opacity-50" />
+          </div>
+        </div>
+
+        {/* Right Panel (Chat) */}
+        <div
+          className={cn(
+            "flex flex-col min-w-0 bg-gray-50 lg:border-l",
+            "lg:flex", // Always visible on desktop
+            mobileActiveTab === 'chat' ? "flex w-full" : "hidden" // Toggle on mobile, full width
+          )}
+          style={isDesktop ? { width: `${100 - leftWidth}%` } : undefined}
+        >
+          {right}
+        </div>
       </div>
     </div>
   )
