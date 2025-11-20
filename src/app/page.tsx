@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { CheckCircle, Sparkles,ChevronDown} from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import FeaturesSection from "@/components/home/features";
@@ -12,9 +14,19 @@ import {
 } from "./(landingpages)/ai-legal-research/LegalResearchPage";
 import DocumentAutomation from "@/components/home/DocumentAutomation";
 import KnowledgeBase from "@/components/home/Knowledgebase";
+import LogoAnimation from "@/components/commons/LogoAnimation";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { status } = useSession();
+  const router = useRouter();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/dashboard');
+    }
+  }, [status, router]);
 
   // Handle navbar transparency on scroll
   useEffect(() => {
@@ -25,6 +37,17 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Show loading state while checking auth
+  if (status === 'loading') {
+    return (
+      <div className="w-full flex items-center justify-center min-h-screen">
+      <LogoAnimation />
+      </div>
+
+    );
+  }
+ 
 
   return (
     <>
