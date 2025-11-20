@@ -396,7 +396,7 @@ const LegalCanvas: React.FC = () => {
           {showUpdateNotification && (
             <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs animate-pulse">
               <CheckCircle className="h-2.5 w-2.5 md:h-3 md:w-3" />
-              <span className="hidden sm:inline">Document updated</span>
+              <span className="inline">Document updated</span>
             </div>
           )}
         </div>
@@ -610,6 +610,8 @@ const LegalCanvas: React.FC = () => {
         .ql-toolbar .ql-picker {
           height: 28px !important;
           border-radius: 3px !important;
+          position: relative !important;
+          z-index: 50 !important;
         }
 
         .ql-toolbar .ql-picker-label {
@@ -623,6 +625,14 @@ const LegalCanvas: React.FC = () => {
         .ql-toolbar .ql-picker-label:hover {
           background-color: #f9fafb !important;
           border-color: #d1d5db !important;
+        }
+
+        .ql-toolbar .ql-picker-options {
+          z-index: 100 !important;
+        }
+
+        .ql-picker.ql-expanded .ql-picker-options {
+          z-index: 100 !important;
         }
 
         .ql-toolbar .ql-stroke {
