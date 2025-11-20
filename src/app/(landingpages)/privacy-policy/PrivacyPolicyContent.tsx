@@ -64,7 +64,7 @@ const PrivacyPolicyContent = () => {
               When you connect third-party services to your account:
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700 space-y-2">
-              <li><strong>Google Account:</strong> With your permission, we access your Google Calendar events, Gmail messages (read-only and draft composition), and basic profile information</li>
+              <li><strong>Google Account:</strong> With your permission, we access your Google Calendar events, Gmail messages (read-only), and basic profile information</li>
               <li><strong>OAuth Tokens:</strong> We securely store OAuth tokens to maintain these integrations</li>
               <li><strong>Third-Party Data:</strong> Information from integrated services as necessary to provide the requested functionality</li>
             </ul>
@@ -78,11 +78,9 @@ const PrivacyPolicyContent = () => {
               <li><strong>Provide Services:</strong> Operate, maintain, and improve our AI-powered legal platform</li>
               <li><strong>Process AI Requests:</strong> Analyze your queries and documents to provide AI-generated legal insights, drafts, and recommendations</li>
               <li><strong>Personalization:</strong> Customize your experience based on your jurisdiction, practice areas, and usage patterns</li>
-              <li><strong>Communication:</strong> Send you service-related notifications, updates, security alerts, and support messages</li>
-              <li><strong>Analytics:</strong> Understand how users interact with our Services to improve functionality and user experience</li>
+              <li><strong>Improve User Experience:</strong> Understand how users interact with our Services to improve functionality and user-facing features</li>
               <li><strong>Security:</strong> Detect, prevent, and address technical issues, fraud, and unauthorized access</li>
               <li><strong>Legal Compliance:</strong> Comply with applicable laws, regulations, and legal processes</li>
-              <li><strong>Marketing:</strong> Send promotional communications about new features, products, and offers (with your consent where required)</li>
             </ul>
           </section>
 
@@ -90,7 +88,7 @@ const PrivacyPolicyContent = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. AI Processing and Data Usage</h2>
             <p className="text-gray-700 mb-4">
-              Our Services utilize artificial intelligence to provide legal assistance. Here's how your data is processed:
+              Our Services utilize artificial intelligence to improve productivity for lawyers. Here's how your data is processed:
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700 space-y-2">
               <li><strong>AI Model Processing:</strong> Your queries and documents are processed by AI models to generate responses and insights</li>
@@ -110,22 +108,7 @@ const PrivacyPolicyContent = () => {
               We share information when you explicitly authorize us to do so, such as when connecting third-party services.
             </p>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">5.2 Service Providers</h3>
-            <p className="text-gray-700 mb-4">
-              We engage trusted third-party service providers to perform functions on our behalf, including:
-            </p>
-            <ul className="list-disc pl-6 mb-4 text-gray-700 space-y-2">
-              <li>Cloud hosting and storage providers</li>
-              <li>AI and machine learning service providers</li>
-              <li>Payment processors</li>
-              <li>Email and communication services</li>
-              <li>Analytics providers</li>
-            </ul>
-            <p className="text-gray-700 mb-4">
-              These providers have access to your information only to perform specific tasks and are obligated to protect your data.
-            </p>
-
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">5.3 Organization Members</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">5.2 Organization Members</h3>
             <p className="text-gray-700 mb-4">
               If you're part of an organization account, certain information may be visible to other members and administrators within your organization.
             </p>
@@ -160,9 +143,6 @@ const PrivacyPolicyContent = () => {
               <li><strong>Regular Audits:</strong> Periodic security audits and assessments</li>
               <li><strong>Secure Authentication:</strong> Multi-factor authentication options and secure password requirements</li>
             </ul>
-            <p className="text-gray-700">
-              However, no method of transmission or storage is 100% secure. While we strive to protect your information, we cannot guarantee absolute security.
-            </p>
           </section>
 
           {/* Data Retention */}
