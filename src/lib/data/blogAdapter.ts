@@ -85,7 +85,7 @@ export function adaptBlogPost(post: BlogPost) {
 export function adaptDocumentTemplate(post: DocumentTemplate) {
   // Convert rich text to HTML
   const contentHtml = post.fields.description
-    ? documentToHtmlString(post.fields.description, htmlRenderOptions) 
+    ? documentToHtmlString(post.fields.description, htmlRenderOptions)
     : '';
   const previewHtml = post.fields.preview
     ? documentToHtmlString(post.fields.preview, htmlRenderOptions)
@@ -93,16 +93,23 @@ export function adaptDocumentTemplate(post: DocumentTemplate) {
   // Generate slug from title
   const slug = createSlug(post.fields.title || '');
   const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
-  
+
   return {
     id: post.sys.id,
     title: post.fields.title || 'Untitled',
     preview: previewHtml || '',
     description: post.fields.description, // Keep original content
     contentHtml, // Add the HTML version for dangerouslySetInnerHTML
-    image: post.fields.image?.fields?.file?.url 
-      ? `https:${post.fields.image.fields.file.url}` 
+    image: post.fields.image?.fields?.file?.url
+      ? `https:${post.fields.image.fields.file.url}`
       : undefined,
+    template: post.fields.template?.fields?.file ? {
+      url: `https:${post.fields.template.fields.file.url}`,
+      fileName: post.fields.template.fields.file.fileName || 'template',
+      contentType: post.fields.template.fields.file.contentType,
+    } : undefined,
+    jurisdiction: post.fields.jurisdiction,
+    category: post.fields?.category || 'Uncategorized',
     date: new Date(post.sys.createdAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',

@@ -92,7 +92,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="md:hidden">
-          <Image src={darkmode ? `/logo-lg.png` : `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
+          <Image src={ `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>
 
         {/* Mobile menu button */}
@@ -100,7 +100,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
           className={`md:hidden z-50  focus:outline-none transition-transform duration-300 ${darkmode ? 'text-black' : 'text-white'}`}
           onClick={() => setIsOpen(!isOpen)}  aria-label="Mobile menu"
         >
-          {isOpen ? <X className='text-black' size={24} /> : <Menu size={24} />}
+          {isOpen ? <X className={darkmode?'text-white':'text-black'} size={24} /> : <Menu size={24} />}
         </button>
 
         {/* Desktop Navigation */}
