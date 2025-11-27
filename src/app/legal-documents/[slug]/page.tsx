@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         title: adaptedPost.title,
         description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
         type: 'article',
-        url: `https://ww.wansom.ai/legal-documents/${slug}`, 
+        url: `https://www.wansom.ai/legal-documents/${slug}`, 
         images: [
           {
             url: "/contract-sample.webp",

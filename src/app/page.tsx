@@ -50,10 +50,10 @@ export default function Home() {
  
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <Navbar />
       <main>
-        <section className=" pt-24 md:pt-28  px-5 bg-primary relative overflow-hidden">
+        <section className=" pt-24 md:pt-28  px-5 bg-primary relative overflow-x-hidden ">
           <div className="container mx-auto grid lg:grid-cols-1 gap-5 items-center">
             {/* Left Side - Content */}
             <div className="text-center space-y-8">
@@ -118,7 +118,7 @@ export default function Home() {
         our
       </CookieConsent>
       <Footer />
-    </>
+    </div>
   );
 }
 

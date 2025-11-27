@@ -53,7 +53,27 @@ export interface practiseAreaFields {
 export interface DocumentTemplateFields {
   title: string;
   preview?: any;
-  description: any; // Rich text content
+  description: any;
+  category: string;
+  template:  {
+    fields: {
+      file: {
+        url: string;
+        details?: {
+          size?: number;
+          image?: {
+            width: number;
+            height: number;
+          };
+        };
+        fileName?: string;
+        contentType?: string;
+      };
+      title?: string;
+      
+    };
+  }; // Rich text content
+  jurisdiction: string;
   image?: {
     fields: {
       file: {
@@ -146,7 +166,10 @@ export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
         'sys.updatedAt',
         'fields.title',
         'fields.preview',
-        'fields.description'
+        'fields.description',
+        'fields.template',
+        'fields.jurisdiction',
+        'fields.category'
       ],
       // Reduce the include level to avoid fetching too much nested data
       include: 1
@@ -163,7 +186,7 @@ export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
-
+console.log(`Fetched ${allItems[0].fields.template.fields.file.url} document templates from Contentful.`);
   return allItems;
 }
 

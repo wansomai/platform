@@ -1,28 +1,23 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import {
-  Send,
-  Loader2,
-  SlidersHorizontal,
-  X,
-  Paperclip,
-  Settings,
+  FileText,
+  Download,
+  ChevronRight,
+  Tag,
+  MapPin,
+  Info,
+  ArrowUpRight,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { getAllDocumentTemplates } from "@/lib/data/contentful";
+import { adaptDocumentTemplates, createSlug } from "@/lib/data/blogAdapter";
 
 // Lazy load Footer component
 const Footer = dynamic(() => import("@/components/layout/Footer"), {
@@ -37,397 +32,247 @@ interface PageProps {
 const DocDetailPageClient = ({ blog }: PageProps) => {
   const router = useRouter();
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
-  const [chatInput, setChatInput] = useState("Help me customize this legal document template");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showToolsDropdown, setShowToolsDropdown] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
 
-  // Auto-resize textarea
+  // Fetch related documents
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    const fetchRelated = async () => {
+      try {
+        const allDocs = await getAllDocumentTemplates();
+        const adapted = adaptDocumentTemplates(allDocs);
+
+        // Filter out current document and get up to 6 related
+        const related = adapted
+          .filter((doc: any) => doc.id !== blog?.id)
+          .slice(0, 6);
+
+        setRelatedPosts(related);
+      } catch (error) {
+        console.error('Error fetching related documents:', error);
+      }
+    };
+
+    if (blog) {
+      fetchRelated();
     }
-  }, [chatInput]);
+  }, [blog]);
 
-  // Handle chat input send
-  const handleSend = async () => {
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    try {
-      // Navigate to register page when send is clicked
-      router.push('/register');
-    } catch (error) {
-      console.error('Navigation error:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+  const handleDownload = () => {
+    if (blog?.template?.url) {
+      window.open(blog.template.url, '_blank');
     }
   };
 
   if (!blog) {
     return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center flex items-center flex-col gap-3 justify-center">
-          <h1 className="text-5xl font-semibold text-primary mb-4 font-serif">
-            Oops!
-          </h1>
-          <p className="mb-6">The requested legal document could not be found.</p>
-          <img src="/404.png" className="mx-aut0 -mt-20"/>
-          <Link
-            href="/legal-documents"
-            className="flex gap-1 items-center bg-teal-600 text-sm text-white px-6 py-2 rounded-md"
-          >
-            View More Documents <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-</svg>
-
-          </Link>
+      <div className="bg-gray-50 min-h-screen">
+        <Navbar darkmode />
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center flex items-center flex-col gap-3 justify-center">
+            <h1 className="text-5xl font-semibold text-primary mb-4 font-serif">
+              Oops!
+            </h1>
+            <p className="mb-6">The requested legal document could not be found.</p>
+            <img src="/404.png" className="mx-auto -mt-20" alt="404"/>
+            <Link
+              href="/legal-documents"
+              className="flex gap-1 items-center bg-teal-600 text-sm text-white px-6 py-2 rounded-md"
+            >
+              View More Documents
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+              </svg>
+            </Link>
+          </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
-  // Generate social share URLs
-  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
-
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Navbar darkmode />
-      {/* Header Section */}
+      <Navbar darkmode/>
 
-      {/* Chat Input Section */}
-      <section className="bg-gray-100 pb-12 pt-24 md:pt-32 lg:pt-40">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-              {blog.title}
-            </h1>
-            <p className="text-gray-600">
-              Draft entire legal documents and forms from scratch with AI or start with professional templates.
-            </p>
-          </div>
+      {/* Header Section with Breadcrumb */}
+      <div className="pt-20 md:pt-24">
+        <div className="container mx-auto px-4 py-6 max-w-6xl">
+          {/* Title and Description */}
+          <h1 className="text-xl lg:text-3xl font-serif font-bold text-gray-900 mb-4">
+            {blog.title}
+          </h1>
 
-          {/* Chat Input Area */}
-          <div className="relative w-full max-w-4xl mx-auto">
-            <div className="w-full">
-              <div className="bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative shadow-sm focus-within:shadow-md">
-
-                {/* Left side icons */}
-                <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
-                  {/* Documents Tool */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0 rounded-md cursor-not-allowed opacity-60"
-                    title="Documents (available after registration)"
-                    disabled={true}
-                    aria-labelledby="upload documents"
-                  >
-                    <Paperclip className="h-6 w-6 text-gray-600" />
-                  </Button>
-
-                  {/* Tools Dropdown */}
-                  <DropdownMenu
-                    open={showToolsDropdown}
-                    onOpenChange={setShowToolsDropdown}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
-                        title="AI Tools (preview - will be configurable after registration)"
-                        aria-labelledby="AI tools"
-                      >
-                        <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
-                        Tools
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      className="w-72 p-4 mb-2"
-                      side="top"
-                    >
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-sm text-gray-700">
-                            Available AI Tools
-                          </h4>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowToolsDropdown(false)}
-                            className="h-6 w-6 p-0"
-                            aria-labelledby="Close Tools"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label
-                              htmlFor="web-search"
-                              className="font-medium text-sm"
-                            >
-                              Deep Research
-                            </Label>
-                          </div>
-                          <Switch
-                            id="web-search"
-                            checked={false}
-                            disabled={true}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label
-                              htmlFor="legal-drafting"
-                              className="font-medium text-sm"
-                            >
-                              Legal drafting
-                            </Label>
-                          </div>
-                          <Switch
-                            id="legal-drafting"
-                            checked={false}
-                            disabled={true}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label
-                              htmlFor="contract-review"
-                              className="font-medium text-sm"
-                            >
-                              Contract Review
-                            </Label>
-                          </div>
-                          <Switch
-                            id="contract-review"
-                            checked={false}
-                            disabled={true}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label
-                              htmlFor="case-preparation"
-                              className="font-medium text-sm"
-                            >
-                              Case Preparation
-                            </Label>
-                          </div>
-                          <Switch
-                            id="case-preparation"
-                            checked={false}
-                            disabled={true}
-                          />
-                        </div>
-
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                              <Label
-                                htmlFor="cite-sources"
-                                className="font-medium text-sm"
-                              >
-                                Cite sources
-                              </Label>
-                            </div>
-                            <Switch
-                              id="cite-sources"
-                              checked={false}
-                              disabled={true}
-                            />
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                              <Label
-                                htmlFor="suggest-actions"
-                                className="font-medium text-sm"
-                              >
-                                Suggest actions
-                              </Label>
-                            </div>
-                            <Switch
-                              id="suggest-actions"
-                              checked={false}
-                              disabled={true}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  {/* Settings Button */}
-                  <button
-                    className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
-                    disabled={true}
-                    title="Settings (available after registration)"
-                    aria-labelledby="settings"
-                  >
-                    <Settings className="h-4 w-4 text-gray-700 text-xs" />
-                    Settings
-                  </button>
-                </div>
-
-                <Textarea
-                  ref={textareaRef}
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask anything about this document..."
-                  className="border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-600 min-h-[120px] max-h-[200px] px-6 py-4 pr-16 text-[13px] md:text-base"
-                  disabled={isSubmitting}
-                />
-
-                {/* Send button positioned inside textarea */}
-                <div className="absolute right-3 bottom-3 z-10">
-                  <Button
-                    className="bg-primary hover:bg-[#d47b0f] text-white z-10 shadow-md h-10 w-10 rounded-lg"
-                    disabled={isSubmitting}
-                    onClick={handleSend}
-                    aria-label="Send message"
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="animate-spin text-white h-5 w-5" />
-                    ) : (
-                      <Send className="text-white h-5 w-5" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+          {/* Preview with Show More */}
+          {blog.preview && (
+            <div className="mb-6">
+              <div
+                className={`text-gray-600 text-lg leading-relaxed ${
+                  isPreviewExpanded ? '' : 'line-clamp-3'
+                }`}
+                dangerouslySetInnerHTML={{ __html: blog.preview }}
+              />
+              <button
+                onClick={() => setIsPreviewExpanded(!isPreviewExpanded)}
+                className="mt-2 text-secondary hover:text-black font-medium flex items-center gap-1 text-sm"
+              >
+                {isPreviewExpanded ? (
+                  <>
+                    Show less
+                    <ChevronRight className="w-4 h-4 rotate-[-90deg] transition-transform" />
+                  </>
+                ) : (
+                  <>
+                    View more
+                    <ChevronRight className="w-4 h-4 rotate-90 transition-transform" />
+                  </>
+                )}
+              </button>
             </div>
+          )}
 
-            {/* Helper text */}
-            <div className="text-center mt-4">
-              <p className="text-sm text-gray-700">
-                Press <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono text-gray-900">Enter</kbd> to send,
-                <kbd className="px-2 py-1 bg-gray-100 rounded text-xs font-mono text-gray-900 ml-1">Shift+Enter</kbd> for new line
-              </p>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3 mb-6">
+            <Link
+              href="/login"
+              className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded hover:bg-black transition-colors font-medium"
+            >
+              Open in editor
+              <ArrowUpRight className="w-6 h-6" />
+            </Link>
           </div>
         </div>
-      </section>
+      </div>
+      
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="block lg:hidden">
-            <div className="">
-              <Image
-                src={blog.image || "/contract-sample.webp"}
-                alt={blog.title}
-                width={800}
-                height={600}
-                priority
-                sizes="100vw"
-                className="rounded-lg w-full h-auto object-cover"
-              />
-            </div>
-            <div className="flex justify-center mt-4 gap-2">
-              <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-              <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+      {/* Main Content Area */}
+      <div className="container mx-auto px-4  max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        
+
+          {/* Main Content - Document Display */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded border border-gray-200 overflow-hidden">
+              {/* Document Template Viewer */}
+              {blog.template?.url ? (
+                <div className="relative w-full">       
+                  {/* Document Viewer */}
+                  <div className="w-full h-[400px] lg:h-[600px] overflow-hidden relative">
+
+                    <iframe
+                      src={`https://docs.google.com/gview?url=${encodeURIComponent(blog.template.url)}&embedded=true`}
+                      className="w-full h-full border-0"
+                      title="Document Preview"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              ):(
+                <div className="w-full h-[400px] lg:h-[600px] overflow-hidden relative">
+
+                   <img src="/contract-sample.webp" alt={blog.title} className="w-full h-full object-cover"/>
+                  </div>
+              )}
             </div>
           </div>
+            {/* Left Sidebar - Categories and Info */}
+          <div className="lg:col-span-1 space-y-6">
 
-          {/* Main content column */}
-          <div className="w-full lg:w-7/12">
-            {/* Breadcrumb */}
-              <div className="container mx-auto py-4 text-sm ">
-                <div className="flex items-center">
-                  <Link href="/" className="hover:text-teal-600">
-                    Home
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <Link href="/legal-documents" className="hover:text-teal-600  whitespace-nowrap">
-                    Legal Documents
-                  </Link>
-                  <span className="mx-2">/</span>
-                  <span className="truncate text-teal-600">
-                    {blog.title}
-                  </span>
+            {/* Categories */}
+            {blog.tags && blog.tags.length > 0 && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Tag className="w-5 h-5 text-secondary" />
+                  <h3 className="font-semibold text-gray-900">Categories</h3>
                 </div>
-                
-              </div>
-            {/* Blog Content */}
-            <div
-              className="blog-content mb-12"
-              dangerouslySetInnerHTML={{ __html: blog.contentHtml || "" }}
-            />
-
-            {/* Tags */}
-            {/* {blog.tags && blog.tags.length > 0 && (
-              <div className="mb-12">
-                <h3 className="text-lg font-semibold mb-2">Related Topics</h3>
                 <div className="flex flex-wrap gap-2">
                   {blog.tags.map((tag: string) => (
-                    <Link
+                    <span
                       key={tag}
-                      href={`/blogs?tag=${encodeURIComponent(tag)}`}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-teal-100 hover:text-teal-700"
+                      className="px-3 py-1 bg-primary text-white rounded-full text-sm"
                     >
                       {tag}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )} */}
-
-            {/* Related Posts */}
-            {relatedPosts.length > 0 && (
-              <div className="border-t border-gray-200 pt-8">
-                <h3 className="text-xl font-semibold mb-6">Related Articles</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {relatedPosts.map((post) => (
-                    <Link key={post.id} href={post.link} className="block group">
-                      <div className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                        <h4 className="font-semibold text-gray-800 mb-2 group-hover:text-teal-600">
-                          {post.title}
-                        </h4>
-                        <p className="text-sm text-gray-700">{post.date}</p>
-                      </div>
-                    </Link>
+                    </span>
                   ))}
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Fixed image column */}
-          <div className="hidden lg:block w-5/12">
-            <div className="sticky top-32">
-              <Image
-                src={blog.image || "/contract-sample.webp"}
-                alt={blog.title}
-                width={600}
-                height={315}
-                priority
-                fetchPriority="high"
-                sizes="(max-width: 1024px) 100vw, 41.67vw"
-                className="rounded-lg w-full h-auto object-cover max-h-[500px] mb-5"
-              />
-              <div className="flex justify-center mt-4 gap-2">
-                <Link href={'/login'} className="bg-primary text-white py-2 px-4 rounded-lg"> Customize Template</Link>
-                <Link href={'/contact'} className="bg-secondary text-white py-2 px-4 rounded-lg"> Ask A Lawyer</Link>
+            {/* Jurisdictions */}
+            {blog.jurisdiction && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <MapPin className="w-5 h-5 text-secondary" />
+                  <h3 className="font-semibold text-gray-900">Jurisdictions</h3>
+                </div>
+                
+                <span className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm">
+                  {blog.jurisdiction}
+                </span>
+              </div>
+            )}
+
+            {/* Document Info */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Info className="w-5 h-5 text-secondary" />
+                <h3 className="font-semibold text-gray-900">Document info</h3>
+              </div>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <p className="text-gray-500">Word document.</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Last Edited On {blog.date}.</p>
+                </div>
+                {blog.template && (
+                  <div>
+                    <p className="text-gray-500">
+                      Licensed under{' '}
+                      <span className="text-secondary hover:underline cursor-pointer">
+                        CC BY 4.0 (Attribution)
+                      </span>
+                      .
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+
+        {/* Related Documents Section */}
+        {relatedPosts.length > 0 && (
+          <div className="mt-16 pb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              More documents in this category
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={post.link}
+                  className="block bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-gray-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">Wansom Legal Library</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
       <Footer />
     </div>
   );
