@@ -206,6 +206,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
                   <MapPin className="w-5 h-5 text-secondary" />
                   <h3 className="font-semibold text-gray-900">Jurisdictions</h3>
                 </div>
+                
                 <span className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm">
                   {blog.jurisdiction}
                 </span>
