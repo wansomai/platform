@@ -7,22 +7,31 @@ import Image from 'next/image';
 
 const CareersPageClient = () => {
   const [opportunities] = useState([
-    {
+
+      {
       id: 1,
-      title: "Digital Marketer",
-      location: "Nairobi",
-      department: "Marketing",
-      date: "24th July, 2024",
-      description: "We are seeking a creative and data-driven Digital Marketer to join our growing team. The ideal candidate will help develop and implement innovative marketing strategies to increase brand awareness and drive customer acquisition for our AI-powered legal solutions.",
+      title: "Lead UI/UX Designer",
+      location: "Hybrid",
+      department: "Technology",
+      date: "1st December, 2025",
+      description: "We are looking for a talented Lead UI/UX Designer to join our product team. The ideal candidate will have a strong portfolio showcasing their expertise in creating user-centered designs for web and mobile applications, with a focus on usability and aesthetics. To apply,send a redesigned hero section of our current homepage to law@wansom.ai together with your resume and cover letter.",
     },
     {
       id: 2,
       title: "Software Engineer",
-      location: "Nairobi",
+      location: "Hybrid",
       department: "Technology",
-      date: "24th July, 2024",
-      description: "We are looking for a talented Software Engineer to join our development team. You'll work on cutting-edge AI solutions for the legal industry, collaborating with a cross-functional team to build and maintain our core products and services.",
-    }
+      date: "1st December, 2025",
+      description: "We are looking for a talented Software Engineer to join our development team. The Ideal tech stack: NextJs, Typescript,Golang,PostregresQl,Tailwindcss. to Apply,send your Github link,resume and cover letter to law@wansom.ai",
+    },
+    {
+      id: 3,
+      title: "Digital Marketer",
+      location: "Hybrid",
+      department: "Marketing",
+      date: "1st December, 2025",
+      description: "We are seeking a creative and data-driven Digital Marketer to join our growing team. The ideal candidate will help develop and implement innovative marketing strategies to increase brand awareness and drive customer acquisition for our AI-powered legal solutions.To apply,send your resume and cover letter to law@wansom.ai",
+    },
   ]);
 
   return (
@@ -56,17 +65,17 @@ const CareersPageClient = () => {
                 </a>
               </div>
       {/* Header Section */}
-      <section className='hero-bg'>
+      <section className='bg-primary'>
     <Navbar />
-      <div className="container mx-auto px-6 md:pl-20 py-10 pt-32">
+      <div className="container mx-auto px-6 pt-32 ">
                 <div className="grid lg:grid-cols-2 gap-12">
                   {/* Left Column - Contact Form */}
                   <div>
-                    <h1 className="font-marcellus text-5xl mb-6">Careers at Wansom AI</h1>
-                    <div className="font-jost text-sm text-slate-600 mb-10">
+                    <h1 className="font-serif text-5xl mb-6 text-white">Careers at Wansom AI</h1>
+                    <div className="font-jost text-sm text-white mb-10">
                       Home / Careeers
                     </div>
-                    <div className="flex items-center gap-3 text-slate-600 mb-4 ">
+                    <div className="flex items-center gap-3 text-white mb-4 ">
                     
                       <p>
                       At Wansom, we're building the future of legal AI solutions. Join our talented team and help shape the next generation of legal technology. We give equal opportunity to all applicants.
@@ -76,14 +85,14 @@ const CareersPageClient = () => {
                   </div>
       
                   {/* Right Column - Map */}
-                  <div className="space-y-6">
+                  <div className="">
                     <div>
                       <Image
-                        src="/hero.png"
+                        src="/law-office.jpg"
                         alt="AI lawyer"
                         width={600}
                         height={400}
-                        className="rounded-lg object-cover w-full"
+                        className="rounded-t-lg object-cover w-full"
                       />
                     </div>
                   
@@ -101,7 +110,7 @@ const CareersPageClient = () => {
             <div key={job.id} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/3 p-6 border-r border-gray-200">
-                  <h3 className="text-xl font-semibold text-teal-600 mb-2">{job.title}</h3>
+                  <h3 className="text-xl font-semibold text-primary mb-2">{job.title}</h3>
                 </div>
                 
                 <div className="md:w-2/3 p-6">
@@ -132,7 +141,7 @@ const CareersPageClient = () => {
                   <p className="text-gray-600 mb-4">{job.description}</p>
                   
                   <div className="flex justify-end">
-                    <a href='mailto:law@wansom.ai' className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center">
+                    <a href='mailto:law@wansom.ai' className="bg-primary hover:bg-black text-white px-4 py-2 rounded-md flex items-center">
                       Apply Now
                       <ChevronRight className="ml-1 h-4 w-4" />
                     </a>
