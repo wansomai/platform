@@ -156,22 +156,39 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
             <div className="bg-white rounded border border-gray-200 overflow-hidden">
               {/* Document Template Viewer */}
               {blog.template?.url ? (
-                <div className="relative w-full">       
+                <div className="relative w-full">
                   {/* Document Viewer */}
-                  <div className="w-full h-[400px] lg:h-[600px] overflow-hidden relative">
-
+                  <div
+                    className="w-full h-[400px] lg:h-[600px] overflow-hidden relative"
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      router.push('/login');
+                    }}
+                  >
                     <iframe
                       src={`https://docs.google.com/gview?url=${encodeURIComponent(blog.template.url)}&embedded=true`}
-                      className="w-full h-full border-0"
+                      className="w-full h-full border-0 pointer-events-none"
                       title="Document Preview"
                       loading="lazy"
+                    />
+                    {/* Transparent overlay to prevent direct interaction and redirect to login */}
+                    <div
+                      className="absolute inset-0 cursor-pointer bg-transparent z-10"
+                      onClick={() => router.push('/login')}
+                      title="Click to open in editor"
                     />
                   </div>
                 </div>
               ):(
-                <div className="w-full h-[400px] lg:h-[600px] overflow-hidden relative">
-
-                   <img src="/contract-sample.webp" alt={blog.title} className="w-full h-full object-cover"/>
+                <div
+                  className="w-full h-[400px] lg:h-[600px] overflow-hidden relative cursor-pointer"
+                  onClick={() => router.push('/login')}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    router.push('/login');
+                  }}
+                >
+                   <img src="/contract-sample.webp" alt={blog.title} className="w-full h-full object-cover pointer-events-none"/>
                   </div>
               )}
             </div>
