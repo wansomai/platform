@@ -138,7 +138,7 @@ const NewFeaturesSection = () => {
     {
       title: "Collaborate Better",
       description:
-        "Organize projects,files into shared team workspaces for seamless team collaboration.",
+        "Organize projects,files into shared team workspaces for seamless collaboration.",
       href: "/login",
       image:"/wansom-dashboard.jpg",
     },

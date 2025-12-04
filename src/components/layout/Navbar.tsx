@@ -205,7 +205,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </div>
 
             {/* Programs Dropdown */}
-            <div className="relative dropdown-container">
+            {/* <div className="relative dropdown-container">
               <button
                 className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8 focus:outline-none"
                 onClick={() => setActiveDropdown(activeDropdown === 'programs' ? null : 'programs')}
@@ -233,12 +233,12 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                   </Link>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Security Link */}
-            {/* <Link href="/#security" className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
+            <Link href="/#security" className="font-semibold text-md flex items-center hover:text-[#F18F01] hover:underline hover:underline-offset-8">
               Security
-            </Link> */}
+            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">
