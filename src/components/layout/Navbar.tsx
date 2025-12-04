@@ -247,7 +247,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
             </Link>
             <Link
               href="/login"
-              className="font-medium text-md whitespace-nowrap text-white bg-black hover:bg-[#2a4d54] rounded-md py-2 px-4"
+              className="font-medium text-md whitespace-nowrap text-white bg-black hover:bg-black rounded-md py-2 px-4"
             >
               Start For Free
             </Link>
@@ -386,7 +386,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                 </Link>
                 <Link
                   href="/login"
-                  className="font-medium text-white bg-primary hover:bg-[#2a4d54] rounded-md py-3 px-4 text-center"
+                  className="font-medium text-white bg-primary hover:bg-black rounded-md py-3 px-4 text-center"
                   onClick={() => setIsOpen(false)}
                 >
                   Start For Free

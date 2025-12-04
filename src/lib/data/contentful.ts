@@ -186,7 +186,6 @@ export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
-console.log(`Fetched ${allItems[0].fields.template.fields.file.url} document templates from Contentful.`);
   return allItems;
 }
 
