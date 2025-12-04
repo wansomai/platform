@@ -6,6 +6,7 @@ import { Notifications } from "@/components/ui/Notifications";
 import AuthProvider from "@/providers/AuthProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Script from 'next/script';
+import MicrosoftClarity from "@/components/analytics/MicrosoftClarity";
 
 // Configure Roboto with multiple weights for professional use
 const roboto = Roboto({ 
@@ -103,6 +104,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${roboto.className} antialiased`}>
+        <MicrosoftClarity />
         <AuthProvider>
           <ErrorBoundary>
             <Notifications />
