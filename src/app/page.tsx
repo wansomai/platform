@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, Sparkles,ChevronDown} from "lucide-react";
+import { CheckCircle, Sparkles,ChevronDown, SquareArrowOutUpRight, ArrowUpRight} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
@@ -15,6 +15,7 @@ import {
 import DocumentAutomation from "@/components/home/DocumentAutomation";
 import KnowledgeBase from "@/components/home/Knowledgebase";
 import LogoAnimation from "@/components/commons/LogoAnimation";
+import { PatnerLogoSection } from "@/components/home/Partnerlogos";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,9 +63,8 @@ export default function Home() {
                   Collaborative AI workspace for legal teams
                 </h1>
 
-                <p className="text-lg md:text-xl max-w-4xl mx-auto mb-8  text-[#f3f4f4]">
-                  Save time by automating routine legal processes with AI, so
-                  you can focus on high-impact work.
+                <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8  text-[#f3f4f4]">
+                  Wansom is the only legal AI that enables you to scale your firm's capacity to deliver big law results without big law budget
                 </p>
                 <button
                   className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10 mx-auto"
@@ -72,7 +72,7 @@ export default function Home() {
                   aria-label="Try Wansom AI for free - Start your free trial"
                 >
                   TRY WANSOM FOR FREE{" "}
-                  <Sparkles className="w-5 h-5 text-white" aria-hidden="true" />
+                  <SquareArrowOutUpRight className="w-5 h-5 text-white" aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -88,8 +88,10 @@ export default function Home() {
           </div>
         </section>
         {/* <HeroSection /> */}
-
-        <FeaturesSection />
+        <PatnerLogoSection />
+<NewFeaturesSection />
+        {/* <FeaturesSection /> */}
+       
         <LegalDraftingSection />
         <LegalResearchSection />
         <DocumentAutomation />
@@ -121,6 +123,73 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+const NewFeaturesSection = () => {
+  const features = [
+    {
+      title: "Work Smarter",
+      description:
+        "Automate routine legal tasks with AI so your team can focus on high-value work.",
+      href: "/login",
+      image:"/drafting-feature.jpg",
+    },
+    {
+      title: "Collaborate Better",
+      description:
+        "Organize projects,files into shared team workspaces for seamless team collaboration.",
+      href: "/login",
+      image:"/wansom-dashboard.jpg",
+    },
+    {
+      title: "Get More Billable Hours",
+      description:
+        "Create Specialised AI associates to do quality work faster so you can bill more.",
+      href: "/login",
+      image:"/contract-negotiation.jpg",
+    },
+  ];
+
+  return (
+    <section className=" ">
+      <div className="section-container">
+
+        {/* Feature Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="group relative rounded-lg py-6 px-3 transition-all duration-300 space-y-3"
+            >
+              <div className="mb-4">
+                 <img src={feature.image} alt={feature.title} className="rounded-lg object-cover "/>
+              </div>
+            
+
+              {/* Content */}
+              <h3 className="text-xl font-semibold text-gray-900">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+                {feature.description}
+              </p>
+
+              {/* Arrow Link */}
+              <a
+                href={feature.href}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                aria-label={`Learn more about ${feature.title}`}
+              >
+                <ArrowUpRight className="w-5 h-5" />
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 function LegalDraftingSection() {
   return (
