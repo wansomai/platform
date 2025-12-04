@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { clarity } from '@microsoft/clarity';
+import clarity  from '@microsoft/clarity';
 
 export default function MicrosoftClarity() {
   useEffect(() => {
@@ -9,7 +9,6 @@ export default function MicrosoftClarity() {
 
     if (projectId && typeof window !== 'undefined') {
       clarity.init(projectId);
-      console.log('Microsoft Clarity initialized with project ID:', projectId);
     }
   }, []);
 
