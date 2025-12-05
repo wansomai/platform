@@ -49,6 +49,7 @@ interface Invitation {
 interface UpdateProfileData {
   name?: string;
   email?: string;
+  organizationName?: string;
 }
 
 interface InviteMemberData {

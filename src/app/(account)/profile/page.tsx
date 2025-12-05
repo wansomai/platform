@@ -77,6 +77,7 @@ const Page = () => {
   // Local UI state only
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState('');
+  const [organizationName, setOrganizationName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('member');
   const [activeTab, setActiveTab] = useState<'members' | 'invitations'>('members');
@@ -92,15 +93,25 @@ const Page = () => {
     fetchOrganizations();
   }, []);
 
-  // Sync fullName with profile
+  // Sync fullName and organizationName with profile
   useEffect(() => {
     if (profile) {
       setFullName(profile.fullName || '');
+      setOrganizationName(profile.organization?.name || '');
     }
   }, [profile]);
 
   const handleSave = async () => {
-    const result = await updateProfile({ name: fullName });
+    const updateData: { name: string; organizationName?: string } = {
+      name: fullName
+    };
+
+    // Only include organizationName if user is the owner and it has changed
+    if (profile?.role === 'owner' && organizationName !== profile?.organization?.name) {
+      updateData.organizationName = organizationName;
+    }
+
+    const result = await updateProfile(updateData);
     if (result) {
       setIsEditing(false);
       notify.success("Profile updated successfully");
@@ -254,6 +265,22 @@ const Page = () => {
                       <Label htmlFor="email">Email</Label>
                       <p className="text-lg">{profile.email}</p>
                     </div>
+
+                    {profile?.role === 'owner' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="organization-name">Organization Name</Label>
+                        {isEditing ? (
+                          <Input
+                            id="organization-name"
+                            value={organizationName}
+                            onChange={(e) => setOrganizationName(e.target.value)}
+                            placeholder="Enter organization name"
+                          />
+                        ) : (
+                          <p className="text-lg">{profile.organization?.name || 'Not set'}</p>
+                        )}
+                      </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="org-select">Organization</Label>
@@ -566,6 +593,22 @@ const Page = () => {
                       <Label htmlFor="email">Email</Label>
                       <p className="text-lg">{profile.email}</p>
                     </div>
+
+                    {profile?.role === 'owner' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="organization-name">Organization Name</Label>
+                        {isEditing ? (
+                          <Input
+                            id="organization-name"
+                            value={organizationName}
+                            onChange={(e) => setOrganizationName(e.target.value)}
+                            placeholder="Enter organization name"
+                          />
+                        ) : (
+                          <p className="text-lg">{profile.organization?.name || 'Not set'}</p>
+                        )}
+                      </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label htmlFor="org-select">Organization</Label>
