@@ -82,8 +82,8 @@ export async function sendEmail(options: EmailOptions) {
  * @returns Result of sending the email
  */
 export function sendWelcomeEmail(user: { email: string; fullName?: string | null; }) {
-  const name = user.fullName || 'there';
-  const subject = 'Welcome to Wansom - Your AI-powered Legal Workspace';
+  const name = user.fullName || 'User';
+  const subject = 'Welcome to Wansom AI - Do More Legal Work with Less';
   const email = user.email;
   
   // Create HTML email content
@@ -162,25 +162,27 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
         <div class="content">
           <h1>Welcome to Wansom, ${name}!</h1>
           
-          <p>Thank you for joining Wansom, your new AI-powered legal workspace. We're excited to help you automate routine legal tasks.</p>
+          <p>We're excited to help you save time on routine legal tasks so you can focus on high impact work</p>
           
-          <p>Here's what you can do with Wansom:</p>
+          <p>Here's a qucik look at what you can do on the platform:</p>
           
           <div class="feature">
-            <h3>🤖 AI Assistant</h3>
-            <p>Our advanced legal AI can perform deep research with internet access, securely retrieve information from your company's proprietary data, and help with context-aware document drafting.</p>
+            <h3>🤖 Create AI Associates</h3>
+            <p>Boost your productivity with AI teammates specialized in specific legal tasks.Create,train and use AI associates that adapt to your work style and help you complete tasks faster</p>
+          </div>
+          <div class="feature">
+            <h3>⚙️ Draft and Review Contracts</h3>
+            <p>Never switch between different tools when working with a large set of documents. We have an inline editor to help you draft documents from scratch with AI or start from a professional template. review and compare different sets of documents with Ai to ensure you never miss any details</p>
           </div>
           
           <div class="feature">
-            <h3>🔒 Vault</h3>
+            <h3>🔒Document Vault</h3>
             <p>Securely upload, share, and perform semantic searches across all your important legal documents.</p>
-          </div>
-          
+          </div>               
           <div class="feature">
-            <h3>⚙️ Workflows</h3>
-            <p>Automate repetitive tasks such as contract reviews, compliance checks, regulatory filings, email writing, and tax preparation.</p>
-          </div>
-          
+            <h3>👥 Research Better</h3>
+            <p>Get instant answers to complex legal questions with AI that searches through verified cases, statutes, and legal authorities in seconds.</p>
+          </div>     
           <div class="feature">
             <h3>🔄 Integrations</h3>
             <p>Connect with Outlook, Google Calendar, ERP Databases, and other legal management tools to streamline your operations.</p>
