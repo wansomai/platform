@@ -1,11 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, Sparkles,ChevronDown, SquareArrowOutUpRight, ArrowUpRight} from "lucide-react";
+import { CheckCircle,ChevronDown, SquareArrowOutUpRight, ArrowUpRight} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import FeaturesSection from "@/components/home/features";
 import VaultSection, { VaultDocs } from "@/components/home/vault";
 import CookieConsent, { Cookies } from "react-cookie-consent";
 import {
@@ -113,11 +112,7 @@ export default function Home() {
         }}
         expires={150}
       >
-        We use essential cookies to make our site function effectively. We’d
-        like to set additional cookies to better understand site usage, enhance
-        site improvements, and remember your settings. We also use cookies set
-        by other sites to assist in delivering content from their services. View
-        our
+        We use cookies to personalize content, run ads, and analyze traffic.
       </CookieConsent>
       <Footer />
     </div>

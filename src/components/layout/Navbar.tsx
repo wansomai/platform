@@ -91,20 +91,20 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
       isScrolled || isOpen||darkmode ? 'bg-primary shadow-sm backdrop-filter lg:backdrop-blur-lg  text-white bg-opacity-40' : 'bg-transparent text-white'
     }`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="md:hidden">
+        <Link href="/" className="lg:hidden">
           <Image src={ `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>
 
         {/* Mobile menu button */}
         <button 
-          className={`md:hidden z-50  focus:outline-none transition-transform duration-300 ${darkmode ? 'text-black' : 'text-white'}`}
+          className={`lg:hidden z-50  focus:outline-none transition-transform duration-300 ${darkmode ? 'text-black' : 'text-white'}`}
           onClick={() => setIsOpen(!isOpen)}  aria-label="Mobile menu"
         >
           {isOpen ? <X className={darkmode?'text-white':'text-black'} size={24} /> : <Menu size={24} />}
         </button>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center justify-between flex-grow mx-auto">
+        <div className="hidden lg:flex items-center justify-between flex-grow mx-auto">
         <Link href="/">
           <Image src={ `/images/logo-dark.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>
@@ -258,7 +258,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
         <div
           className={`fixed inset-0 bg-white z-40 transform transition-transform duration-300 ease-in-out ${
             isOpen ? 'translate-x-0' : 'translate-x-full'
-          } md:hidden`}
+          } lg:hidden`}
         >
           <div className="container mx-auto px-4 pt-20 pb-6 h-full overflow-y-auto">
             <nav className="flex flex-col space-y-2">

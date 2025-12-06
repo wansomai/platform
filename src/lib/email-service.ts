@@ -203,7 +203,7 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           The Wansom Team</p>
         </div>
         <div class="footer">
-          <p>© 2025 Wansom Ltd. All rights reserved.</p>
+          <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
           <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |

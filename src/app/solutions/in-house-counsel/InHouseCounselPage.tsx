@@ -15,7 +15,6 @@ import {
   MessageSquare,
   Sparkles,
 } from "lucide-react";
-import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VaultSection from "@/components/home/vault";
@@ -34,13 +33,13 @@ const InHouseCounselPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 bg-primary relative overflow-hidden">
+      <section className="pt-24 md:pt-32 pb-5 bg-primary relative overflow-hidden">
         <div className="container mx-auto px-5 z-10 relative">
-          <div className="relative grid grid-cols- lg:grid-cols-2 gap-12 items-center ">
+          <div className="relative grid grid-cols- lg:grid-cols-2 gap-5 items-center ">
             <div className="text-white lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For In-House Legal Teams </p>
               <h1 className="text-heading-1 text-shadow font-serif max-w-4xl">
-                Streamline Routine Legal Tasks so you focus on High Impact Work
+                Automate Routine Legal Tasks With AI so you focus on High Value Work
               </h1>
               <button className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-primary transition">
                 Get Started

@@ -45,7 +45,7 @@ const PrivacyPolicyContent = () => {
               <li><strong>Usage Data:</strong> Your interactions with the Services, including AI queries, documents uploaded, features used, and time spent</li>
               <li><strong>Device Information:</strong> Device type, operating system, browser type, IP address, and unique device identifiers</li>
               <li><strong>Log Data:</strong> Server logs including access times, pages viewed, and referring URLs</li>
-              <li><strong>Cookies and Similar Technologies:</strong> We use cookies, web beacons, and similar tracking technologies to collect information about your browsing activities</li>
+              <li><strong>Cookies :</strong> We use cookies to personalize content, run ads, and analyze traffic.</li>
             </ul>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-3">2.3 Content and Documents</h3>

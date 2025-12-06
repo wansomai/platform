@@ -19,7 +19,7 @@ const MALawyersPage = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-32 bg-primary relative overflow-hidden">
+      <section className="pt-24 md:pt-32 pb-5 bg-primary relative overflow-hidden">
         <div className="container mx-auto px-5 z-10 relative">
           <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ">
             <div className="text-white lg:basis-1/2 text-center lg:text-left space-y-5">
