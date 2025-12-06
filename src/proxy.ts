@@ -1,10 +1,10 @@
-// middleware.ts
+// proxy.ts
 import { NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 import type { NextRequest } from 'next/server'
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   
   // Get the token, using the same secret used in NextAuth
   const token = await getToken({ 
