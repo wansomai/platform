@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import PrivacyPolicyContent from './PrivacyPolicyContent';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Wansom AI - Legal Services',
+  title: 'Privacy Policy | Wansom AI',
   description: 'Learn how Wansom AI collects, uses, and protects your personal information. Our commitment to your privacy and data security.',
   keywords: 'privacy policy, data protection, wansom AI privacy, legal AI privacy, data security',
   alternates: {
