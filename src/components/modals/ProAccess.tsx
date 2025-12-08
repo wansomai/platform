@@ -71,7 +71,15 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             </div>
           </div>
         </DialogHeader>
-        <div className="flex flex-col gap-5">   
+
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-amber-800 font-medium">{errorMessage}</p>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-5">
             <img
               src="/images/ai-in-house-counsel.jpg"
               alt="Pro Access Illustration"
@@ -118,12 +126,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             type="submit"
             onClick={handleSubmit}
             className="sm:flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-            disabled={
-              isLoading ||
-              !formData.name ||
-              !formData.email ||
-              !formData.accountType
-            }
+            disabled={isLoading}
           >
             {isLoading ? "Processing..." : "Request Pro Access"}
           </Button>
