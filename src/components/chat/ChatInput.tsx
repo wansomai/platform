@@ -311,24 +311,34 @@ export function ChatInput({
             organizationId: session.user.organization.id,
           };
 
-          const newProject = await createProject(payload);
+          try {
+            const newProject = await createProject(payload);
 
-          if (newProject) {
-            notify.success("AI workspace created successfully!");
+            if (newProject) {
+              notify.success("AI workspace created successfully!");
 
-            // Store the message in sessionStorage to preserve it across navigation
-            sessionStorage.setItem("pendingMessage", messageToSend);
+              // Store the message in sessionStorage to preserve it across navigation
+              sessionStorage.setItem("pendingMessage", messageToSend);
 
-            // Call callback if provided
-            onWorkspaceCreated?.(newProject.id);
+              // Call callback if provided
+              onWorkspaceCreated?.(newProject.id);
 
-            // Navigate to the new project - the message will be restored in the workspace
-            router.push(`/projects/${newProject.id}`);
-          } else {
-            throw new Error("Failed to create project");
+              // Navigate to the new project - the message will be restored in the workspace
+              router.push(`/projects/${newProject.id}`);
+            } else {
+              throw new Error("Failed to create project");
+            }
+          } catch (error: any) {
+            // Check if this is a subscription limit error
+            if (error.status === 403 && error.requiresUpgrade) {
+              setShowProAccess(true);
+              return; // Don't show generic error or clear input
+            }
+            throw error; // Re-throw other errors
           }
         } catch (error: any) {
-          notify.error("Failed to create AI workspace. Please try again.");
+          const errorMessage = error.message || "Failed to create AI workspace. Please try again.";
+          notify.error(errorMessage);
         } finally {
           setIsSubmitting(false);
         }
@@ -817,7 +827,11 @@ export function ChatInput({
         onClose={() => setShowProAccess(false)}
         onRequestAccess={handleRequestProAccess}
         isLoading={isUpgrading}
-        errorMessage="You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
+        errorMessage={
+          projectRequiresUpgrade
+            ? "You have reached your workspace limit (1 workspace on free plan). Request Pro access to create unlimited workspaces."
+            : "You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
+        }
         userData={{
           name: session?.user?.name || "",
           email: session?.user?.email || "",

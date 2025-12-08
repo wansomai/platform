@@ -214,12 +214,12 @@ function LegalDraftingSection() {
                 <div>Clause Length: Standard</div>
               </div>
 
-              <button
-                className="w-full bg-[#355e66] text-white py-3 rounded-lg font-medium mt-6 hover:bg-[#2a4d54] transition-colors"
+                <button onClick={() => window.location.href = "/login"}
+                className="w-full bg-primary hover:bg-[#F18F01] text-white py-3 rounded-lg font-medium mt-6 transition-colors"
                 aria-label="Generate document outline for Employment Agreement in London, UK jurisdiction"
-              >
+                >
                 Generate Document Outline
-              </button>
+                </button>
             </div>
           </div>
 
