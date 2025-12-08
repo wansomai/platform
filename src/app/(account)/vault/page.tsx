@@ -861,8 +861,8 @@ export default function VaultPage() {
         onOpenChange={setShowUploadModal}
         mode="upload"
         onDocumentsAdded={handleDocumentUploaded}
-        title="Upload Document"
-        description="Upload a new document to your vault."
+        title="Upload Files"
+        description=""
       />
       
       {/* Delete Confirmation Dialog */}

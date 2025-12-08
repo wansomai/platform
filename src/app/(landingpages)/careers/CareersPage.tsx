@@ -110,7 +110,12 @@ const CareersPageClient = () => {
             <div key={job.id} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/3 p-6 border-r border-gray-200">
-                  <h3 className="text-xl font-semibold text-primary mb-2">{job.title}</h3>
+                  <a
+                    href='mailto:law@wansom.ai'
+                    className="text-xl font-semibold text-primary mb-2 hover:text-[#F18F01] hover:underline cursor-pointer transition-all block"
+                  >
+                    {job.title}
+                  </a>
                 </div>
                 
                 <div className="md:w-2/3 p-6">
@@ -141,9 +146,12 @@ const CareersPageClient = () => {
                   <p className="text-gray-600 mb-4">{job.description}</p>
                   
                   <div className="flex justify-end">
-                    <a href='mailto:law@wansom.ai' className="bg-primary hover:bg-black text-white px-4 py-2 rounded-md flex items-center">
+                    <a
+                      href='mailto:law@wansom.ai'
+                      className="bg-primary hover:bg-[#F18F01] text-white px-6 py-3 rounded-md flex items-center gap-1 transition-all hover:shadow-lg transform hover:scale-105"
+                    >
                       Apply Now
-                      <ChevronRight className="ml-1 h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" />
                     </a>
                   </div>
                 </div>
