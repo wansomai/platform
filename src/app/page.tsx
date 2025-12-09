@@ -156,6 +156,7 @@ const NewFeaturesSection = () => {
             <div
               key={index}
               className="group relative rounded-lg py-6 px-3 transition-all duration-300 space-y-3"
+              onClick={() => window.location.href = "/login"}
             >
               <div className="mb-4">
                  <img src={feature.image} alt={feature.title} className="rounded-lg object-cover "/>

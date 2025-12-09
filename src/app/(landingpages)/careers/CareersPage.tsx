@@ -4,6 +4,7 @@ import { Linkedin, X, ChevronRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Image from 'next/image';
+import Link from 'next/link';
 
 const CareersPageClient = () => {
   const [opportunities] = useState([
@@ -72,8 +73,12 @@ const CareersPageClient = () => {
                   {/* Left Column - Contact Form */}
                   <div>
                     <h1 className="font-serif text-5xl mb-6 text-white">Careers at Wansom AI</h1>
-                    <div className="font-jost text-sm text-white mb-10">
-                      Home / Careeers
+                    <div className="font-jost text-sm text-white mb-10 flex items-center gap-2">
+                      <Link href="/" className="hover:underline transition-all">
+                        Home
+                      </Link>
+                      <span>/</span>
+                      <span>Careers</span>
                     </div>
                     <div className="flex items-center gap-3 text-white mb-4 ">
                     
