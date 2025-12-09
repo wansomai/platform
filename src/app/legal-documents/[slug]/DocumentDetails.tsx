@@ -134,7 +134,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 mb-6">
             <Link
-              href="/login"
+              href="/register"
               className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded hover:bg-black transition-colors font-medium"
             >
               Open in editor
