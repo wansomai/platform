@@ -9,9 +9,11 @@ import { Loader2 } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { ErrorAlert } from "@/components/ui/error-alert";
 
 const DemoPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,23 +32,44 @@ const DemoPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (!formData.name || !formData.email || !formData.accountType) {
-      notify.error("Please fill in all fields");
+      setError("Please fill in all fields");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch("/api/submissions/demo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit demo request");
+      }
+
       notify.success("Demo request submitted! We'll contact you within 24 hours.");
+
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        accountType: "",
+      });
 
       // Optionally redirect to thank you page or calendly
       // router.push("/thank-you");
     } catch (error) {
-      notify.error("Failed to submit demo request. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Failed to submit demo request. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -79,6 +102,8 @@ const DemoPage = () => {
             <p className="text-sm text-gray-600 mb-6">
               Fill out the form and we'll reach out in 24hrs or less
             </p>
+
+            <ErrorAlert error={error} onDismiss={() => setError(null)} />
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name Field */}
