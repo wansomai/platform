@@ -22,7 +22,7 @@ export const PatnerLogoSection = () => {
           <p className="text-body-large text-gray-600 mb-8 max-w-3xl mx-auto capitalize">
            Join Leading Legal Teams streamlining their legal processes with wansom AI</p>
         </div>
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden min-h-[80px]">
         <div className="flex animate-scroll whitespace-nowrap">
           {/* First set of logos */}
           <div className="flex items-center space-x-12 md:space-x-16 lg:space-x-20 pr-12 md:pr-16 lg:pr-20">
@@ -33,6 +33,7 @@ export const PatnerLogoSection = () => {
                   alt={logo.alt}
                   width={160}
                   height={80}
+                  sizes="(max-width: 768px) 120px, 160px"
                   className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
                   loading="lazy"
                 />
@@ -49,6 +50,7 @@ export const PatnerLogoSection = () => {
                   alt={logo.alt}
                   width={160}
                   height={80}
+                  sizes="(max-width: 768px) 120px, 160px"
                   className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
                   loading="lazy"
                 />

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { CheckCircle,ChevronDown, SquareArrowOutUpRight, ArrowUpRight} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import VaultSection, { VaultDocs } from "@/components/home/vault";
@@ -78,8 +79,11 @@ export default function Home() {
 
             {/* Right Side - Image */}
             <div className=" -mb-1 md:-mb-4 max-w-7xl mx-auto ">
-              <img
-                src="/home-demo.png"
+              <Image
+                src="/home-demo.webp"
+                width={1400}
+                height={800}
+                priority
                 className="rounded-lg"
                 alt="Modern law office workspace showing professional legal environment with Wansom AI collaborative tools"
               />
@@ -128,21 +132,21 @@ const NewFeaturesSection = () => {
       description:
         "Automate routine legal tasks with AI so your team can focus on high-value work.",
       href: "/login",
-      image:"/drafting-feature.jpg",
+      image:"/drafting-feature.webp",
     },
     {
       title: "Collaborate Better",
       description:
         "Organize projects,files into shared team workspaces for seamless collaboration.",
       href: "/login",
-      image:"/wansom-dashboard.jpg",
+      image:"/wansom-dashboard.webp",
     },
     {
       title: "Get More Billable Hours",
       description:
         "Create Specialised AI associates to do quality work faster so you can bill more.",
       href: "/login",
-      image:"/contract-negotiation.jpg",
+      image:"/contract-negotiation.webp",
     },
   ];
 
@@ -159,7 +163,13 @@ const NewFeaturesSection = () => {
               onClick={() => window.location.href = "/login"}
             >
               <div className="mb-4">
-                 <img src={feature.image} alt={feature.title} className="rounded-lg object-cover "/>
+                 <Image
+                   src={feature.image}
+                   alt={feature.title}
+                   width={600}
+                   height={400}
+                   className="rounded-lg object-cover "
+                 />
               </div>
             
 
