@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 
 const DocumentAutomation = () => {
   const [activeTab, setActiveTab] = useState(2);
@@ -20,7 +21,7 @@ const DocumentAutomation = () => {
     },
     {
       title: "Compare and Share Documents",
-      image: "/images/legal-document-review.png",
+      image: "/images/legal-document-review.webp",
       alt: "review legal documents",
       description: "Compare different versions of documents side by side and share securely with clients and colleagues."
     }
@@ -71,11 +72,12 @@ const DocumentAutomation = () => {
                 </button>
             </div>
             <div className="flex-1 lg:basis-1/3 order-1 lg:order-2">
-              <img
+              <Image
                 src={tabs[activeTab].image}
+                width={800}
+                height={600}
                 className="rounded-lg w-full h-auto"
                 alt={tabs[activeTab].alt}
-                loading="lazy"
               />
             </div>
           </div>
