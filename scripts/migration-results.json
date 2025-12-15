@@ -1,0 +1,840 @@
+[
+  {
+    "success": true,
+    "contentfulId": "6wRDYC8D4y95wHdw50VfmM",
+    "contentfulTitle": "The Ultimate Guide to Legal AI: What Every Lawyer Must Know in 2025",
+    "wordpressId": 8,
+    "wordpressSlug": "the-ultimate-guide-to-legal-ai-what-every-lawyer-must-know-in-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/11/27/the-ultimate-guide-to-legal-ai-what-every-lawyer-must-know-in-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "Fi5RgMgAwxsELDgCryyYB",
+    "contentfulTitle": "Why Having a Lease Agreement with Your Landlord Is Essential for Tenants and Landlords",
+    "wordpressId": 10,
+    "wordpressSlug": "why-having-a-lease-agreement-with-your-landlord-is-essential-for-tenants-and-landlords",
+    "wordpressUrl": "https://portal.wansom.shop/2025/11/13/why-having-a-lease-agreement-with-your-landlord-is-essential-for-tenants-and-landlords/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2dIzraZc7mzCoRZRK3LVHH",
+    "contentfulTitle": "AI Bill of Rights: Everything You Need to Know",
+    "wordpressId": 12,
+    "wordpressSlug": "ai-bill-of-rights-everything-you-need-to-know",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/ai-bill-of-rights-everything-you-need-to-know/"
+  },
+  {
+    "success": true,
+    "contentfulId": "73qIS5e57DFyJ4tbZutTZE",
+    "contentfulTitle": "Exploring AI Legal Issues: Navigating Challenges and Risks in the Era of Artificial Intelligence",
+    "wordpressId": 14,
+    "wordpressSlug": "exploring-ai-legal-issues-navigating-challenges-and-risks-in-the-era-of-artificial-intelligence",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/exploring-ai-legal-issues-navigating-challenges-and-risks-in-the-era-of-artificial-intelligence/"
+  },
+  {
+    "success": true,
+    "contentfulId": "61A4FNJcM0KwXy98VaIFKE",
+    "contentfulTitle": "Artificial Intelligence and the Law: Navigating AI in the Legal Industry",
+    "wordpressId": 16,
+    "wordpressSlug": "artificial-intelligence-and-the-law-navigating-ai-in-the-legal-industry",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/artificial-intelligence-and-the-law-navigating-ai-in-the-legal-industry/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5SQRmSu9IG8qxgoHF0CHm9",
+    "contentfulTitle": "AI for Legal Research: Tools, Tips, and Examples",
+    "wordpressId": 18,
+    "wordpressSlug": "ai-for-legal-research-tools-tips-and-examples",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/ai-for-legal-research-tools-tips-and-examples/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5YtcAhsT6YHjBuefDOGtab",
+    "contentfulTitle": "Law Firm AI Policy Template, Tips & Examples",
+    "wordpressId": 20,
+    "wordpressSlug": "law-firm-ai-policy-template-tips-examples",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/law-firm-ai-policy-template-tips-examples/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6t95YoXy8lPHYw9T4klMNl",
+    "contentfulTitle": "Understanding and Utilizing Legal Large Language Models",
+    "wordpressId": 22,
+    "wordpressSlug": "understanding-and-utilizing-legal-large-language-models",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/understanding-and-utilizing-legal-large-language-models/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2XJwOoS4v4DjrgavRJD52T",
+    "contentfulTitle": "ChatGPT for Lawyers: How Firms Are Embracing AI Chatbots ",
+    "wordpressId": 24,
+    "wordpressSlug": "chatgpt-for-lawyers-how-firms-are-embracing-ai-chatbots",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/chatgpt-for-lawyers-how-firms-are-embracing-ai-chatbots/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5fOFlCr0TPLQYvy5GH3d5F",
+    "contentfulTitle": "How to Cite AI in Legal Writing ",
+    "wordpressId": 26,
+    "wordpressSlug": "how-to-cite-ai-in-legal-writing",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/how-to-cite-ai-in-legal-writing/"
+  },
+  {
+    "success": true,
+    "contentfulId": "7KcJF25xeScuYSoF8V1J75",
+    "contentfulTitle": "AI Tools for Lawyers: Improving Efficiency and Productivity in Law Firms ",
+    "wordpressId": 28,
+    "wordpressSlug": "ai-tools-for-lawyers-improving-efficiency-and-productivity-in-law-firms",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/ai-tools-for-lawyers-improving-efficiency-and-productivity-in-law-firms/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1XgwJtkfb7KvvSLqtI19b4",
+    "contentfulTitle": "Artificial Intelligence in Courtrooms: How Wansom is Powering the Next Phase of Judicial Innovation",
+    "wordpressId": 30,
+    "wordpressSlug": "artificial-intelligence-in-courtrooms-how-wansom-is-powering-the-next-phase-of-judicial-innovation",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/artificial-intelligence-in-courtrooms-how-wansom-is-powering-the-next-phase-of-judicial-innovation/"
+  },
+  {
+    "success": true,
+    "contentfulId": "18hqg1NCJFnR7917RuhHTb",
+    "contentfulTitle": "Can AI Give Legal Advice? ",
+    "wordpressId": 32,
+    "wordpressSlug": "can-ai-give-legal-advice",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/can-ai-give-legal-advice/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1r4bNNB77XJ2Zd4psS85KF",
+    "contentfulTitle": "How AI Can Automate Vendor Management Contracts: DPAs & Security Riders Explained ",
+    "wordpressId": 34,
+    "wordpressSlug": "how-ai-can-automate-vendor-management-contracts-dpas-security-riders-explained",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/how-ai-can-automate-vendor-management-contracts-dpas-security-riders-explained/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2s4INndzDvY1waabxYHPTI",
+    "contentfulTitle": "How to Build a Contract Risk Heat Map for Your Organization ",
+    "wordpressId": 36,
+    "wordpressSlug": "how-to-build-a-contract-risk-heat-map-for-your-organization",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/28/how-to-build-a-contract-risk-heat-map-for-your-organization/"
+  },
+  {
+    "success": true,
+    "contentfulId": "Tm2MrSwsTVbwgwI1HKKqG",
+    "contentfulTitle": "Legal Aid Funding Application for Non-Profits  with Template ",
+    "wordpressId": 38,
+    "wordpressSlug": "legal-aid-funding-application-for-non-profits-with-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/legal-aid-funding-application-for-non-profits-with-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4dI155CzrpmHAb2ETT53G7",
+    "contentfulTitle": "Contract Intelligence for General Counsel: Complete Guide to AI-Powered Contract Management in 2025 ",
+    "wordpressId": 40,
+    "wordpressSlug": "contract-intelligence-for-general-counsel-complete-guide-to-ai-powered-contract-management-in-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/contract-intelligence-for-general-counsel-complete-guide-to-ai-powered-contract-management-in-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3LDW7n8KNw7szaGmo7dRq6",
+    "contentfulTitle": "How to Build a Playbook So Your AI Legal Chatbot Negotiates Like You ",
+    "wordpressId": 42,
+    "wordpressSlug": "how-to-build-a-playbook-so-your-ai-legal-chatbot-negotiates-like-you",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/how-to-build-a-playbook-so-your-ai-legal-chatbot-negotiates-like-you/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2OFM43eHuI88m88z7TpuFe",
+    "contentfulTitle": "Negotiation in Minutes: Clause-Level Redlining with an AI Co-Counsel ",
+    "wordpressId": 44,
+    "wordpressSlug": "negotiation-in-minutes-clause-level-redlining-with-an-ai-co-counsel",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/negotiation-in-minutes-clause-level-redlining-with-an-ai-co-counsel/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6RyKJJ0vdnAxcDWefDMfGa",
+    "contentfulTitle": "Best Legal AI Software for Research vs Drafting: Where Each Shines ",
+    "wordpressId": 46,
+    "wordpressSlug": "best-legal-ai-software-for-research-vs-drafting-where-each-shines",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/best-legal-ai-software-for-research-vs-drafting-where-each-shines/"
+  },
+  {
+    "success": true,
+    "contentfulId": "765ThVo4PxWgK6Yyb46OQr",
+    "contentfulTitle": "Sectional Properties Plan Template with Examples ",
+    "wordpressId": 48,
+    "wordpressSlug": "sectional-properties-plan-template-with-examples",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/sectional-properties-plan-template-with-examples/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4GjgA3jt4ioA6LXazA4MrT",
+    "contentfulTitle": "Disability Representative Appointment Form with Template ",
+    "wordpressId": 50,
+    "wordpressSlug": "disability-representative-appointment-form-with-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/disability-representative-appointment-form-with-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "62vqbkezQrr5udEewTUCem",
+    "contentfulTitle": "Medical Release Form Template with Examples ",
+    "wordpressId": 52,
+    "wordpressSlug": "medical-release-form-template-with-examples",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/medical-release-form-template-with-examples/"
+  },
+  {
+    "success": true,
+    "contentfulId": "7nlpQm3S2wpBqTeue5uVLO",
+    "contentfulTitle": "How AI is Transforming Environmental Law ",
+    "wordpressId": 54,
+    "wordpressSlug": "how-ai-is-transforming-environmental-law",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/how-ai-is-transforming-environmental-law/"
+  },
+  {
+    "success": true,
+    "contentfulId": "50gfIFZwBYl1Rao041ntH7",
+    "contentfulTitle": "Audited Financial Statements with Template ",
+    "wordpressId": 57,
+    "wordpressSlug": "audited-financial-statements-with-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/audited-financial-statements-with-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "17AoptHd9daGq6xy9L7Q6w",
+    "contentfulTitle": "Consent Withdrawal Request: A Complete Guide with Customizable Template ",
+    "wordpressId": 59,
+    "wordpressSlug": "consent-withdrawal-request-a-complete-guide-with-customizable-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/consent-withdrawal-request-a-complete-guide-with-customizable-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3lp4t5uwPWEy2YD0kzixJ1",
+    "contentfulTitle": "Comprehensive Insurance Coverage Contract with Template ",
+    "wordpressId": 61,
+    "wordpressSlug": "comprehensive-insurance-coverage-contract-with-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/comprehensive-insurance-coverage-contract-with-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "28BDEkMYjEVcRYJ7rhJ54L",
+    "contentfulTitle": "AML/CTF Compliance Manual for Insurance Companies: Complete Guide + Customizable Template ",
+    "wordpressId": 63,
+    "wordpressSlug": "aml-ctf-compliance-manual-for-insurance-companies-complete-guide-customizable-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/27/aml-ctf-compliance-manual-for-insurance-companies-complete-guide-customizable-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4uSJe5t8C4ICokdBkosAL5",
+    "contentfulTitle": "What Is a Prenuptial Agreement? ",
+    "wordpressId": 65,
+    "wordpressSlug": "what-is-a-prenuptial-agreement",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/25/what-is-a-prenuptial-agreement/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3nOpTXwbCTROfuydES6nV0",
+    "contentfulTitle": "SSD Denial? Legal Document Templates Every Advocate Needs ",
+    "wordpressId": 67,
+    "wordpressSlug": "ssd-denial-legal-document-templates-every-advocate-needs",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/25/ssd-denial-legal-document-templates-every-advocate-needs/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3KJsqdE83lTXLoFsUuhNix",
+    "contentfulTitle": "How AI Is Changing Disability Law Practice: From Intake to Hearing Preparation ",
+    "wordpressId": 69,
+    "wordpressSlug": "how-ai-is-changing-disability-law-practice-from-intake-to-hearing-preparation",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/25/how-ai-is-changing-disability-law-practice-from-intake-to-hearing-preparation/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5zCUn9zP9PFndSoCHKAJ27",
+    "contentfulTitle": "Top 10 Mistakes Attorneys Make in Disability Appeals (and How AI Can Help Prevent Them) ",
+    "wordpressId": 71,
+    "wordpressSlug": "top-10-mistakes-attorneys-make-in-disability-appeals-and-how-ai-can-help-prevent-them",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/25/top-10-mistakes-attorneys-make-in-disability-appeals-and-how-ai-can-help-prevent-them/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3CzZOk56J5DePSqtuHueT3",
+    "contentfulTitle": "Understanding the ALJ Hearing Process: What Happens After You File HA-501-U5 ",
+    "wordpressId": 73,
+    "wordpressSlug": "understanding-the-alj-hearing-process-what-happens-after-you-file-ha-501-u5",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/25/understanding-the-alj-hearing-process-what-happens-after-you-file-ha-501-u5/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6QC3EsAYhu4uj3s8fyUGyT",
+    "contentfulTitle": "From Template Chaos to Contract Governance: The Complete Guide to AI-Powered Clause Management in 2025 ",
+    "wordpressId": 75,
+    "wordpressSlug": "from-template-chaos-to-contract-governance-the-complete-guide-to-ai-powered-clause-management-in-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/from-template-chaos-to-contract-governance-the-complete-guide-to-ai-powered-clause-management-in-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5wknih4JJMank8nJ7MpooK",
+    "contentfulTitle": "The Complete Guide to Automating CP Checklists and Closing Binders with AI in 2025 ",
+    "wordpressId": 77,
+    "wordpressSlug": "the-complete-guide-to-automating-cp-checklists-and-closing-binders-with-ai-in-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/the-complete-guide-to-automating-cp-checklists-and-closing-binders-with-ai-in-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6arjKYzVXE3QOWCFuYXS7w",
+    "contentfulTitle": "NDA Triage at Scale: Let AI Clear Low-Risk Paperwork ",
+    "wordpressId": 79,
+    "wordpressSlug": "nda-triage-at-scale-let-ai-clear-low-risk-paperwork",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/nda-triage-at-scale-let-ai-clear-low-risk-paperwork/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6cOdHGSZX7Xt4rc2NrW6JO",
+    "contentfulTitle": "How to Build a Playbook So Your AI Legal Chatbot Negotiates Like You ",
+    "wordpressId": 81,
+    "wordpressSlug": "how-to-build-a-playbook-so-your-ai-legal-chatbot-negotiates-like-you-2",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/how-to-build-a-playbook-so-your-ai-legal-chatbot-negotiates-like-you-2/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5p762zYSA51IYSndhDJvXP",
+    "contentfulTitle": "Negotiation in Minutes: Clause-Level Redlining with an AI Co-Counsel ",
+    "wordpressId": 83,
+    "wordpressSlug": "negotiation-in-minutes-clause-level-redlining-with-an-ai-co-counsel-2",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/negotiation-in-minutes-clause-level-redlining-with-an-ai-co-counsel-2/"
+  },
+  {
+    "success": true,
+    "contentfulId": "XY1RNRasjBcovjBALDAPT",
+    "contentfulTitle": "Best Legal AI Software for Research vs Drafting: Where Each Shines ",
+    "wordpressId": 85,
+    "wordpressSlug": "best-legal-ai-software-for-research-vs-drafting-where-each-shines-2",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/best-legal-ai-software-for-research-vs-drafting-where-each-shines-2/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6uWTYwWCmRUQWS0gtbAXz2",
+    "contentfulTitle": "The Modern Contract Stack: AI Drafting, Clause Libraries, and Playbooks ",
+    "wordpressId": 87,
+    "wordpressSlug": "the-modern-contract-stack-ai-drafting-clause-libraries-and-playbooks",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/24/the-modern-contract-stack-ai-drafting-clause-libraries-and-playbooks/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3gjVtVp2fkhXWCnkr8EKIL",
+    "contentfulTitle": "The Future of AI in Legal Research: How Smart Tools Are Changing the Game",
+    "wordpressId": 89,
+    "wordpressSlug": "the-future-of-ai-in-legal-research-how-smart-tools-are-changing-the-game",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/16/the-future-of-ai-in-legal-research-how-smart-tools-are-changing-the-game/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1iWmjVlhchnHpTWziH2KK3",
+    "contentfulTitle": "The Duty of Technological Competence: Why Modern Lawyers Must Master Technology to Stay Ethical and Competitive",
+    "wordpressId": 91,
+    "wordpressSlug": "the-duty-of-technological-competence-why-modern-lawyers-must-master-technology-to-stay-ethical-and-competitive",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/16/the-duty-of-technological-competence-why-modern-lawyers-must-master-technology-to-stay-ethical-and-competitive/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4WCsWYkXY6XudnNCdvTYaX",
+    "contentfulTitle": "The 7 Steps to Finalize Your Insurance Claim Settlement Quickly ",
+    "wordpressId": 93,
+    "wordpressSlug": "the-7-steps-to-finalize-your-insurance-claim-settlement-quickly",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/14/the-7-steps-to-finalize-your-insurance-claim-settlement-quickly/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3pLhrgYjEIouAwjZt0gqtV",
+    "contentfulTitle": "Top 7 Mistakes People Make When Settling Insurance Claims ",
+    "wordpressId": 95,
+    "wordpressSlug": "top-7-mistakes-people-make-when-settling-insurance-claims",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/14/top-7-mistakes-people-make-when-settling-insurance-claims/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1uHocwoihUURGIE3vXwSNE",
+    "contentfulTitle": "How to Ensure Your Insurance Proposal Form Meets Legal Standards [Free Template]",
+    "wordpressId": 97,
+    "wordpressSlug": "how-to-ensure-your-insurance-proposal-form-meets-legal-standards-free-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/14/how-to-ensure-your-insurance-proposal-form-meets-legal-standards-free-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2trUaW4T5lnA6TFoOZa0Gq",
+    "contentfulTitle": "What Is an Insurance Proposal Form and Why You Need One?",
+    "wordpressId": 99,
+    "wordpressSlug": "what-is-an-insurance-proposal-form-and-why-you-need-one",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/what-is-an-insurance-proposal-form-and-why-you-need-one/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2mdIfZumdGir2OoSDwN8Mn",
+    "contentfulTitle": "The Ethical Playbook: Navigating Generative AI Risks in Legal Practice ",
+    "wordpressId": 101,
+    "wordpressSlug": "the-ethical-playbook-navigating-generative-ai-risks-in-legal-practice",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/the-ethical-playbook-navigating-generative-ai-risks-in-legal-practice/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5KlZD6AKHwV4dOJjtPaMZG",
+    "contentfulTitle": "Should Lawyers Fear AI or Embrace It? ",
+    "wordpressId": 103,
+    "wordpressSlug": "should-lawyers-fear-ai-or-embrace-it",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/should-lawyers-fear-ai-or-embrace-it/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5yIiPEu61eqQFzhrBE8kAH",
+    "contentfulTitle": "Top AI Legal Trends to Watch in 2025: A Guide for Strategic Law Firm Leaders ",
+    "wordpressId": 105,
+    "wordpressSlug": "top-ai-legal-trends-to-watch-in-2025-a-guide-for-strategic-law-firm-leaders",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/top-ai-legal-trends-to-watch-in-2025-a-guide-for-strategic-law-firm-leaders/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4qbqMstceWC12WMWpr8x8",
+    "contentfulTitle": "AI and the Billable Hour: is this The End of Traditional Practice? ",
+    "wordpressId": 107,
+    "wordpressSlug": "ai-and-the-billable-hour-is-this-the-end-of-traditional-practice",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/ai-and-the-billable-hour-is-this-the-end-of-traditional-practice/"
+  },
+  {
+    "success": true,
+    "contentfulId": "299uZv1HFe3BLU71SGHsk1",
+    "contentfulTitle": "The Definitive Guide: How AI Enhances Contract Lifecycle Management for Legal Teams ",
+    "wordpressId": 109,
+    "wordpressSlug": "the-definitive-guide-how-ai-enhances-contract-lifecycle-management-for-legal-teams",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/the-definitive-guide-how-ai-enhances-contract-lifecycle-management-for-legal-teams/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2f7Bf8yML2uV0KWRrhrXwg",
+    "contentfulTitle": "The Ethical Implications of AI in Legal Practice ",
+    "wordpressId": 111,
+    "wordpressSlug": "the-ethical-implications-of-ai-in-legal-practice",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/the-ethical-implications-of-ai-in-legal-practice/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6GAtNTrMyExh8rOQ7nmFBa",
+    "contentfulTitle": "10 Everyday Law Firm Tasks AI Can Automate",
+    "wordpressId": 113,
+    "wordpressSlug": "10-everyday-law-firm-tasks-ai-can-automate",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/10-everyday-law-firm-tasks-ai-can-automate/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3nekKxVtM7At4u6wYfpRDs",
+    "contentfulTitle": "What is Legal AI? Everything Lawyers Need to Know About AI in Legal Practice",
+    "wordpressId": 115,
+    "wordpressSlug": "what-is-legal-ai-everything-lawyers-need-to-know-about-ai-in-legal-practice",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/what-is-legal-ai-everything-lawyers-need-to-know-about-ai-in-legal-practice/"
+  },
+  {
+    "success": true,
+    "contentfulId": "16kseIL95GVTVNWgqSfx4P",
+    "contentfulTitle": "The Future of Legal Work: How AI Is Transforming Law ",
+    "wordpressId": 117,
+    "wordpressSlug": "the-future-of-legal-work-how-ai-is-transforming-law",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/13/the-future-of-legal-work-how-ai-is-transforming-law/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2TO713IQaF2upRwLMzo6lb",
+    "contentfulTitle": "How AI is Transforming Insurance Documentation: A Legal Shift",
+    "wordpressId": 119,
+    "wordpressSlug": "how-ai-is-transforming-insurance-documentation-a-legal-shift",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/how-ai-is-transforming-insurance-documentation-a-legal-shift/"
+  },
+  {
+    "success": false,
+    "contentfulId": "wIWqyMYCeCkHs4Z5R4R6w",
+    "contentfulTitle": "Life Insurance Beneficiary Forms: 7 Costly Mistakes to Avoid",
+    "error": "fetch failed"
+  },
+  {
+    "success": true,
+    "contentfulId": "2qwFWHmPHe9TUVp4wD0O0z",
+    "contentfulTitle": "Writing a Strong Insurance Expert Witness Report",
+    "wordpressId": 121,
+    "wordpressSlug": "writing-a-strong-insurance-expert-witness-report",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/writing-a-strong-insurance-expert-witness-report/"
+  },
+  {
+    "success": true,
+    "contentfulId": "59dbuTgK9w1MwofFrybhgU",
+    "contentfulTitle": "Filing an Insurance Ombudsman Complaint: Legal Strategy Guide",
+    "wordpressId": 123,
+    "wordpressSlug": "filing-an-insurance-ombudsman-complaint-legal-strategy-guide",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/filing-an-insurance-ombudsman-complaint-legal-strategy-guide/"
+  },
+  {
+    "success": true,
+    "contentfulId": "7hqYnTTlDpr5rXS3DleXOJ",
+    "contentfulTitle": "Essential Clauses in a Comprehensive Insurance Contract",
+    "wordpressId": 125,
+    "wordpressSlug": "essential-clauses-in-a-comprehensive-insurance-contract",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/essential-clauses-in-a-comprehensive-insurance-contract/"
+  },
+  {
+    "success": true,
+    "contentfulId": "50Y7wLDLL3gwNHOjYqooU4",
+    "contentfulTitle": "Understanding AML/CTF Compliance in Insurance: A Legal Guide",
+    "wordpressId": 127,
+    "wordpressSlug": "understanding-aml-ctf-compliance-in-insurance-a-legal-guide",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/understanding-aml-ctf-compliance-in-insurance-a-legal-guide/"
+  },
+  {
+    "success": true,
+    "contentfulId": "18Cm9rqOSaLGYZsCe1IpwP",
+    "contentfulTitle": "Claim Release Form: Legal Security, Timing, and Usage Guide",
+    "wordpressId": 129,
+    "wordpressSlug": "claim-release-form-legal-security-timing-and-usage-guide",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/claim-release-form-legal-security-timing-and-usage-guide/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1wOg93omott31tP3JfGmsZ",
+    "contentfulTitle": "How to Draft a Legally Sound Insurance Proposal Form [Freee Template]",
+    "wordpressId": 131,
+    "wordpressSlug": "how-to-draft-a-legally-sound-insurance-proposal-form-freee-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/how-to-draft-a-legally-sound-insurance-proposal-form-freee-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3mKjDdUo4oaNTJmyD1mBS1",
+    "contentfulTitle": "The Complete Legal Guide to Insurance Documentation and Compliance [Free Templates]",
+    "wordpressId": 133,
+    "wordpressSlug": "the-complete-legal-guide-to-insurance-documentation-and-compliance-free-templates",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/12/the-complete-legal-guide-to-insurance-documentation-and-compliance-free-templates/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1MkllW77XPEIppb2uxjMCM",
+    "contentfulTitle": "How to Choose the Right Virtual Data Room for Your M&A Deal",
+    "wordpressId": 135,
+    "wordpressSlug": "how-to-choose-the-right-virtual-data-room-for-your-ma-deal",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/08/how-to-choose-the-right-virtual-data-room-for-your-ma-deal/"
+  },
+  {
+    "success": true,
+    "contentfulId": "75duj72PkACqyQTicTs6XW",
+    "contentfulTitle": "The Complete M&A Due Diligence Checklist",
+    "wordpressId": 137,
+    "wordpressSlug": "the-complete-ma-due-diligence-checklist",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/08/the-complete-ma-due-diligence-checklist/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1aYbAeaCJjXGJYkJ96oYvs",
+    "contentfulTitle": "The Insurrection Act: What Lawyers Must Know Now",
+    "wordpressId": 139,
+    "wordpressSlug": "the-insurrection-act-what-lawyers-must-know-now",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/07/the-insurrection-act-what-lawyers-must-know-now/"
+  },
+  {
+    "success": true,
+    "contentfulId": "7ncG4xBssQZ8wTl8iNPZA2",
+    "contentfulTitle": "The Reason Why Functional Reports Cause 50% of SSDI Denials",
+    "wordpressId": 141,
+    "wordpressSlug": "the-reason-why-functional-reports-cause-50-of-ssdi-denials",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/02/the-reason-why-functional-reports-cause-50-of-ssdi-denials/"
+  },
+  {
+    "success": true,
+    "contentfulId": "P086hHDeheNJnxQOgMRPT",
+    "contentfulTitle": "6 Types of Medical Evidence the SSA Cannot Ignore in Your Disability Claim",
+    "wordpressId": 143,
+    "wordpressSlug": "6-types-of-medical-evidence-the-ssa-cannot-ignore-in-your-disability-claim",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/02/6-types-of-medical-evidence-the-ssa-cannot-ignore-in-your-disability-claim/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3W4CocGWon5KRxfwH8eqNc",
+    "contentfulTitle": "How to Draft Effective Sectional Property By-Laws",
+    "wordpressId": 145,
+    "wordpressSlug": "how-to-draft-effective-sectional-property-by-laws",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/01/how-to-draft-effective-sectional-property-by-laws/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4CwZG27sn7VXWAnLZGV7ei",
+    "contentfulTitle": "What Are Sectional Property By-Laws & Why They Matter",
+    "wordpressId": 147,
+    "wordpressSlug": "what-are-sectional-property-by-laws-why-they-matter",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/01/what-are-sectional-property-by-laws-why-they-matter/"
+  },
+  {
+    "success": true,
+    "contentfulId": "47dBQUhEayDrIrUXhA6x0y",
+    "contentfulTitle": "How to Draft a Personal Injury Settlement Agreement: Complete Guide + Free Template",
+    "wordpressId": 149,
+    "wordpressSlug": "how-to-draft-a-personal-injury-settlement-agreement-complete-guide-free-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/01/how-to-draft-a-personal-injury-settlement-agreement-complete-guide-free-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4DWNa483ebFB7ZIqysIcSK",
+    "contentfulTitle": "Are Personal Injury Settlements Taxable in 2025?",
+    "wordpressId": 151,
+    "wordpressSlug": "are-personal-injury-settlements-taxable-in-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/01/are-personal-injury-settlements-taxable-in-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4N9sNSPZQ8hDMAvZtkB9Km",
+    "contentfulTitle": "What is a Personal Injury Settlement?",
+    "wordpressId": 153,
+    "wordpressSlug": "what-is-a-personal-injury-settlement",
+    "wordpressUrl": "https://portal.wansom.shop/2025/10/01/what-is-a-personal-injury-settlement/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2hp08YJ1SDsodjm07hopmN",
+    "contentfulTitle": "Drafting Sectional Property By-Laws That Avoid Disputes",
+    "wordpressId": 155,
+    "wordpressSlug": "drafting-sectional-property-by-laws-that-avoid-disputes",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/26/drafting-sectional-property-by-laws-that-avoid-disputes/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4VaVlTFmTjtVOpxotthMf0",
+    "contentfulTitle": "What Are Sectional Property By-Laws? Complete Guide 2025",
+    "wordpressId": 157,
+    "wordpressSlug": "what-are-sectional-property-by-laws-complete-guide-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/26/what-are-sectional-property-by-laws-complete-guide-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2uJo95att92CIkS89v1ALs",
+    "contentfulTitle": "KRA Compliance Certificate Template Download",
+    "wordpressId": 159,
+    "wordpressSlug": "kra-compliance-certificate-template-download",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/kra-compliance-certificate-template-download/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3sao3eufZTHZDHK2w5GaFf",
+    "contentfulTitle": "KRA Tax Compliance Certificate Guide 2025",
+    "wordpressId": 161,
+    "wordpressSlug": "kra-tax-compliance-certificate-guide-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/kra-tax-compliance-certificate-guide-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6k2TOZ7Fo6AlXcu3jTZjl3",
+    "contentfulTitle": "Early Lease Termination Agreement Template: How to Use It Effectively",
+    "wordpressId": 163,
+    "wordpressSlug": "early-lease-termination-agreement-template-how-to-use-it-effectively",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/early-lease-termination-agreement-template-how-to-use-it-effectively/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4wLc0Y1ZmY8372HFdOLp6L",
+    "contentfulTitle": "Breaking a Lease Early: Legal Options, Costs, & Templates",
+    "wordpressId": 165,
+    "wordpressSlug": "breaking-a-lease-early-legal-options-costs-templates",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/breaking-a-lease-early-legal-options-costs-templates/"
+  },
+  {
+    "success": true,
+    "contentfulId": "7M5ZReLfvqMkwCr5Hf8IGv",
+    "contentfulTitle": "Early Lease Termination Explained: What Tenants and Landlords Need to Know in 2025",
+    "wordpressId": 167,
+    "wordpressSlug": "early-lease-termination-explained-what-tenants-and-landlords-need-to-know-in-2025",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/early-lease-termination-explained-what-tenants-and-landlords-need-to-know-in-2025/"
+  },
+  {
+    "success": true,
+    "contentfulId": "TkNXyV1J7syLLJ1BkupBg",
+    "contentfulTitle": "Retention Bonuses vs. Key Employee Retention Agreements: Which Works Better?",
+    "wordpressId": 169,
+    "wordpressSlug": "retention-bonuses-vs-key-employee-retention-agreements-which-works-better",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/retention-bonuses-vs-key-employee-retention-agreements-which-works-better/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5oYTKvG3KCGL1WNn2R3fSc",
+    "contentfulTitle": "How Startups Can Retain Top Talent Without Breaking the Bank",
+    "wordpressId": 172,
+    "wordpressSlug": "how-startups-can-retain-top-talent-without-breaking-the-bank",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/how-startups-can-retain-top-talent-without-breaking-the-bank/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3EeN25pWs0BEYxXzKZ65AJ",
+    "contentfulTitle": "Why Employees Quit: 15 Data-Backed Reasons and How to Keep Your Best People",
+    "wordpressId": 174,
+    "wordpressSlug": "why-employees-quit-15-data-backed-reasons-and-how-to-keep-your-best-people",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/why-employees-quit-15-data-backed-reasons-and-how-to-keep-your-best-people/"
+  },
+  {
+    "success": true,
+    "contentfulId": "omGaDGkczPe2OwEEM4Vur",
+    "contentfulTitle": "13 Effective Employee Retention Strategies",
+    "wordpressId": 176,
+    "wordpressSlug": "13-effective-employee-retention-strategies",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/25/13-effective-employee-retention-strategies/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1BjMUfOYsi2dDFh4uRNVcB",
+    "contentfulTitle": "Volunteer Management: Steps From Application to Onboarding",
+    "wordpressId": 178,
+    "wordpressSlug": "volunteer-management-steps-from-application-to-onboarding",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/24/volunteer-management-steps-from-application-to-onboarding/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6tbWovOFKPwUevZO70HXTR",
+    "contentfulTitle": "Volunteer Recruitment Made Easy: Why a Volunteer Application Form is Essential",
+    "wordpressId": 180,
+    "wordpressSlug": "volunteer-recruitment-made-easy-why-a-volunteer-application-form-is-essential",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/24/volunteer-recruitment-made-easy-why-a-volunteer-application-form-is-essential/"
+  },
+  {
+    "success": true,
+    "contentfulId": "486MPqRjWcIIVmvyXOzPEU",
+    "contentfulTitle": "Procedure for Termination of an Employee",
+    "wordpressId": 182,
+    "wordpressSlug": "procedure-for-termination-of-an-employee",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/24/procedure-for-termination-of-an-employee/"
+  },
+  {
+    "success": true,
+    "contentfulId": "35eem7Cg88jRfpOt6iHpLJ",
+    "contentfulTitle": "Job Offer Letter: What it is + Free Template",
+    "wordpressId": 184,
+    "wordpressSlug": "job-offer-letter-what-it-is-free-template",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/24/job-offer-letter-what-it-is-free-template/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2wPMmGtjgrHXkIO7UdSVvO",
+    "contentfulTitle": "Accident Witness Statement Form: How to Write and Use One Effectively",
+    "wordpressId": 186,
+    "wordpressSlug": "accident-witness-statement-form-how-to-write-and-use-one-effectively",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/24/accident-witness-statement-form-how-to-write-and-use-one-effectively/"
+  },
+  {
+    "success": true,
+    "contentfulId": "4FG0Y3LV3SvW7klt0pfvTv",
+    "contentfulTitle": "Consulting Agreement Template: Your Guide to a Secure Contract",
+    "wordpressId": 188,
+    "wordpressSlug": "consulting-agreement-template-your-guide-to-a-secure-contract",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/23/consulting-agreement-template-your-guide-to-a-secure-contract/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5pinxDvjBMVn5frBdND5sR",
+    "contentfulTitle": "Casual Work Employment Contract: Learn How to Create one + Free Template inside",
+    "wordpressId": 190,
+    "wordpressSlug": "casual-work-employment-contract-learn-how-to-create-one-free-template-inside",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/23/casual-work-employment-contract-learn-how-to-create-one-free-template-inside/"
+  },
+  {
+    "success": true,
+    "contentfulId": "1I0AUJzCkvrhhWF7E9HSOE",
+    "contentfulTitle": "Why Wansom is the Leading AI Legal Assistant in Africa",
+    "wordpressId": 192,
+    "wordpressSlug": "why-wansom-is-the-leading-ai-legal-assistant-in-africa",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/23/why-wansom-is-the-leading-ai-legal-assistant-in-africa/"
+  },
+  {
+    "success": true,
+    "contentfulId": "32mVpGEuuUi0Gyya2llcCg",
+    "contentfulTitle": "Restrictive Covenants: Definition, How They Work, and Templates",
+    "wordpressId": 194,
+    "wordpressSlug": "restrictive-covenants-definition-how-they-work-and-templates",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/22/restrictive-covenants-definition-how-they-work-and-templates/"
+  },
+  {
+    "success": true,
+    "contentfulId": "n0tQdaK3dtrYUzVEk3R96",
+    "contentfulTitle": "Will AI make lawyers lose their jobs or make them richer?",
+    "wordpressId": 196,
+    "wordpressSlug": "will-ai-make-lawyers-lose-their-jobs-or-make-them-richer",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/21/will-ai-make-lawyers-lose-their-jobs-or-make-them-richer/"
+  },
+  {
+    "success": true,
+    "contentfulId": "10lS8LPUQ4LyvrOxScv62n",
+    "contentfulTitle": "Why law firms are Racing to Hire Data Scientists and Software Engineers",
+    "wordpressId": 198,
+    "wordpressSlug": "why-law-firms-are-racing-to-hire-data-scientists-and-software-engineers",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/21/why-law-firms-are-racing-to-hire-data-scientists-and-software-engineers/"
+  },
+  {
+    "success": true,
+    "contentfulId": "6eueZnHDITHKAC5zN18jkr",
+    "contentfulTitle": "AI vs the billable hour: How legal pricing models are being forced to evolve",
+    "wordpressId": 200,
+    "wordpressSlug": "ai-vs-the-billable-hour-how-legal-pricing-models-are-being-forced-to-evolve",
+    "wordpressUrl": "https://portal.wansom.shop/2025/09/21/ai-vs-the-billable-hour-how-legal-pricing-models-are-being-forced-to-evolve/"
+  },
+  {
+    "success": true,
+    "contentfulId": "2NFHkuKVvJgUgH85Ycxq5y",
+    "contentfulTitle": "Common Types of Affidavits You Need in Kenya",
+    "wordpressId": 202,
+    "wordpressSlug": "common-types-of-affidavits-you-need-in-kenya",
+    "wordpressUrl": "https://portal.wansom.shop/2025/07/26/common-types-of-affidavits-you-need-in-kenya/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3Zwpb0umKae4ekKR2fl6jG",
+    "contentfulTitle": "Top 13 AI Prompts Every Legal Professional Should Master",
+    "wordpressId": 204,
+    "wordpressSlug": "top-13-ai-prompts-every-legal-professional-should-master",
+    "wordpressUrl": "https://portal.wansom.shop/2025/06/18/top-13-ai-prompts-every-legal-professional-should-master/"
+  },
+  {
+    "success": true,
+    "contentfulId": "35lnyGQats01iiJcDdk9YW",
+    "contentfulTitle": " The True Cost of AI for Law Firms: What You Need to Know Before You Invest",
+    "wordpressId": 206,
+    "wordpressSlug": "the-true-cost-of-ai-for-law-firms-what-you-need-to-know-before-you-invest",
+    "wordpressUrl": "https://portal.wansom.shop/2025/05/21/the-true-cost-of-ai-for-law-firms-what-you-need-to-know-before-you-invest/"
+  },
+  {
+    "success": true,
+    "contentfulId": "5y2jyBNUrGZUfrZo8Po4lc",
+    "contentfulTitle": "Reducing Human Error in Legal Drafting: The AI Advantage",
+    "wordpressId": 208,
+    "wordpressSlug": "reducing-human-error-in-legal-drafting-the-ai-advantage",
+    "wordpressUrl": "https://portal.wansom.shop/2025/05/20/reducing-human-error-in-legal-drafting-the-ai-advantage/"
+  },
+  {
+    "success": true,
+    "contentfulId": "pP0Zd2GrqNXXK0RQsDKzh",
+    "contentfulTitle": "Optimizing AI-Drafted Legal Documents with Custom Templates",
+    "wordpressId": 210,
+    "wordpressSlug": "optimizing-ai-drafted-legal-documents-with-custom-templates",
+    "wordpressUrl": "https://portal.wansom.shop/2025/05/20/optimizing-ai-drafted-legal-documents-with-custom-templates/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3crHkZseBxoIdN0isoD9Ut",
+    "contentfulTitle": "Overcoming the Challenges of Legal Research with AI-Powered Tools",
+    "wordpressId": 212,
+    "wordpressSlug": "overcoming-the-challenges-of-legal-research-with-ai-powered-tools",
+    "wordpressUrl": "https://portal.wansom.shop/2025/04/23/overcoming-the-challenges-of-legal-research-with-ai-powered-tools/"
+  },
+  {
+    "success": true,
+    "contentfulId": "3aXqpRs7IbslwuAG9QAZlX",
+    "contentfulTitle": "AI for Corporate Law: Enhancing Compliance and Governance",
+    "wordpressId": 214,
+    "wordpressSlug": "ai-for-corporate-law-enhancing-compliance-and-governance",
+    "wordpressUrl": "https://portal.wansom.shop/2025/04/23/ai-for-corporate-law-enhancing-compliance-and-governance/"
+  },
+  {
+    "success": true,
+    "contentfulId": "vgXhvi1SVc5i9s5czKPub",
+    "contentfulTitle": "How AI powered document review speeds up M&A",
+    "wordpressId": 216,
+    "wordpressSlug": "how-ai-powered-document-review-speeds-up-ma",
+    "wordpressUrl": "https://portal.wansom.shop/2025/04/23/how-ai-powered-document-review-speeds-up-ma/"
+  }
+]

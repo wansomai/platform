@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllBlogPosts } from '@/lib/data/contentful';
-import { adaptBlogPosts } from '@/lib/data/blogAdapter';
 import PostCard from '@/components/home/blog-post';
 import Pagination from '@/components/home/pagination';
 import Navbar from '@/components/layout/Navbar';
@@ -19,28 +17,35 @@ const BlogsPageClient = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchAllPosts = async () => {
       try {
         setLoading(true);
-        const blogPosts = await getAllBlogPosts();
-        const adaptedPosts = adaptBlogPosts(blogPosts);
-        setPosts(adaptedPosts);
-      } catch (err) {
-        console.error('Error fetching blog posts:', err);
+        // Use the Next.js API route which has caching and handles pagination server-side
+        const response = await fetch('/api/wordpress/posts?fetch_all=true');
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch posts');
+        }
+
+        const postsWithImages = await response.json();
+        console.log(`Fetched ${postsWithImages.length} posts with images`);
+        setPosts(postsWithImages);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
         setError('Failed to load blog posts');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
+    fetchAllPosts();
   }, []);
 
   // Filter posts by search term
   const filteredPosts = posts.filter(post => {
     return (
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      post.preview?.toLowerCase().includes(searchTerm.toLowerCase())
+      post.title.rendered.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content?.rendered.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
@@ -73,7 +78,6 @@ const BlogsPageClient = () => {
           </div>
         </div>
       </section>
-      
       {/* Blog Posts Section */}
       <section className="py-16">
         <div className="section-container mx-auto px-4">
@@ -87,7 +91,7 @@ const BlogsPageClient = () => {
 
           {loading ? (
             <div className="flex justify-center py-16">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F18F01]"></div>
             </div>
           ) : (
             <>

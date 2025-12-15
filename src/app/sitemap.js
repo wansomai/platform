@@ -92,20 +92,56 @@ export default async function sitemap() {
 }
 
   // -------------------------------------------------------------------
-  // 4. Dynamic routes (blogs, documents, lawyer pages)
+  // 4. Dynamic routes (blogs from WordPress, documents from Contentful)
   // -------------------------------------------------------------------
- const [blogPosts, legalDocs, lawyerPages,practiceAreas] = await Promise.all([
-  fetchAllEntries(client, { content_type: 'blogPost' }),
+
+  // Fetch all WordPress blog posts with pagination
+  const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://portal.wansom.shop/wp-json/wp/v2';
+
+  let blogPosts = [];
+  try {
+    const perPage = 100;
+    const initialResponse = await fetch(`${WORDPRESS_API_URL}/posts?per_page=${perPage}&page=1`);
+
+    if (initialResponse.ok) {
+      const totalPages = parseInt(initialResponse.headers.get('X-WP-TotalPages') || '1', 10);
+      const firstPagePosts = await initialResponse.json();
+      blogPosts = [...firstPagePosts];
+
+      // Fetch remaining pages if there are any
+      if (totalPages > 1) {
+        const pagePromises = [];
+        for (let page = 2; page <= totalPages; page++) {
+          pagePromises.push(
+            fetch(`${WORDPRESS_API_URL}/posts?per_page=${perPage}&page=${page}`)
+              .then(res => res.ok ? res.json() : [])
+          );
+        }
+
+        const additionalPages = await Promise.all(pagePromises);
+        additionalPages.forEach(pagePosts => {
+          if (Array.isArray(pagePosts)) {
+            blogPosts = [...blogPosts, ...pagePosts];
+          }
+        });
+      }
+
+      console.log(`Sitemap: Fetched ${blogPosts.length} WordPress blog posts`);
+    }
+  } catch (error) {
+    console.error('Error fetching WordPress posts for sitemap:', error);
+  }
+
+ const [legalDocs, lawyerPages, practiceAreas] = await Promise.all([
   fetchAllEntries(client, { content_type: 'documentTemplates'}),
   fetchLawyerPages(client, { content_type: 'lawyerPages' }),
   fetchAllEntries(client, { content_type: 'practiseareas'}),
 ]);
 
   const blogRoutes = blogPosts.map((post) => {
-    const slug = slugify(post.fields.title)??NEXT_PUBLIC_BASE_URL;
     return {
-      url: `${baseUrl}/blogs/${slug}`,
-      lastModified: new Date(post.sys.updatedAt || post.sys.createdAt),
+      url: `${baseUrl}/blogs/${post.slug}`,
+      lastModified: new Date(post.modified || post.date),
     };
   });
 

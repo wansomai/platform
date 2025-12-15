@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
-import { getAllBlogPosts } from '@/lib/data/contentful';
-import { adaptBlogPost, createSlug } from '@/lib/data/blogAdapter';
+import { getBlogPostBySlug } from '@/lib/data/wordpress';
+import { adaptWordPressBlogPost } from '@/lib/data/blogAdapter';
 import BlogDetailPageClient from './BlogDetailPage';
 
 type Props = {
@@ -11,13 +11,7 @@ type Props = {
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const allBlogPosts = await getAllBlogPosts();
-    
-    // Fix: Remove async from find callback and properly compare slugs
-    const blogPost = allBlogPosts.find((post) => {
-      const postSlug = createSlug(post.fields.title);
-      return postSlug === slug;
-    });
+    const blogPost = await getBlogPostBySlug(slug);
 
     if (!blogPost) {
       return {
@@ -26,20 +20,20 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       };
     }
 
-    const adaptedPost = adaptBlogPost(blogPost);
+    const adaptedPost = adaptWordPressBlogPost(blogPost);
     
     return {
       title: `${adaptedPost.title} | wansom AI Blog`,
       description: adaptedPost.preview || 'Read this article on legal technology and AI law insights from wansom AI.',
       keywords: adaptedPost.tags?.join(', ') || 'legal tech, AI law, legal insights',
       alternates: {
-        canonical: `https://www.wansom.ai/blogs/${slug}`,
+        canonical: `https://www.wansom.shop/blogs/${slug}`,
       },
       openGraph: {
         title: adaptedPost.title,
         description: adaptedPost.preview,
         type: 'article',
-        url: `https://www.wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
+        url: `https://www.wansom.shop/blogs/${slug}`, // Fix: Use slug instead of params
         images: [
           {
             url: adaptedPost.image || '/images/features-1.png',

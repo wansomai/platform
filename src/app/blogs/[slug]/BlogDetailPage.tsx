@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { getAllBlogPosts, getBlogPostById, getRelatedBlogPosts } from "@/lib/data/contentful";
-import { adaptBlogPost, adaptBlogPosts, createSlug } from "@/lib/data/blogAdapter";
+import { getBlogPostBySlug } from "@/lib/data/wordpress";
+import { adaptWordPressBlogPost } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 interface PageProps {
@@ -30,26 +29,48 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
 
         setLoading(true);
 
-        // Get all blog posts and find the one with matching slug
-        const allBlogPosts = await getAllBlogPosts();
-
-        // Find the blog post with matching slug
-        const blogPost = allBlogPosts.find(post => {
-          const postSlug = createSlug(post.fields.title);
-          return postSlug === slug;
-        });
+        // Get blog post by slug from WordPress
+        const blogPost = await getBlogPostBySlug(slug);
+        console.log('Fetched blog post:', blogPost);
 
         if (!blogPost) {
           throw new Error('Blog post not found');
         }
 
-        const adaptedPost = adaptBlogPost(blogPost);
+        const adaptedPost = adaptWordPressBlogPost(blogPost);
         setBlog(adaptedPost);
 
-        // Get first 6 blog posts
-        const allAdapted = adaptBlogPosts(allBlogPosts);
-        const firstSix = allAdapted.slice(0, 6);
-        setRelatedPosts(firstSix);
+        // Fetch only 20 recent posts for related section (more efficient than fetching all)
+        const recentPostsResponse = await fetch('https://portal.wansom.shop/wp-json/wp/v2/posts?per_page=20');
+        if (recentPostsResponse.ok) {
+          const recentPosts = await recentPostsResponse.json();
+
+          // Fetch featured images for these posts
+          const postsWithImages = await Promise.all(
+            recentPosts.map(async (post: any) => {
+              if (post.featured_media) {
+                try {
+                  const mediaResponse = await fetch(
+                    `https://portal.wansom.shop/wp-json/wp/v2/media/${post.featured_media}`
+                  );
+                  if (mediaResponse.ok) {
+                    const media = await mediaResponse.json();
+                    post.featured_image_url = media.source_url;
+                  }
+                } catch (error) {
+                  console.error(`Error fetching media for post ${post.id}:`, error);
+                }
+              }
+              return post;
+            })
+          );
+
+          // Filter out current post and get first 6 for related posts
+          const otherPosts = postsWithImages.filter((post: any) => post.slug !== slug);
+          setRelatedPosts(otherPosts.slice(0, 6));
+          console.log(`Showing ${otherPosts.slice(0, 6).length} related posts`);
+        }
+       
       } catch (err) {
         console.error('Error fetching blog post:', err);
         setError('Failed to load blog post');
@@ -91,17 +112,6 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
     );
   }
 
-  // Generate social share URLs
-  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
-  const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-    pageUrl
-  )}&text=${encodeURIComponent(blog.title)}`;
-  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-    pageUrl
-  )}`;
-  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-    pageUrl
-  )}`;
 
   return (
     <div className="bg-white min-h-screen">
@@ -191,20 +201,20 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
               {relatedPosts.length > 0 && (
                 <div className="space-y-6">
                   {relatedPosts.map((post) => (
-                    <Link key={post.id} href={post.link} className="block group">
+                    <Link key={post.id} href={`${post.slug}`} className="block group">
                       <div className="bg-white rounded-lg overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-200">
-                        {post.image && (
+                        {post.featured_image_url && (
                           <div className="relative w-full h-48">
                             <img
-                              src={post.image}
-                              alt={post.title}
+                              src={post.featured_image_url}
+                              alt={post.title.rendered}
                               className="w-full h-full object-cover"
                             />
                           </div>
                         )}
                         <div className="p-4">
                           <h4 className="font-semibold text-gray-900 mb-3 group-hover:text-teal-600 line-clamp-2 text-base">
-                            {post.title}
+                            {post.title.rendered}
                           </h4>
                           <div className="flex items-center justify-between mt-3">
                             <span className="inline-flex items-center px-4 py-2 rounded text-xs font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-colors uppercase">
