@@ -28,6 +28,7 @@ interface CreateProjectModalProps {
 }
 
 export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
+  
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
@@ -43,18 +44,22 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const { data: session } = useSession()
   const router = useRouter();
 
-  // Fetch the user's active organization when modal opens
+  // Fetch fresh user profile when modal opens to ensure we have the latest activeOrganizationId
   useEffect(() => {
-    if (open && !profile) {
-      fetchProfile()
+    if (open) {
+      // Always fetch profile when modal opens (force refresh to bypass cache)
+      // This ensures we have the latest organization data after any org switches
+      fetchProfile(true)
     }
-  }, [open, profile, fetchProfile])
+  }, [open, fetchProfile])
 
   const handleSubmit = async () => {
     setIsLoading(true)
     setError('')
 
-    const organizationId = profile?.organizationId
+    // Use active organization ID (supports org switching), fallback to primary org
+    const organizationId = profile?.activeOrganizationId || profile?.organizationId
+
     if (!organizationId) {
       setError('Something went wrong. Please try again.')
       setIsLoading(false)

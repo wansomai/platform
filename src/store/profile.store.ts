@@ -10,7 +10,8 @@ interface User {
   email: string;
   fullName: string | null;
   role: string;
-  organizationId: string;
+  organizationId: string;  // Primary organization (never changes)
+  activeOrganizationId?: string | null;  // Current active organization (can be switched)
   organization: {
     id: string;
     name: string;
@@ -18,6 +19,13 @@ interface User {
     ownerId: string;
     upgradeRequestedAt?: string | null;
   };
+  activeOrganization?: {  // The currently active organization
+    id: string;
+    name: string;
+    accountType: string;
+    ownerId: string;
+    upgradeRequestedAt?: string | null;
+  } | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -166,7 +174,6 @@ export const useProfileStore = create<ProfileState>()(
 
           const response = await apiService.get('/api/profile') as { user: User };
           const user = response.user;
-
           set({
             user,
             isLoading: false,
@@ -397,8 +404,19 @@ export const useProfileStore = create<ProfileState>()(
             message: string;
           };
 
+
           if (response.success) {
-            set({ currentOrgId: organizationId, isSwitching: false });
+            // ✅ CRITICAL: Invalidate cache by clearing lastFetched timestamp
+            // This ensures any future fetchProfile() calls will get fresh data
+            set({
+              currentOrgId: organizationId,
+              isSwitching: false,
+              lastFetched: null  // Clear cache timestamp
+            });
+
+            // ✅ Force profile refresh after organization switch
+            await get().fetchProfile(true);  // Force refresh = true bypasses cache
+
             return true;
           }
 

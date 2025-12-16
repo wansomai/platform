@@ -132,20 +132,49 @@ const filteredDocuments = useMemo(() => {
     }
   };
   
-  // Handle jurisdiction change - connected to working store  
+  // Handle jurisdiction change - connected to working store
   const handleJurisdictionChange = async (jurisdiction: Jurisdiction | null) => {
     if (!projectId) return;
-    
+
     try {
       const success = await setJurisdiction(projectId, jurisdiction);
       if (success) {
-        addToast({ 
+        addToast({
           message: jurisdiction ? `Jurisdiction set to ${jurisdiction.name}` : 'Jurisdiction cleared',
           type: 'success'
         });
       }
     } catch (error) {
       addToast({ message: 'Failed to update jurisdiction', type: 'error' });
+    }
+  };
+
+  // Handle multiple jurisdictions change
+  const handleJurisdictionsChange = async (jurisdictions: Jurisdiction[]) => {
+    if (!projectId) return;
+
+    try {
+      const success = await useProjectSettingsStore.getState().updateSettings(projectId, {
+        jurisdictions: jurisdictions.map(j => ({
+          id: j.id,
+          name: j.name,
+          country: j.country,
+          state: j.state,
+          legalSystem: j.legalSystem,
+          citationStyle: j.citationStyle
+        }))
+      });
+
+      if (success) {
+        addToast({
+          message: jurisdictions.length > 0
+            ? `${jurisdictions.length} jurisdiction${jurisdictions.length !== 1 ? 's' : ''} selected`
+            : 'Jurisdictions cleared',
+          type: 'success'
+        });
+      }
+    } catch (error) {
+      addToast({ message: 'Failed to update jurisdictions', type: 'error' });
     }
   };
 
@@ -165,10 +194,20 @@ const filteredDocuments = useMemo(() => {
       }
     }
   
-  // Get current jurisdiction from project settings
-   const currentJurisdiction = settings?.jurisdiction ? 
-    getJurisdictionById(settings.jurisdiction.id) : 
+  // Get current jurisdiction(s) from project settings
+  const currentJurisdiction = settings?.jurisdiction ?
+    getJurisdictionById(settings.jurisdiction.id) :
     null;
+
+  // Get multiple jurisdictions if available
+  const currentJurisdictions = useMemo(() => {
+    if (!settings?.jurisdictions || settings.jurisdictions.length === 0) {
+      return [];
+    }
+    return settings.jurisdictions
+      .map(j => getJurisdictionById(j.id))
+      .filter(Boolean) as Jurisdiction[];
+  }, [settings?.jurisdictions]);
 
       // Load project settings and instructions only when component mounts
       useEffect(() => {
@@ -256,12 +295,15 @@ const filteredDocuments = useMemo(() => {
             )}
           </div>
           
-          {/* Jurisdiction Selector */}
+          {/* Jurisdiction Selector - Multi-select enabled */}
           <div className="space-y-3">
-          <JurisdictionSelector
-              value={currentJurisdiction}
-              onChange={handleJurisdictionChange}
+            <JurisdictionSelector
+              multiSelect={true}
+              values={currentJurisdictions}
+              onChangeMulti={handleJurisdictionsChange}
               disabled={settingsLoading}
+              placeholder="Select jurisdictions..."
+              maxSelections={5}
             />
             {settingsLoading && (
               <div className="flex items-center text-xs text-gray-500">

@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const { organizationId } = await request.json();
 
+
     if (!organizationId) {
       return NextResponse.json(
         { error: 'Organization ID is required' },
@@ -120,13 +121,13 @@ export async function POST(request: NextRequest) {
       where: { id: userId },
       select: {
         organizationId: true,
+        activeOrganizationId: true,
         organizationMemberships: {
           where: { organizationId },
           select: { organizationId: true, role: true }
         }
       }
     });
-
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -164,10 +165,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user's active organization
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { activeOrganizationId: organizationId }
+      data: { activeOrganizationId: organizationId },
+      select: {
+        id: true,
+        activeOrganizationId: true,
+        organizationId: true
+      }
     });
+
 
     return NextResponse.json({
       success: true,

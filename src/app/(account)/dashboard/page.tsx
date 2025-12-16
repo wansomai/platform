@@ -22,6 +22,7 @@ import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { ChatInput } from "@/components/chat/ChatInput";
+import { useProfile } from "@/store/profile.store";
 // Quick Action Card Component
 interface QuickActionProps {
   icon: React.ElementType;
@@ -94,6 +95,7 @@ export default function DashboardPage() {
   const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
     const { fetchProjects, projects, isLoading: projectsLoading } = useProjectStore();
   const { documents, fetchDocuments, isLoading: documentsLoading } = useDocumentsStore();
+  const { fetchProfile } = useProfile();
   const { notify } = useNotifications();
 
   // Load dashboard data on mount only
@@ -102,7 +104,8 @@ export default function DashboardPage() {
       try {
         await Promise.all([
           fetchProjects(),
-          fetchDocuments({ limit: 5 })
+          fetchDocuments({ limit: 5 }),
+          fetchProfile(true)  // Fetch fresh profile to ensure latest activeOrganizationId
         ]);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to load dashboard data';

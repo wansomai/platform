@@ -23,7 +23,7 @@ import {
 import { useChatStore } from "@/store/chat.store";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
-import { useOrganization } from "@/store/profile.store";
+import { useOrganization, useProfile } from "@/store/profile.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useSession } from "next-auth/react";
 import ProAccessModal from "../modals/ProAccess";
@@ -75,6 +75,7 @@ export function ChatInput({
     requiresUpgrade: chatRequiresUpgrade,
   } = useChatStore();
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
+  const { user: profile, fetchProfile } = useProfile();
 
   const {
     settings,
@@ -89,6 +90,15 @@ export function ChatInput({
   const { rightSidebarCollapsed, setRightSidebarCollapsed } = useUIStore();
 
   const { data: session } = useSession();
+
+  // Fetch fresh profile data for organization ID in homepage mode
+  useEffect(() => {
+    if (homepageMode) {
+      // Always fetch profile in homepage mode to ensure we have latest activeOrganizationId
+      // Force refresh to bypass cache and get updated organization data
+      fetchProfile(true);
+    }
+  }, [homepageMode, fetchProfile]);
 
   // Show Pro Access modal when upgrade is required
   useEffect(() => {
@@ -305,10 +315,13 @@ export function ChatInput({
           // Generate a meaningful project name
           const projectTitle = generateQuickChatProjectName();
 
+          // Use active organization ID (supports org switching), fallback to primary org or session
+          const organizationId = profile?.activeOrganizationId || profile?.organizationId || session?.user?.organization?.id;
+
           const payload = {
             title: projectTitle,
             description: "Quick AI chat session",
-            organizationId: session.user.organization.id,
+            organizationId,
           };
 
           try {

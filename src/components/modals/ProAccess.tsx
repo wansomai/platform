@@ -73,11 +73,11 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
         </DialogHeader>
 
         {/* Error Message */}
-        {errorMessage && (
+        {/* {errorMessage && (
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
             <p className="text-sm text-amber-800 font-medium">{errorMessage}</p>
           </div>
-        )}
+        )} */}
 
         <div className="flex flex-col gap-5">
             <img

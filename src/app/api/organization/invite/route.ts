@@ -3,7 +3,7 @@ import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { sendInvitationEmail } from "@/lib/email-service";
 import { generateInvitationToken } from "@/lib/utils/token-utils";
-import { getUserOrganizationId } from "@/lib/api/org-helpers";
+import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 import {
   hasOrganizationPermission,
   canInviteMembers,
@@ -32,8 +32,8 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // ✅ Use helper to get organization ID
-  const organizationId = await getUserOrganizationId(userId);
+  // ✅ Use helper to get active organization ID (supports org switching)
+  const organizationId = await getActiveOrganizationId(userId);
 
   // Check if organization can invite members (enterprise check)
   const { canInvite, reason: accountTypeReason } = await canInviteMembers(organizationId);
