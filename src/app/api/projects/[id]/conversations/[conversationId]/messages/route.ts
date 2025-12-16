@@ -39,7 +39,7 @@ const DEFAULT_SETTINGS: {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  model: 'gemini-2.0-flash-exp',
+  model: 'gemini-3-pro-preview',
   temperature: 0.7,
   legalDrafting: false,
   googleCalendar: false,

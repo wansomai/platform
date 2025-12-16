@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
-import { getUserOrganizationId } from '@/lib/api/org-helpers';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 import { blobStorageService } from '@/lib/storage';
 
 // Get document details
@@ -22,8 +22,8 @@ export async function GET(
       );
     }
     
-    // ✅ Check user's organization access
-    const organizationId = await getUserOrganizationId(userId);
+    // ✅ Check user's active organization access (supports org switching)
+    const organizationId = await getActiveOrganizationId(userId);
 
     // Get query parameters
     const url = new URL(request.url);

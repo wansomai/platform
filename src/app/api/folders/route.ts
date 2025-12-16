@@ -2,11 +2,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
-import { getUserOrganizationId } from '@/lib/api/org-helpers';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  // ✅ Get user's organization
-  const organizationId = await getUserOrganizationId(userId);
+  // ✅ Get user's active organization (supports org switching)
+  const organizationId = await getActiveOrganizationId(userId);
 
   // Get folders for the organization, with document counts
   const folders = await prisma.folder.findMany({

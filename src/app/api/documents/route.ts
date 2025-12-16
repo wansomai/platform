@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
-import { getUserOrganizationId } from '@/lib/api/org-helpers';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const page = parseInt(searchParams.get('page') || '1');
     
-    // ✅ Use helper to get user organization
-    const organizationId = await getUserOrganizationId(userId);
+    // ✅ Use helper to get active organization ID (supports org switching)
+    const organizationId = await getActiveOrganizationId(userId);
 
     // Build query filters
     const where: any = {

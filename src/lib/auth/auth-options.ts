@@ -329,20 +329,53 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token, trigger }) {
       if (token && session.user) {
         session.accessToken = token.accessToken as string;
         session.user.id = token.userId as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.role = token.role as string;
-        session.user.organizationId = token.organizationId as string;
-        session.user.organization = token.organization as {
-          id: string;
-          name: string;
-        };
+
+        // If session is being updated (e.g., after org switch), fetch fresh data
+        if (trigger === "update") {
+          try {
+            const user = await prisma.user.findUnique({
+              where: { id: token.userId as string },
+              include: {
+                organization: true,
+                activeOrganization: true
+              }
+            });
+
+            if (user) {
+              // Use active organization if set, otherwise use primary organization
+              const currentOrg = user.activeOrganization || user.organization;
+              session.user.organizationId = currentOrg.id;
+              session.user.organization = {
+                id: currentOrg.id,
+                name: currentOrg.name
+              };
+            }
+          } catch (error) {
+            console.error("Error fetching user organization in session callback:", error);
+            // Fallback to token data if database fetch fails
+            session.user.organizationId = token.organizationId as string;
+            session.user.organization = token.organization as {
+              id: string;
+              name: string;
+            };
+          }
+        } else {
+          // For regular session reads, use token data
+          session.user.organizationId = token.organizationId as string;
+          session.user.organization = token.organization as {
+            id: string;
+            name: string;
+          };
+        }
       }
-      
+
       return session;
     },
     async redirect({ url, baseUrl }) {

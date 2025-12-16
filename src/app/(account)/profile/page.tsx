@@ -41,7 +41,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useProfile, useTeamManagement, useOrganization } from '@/store/profile.store';
 
 const Page = () => {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const router = useRouter();
 
   // Zustand stores
@@ -192,6 +192,11 @@ const Page = () => {
     const success = await switchOrg(organizationId);
 
     if (success) {
+      // Profile is already refreshed inside switchOrg() function
+
+      // Trigger NextAuth session refresh to update session data
+      await updateSession();
+
       notify.success('Organization switched successfully');
       router.refresh();
 

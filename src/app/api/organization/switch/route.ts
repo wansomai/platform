@@ -108,6 +108,11 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const { organizationId } = await request.json();
 
+    console.log('[API /organization/switch POST] Switch request:', {
+      userId,
+      requestedOrgId: organizationId
+    });
+
     if (!organizationId) {
       return NextResponse.json(
         { error: 'Organization ID is required' },
@@ -120,11 +125,18 @@ export async function POST(request: NextRequest) {
       where: { id: userId },
       select: {
         organizationId: true,
+        activeOrganizationId: true,
         organizationMemberships: {
           where: { organizationId },
           select: { organizationId: true, role: true }
         }
       }
+    });
+
+    console.log('[API /organization/switch POST] User data:', {
+      primaryOrgId: user?.organizationId,
+      currentActiveOrgId: user?.activeOrganizationId,
+      hasMembership: user?.organizationMemberships.length ?? 0
     });
 
     if (!user) {
@@ -164,9 +176,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user's active organization
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { activeOrganizationId: organizationId }
+      data: { activeOrganizationId: organizationId },
+      select: {
+        id: true,
+        activeOrganizationId: true,
+        organizationId: true
+      }
+    });
+
+    console.log('[API /organization/switch POST] Database updated:', {
+      userId: updatedUser.id,
+      newActiveOrgId: updatedUser.activeOrganizationId,
+      primaryOrgId: updatedUser.organizationId,
+      targetOrgName: organization.name
     });
 
     return NextResponse.json({

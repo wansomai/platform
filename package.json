@@ -7,7 +7,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate:blogs": "npx tsx scripts/migrate-contentful-to-wordpress.ts"
+    "migrate:documents": "npx tsx scripts/migrate-documents.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

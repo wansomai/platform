@@ -95,7 +95,10 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
   // ✅ Verify user belongs to the organization
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true }
+    select: {
+      organizationId: true,
+      activeOrganizationId: true  // Also get active org for switching support
+    }
   });
 
   if (!user) {
@@ -105,11 +108,26 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // Check if this is the user's primary organization
-  const isPrimaryOrg = user.organizationId === organizationId;
+  // DEBUG: Log organization verification
+  console.log('[API /projects POST] Organization verification:', {
+    requestedOrgId: organizationId,
+    userPrimaryOrgId: user.organizationId,
+    userActiveOrgId: user.activeOrganizationId,
+    userId: userId
+  });
 
-  // If not primary org, check if user is a member via UserOrganization
-  if (!isPrimaryOrg) {
+  // Check if this is the user's primary organization OR active organization
+  const isPrimaryOrg = user.organizationId === organizationId;
+  const isActiveOrg = user.activeOrganizationId === organizationId;
+
+  console.log('[API /projects POST] Permission checks:', {
+    isPrimaryOrg,
+    isActiveOrg,
+    willCheckMembership: !isPrimaryOrg && !isActiveOrg
+  });
+
+  // If not primary or active org, check if user is a member via UserOrganization
+  if (!isPrimaryOrg && !isActiveOrg) {
     const membership = await prisma.userOrganization.findUnique({
       where: {
         userId_organizationId: {

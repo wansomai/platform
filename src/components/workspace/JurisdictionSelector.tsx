@@ -21,20 +21,31 @@ import { Jurisdiction } from "@/types";
 
 interface JurisdictionSelectorProps {
   value?: Jurisdiction | null;
-  onChange: (jurisdiction: Jurisdiction | null) => void;
+  values?: Jurisdiction[];  // For multi-select mode
+  onChange?: (jurisdiction: Jurisdiction | null) => void;  // For single-select mode
+  onChangeMulti?: (jurisdictions: Jurisdiction[]) => void;  // For multi-select mode
   disabled?: boolean;
   placeholder?: string;
+  multiSelect?: boolean;  // Enable multi-select mode
+  maxSelections?: number;  // Optional limit on number of selections
 }
 
-export function JurisdictionSelector({ 
-  value, 
-  onChange, 
+export function JurisdictionSelector({
+  value,
+  values = [],
+  onChange,
+  onChangeMulti,
   disabled = false,
-  placeholder = "Select jurisdiction..." 
+  placeholder = "Select jurisdiction...",
+  multiSelect = false,
+  maxSelections
 }: JurisdictionSelectorProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+
+  // Use the appropriate value(s) based on mode
+  const selectedJurisdictions = multiSelect ? values : (value ? [value] : []);
 
   // Filter jurisdictions based on search and region
   const filteredJurisdictions = useMemo(() => {
@@ -68,24 +79,84 @@ export function JurisdictionSelector({
   }, [filteredJurisdictions]);
 
   const handleSelect = (jurisdiction: Jurisdiction) => {
-    onChange(jurisdiction);
-    setOpen(false);
-    setSearchQuery("");
-    setSelectedRegion(null);
+    if (multiSelect) {
+      // Multi-select mode
+      const isSelected = selectedJurisdictions.some(j => j.id === jurisdiction.id);
+      let newSelections: Jurisdiction[];
+
+      if (isSelected) {
+        // Remove from selection
+        newSelections = selectedJurisdictions.filter(j => j.id !== jurisdiction.id);
+      } else {
+        // Add to selection (check max limit)
+        if (maxSelections && selectedJurisdictions.length >= maxSelections) {
+          return; // Don't add if limit reached
+        }
+        newSelections = [...selectedJurisdictions, jurisdiction];
+      }
+
+      onChangeMulti?.(newSelections);
+      // Don't close popover in multi-select mode
+    } else {
+      // Single-select mode
+      onChange?.(jurisdiction);
+      setOpen(false);
+      setSearchQuery("");
+      setSelectedRegion(null);
+    }
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    onChange(null);
+    if (multiSelect) {
+      onChangeMulti?.([]);
+    } else {
+      onChange?.(null);
+    }
+  };
+
+  const handleRemoveJurisdiction = (jurisdictionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (multiSelect) {
+      const newSelections = selectedJurisdictions.filter(j => j.id !== jurisdictionId);
+      onChangeMulti?.(newSelections);
+    }
   };
 
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">
-        Jurisdiction
+        {multiSelect ? "Jurisdictions" : "Jurisdiction"}
+        {multiSelect && maxSelections && (
+          <span className="text-xs text-gray-500 ml-2">
+            ({selectedJurisdictions.length}/{maxSelections} selected)
+          </span>
+        )}
       </label>
-      
+
+      {/* Multi-select: Show selected jurisdictions as badges */}
+      {multiSelect && selectedJurisdictions.length > 0 && (
+        <div className="flex flex-wrap gap-1 p-2 border rounded-md bg-gray-50">
+          {selectedJurisdictions.map((jurisdiction) => (
+            <div
+              key={jurisdiction.id}
+              className="inline-flex items-center gap-1 px-2 py-1 bg-white border rounded-md text-sm"
+            >
+              <span className="truncate max-w-[200px]">{jurisdiction.name}</span>
+              <button
+                onClick={(e) => handleRemoveJurisdiction(jurisdiction.id, e)}
+                className="hover:bg-gray-100 rounded-sm p-0.5"
+                disabled={disabled}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -94,17 +165,21 @@ export function JurisdictionSelector({
             aria-expanded={open}
             className={cn(
               "w-full justify-between h-9 px-3",
-              !value && "text-muted-foreground",
+              !multiSelect && !value && "text-muted-foreground",
               disabled && "opacity-50 cursor-not-allowed"
             )}
             disabled={disabled}
           >
             <span className="truncate">
-              {value ? value.name : placeholder}
+              {!multiSelect && value
+                ? value.name
+                : multiSelect && selectedJurisdictions.length > 0
+                ? `${selectedJurisdictions.length} selected`
+                : placeholder}
             </span>
-            
+
             <div className="flex items-center gap-1 ml-2">
-              {value && (
+              {((multiSelect && selectedJurisdictions.length > 0) || (!multiSelect && value)) && (
                 <div
                   className="h-4 w-4 p-0 hover:bg-gray-100 rounded-sm flex items-center justify-center cursor-pointer"
                   onClick={handleClear}
@@ -170,8 +245,9 @@ export function JurisdictionSelector({
                         <JurisdictionOption
                           key={jurisdiction.id}
                           jurisdiction={jurisdiction}
-                          isSelected={value?.id === jurisdiction.id}
+                          isSelected={selectedJurisdictions.some(j => j.id === jurisdiction.id)}
                           onSelect={handleSelect}
+                          multiSelect={multiSelect}
                         />
                       ))}
                     </div>
@@ -209,14 +285,15 @@ interface JurisdictionOptionProps {
   jurisdiction: Jurisdiction;
   isSelected: boolean;
   onSelect: (jurisdiction: Jurisdiction) => void;
+  multiSelect?: boolean;
 }
 
-function JurisdictionOption({ jurisdiction, isSelected, onSelect }: JurisdictionOptionProps) {
+function JurisdictionOption({ jurisdiction, isSelected, onSelect, multiSelect }: JurisdictionOptionProps) {
   return (
     <div
       className={cn(
         "flex items-center justify-between px-2 py-1.5 rounded-sm cursor-pointer hover:bg-gray-100 transition-colors text-sm",
-        isSelected && "bg-gray-100"
+        isSelected && !multiSelect && "bg-gray-100"
       )}
       onClick={() => onSelect(jurisdiction)}
     >
@@ -227,9 +304,18 @@ function JurisdictionOption({ jurisdiction, isSelected, onSelect }: Jurisdiction
           {jurisdiction.state && ` • ${jurisdiction.state}`}
         </div>
       </div>
-      
-      {isSelected && (
-        <Check className="h-4 w-4 text-gray-600 ml-2" />
+
+      {multiSelect ? (
+        <div className="ml-2">
+          <div className={cn(
+            "h-4 w-4 border rounded flex items-center justify-center",
+            isSelected ? "bg-primary border-primary" : "border-gray-300"
+          )}>
+            {isSelected && <Check className="h-3 w-3 text-white" />}
+          </div>
+        </div>
+      ) : (
+        isSelected && <Check className="h-4 w-4 text-gray-600 ml-2" />
       )}
     </div>
   );

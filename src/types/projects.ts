@@ -67,6 +67,7 @@ export interface ProjectSettings {
   gmail?: boolean;
   model?: string;
   temperature?: number;
+  // Support both single jurisdiction (legacy) and multiple jurisdictions
   jurisdiction?: {
     id: string;
     name: string;
@@ -75,4 +76,12 @@ export interface ProjectSettings {
     legalSystem: string;
     citationStyle: string;
   };
+  jurisdictions?: Array<{
+    id: string;
+    name: string;
+    country: string;
+    state?: string;
+    legalSystem: string;
+    citationStyle: string;
+  }>;
 }

@@ -39,12 +39,14 @@ import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useProfile } from "@/store/profile.store";
 
 export default function ProjectsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { projects, fetchProjects, isLoading, removeProject } = useProjectStore();
   const { notify } = useNotifications();
+  const { fetchProfile } = useProfile();
 
   // State
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,10 +62,12 @@ export default function ProjectsPage() {
   // Track if we've already handled the connection notification
   const connectionHandledRef = useRef(false);
 
-  // Fetch projects when component mounts
+  // Fetch projects and profile when component mounts
   useEffect(() => {
     fetchProjects();
-  }, [fetchProjects]);
+    // Fetch fresh profile to ensure we have latest activeOrganizationId
+    fetchProfile(true);
+  }, [fetchProjects, fetchProfile]);
 
   // Handle Google connection notifications
   useEffect(() => {

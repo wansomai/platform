@@ -9,14 +9,14 @@ import {
 } from "@/lib/auth/permissions";
 import { OrganizationPermission } from "@/lib/constants/permissions";
 import { sendMemberRemovedEmail } from "@/lib/email-service";
-import { getUserOrganizationId } from "@/lib/api/org-helpers";
+import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 
 const prisma = new PrismaClient();
 
 // Get organization members
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  // ✅ Use helper to get organization ID
-  const organizationId = await getUserOrganizationId(userId);
+  // ✅ Use helper to get active organization ID (supports org switching)
+  const organizationId = await getActiveOrganizationId(userId);
 
   // Check if user has permission to view members
   const hasPermission = await hasOrganizationPermission(
