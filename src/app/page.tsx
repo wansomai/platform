@@ -211,7 +211,7 @@ function LegalDraftingSection() {
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Wansom automatically detects the substance of your document to
-              draft relevant, ready to use clauses.Start from Scratch or upload
+              draft relevant, ready to use clauses.Start from Scratch or
               from a template library and collaborate with AI in an Inline
               document editor. Save and export ready Word documents .
             </p>

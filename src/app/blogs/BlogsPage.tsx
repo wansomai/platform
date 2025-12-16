@@ -61,7 +61,7 @@ const BlogsPageClient = () => {
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50">
         <Navbar/>
       {/* Header Section */}
       <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden text-black">
