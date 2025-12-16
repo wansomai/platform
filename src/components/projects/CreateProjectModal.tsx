@@ -60,15 +60,6 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     // Use active organization ID (supports org switching), fallback to primary org
     const organizationId = profile?.activeOrganizationId || profile?.organizationId
 
-    // DEBUG: Log organization IDs
-    console.log('[CreateProjectModal] Profile data:', {
-      activeOrganizationId: profile?.activeOrganizationId,
-      organizationId: profile?.organizationId,
-      selectedOrgId: organizationId,
-      activeOrgName: profile?.activeOrganization?.name,
-      primaryOrgName: profile?.organization?.name
-    });
-
     if (!organizationId) {
       setError('Something went wrong. Please try again.')
       setIsLoading(false)

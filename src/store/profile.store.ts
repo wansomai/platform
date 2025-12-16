@@ -174,18 +174,6 @@ export const useProfileStore = create<ProfileState>()(
 
           const response = await apiService.get('/api/profile') as { user: User };
           const user = response.user;
-
-          // DEBUG: Log profile data
-          console.log('[Profile Store] Fetched profile:', {
-            userId: user.id,
-            email: user.email,
-            primaryOrgId: user.organizationId,
-            activeOrgId: user.activeOrganizationId,
-            primaryOrgName: user.organization?.name,
-            activeOrgName: user.activeOrganization?.name,
-            forceRefresh
-          });
-
           set({
             user,
             isLoading: false,
@@ -401,13 +389,7 @@ export const useProfileStore = create<ProfileState>()(
       switchOrganization: async (organizationId: string): Promise<boolean> => {
         const state = get();
 
-        console.log('[Profile Store] Switching organization:', {
-          from: state.currentOrgId,
-          to: organizationId
-        });
-
         if (organizationId === state.currentOrgId) {
-          console.log('[Profile Store] Already on this organization, skipping switch');
           return false;
         }
 
@@ -422,7 +404,6 @@ export const useProfileStore = create<ProfileState>()(
             message: string;
           };
 
-          console.log('[Profile Store] Switch response:', response);
 
           if (response.success) {
             // ✅ CRITICAL: Invalidate cache by clearing lastFetched timestamp
@@ -432,18 +413,14 @@ export const useProfileStore = create<ProfileState>()(
               isSwitching: false,
               lastFetched: null  // Clear cache timestamp
             });
-            console.log('[Profile Store] Organization switched successfully, cache invalidated');
 
             // ✅ Force profile refresh after organization switch
-            // This ensures cached profile data is updated with new activeOrganizationId
-            console.log('[Profile Store] Force refreshing profile after org switch...');
             await get().fetchProfile(true);  // Force refresh = true bypasses cache
 
             return true;
           }
 
           set({ isSwitching: false });
-          console.log('[Profile Store] Organization switch failed');
           return false;
         } catch (error: any) {
           const errorMessage = error.response?.data?.error || error.message || 'Failed to switch organization';

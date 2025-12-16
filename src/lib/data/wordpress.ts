@@ -90,7 +90,6 @@ export async function getAllBlogPosts(): Promise<WordPressPost[]> {
     }
 
     const posts: WordPressPost[] = await response.json();
-    console.log(`Fetched ${posts.length} blog posts from WordPress`);
     return posts;
   } catch (error) {
     console.error("Error fetching WordPress blog posts:", error);

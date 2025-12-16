@@ -28,7 +28,6 @@ const BlogsPageClient = () => {
         }
 
         const postsWithImages = await response.json();
-        console.log(`Fetched ${postsWithImages.length} posts with images`);
         setPosts(postsWithImages);
       } catch (error) {
         console.error('Error fetching blog posts:', error);

@@ -108,23 +108,10 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // DEBUG: Log organization verification
-  console.log('[API /projects POST] Organization verification:', {
-    requestedOrgId: organizationId,
-    userPrimaryOrgId: user.organizationId,
-    userActiveOrgId: user.activeOrganizationId,
-    userId: userId
-  });
 
   // Check if this is the user's primary organization OR active organization
   const isPrimaryOrg = user.organizationId === organizationId;
   const isActiveOrg = user.activeOrganizationId === organizationId;
-
-  console.log('[API /projects POST] Permission checks:', {
-    isPrimaryOrg,
-    isActiveOrg,
-    willCheckMembership: !isPrimaryOrg && !isActiveOrg
-  });
 
   // If not primary or active org, check if user is a member via UserOrganization
   if (!isPrimaryOrg && !isActiveOrg) {

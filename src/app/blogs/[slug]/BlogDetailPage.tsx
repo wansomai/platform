@@ -31,7 +31,6 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
 
         // Get blog post by slug from WordPress
         const blogPost = await getBlogPostBySlug(slug);
-        console.log('Fetched blog post:', blogPost);
 
         if (!blogPost) {
           throw new Error('Blog post not found');
@@ -68,7 +67,6 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
           // Filter out current post and get first 6 for related posts
           const otherPosts = postsWithImages.filter((post: any) => post.slug !== slug);
           setRelatedPosts(otherPosts.slice(0, 6));
-          console.log(`Showing ${otherPosts.slice(0, 6).length} related posts`);
         }
        
       } catch (err) {

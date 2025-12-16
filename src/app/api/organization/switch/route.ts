@@ -108,10 +108,6 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const { organizationId } = await request.json();
 
-    console.log('[API /organization/switch POST] Switch request:', {
-      userId,
-      requestedOrgId: organizationId
-    });
 
     if (!organizationId) {
       return NextResponse.json(
@@ -132,13 +128,6 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-
-    console.log('[API /organization/switch POST] User data:', {
-      primaryOrgId: user?.organizationId,
-      currentActiveOrgId: user?.activeOrganizationId,
-      hasMembership: user?.organizationMemberships.length ?? 0
-    });
-
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -186,12 +175,6 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    console.log('[API /organization/switch POST] Database updated:', {
-      userId: updatedUser.id,
-      newActiveOrgId: updatedUser.activeOrganizationId,
-      primaryOrgId: updatedUser.organizationId,
-      targetOrgName: organization.name
-    });
 
     return NextResponse.json({
       success: true,
