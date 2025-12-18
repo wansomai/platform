@@ -1,8 +1,5 @@
 // lib/data/blogAdapter.ts
-import { BlogPost as ContentfulBlogPost, DocumentTemplate } from './contentful';
-import { WordPressPost } from './wordpress';
-import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
-import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
+import { SanityPost, SanityLegalDocument } from './sanity';
 
 export function createSlug(title: string): string {
   return title
@@ -13,100 +10,121 @@ export function createSlug(title: string): string {
     .trim(); // Trim any leading/trailing spaces or hyphens
 }
 
-// HTML renderer options for Contentful Rich Text
-const htmlRenderOptions = {
-  renderMark: {
-    [MARKS.BOLD]: (text: string) => `<strong>${text}</strong>`,
-    [MARKS.ITALIC]: (text: string) => `<em>${text}</em>`,
-    [MARKS.UNDERLINE]: (text: string) => `<u>${text}</u>`,
-    [MARKS.CODE]: (text: string) => `<code class="px-1 py-0.5 bg-gray-100 rounded">${text}</code>`,
-  },
-  renderNode: {
-    [BLOCKS.PARAGRAPH]: (node: any, next: any) => `<p class="mb-6">${next(node.content)}</p>`,
-    [BLOCKS.HEADING_1]: (node: any, next: any) => `<h1 class="text-4xl font-bold mb-6">${next(node.content)}</h1>`,
-    [BLOCKS.HEADING_2]: (node: any, next: any) => `<h2 class="text-3xl font-bold mb-5">${next(node.content)}</h2>`,
-    [BLOCKS.HEADING_3]: (node: any, next: any) => `<h3 class="text-2xl font-bold mb-4">${next(node.content)}</h3>`,
-    [BLOCKS.HEADING_4]: (node: any, next: any) => `<h4 class="text-xl font-bold mb-4">${next(node.content)}</h4>`,
-    [BLOCKS.UL_LIST]: (node: any, next: any) => `<ul class="list-disc pl-6 mb-6">${next(node.content)}</ul>`,
-    [BLOCKS.OL_LIST]: (node: any, next: any) => `<ol class="list-decimal pl-6 mb-6">${next(node.content)}</ol>`,
-    [BLOCKS.LIST_ITEM]: (node: any, next: any) => `<li class="mb-2">${next(node.content)}</li>`,
-    [BLOCKS.QUOTE]: (node: any, next: any) => `<blockquote class="border-l-4 border-teal-600 pl-4 py-2 mb-6 italic">${next(node.content)}</blockquote>`,
-    [BLOCKS.HR]: () => `<hr class="my-8 border-t border-gray-200" />`,
-    [BLOCKS.EMBEDDED_ASSET]: (node: any) => {
-      const { url, title, description } = node.data.target.fields.file;
-      return `
-        <div class="my-6 text-center">
-          <img
-            src="https:${url}"
-            alt="${title || 'Blog image'}"
-            class="mx-auto rounded-lg max-w-full h-auto"
-          />
-          ${description ? `<p class="text-center text-sm text-gray-500 mt-2">${description}</p>` : ''}
-        </div>
-      `;
-    },
-    [INLINES.HYPERLINK]: (node: any, next: any) => {
-      const href = node.data.uri;
-      return `<a href="${href}" target="${href.startsWith('http') ? '_blank' : '_self'}" rel="noopener noreferrer" class="text-teal-600 hover:underline">${next(node.content)}</a>`;
-    },
-  },
-};
+// ============================================
+// SANITY ADAPTERS
+// ============================================
 
-// Clean WordPress HTML content
-function cleanWordPressHtml(html: string): string {
-  return html
-    .replace(/\[&hellip;\]/g, '...')
-    .replace(/&#8230;/g, '...')
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8216;/g, "'")
-    .replace(/&#8220;/g, '"')
-    .replace(/&#8221;/g, '"');
+// Convert Sanity Portable Text to HTML
+function portableTextToHtml(blocks: any[]): string {
+  if (!blocks || !Array.isArray(blocks)) return '';
+
+  return blocks
+    .map((block) => {
+      // Handle basic blocks
+      if (block._type === 'block') {
+        const children = block.children || [];
+        const text = children
+          .map((child: any) => {
+            let content = child.text || '';
+
+            // Apply marks (bold, italic, etc.)
+            if (child.marks && child.marks.length > 0) {
+              child.marks.forEach((mark: string) => {
+                if (mark === 'strong') content = `<strong>${content}</strong>`;
+                if (mark === 'em') content = `<em>${content}</em>`;
+                if (mark === 'underline') content = `<u>${content}</u>`;
+                if (mark === 'code') content = `<code class="px-1 py-0.5 bg-gray-100 rounded">${content}</code>`;
+              });
+            }
+
+            return content;
+          })
+          .join('');
+
+        // Apply block styles
+        switch (block.style) {
+          case 'h1':
+            return `<h1 class="text-4xl font-bold mb-6">${text}</h1>`;
+          case 'h2':
+            return `<h2 class="text-3xl font-bold mb-5">${text}</h2>`;
+          case 'h3':
+            return `<h3 class="text-2xl font-bold mb-4">${text}</h3>`;
+          case 'h4':
+            return `<h4 class="text-xl font-bold mb-4">${text}</h4>`;
+          case 'blockquote':
+            return `<blockquote class="border-l-4 border-teal-600 pl-4 py-2 mb-6 italic">${text}</blockquote>`;
+          default:
+            return `<p class="mb-6">${text}</p>`;
+        }
+      }
+
+      // Handle lists
+      if (block._type === 'list') {
+        const listItems = block.children || [];
+        const items = listItems.map((item: any) => {
+          const text = item.children?.map((child: any) => child.text || '').join('') || '';
+          return `<li class="mb-2">${text}</li>`;
+        }).join('');
+
+        return block.listItem === 'bullet'
+          ? `<ul class="list-disc pl-6 mb-6">${items}</ul>`
+          : `<ol class="list-decimal pl-6 mb-6">${items}</ol>`;
+      }
+
+      // Handle images
+      if (block._type === 'image') {
+        const imageUrl = block.asset?.url || '';
+        const alt = block.alt || 'Image';
+        return `
+          <div class="my-6 text-center">
+            <img
+              src="${imageUrl}"
+              alt="${alt}"
+              class="mx-auto rounded-lg max-w-full h-auto"
+            />
+          </div>
+        `;
+      }
+
+      return '';
+    })
+    .join('');
 }
 
-// Extract tags from WordPress post
-function extractTags(post: WordPressPost): string[] {
-  if (post._embedded?.['wp:term']) {
-    // WordPress returns terms as an array of arrays
-    // Index 1 typically contains tags (0 is categories)
-    const tagTerms = post._embedded['wp:term'][1] || [];
-    return tagTerms.map((tag: any) => tag.name);
+// Extract preview text from Portable Text
+function extractPortableTextPreview(blocks: any[], maxLength: number = 200): string {
+  if (!blocks || !Array.isArray(blocks)) return '';
+
+  let preview = '';
+  for (const block of blocks) {
+    if (block._type === 'block' && block.children) {
+      const text = block.children
+        .map((child: any) => child.text || '')
+        .join(' ');
+      preview += text + ' ';
+
+      if (preview.length >= maxLength) break;
+    }
   }
-  return ['guides', 'legal documents', 'articles', 'news'];
+
+  return preview.trim().substring(0, maxLength) + (preview.length > maxLength ? '...' : '');
 }
 
-// Extract featured image from WordPress post
-function extractFeaturedImage(post: any): string | undefined {
-  // Check if featured_image_url was already fetched (from API route)
-  if (post.featured_image_url) {
-    return post.featured_image_url;
-  }
-  // Fallback to embedded media
-  if (post._embedded?.['wp:featuredmedia']?.[0]) {
-    return post._embedded['wp:featuredmedia'][0].source_url;
-  }
-  return undefined;
-}
-
-// Strip HTML tags for preview text
-function stripHtmlTags(html: string): string {
-  return html.replace(/<[^>]*>/g, '').trim();
-}
-
-// Adapter for WordPress posts
-export function adaptWordPressBlogPost(post: WordPressPost) {
-  const contentHtml = cleanWordPressHtml(post.content.rendered);
-  const excerpt = stripHtmlTags(cleanWordPressHtml(post.excerpt.rendered));
-  const tags = extractTags(post);
-  const image = extractFeaturedImage(post);
+// Adapter for Sanity blog posts
+export function adaptSanityBlogPost(post: SanityPost) {
+  const contentHtml = portableTextToHtml(post.body);
+  const excerpt = post.excerpt || extractPortableTextPreview(post.body);
+  const image = post.mainImage?.asset?.url;
+  const tags = post.categories?.map(cat => cat.title) || ['guides', 'legal documents', 'articles', 'news'];
 
   return {
-    id: post.id.toString(),
-    title: post.title.rendered || 'Untitled',
+    id: post._id,
+    title: post.title || 'Untitled',
     preview: excerpt || '',
-    content: post.content.rendered, // Keep original HTML content
-    contentHtml, // Cleaned HTML version for dangerouslySetInnerHTML
+    content: post.body, // Keep original Portable Text
+    contentHtml, // Converted HTML version
     image,
-    date: new Date(post.date).toLocaleDateString('en-US', {
+    date: new Date(post.publishedAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -114,87 +132,49 @@ export function adaptWordPressBlogPost(post: WordPressPost) {
     link: `/blogs/${post.slug}`,
     slug: post.slug,
     tags,
+    author: post.author?.name,
   };
 }
 
-// This adapter transforms Contentful blog data to the format expected by your components
-export function adaptBlogPost(post: ContentfulBlogPost) {
-  // Convert rich text to HTML
-  const contentHtml = post.fields.content
-    ? documentToHtmlString(post.fields.content, htmlRenderOptions)
-    : '';
-
-  // Generate slug from title
-  const slug = createSlug(post.fields.title || '');
-  const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
+// Adapter for Sanity legal documents
+export function adaptSanityLegalDocument(doc: SanityLegalDocument) {
+  const contentHtml = portableTextToHtml(doc.description);
+  const previewHtml = doc.descriptionPreview || extractPortableTextPreview(doc.description, 150);
+  const image = doc.image?.asset?.url;
+  const previewImage = doc.preview?.asset?.url;
 
   return {
-    id: post.sys.id,
-    title: post.fields.title || 'Untitled',
-    preview: post.fields.preview || '',
-    content: post.fields.content, // Keep original content
-    contentHtml, // Add the HTML version for dangerouslySetInnerHTML
-    image: post.fields.image?.fields?.file?.url
-      ? `https:${post.fields.image.fields.file.url}`
-      : undefined,
-    date: new Date(post.sys.createdAt).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }),
-    link: `/blogs/${slug}`,
-    slug,
-    tags,
-  };
-}
-
-export function adaptDocumentTemplate(post: DocumentTemplate) {
-  // Convert rich text to HTML
-  const contentHtml = post.fields.description
-    ? documentToHtmlString(post.fields.description, htmlRenderOptions)
-    : '';
-  const previewHtml = post.fields.preview
-    ? documentToHtmlString(post.fields.preview, htmlRenderOptions)
-    : '';
-  // Generate slug from title
-  const slug = createSlug(post.fields.title || '');
-  const tags = post.fields.tags || ['guides', 'legal documents', 'articles', 'news'];
-
-  return {
-    id: post.sys.id,
-    title: post.fields.title || 'Untitled',
+    id: doc._id,
+    title: doc.title || 'Untitled',
     preview: previewHtml || '',
-    description: post.fields.description, // Keep original content
-    contentHtml, // Add the HTML version for dangerouslySetInnerHTML
-    image: post.fields.image?.fields?.file?.url
-      ? `https:${post.fields.image.fields.file.url}`
-      : undefined,
-    template: post.fields.template?.fields?.file ? {
-      url: `https:${post.fields.template.fields.file.url}`,
-      fileName: post.fields.template.fields.file.fileName || 'template',
-      contentType: post.fields.template.fields.file.contentType,
+    description: doc.description, // Keep original Portable Text
+    contentHtml, // Converted HTML version
+    image,
+    previewImage,
+    template: doc.template?.asset ? {
+      url: doc.template.asset.url,
+      fileName: doc.template.asset.originalFilename || 'template',
+      contentType: 'application/pdf',
+      size: doc.template.asset.size,
     } : undefined,
-    jurisdiction: post.fields.jurisdiction,
-    category: post.fields?.category || 'Uncategorized',
-    date: new Date(post.sys.createdAt).toLocaleDateString('en-US', {
+    jurisdiction: doc.jurisdiction,
+    category: doc.category || 'Uncategorized',
+    date: new Date(doc._createdAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     }),
-    link: `/legal-documents/${slug}`,
-    slug,
-    tags,
+    link: `/legal-documents/${doc.slug}`,
+    slug: doc.slug,
+    tags: doc.tags || ['guides', 'legal documents', 'articles', 'news'],
   };
 }
 
-export function adaptBlogPosts(posts: ContentfulBlogPost[]) {
-  return posts.map(adaptBlogPost);
+// Batch adapters
+export function adaptSanityBlogPosts(posts: SanityPost[]) {
+  return posts.map(adaptSanityBlogPost);
 }
 
-export function adaptWordPressBlogPosts(posts: WordPressPost[]) {
-  return posts.map(adaptWordPressBlogPost);
-}
-
-export function adaptDocumentTemplates(posts: DocumentTemplate[]) {
-  return posts.map(adaptDocumentTemplate);
+export function adaptSanityLegalDocuments(docs: SanityLegalDocument[]) {
+  return docs.map(adaptSanityLegalDocument);
 }

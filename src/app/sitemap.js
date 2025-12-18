@@ -1,4 +1,5 @@
 import { createClient } from 'contentful';
+import { createClient as createSanityClient } from '@sanity/client';
 
 // Revalidate once per hour (in seconds)
 export const revalidate = 3600;
@@ -26,6 +27,14 @@ async function fetchAllEntries(client, { content_type }) {
   }
   return items;
 }
+
+// Initialize Sanity client
+const sanityClient = createSanityClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
+  useCdn: true,
+});
 
 /* Main sitemap generator --------------------------------------------- */
 export default async function sitemap() {
@@ -92,64 +101,54 @@ export default async function sitemap() {
 }
 
   // -------------------------------------------------------------------
-  // 4. Dynamic routes (blogs from WordPress, documents from Contentful)
+  // 4. Dynamic routes (blogs and documents from Sanity)
   // -------------------------------------------------------------------
 
-  // Fetch all WordPress blog posts with pagination
-  const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || 'https://portal.wansom.shop/wp-json/wp/v2';
-
+  // Fetch blog posts from Sanity
   let blogPosts = [];
   try {
-    const perPage = 100;
-    const initialResponse = await fetch(`${WORDPRESS_API_URL}/posts?per_page=${perPage}&page=1`);
-
-    if (initialResponse.ok) {
-      const totalPages = parseInt(initialResponse.headers.get('X-WP-TotalPages') || '1', 10);
-      const firstPagePosts = await initialResponse.json();
-      blogPosts = [...firstPagePosts];
-
-      // Fetch remaining pages if there are any
-      if (totalPages > 1) {
-        const pagePromises = [];
-        for (let page = 2; page <= totalPages; page++) {
-          pagePromises.push(
-            fetch(`${WORDPRESS_API_URL}/posts?per_page=${perPage}&page=${page}`)
-              .then(res => res.ok ? res.json() : [])
-          );
-        }
-
-        const additionalPages = await Promise.all(pagePromises);
-        additionalPages.forEach(pagePosts => {
-          if (Array.isArray(pagePosts)) {
-            blogPosts = [...blogPosts, ...pagePosts];
-          }
-        });
-      }
-
-      console.log(`Sitemap: Fetched ${blogPosts.length} WordPress blog posts`);
-    }
+    const query = `*[_type == "post"] {
+      "slug": slug.current,
+      publishedAt,
+      _updatedAt
+    }`;
+    blogPosts = await sanityClient.fetch(query);
+    console.log(`Sitemap: Fetched ${blogPosts.length} Sanity blog posts`);
   } catch (error) {
-    console.error('Error fetching WordPress posts for sitemap:', error);
+    console.error('Error fetching Sanity blog posts for sitemap:', error);
   }
 
- const [legalDocs, lawyerPages, practiceAreas] = await Promise.all([
-  fetchAllEntries(client, { content_type: 'documentTemplates'}),
-  fetchLawyerPages(client, { content_type: 'lawyerPages' }),
-  fetchAllEntries(client, { content_type: 'practiseareas'}),
-]);
+  // Fetch legal documents from Sanity
+  let legalDocs = [];
+  try {
+    const query = `*[_type == "legalDocument"] {
+      "slug": slug.current,
+      _createdAt,
+      _updatedAt
+    }`;
+    legalDocs = await sanityClient.fetch(query);
+    console.log(`Sitemap: Fetched ${legalDocs.length} Sanity legal documents`);
+  } catch (error) {
+    console.error('Error fetching Sanity legal documents for sitemap:', error);
+  }
+
+  // Fetch lawyer pages and practice areas from Contentful (still using Contentful)
+  const [lawyerPages, practiceAreas] = await Promise.all([
+    fetchLawyerPages(client, { content_type: 'lawyerPages' }),
+    fetchAllEntries(client, { content_type: 'practiseareas'}),
+  ]);
 
   const blogRoutes = blogPosts.map((post) => {
     return {
       url: `${baseUrl}/blogs/${post.slug}`,
-      lastModified: new Date(post.modified || post.date),
+      lastModified: new Date(post._updatedAt || post.publishedAt),
     };
   });
 
   const legalDocRoutes = legalDocs.map((doc) => {
-    const slug =  slugify(doc.fields.title)??doc.fields.slug;
     return {
-      url: `${baseUrl}/legal-documents/${slug}`,
-      lastModified: new Date(doc.sys.updatedAt || doc.sys.createdAt),
+      url: `${baseUrl}/legal-documents/${doc.slug}`,
+      lastModified: new Date(doc._updatedAt || doc._createdAt),
     };
   });
     const practiseAreaRoutes = practiceAreas.map((area) => {

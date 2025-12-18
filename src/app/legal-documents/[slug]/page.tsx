@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
-import { getAllDocumentTemplates } from '@/lib/data/contentful';
-import { adaptDocumentTemplate, createSlug } from '@/lib/data/blogAdapter';
+import { getAllLegalDocuments, getLegalDocumentBySlug } from '@/lib/data/sanity';
+import { adaptSanityLegalDocument } from '@/lib/data/blogAdapter';
 import DocDetailPageClient from './DocumentDetails';
 
 type Props = {
@@ -10,9 +10,9 @@ type Props = {
 // Generate static params for all document templates
 export async function generateStaticParams() {
   try {
-    const allDocuments = await getAllDocumentTemplates();
+    const allDocuments = await getAllLegalDocuments();
     return allDocuments.map((doc) => ({
-      slug: createSlug(doc.fields.title),
+      slug: doc.slug,
     }));
   } catch (error) {
     console.error('Error generating static params:', error);
@@ -24,25 +24,19 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   try {
     const { slug } = await params;
-    const allBlogPosts = await getAllDocumentTemplates();
+    const sanityDoc = await getLegalDocumentBySlug(slug);
 
-    // Fix: Remove async from find callback and properly compare slugs
-    const blogPost = allBlogPosts.find((post) => {
-      const postSlug = createSlug(post.fields.title);
-      return postSlug === slug;
-    });
-
-    if (!blogPost) {
+    if (!sanityDoc) {
       return {
         title: 'Legal Document Template Not Found',
         description: 'The requested legal document could not be found.',
       };
     }
 
-    const adaptedPost = adaptDocumentTemplate(blogPost);
+    const adaptedPost = adaptSanityLegalDocument(sanityDoc);
 
     return {
-      title: `${blogPost.fields.title}`,
+      title: `${adaptedPost.title}`,
       description: adaptedPost.preview || 'legal document templates and AI law insights from wansom AI.',
       keywords: adaptedPost.title || 'legal document templates, Draft legal documments, legal insights',
       alternates: {
@@ -88,20 +82,16 @@ export default async function Page({ params }: Props) {
   try {
     const { slug } = await params;
 
-    // Fetch data on the server
-    const allBlogPosts = await getAllDocumentTemplates();
-    const blogPost = allBlogPosts.find((post) => {
-      const postSlug = createSlug(post.fields.title);
-      return postSlug === slug;
-    });
+    // Fetch data from Sanity
+    const sanityDoc = await getLegalDocumentBySlug(slug);
 
-    if (!blogPost) {
+    if (!sanityDoc) {
       return <DocDetailPageClient blog={null} />;
     }
 
-    const adaptedPost = adaptDocumentTemplate(blogPost);
+    const adaptedDoc = adaptSanityLegalDocument(sanityDoc);
 
-    return <DocDetailPageClient blog={adaptedPost} />;
+    return <DocDetailPageClient blog={adaptedDoc} />;
   } catch (error) {
     console.error('Error loading document:', error);
     return <DocDetailPageClient blog={null} />;

@@ -6,6 +6,8 @@ import PostCard from '@/components/home/blog-post';
 import Pagination from '@/components/home/pagination';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { getAllBlogPosts } from '@/lib/data/sanity';
+import { adaptSanityBlogPosts } from '@/lib/data/blogAdapter';
 
 const POSTS_PER_PAGE = 9; // 3x3 grid
 
@@ -20,15 +22,10 @@ const BlogsPageClient = () => {
     const fetchAllPosts = async () => {
       try {
         setLoading(true);
-        // Use the Next.js API route which has caching and handles pagination server-side
-        const response = await fetch('/api/wordpress/posts?fetch_all=true');
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch posts');
-        }
-
-        const postsWithImages = await response.json();
-        setPosts(postsWithImages);
+        // Fetch posts from Sanity
+        const sanityPosts = await getAllBlogPosts();
+        const adaptedPosts = adaptSanityBlogPosts(sanityPosts);
+        setPosts(adaptedPosts);
       } catch (error) {
         console.error('Error fetching blog posts:', error);
         setError('Failed to load blog posts');
@@ -43,8 +40,9 @@ const BlogsPageClient = () => {
   // Filter posts by search term
   const filteredPosts = posts.filter(post => {
     return (
-      post.title.rendered.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.content?.rendered.toLowerCase().includes(searchTerm.toLowerCase())
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.preview?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   });
 
@@ -61,7 +59,7 @@ const BlogsPageClient = () => {
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50">
         <Navbar/>
       {/* Header Section */}
       <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden text-black">

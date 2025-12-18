@@ -1,23 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/layout/Navbar";
-import { Button } from "@/components/ui/button";
 import {
   FileText,
-  Download,
   ChevronRight,
   Tag,
   MapPin,
   Info,
   ArrowUpRight,
 } from "lucide-react";
-import { getAllDocumentTemplates } from "@/lib/data/contentful";
-import { adaptDocumentTemplates, createSlug } from "@/lib/data/blogAdapter";
+import { getAllLegalDocuments } from "@/lib/data/sanity";
+import { adaptSanityLegalDocuments } from "@/lib/data/blogAdapter";
 
 // Lazy load Footer component
 const Footer = dynamic(() => import("@/components/layout/Footer"), {
@@ -39,8 +36,9 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
   useEffect(() => {
     const fetchRelated = async () => {
       try {
-        const allDocs = await getAllDocumentTemplates();
-        const adapted = adaptDocumentTemplates(allDocs);
+        // Fetch all documents from Sanity
+        const allDocs = await getAllLegalDocuments();
+        const adapted = adaptSanityLegalDocuments(allDocs);
 
         // Filter out current document and get up to 6 related
         const related = adapted
@@ -99,18 +97,18 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
       <div className="pt-20 md:pt-24">
         <div className="container mx-auto px-4 py-6 max-w-6xl">
           {/* Title and Description */}
-          <h1 className="text-xl lg:text-3xl font-serif font-bold text-gray-900 mb-4">
-            {blog.title}
+          <h1 className="text-xl lg:text-3xl font-serif font-bold text-gray-900 mb-4" dangerouslySetInnerHTML={{ __html: blog.title }}>
+            
           </h1>
 
           {/* Preview with Show More */}
-          {blog.preview && (
+          {blog.contentHtml && (
             <div className="mb-6">
               <div
                 className={`text-gray-600 text-lg leading-relaxed ${
                   isPreviewExpanded ? '' : 'line-clamp-3'
                 }`}
-                dangerouslySetInnerHTML={{ __html: blog.preview }}
+                dangerouslySetInnerHTML={{ __html: blog.contentHtml }}
               />
               <button
                 onClick={() => setIsPreviewExpanded(!isPreviewExpanded)}
@@ -277,8 +275,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
                       <FileText className="w-5 h-5 text-gray-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
-                        {post.title}
+                      <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2"  dangerouslySetInnerHTML={{ __html: post.title }}>
                       </h3>
                       <p className="text-sm text-gray-500">Wansom Legal Library</p>
                     </div>

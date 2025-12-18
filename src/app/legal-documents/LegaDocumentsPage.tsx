@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getAllDocumentTemplates } from '@/lib/data/contentful';
-import { adaptDocumentTemplates } from '@/lib/data/blogAdapter';
+import { getAllLegalDocuments } from '@/lib/data/sanity';
+import { adaptSanityLegalDocuments } from '@/lib/data/blogAdapter';
 import Pagination from '@/components/home/pagination';
 import Navbar from '@/components/layout/Navbar';
 import { Sparkles, Search, X } from 'lucide-react';
@@ -23,9 +23,10 @@ const LegalDocumentsPageClient = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const blogPosts = await getAllDocumentTemplates();
-        const adaptedPosts = adaptDocumentTemplates(blogPosts);
-        setPosts(adaptedPosts);
+        // Fetch legal documents from Sanity
+        const sanityDocs = await getAllLegalDocuments();
+        const adaptedDocs = adaptSanityLegalDocuments(sanityDocs);
+        setPosts(adaptedDocs);
       } catch (err) {
         console.error('Error fetching legal documents:', err);
         setError('Failed to load legal documents');
