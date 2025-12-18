@@ -1,6 +1,6 @@
 import { Metadata, ResolvingMetadata } from 'next';
-import { getBlogPostBySlug } from '@/lib/data/wordpress';
-import { adaptWordPressBlogPost } from '@/lib/data/blogAdapter';
+import { getBlogPostBySlug } from '@/lib/data/sanity';
+import { adaptSanityBlogPost } from '@/lib/data/blogAdapter';
 import BlogDetailPageClient from './BlogDetailPage';
 
 type Props = {
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       };
     }
 
-    const adaptedPost = adaptWordPressBlogPost(blogPost);
+    const adaptedPost = adaptSanityBlogPost(blogPost);
     
     return {
       title: `${adaptedPost.title} | wansom AI Blog`,

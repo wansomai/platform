@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getBlogPostBySlug } from "@/lib/data/wordpress";
-import { adaptWordPressBlogPost } from "@/lib/data/blogAdapter";
+import { getBlogPostBySlug, getRelatedBlogPosts } from "@/lib/data/sanity";
+import { adaptSanityBlogPost, adaptSanityBlogPosts } from "@/lib/data/blogAdapter";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 interface PageProps {
@@ -29,45 +29,21 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
 
         setLoading(true);
 
-        // Get blog post by slug from WordPress
+        // Get blog post by slug from Sanity
         const blogPost = await getBlogPostBySlug(slug);
 
         if (!blogPost) {
           throw new Error('Blog post not found');
         }
 
-        const adaptedPost = adaptWordPressBlogPost(blogPost);
+        const adaptedPost = adaptSanityBlogPost(blogPost);
         setBlog(adaptedPost);
 
-        // Fetch only 20 recent posts for related section (more efficient than fetching all)
-        const recentPostsResponse = await fetch('https://portal.wansom.shop/wp-json/wp/v2/posts?per_page=20');
-        if (recentPostsResponse.ok) {
-          const recentPosts = await recentPostsResponse.json();
-
-          // Fetch featured images for these posts
-          const postsWithImages = await Promise.all(
-            recentPosts.map(async (post: any) => {
-              if (post.featured_media) {
-                try {
-                  const mediaResponse = await fetch(
-                    `https://portal.wansom.shop/wp-json/wp/v2/media/${post.featured_media}`
-                  );
-                  if (mediaResponse.ok) {
-                    const media = await mediaResponse.json();
-                    post.featured_image_url = media.source_url;
-                  }
-                } catch (error) {
-                  console.error(`Error fetching media for post ${post.id}:`, error);
-                }
-              }
-              return post;
-            })
-          );
-
-          // Filter out current post and get first 6 for related posts
-          const otherPosts = postsWithImages.filter((post: any) => post.slug !== slug);
-          setRelatedPosts(otherPosts.slice(0, 6));
-        }
+        // Fetch related posts based on categories
+        const categoryIds = blogPost.categories?.map(cat => cat._id) || [];
+        const relatedSanityPosts = await getRelatedBlogPosts(slug, categoryIds, 6);
+        const adaptedRelated = adaptSanityBlogPosts(relatedSanityPosts);
+        setRelatedPosts(adaptedRelated);
        
       } catch (err) {
         console.error('Error fetching blog post:', err);
@@ -201,18 +177,18 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
                   {relatedPosts.map((post) => (
                     <Link key={post.id} href={`${post.slug}`} className="block group">
                       <div className="bg-white rounded-lg overflow-hidden border border-gray-100 hover:border-gray-200 transition-all duration-200">
-                        {post.featured_image_url && (
+                        {post.image && (
                           <div className="relative w-full h-48">
                             <img
-                              src={post.featured_image_url}
-                              alt={post.title.rendered}
+                              src={post.image}
+                              alt={post.title}
                               className="w-full h-full object-cover"
                             />
                           </div>
                         )}
                         <div className="p-4">
                           <h4 className="font-semibold text-gray-900 mb-3 group-hover:text-teal-600 line-clamp-2 text-base">
-                            {post.title.rendered}
+                            {post.title}
                           </h4>
                           <div className="flex items-center justify-between mt-3">
                             <span className="inline-flex items-center px-4 py-2 rounded text-xs font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-colors uppercase">

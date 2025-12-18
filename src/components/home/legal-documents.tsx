@@ -27,16 +27,10 @@ const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
       </div>
       <div className="p-8 flex flex-col flex-grow">
         <h3 
-          className="font-marcellus text-xl mb-4" 
+          className="font-marcellus text-lg mb-4" 
           dangerouslySetInnerHTML={{ __html: post.title }}
         />
-        {post.preview && (
-          <p className="font-jost text-slate-600 mb-4 line-clamp-3"  dangerouslySetInnerHTML={{ __html: post.preview }}></p>
-        )}
         <div className="flex justify-between items-center mt-auto">
-          <span className="font-jost text-sm text-slate-500">
-            {post.date}
-          </span>
           <Link 
             href={post.link} 
             className="flex items-center text-[#2E1A47] font-jost group"

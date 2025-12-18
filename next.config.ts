@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
       },
         {
         protocol: 'https',
-        hostname: 'portal.wansom.shop',
+        hostname: 'cdn.sanity.io',
         port: '',
         pathname: '/**',
       },
