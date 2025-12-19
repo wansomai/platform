@@ -8,6 +8,11 @@ import {
   Scale,
   Gavel,
   Sparkles,
+  SquareArrowOutUpRight,
+  ArrowRight,
+  TrendingUp,
+  Target,
+  Brain,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -21,412 +26,550 @@ const LitigationLawyersPage = () => {
 
       {/* Hero Section */}
       <section className="pt-24 md:pt-32 pb-5 relative overflow-hidden">
-                {/* SVG Background */}
-                      <div className="absolute inset-0 z-0">
-                        <svg
-                          width="100%"
-                          height="100%"
-                          viewBox="0 0 1220 810"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          preserveAspectRatio="xMidYMid slice"
-                        >
-                          <g clipPath="url(#clip0_186_1134)">
-                            <mask
-                              id="mask0_186_1134"
-                              style={{ maskType: "alpha" }}
-                              maskUnits="userSpaceOnUse"
-                              x="10"
-                              y="-1"
-                              width="1200"
-                              height="812"
-                            >
-                              <rect x="10" y="-0.84668" width="1200" height="811.693" fill="url(#paint0_linear_186_1134)" />
-                            </mask>
-                            <g mask="url(#mask0_186_1134)">
-                              {/* Grid Rectangles */}
-                              {[...Array(35)].map((_, i) => (
-                                <React.Fragment key={`row1-${i}`}>
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="9.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="45.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="81.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="117.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="153.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="189.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="225.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="261.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="297.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="333.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="369.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="405.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="441.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="477.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="513.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="549.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="585.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="621.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="657.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="693.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="729.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                  <rect
-                                    x={-20.0891 + i * 36}
-                                    y="765.2"
-                                    width="35.6"
-                                    height="35.6"
-                                    stroke="hsl(var(--foreground))"
-                                    strokeOpacity="0.11"
-                                    strokeWidth="0.4"
-                                    strokeDasharray="2 2"
-                                  />
-                                </React.Fragment>
-                              ))}
-                              {/* Specific Rectangles with fill */}
-                              <rect x="699.711" y="81" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.08" />
-                              <rect x="195.711" y="153" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="1023.71" y="153" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="123.711" y="225" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="1095.71" y="225" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="951.711" y="297" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="231.711" y="333" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.07" />
-                              <rect x="303.711" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.07" />
-                              <rect x="87.7109" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="519.711" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.08" />
-                              <rect x="771.711" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-                              <rect x="591.711" y="477" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.07" />
-                            </g>
-                          </g>
-                
-                          <rect
-                            x="0.5"
-                            y="0.5"
-                            width="1219"
-                            height="809"
-                            rx="15.5"
-                            stroke="hsl(var(--foreground))"
-                            strokeOpacity="0.06"
-                          />
-                
-                          <defs>
-                            <filter
-                              id="filter0_f_186_1134"
-                              x="147.369"
-                              y="-467.818"
-                              width="1941.42"
-                              height="2035.46"
-                              filterUnits="userSpaceOnUse"
-                              colorInterpolationFilters="sRGB"
-                            >
-                              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                              <feGaussianBlur stdDeviation="159.394" result="effect1_foregroundBlur_186_1134" />
-                            </filter>
-                            <filter
-                              id="filter1_f_186_1134"
-                              x="-554.207"
-                              y="-1169.39"
-                              width="3216.57"
-                              height="3310.61"
-                              filterUnits="userSpaceOnUse"
-                              colorInterpolationFilters="sRGB"
-                            >
-                              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                              <feGaussianBlur stdDeviation="478.182" result="effect1_foregroundBlur_186_1134" />
-                            </filter>
-                            <filter
-                              id="filter2_f_186_1134"
-                              x="426.762"
-                              y="-452.424"
-                              width="1622.63"
-                              height="1716.67"
-                              filterUnits="userSpaceOnUse"
-                              colorInterpolationFilters="sRGB"
-                            >
-                              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                              <feGaussianBlur stdDeviation="79.6969" result="effect1_foregroundBlur_186_1134" />
-                            </filter>
-                            <filter
-                              id="filter3_f_186_1134"
-                              x="-253.163"
-                              y="-611.818"
-                              width="2221.95"
-                              height="2035.46"
-                              filterUnits="userSpaceOnUse"
-                              colorInterpolationFilters="sRGB"
-                            >
-                              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                              <feGaussianBlur stdDeviation="159.394" result="effect1_foregroundBlur_186_1134" />
-                            </filter>
-                            <linearGradient
-                              id="paint0_linear_186_1134"
-                              x1="35.0676"
-                              y1="23.6807"
-                              x2="903.8"
-                              y2="632.086"
-                              gradientUnits="userSpaceOnUse"
-                            >
-                              <stop stopColor="hsl(var(--foreground))" stopOpacity="0" />
-                              <stop offset="1" stopColor="hsl(var(--muted-foreground))" />
-                            </linearGradient>
-                            <linearGradient
-                              id="paint1_linear_186_1134"
-                              x1="1118.08"
-                              y1="-149.03"
-                              x2="1118.08"
-                              y2="1248.85"
-                              gradientUnits="userSpaceOnUse"
-                            >
-                              <stop stopColor="hsl(var(--foreground))" />
-                              <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
-                              <stop offset="1" stopColor="hsl(var(--primary))" />
-                            </linearGradient>
-                            <linearGradient
-                              id="paint2_linear_186_1134"
-                              x1="1054.08"
-                              y1="-213.03"
-                              x2="1054.08"
-                              y2="1184.85"
-                              gradientUnits="userSpaceOnUse"
-                            >
-                              <stop stopColor="hsl(var(--foreground))" />
-                              <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
-                              <stop offset="1" stopColor="hsl(var(--primary))" />
-                            </linearGradient>
-                            <linearGradient
-                              id="paint3_linear_186_1134"
-                              x1="1238.08"
-                              y1="-293.03"
-                              x2="1238.08"
-                              y2="1104.85"
-                              gradientUnits="userSpaceOnUse"
-                            >
-                              <stop stopColor="hsl(var(--foreground))" />
-                              <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
-                              <stop offset="1" stopColor="hsl(var(--primary))" />
-                            </linearGradient>
-                            <radialGradient
-                              id="paint4_radial_186_1134"
-                              cx="0"
-                              cy="0"
-                              r="1"
-                              gradientUnits="userSpaceOnUse"
-                              gradientTransform="translate(989.13 557.24) rotate(47.9516) scale(466.313 471.424)"
-                            >
-                              <stop stopColor="hsl(var(--foreground))" />
-                              <stop offset="0.157789" stopColor="hsl(var(--primary-light))" />
-                              <stop offset="1" stopColor="hsl(var(--primary))" />
-                            </radialGradient>
-                            <clipPath id="clip0_186_1134">
-                              <rect width="1220" height="810" rx="16" fill="hsl(var(--foreground))" />
-                            </clipPath>
-                          </defs>
-                        </svg>
-                      </div>
-                
-                      {/* Header positioned at top of hero container */}
-                      <div className="absolute top-0 left-0 right-0 z-20">
-                      </div>
+        {/* SVG Background */}
+        <div className="absolute inset-0 z-0">
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 1220 810"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <g clipPath="url(#clip0_186_1134)">
+              <mask
+                id="mask0_186_1134"
+                style={{ maskType: "alpha" }}
+                maskUnits="userSpaceOnUse"
+                x="10"
+                y="-1"
+                width="1200"
+                height="812"
+              >
+                <rect
+                  x="10"
+                  y="-0.84668"
+                  width="1200"
+                  height="811.693"
+                  fill="url(#paint0_linear_186_1134)"
+                />
+              </mask>
+              <g mask="url(#mask0_186_1134)">
+                {/* Grid Rectangles */}
+                {[...Array(35)].map((_, i) => (
+                  <React.Fragment key={`row1-${i}`}>
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="9.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="45.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="81.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="117.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="153.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="189.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="225.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="261.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="297.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="333.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="369.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="405.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="441.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="477.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="513.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="549.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="585.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="621.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="657.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="693.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="729.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                    <rect
+                      x={-20.0891 + i * 36}
+                      y="765.2"
+                      width="35.6"
+                      height="35.6"
+                      stroke="hsl(var(--foreground))"
+                      strokeOpacity="0.11"
+                      strokeWidth="0.4"
+                      strokeDasharray="2 2"
+                    />
+                  </React.Fragment>
+                ))}
+                {/* Specific Rectangles with fill */}
+                <rect
+                  x="699.711"
+                  y="81"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.08"
+                />
+                <rect
+                  x="195.711"
+                  y="153"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="1023.71"
+                  y="153"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="123.711"
+                  y="225"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="1095.71"
+                  y="225"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="951.711"
+                  y="297"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="231.711"
+                  y="333"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.07"
+                />
+                <rect
+                  x="303.711"
+                  y="405"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.07"
+                />
+                <rect
+                  x="87.7109"
+                  y="405"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="519.711"
+                  y="405"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.08"
+                />
+                <rect
+                  x="771.711"
+                  y="405"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.09"
+                />
+                <rect
+                  x="591.711"
+                  y="477"
+                  width="36"
+                  height="36"
+                  fill="hsl(var(--primary))"
+                  fillOpacity="0.07"
+                />
+              </g>
+            </g>
+
+            <rect
+              x="0.5"
+              y="0.5"
+              width="1219"
+              height="809"
+              rx="15.5"
+              stroke="hsl(var(--foreground))"
+              strokeOpacity="0.06"
+            />
+
+            <defs>
+              <filter
+                id="filter0_f_186_1134"
+                x="147.369"
+                y="-467.818"
+                width="1941.42"
+                height="2035.46"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="159.394"
+                  result="effect1_foregroundBlur_186_1134"
+                />
+              </filter>
+              <filter
+                id="filter1_f_186_1134"
+                x="-554.207"
+                y="-1169.39"
+                width="3216.57"
+                height="3310.61"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="478.182"
+                  result="effect1_foregroundBlur_186_1134"
+                />
+              </filter>
+              <filter
+                id="filter2_f_186_1134"
+                x="426.762"
+                y="-452.424"
+                width="1622.63"
+                height="1716.67"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="79.6969"
+                  result="effect1_foregroundBlur_186_1134"
+                />
+              </filter>
+              <filter
+                id="filter3_f_186_1134"
+                x="-253.163"
+                y="-611.818"
+                width="2221.95"
+                height="2035.46"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feGaussianBlur
+                  stdDeviation="159.394"
+                  result="effect1_foregroundBlur_186_1134"
+                />
+              </filter>
+              <linearGradient
+                id="paint0_linear_186_1134"
+                x1="35.0676"
+                y1="23.6807"
+                x2="903.8"
+                y2="632.086"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stopColor="hsl(var(--foreground))" stopOpacity="0" />
+                <stop offset="1" stopColor="hsl(var(--muted-foreground))" />
+              </linearGradient>
+              <linearGradient
+                id="paint1_linear_186_1134"
+                x1="1118.08"
+                y1="-149.03"
+                x2="1118.08"
+                y2="1248.85"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stopColor="hsl(var(--foreground))" />
+                <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
+                <stop offset="1" stopColor="hsl(var(--primary))" />
+              </linearGradient>
+              <linearGradient
+                id="paint2_linear_186_1134"
+                x1="1054.08"
+                y1="-213.03"
+                x2="1054.08"
+                y2="1184.85"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stopColor="hsl(var(--foreground))" />
+                <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
+                <stop offset="1" stopColor="hsl(var(--primary))" />
+              </linearGradient>
+              <linearGradient
+                id="paint3_linear_186_1134"
+                x1="1238.08"
+                y1="-293.03"
+                x2="1238.08"
+                y2="1104.85"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stopColor="hsl(var(--foreground))" />
+                <stop offset="0.578125" stopColor="hsl(var(--primary-light))" />
+                <stop offset="1" stopColor="hsl(var(--primary))" />
+              </linearGradient>
+              <radialGradient
+                id="paint4_radial_186_1134"
+                cx="0"
+                cy="0"
+                r="1"
+                gradientUnits="userSpaceOnUse"
+                gradientTransform="translate(989.13 557.24) rotate(47.9516) scale(466.313 471.424)"
+              >
+                <stop stopColor="hsl(var(--foreground))" />
+                <stop offset="0.157789" stopColor="hsl(var(--primary-light))" />
+                <stop offset="1" stopColor="hsl(var(--primary))" />
+              </radialGradient>
+              <clipPath id="clip0_186_1134">
+                <rect
+                  width="1220"
+                  height="810"
+                  rx="16"
+                  fill="hsl(var(--foreground))"
+                />
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+
+        {/* Header positioned at top of hero container */}
+        <div className="absolute top-0 left-0 right-0 z-20"></div>
         <div className="container mx-auto px-5 z-10 relative">
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-5 items-center ">
+          <div className="relative grid grid-cols-1  gap-5 items-center ">
             <div className="text-primary lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For Litigation Lawyers</p>
               <h1 className="text-heading-1 font-serif max-w-4xl">
-               Enjoy Winning More Cases with AI Inspired Teammates
+                Enjoy Winning More Cases with AI Inspired Teammates
               </h1>
-              <button className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-primary transition">
-                Get Started
-                <ArrowUpRight className="w-5 h-5 ml-2" />
+              <p className="text-lg lg:text-xl text-gray-600 mb-8">
+                Prepare winning cases with AI that analyzes your arguments,
+                predicts outcomes, and simulates opposing counsel strategies to
+                strengthen your position.
+              </p>
+              <button
+                className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10 mx-auto lg:mx-0"
+                onClick={() => (window.location.href = "/register")}
+                aria-label="Try Wansom AI for free - Start your free trial"
+              >
+                TRY WANSOM FOR FREE{" "}
+                <SquareArrowOutUpRight
+                  className="w-5 h-5 text-white"
+                  aria-hidden="true"
+                />
               </button>
             </div>
             {/* Hero image */}
@@ -445,7 +588,7 @@ const LitigationLawyersPage = () => {
           {/* Active Stats */}
           <div className="text-left mb-2 lg:mb-8">
             <p className="text-sm font-semibold text-gray-900 uppercase tracking-wider text-center lg:text-left">
-             Actionable Results From Day One
+              Actionable Results From Day One
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
@@ -509,31 +652,24 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: Search,
-      title: "Case Law Research",
+      title: "Evidence Analysis",
       description:
-        "Find relevant case law, precedents, and legal authorities in seconds with AI-powered search across multiple jurisdictions.",
-      href: "#",
-    },
-    {
-      icon: FileText,
-      title: "Document Discovery",
-      description:
-        "Analyze thousands of documents quickly, identify key evidence, and organize discovery materials efficiently.",
-      href: "#",
+        "AI automatically reviews all case materials, identifies key evidence, and suggests additional documentation needed.",
+      href: "login",
     },
     {
       icon: Sparkles,
-      title: "Brief Drafting",
+      title: "Case Strategy",
       description:
-        "Generate court-ready legal briefs, motions, and pleadings with AI assistance and jurisdiction-specific formatting.",
-      href: "#",
+        "Role-play against AI opposition to test arguments, identify weaknesses, and refine your case strategy.",
+      href: "login",
     },
     {
       icon: Scale,
-      title: "Case Strategy",
+      title: "Outcome Prediction",
       description:
-        "Analyze case strengths, identify winning arguments, and develop litigation strategies backed by data and precedent.",
-      href: "#",
+        "Get data-driven predictions on case outcomes, settlement ranges, and optimal strategic timing.",
+      href: "login",
     },
   ];
 
@@ -548,7 +684,7 @@ const FeaturesSection = () => {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <div
               key={index}
@@ -596,14 +732,14 @@ const KeyCapabilities = () => {
         "Search through millions of cases, statutes, and regulations to find relevant authorities and build stronger arguments.",
     },
     {
-      title: "Document Review",
+      title: "Document Discovery",
       description:
-        "Quickly review and analyze discovery documents, depositions, and evidence with AI-powered insights.",
+        "Analyze thousands of documents quickly, identify key evidence, and organize discovery materials efficiently.",
     },
     {
       title: "Brief Preparation",
       description:
-        "Draft persuasive legal briefs with proper citations, formatting, and jurisdiction-specific requirements.",
+        "Generate court-ready legal briefs, motions, and pleadings with AI assistance and jurisdiction-specific formatting.",
     },
     {
       title: "Case Management",
@@ -640,8 +776,11 @@ const KeyCapabilities = () => {
 
         {/* Tab Content */}
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col items-center gap-5 justify-center">
-            <p className="text-xl text-gray-600 leading-relaxed mb-6 max-w-4xl text-center mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-5 justify-center">
+
+
+            <div>
+                <p className="text-xl text-gray-600 leading-relaxed mb-6 max-w-4xl  mx-auto">
               {tabs[activeTab].description}
             </p>
             <button
@@ -651,6 +790,8 @@ const KeyCapabilities = () => {
               Get Started
               <ArrowUpRight className="w-5 h-5 ml-2" />
             </button>
+            </div>
+          <CasePreparationInterface />
           </div>
         </div>
       </div>
@@ -737,6 +878,91 @@ const FAQSection = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+const CasePreparationInterface = () => {
+  return (
+    <div className="bg-primary rounded-lg p-4 relative overflow-hidden md:min-w-[500px]">
+      <div className="bg-white rounded-xl shadow-2xl overflow-hidden lg:w-[75%]">
+        <div className="flex items-center bg-gray-50 px-4 py-3 border-b">
+          <div className="flex space-x-2">
+            <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+          </div>
+          <div className="flex ml-auto space-x-4 text-sm">
+            <button className="flex items-center text-gray-600">
+              <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+              Analysis
+            </button>
+            <button className="flex items-center text-primary font-medium">
+              <span className="w-2 h-2 bg-[#355e66] rounded-full mr-2"></span>
+              Strategy
+            </button>
+            <button className="flex items-center text-gray-600">
+              <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+              Predict
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6 text-gray-900">
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <h3 className="font-medium">AI Opposition Simulation</h3>
+                <p className="text-sm text-gray-600">Test arguments against AI counsel</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Target className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <h3 className="font-medium">Strategy Development</h3>
+                <p className="text-sm text-gray-600">Build comprehensive case strategy</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <h3 className="font-medium">Outcome Prediction</h3>
+                <p className="text-sm text-gray-600">AI-powered success probability</p>
+              </div>
+            </div>
+            
+            <button className="text-sm text-gray-600 flex items-center">
+              3 More Features <ArrowRight className="w-4 h-4 ml-1" />
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="text-center lg:text-left lg:w-[60%] absolute top-1/2 right-1 md:right-10">
+        <div className="bg-white rounded-lg shadow-xl p-6">
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            <div className="text-sm text-gray-600 mb-2">Case Analysis Report</div>
+            <div className="space-y-2">
+              <div className="h-2 bg-gray-300 rounded w-full"></div>
+              <div className="h-2 bg-gray-300 rounded w-3/4"></div>
+              <div className="h-2 bg-green-500 rounded w-5/6"></div>
+              <div className="h-2 bg-primary rounded w-1/2"></div>
+              <div className="h-2 bg-gray-300 rounded w-2/3"></div>
+              <div className="text-xs text-primary mt-2 font-medium">87% Success Rate</div>
+            </div>
+          </div>
+          <div className="text-xs text-gray-500 text-center">Case Strategy Preview</div>
+        </div>
+      </div>
+    </div>
   );
 };
 

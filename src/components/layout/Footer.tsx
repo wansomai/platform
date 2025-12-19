@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const Footer = () => {
     const aiPlatformItems = [
-        { name: 'AI Assistant', href: '/ai-legal-research' },
+        { name: 'AI Assistant', href: '/ai-assistant' },
         { name: 'Draft & Review', href: '/ai-legal-drafting' },
         { name: 'Document Vault', href: '/document-vault' },
         { name: 'Workflows', href: '/#workflows' },

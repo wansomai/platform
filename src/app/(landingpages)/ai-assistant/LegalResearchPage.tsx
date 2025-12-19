@@ -26,15 +26,15 @@ const LegalResearchPage = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
-     
+
       {/* Hero Section */}
      <HeroSection partnerLogos={partnerLogos}/>
 
       {/* Legal authorities database section */}
      <LegalResearchAssistant/>
 
-       {/* workspace section */}  
-      <CollaborativeWorkspaces/>         
+       {/* workspace section */}
+      <CollaborativeWorkspaces/>
 <KnowledgeBase/>
       {/* More features section */}
    <VaultSection/>
@@ -533,9 +533,9 @@ export const ResearchInterfaceCards = () => {
           <div className="h-2 bg-gray-200 rounded-full w-full"></div>
           <div className="h-2 bg-gray-200 rounded-full w-3/4 "></div>
           <div className="h-2 bg-gray-200 rounded-full w-1/2"></div>
-         
+
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <input
             type="text"
@@ -570,7 +570,7 @@ export const ResearchInterfaceCards = () => {
         {/* Federal Cases Card */}
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
           <div className="flex items-center justify-start mb-4 gap-4">
-           
+
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-white" />
             </div>
@@ -588,7 +588,7 @@ export const ResearchInterfaceCards = () => {
         {/* State Statutes Card */}
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
           <div className="flex items-center justify-start gap-4 mb-4">
-           
+
              <Loader className="w-8 h-8 text-[#4a7279]" />
             <h3 className="text-sm font-semibold text-gray-900 mb-2">
             Statutes
@@ -601,11 +601,11 @@ export const ResearchInterfaceCards = () => {
             <div className="h-2 bg-gray-200 rounded-full w-1/2"></div>
           </div>
         </div>
-      
+
         {/* Regulations Card */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
           <div className="flex items-center justify-start gap-4 mb-4">
-           
+
              <Loader className="w-8 h-8 text-[#4a7279]" />
             <h3 className="text-sm font-semibold text-gray-900 mb-2">
             Regulations
@@ -827,10 +827,10 @@ const LegalResearchAssistant = () => {
               </div>
             </div>
   <ResearchSourcesWorkflow/>
-          
+
           </div>
         </div>
-      </section>   
+      </section>
   );
 }
 
@@ -956,10 +956,10 @@ const CollaborativeWorkspaces = () => {
                 </div>
               </div>
             </div>
-          
+
           </div>
         </div>
-      </section>   
+      </section>
   );
 }
 

@@ -11,14 +11,12 @@ import CookieConsent, { Cookies } from "react-cookie-consent";
 import {
   ResearchInterfaceCards,
   ResearchSourcesWorkflow,
-} from "./(landingpages)/ai-legal-research/LegalResearchPage";
+} from "./(landingpages)/ai-assistant/LegalResearchPage";
 import DocumentAutomation from "@/components/home/DocumentAutomation";
 import KnowledgeBase from "@/components/home/Knowledgebase";
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import { PatnerLogoSection } from "@/components/home/Partnerlogos";
 import React from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
