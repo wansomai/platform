@@ -39,6 +39,21 @@ const nextConfig: NextConfig = {
   },
   // Experimental features
   experimental: {},
+  // Redirects
+  async redirects() {
+    return [
+      {
+        source: '/ai-case-prediction',
+        destination: '/solutions/litigation-lawyers',
+        permanent: true, // 301 redirect - SEO friendly
+      },
+      {
+        source: '/ai-legal-research',
+        destination: '/ai-assistant',
+        permanent: true, // 301 redirect - SEO friendly
+      },
+    ];
+  },
 };
 
 export default nextConfig;
