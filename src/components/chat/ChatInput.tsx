@@ -1,6 +1,6 @@
 // src/components/chat/ChatInput.tsx
 "use client";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,8 @@ import {
   Paperclip,
   Settings,
   ArrowUpRightFromSquare,
+  Globe,
+  FileText,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -30,7 +32,11 @@ import ProAccessModal from "../modals/ProAccess";
 import { UploadDocumentModal } from "../modals/UploadModal";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
+import { useDocumentsStore } from "@/store/documents.store";
 import { apiService } from "@/lib/api";
+import { JurisdictionSelector } from "@/components/workspace/JurisdictionSelector";
+import { Jurisdiction } from "@/types";
+import { getJurisdictionById } from "@/lib/jurisdictions";
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -51,6 +57,9 @@ export function ChatInput({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
+  const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
 
@@ -328,10 +337,45 @@ export function ChatInput({
             const newProject = await createProject(payload);
 
             if (newProject) {
-              notify.success("AI workspace created successfully!");
+              // If there are files to upload, handle them first
+              if (selectedFiles.length > 0) {
+                try {
+                  // Upload each file
+                  const uploadedDocIds: string[] = [];
+                  for (const file of selectedFiles) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    // Upload document
+                    const doc = await useDocumentsStore.getState().uploadDocument(formData);
+                    if (doc) {
+                      uploadedDocIds.push(doc.id);
+                    }
+                  }
+
+                  // Attach documents to project if any were uploaded
+                  if (uploadedDocIds.length > 0) {
+                    await useProjectDocumentsStore.getState().attachDocumentsToProject(
+                      newProject.id,
+                      uploadedDocIds
+                    );
+                    notify.success(`AI workspace created with ${uploadedDocIds.length} file${uploadedDocIds.length !== 1 ? 's' : ''}!`);
+                  } else {
+                    notify.success("AI workspace created successfully!");
+                  }
+                } catch (uploadError: any) {
+                  console.error("Error uploading files:", uploadError);
+                  notify.error("Workspace created but some files failed to upload");
+                }
+              } else {
+                notify.success("AI workspace created successfully!");
+              }
 
               // Store the message in sessionStorage to preserve it across navigation
               sessionStorage.setItem("pendingMessage", messageToSend);
+
+              // Clear selected files
+              setSelectedFiles([]);
 
               // Call callback if provided
               onWorkspaceCreated?.(newProject.id);
@@ -364,6 +408,37 @@ export function ChatInput({
       try {
         setIsSubmitting(true);
 
+        // Upload and attach files if any are selected
+        if (selectedFiles.length > 0) {
+          try {
+            const uploadedDocIds: string[] = [];
+            for (const file of selectedFiles) {
+              const formData = new FormData();
+              formData.append('file', file);
+
+              // Upload document
+              const doc = await useDocumentsStore.getState().uploadDocument(formData);
+              if (doc) {
+                uploadedDocIds.push(doc.id);
+              }
+            }
+
+            // Attach documents to project if any were uploaded
+            if (uploadedDocIds.length > 0) {
+              await useProjectDocumentsStore.getState().attachDocumentsToProject(
+                projectId,
+                uploadedDocIds
+              );
+              notify.success(`${uploadedDocIds.length} file${uploadedDocIds.length !== 1 ? 's' : ''} uploaded`);
+            }
+          } catch (uploadError: any) {
+            console.error("Error uploading files:", uploadError);
+            notify.error("Failed to upload files");
+            setIsSubmitting(false);
+            return;
+          }
+        }
+
         try {
           await sendMessage(
             projectId,
@@ -384,6 +459,7 @@ export function ChatInput({
 
         if (!customMessage) {
           setInput("");
+          setSelectedFiles([]); // Clear selected files after sending
           if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
           }
@@ -407,6 +483,10 @@ export function ChatInput({
       currentConversation,
       projectId,
       sendMessage,
+      selectedFiles,
+      selectedPreviewDocument,
+      profile?.activeOrganizationId,
+      profile?.organizationId,
     ]
   );
 
@@ -437,6 +517,35 @@ export function ChatInput({
     }
   };
 
+  // Handle multiple jurisdictions change
+  const handleJurisdictionsChange = async (jurisdictions: Jurisdiction[]) => {
+    if (!projectId) return;
+
+    try {
+      const success = await useProjectSettingsStore.getState().updateSettings(projectId, {
+        jurisdictions: jurisdictions.map(j => ({
+          id: j.id,
+          name: j.name,
+          country: j.country,
+          state: j.state,
+          legalSystem: j.legalSystem,
+          citationStyle: j.citationStyle
+        }))
+      });
+
+      if (success) {
+        addToast({
+          message: jurisdictions.length > 0
+            ? `${jurisdictions.length} jurisdiction${jurisdictions.length !== 1 ? 's' : ''} selected`
+            : 'Jurisdictions cleared',
+          type: 'success'
+        });
+      }
+    } catch (error) {
+      addToast({ message: 'Failed to update jurisdictions', type: 'error' });
+    }
+  };
+
   // Handle documents added
   const handleDocumentsAdded = (documents: any[]) => {
     const count = documents.length;
@@ -450,6 +559,29 @@ export function ChatInput({
     if (currentConversation?.id) {
       fetchProjectDocuments(currentConversation.id);
     }
+  };
+
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+      // Reset input so same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Handle file removal
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Trigger file input click - always use file picker
+  const handlePaperclipClick = () => {
+    fileInputRef.current?.click();
   };
   // Toggle sidebar function
   const toggleSidebar = () => {
@@ -473,6 +605,16 @@ export function ChatInput({
 
     setShowProAccess(false);
   };
+
+  // Get current jurisdictions from settings
+  const currentJurisdictions = useMemo(() => {
+    if (!settings?.jurisdictions || settings.jurisdictions.length === 0) {
+      return [];
+    }
+    return settings.jurisdictions
+      .map(j => getJurisdictionById(j.id))
+      .filter(Boolean) as Jurisdiction[];
+  }, [settings?.jurisdictions]);
 
   return (
     <>
@@ -501,20 +643,13 @@ export function ChatInput({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={
-                  homepageMode ? undefined : () => setShowDocumentModal(true)
-                }
-                className={`h-8 w-8 p-0 rounded-md ${
-                  homepageMode
-                    ? "cursor-not-allowed opacity-60"
-                    : "hover:bg-gray-100"
-                }`}
+                onClick={handlePaperclipClick}
+                className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
                 title={
-                  homepageMode
-                    ? "Documents (available after creating workspace)"
-                    : `Documents (${conversationDocuments?.length || 0})`
+                  selectedFiles.length > 0
+                    ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected`
+                    : "Attach files"
                 }
-                disabled={homepageMode}
               >
                 <Paperclip className="h-6 w-6 text-gray-500" />
               </Button>
@@ -765,6 +900,41 @@ export function ChatInput({
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Jurisdiction Selector Dropdown */}
+              <DropdownMenu
+                open={showJurisdictionDropdown}
+                onOpenChange={setShowJurisdictionDropdown}
+              >
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                    title={
+                      currentJurisdictions.length > 0
+                        ? `${currentJurisdictions.length} jurisdiction${currentJurisdictions.length !== 1 ? 's' : ''} selected`
+                        : "Select jurisdiction"
+                    }
+                  >
+                    <Globe className="h-5 w-5 text-gray-500" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="w-[340px] p-3 mb-2"
+                  side="top"
+                >
+                  <JurisdictionSelector
+                    inline={true}
+                    multiSelect={true}
+                    values={currentJurisdictions}
+                    onChangeMulti={handleJurisdictionsChange}
+                    disabled={isLoadingSettings}
+                    placeholder="Search jurisdictions..."
+                    maxSelections={5}
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Settings Button for Sidebar Toggle */}
               <button
                 className={`h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border ${
@@ -785,19 +955,65 @@ export function ChatInput({
               </button>
             </div>
 
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {/* Selected Files Chips - Show above textarea */}
+            {selectedFiles.length > 0 && (
+              <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
+                {selectedFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-[#E9F5F3] rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="bg-[#74C6B8] rounded-md p-1.5">
+                        <FileText className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900 max-w-[150px] truncate">
+                          {file.name}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveFile(index)}
+                      className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                      type="button"
+                    >
+                      <X className="h-3.5 w-3.5 text-gray-600" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <Textarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                homepageMode
-                  ? "Ask anything legal-related... (e.g., 'Help me draft a contract','Review this agreement')"
-                  : "Ask Wansom..."
+                selectedFiles.length > 0
+                  ? "Ask anything about your document..."
+                  : homepageMode
+                  ? "Ask wansom anything... (e.g., 'Help me draft a contract','Review this agreement')"
+                  : "Ask Wansom anything..."
               }
               className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 overflow-y-auto ${
                 homepageMode
-                  ? "min-h-[120px] max-h-[400px] px-6 pt-4 pb-16 pr-16 text-[13px] md:text-base"
+                  ? selectedFiles.length > 0
+                    ? "min-h-[80px] max-h-[400px] px-6 pt-2 pb-16 pr-16 text-[13px] md:text-base"
+                    : "min-h-[120px] max-h-[400px] px-6 pt-4 pb-16 pr-16 text-[13px] md:text-base"
+                  : selectedFiles.length > 0
+                  ? "min-h-[80px] max-h-[300px] pl-6 pr-16 pt-2 pb-16"
                   : "min-h-[100px] max-h-[300px] pl-6 pr-16 pt-4 pb-16"
               }`}
               disabled={isSubmitting}

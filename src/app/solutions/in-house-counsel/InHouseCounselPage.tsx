@@ -435,7 +435,7 @@ const InHouseCounselPage = () => {
             <div className="text-primary lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For In-House Legal Teams </p>
               <h1 className="text-heading-1  font-serif max-w-4xl">
-                Automate Routine Legal Tasks With AI so you focus on High Value Work
+               Do More Legal Work with Less
               </h1>
               <button className="inline-flex items-center px-6 py-3 bg-secondary w-fit text-white font-semibold rounded-lg shadow hover:bg-primary transition">
                 Get Started

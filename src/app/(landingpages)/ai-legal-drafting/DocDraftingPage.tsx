@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
   FileText,
   CheckCircle,
@@ -14,6 +14,7 @@ import {
   Send,
   Plus,
   Globe2,
+  Globe,
   BookCopy,
   ChevronDown,
 } from "lucide-react";
@@ -39,6 +40,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { JurisdictionSelector } from "@/components/workspace/JurisdictionSelector";
+import { Jurisdiction } from "@/types";
 
 const LegalDraftingPage = () => {
   const [formData, setFormData] = useState({
@@ -49,7 +52,7 @@ const LegalDraftingPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
+    <div className=" bg-white text-gray-900 overflow-x-hidden">
       <Navbar />
       <DraftPlus />
  {/* Partner Logos */}
@@ -212,6 +215,10 @@ const DraftPlus = () => {
   const [chatInput, setChatInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
+  const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedJurisdictions, setSelectedJurisdictions] = useState<Jurisdiction[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Placeholder rotation
@@ -266,9 +273,37 @@ const DraftPlus = () => {
       handleSend();
     }
   };
+
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+      // Reset input so same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Handle file removal
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Trigger file input click
+  const handlePaperclipClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle jurisdiction change
+  const handleJurisdictionsChange = (jurisdictions: Jurisdiction[]) => {
+    setSelectedJurisdictions(jurisdictions);
+  };
   return (
     <section
-      className="pt-24 lg:pt-32"
+      className="pt-24 lg:pt-32 relative"
       id="knowledge-base"
     >
             {/* SVG Background */}
@@ -713,7 +748,7 @@ const DraftPlus = () => {
             <div className="bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative shadow-sm focus-within:shadow-md">
               {/* Left side icons */}
               {/* Animated placeholder overlay */}
-              {!chatInput && (
+              {!chatInput && selectedFiles.length === 0 && (
                 <div className="absolute left-6 top-4 pointer-events-none overflow-hidden h-6">
                   <div
                     key={currentPlaceholderIndex}
@@ -729,9 +764,13 @@ const DraftPlus = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 w-8 p-0 rounded-md cursor-not-allowed opacity-60"
-                  title="Documents (available after registration)"
-                  disabled={true}
+                  onClick={handlePaperclipClick}
+                  className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
+                  title={
+                    selectedFiles.length > 0
+                      ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected`
+                      : "Attach files"
+                  }
                   aria-labelledby="upload documents"
                 >
                   <Paperclip className="h-6 w-6 text-gray-600" />
@@ -875,6 +914,39 @@ const DraftPlus = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
+                {/* Jurisdiction Selector Dropdown */}
+                <DropdownMenu
+                  open={showJurisdictionDropdown}
+                  onOpenChange={setShowJurisdictionDropdown}
+                >
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                      title={
+                        selectedJurisdictions.length > 0
+                          ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
+                          : "Select jurisdiction"
+                      }
+                    >
+                      <Globe className="h-5 w-5 text-gray-500" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[340px] p-3 mb-2"
+                    side="top"
+                  >
+                    <JurisdictionSelector
+                      inline={true}
+                      multiSelect={true}
+                      values={selectedJurisdictions}
+                      onChangeMulti={handleJurisdictionsChange}
+                      placeholder="Search jurisdictions..."
+                      maxSelections={5}
+                    />
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 {/* Settings Button */}
                 <TooltipProvider>
                   <Tooltip>
@@ -886,8 +958,48 @@ const DraftPlus = () => {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-          
+
               </div>
+
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
+              {/* Selected Files Chips - Show above textarea */}
+              {selectedFiles.length > 0 && (
+                <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
+                  {selectedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-[#E9F5F3] rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="bg-[#74C6B8] rounded-md p-1.5">
+                          <FileText className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 max-w-[150px] truncate">
+                            {file.name}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveFile(index)}
+                        className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                        type="button"
+                      >
+                        <X className="h-3.5 w-3.5 text-gray-600" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <Textarea
                 ref={textareaRef}
@@ -895,7 +1007,11 @@ const DraftPlus = () => {
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder=""
-                className="border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-600 min-h-[120px] max-h-[200px] px-6 py-4 pr-16 text-[13px] md:text-base"
+                className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-600 px-6 pr-16 text-[13px] md:text-base ${
+                  selectedFiles.length > 0
+                    ? "min-h-[100px] max-h-[200px] pt-2 pb-4"
+                    : "min-h-[120px] max-h-[200px] py-4"
+                }`}
                 disabled={isSubmitting}
               />
 
@@ -958,14 +1074,14 @@ const DraftPlus = () => {
               Afcomm
               <Plus className="h-4 w-4 text-gray-500" />
             </a>
-            <div className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
+            <div className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-50 text-gray-50 lg:text-gray-50 rounded-lg px-4 py-2 flex items-center gap-2">
               <img
                 src="/logos/CommonLII.jpg"
                 alt=" CommonLII"
                 className="h-8 w-8 rounded-full"
               />
               CommonLII
-              <Plus className="h-4 w-4 text-gray-500" />
+              <Plus className="h-4 w-4 text-gray-50" />
             </div>
             <div className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
               <img

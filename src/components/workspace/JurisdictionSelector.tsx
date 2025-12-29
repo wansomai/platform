@@ -12,9 +12,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { 
-  JURISDICTIONS, 
-  REGIONS, 
+import {
+  JURISDICTIONS,
   searchJurisdictions,
 } from "@/lib/jurisdictions";
 import { Jurisdiction } from "@/types";
@@ -28,6 +27,7 @@ interface JurisdictionSelectorProps {
   placeholder?: string;
   multiSelect?: boolean;  // Enable multi-select mode
   maxSelections?: number;  // Optional limit on number of selections
+  inline?: boolean;  // Render inline without Popover wrapper
 }
 
 export function JurisdictionSelector({
@@ -38,31 +38,24 @@ export function JurisdictionSelector({
   disabled = false,
   placeholder = "Select jurisdiction...",
   multiSelect = false,
-  maxSelections
+  maxSelections,
+  inline = false
 }: JurisdictionSelectorProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   // Use the appropriate value(s) based on mode
   const selectedJurisdictions = multiSelect ? values : (value ? [value] : []);
 
-  // Filter jurisdictions based on search and region
+  // Filter jurisdictions based on search
   const filteredJurisdictions = useMemo(() => {
-    let jurisdictions = JURISDICTIONS;
-    
     // Filter by search query
     if (searchQuery.trim()) {
-      jurisdictions = searchJurisdictions(searchQuery);
+      return searchJurisdictions(searchQuery);
     }
-    
-    // Filter by region
-    if (selectedRegion) {
-      jurisdictions = jurisdictions.filter(j => j.region === selectedRegion);
-    }
-    
-    return jurisdictions;
-  }, [searchQuery, selectedRegion]);
+
+    return JURISDICTIONS;
+  }, [searchQuery]);
 
   // Group jurisdictions by region
   const jurisdictionsByRegion = useMemo(() => {
@@ -102,7 +95,6 @@ export function JurisdictionSelector({
       onChange?.(jurisdiction);
       setOpen(false);
       setSearchQuery("");
-      setSelectedRegion(null);
     }
   };
 
@@ -125,6 +117,82 @@ export function JurisdictionSelector({
     }
   };
 
+  // Inline mode: render just the content without Popover wrapper
+  if (inline) {
+    return (
+      <div className="space-y-3">
+        {/* Multi-select: Show selected jurisdictions as badges */}
+        {multiSelect && selectedJurisdictions.length > 0 && (
+          <div className="flex flex-wrap gap-1 p-2 border rounded-md bg-gray-50">
+            {selectedJurisdictions.map((jurisdiction) => (
+              <div
+                key={jurisdiction.id}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-white border rounded-md text-sm"
+              >
+                <span className="truncate max-w-[200px]">{jurisdiction.name}</span>
+                <button
+                  onClick={(e) => handleRemoveJurisdiction(jurisdiction.id, e)}
+                  className="hover:bg-gray-100 rounded-sm p-0.5"
+                  disabled={disabled}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-col h-[350px]">
+          {/* Search Bar */}
+          <div className="pb-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search jurisdictions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-8"
+              />
+            </div>
+          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="pr-3">
+              {/* Jurisdictions by Region */}
+              {Object.entries(jurisdictionsByRegion).map(([region, jurisdictions]) => (
+                <div key={region} className="mb-3">
+                  <div className="px-2 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    {region}
+                  </div>
+                  <div className="space-y-0.5">
+                    {jurisdictions.map((jurisdiction) => (
+                      <JurisdictionOption
+                        key={jurisdiction.id}
+                        jurisdiction={jurisdiction}
+                        isSelected={selectedJurisdictions.some(j => j.id === jurisdiction.id)}
+                        onSelect={handleSelect}
+                        multiSelect={multiSelect}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* No Results */}
+              {filteredJurisdictions.length === 0 && (
+                <div className="py-8 text-center text-gray-500">
+                  <p className="text-sm">No jurisdictions found</p>
+                  <p className="text-xs mt-1">Try adjusting your search</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+      </div>
+    );
+  }
+
+  // Full mode with Popover wrapper
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">
@@ -191,7 +259,7 @@ export function JurisdictionSelector({
             </div>
           </Button>
         </PopoverTrigger>
-        
+
         <PopoverContent className="w-[320px] p-0" align="start">
           <div className="flex flex-col h-[400px]">
             {/* Search Bar */}
@@ -204,31 +272,6 @@ export function JurisdictionSelector({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-8"
                 />
-              </div>
-            </div>
-
-            {/* Region Filter */}
-            <div className="p-3 border-b">
-              <div className="flex flex-wrap gap-1">
-                <Button
-                  variant={selectedRegion === null ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedRegion(null)}
-                  className="h-6 text-xs px-2"
-                >
-                  All
-                </Button>
-                {REGIONS.map((region) => (
-                  <Button
-                    key={region}
-                    variant={selectedRegion === region ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedRegion(region)}
-                    className="h-6 text-xs px-2"
-                  >
-                    {region.replace(' ', '')}
-                  </Button>
-                ))}
               </div>
             </div>
 
@@ -266,7 +309,7 @@ export function JurisdictionSelector({
           </div>
         </PopoverContent>
       </Popover>
-      
+
       {/* Current Selection Info */}
       {value && (
         <div className="text-xs text-gray-500 mt-1">
