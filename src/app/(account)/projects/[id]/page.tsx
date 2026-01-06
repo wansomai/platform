@@ -10,11 +10,7 @@ import { ErrorState } from "@/components/commons/LoadingState"
 import { WorkspaceSkeleton } from "@/components/commons/WorkspaceSkeleton"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
 import { useUIStore } from "@/store/ui.store"
-import { Button } from "@/components/ui/button"
-import { Briefcase, ChevronLeft, X, Users } from "lucide-react"
 import { ChatInput } from "@/components/chat/ChatInput"
-import { ConversationDetails } from "@/components/workspace/ConversationDetails"
-import { cn } from "@/lib/utils"
 import { useChatStore } from "@/store/chat.store"
 import { useProjectStore } from "@/store/project.store"
 import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal"
@@ -38,11 +34,7 @@ export default function ProjectPage() {
 
   // Get settings from dedicated store
   const { settings, updateSetting } = useProjectSettingsStore()
-  const {
-    rightSidebarCollapsed,
-    setRightSidebarCollapsed,
-    selectedPreviewDocument
-  } = useUIStore();
+  const { selectedPreviewDocument } = useUIStore();
   const { fetchConversation, isLoading: chatLoading } = useChatStore();
     
   // Load project conversations
@@ -109,16 +101,19 @@ export default function ProjectPage() {
     }
 
     // Remove query params from URL after a short delay
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       router.replace(`/projects/${projectId}`);
     }, 100);
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timeoutId);
   }, [searchParams, router, notify, projectId, updateSetting, settings]);
 
   // Show skeleton loading state if project is loading
   if (chatLoading || (!project && projectId)) {
     return (
-      <WorkspaceSkeleton 
-        showSidebar={!rightSidebarCollapsed}
+      <WorkspaceSkeleton
+        showSidebar={false}
         projectTitle={project?.title}
       />
     )
@@ -145,67 +140,18 @@ export default function ProjectPage() {
   return (
     <div className="flex h-screen bg-white">
       <div className="flex-1 flex flex-col min-w-0">
-        <main className="flex-1 overflow-hidden">
-          <div className="h-full">
+        <main className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-hidden">
             {showDocumentPreview ? <DocumentPreviewSplitView /> :
              showLegalDrafting ? <CanvasChatSplitView /> :
              <ChatInterface />}
           </div>
-          <div className="border-t bg-white">
+          <div className="bg-white border-t">
             <ChatInput />
           </div>
         </main>
-        
-      </div>
-      
-      <div className={cn(
-        "border-l bg-white transition-all duration-200 ease-in-out flex flex-col",
-        rightSidebarCollapsed ? "w-0 overflow-hidden" : "w-80"
-      )}>
-        {/* Sidebar Header */}
-        <div className="border-b p-4 flex items-center justify-between bg-gray-50">
-          <div className="flex items-center space-x-2 flex-1 min-w-0">
-            <Briefcase className="h-4 w-4 text-gray-600 shrink-0" />
-            <span className="font-medium text-sm truncate">{project.title}</span>
-          </div>
-          <div className="flex items-center gap-1 ml-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowMembersModal(true)}
-              className="h-8 w-8 p-0"
-              title="Manage members"
-            >
-              <Users className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setRightSidebarCollapsed(true)}
-              className="h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
 
-        {/* Sidebar Content */}
-        <div className="flex-1 overflow-hidden">
-          <ConversationDetails />
-        </div>
       </div>
-      
-      {/* Sidebar Toggle Button - Only show when collapsed */}
-      {rightSidebarCollapsed && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setRightSidebarCollapsed(false)}
-          className="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 shadow-lg"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-      )}
 
       {/* Members Modal */}
       <ProjectMembersModal

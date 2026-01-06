@@ -161,7 +161,7 @@ const ChatMessageItem = React.memo(({
                     )}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-start">
+                  <div className="flex flex-col items-center justify-center">
                     {message.processingStatus && isCanvasProcessingStatus(message.processingStatus) ? (
                       <CanvasProcessingStatus 
                         status={message.processingStatus} 

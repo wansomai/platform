@@ -10,7 +10,8 @@ const prisma = new PrismaClient()
 // Schema validation
 const updateConversationSchema = z.object({
   title: z.string().min(1, 'Title is required').optional(),
-  isPinned: z.boolean().optional()
+  isPinned: z.boolean().optional(),
+  aiAssociateId: z.string().nullable().optional()
 })
 
 // GET handler - Get conversation by ID
@@ -52,6 +53,13 @@ export const GET = withErrorHandler(withAuth(async (
             }
           }
         }
+      },
+      aiAssociate: {
+        select: {
+          id: true,
+          name: true,
+          description: true
+        }
       }
     }
   });
@@ -86,7 +94,13 @@ export const GET = withErrorHandler(withAuth(async (
     messages: formattedMessages,
     createdAt: conversation.createdAt.toISOString(),
     updatedAt: conversation.updatedAt.toISOString(),
-    isPinned: conversation.isPinned
+    isPinned: conversation.isPinned,
+    aiAssociateId: conversation.aiAssociateId,
+    aiAssociate: conversation.aiAssociate ? {
+      id: conversation.aiAssociate.id,
+      name: conversation.aiAssociate.name,
+      description: conversation.aiAssociate.description
+    } : undefined
   };
 
   return NextResponse.json({
@@ -131,14 +145,42 @@ export const PUT = withErrorHandler(withAuth(async (
 
   // Parse and validate request body
   const body = await request.json();
-  const { title, isPinned } = updateConversationSchema.parse(body);
+  const { title, isPinned, aiAssociateId } = updateConversationSchema.parse(body);
+
+  // Build update data
+  const updateData: any = {};
+
+  if (title) {
+    updateData.title = title;
+  }
+
+  if (isPinned !== undefined) {
+    updateData.isPinned = isPinned;
+  }
+
+  // Handle aiAssociateId (can be set to null to remove associate)
+  if ('aiAssociateId' in body) {
+    if (aiAssociateId === null) {
+      updateData.aiAssociateId = null;
+    } else if (aiAssociateId) {
+      updateData.aiAssociate = {
+        connect: { id: aiAssociateId }
+      };
+    }
+  }
 
   // Update conversation
   const updatedConversation = await prisma.conversation.update({
     where: { id: conversationId },
-    data: {
-      ...(title && { title }),
-      ...(isPinned !== undefined && { isPinned })
+    data: updateData,
+    include: {
+      aiAssociate: {
+        select: {
+          id: true,
+          name: true,
+          description: true
+        }
+      }
     }
   });
 
@@ -147,6 +189,12 @@ export const PUT = withErrorHandler(withAuth(async (
     id: updatedConversation.id,
     title: updatedConversation.title,
     isPinned: updatedConversation.isPinned,
+    aiAssociateId: updatedConversation.aiAssociateId,
+    aiAssociate: updatedConversation.aiAssociate ? {
+      id: updatedConversation.aiAssociate.id,
+      name: updatedConversation.aiAssociate.name,
+      description: updatedConversation.aiAssociate.description
+    } : undefined,
     updatedAt: updatedConversation.updatedAt.toISOString()
   };
 
@@ -156,6 +204,9 @@ export const PUT = withErrorHandler(withAuth(async (
     data: formattedConversation
   });
 }));
+
+// PATCH handler - Partial update conversation (same as PUT)
+export const PATCH = PUT;
 
 // DELETE handler - Delete conversation
 export const DELETE = withErrorHandler(withAuth(async (

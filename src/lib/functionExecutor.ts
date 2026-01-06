@@ -5,6 +5,7 @@ import { PrismaClient } from '@/prisma/client';
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { GoogleCalendarService } from '@/services/googleCalendarService';
 import { GmailService } from '@/services/gmailService';
+import { executeAssociateCall } from './associateExecutor';
 
 const prisma = new PrismaClient();
 
@@ -655,9 +656,23 @@ Please provide a structured review report.`;
         }
       }
 
-      default:
+      default: {
+        // Check if this is an associate tool call (starts with "use")
+        if (functionCall.name.startsWith('use')) {
+          return await executeAssociateCall(
+            functionCall,
+            projectId,
+            project,
+            conversationDocuments,
+            recentMessages,
+            streamCallback,
+            userId
+          );
+        }
+
         console.error('❌ Unknown function:', functionCall.name);
         return { error: `Unknown function: ${functionCall.name}` };
+      }
     }
   } catch (error: any) {
     console.error('❌ Error executing function:', error);

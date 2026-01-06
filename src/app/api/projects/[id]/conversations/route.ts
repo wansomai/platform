@@ -9,7 +9,8 @@ const prisma = new PrismaClient()
 
 // Schema validation
 const createConversationSchema = z.object({
-  title: z.string().min(1, 'Title is required')
+  title: z.string().min(1, 'Title is required'),
+  aiAssociateId: z.string().optional()
 })
 
 // GET handler - List all conversations for a project
@@ -50,6 +51,13 @@ export const GET = withErrorHandler(withAuth(async (
           }
         }
       },
+      aiAssociate: {
+        select: {
+          id: true,
+          name: true,
+          description: true
+        }
+      },
       _count: {
         select: {
           messages: true
@@ -75,6 +83,12 @@ export const GET = withErrorHandler(withAuth(async (
     createdAt: conversation.createdAt.toISOString(),
     updatedAt: conversation.updatedAt.toISOString(),
     isPinned: conversation.isPinned,
+    aiAssociateId: conversation.aiAssociateId,
+    aiAssociate: conversation.aiAssociate ? {
+      id: conversation.aiAssociate.id,
+      name: conversation.aiAssociate.name,
+      description: conversation.aiAssociate.description
+    } : undefined,
     messages: conversation.messages.map((message:any) => ({
       id: message.id,
       content: message.content,
@@ -125,14 +139,28 @@ export const POST = withErrorHandler(withAuth(async (
 
   // Parse and validate request body
   const body = await request.json();
-  const { title } = createConversationSchema.parse(body);
+  const { title, aiAssociateId } = createConversationSchema.parse(body);
 
-  // Create conversation
+  // Create conversation with optional AI associate
   const conversation = await prisma.conversation.create({
     data: {
       title,
       project: {
         connect: { id: projectId }
+      },
+      ...(aiAssociateId && {
+        aiAssociate: {
+          connect: { id: aiAssociateId }
+        }
+      })
+    },
+    include: {
+      aiAssociate: {
+        select: {
+          id: true,
+          name: true,
+          description: true
+        }
       }
     }
   });
@@ -145,6 +173,12 @@ export const POST = withErrorHandler(withAuth(async (
     createdAt: conversation.createdAt.toISOString(),
     updatedAt: conversation.updatedAt.toISOString(),
     isPinned: conversation.isPinned,
+    aiAssociateId: conversation.aiAssociateId,
+    aiAssociate: conversation.aiAssociate ? {
+      id: conversation.aiAssociate.id,
+      name: conversation.aiAssociate.name,
+      description: conversation.aiAssociate.description
+    } : undefined,
     messages: []
   };
 

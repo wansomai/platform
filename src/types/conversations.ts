@@ -1,4 +1,4 @@
-// types/conversation.ts 
+// types/conversation.ts
 export interface Conversation {
   id: string;
   title: string;
@@ -6,12 +6,18 @@ export interface Conversation {
   isPinned: boolean;
   createdAt: string;
   updatedAt: string;
-  
+  aiAssociateId?: string | null;
+
   // Optional expanded data
   messages: Message[];
   messageCount?: number;
   lastMessage?: string;
-  
+  aiAssociate?: {
+    id: string;
+    name: string;
+    description?: string;
+  };
+
 }
 
 export interface Message {

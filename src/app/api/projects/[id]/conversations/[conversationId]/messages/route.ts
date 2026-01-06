@@ -8,6 +8,7 @@ import { GoogleGenAI } from '@google/genai';
 import { canSendMessage } from '@/lib/subscription';
 import { legalDraftingTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
+import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
@@ -240,7 +241,12 @@ export async function POST(
           // Check if project is in drafting mode
           // With function calling enabled, the AI will decide when to draft documents vs ask questions
           const isDraftingMode = settings.legalDrafting === true;
-          
+
+          // Load AI Associates for this project (if enabled)
+          const associateToolsPromise = settings.aiAssociates !== false
+            ? generateProjectAssociateTools(projectId)
+            : Promise.resolve([]);
+
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
           
@@ -429,6 +435,32 @@ export async function POST(
           `}
           ` : ''}
 
+          ${await (async () => {
+            const associateTools = await associateToolsPromise;
+            if (associateTools && associateTools.length > 0) {
+              return `
+          **🤝 SPECIALIZED AI ASSOCIATES AVAILABLE**:
+          You have access to specialized AI legal associates who are experts in specific practice areas:
+
+          ${associateTools.map(tool =>
+            `- **${tool.metadata.associateName}**: ${tool.metadata.practiceAreas.map(pa => pa.replace(/_/g, ' ')).join(', ')}`
+          ).join('\n          ')}
+
+          **When to delegate to associates**:
+          - When a user's question falls clearly within an associate's specialization, call the associate's function
+          - Associates have specialized knowledge and can provide expert guidance in their domains
+          - Use associates for in-depth analysis, specialized advice, and domain-specific questions
+          - You can still handle general questions yourself - only delegate when their expertise is needed
+
+          **How to use associates**:
+          - Call the appropriate associate function (e.g., ${associateTools[0].name}) with the user's query
+          - The associate will provide specialized analysis based on their expertise and knowledge base
+          - Present the associate's response to the user, crediting them appropriately
+          `;
+            }
+            return '';
+          })()}
+
           ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
           ${draftingContext}
             
@@ -609,6 +641,12 @@ export async function POST(
                   description: tool.description,
                   parameters: tool.parameters
                 })));
+              }
+
+              // Load and add AI Associates tools
+              const associateTools = await associateToolsPromise;
+              if (associateTools && associateTools.length > 0) {
+                allFunctionDeclarations.push(...getAssociateToolDeclarations(associateTools));
               }
 
               if (allFunctionDeclarations.length > 0) {

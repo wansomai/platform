@@ -205,6 +205,41 @@ export type EventRegistration = $Result.DefaultSelection<Prisma.$EventRegistrati
 export type Publications = $Result.DefaultSelection<Prisma.$PublicationsPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const PracticeArea: {
+  MERGERS_AND_ACQUISITIONS: 'MERGERS_AND_ACQUISITIONS',
+  TAX_LAW: 'TAX_LAW',
+  INTELLECTUAL_PROPERTY: 'INTELLECTUAL_PROPERTY',
+  COMPLIANCE_REGULATORY: 'COMPLIANCE_REGULATORY',
+  CORPORATE_GOVERNANCE: 'CORPORATE_GOVERNANCE',
+  EMPLOYMENT_LABOR: 'EMPLOYMENT_LABOR',
+  LITIGATION_DISPUTE_RESOLUTION: 'LITIGATION_DISPUTE_RESOLUTION',
+  REAL_ESTATE: 'REAL_ESTATE',
+  BANKING_FINANCE: 'BANKING_FINANCE',
+  CONTRACTS_COMMERCIAL: 'CONTRACTS_COMMERCIAL',
+  SECURITIES: 'SECURITIES',
+  ANTITRUST_COMPETITION: 'ANTITRUST_COMPETITION',
+  BANKRUPTCY_RESTRUCTURING: 'BANKRUPTCY_RESTRUCTURING',
+  ENVIRONMENTAL_LAW: 'ENVIRONMENTAL_LAW',
+  HEALTHCARE_LIFE_SCIENCES: 'HEALTHCARE_LIFE_SCIENCES',
+  IMMIGRATION: 'IMMIGRATION',
+  PRIVACY_DATA_PROTECTION: 'PRIVACY_DATA_PROTECTION',
+  TECHNOLOGY_LICENSING: 'TECHNOLOGY_LICENSING',
+  INTERNATIONAL_TRADE: 'INTERNATIONAL_TRADE',
+  GENERAL_PRACTICE: 'GENERAL_PRACTICE'
+};
+
+export type PracticeArea = (typeof PracticeArea)[keyof typeof PracticeArea]
+
+}
+
+export type PracticeArea = $Enums.PracticeArea
+
+export const PracticeArea: typeof $Enums.PracticeArea
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -41300,6 +41335,8 @@ export namespace Prisma {
     id: string | null
     name: string | null
     instructions: string | null
+    description: string | null
+    isActive: boolean | null
     organizationId: string | null
     createdById: string | null
     createdAt: Date | null
@@ -41310,6 +41347,8 @@ export namespace Prisma {
     id: string | null
     name: string | null
     instructions: string | null
+    description: string | null
+    isActive: boolean | null
     organizationId: string | null
     createdById: string | null
     createdAt: Date | null
@@ -41320,6 +41359,10 @@ export namespace Prisma {
     id: number
     name: number
     instructions: number
+    description: number
+    practiceAreas: number
+    knowledgeBase: number
+    isActive: number
     organizationId: number
     createdById: number
     createdAt: number
@@ -41332,6 +41375,8 @@ export namespace Prisma {
     id?: true
     name?: true
     instructions?: true
+    description?: true
+    isActive?: true
     organizationId?: true
     createdById?: true
     createdAt?: true
@@ -41342,6 +41387,8 @@ export namespace Prisma {
     id?: true
     name?: true
     instructions?: true
+    description?: true
+    isActive?: true
     organizationId?: true
     createdById?: true
     createdAt?: true
@@ -41352,6 +41399,10 @@ export namespace Prisma {
     id?: true
     name?: true
     instructions?: true
+    description?: true
+    practiceAreas?: true
+    knowledgeBase?: true
+    isActive?: true
     organizationId?: true
     createdById?: true
     createdAt?: true
@@ -41435,6 +41486,10 @@ export namespace Prisma {
     id: string
     name: string
     instructions: string
+    description: string | null
+    practiceAreas: $Enums.PracticeArea[]
+    knowledgeBase: string[]
+    isActive: boolean
     organizationId: string
     createdById: string
     createdAt: Date
@@ -41462,6 +41517,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     instructions?: boolean
+    description?: boolean
+    practiceAreas?: boolean
+    knowledgeBase?: boolean
+    isActive?: boolean
     organizationId?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -41479,6 +41538,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     instructions?: boolean
+    description?: boolean
+    practiceAreas?: boolean
+    knowledgeBase?: boolean
+    isActive?: boolean
     organizationId?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -41491,6 +41554,10 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     instructions?: boolean
+    description?: boolean
+    practiceAreas?: boolean
+    knowledgeBase?: boolean
+    isActive?: boolean
     organizationId?: boolean
     createdById?: boolean
     createdAt?: boolean
@@ -41503,13 +41570,17 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     instructions?: boolean
+    description?: boolean
+    practiceAreas?: boolean
+    knowledgeBase?: boolean
+    isActive?: boolean
     organizationId?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AIAssociateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "instructions" | "organizationId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["aIAssociate"]>
+  export type AIAssociateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "instructions" | "description" | "practiceAreas" | "knowledgeBase" | "isActive" | "organizationId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["aIAssociate"]>
   export type AIAssociateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdBy?: boolean | UserDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -41542,6 +41613,10 @@ export namespace Prisma {
       id: string
       name: string
       instructions: string
+      description: string | null
+      practiceAreas: $Enums.PracticeArea[]
+      knowledgeBase: string[]
+      isActive: boolean
       organizationId: string
       createdById: string
       createdAt: Date
@@ -41978,6 +42053,10 @@ export namespace Prisma {
     readonly id: FieldRef<"AIAssociate", 'String'>
     readonly name: FieldRef<"AIAssociate", 'String'>
     readonly instructions: FieldRef<"AIAssociate", 'String'>
+    readonly description: FieldRef<"AIAssociate", 'String'>
+    readonly practiceAreas: FieldRef<"AIAssociate", 'PracticeArea[]'>
+    readonly knowledgeBase: FieldRef<"AIAssociate", 'String[]'>
+    readonly isActive: FieldRef<"AIAssociate", 'Boolean'>
     readonly organizationId: FieldRef<"AIAssociate", 'String'>
     readonly createdById: FieldRef<"AIAssociate", 'String'>
     readonly createdAt: FieldRef<"AIAssociate", 'DateTime'>
@@ -49222,6 +49301,10 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     instructions: 'instructions',
+    description: 'description',
+    practiceAreas: 'practiceAreas',
+    knowledgeBase: 'knowledgeBase',
+    isActive: 'isActive',
     organizationId: 'organizationId',
     createdById: 'createdById',
     createdAt: 'createdAt',
@@ -49432,6 +49515,20 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PracticeArea[]'
+   */
+  export type ListEnumPracticeAreaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PracticeArea[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PracticeArea'
+   */
+  export type EnumPracticeAreaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PracticeArea'>
     
   /**
    * Deep Input Types
@@ -51921,6 +52018,10 @@ export namespace Prisma {
     id?: StringFilter<"AIAssociate"> | string
     name?: StringFilter<"AIAssociate"> | string
     instructions?: StringFilter<"AIAssociate"> | string
+    description?: StringNullableFilter<"AIAssociate"> | string | null
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"AIAssociate">
+    knowledgeBase?: StringNullableListFilter<"AIAssociate">
+    isActive?: BoolFilter<"AIAssociate"> | boolean
     organizationId?: StringFilter<"AIAssociate"> | string
     createdById?: StringFilter<"AIAssociate"> | string
     createdAt?: DateTimeFilter<"AIAssociate"> | Date | string
@@ -51937,6 +52038,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     instructions?: SortOrder
+    description?: SortOrderInput | SortOrder
+    practiceAreas?: SortOrder
+    knowledgeBase?: SortOrder
+    isActive?: SortOrder
     organizationId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -51956,6 +52061,10 @@ export namespace Prisma {
     NOT?: AIAssociateWhereInput | AIAssociateWhereInput[]
     name?: StringFilter<"AIAssociate"> | string
     instructions?: StringFilter<"AIAssociate"> | string
+    description?: StringNullableFilter<"AIAssociate"> | string | null
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"AIAssociate">
+    knowledgeBase?: StringNullableListFilter<"AIAssociate">
+    isActive?: BoolFilter<"AIAssociate"> | boolean
     organizationId?: StringFilter<"AIAssociate"> | string
     createdById?: StringFilter<"AIAssociate"> | string
     createdAt?: DateTimeFilter<"AIAssociate"> | Date | string
@@ -51972,6 +52081,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     instructions?: SortOrder
+    description?: SortOrderInput | SortOrder
+    practiceAreas?: SortOrder
+    knowledgeBase?: SortOrder
+    isActive?: SortOrder
     organizationId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -51988,6 +52101,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"AIAssociate"> | string
     name?: StringWithAggregatesFilter<"AIAssociate"> | string
     instructions?: StringWithAggregatesFilter<"AIAssociate"> | string
+    description?: StringNullableWithAggregatesFilter<"AIAssociate"> | string | null
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"AIAssociate">
+    knowledgeBase?: StringNullableListFilter<"AIAssociate">
+    isActive?: BoolWithAggregatesFilter<"AIAssociate"> | boolean
     organizationId?: StringWithAggregatesFilter<"AIAssociate"> | string
     createdById?: StringWithAggregatesFilter<"AIAssociate"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AIAssociate"> | Date | string
@@ -54954,6 +55071,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
@@ -54968,6 +55089,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdById: string
     createdAt?: Date | string
@@ -54982,6 +55107,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
@@ -54996,6 +55125,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55010,6 +55143,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdById: string
     createdAt?: Date | string
@@ -55020,6 +55157,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -55028,6 +55169,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57183,6 +57328,14 @@ export namespace Prisma {
     accessTime?: SortOrder
   }
 
+  export type EnumPracticeAreaNullableListFilter<$PrismaModel = never> = {
+    equals?: $Enums.PracticeArea[] | ListEnumPracticeAreaFieldRefInput<$PrismaModel> | null
+    has?: $Enums.PracticeArea | EnumPracticeAreaFieldRefInput<$PrismaModel> | null
+    hasEvery?: $Enums.PracticeArea[] | ListEnumPracticeAreaFieldRefInput<$PrismaModel>
+    hasSome?: $Enums.PracticeArea[] | ListEnumPracticeAreaFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type AssociateStepListRelationFilter = {
     every?: AssociateStepWhereInput
     some?: AssociateStepWhereInput
@@ -57207,6 +57360,10 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     instructions?: SortOrder
+    description?: SortOrder
+    practiceAreas?: SortOrder
+    knowledgeBase?: SortOrder
+    isActive?: SortOrder
     organizationId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -57217,6 +57374,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     instructions?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
     organizationId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -57227,6 +57386,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     instructions?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
     organizationId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
@@ -60587,6 +60748,14 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSharedWorkspaceAccessInput, UserUpdateWithoutSharedWorkspaceAccessInput>, UserUncheckedUpdateWithoutSharedWorkspaceAccessInput>
   }
 
+  export type AIAssociateCreatepracticeAreasInput = {
+    set: $Enums.PracticeArea[]
+  }
+
+  export type AIAssociateCreateknowledgeBaseInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutCreatedAIAssociatesInput = {
     create?: XOR<UserCreateWithoutCreatedAIAssociatesInput, UserUncheckedCreateWithoutCreatedAIAssociatesInput>
     connectOrCreate?: UserCreateOrConnectWithoutCreatedAIAssociatesInput
@@ -60653,6 +60822,16 @@ export namespace Prisma {
     connectOrCreate?: ProjectAssociateCreateOrConnectWithoutAssociateInput | ProjectAssociateCreateOrConnectWithoutAssociateInput[]
     createMany?: ProjectAssociateCreateManyAssociateInputEnvelope
     connect?: ProjectAssociateWhereUniqueInput | ProjectAssociateWhereUniqueInput[]
+  }
+
+  export type AIAssociateUpdatepracticeAreasInput = {
+    set?: $Enums.PracticeArea[]
+    push?: $Enums.PracticeArea | $Enums.PracticeArea[]
+  }
+
+  export type AIAssociateUpdateknowledgeBaseInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput = {
@@ -61393,6 +61572,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutAiAssociatesInput
@@ -61406,6 +61589,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -62110,6 +62297,10 @@ export namespace Prisma {
     id?: StringFilter<"AIAssociate"> | string
     name?: StringFilter<"AIAssociate"> | string
     instructions?: StringFilter<"AIAssociate"> | string
+    description?: StringNullableFilter<"AIAssociate"> | string | null
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"AIAssociate">
+    knowledgeBase?: StringNullableListFilter<"AIAssociate">
+    isActive?: BoolFilter<"AIAssociate"> | boolean
     organizationId?: StringFilter<"AIAssociate"> | string
     createdById?: StringFilter<"AIAssociate"> | string
     createdAt?: DateTimeFilter<"AIAssociate"> | Date | string
@@ -62736,6 +62927,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
@@ -62749,6 +62944,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdById: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67620,6 +67819,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
@@ -67633,6 +67836,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdById: string
     createdAt?: Date | string
@@ -67856,6 +68063,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
@@ -67869,6 +68080,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70771,6 +70986,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
@@ -70784,6 +71003,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdById: string
     createdAt?: Date | string
@@ -70813,6 +71036,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
@@ -70826,6 +71053,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70839,6 +71070,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
@@ -70852,6 +71087,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdById: string
     createdAt?: Date | string
@@ -70881,6 +71120,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
@@ -70894,6 +71137,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70907,6 +71154,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
@@ -70920,6 +71171,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdById: string
     createdAt?: Date | string
@@ -70994,6 +71249,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
@@ -71007,6 +71266,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71167,6 +71430,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     organizationId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71338,6 +71605,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutAiAssociatesNestedInput
@@ -71351,6 +71622,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71364,6 +71639,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     organizationId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71905,6 +72184,10 @@ export namespace Prisma {
     id?: string
     name: string
     instructions: string
+    description?: string | null
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    isActive?: boolean
     createdById: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72028,6 +72311,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
@@ -72041,6 +72328,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72054,6 +72345,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdById?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

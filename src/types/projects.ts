@@ -65,6 +65,7 @@ export interface ProjectSettings {
   legalDrafting: boolean;
   googleCalendar?: boolean;
   gmail?: boolean;
+  aiAssociates?: boolean;
   model?: string;
   temperature?: number;
   // Support both single jurisdiction (legacy) and multiple jurisdictions

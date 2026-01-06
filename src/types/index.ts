@@ -1,5 +1,6 @@
 // Core types
 export * from './api';
+export * from './associates';
 export * from './auth';
 export * from './business';
 export * from './content';

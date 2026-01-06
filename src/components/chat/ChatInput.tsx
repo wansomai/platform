@@ -12,10 +12,11 @@ import {
   SlidersHorizontal,
   X,
   Paperclip,
-  Settings,
   ArrowUpRightFromSquare,
   Globe,
   FileText,
+  User,
+  Zap,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -37,6 +38,10 @@ import { apiService } from "@/lib/api";
 import { JurisdictionSelector } from "@/components/workspace/JurisdictionSelector";
 import { Jurisdiction } from "@/types";
 import { getJurisdictionById } from "@/lib/jurisdictions";
+import { useAssociates } from "@/hooks/useAssociates";
+import { useProjectAssociates } from "@/hooks/useProjectAssociates";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
   onDocumentsAdded?: (count: number) => void;
@@ -58,7 +63,9 @@ export function ChatInput({
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
+  const [showAssociatesDropdown, setShowAssociatesDropdown] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedAssociateId, setSelectedAssociateId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
@@ -95,8 +102,35 @@ export function ChatInput({
   const { documents: conversationDocuments, fetchProjectDocuments } =
     useProjectDocumentsStore();
 
-  // Get right sidebar state from UI store
-  const { rightSidebarCollapsed, setRightSidebarCollapsed } = useUIStore();
+  // Stable error handler for associates
+  const handleAssociatesError = useCallback((error: string) => {
+    notify.error(error);
+  }, [notify]);
+
+  // Error handler for project associate assignment - suppress "already assigned" errors
+  const handleProjectAssociateError = useCallback((error: string) => {
+    // Don't show error if associate is already assigned - this is expected
+    if (!error.includes('already assigned')) {
+      notify.error(error);
+    }
+  }, [notify]);
+
+  // Get all associates (not just project associates)
+  const {
+    associates,
+    isLoading: isLoadingAssociates,
+    error: associatesError,
+    fetchAssociates
+  } = useAssociates({
+    onError: handleAssociatesError
+  });
+
+  // Get project associates management functions
+  const {
+    assignAssociate: assignAssociateToProject
+  } = useProjectAssociates({
+    onError: handleProjectAssociateError
+  });
 
   const { data: session } = useSession();
 
@@ -237,6 +271,13 @@ export function ChatInput({
     };
   }, [homepageMode]);
 
+  // Fetch all associates when component mounts
+  useEffect(() => {
+    fetchAssociates().catch(err => {
+      console.error('Failed to fetch associates:', err);
+    });
+  }, []); // Only run once when mounting
+
   // Handle Google account connection
   const handleConnectGoogle = (
     type: "calendar" | "gmail"
@@ -247,46 +288,6 @@ export function ChatInput({
     //   type
     // )}`;
     // window.location.href = url;
-  };
-
-  // Handle Google account disconnection
-  const handleDisconnectGoogle = async () => {
-    if (
-      !confirm(
-        "Are you sure you want to disconnect your Google account? This will disable Calendar and Gmail features."
-      )
-    ) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/auth/google-connection/disconnect", {
-        method: "POST",
-      });
-
-      if (response.ok) {
-        setGoogleConnectionStatus({
-          connected: false,
-          email: null,
-          hasCalendarAccess: false,
-          hasGmailAccess: false,
-        });
-        notify.success("Google account disconnected");
-
-        // Disable Calendar and Gmail settings
-        if (settings.googleCalendar) {
-          await updateSetting(projectId, "googleCalendar", false);
-        }
-        if (settings.gmail) {
-          await updateSetting(projectId, "gmail", false);
-        }
-      } else {
-        notify.error("Failed to disconnect Google account");
-      }
-    } catch (error) {
-      console.error("Error disconnecting Google:", error);
-      notify.error("Failed to disconnect Google account");
-    }
   };
 
   // Helper function to generate meaningful project names
@@ -371,11 +372,31 @@ export function ChatInput({
                 notify.success("AI workspace created successfully!");
               }
 
+              // If an associate was selected, create a conversation with that associate
+              if (selectedAssociateId) {
+                try {
+                  const selectedAssociate = associates.find(a => a.id === selectedAssociateId);
+                  const conversation = await useChatStore.getState().createConversation(
+                    newProject.id,
+                    `Chat with ${selectedAssociate?.name || 'AI Associate'}`,
+                    selectedAssociateId
+                  );
+
+                  if (!conversation) {
+                    console.error("Failed to create conversation with associate");
+                  }
+                } catch (error: any) {
+                  console.error("Error creating conversation with associate:", error);
+                  // Don't block navigation if conversation creation fails
+                }
+              }
+
               // Store the message in sessionStorage to preserve it across navigation
               sessionStorage.setItem("pendingMessage", messageToSend);
 
-              // Clear selected files
+              // Clear selected files and associate
               setSelectedFiles([]);
+              setSelectedAssociateId(null);
 
               // Call callback if provided
               onWorkspaceCreated?.(newProject.id);
@@ -546,6 +567,57 @@ export function ChatInput({
     }
   };
 
+  // Handle associate toggle (add/remove)
+  const handleAssociateToggle = async (associateId: string, isCurrentlySelected: boolean) => {
+    const associate = associates.find(a => a.id === associateId);
+
+    // Homepage mode - just update local state
+    if (homepageMode) {
+      if (isCurrentlySelected) {
+        setSelectedAssociateId(null);
+        notify.success(`${associate?.name} removed`);
+      } else {
+        setSelectedAssociateId(associateId);
+        notify.success(`${associate?.name} selected`);
+      }
+      return;
+    }
+
+    // Normal mode - update conversation and project
+    if (!currentConversation || !projectId) return;
+
+    try {
+      let success = false;
+
+      if (isCurrentlySelected) {
+        // Remove associate from conversation
+        success = await useChatStore.getState().removeAssociateFromConversation(
+          projectId,
+          currentConversation.id
+        );
+        if (success) {
+          notify.success(`${associate?.name} removed`);
+        }
+      } else {
+        // First, assign the associate to the project (if not already assigned)
+        // Note: assignAssociateToProject may fail if already assigned, which is fine
+        await assignAssociateToProject(projectId, associateId);
+
+        // Then assign associate to conversation
+        success = await useChatStore.getState().assignAssociateToConversation(
+          projectId,
+          currentConversation.id,
+          associateId
+        );
+        if (success) {
+          notify.success(`${associate?.name} added`);
+        }
+      }
+    } catch (error: any) {
+      notify.error("Failed to update AI Associate");
+    }
+  };
+
   // Handle documents added
   const handleDocumentsAdded = (documents: any[]) => {
     const count = documents.length;
@@ -583,10 +655,6 @@ export function ChatInput({
   const handlePaperclipClick = () => {
     fileInputRef.current?.click();
   };
-  // Toggle sidebar function
-  const toggleSidebar = () => {
-    setRightSidebarCollapsed(!rightSidebarCollapsed);
-  };
 
   const handleRequestProAccess = async () => {
     setUpgrading(true);
@@ -620,16 +688,12 @@ export function ChatInput({
     <>
       {/* Input Area - Different styling for homepage vs chat mode */}
       <div
-        className={
-          homepageMode
-            ? "relative w-full max-w-4xl mx-auto"
-            : "fixed bottom-2 left-1/2 transform -translate-x-1/2 z-50 w-[80vw]"
-        }
+        className="relative w-full max-w-4xl mx-auto"
       >
-        <div className={homepageMode ? "w-full" : "w-full max-w-3xl mx-auto"}>
+        <div className={homepageMode ? "w-full" : "w-full max-w-4xl mx-auto"}>
           {/* Input Area with embedded icons */}
           <div
-            className={`bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative ${
+            className={`bg-white rounded-t-xl border-t-2 border-[#0a4b5e]  focus-within:border-primary-300 transition-colors relative ${
               homepageMode ? "shadow-sm focus-within:shadow-md" : "shadow-lg"
             }`}
           >
@@ -820,29 +884,7 @@ export function ChatInput({
                           </Button>
                         )}
                       </div>
-                  
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <Label
-                          htmlFor="case-preparation"
-                          className="font-medium text-sm"
-                        >
-                          Case Preparation
-                        </Label>
-                      </div>
-                      <Switch
-                        id="case-preparation"
-                        checked={false}
-                        disabled={true}
-                        onCheckedChange={
-                          homepageMode
-                            ? undefined
-                            : (checked) => {
-                                setShowProAccess(true);
-                              }
-                        }
-                      />
+
                     </div>
                     <div className="h-[1px] bg-gray-300 w-full"></div>
                     <div className="space-y-4">
@@ -935,24 +977,157 @@ export function ChatInput({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Settings Button for Sidebar Toggle */}
-              <button
-                className={`h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border ${
-                  homepageMode
-                    ? "cursor-not-allowed opacity-60"
-                    : "hover:bg-gray-50"
-                }`}
-                onClick={homepageMode ? undefined : toggleSidebar}
-                disabled={homepageMode}
-                title={
-                  homepageMode
-                    ? "Settings (available after creating workspace)"
-                    : "Settings"
-                }
-              >
-                <Settings className="h-4 w-4 text-gray-500 text-xs" />
-                Settings
-              </button>
+              {/* AI Associates Selector Dropdown - Show if no associate selected */}
+              {((homepageMode && !selectedAssociateId) || (!homepageMode && !currentConversation?.aiAssociate)) && (
+                <DropdownMenu
+                  open={showAssociatesDropdown}
+                  onOpenChange={setShowAssociatesDropdown}
+                >
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                      title="Select AI Associate"
+                      disabled={isLoadingAssociates}
+                    >
+                      <Zap className="h-5 w-5 text-gray-500" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[340px] p-3 mb-2"
+                    side="top"
+                  >
+                    <div className="space-y-3">
+                      {/* Header */}
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-sm text-gray-700">Select AI Associates</h4>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAssociatesDropdown(false)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                      <div className="h-[1px] bg-gray-200" />
+
+                      {/* Available associates list */}
+                      {isLoadingAssociates ? (
+                        <div className="text-sm text-center py-6 text-gray-500">
+                          <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
+                          Loading associates...
+                        </div>
+                      ) : associatesError ? (
+                        <div className="text-sm text-center py-6 text-red-500">
+                          <X className="h-8 w-8 mx-auto mb-2" />
+                          <p>Failed to load associates</p>
+                          <p className="text-xs mt-1">{associatesError}</p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => fetchAssociates()}
+                            className="mt-2"
+                          >
+                            Retry
+                          </Button>
+                        </div>
+                      ) : associates.length === 0 ? (
+                        <div className="text-sm text-center py-6 text-gray-500">
+                          <User className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                          <p>No associates available</p>
+                          <p className="text-xs mt-1 max-w-[280px] mx-auto">
+                            Go to Workflows page to create your first AI associate
+                          </p>
+                        </div>
+                      ) : (
+                        <ScrollArea className="max-h-[300px]">
+                          <div className="space-y-1 pr-3">
+                            {associates.map(associate => {
+                              const isSelected = homepageMode
+                                ? selectedAssociateId === associate.id
+                                : currentConversation?.aiAssociateId === associate.id;
+
+                              return (
+                                <div
+                                  key={associate.id}
+                                  className="flex items-start p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors"
+                                  onClick={() => handleAssociateToggle(associate.id, isSelected)}
+                                >
+                                  <div className={cn(
+                                    "h-4 w-4 border rounded flex items-center justify-center mr-3 mt-0.5 shrink-0",
+                                    isSelected
+                                      ? "bg-primary border-primary"
+                                      : "border-gray-300"
+                                  )}>
+                                    {isSelected && (
+                                      <svg className="h-3 w-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path d="M5 13l4 4L19 7"></path>
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-medium truncate">
+                                      {associate.name}
+                                    </div>
+                                    {associate.description && (
+                                      <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">
+                                        {associate.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </ScrollArea>
+                      )}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
+              {/* Active AI Associate Badge */}
+              {((homepageMode && selectedAssociateId) || (!homepageMode && currentConversation?.aiAssociate)) && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-amber-500 rounded-md p-1">
+                      <User className="h-3 w-3 text-white" />
+                    </div>
+                    <span className="text-sm font-medium text-amber-900 max-w-[150px] truncate">
+                      {homepageMode
+                        ? associates.find(a => a.id === selectedAssociateId)?.name
+                        : currentConversation?.aiAssociate?.name
+                      }
+                    </span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      if (homepageMode) {
+                        // Homepage mode - just clear the selected associate
+                        setSelectedAssociateId(null);
+                        const associate = associates.find(a => a.id === selectedAssociateId);
+                        notify.success(`${associate?.name} removed`);
+                      } else if (currentConversation?.id && projectId) {
+                        // Normal mode - remove from conversation
+                        const { removeAssociateFromConversation } = useChatStore.getState();
+                        const success = await removeAssociateFromConversation(projectId, currentConversation.id);
+                        if (success) {
+                          notify.success("AI Associate removed from conversation");
+                        } else {
+                          notify.error("Failed to remove AI Associate");
+                        }
+                      }
+                    }}
+                    className="hover:bg-amber-100 rounded-full p-1 transition-colors"
+                    type="button"
+                    title="Remove AI Associate"
+                  >
+                    <X className="h-3.5 w-3.5 text-amber-700" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Hidden file input */}

@@ -28,8 +28,10 @@ interface ChatState {
   // API interactions
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string) => Promise<Conversation | null>;
-  createConversation: (projectId: string, title?: string) => Promise<Conversation | null>;
+  createConversation: (projectId: string, title?: string, aiAssociateId?: string) => Promise<Conversation | null>;
   sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any) => Promise<void>;
+  removeAssociateFromConversation: (projectId: string, conversationId: string) => Promise<boolean>;
+  assignAssociateToConversation: (projectId: string, conversationId: string, associateId: string) => Promise<boolean>;
 
   // State management
   setLoading: (isLoading: boolean) => void;
@@ -175,31 +177,92 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
   
-  createConversation: async (projectId, title) => {
+  createConversation: async (projectId, title, aiAssociateId) => {
     try {
       set({ isLoading: true, error: null });
       const response = await apiService.post<{ data: Conversation }>(
         `/api/projects/${projectId}/conversations`,
-        { title: title || 'New Conversation' }
+        {
+          title: title || 'New Conversation',
+          ...(aiAssociateId && { aiAssociateId })
+        }
       );
       const newConversation = response.data;
-      
-      set((state) => ({ 
+
+      set((state) => ({
         conversations: [newConversation, ...state.conversations],
         currentConversation: newConversation,
         isLoading: false
       }));
-      
+
       return newConversation;
     } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to create conversation', 
-        isLoading: false 
+      set({
+        error: error.message || 'Failed to create conversation',
+        isLoading: false
       });
       return null;
     }
   },
-  
+
+  removeAssociateFromConversation: async (projectId, conversationId) => {
+    try {
+      set({ error: null });
+      const response = await apiService.patch(
+        `/api/projects/${projectId}/conversations/${conversationId}`,
+        { aiAssociateId: null }
+      );
+
+      // Update the current conversation
+      set((state) => {
+        if (state.currentConversation?.id === conversationId) {
+          return {
+            currentConversation: {
+              ...state.currentConversation,
+              aiAssociateId: null,
+              aiAssociate: undefined
+            }
+          };
+        }
+        return state;
+      });
+
+      return true;
+    } catch (error: any) {
+      set({ error: error.message || 'Failed to remove associate' });
+      return false;
+    }
+  },
+
+  assignAssociateToConversation: async (projectId, conversationId, associateId) => {
+    try {
+      set({ error: null });
+      const response = await apiService.patch(
+        `/api/projects/${projectId}/conversations/${conversationId}`,
+        { aiAssociateId: associateId }
+      );
+
+      // Update the current conversation
+      set((state) => {
+        if (state.currentConversation?.id === conversationId) {
+          return {
+            currentConversation: {
+              ...state.currentConversation,
+              aiAssociateId: response.data.aiAssociateId,
+              aiAssociate: response.data.aiAssociate
+            }
+          };
+        }
+        return state;
+      });
+
+      return true;
+    } catch (error: any) {
+      set({ error: error.message || 'Failed to assign associate' });
+      return false;
+    }
+  },
+
   sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument) => {
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {

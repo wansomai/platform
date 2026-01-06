@@ -8,6 +8,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PracticeArea {
+  MERGERS_AND_ACQUISITIONS
+  TAX_LAW
+  INTELLECTUAL_PROPERTY
+  COMPLIANCE_REGULATORY
+  CORPORATE_GOVERNANCE
+  EMPLOYMENT_LABOR
+  LITIGATION_DISPUTE_RESOLUTION
+  REAL_ESTATE
+  BANKING_FINANCE
+  CONTRACTS_COMMERCIAL
+  SECURITIES
+  ANTITRUST_COMPETITION
+  BANKRUPTCY_RESTRUCTURING
+  ENVIRONMENTAL_LAW
+  HEALTHCARE_LIFE_SCIENCES
+  IMMIGRATION
+  PRIVACY_DATA_PROTECTION
+  TECHNOLOGY_LICENSING
+  INTERNATIONAL_TRADE
+  GENERAL_PRACTICE
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -533,7 +556,11 @@ model SharedWorkspaceAccess {
 model AIAssociate {
   id             String             @id @default(cuid())
   name           String
-  instructions   String
+  instructions   String             @db.Text
+  description    String?            @db.Text
+  practiceAreas  PracticeArea[]
+  knowledgeBase  String[]
+  isActive       Boolean            @default(true)
   organizationId String
   createdById    String
   createdAt      DateTime           @default(now())
@@ -544,6 +571,9 @@ model AIAssociate {
   tools          AssociateTool[]
   conversations  Conversation[]
   projects       ProjectAssociate[]
+
+  @@index([organizationId])
+  @@index([createdById])
 }
 
 model AssociateStep {
