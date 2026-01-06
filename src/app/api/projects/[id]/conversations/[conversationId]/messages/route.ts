@@ -36,6 +36,7 @@ const DEFAULT_SETTINGS: {
   temperature: number;
   legalDrafting: boolean;
   jurisdiction?: JurisdictionType;
+  aiAssociates?: boolean;
 } = {
   citeSources: true,
   suggestActions: true,
@@ -45,7 +46,8 @@ const DEFAULT_SETTINGS: {
   legalDrafting: false,
   googleCalendar: false,
   gmail: false,
-  jurisdiction: undefined 
+  jurisdiction: undefined,
+  aiAssociates: true
 };
 
 // Schema validation
