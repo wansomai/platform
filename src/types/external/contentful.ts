@@ -97,4 +97,4 @@ export interface ContentfulEntry<T = any> {
 export type BlogPost = ContentfulEntry<BlogPostFields>;
 export type LawyerPage = ContentfulEntry<LawyerPageFields>;
 export type DocumentTemplate = ContentfulEntry<DocumentTemplateFields>;
-export type PracticeArea = ContentfulEntry<PracticeAreaFields>;
+export type PracticeAreaType = ContentfulEntry<PracticeAreaFields>;
