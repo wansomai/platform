@@ -237,7 +237,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   assignAssociateToConversation: async (projectId, conversationId, associateId) => {
     try {
       set({ error: null });
-      const response = await apiService.patch(
+      const response = await apiService.patch<{ data: { aiAssociateId: string; aiAssociate?: any } }>(
         `/api/projects/${projectId}/conversations/${conversationId}`,
         { aiAssociateId: associateId }
       );
