@@ -88,12 +88,12 @@ export const useAssociatesStore = create<AssociatesState>()(
         try {
           set({ isLoading: true, error: null });
 
-          const response = await apiService.post<ApiResponse<AIAssociate>>(
+          const response = await apiService.post<ApiResponse<{ associate: AIAssociate }>>(
             '/api/associates',
             input
           );
 
-          const newAssociate = response.data;
+          const newAssociate = response.data.associate;
 
           // Add the new associate to the store
           set((state) => {
@@ -118,12 +118,12 @@ export const useAssociatesStore = create<AssociatesState>()(
         try {
           set({ isLoading: true, error: null });
 
-          const response = await apiService.put<ApiResponse<AIAssociate>>(
+          const response = await apiService.put<ApiResponse<{ associate: AIAssociate }>>(
             `/api/associates/${id}`,
             input
           );
 
-          const updatedAssociate = response.data;
+          const updatedAssociate = response.data.associate;
 
           // Update the associate in the store
           set((state) => {
