@@ -7,24 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import {
-  Search,
   Plus,
-  Calendar,
   CheckCircle2,
   FileText,
   Clipboard,
   Crown,
-  Snowflake,
-  Sparkles,
   User,
-  FileSearch,
-  BarChart,
-  Pencil,
   ChevronRight,
   Loader2,
   Scale,
   MessageSquare,
-  Edit,
   Trash2,
   Zap,
 } from "lucide-react";
@@ -39,19 +31,6 @@ import { useSession } from "next-auth/react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog";
 
-// Workflow type definition
-interface Workflow {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  status: "active" | "completed" | "draft";
-  progress: number;
-  dueDate?: string;
-  assignee?: string;
-  createdAt: string;
-  steps: WorkflowStep[];
-}
 
 interface WorkflowStep {
   id: string;

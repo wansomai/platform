@@ -106,7 +106,7 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
 
             {/* Featured Image with overlay text */}
             {blog.image && (
-              <div className="relative mb-6 rounded-lg overflow-hidden">
+              <div className="relative mb-6 rounded-lg overflow-hidden max-h-[500px]">
                 <img
                   src={blog.image}
                   alt={blog.title}

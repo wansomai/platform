@@ -11,6 +11,7 @@ import {
   Globe2,
   Globe,
   FileText,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -114,7 +115,7 @@ const KnowledgeBase = () => {
               <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
                 {/* Documents Tool */}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={handlePaperclipClick}
                   className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
@@ -135,7 +136,7 @@ const KnowledgeBase = () => {
                 >
                   <DropdownMenuTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
                       title="AI Tools (preview - will be configurable after registration)"
@@ -287,8 +288,10 @@ const KnowledgeBase = () => {
                   onOpenChange={setShowJurisdictionDropdown}
                 >
                   <DropdownMenuTrigger asChild>
-                    <button
-                      className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                    <Button
+                  variant="ghost"
+                  size="sm"
+                       className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
                       title={
                         selectedJurisdictions.length > 0
                           ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
@@ -296,7 +299,7 @@ const KnowledgeBase = () => {
                       }
                     >
                       <Globe className="h-5 w-5 text-gray-500" />
-                    </button>
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="start"
@@ -316,13 +319,13 @@ const KnowledgeBase = () => {
 
                 {/* Settings Button */}
                 <button
-                  className="h-8 w-fit px-3 py-2 rounded-lg shadow-lg flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
+                  className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
                   disabled={true}
                   title="Settings (available after registration)"
                   aria-labelledby="settings"
                 >
-                  <Settings className="h-4 w-4 text-gray-700 text-xs" />
-                  Settings
+                  <Zap className="h-4 w-4 text-gray-700 text-xs" />
+                  Workflows
                 </button>
               </div>
 

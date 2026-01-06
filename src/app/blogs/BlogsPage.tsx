@@ -62,7 +62,7 @@ const BlogsPageClient = () => {
     <div className="bg-gray-50">
         <Navbar/>
       {/* Header Section */}
-      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden text-black">
+      <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden text-black relative">
                   {/* SVG Background */}
               <div className="absolute inset-0 z-0">
                 <svg

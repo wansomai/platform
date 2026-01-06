@@ -68,7 +68,11 @@ const SidebarLink = ({
         active ? "text-primary-600" : "text-gray-500"
       )}
     />
-    {!collapsed && <span>{label}</span>}
+    {!collapsed && (
+      <span className="flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap">
+        {label}
+      </span>
+    )}
     {!collapsed && badge !== undefined && badge > 0 && (
       <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-xs font-medium text-primary-600">
         {badge > 9 ? "9+" : badge}
