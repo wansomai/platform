@@ -150,7 +150,6 @@ export async function findAssociateByFunctionName(
       where: { projectId },
       include: {
         associate: {
-          where: { isActive: true },
           include: {
             steps: { orderBy: { stepOrder: 'asc' } }
           }
