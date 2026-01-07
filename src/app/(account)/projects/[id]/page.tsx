@@ -146,9 +146,8 @@ export default function ProjectPage() {
              showLegalDrafting ? <CanvasChatSplitView /> :
              <ChatInterface />}
           </div>
-          <div className="bg-white border-t">
+      
             <ChatInput />
-          </div>
         </main>
 
       </div>

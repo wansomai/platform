@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CheckCircle,
   Send,
@@ -43,7 +44,8 @@ const LegalResearchPage = () => {
     </div>
   );
 }
- function HeroSection({partnerLogos}: {partnerLogos: {src: string; alt: string}[]}) {
+function HeroSection({partnerLogos}: {partnerLogos: {src: string; alt: string}[]}) {
+  const router = useRouter();
   return (
     <section
       className="pt-24 md:pt-28 pb-5 bg-white  relative overflow-hidden"
@@ -487,7 +489,7 @@ const LegalResearchPage = () => {
                 Get instant answers to complex legal questions with AI that searches through verified cases, statutes, and legal authorities in seconds.
               </p>
 
-              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-5 py-2 rounded-lg font-semibold transition-colors mb-12">
+              <button className="bg-[#d47b0f] hover:bg-[#355e66] text-white px-5 py-2 rounded-lg font-semibold transition-colors mb-12" onClick={() => router.push('/login')}>
                 Try Wansom For Free <ArrowUpRight className="inline-block ml-2 w-6 h-6" />
               </button>
 
