@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState, useMemo } from "react";
+import Image from "next/image";
 import {
   FileText,
   CheckCircle,
@@ -20,6 +21,7 @@ import {
   Zap,
   FilePlus,
   FileSearch,
+  Sparkles,
 } from "lucide-react";
 
 // Import existing components
@@ -57,7 +59,8 @@ const LegalDraftingPage = () => {
   return (
     <div className=" bg-white text-gray-900 overflow-x-hidden">
       <Navbar />
-      <DraftPlus />
+      <DraftPlus  title="Draft or Review legal documents with AI" subtitle=" Use Wansom's legally-trained AI to draft,redline, and review legal
+            documents faster than ever."/>
  {/* Partner Logos */}
  <PatnerLogoSection/>
 <DraftFeatures/>
@@ -213,7 +216,7 @@ const LegalDraftingPage = () => {
 };
 
 
-const DraftPlus = () => {
+export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: string }) => {
   const router = useRouter();
   const [chatInput, setChatInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -258,6 +261,17 @@ const DraftPlus = () => {
     "Review Employment Contract for remote worker",
     "Summarize Intellectual Property Agreement",
     "Create Sales Contract for Commercial Property",
+  ];
+    const partnerLogos = [
+    { src: "/logos/1.png", alt: "CM Advocates" },
+    { src: "/logos/2.png", alt: "Mbulo and Partners Legal Practisioners" },
+    { src: "/logos/3.png", alt: "Cymbelle Attorneys" },
+    { src: "/logos/4.png", alt: "Akoth Odipo Advocates" },
+    { src: "/logos/5.png", alt: "Ooc Advocates" },
+    { src: "/logos/6.png", alt: "Bellmac consulting" },
+    { src: "/logos/7.png", alt: "Riskhouse International" },
+    { src: "/logos/8.png", alt: "Netsheria International" },
+    { src: "/logos/9.png", alt: "Barizi Data Privacy Services" }
   ];
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
@@ -782,13 +796,12 @@ const DraftPlus = () => {
       <div className="absolute top-0 left-0 right-0 z-20">
       </div>
       <div className="section-container pb-12">
-        <div className="text-center mb-12 ">
+        <div className="text-center mb-8 ">
           <h2 className="text-heading-1 font-serif text-primary mb-2">
-            Draft or Review legal documents with AI
+            {title}
           </h2>
           <p className="text-body-large text-black max-w-4xl mx-auto">
-            Use Wansom's legally-trained AI to draft,redline, and review legal
-            documents faster than ever.
+           {subtitle}
           </p>
         </div>
         {/* Chat Input Area */}
@@ -1077,11 +1090,11 @@ Tools
             >
               <DropdownMenuTrigger asChild>
                 <Button
-                  size={'default'}
-                  className="tex-sm lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
+                  size={'sm'}
+                  className="text-xs lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
                 >
-                  <FilePlus className="h-4 w-4 text-white" />
-                  Draft From Scratch
+                  <Sparkles className="h-4 w-4 text-white" />
+                  Draft with AI
                   <ChevronDown className="h-4 w-4 text-white ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -1111,11 +1124,11 @@ Tools
             >
               <DropdownMenuTrigger asChild>
                 <Button
-                  size={'default'}
-                  className="tex-sm lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
+                  size={'sm'}
+                  className="text-xs lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
                 >
                   <FilePlus className="h-4 w-4 text-white" />
-                  Draft From Template
+                  Start from a Template
                   <ChevronDown className="h-4 w-4 text-white ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -1140,17 +1153,75 @@ Tools
 
             {/* Review Document - File Upload Trigger */}
             <Button
-              size={'default'}
-              className="tex-sm lg:text-lg  bg-primary  text-white rounded  flex items-center gap-2"
+              size={'sm'}
+              className="text-xs lg:text-lg  bg-primary  text-white rounded  flex items-center gap-2"
               onClick={handleReviewDocumentClick}
             >
               <FileSearch className="h-4 w-4 text-white" />
-              Review Document
+              Review a Document
             </Button>
 
           </div>
+           
+
         </div>
       </div>
+      <div className="relative overflow-hidden min-h-[80px] my-2">
+                  <div className="flex animate-scroll whitespace-nowrap">
+                    {/* First set of logos */}
+                    <div className="flex items-center space-x-12 md:space-x-16 lg:space-x-20 pr-12 md:pr-16 lg:pr-20">
+                      {partnerLogos.map((logo, index) => (
+                        <div key={index} className="flex-shrink-0 flex justify-center items-center min-w-[120px] md:min-w-[160px]">
+                          <Image
+                            src={logo.src}
+                            alt={logo.alt}
+                            width={160}
+                            height={80}
+                            sizes="(max-width: 768px) 120px, 160px"
+                            className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Duplicate set for seamless loop */}
+                    <div className="flex items-center space-x-12 md:space-x-16 lg:space-x-20 pr-12 md:pr-16 lg:pr-20">
+                      {partnerLogos.map((logo, index) => (
+                        <div key={`duplicate-${index}`} className="flex-shrink-0 flex justify-center items-center min-w-[120px] md:min-w-[160px]">
+                          <Image
+                            src={logo.src}
+                            alt={logo.alt}
+                            width={160}
+                            height={80}
+                            sizes="(max-width: 768px) 120px, 160px"
+                            className="h-12 md:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-105"
+                            loading="lazy"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+            <style jsx>{`
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        
+        .animate-scroll {
+          animation: scroll 35s linear infinite;
+          width: max-content;
+        }
+        
+        .animate-scroll:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
     </section>
   );
 };
