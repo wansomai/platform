@@ -1089,7 +1089,7 @@ Tools
               <DropdownMenuTrigger asChild>
                 <Button
                   size={'sm'}
-                  className="text-xs lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
+                  className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-2"
                 >
                   <Sparkles className="h-4 w-4 text-white" />
                   Draft with AI
@@ -1123,7 +1123,7 @@ Tools
               <DropdownMenuTrigger asChild>
                 <Button
                   size={'sm'}
-                  className="text-xs lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
+                  className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-2"
                 >
                   <FilePlus className="h-4 w-4 text-white" />
                   Start from a Template
@@ -1142,7 +1142,7 @@ Tools
                       onClick={() => handleTemplateSelect(template)}
                       className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-100 rounded-md transition-colors"
                     >
-                      {template}
+                      {template}.PDF
                     </button>
                   ))}
                 </div>
@@ -1152,7 +1152,7 @@ Tools
             {/* Review Document - File Upload Trigger */}
             <Button
               size={'sm'}
-              className="text-xs lg:text-lg  bg-primary  text-white rounded  flex items-center gap-2"
+              className="text-xs lg:text-sm  bg-primary  text-white rounded  flex items-center gap-2"
               onClick={handleReviewDocumentClick}
             >
               <FileSearch className="h-4 w-4 text-white" />
