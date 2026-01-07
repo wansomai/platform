@@ -30,13 +30,26 @@ const LegalResearchPage = () => {
 
       {/* Hero Section */}
      <HeroSection partnerLogos={partnerLogos}/>
+       <section className="section-spacing bg-gray-50" id="knowledge-base">
+      <div className="section-container pb-12">
+        <div className="text-center mb-12 ">
+          <h2 className="text-heading-2 text-gray-900 mb-2">
+            Access verified legal authorities in one intelligent search
+          </h2>
+          <p className="text-body-large text-gray-600 max-w-3xl mx-auto">
+            Wansom supports trusted legal data sources across multiple
+            jursidictions removing hallucinations and errors from AI responses.
+          </p>
+        </div>
+        <ResearchInterfaceCards/>
+        </div>
+        </section>
 
       {/* Legal authorities database section */}
      <LegalResearchAssistant/>
 
        {/* workspace section */}
       <CollaborativeWorkspaces/>
-<KnowledgeBase/>
       {/* More features section */}
    <VaultSection/>
 

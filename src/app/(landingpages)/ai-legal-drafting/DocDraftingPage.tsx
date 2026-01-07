@@ -17,6 +17,9 @@ import {
   Globe,
   BookCopy,
   ChevronDown,
+  Zap,
+  FilePlus,
+  FileSearch,
 } from "lucide-react";
 
 // Import existing components
@@ -218,19 +221,43 @@ const DraftPlus = () => {
   const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedJurisdictions, setSelectedJurisdictions] = useState<Jurisdiction[]>([]);
+  const [showDraftDropdown, setShowDraftDropdown] = useState(false);
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Common drafting prompts
+  const draftingPrompts = [
+    "Draft a mutual NDA for partnership discussions",
+    "Draft an independent contractor agreement",
+    "Draft an Advisor Agreement for the UK",
+    "Create a sales contract for goods",
+    "Draft a SAFE agreement to raise $250k from an angel investor",
+    "Draft a SaaS license for my first enterprise client",
+  ];
+
+  // Common legal templates
+  const legalTemplates = [
+    "Non-Disclosure Agreement (NDA)",
+    "Employment Agreement",
+    "Independent Contractor Agreement",
+    "Service Level Agreement (SLA)",
+    "Partnership Agreement",
+    "Sales Contract",
+    "Lease Agreement",
+    "Consulting Agreement",
+    "Software License Agreement",
+    "Intellectual Property Assignment",
+  ];
+
   // Placeholder rotation
   const placeholders = [
-    "Create an NDA for Software engineer",
+    "Create an NDA for Senior Software engineer",
+    "Help me prepare for a civil litigation case",
     "Draft Lease Agreement for tenant in UK",
-    "Write Employment Contract for Remote Worker",
-    "Generate Service Agreement for Consulting Services",
-    "Draft Partnership Agreement for Tech Startup",
+    "Review Employment Contract for remote worker",
+    "Summarize Intellectual Property Agreement",
     "Create Sales Contract for Commercial Property",
-    "Write Freelance Agreement for Graphic Designer",
-    "Draft Non-Compete Agreement for Executive",
   ];
   const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
 
@@ -300,6 +327,28 @@ const DraftPlus = () => {
   // Handle jurisdiction change
   const handleJurisdictionsChange = (jurisdictions: Jurisdiction[]) => {
     setSelectedJurisdictions(jurisdictions);
+  };
+
+  // Handle drafting prompt selection
+  const handleDraftPromptSelect = (prompt: string) => {
+    setChatInput(prompt);
+    setShowDraftDropdown(false);
+  };
+
+  // Handle template selection
+  const handleTemplateSelect = (templateName: string) => {
+    // Create a mock file object to represent the template
+    const mockFile = new File([], `${templateName}.docx`, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    setSelectedFiles(prev => [...prev, mockFile]);
+
+    // Populate input field with the template prompt
+    setChatInput("Draft a legal document starting with this template");
+    setShowTemplateDropdown(false);
+  };
+
+  // Handle review document button click (triggers file upload)
+  const handleReviewDocumentClick = () => {
+    fileInputRef.current?.click();
   };
   return (
     <section
@@ -762,7 +811,7 @@ const DraftPlus = () => {
               <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
                 {/* Documents Tool */}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={handlePaperclipClick}
                   className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
@@ -783,14 +832,14 @@ const DraftPlus = () => {
                 >
                   <DropdownMenuTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
                       title="AI Tools (preview - will be configurable after registration)"
                       aria-labelledby="AI tools"
                     >
                       <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
-                      Settings
+Tools
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -835,7 +884,7 @@ const DraftPlus = () => {
                             htmlFor="legal-drafting"
                             className="font-medium text-sm"
                           >
-                            Legal drafting
+                            Draft & Review
                           </Label>
                         </div>
                         <Switch
@@ -893,22 +942,6 @@ const DraftPlus = () => {
                             disabled={true}
                           />
                         </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label
-                              htmlFor="suggest-actions"
-                              className="font-medium text-sm"
-                            >
-                              Switch Jurisdiction
-                            </Label>
-                          </div>
-                          <Switch
-                            id="suggest-actions"
-                            checked={false}
-                            disabled={true}
-                          />
-                        </div>
                       </div>
                     </div>
                   </DropdownMenuContent>
@@ -920,8 +953,10 @@ const DraftPlus = () => {
                   onOpenChange={setShowJurisdictionDropdown}
                 >
                   <DropdownMenuTrigger asChild>
-                    <button
-                      className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                    <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
                       title={
                         selectedJurisdictions.length > 0
                           ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
@@ -929,7 +964,7 @@ const DraftPlus = () => {
                       }
                     >
                       <Globe className="h-5 w-5 text-gray-500" />
-                    </button>
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="start"
@@ -951,10 +986,10 @@ const DraftPlus = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" className="flex gap-1 items-center"> <BookCopy className="h-4 w-4 text-gray-700 text-xs" />Templates</Button>
+                      <Button variant="ghost" className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"> <Zap className="h-6 w-6 text-gray-700" /></Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Register to Use Templates</p>
+                      <p>Register to start new workflow</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -1035,89 +1070,84 @@ const DraftPlus = () => {
 
           {/* Helper text */}
           <div className="flex items-center justify-center flex-wrap gap-5 mt-4">
-            <a
-              href="https://eur-lex.europa.eu/homepage.html"
-              target="_blank"
-              className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+            {/* Draft From Scratch Dropdown */}
+            <DropdownMenu
+              open={showDraftDropdown}
+              onOpenChange={setShowDraftDropdown}
             >
-              <img
-                src="/logos/eu.jpg"
-                alt="euro-lex"
-                className="h-8 w-8 rounded-full"
-              />
-              Euro Lex
-              <Plus className="h-4 w-4 text-gray-500" />
-            </a>
-            <a
-              href="https://www.kenyalaw.org/"
-              target="_blank"
-              className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size={'default'}
+                  className="tex-sm lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
+                >
+                  <FilePlus className="h-4 w-4 text-white" />
+                  Draft From Scratch
+                  <ChevronDown className="h-4 w-4 text-white ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                className="w-[400px] p-2"
+                side="top"
+              >
+                <div className="space-y-1">
+                  {draftingPrompts.map((prompt, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleDraftPromptSelect(prompt)}
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Draft From Template Dropdown */}
+            <DropdownMenu
+              open={showTemplateDropdown}
+              onOpenChange={setShowTemplateDropdown}
             >
-              <img
-                src="/logos/kenya-law.jpg"
-                alt="Kenya Law"
-                className="h-8 w-8 rounded-full"
-              />
-              Kenya Law
-              <Plus className="h-4 w-4 text-gray-500" />
-            </a>
-            <a
-              href="https://africanlii.org/en/indexes/case-indexes/case-indexes-commercial"
-              target="_blank"
-              className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size={'default'}
+                  className="tex-sm lg:text-lg  bg-primary  text-white rounded   flex items-center gap-2"
+                >
+                  <FilePlus className="h-4 w-4 text-white" />
+                  Draft From Template
+                  <ChevronDown className="h-4 w-4 text-white ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                className="w-[340px] p-2"
+                side="top"
+              >
+                <div className="space-y-1">
+                  {legalTemplates.map((template, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleTemplateSelect(template)}
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      {template}
+                    </button>
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Review Document - File Upload Trigger */}
+            <Button
+              size={'default'}
+              className="tex-sm lg:text-lg  bg-primary  text-white rounded  flex items-center gap-2"
+              onClick={handleReviewDocumentClick}
             >
-              <img
-                src="/logos/African+union.webp"
-                alt="Afcomm"
-                className="h-8 w-8 rounded-full"
-              />
-              Afcomm
-              <Plus className="h-4 w-4 text-gray-500" />
-            </a>
-            <div className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-50 text-gray-50 lg:text-gray-50 rounded-lg px-4 py-2 flex items-center gap-2">
-              <img
-                src="/logos/CommonLII.jpg"
-                alt=" CommonLII"
-                className="h-8 w-8 rounded-full"
-              />
-              CommonLII
-              <Plus className="h-4 w-4 text-gray-50" />
-            </div>
-            <div className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
-              <img
-                src="/logos/SAFLII_small.png"
-                alt=" SAFLII"
-                className="h-8 w-8 rounded-full"
-              />
-              SAFLII
-              <Plus className="h-4 w-4 text-gray-500" />
-            </div>
-            <a
-              href="https://www.worldlii.org/"
-              className="tex-sm lg:text-lg border border-gray-50 lg:border-gray-500 text-gray-50 lg:text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
-            >
-              <img
-                src="/logos/WorldLII.gif"
-                alt=" WorldLII"
-                className="h-8 w-8 rounded-full"
-              />
-              WorldLII
-              <Plus className="h-4 w-4 text-gray-500" />
-            </a>
-            <div className="tex-xs lg:text-lg border border-gray-50 text-gray-50 rounded-lg px-4 py-2 flex items-center gap-2">
-              <img
-                src="/logos/ZambiaLII.webp"
-                alt="ZambiaLII"
-                className="h-6 md:h-8 w-6 md:w-8 rounded-full"
-              />
-              ZambiaLII
-              <Plus className="h-4 w-4 text-gray-50" />
-            </div>
-            <div className="tex-xs lg:text-lg border border-gray-50 text-gray-50 rounded-lg px-4 py-2 flex items-center gap-2">
-              <Globe2 className="h-6 md:h-8 w-6 md:w-8 rounded-full" />
-              Web Search
-              <Plus className="h-4 w-4 text-gray-50" />
-            </div>
+              <FileSearch className="h-4 w-4 text-white" />
+              Review Document
+            </Button>
+
           </div>
         </div>
       </div>
