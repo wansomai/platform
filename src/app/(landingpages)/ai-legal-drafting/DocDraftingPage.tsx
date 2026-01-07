@@ -61,8 +61,6 @@ const LegalDraftingPage = () => {
       <Navbar />
       <DraftPlus  title="Draft or Review legal documents with AI" subtitle=" Use Wansom's legally-trained AI to draft,redline, and review legal
             documents faster than ever."/>
- {/* Partner Logos */}
- <PatnerLogoSection/>
 <DraftFeatures/>
 
 
@@ -119,7 +117,7 @@ const LegalDraftingPage = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, jurisdiction: e.target.value })
                     }
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
+                    className="w-full p-3 border border-gray-800 rounded-lg mb-6 focus:ring-2 focus:ring-[#355e66] focus:border-transparent"
                   />
 
                   <h4 className="font-medium mb-4 text-gray-700">
@@ -1241,7 +1239,7 @@ function DraftFeatures() {
   };
 
   return (
-    <section className="section-spacing bg-primary" id="legal-research">
+    <section className="section-spacing bg-white" id="legal-research">
       <div className="section-container ">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="bg-primary  rounded-lg pb-4 px-4 relative   md:min-w-[500px] w-full lg:basis-1/2">
@@ -1334,15 +1332,15 @@ function DraftFeatures() {
             </div>
           </div>
           <div className="space-y-4 mt-24 lg:mt-0">
-            <h3 className="font-semibold text-lg text-gray-100">
+            <h3 className="font-semibold text-lg text-black">
                  Generate Drafts Instantly
                 </h3>
-            <p className=" text-gray-100 mb-8">
+            <p className=" text-black mb-8">
      Start from Scratch or select from 1,000+ advocate-vetted templates and let AI refine documents in a unified editor.
             </p>
 
             {/* Enhanced AI Document Review section */}
-            <div className="border-b border-gray-400 pb-4">
+            <div className="border-b border-gray-800 pb-4">
               <button
                 onClick={() => toggleSection('review')}
                 className="w-full flex items-center justify-between text-left group"
@@ -1350,11 +1348,11 @@ function DraftFeatures() {
                 aria-controls="review-content"
                 aria-label={`${expandedSections.review ? 'Collapse' : 'Expand'} Enhanced AI Document Review section`}
               >
-                <h3 className="font-semibold text-lg text-gray-100">
+                <h3 className="font-semibold text-lg text-black">
                 Smarter Redlining
                 </h3>
                 <ChevronDown
-                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
+                  className={`w-6 h-6 text-black transition-transform duration-200 ${
                     expandedSections.review ? 'rotate-180' : ''
                   }`}
                   aria-hidden="true"
@@ -1366,13 +1364,13 @@ function DraftFeatures() {
                   expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
                 }`}
               >
-                <p className="text-gray-100">
+                <p className="text-black">
                  Wansom learns from your writing style, prior documents and guidelines to instantly mark up and redline entire agreements according to your set instructions.
                 </p>
               </div>
             </div>
  {/* Document Folders section */}
-            <div className="pb-4">
+            <div className="pb-4 ">
               <button
                 onClick={() => toggleSection('drafts')}
                 className="w-full flex items-center justify-between text-left group"
@@ -1380,11 +1378,11 @@ function DraftFeatures() {
                 aria-controls="draft-content"
                 aria-label={`${expandedSections.drafts ? 'Collapse' : 'Expand'} Document Review section`}
               >
-                <h3 className="font-semibold text-lg text-gray-100">
+                <h3 className="font-semibold text-lg text-black">
                 Review with Precision
                 </h3>
                 <ChevronDown
-                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
+                  className={`w-6 h-6 text-black transition-transform duration-200 ${
                     expandedSections.drafts ? 'rotate-180' : ''
                   }`}
                   aria-hidden="true"
@@ -1396,7 +1394,7 @@ function DraftFeatures() {
                   expandedSections.drafts ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
                 }`}
               >
-                <p className="text-gray-100">
+                <p className="text-black">
                   Leverage AI to identify risks, suggest improvements, and ensure compliance with legal standards in your documents.
                 </p>
               </div>
@@ -1410,11 +1408,11 @@ function DraftFeatures() {
                 aria-controls="folders-content"
                 aria-label={`${expandedSections.folders ? 'Collapse' : 'Expand'} Document Folders section`}
               >
-                <h3 className="font-semibold text-lg text-gray-100">
+                <h3 className="font-semibold text-lg text-black">
                 Secure Document Storage
                 </h3>
                 <ChevronDown
-                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
+                  className={`w-6 h-6 text-black transition-transform duration-200 ${
                     expandedSections.folders ? 'rotate-180' : ''
                   }`}
                   aria-hidden="true"
@@ -1426,7 +1424,7 @@ function DraftFeatures() {
                   expandedSections.folders ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
                 }`}
               >
-                <p className="text-gray-100">
+                <p className="text-black">
                   Organize and store documents into customizable folders and
                   subfolders for easy retrieval and management.
                 </p>
