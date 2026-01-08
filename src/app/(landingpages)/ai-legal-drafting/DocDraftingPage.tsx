@@ -1114,6 +1114,15 @@ Tools
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
+                {/* Review Document - File Upload Trigger */}
+            <Button
+              size={'sm'}
+              className="text-xs lg:text-sm  bg-primary  text-white rounded  flex items-center gap-2"
+              onClick={handleReviewDocumentClick}
+            >
+              <FileSearch className="h-4 w-4 text-white" />
+              Review a Document
+            </Button>
 
             {/* Draft From Template Dropdown */}
             <DropdownMenu
@@ -1149,15 +1158,7 @@ Tools
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Review Document - File Upload Trigger */}
-            <Button
-              size={'sm'}
-              className="text-xs lg:text-sm  bg-primary  text-white rounded  flex items-center gap-2"
-              onClick={handleReviewDocumentClick}
-            >
-              <FileSearch className="h-4 w-4 text-white" />
-              Review a Document
-            </Button>
+        
 
           </div>
            
