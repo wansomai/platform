@@ -901,7 +901,7 @@ function DocumentReview() {
             <div className="text-center space-y-8">
               <div className="space-y-6">
                 <h1 className=" text-heading-1 mb-4 text-primary text-shadow-2xs font-bold">
-                  Collaborative AI workspace <br/> for legal teams
+                  Collaborative AI workspace <br className="hidden lg:block"/> for legal teams
                 </h1>
 
                 <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8  text-primary">
