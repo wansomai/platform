@@ -62,7 +62,7 @@ export const POST = withErrorHandler(
       }
 
       // Cancel all pending invitations
-      await tx.organizationInvitation.deleteMany({
+      await tx.invitation.deleteMany({
         where: { organizationId },
       });
     });
