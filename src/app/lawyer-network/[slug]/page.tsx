@@ -66,12 +66,14 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 export default async function Page({ params }: Props) {
     const { slug } = await params;
     const allEntries = await getAllPractiseAreas();
+
     
     // Fix: Remove async from find callback and properly compare slugs
     const entry = allEntries.find((post) => {
-      const postSlug = createSlug(post.fields.title);
+      const postSlug = post.fields.slug;
       return postSlug === slug;
     });
+     
 
    if (!entry) {
     return (

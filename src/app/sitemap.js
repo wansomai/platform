@@ -151,9 +151,8 @@ export default async function sitemap() {
     };
   });
     const practiseAreaRoutes = practiceAreas.map((area) => {
-    const slug =  slugify(area.fields.title)??area.fields.slug;
     return {
-      url: `${baseUrl}/lawyer-network/${slug}`,
+      url: `${baseUrl}/lawyer-network/${area.fields.slug}`,
       lastModified: new Date(area.sys.updatedAt || area.sys.createdAt),
     };
   });

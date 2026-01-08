@@ -290,6 +290,7 @@ export async function getAllSlugs() {
     content_type: "lawyerLandingPage",
     select: ["fields.slug"],
   });
+  console.log('Fetched slugs from Contentful:', res.items);
   return res.items.map((i) => i.fields.slug);
 }
 

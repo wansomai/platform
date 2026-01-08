@@ -27,7 +27,7 @@ const PractiseAreasComponent = ({ areas }: PractiseAreasComponentProps) => {
       {service.fields.title}
     </h3>
     <p className="font-jost text-white/90 mb-6">{service.fields.metaDescription}</p>
-    <a className="flex items-center text-white font-jost group" href={`/lawyer-network/${slugify(service.fields.title)}`} onClick={() => setHoveredIndex(index)}>
+    <a className="flex items-center text-white font-jost group" href={`/lawyer-network/${service.fields.slug}`} onClick={() => setHoveredIndex(index)}>
      learn more
     </a>
     <hr className="h-0.5 w-20 bg-white" />
