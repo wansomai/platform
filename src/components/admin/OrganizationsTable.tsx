@@ -32,6 +32,7 @@ import { MoreVertical, CheckCircle, XCircle, TrendingUp, TrendingDown, Eye } fro
 import { format } from "date-fns";
 import type { AdminOrganization } from "@/types/admin";
 import { toast } from "sonner";
+import { apiService } from "@/lib/api";
 
 interface OrganizationsTableProps {
   organizations: AdminOrganization[];
@@ -59,7 +60,7 @@ export function OrganizationsTable({
 
     try {
       const endpoint = `/api/admin/organizations/${org.id}/${action}`;
-      const response = await fetch(endpoint, {
+      const response = await apiService.post(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,13 +68,9 @@ export function OrganizationsTable({
         },
       });
 
-      const data = await response.json();
+      const data = await response;
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Action failed');
-      }
-
-      toast.success(data.message);
+      toast.success('your request was successful');
       onRefresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to perform action');

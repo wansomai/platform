@@ -6,6 +6,7 @@ import { OrganizationFilters } from '@/components/admin/OrganizationFilters';
 import { OrganizationsTable } from '@/components/admin/OrganizationsTable';
 import type { OrganizationsResponse, FilterType } from '@/types/admin';
 import { toast } from 'sonner';
+import { apiService } from '@/lib/api';
 
 export default function AdminPage() {
   const [data, setData] = useState<OrganizationsResponse | null>(null);
@@ -24,17 +25,13 @@ export default function AdminPage() {
         limit: '20',
       });
 
-      const response = await fetch(`/api/admin/organizations?${params}`, {
+      const response = await apiService.get<OrganizationsResponse>(`/api/admin/organizations?${params}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch organizations');
-      }
-
-      const result: OrganizationsResponse = await response.json();
+      const result: OrganizationsResponse = await response;
       setData(result);
     } catch (error) {
       toast.error(
