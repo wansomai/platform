@@ -9,6 +9,7 @@ import Navbar from '@/components/layout/Navbar';
 import { Sparkles, Search, X } from 'lucide-react';
 import LegalDocCard from '@/components/home/legal-documents';
 import Footer from '@/components/layout/Footer';
+import { DraftPlus } from '../(landingpages)/ai-legal-drafting/DocDraftingPage';
 
 const POSTS_PER_PAGE = 9; // 3x3 grid
 
@@ -63,32 +64,8 @@ const LegalDocumentsPageClient = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar/>
-      
-      {/* Header Section */}
-      <section className="py-16 pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6">
-              Legal Document Templates: Downloadable Agreements, Contracts, Leases, Wills & More
-            </h1>
-            <div className="text-sm mb-6">
-              <Link href="/" className="hover:text-yellow-600">Home</Link> / <span>legal-documents</span>
-            </div>
-            <p className="text-lg">
-              Explore our collection of legal documents and templates to help you navigate the complexities of legal matters. 
-              Whether you're looking for contracts, agreements, or other essential documents, we have you covered.
-            </p>
-
-            <Link
-              href="/login"
-              className="font-medium text-white bg-[#005c4d] hover:bg-yellow-600 rounded-md py-3 px-4 text-center flex items-center gap-2 mt-6 w-fit"
-            >
-              <Sparkles className="ml-2 w-4 h-4" />
-              Draft With AI
-            </Link>
-          </div>
-        </div>
-      </section>
+      <DraftPlus title='Legal Document Templates: Agreements, Contracts, Leases, Wills & More' subtitle="Never start legal drafting from scratch again. Browse our extensive library of professionally crafted legal document templates and customize to suit your specific needs." />
+  
       
       {/* Search Section */}
       <section className="py-8 bg-white border-b">
