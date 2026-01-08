@@ -204,7 +204,6 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
         </div>
         <div class="footer">
           <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -575,7 +574,6 @@ export function sendProjectInvitationEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -934,7 +932,6 @@ export function sendUpgradeApprovalEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
@@ -990,12 +987,6 @@ export function sendPasswordResetEmail({
           margin: 0 auto;
           padding: 20px;
         }
-        .header {
-          background-color: #0a4b5e;
-          padding: 20px;
-          text-align: center;
-          color: white;
-        }
         .content {
           padding: 20px;
         }
@@ -1015,7 +1006,7 @@ export function sendPasswordResetEmail({
         .button {
           display: inline-block;
           background-color: #0a4b5e;
-          color: white;
+          color: white !important;
           padding: 12px 30px;
           text-decoration: none;
           border-radius: 4px;
@@ -1026,9 +1017,6 @@ export function sendPasswordResetEmail({
     </head>
     <body>
       <div class="container">
-        <div class="header">
-          <h2>Password Reset Request</h2>
-        </div>
         <div class="content">
           <p>Hello ${name},</p>
 
@@ -1056,7 +1044,6 @@ export function sendPasswordResetEmail({
         </div>
         <div class="footer">
           <p>© 2025 Wansom Ltd. All rights reserved.</p>
-          <p>Nairobi, Kenya</p>
           <div class="social-links">
             <a href="https://x.com/wansom_ai">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
