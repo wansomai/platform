@@ -18,6 +18,7 @@ import {
   Loader2,
   LucideScanEye,
   Scale,
+  Sparkles,
 } from "lucide-react";
 import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
@@ -25,6 +26,11 @@ import { useDocumentsStore } from "@/store/documents.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { useProfile } from "@/store/profile.store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 // Quick Action Card Component
 interface QuickActionProps {
   icon: React.ElementType;
@@ -103,6 +109,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
+  const [showDraftDropdown, setShowDraftDropdown] = useState(false);
   const {
     fetchProjects,
     projects,
@@ -115,6 +122,16 @@ export default function DashboardPage() {
   } = useDocumentsStore();
   const { fetchProfile } = useProfile();
   const { notify } = useNotifications();
+
+  // Common drafting prompts - same as DraftPlus component
+  const draftingPrompts = [
+    "Draft a mutual NDA for partnership discussions",
+    "Draft an independent contractor agreement",
+    "Draft an Advisor Agreement for the UK",
+    "Create a sales contract for goods",
+    "Draft a SAFE agreement to raise $250k from an angel investor",
+    "Draft a SaaS license for my first enterprise client",
+  ];
 
   // Load dashboard data on mount only
   useEffect(() => {
@@ -181,15 +198,48 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className=" space-y-6">
           <div className="flex flex-wrap items-center justify-center gap-4 md:gap-2">
-            <QuickActionCard
-              icon={MessageSquare}
-              title="Draft A Contract"
-              description="Create a dedicated workspace for each client matter or case."
-              onClick={handleShowProjectModal}
-              color="text-green-600"
-              loading={isCreatingQuickChat}
-              disabled={isCreatingQuickChat}
-            />
+            {/* Draft A Contract Dropdown */}
+            <DropdownMenu
+              open={showDraftDropdown}
+              onOpenChange={setShowDraftDropdown}
+            >
+              <DropdownMenuTrigger asChild>
+                <div>
+                  <QuickActionCard
+                    icon={Sparkles}
+                    title="Draft A Contract"
+                    description="Choose from common contract templates"
+                    onClick={() => setShowDraftDropdown(true)}
+                    color="text-blue-600"
+                    disabled={isCreatingQuickChat}
+                  />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                className="w-[400px] p-2"
+                side="bottom"
+              >
+                <div className="space-y-1">
+                  {draftingPrompts.map((prompt, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setShowDraftDropdown(false);
+                        // Trigger the homepage chat input with this prompt
+                        const event = new CustomEvent('homepage-prompt-select', {
+                          detail: { prompt }
+                        });
+                        document.dispatchEvent(event);
+                      }}
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <QuickActionCard
               icon={LucideScanEye}
               title="Review Documents"
@@ -207,12 +257,13 @@ export default function DashboardPage() {
               color="text-amber-600"
               disabled={isCreatingQuickChat}
             />
-            <QuickActionCard
-              icon={FileUp}
-              title="Upload Files"
-              description="Add contracts, pleadings, or evidence to your vault"
-              href="/vault"
-              color="text-blue-600"
+               <QuickActionCard
+              icon={MessageSquare}
+              title="Start A Project"
+              description="Create a dedicated workspace for each client matter or case."
+              onClick={handleShowProjectModal}
+              color="text-green-600"
+              loading={isCreatingQuickChat}
               disabled={isCreatingQuickChat}
             />
             <QuickActionCard

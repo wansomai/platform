@@ -190,12 +190,24 @@ export function ChatInput({
       }
     };
 
+    const handleHomepagePromptSelect = (event: any) => {
+      if (event.detail && event.detail.prompt && homepageMode) {
+        setInput(event.detail.prompt);
+        // Focus the textarea
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+      }
+    };
+
     document.addEventListener("action-prompt-send", handlePromptSendEvent);
+    document.addEventListener("homepage-prompt-select", handleHomepagePromptSelect);
 
     return () => {
       document.removeEventListener("action-prompt-send", handlePromptSendEvent);
+      document.removeEventListener("homepage-prompt-select", handleHomepagePromptSelect);
     };
-  }, [currentConversation]);
+  }, [currentConversation, homepageMode]);
 
   // Check Google connection status
   useEffect(() => {

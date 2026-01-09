@@ -1092,7 +1092,7 @@ Tools
                   className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-2"
                 >
                   <Sparkles className="h-4 w-4 text-white" />
-                  Draft with AI
+                  Draft A Contract
                   <ChevronDown className="h-4 w-4 text-white ml-1" />
                 </Button>
               </DropdownMenuTrigger>
