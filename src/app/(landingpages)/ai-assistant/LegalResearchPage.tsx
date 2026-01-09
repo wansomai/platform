@@ -29,7 +29,7 @@ const LegalResearchPage = () => {
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
       {/* Hero Section */}
-      <DraftPlus title="AI Built for Lawyers" subtitle="Automate routine legal process with AI so you can focus on higher-value work."/>
+      <DraftPlus title="AI Built for Legal Work" subtitle="Automate routine legal processes with AI so you can focus on higher-value work."/>
       
        <section className="section-spacing bg-gray-50" id="knowledge-base">
       <div className="section-container pb-12">

@@ -51,7 +51,9 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
       id: true,
       name: true,
       accountType: true,
-      ownerId: true
+      ownerId: true,
+      upgradeRequestToken: true,
+      upgradeRequestedAt: true
     }
   });
 
@@ -74,6 +76,19 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
         }
       },
       { status: 400 }
+    );
+  }
+
+  // Check if there's already a pending upgrade request
+  if (organization.upgradeRequestToken && organization.upgradeRequestedAt) {
+    return NextResponse.json(
+      {
+        error: 'An upgrade request is already pending for this organization',
+        status: 'pending',
+        requestedAt: organization.upgradeRequestedAt,
+        message: 'Your upgrade request is being reviewed by our team. We will contact you soon.'
+      },
+      { status: 409 } // 409 Conflict
     );
   }
 
@@ -161,6 +176,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
       name: true,
       accountType: true,
       ownerId: true,
+      upgradeRequestToken: true,
+      upgradeRequestedAt: true,
       _count: {
         select: {
           members: true,
@@ -177,7 +194,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     );
   }
 
-  const canUpgrade = isOwner && organization.accountType === AccountType.PERSONAL;
+  const hasPendingRequest = !!(organization.upgradeRequestToken && organization.upgradeRequestedAt);
+  const canUpgrade = isOwner && organization.accountType === AccountType.PERSONAL && !hasPendingRequest;
 
   return NextResponse.json({
     organization: {
@@ -189,6 +207,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     },
     canUpgrade,
     isOwner,
+    hasPendingRequest,
+    upgradeRequestedAt: organization.upgradeRequestedAt,
     upgradeInfo: {
       currentPlan: organization.accountType,
       targetPlan: AccountType.ENTERPRISE,
