@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PracticeArea, PRACTICE_AREA_LABELS, CreateAssociateInput } from '@/types/associates';
-import { Plus, FileText, X, CircleChevronLeft } from 'lucide-react';
+import { Plus, FileText, X, CircleChevronLeft, Loader2 } from 'lucide-react';
 import { useAssociates } from '@/hooks/useAssociates';
 import { Card, CardContent } from '@/components/ui/card';
 import { useDocumentsStore } from '@/store/documents.store';
@@ -24,6 +24,8 @@ export default function CreateAssociatePage() {
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [error, setError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { createAssociate, isProcessing } = useAssociates({
@@ -43,12 +45,23 @@ export default function CreateAssociatePage() {
       return;
     }
 
+    // Prevent multiple submissions
+    if (isUploading || isProcessing) {
+      return;
+    }
+
     try {
       // Step 1: Upload files if any are selected using the store method
       const uploadedDocumentIds: string[] = [];
 
       if (selectedFiles.length > 0) {
-        for (const file of selectedFiles) {
+        setIsUploading(true);
+        setUploadProgress({ current: 0, total: selectedFiles.length });
+
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const file = selectedFiles[i];
+          setUploadProgress({ current: i + 1, total: selectedFiles.length });
+
           const fileFormData = new FormData();
           fileFormData.append('file', file);
 
@@ -61,6 +74,9 @@ export default function CreateAssociatePage() {
 
           uploadedDocumentIds.push(uploadedDocument.id);
         }
+
+        setIsUploading(false);
+        setUploadProgress(null);
       }
 
       // Step 2: Create associate with uploaded document IDs
@@ -72,6 +88,8 @@ export default function CreateAssociatePage() {
       await createAssociate(associateData);
     } catch (err: any) {
       setError(err.message || 'Failed to upload files or create associate');
+      setIsUploading(false);
+      setUploadProgress(null);
     }
   };
 
@@ -111,7 +129,14 @@ export default function CreateAssociatePage() {
       <div className="container mx-auto px-6 py- max-w-6xl p-6 space-y-6">
         
         <div className="flex items-start gap-6">
-          <CircleChevronLeft className="h-10 w-10 text-secondary hover:text-[#2a4d54] mt-5"  onClick={() => router.push('/workflows')} />
+          <CircleChevronLeft
+            className={`h-10 w-10 mt-5 ${
+              isUploading || isProcessing
+                ? 'text-gray-400 cursor-not-allowed'
+                : 'text-secondary hover:text-[#2a4d54] cursor-pointer'
+            }`}
+            onClick={isUploading || isProcessing ? undefined : () => router.push('/workflows')}
+          />
           {/* Form Section - 2/3 width */}
           <div className="grow">
             <Card>
@@ -135,6 +160,7 @@ export default function CreateAssociatePage() {
                       onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                       required
                       className="mt-2"
+                      disabled={isUploading || isProcessing}
                     />
                   </div>
 
@@ -149,6 +175,7 @@ export default function CreateAssociatePage() {
                       value={formData.description}
                       onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
                       className="mt-2"
+                      disabled={isUploading || isProcessing}
                     />
                   </div>
 
@@ -162,6 +189,7 @@ export default function CreateAssociatePage() {
                             id={area}
                             checked={formData.practiceAreas.includes(area as PracticeArea)}
                             onCheckedChange={() => togglePracticeArea(area as PracticeArea)}
+                            disabled={isUploading || isProcessing}
                           />
                           <label htmlFor={area} className="text-sm cursor-pointer">
                             {label}
@@ -189,6 +217,7 @@ export default function CreateAssociatePage() {
                       rows={8}
                       required
                       className="mt-2 h-32"
+                      disabled={isUploading || isProcessing}
                     />
                  
                   </div>
@@ -214,19 +243,30 @@ export default function CreateAssociatePage() {
 
                     {/* Add files button */}
                     <div
-                      className="flex items-center justify-between p-4 border-2 border-dashed rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
-                      onClick={handleAddFilesClick}
+                      className={`flex items-center justify-between p-4 border-2 border-dashed rounded-lg transition-colors ${
+                        isUploading || isProcessing
+                          ? 'opacity-50 cursor-not-allowed'
+                          : 'cursor-pointer hover:bg-accent/50'
+                      }`}
+                      onClick={isUploading || isProcessing ? undefined : handleAddFilesClick}
                     >
                       <span className="text-muted-foreground">
-                        Add files for your associate to reference
+                        {isUploading && uploadProgress
+                          ? `Uploading file ${uploadProgress.current} of ${uploadProgress.total}...`
+                          : 'Add files for your associate to reference'}
                       </span>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         className="h-8 w-8 p-0"
+                        disabled={isUploading || isProcessing}
                       >
-                        <Plus className="h-5 w-5" />
+                        {isUploading ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Plus className="h-5 w-5" />
+                        )}
                       </Button>
                     </div>
 
@@ -255,10 +295,13 @@ export default function CreateAssociatePage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeFile(index);
+                                  if (!isUploading && !isProcessing) {
+                                    removeFile(index);
+                                  }
                                 }}
-                                className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                                className="hover:bg-blue-100 rounded-full p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 type="button"
+                                disabled={isUploading || isProcessing}
                               >
                                 <X className="h-3.5 w-3.5 text-gray-600" />
                               </button>
@@ -275,11 +318,24 @@ export default function CreateAssociatePage() {
                       type="button"
                       variant="outline"
                       onClick={() => router.push('/workflows')}
+                      disabled={isUploading || isProcessing}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={isProcessing} className="min-w-[120px]">
-                      {isProcessing ? 'Creating...' : 'Create Associate'}
+                    <Button type="submit" disabled={isUploading || isProcessing} className="min-w-[180px]">
+                      {isUploading && uploadProgress ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Uploading {uploadProgress.current}/{uploadProgress.total}...
+                        </>
+                      ) : isProcessing ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        'Create Associate'
+                      )}
                     </Button>
                   </div>
                 </form>

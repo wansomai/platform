@@ -4,7 +4,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 import {
   Plus,
@@ -30,6 +29,7 @@ import { useProfile } from "@/store/profile.store";
 import { useSession } from "next-auth/react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog";
+import LogoAnimation from "@/components/commons/LogoAnimation";
 
 
 interface WorkflowStep {
@@ -167,6 +167,7 @@ export default function WorkflowsPage() {
     id: string;
     name: string;
   } | null>(null);
+  const [creatingTemplateId, setCreatingTemplateId] = useState<string | null>(null);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -182,6 +183,7 @@ export default function WorkflowsPage() {
     fetchAssociates,
     deleteAssociate,
     createAssociate,
+    isProcessing,
   } = useAssociates();
 
   useEffect(() => {
@@ -268,9 +270,11 @@ export default function WorkflowsPage() {
   const handlePremadeAssociate = async (
     template: (typeof premadeAssociates)[0]
   ) => {
+    // Prevent multiple clicks
+    if (creatingTemplateId) return;
+
     try {
-      // Show loading notification
-      notify.info(`Adding ${template.name} to your associates...`);
+      setCreatingTemplateId(template.id);
 
       // Create the associate from the template
       const newAssociate = await createAssociate({
@@ -290,6 +294,8 @@ export default function WorkflowsPage() {
     } catch (error: any) {
       console.error("Error creating associate from template:", error);
       notify.error(error.message || "Failed to create associate");
+    } finally {
+      setCreatingTemplateId(null);
     }
   };
 
@@ -354,9 +360,19 @@ export default function WorkflowsPage() {
                       size="sm"
                       className="text-xs px-2 py-1 h-auto"
                       onClick={() => handlePremadeAssociate(template)}
+                      disabled={!!creatingTemplateId || isProcessing}
                     >
-                      <Zap className="h-3 w-3 mr-1" />
-                      Use Template
+                      {creatingTemplateId === template.id ? (
+                        <>
+                          <LogoAnimation/>
+                          
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-3 w-3 mr-1" />
+                          Use Template
+                        </>
+                      )}
                     </Button>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -384,6 +400,7 @@ export default function WorkflowsPage() {
           <Button
             className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
             onClick={() => router.push("/workflows/new")}
+            disabled={isProcessing || !!creatingTemplateId}
           >
             <Plus className="mr-2 h-4 w-4" />
             New Associate
@@ -392,7 +409,7 @@ export default function WorkflowsPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <LogoAnimation/>
           </div>
         ) : associates.length === 0 ? (
           <Card className="border-2 border-dashed">
@@ -405,7 +422,10 @@ export default function WorkflowsPage() {
                 Create your first AI associate to scale your legal team and
                 automate workflows
               </p>
-              <Button onClick={() => router.push("/workflows/new")}>
+              <Button
+                onClick={() => router.push("/workflows/new")}
+                disabled={isProcessing || !!creatingTemplateId}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Associate
               </Button>
@@ -447,6 +467,7 @@ export default function WorkflowsPage() {
                         size="sm"
                         onClick={() => handleUseInChat(associate)}
                         className="gap-2"
+                        disabled={isProcessing || !!creatingTemplateId}
                       >
                         <MessageSquare className="h-4 w-4" />
                         Use in chat
@@ -467,6 +488,7 @@ export default function WorkflowsPage() {
                             name: associate.name,
                           })
                         }
+                        disabled={isProcessing || !!creatingTemplateId}
                       >
                         <Trash2 className="h-4 w-4 text-red-600" />
                       </Button>
@@ -486,7 +508,7 @@ export default function WorkflowsPage() {
         onConfirm={handleDeleteConfirm}
         itemName={associateToDelete?.name}
         itemType="associate"
-        isLoading={isLoading}
+        isLoading={isProcessing}
       />
     </div>
   );
