@@ -90,7 +90,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
       isScrolled || isOpen||darkmode ? 'bg-white shadow-sm backdrop-filter lg:backdrop-blur-lg  text-primary bg-opacity-40' : 'bg-transparent text-primary'
     }`}>
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="section-container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="lg:hidden">
           <Image src={ `/logo-lg.png`} alt="wansom ai" width={140} height={40} className="w-auto h-10 object-contain" />
         </Link>

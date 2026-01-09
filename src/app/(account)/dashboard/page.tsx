@@ -175,14 +175,6 @@ export default function DashboardPage() {
     // Optional: Handle workspace creation if needed
   }, []);
 
-  // Memoized router navigation handlers
-  const navigateToVault = useCallback(() => {
-    router.push("/vault");
-  }, [router]);
-
-  const navigateToProjects = useCallback(() => {
-    router.push("/projects");
-  }, [router]);
 
   return (
     <div className="container min-h-screen flex flex-col  items-center justify-center mx-auto p-6 space-y-6 max-w-7xl">

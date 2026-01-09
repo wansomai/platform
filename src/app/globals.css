@@ -126,7 +126,7 @@ body {
 
 /* Typography utilities */
 .text-heading-1 {
-  @apply text-3xl lg:text-6xl font-bold tracking-tight;
+  @apply text-5xl lg:text-6xl font-bold tracking-tight;
   font-weight: var(--font-weight-semibold);
 }
 

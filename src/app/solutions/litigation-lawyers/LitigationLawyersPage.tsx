@@ -548,7 +548,7 @@ const LitigationLawyersPage = () => {
 
         {/* Header positioned at top of hero container */}
         <div className="absolute top-0 left-0 right-0 z-20"></div>
-        <div className="container mx-auto px-5 z-10 relative">
+        <div className="section-container mx-auto px-5 z-10 relative">
           <div className="relative grid grid-cols-1  gap-5 items-center ">
             <div className="text-primary lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For Litigation Lawyers</p>

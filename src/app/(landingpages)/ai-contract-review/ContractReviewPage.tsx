@@ -4,7 +4,6 @@ import {
   FileText,
   Sparkles,
   CheckCircle,
-  Play,
   ArrowRight,
   AlertTriangle,
   Eye,

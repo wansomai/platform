@@ -475,7 +475,7 @@ const DocumentVaultPage = () => {
               {/* Header positioned at top of hero container */}
               <div className="absolute top-0 left-0 right-0 z-20">
               </div>
-        <div className="container mx-auto px-4 z-10 relative">
+        <div className="section-container mx-auto px-4 z-10 relative">
           <div className="relative flex flex-col lg:flex-row gap-12 items-center">
             <div className="text-primary max-w-4xl lg:basis-3/5">
               <h1 className="text-heading-1 font-bold mb-4 text-shadow">

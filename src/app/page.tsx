@@ -15,8 +15,9 @@ import {
 import DocumentAutomation from "@/components/home/DocumentAutomation";
 import KnowledgeBase from "@/components/home/Knowledgebase";
 import LogoAnimation from "@/components/commons/LogoAnimation";
-import { PatnerLogoSection } from "@/components/home/Partnerlogos";
+import BrandLogos, { PatnerLogoSection } from "@/components/home/Partnerlogos";
 import React from "react";
+import { partnerLogos } from "@/lib/data";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -58,11 +59,7 @@ export default function Home() {
       <main>
         {/* <HeroSection /> */}
             <HeroSection />
-            <NewFeaturesSection />
-        <PatnerLogoSection />
-
-        {/* <FeaturesSection /> */}
-       
+            <NewFeaturesSection />      
         <LegalDraftingSection />
         <LegalResearchSection />
         <DocumentAutomation />
@@ -896,19 +893,19 @@ function DocumentReview() {
       <div className="absolute top-0 left-0 right-0 z-20">
       </div>
 
-<div className="container mx-auto grid lg:grid-cols-1 gap-5 items-center my-20  relative z-10">
+<div className="section-container mx-auto grid lg:grid-cols-1 gap-5 items-center my-20  relative z-10">
             {/* Left Side - Content */}
-            <div className="text-center space-y-8">
+            <div className=" space-y-8">
               <div className="space-y-6">
-                <h1 className=" text-heading-1 mb-4 text-primary text-shadow-2xs font-bold">
-                  Collaborative AI workspace <br className="hidden lg:block"/> for legal teams
+                <h1 className=" text-heading-1 mb-4 text-primary text-shadow-2xs font-bold font-serif">
+                  Where Lawyers <br className="hidden lg:block"/> are doing their best work
                 </h1>
 
-                <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8  text-primary">
+                <p className="text-lg md:text-xl max-w-3xl  mb-8  text-primary">
                   Wansom is the only legal AI that enables you to scale your firm's capacity to deliver big law results without big law budget
                 </p>
                 <button
-                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10 mx-auto"
+                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
                   onClick={() => (window.location.href = "/register")}
                   aria-label="Try Wansom AI for free - Start your free trial"
                 >
@@ -917,19 +914,8 @@ function DocumentReview() {
                 </button>
               </div>
             </div>
-
-            {/* Right Side - Image */}
-            {/* <div className=" -mb-1 md:-mb-4 max-w-7xl mx-auto ">
-              <Image
-                src="/home-demo.webp"
-                width={1400}
-                height={800}
-                priority
-                className="rounded-lg"
-                alt="Modern law office workspace showing professional legal environment with Wansom AI collaborative tools"
-              />
-            </div> */}
           </div>
+          <BrandLogos/>
     </section>
   )
 }

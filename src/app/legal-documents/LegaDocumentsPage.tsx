@@ -67,7 +67,7 @@ const LegalDocumentsPageClient = () => {
       <DraftPlus title='Legal Document Templates: Agreements, Contracts, Leases, Wills & More' subtitle="Never start legal drafting from scratch again. Browse our extensive library of professionally crafted legal document templates and customize to suit your specific needs." />  
       {/* Search Section */}
       <section className="py-8 bg-white border-b">
-        <div className="container mx-auto px-4">
+        <div className="section-container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* Search Bar */}
             <div className="relative mb-4">
