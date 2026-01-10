@@ -81,9 +81,9 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
         <div className="flex flex-col gap-5">
             <img
-              src="/images/ai-in-house-counsel.jpg"
+              src="/gradient-bg.png"
               alt="Pro Access Illustration"
-              className="rounded-lg"
+              className="rounded-lg max-h-[150px] w-full object-cover"
             />
 
           <div className="space-y-3">
@@ -100,7 +100,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 Automated Workflows
               </h2>
               <p className="text-sm text-gray-600">
-                Build custom automated worflows for routine tasks and processes
+                Build custom automated workflows for routine tasks and processes
               </p>
             </div>
              <div>
