@@ -19,6 +19,7 @@ import {
   X,
   Briefcase,
   UserCircleIcon,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -204,7 +205,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             />
             <SidebarLink
               href="/projects"
-              icon={MessageSquare}
+              icon={FolderOpen}
               label="Workspaces"
               active={pathname === "/projects"}
               onClick={isMobile ? handleMobileNavigation : undefined}
@@ -241,7 +242,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   <SidebarLink
                     key={project.id}
                     href={`/projects/${project.id}`}
-                    icon={Briefcase}
+                    icon={MessageSquare}
                     label={project.title}
                     active={pathname === `/projects/${project.id}`}
                     onClick={isMobile ? handleMobileNavigation : undefined}
