@@ -120,7 +120,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
      <DraftPlus title="Write, review, negotiate, and manage legal contracts" initialPrompt={blog?.title ? `Draft a document using the "${blog.title}" template` : ""} initialTemplateName={blog?.title || ''} />
       {/* Header Section with Breadcrumb */}
       <div className="section-spacing">
-        <div className="container mx-auto px-4 py-6 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-6xl">
           {/* Title and Description */}
           <h1 className="text-xl lg:text-3xl font-serif font-bold text-gray-900 mb-4" dangerouslySetInnerHTML={{ __html: blog.title }}>
             
@@ -278,16 +278,30 @@ const DraftPlus = ({ title, subtitle, initialPrompt, initialTemplateName }: { ti
   }, [initialPrompt]);
 
   // If an initial template name is provided, add a mock file representing it
+  const initialTemplateAddedRef = useRef(false);
   useEffect(() => {
-    if (initialTemplateName && selectedFiles.length === 0) {
-      try {
-        const mockFile = new File([], `${initialTemplateName}.docx`, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-        setSelectedFiles(prev => [...prev, mockFile]);
-      } catch (e) {
-        // File constructor might throw in some environments; ignore gracefully
-        console.warn('Could not create mock file for template', e);
-      }
+    if (!initialTemplateName) return;
+
+    const fileName = `${initialTemplateName}.docx`;
+
+    // Avoid adding duplicate mock files (handles StrictMode double mount and re-renders)
+    if (initialTemplateAddedRef.current) return;
+    if (selectedFiles.some((f) => f.name === fileName)) {
+      initialTemplateAddedRef.current = true;
+      return;
     }
+
+    try {
+      const mockFile = new File([], fileName, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      setSelectedFiles((prev) => {
+        initialTemplateAddedRef.current = true;
+        return [...prev, mockFile];
+      });
+    } catch (e) {
+      // File constructor might throw in some environments; ignore gracefully
+      console.warn('Could not create mock file for template', e);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTemplateName]);
 
@@ -408,13 +422,9 @@ const DraftPlus = ({ title, subtitle, initialPrompt, initialTemplateName }: { ti
   };
   return (
     <section
-      className="section-spacing relative pt-24 lg:pt-32"
+      className="relative pt-32"
       id="knowledge-base"
     >
-
-      {/* Header positioned at top of hero container */}
-      <div className="absolute top-0 left-0 right-0 z-20">
-      </div>
       <div className="section-container">
         <div className="text-center mb-8 ">
           <h2 className="text-2xl lg:text-4xl font-serif text-primary mb-2">
