@@ -461,7 +461,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
       </div>
       <div className="section-container pb-12">
         <div className="text-center mb-8 ">
-          <h2 className="text-4xl font-serif text-primary mb-2">
+          <h2 className="text-2xl lg:text-4xl font-serif text-primary mb-2">
             {title}
           </h2>
           <p className="text-body-large text-black max-w-4xl mx-auto">
@@ -755,7 +755,7 @@ Tools
               <DropdownMenuTrigger asChild>
                 <Button
                   size={'sm'}
-                  className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-2"
+                  className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-1"
                 >
                   <Sparkles className="h-4 w-4 text-white" />
                   Draft A Contract
@@ -783,7 +783,7 @@ Tools
                 {/* Review Document - File Upload Trigger */}
             <Button
               size={'sm'}
-              className="text-xs lg:text-sm  bg-primary  text-white rounded  flex items-center gap-2"
+              className="text-xs lg:text-sm  bg-primary  text-white rounded  flex items-center gap-1"
               onClick={handleReviewDocumentClick}
             >
               <FileSearch className="h-4 w-4 text-white" />
@@ -798,7 +798,7 @@ Tools
               <DropdownMenuTrigger asChild>
                 <Button
                   size={'sm'}
-                  className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-2"
+                  className="text-xs lg:text-sm  bg-primary  text-white rounded   flex items-center gap-1"
                 >
                   <FilePlus className="h-4 w-4 text-white" />
                   Start from a Template

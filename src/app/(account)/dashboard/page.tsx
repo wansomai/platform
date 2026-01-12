@@ -189,7 +189,7 @@ export default function DashboardPage() {
       <div className="">
         {/* Quick Actions */}
         <div className=" space-y-6">
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-">
             {/* Draft A Contract Dropdown */}
             <DropdownMenu
               open={showDraftDropdown}
