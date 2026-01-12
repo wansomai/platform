@@ -8,9 +8,6 @@ import Navbar from "@/components/layout/Navbar";
 import {
   FileText,
   ChevronRight,
-  Tag,
-  MapPin,
-  Info,
   ArrowUpRight,
   Paperclip,
   SlidersHorizontal,
@@ -29,6 +26,14 @@ import { adaptSanityLegalDocuments } from "@/lib/data/blogAdapter";
 import { Jurisdiction } from "@/types";
 import React from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -84,7 +89,8 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
   if (!blog) {
     return (
       <div className="bg-gray-50 min-h-screen">
-        <Navbar darkmode />
+          <Navbar darkmode />
+            <DraftPlus title="Write, review, negotiate, and manage legal contracts" initialPrompt={blog?.title ? `Draft a document using the "${blog.title}" template` : ""} initialTemplateName={blog?.title || ''} />
         <div className="container mx-auto px-4 py-16">
           <div className="text-center flex items-center flex-col gap-3 justify-center">
             <h1 className="text-5xl font-semibold text-primary mb-4 font-serif">
@@ -110,10 +116,10 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Navbar darkmode/>
-
+       <Navbar darkmode/>
+     <DraftPlus title="Write, review, negotiate, and manage legal contracts" initialPrompt={blog?.title ? `Draft a document using the "${blog.title}" template` : ""} initialTemplateName={blog?.title || ''} />
       {/* Header Section with Breadcrumb */}
-      <div className="pt-20 md:pt-24">
+      <div className="section-spacing">
         <div className="container mx-auto px-4 py-6 max-w-6xl">
           {/* Title and Description */}
           <h1 className="text-xl lg:text-3xl font-serif font-bold text-gray-900 mb-4" dangerouslySetInnerHTML={{ __html: blog.title }}>
@@ -149,7 +155,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 mb-6">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/register"
               className="flex items-center gap-2 px-6 py-2 bg-primary text-white rounded hover:bg-black transition-colors font-medium"
@@ -164,121 +170,11 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
 
       {/* Main Content Area */}
       <div className="container mx-auto px-4  max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-        
-
-          {/* Main Content - Document Display */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded border border-gray-200 overflow-hidden">
-              {/* Document Template Viewer */}
-              {blog.template?.url ? (
-                <div className="relative w-full">
-                  {/* Document Viewer */}
-                  <div
-                    className="w-full h-[400px] lg:h-[600px] overflow-hidden relative"
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      router.push('/login');
-                    }}
-                  >
-                    <iframe
-                      src={`https://docs.google.com/gview?url=${encodeURIComponent(blog.template.url)}&embedded=true`}
-                      className="w-full h-full border-0 pointer-events-none"
-                      title="Document Preview"
-                      loading="lazy"
-                    />
-                    {/* Transparent overlay to prevent direct interaction and redirect to login */}
-                    <div
-                      className="absolute inset-0 cursor-pointer bg-transparent z-10"
-                      onClick={() => router.push('/login')}
-                      title="Click to open in editor"
-                    />
-                  </div>
-                </div>
-              ):(
-                <div
-                  className="w-full h-[400px] lg:h-[600px] overflow-hidden relative cursor-pointer"
-                  onClick={() => router.push('/login')}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    router.push('/login');
-                  }}
-                >
-                   <img src="/contract-sample.webp" alt={blog.title} className="w-full h-full object-cover pointer-events-none"/>
-                  </div>
-              )}
-            </div>
-          </div>
-            {/* Left Sidebar - Categories and Info */}
-          <div className="lg:col-span-1 space-y-6">
-
-            {/* Categories */}
-            {blog.tags && blog.tags.length > 0 && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Tag className="w-5 h-5 text-secondary" />
-                  <h3 className="font-semibold text-gray-900">Categories</h3>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {blog.tags.map((tag: string) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-primary text-white rounded-full text-sm"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Jurisdictions */}
-            {blog.jurisdiction && (
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <MapPin className="w-5 h-5 text-secondary" />
-                  <h3 className="font-semibold text-gray-900">Jurisdictions</h3>
-                </div>
-                
-                <span className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm">
-                  {blog.jurisdiction}
-                </span>
-              </div>
-            )}
-
-            {/* Document Info */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Info className="w-5 h-5 text-secondary" />
-                <h3 className="font-semibold text-gray-900">Document info</h3>
-              </div>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-gray-500">Word document.</p>
-                </div>
-                <div>
-                  <p className="text-gray-500">Last Edited On {blog.date}.</p>
-                </div>
-                {blog.template && (
-                  <div>
-                    <p className="text-gray-500">
-                      Licensed under{' '}
-                      <span className="text-secondary hover:underline cursor-pointer">
-                        CC BY 4.0 (Attribution)
-                      </span>
-                      .
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="flex gap-8">
         </div>
-              <DraftPlus title="Write, review, negotiate, and manage legal contracts"/>
         {/* Related Documents Section */}
         {relatedPosts.length > 0 && (
-          <div className="mt-16 pb-6">
+          <div className=" pb-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               More documents in this category
             </h2>
@@ -312,10 +208,14 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
 };
 
 
- const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: string }) => {
+const DraftPlus = ({ title, subtitle, initialPrompt, initialTemplateName }: { title?: string; subtitle?: string; initialPrompt?: string; initialTemplateName?: string }) => {
   const router = useRouter();
   const [chatInput, setChatInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressIntervalRef = useRef<number | null>(null);
+  const [showGeneratedModal, setShowGeneratedModal] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -370,6 +270,27 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
     return () => clearInterval(interval);
   }, []);
 
+  // Prefill chat input from an initial prompt (e.g., template)
+  useEffect(() => {
+    if (initialPrompt) {
+      setChatInput(initialPrompt);
+    }
+  }, [initialPrompt]);
+
+  // If an initial template name is provided, add a mock file representing it
+  useEffect(() => {
+    if (initialTemplateName && selectedFiles.length === 0) {
+      try {
+        const mockFile = new File([], `${initialTemplateName}.docx`, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        setSelectedFiles(prev => [...prev, mockFile]);
+      } catch (e) {
+        // File constructor might throw in some environments; ignore gracefully
+        console.warn('Could not create mock file for template', e);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTemplateName]);
+
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
@@ -380,19 +301,54 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
 
   // Handle chat input send
   const handleSend = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting || isGenerating) return;
 
     setIsSubmitting(true);
+    setIsGenerating(true);
+    // Open modal immediately and show skeleton inside it
+    setShowGeneratedModal(true);
 
     try {
-      // Navigate to register page when send is clicked
-      router.push("/register");
+      // Start a simulated progress updater
+      setProgress(3);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+      progressIntervalRef.current = window.setInterval(() => {
+        setProgress((prev) => {
+          const inc = Math.floor(Math.random() * 8) + 4; // random increment
+          return Math.min(98, prev + inc);
+        });
+      }, 250);
+      window.setTimeout(() => {
+        // finish progress and stop interval
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+          progressIntervalRef.current = null;
+        }
+        setProgress(100);
+        // small delay to allow bar to reach 100%
+        window.setTimeout(() => {
+          setIsGenerating(false);
+          setIsSubmitting(false);
+        }, 300);
+      }, 2200);
     } catch (error) {
-      console.error("Navigation error:", error);
-    } finally {
+      console.error("Generation error:", error);
+      setIsGenerating(false);
       setIsSubmitting(false);
     }
   };
+
+  // Cleanup progress interval on unmount
+  useEffect(() => {
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    };
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -452,14 +408,14 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
   };
   return (
     <section
-      className="section-spacing relative"
+      className="section-spacing relative pt-24 lg:pt-32"
       id="knowledge-base"
     >
 
       {/* Header positioned at top of hero container */}
       <div className="absolute top-0 left-0 right-0 z-20">
       </div>
-      <div className="section-container pb-12">
+      <div className="section-container">
         <div className="text-center mb-8 ">
           <h2 className="text-2xl lg:text-4xl font-serif text-primary mb-2">
             {title}
@@ -695,10 +651,10 @@ Tools
                         <div className="bg-[#74C6B8] rounded-md p-1.5">
                           <FileText className="h-4 w-4 text-white" />
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-900 max-w-[150px] truncate">
+                        <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                          <span className=" max-w-[140px] truncate">
                             {file.name}
-                          </span>
+                          </span>.docx
                         </div>
                       </div>
                       <button
@@ -724,14 +680,14 @@ Tools
                     ? "min-h-[100px] max-h-[200px] pt-2 pb-4"
                     : "min-h-[120px] max-h-[200px] py-4"
                 }`}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isGenerating}
               />
 
               {/* Send button positioned inside textarea */}
               <div className="absolute right-3 bottom-3 z-10">
                 <Button
                   className="bg-primary hover:bg-[#d47b0f] text-white z-10 shadow-md h-10 w-10 rounded-lg"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isGenerating}
                   onClick={handleSend}
                   aria-label="Send message"
                 >
@@ -744,6 +700,8 @@ Tools
               </div>
             </div>
           </div>
+
+          {/* page-level skeleton removed; generation UI now appears inside modal */}
 
           {/* Helper text */}
           <div className="flex items-center justify-center flex-wrap gap-5 mt-4">
@@ -817,7 +775,7 @@ Tools
                       onClick={() => handleTemplateSelect(template)}
                       className="w-full text-left px-3 py-2.5 text-sm hover:bg-gray-100 rounded-md transition-colors"
                     >
-                      {template}.PDF
+                      {template}.docx
                     </button>
                   ))}
                 </div>
@@ -831,6 +789,61 @@ Tools
 
         </div>
       </div>
+
+      {/* Generated Document Modal */}
+      <Dialog
+        open={showGeneratedModal}
+        onOpenChange={(open) => {
+          // Prevent closing while generation is in progress
+          if (!isGenerating) setShowGeneratedModal(open);
+        }}
+      >
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle>{isGenerating ? 'Generating document…' : ''}</DialogTitle>
+           
+          </DialogHeader>
+
+          <div className="py-3">
+            {isGenerating ? (
+              <div className="space-y-4">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
+                  <div className="h-40 bg-gray-200 rounded" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="h-10 bg-gray-200 rounded w-24" />
+                  <div className="h-10 bg-gray-200 rounded w-40" />
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-4 py-6">
+                <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center">
+                  <div className="text-4xl">🎉</div>
+                </div>
+                <h3 className="text-xl font-serif font-semibold">Your document is ready for preview</h3>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowGeneratedModal(false)} disabled={isGenerating}>
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                setShowGeneratedModal(false);
+                router.push('/register');
+              }}
+              className="ml-2"
+              disabled={isGenerating}
+            >
+              Open in Editor
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </section>
   );
 };

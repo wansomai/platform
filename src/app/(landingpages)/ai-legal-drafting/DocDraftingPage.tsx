@@ -344,7 +344,7 @@ export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: stri
     setSelectedFiles(prev => [...prev, mockFile]);
 
     // Populate input field with the template prompt
-    setChatInput("Draft a legal document starting with this template");
+    setChatInput("Use this template to draft my legal document.");
     setShowTemplateDropdown(false);
   };
 
@@ -839,8 +839,7 @@ export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: stri
                       title="AI Tools (preview - will be configurable after registration)"
                       aria-labelledby="AI tools"
                     >
-                      <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
-Tools
+                      <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}Tools
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
