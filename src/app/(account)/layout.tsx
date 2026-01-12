@@ -277,7 +277,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 size="icon"
                 onClick={() => router.push("/projects")}
               >
-                <Briefcase className="h-5 w-5 text-gray-500" />
+                <MessageSquare className="h-5 w-5 text-gray-500" />
               </Button>
             </div>
           )}
