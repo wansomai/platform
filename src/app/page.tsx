@@ -902,7 +902,7 @@ function DocumentReview() {
                 </h1>
 
                 <p className="text-lg md:text-xl max-w-3xl  mb-8  text-primary">
-                  Wansom is the only legal AI that enables you to scale your firm's capacity to deliver big law results without big law budget
+                  Wansom is the only legal AI that enables you to scale your ability to deliver big law results without the big law budget
                 </p>
                 <button
                   className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
