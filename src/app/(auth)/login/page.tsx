@@ -77,7 +77,7 @@ function LoginPageContent() {
       <div className="flex flex-1 flex-col justify-center bg-white px-4 py-12 md:px-12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 text-center">Sign in to your account</h2>
+            <h1 className="text-3xl font-bold text-gray-900 text-center">Sign in to your account</h1>
           </div>
 
           <ErrorAlert error={error} onDismiss={() => setError(null)} />

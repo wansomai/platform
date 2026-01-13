@@ -124,7 +124,7 @@ function RegisterPageContent() {
       <div className="flex flex-1 flex-col justify-center bg-white px-4 py-12 lg:pt-24 md:px-12">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 text-center">Create your account</h2>
+            <h1 className="text-3xl font-bold text-gray-900 text-center">Create your account</h1>
           </div>
 
           {invitationToken && (
