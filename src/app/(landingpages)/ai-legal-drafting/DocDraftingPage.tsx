@@ -785,9 +785,9 @@ export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: stri
       </div>
       <div className="section-container pb-12">
         <div className="text-center mb-8 ">
-          <h2 className="text-heading-1 font-serif text-primary mb-2">
+          <h1 className="text-heading-1 font-serif text-primary mb-2">
             {title}
-          </h2>
+          </h1>
           <p className="text-body-large text-black max-w-4xl mx-auto">
            {subtitle}
           </p>
