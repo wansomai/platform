@@ -52,6 +52,7 @@ interface Invitation {
   email: string;
   role: string;
   createdAt: string;
+  expiresAt: string;
 }
 
 interface UpdateProfileData {

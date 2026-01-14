@@ -589,7 +589,7 @@ const Page = () => {
                               size="sm"
                               onClick={() => handleResendInvitation(invitation.id)}
                               disabled={resendingInvitation === invitation.id}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="text-primary hover:text-amber-100"
                             >
                               {resendingInvitation === invitation.id ? (
                                 <>
