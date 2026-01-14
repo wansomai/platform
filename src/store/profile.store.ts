@@ -356,6 +356,10 @@ export const useProfileStore = create<ProfileState>()(
             )
           }));
 
+          // Invalidate cache to ensure fresh profile data on next fetch
+          // This is important if the current user's role was changed
+          set({ lastFetched: null });
+
           return true;
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Failed to update member role';

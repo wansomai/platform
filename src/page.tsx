@@ -261,7 +261,7 @@ export default function ProjectsPage() {
               <CardFooter className="border-t pt-4">
                 <p className="text-gray-600 text-sm">Created {format(new Date(project.createdAt), "PP")} </p>
                 <Button variant="ghost" size="sm" className="ml-auto"   onClick={() => router.push(`/projects/${project.id}`)}>
-                  View Workspace
+                 
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardFooter>

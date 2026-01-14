@@ -149,6 +149,8 @@ const Page = () => {
     const success = await updateMemberRole(memberId, newRole);
     if (success) {
       notify.success('Role updated successfully');
+      // Refresh profile to ensure current user sees updated permissions if their role was changed
+      await fetchProfile(true);
     } else {
       notify.error('Failed to update role');
     }
@@ -225,7 +227,7 @@ const Page = () => {
           <p className="text-gray-600">Manage your organization.</p>
         </div>
 
-        {(profile?.role === 'admin' || profile?.role === 'owner') && profile?.organization?.accountType === 'enterprise' ? (
+        {(profile?.role === 'admin' || profile?.role === 'owner') && (profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise') ? (
           // Enterprise accounts - show tabs with Members
           <Tabs defaultValue="general" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
