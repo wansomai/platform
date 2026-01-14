@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2 } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2, Loader2, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +57,7 @@ const Page = () => {
     inviteMember,
     removeMember,
     cancelInvitation,
+    resendInvitation,
     updateMemberRole,
     setSearchQuery
   } = useTeamManagement();
@@ -83,6 +84,8 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState<'members' | 'invitations'>('members');
   const [showDowngradeDialog, setShowDowngradeDialog] = useState(false);
   const [showProAccess, setShowProAccess] = useState(false);
+  const [changingRoleForMember, setChangingRoleForMember] = useState<string | null>(null);
+  const [resendingInvitation, setResendingInvitation] = useState<string | null>(null);
 
  const { notify } = useNotifications();
 
@@ -146,6 +149,7 @@ const Page = () => {
   };
 
   const handleChangeRole = async (memberId: string, newRole: string) => {
+    setChangingRoleForMember(memberId);
     const success = await updateMemberRole(memberId, newRole);
     if (success) {
       notify.success('Role updated successfully');
@@ -154,6 +158,7 @@ const Page = () => {
     } else {
       notify.error('Failed to update role');
     }
+    setChangingRoleForMember(null);
   };
 
   const handleCancelInvitation = async (invitationId: string) => {
@@ -163,6 +168,17 @@ const Page = () => {
     } else {
       notify.error('Failed to cancel invitation');
     }
+  };
+
+  const handleResendInvitation = async (invitationId: string) => {
+    setResendingInvitation(invitationId);
+    const success = await resendInvitation(invitationId);
+    if (success) {
+      notify.success('Invitation resent successfully');
+    } else {
+      notify.error('Failed to resend invitation');
+    }
+    setResendingInvitation(null);
   };
 
   const handleRequestProAccess = async () => {
@@ -487,18 +503,33 @@ const Page = () => {
                             {member.email !== session?.user?.email && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm">
-                                    <MoreHorizontal className="h-4 w-4" />
+                                  <Button variant="ghost" size="sm" disabled={changingRoleForMember === member.id}>
+                                    {changingRoleForMember === member.id ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    )}
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')}>
-                                    {member.role === 'admin' ? 'Change to Member' : 'Change to Admin'}
+                                  <DropdownMenuItem
+                                    onClick={() => handleChangeRole(member.id, member.role === 'admin' ? 'member' : 'admin')}
+                                    disabled={changingRoleForMember === member.id}
+                                  >
+                                    {changingRoleForMember === member.id ? (
+                                      <span className="flex items-center gap-2">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Updating...
+                                      </span>
+                                    ) : (
+                                      member.role === 'admin' ? 'Change to Member' : 'Change to Admin'
+                                    )}
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     className="text-red-600"
                                     onClick={() => handleRemoveMember(member.id)}
+                                    disabled={changingRoleForMember === member.id}
                                   >
                                     Remove Member
                                   </DropdownMenuItem>
@@ -529,7 +560,9 @@ const Page = () => {
                         <p className="text-sm text-gray-400">Send an invitation to add new team members</p>
                       </div>
                     ) : (
-                      invitations.map((invitation) => (
+                      invitations.map((invitation) => {
+                        const isExpired = invitation?.expiresAt && new Date(invitation.expiresAt) < new Date();
+                        return (
                         <div key={invitation?.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
                           <div className="col-span-4 flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
@@ -537,29 +570,48 @@ const Page = () => {
                             </div>
                             <div>
                               <div className="font-medium">{invitation?.email}</div>
-                              <div className="text-sm text-gray-500">Invitation pending</div>
+                              <div className={`text-sm ${isExpired ? 'text-red-500' : 'text-gray-500'}`}>
+                                {isExpired ? 'Invitation expired' : 'Invitation pending'}
+                              </div>
                             </div>
                           </div>
                           <div className="col-span-3 text-sm text-gray-600">
                             {new Date(invitation?.createdAt).toLocaleDateString()}
                           </div>
                           <div className="col-span-3">
-                            <Badge variant="outline" className="capitalize">
+                            <Badge variant={isExpired ? "destructive" : "outline"} className="capitalize">
                               {invitation?.role}
                             </Badge>
                           </div>
-                          <div className="col-span-2">
+                          <div className="col-span-2 flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleResendInvitation(invitation.id)}
+                              disabled={resendingInvitation === invitation.id}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              {resendingInvitation === invitation.id ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                  Resending...
+                                </>
+                              ) : (
+                                'Resend'
+                              )}
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleCancelInvitation(invitation.id)}
+                              disabled={resendingInvitation === invitation.id}
                               className="text-red-600 hover:text-red-700"
                             >
                               Cancel
                             </Button>
                           </div>
                         </div>
-                      ))
+                      )})
                     )}
                   </div>
                 )}

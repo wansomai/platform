@@ -130,7 +130,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
           {blog.contentHtml && (
             <div className="mb-6">
               <div
-                className={`text-gray-600 text-lg leading-relaxed ${
+                className={`blog-content text-gray-600 text-lg leading-relaxed ${
                   isPreviewExpanded ? '' : 'line-clamp-3'
                 }`}
                 dangerouslySetInnerHTML={{ __html: blog.contentHtml }}

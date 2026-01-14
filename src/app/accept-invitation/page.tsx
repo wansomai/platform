@@ -153,9 +153,10 @@ function AcceptInvitationContent() {
     )
   }
 
-  // Show error state (but handle "already a member" specially)
+  // Show error state (but handle "already a member" and "expired" specially)
   if (error) {
     const isAlreadyMember = error.includes("already a member") || error.includes("already member");
+    const isExpired = error.includes("expired");
 
     if (isAlreadyMember) {
       return (
@@ -185,6 +186,42 @@ function AcceptInvitationContent() {
       );
     }
 
+    if (isExpired) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+          <Card className="w-full max-w-md border-orange-200">
+            <CardHeader className="text-center">
+              <div className="flex justify-center mb-4">
+                <AlertTriangle className="h-12 w-12 text-orange-500" />
+              </div>
+              <CardTitle>Invitation Expired</CardTitle>
+              <CardDescription className="text-orange-600">
+                This invitation link has expired
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-center text-sm text-muted-foreground">
+                The invitation you're trying to use has expired. Invitations are valid for 7 days from when they're sent.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>What to do next:</strong>
+                </p>
+                <p className="text-sm text-blue-700 mt-2">
+                  Contact the person who invited you and ask them to resend the invitation. They can do this from their organization settings page.
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={() => router.push("/login")}>
+                Go to Login
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Card className="w-full max-w-md border-red-200">
@@ -199,12 +236,12 @@ function AcceptInvitationContent() {
           </CardHeader>
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
-              The invitation may have expired or been cancelled. Please contact the person who invited you.
+              The invitation may have been cancelled or is invalid. Please contact the person who invited you.
             </p>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button onClick={() => router.push("/profile")}>
-              Return to Profile
+            <Button onClick={() => router.push("/login")}>
+              Go to Login
             </Button>
           </CardFooter>
         </Card>

@@ -109,6 +109,7 @@ interface ProfileState {
   inviteMember: (data: InviteMemberData) => Promise<boolean>;
   removeMember: (memberId: string) => Promise<boolean>;
   cancelInvitation: (invitationId: string) => Promise<boolean>;
+  resendInvitation: (invitationId: string) => Promise<boolean>;
   updateMemberRole: (memberId: string, role: string) => Promise<boolean>;
 
   // Actions - Organization Management
@@ -337,6 +338,37 @@ export const useProfileStore = create<ProfileState>()(
           return true;
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || error.message || 'Failed to cancel invitation';
+          set({ error: errorMessage });
+          return false;
+        }
+      },
+
+      // Resend an invitation
+      resendInvitation: async (invitationId: string): Promise<boolean> => {
+        try {
+          set({ error: null });
+
+          const response = await apiService.post(`/api/organization/invitations/${invitationId}`, {}) as {
+            success: boolean;
+            message?: string;
+            warning?: string;
+            invitation?: any;
+          };
+
+          // Update the invitation in the list with new expiration date if provided
+          if (response.invitation) {
+            set((state) => ({
+              invitations: state.invitations.map(inv =>
+                inv.id === invitationId
+                  ? { ...inv, expiresAt: response.invitation.expiresAt, createdAt: new Date().toISOString() }
+                  : inv
+              )
+            }));
+          }
+
+          return true;
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || error.message || 'Failed to resend invitation';
           set({ error: errorMessage });
           return false;
         }
@@ -583,6 +615,7 @@ export const useTeamManagement = () => {
   const inviteMember = useProfileStore(state => state.inviteMember);
   const removeMember = useProfileStore(state => state.removeMember);
   const cancelInvitation = useProfileStore(state => state.cancelInvitation);
+  const resendInvitation = useProfileStore(state => state.resendInvitation);
   const updateMemberRole = useProfileStore(state => state.updateMemberRole);
   const setSearchQuery = useProfileStore(state => state.setSearchQuery);
 
@@ -598,6 +631,7 @@ export const useTeamManagement = () => {
     inviteMember,
     removeMember,
     cancelInvitation,
+    resendInvitation,
     updateMemberRole,
     setSearchQuery,
   };
