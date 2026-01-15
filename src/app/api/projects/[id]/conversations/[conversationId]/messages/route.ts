@@ -254,7 +254,8 @@ export async function POST(
           
           // Prepare document content for Gemini (full documents, no chunking)
                     let relevantContent = "";
-          
+                    const scannedDocuments: Array<{ title: string; fileUrl: string; mimeType: string }> = [];
+
                     // Perform intent analysis in drafting mode to decide whether to update canvas
                     let intentAnalysis: { shouldUpdateCanvas?: boolean } | undefined = undefined;
                     if (isDraftingMode) {
@@ -273,12 +274,12 @@ export async function POST(
                         intentAnalysis = { shouldUpdateCanvas: false };
                       }
                     }
-          
+
                     // Include canvas document if in drafting mode and analysis intent indicates not updating canvas
                     if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
                       relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
                     }
-          
+
           if (conversationDocuments.length > 0) {
             // Gemini can handle FULL documents (2M token context) - no truncation needed!
             const contentParts: string[] = [];
@@ -287,6 +288,38 @@ export async function POST(
               if (!docRef.document.content?.content) continue;
 
               const documentContent = docRef.document.content.content;
+
+              // Check if this is a scanned PDF or image that requires Gemini processing
+              if (documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" || documentContent === "[SCANNED_IMAGE_REQUIRES_PROCESSING]") {
+                // Fetch full document details to get fileUrl
+                const fullDoc = await prisma.document.findUnique({
+                  where: { id: docRef.document.id },
+                  select: { file_url: true, file_type: true, title: true }
+                });
+
+                if (fullDoc?.file_url) {
+                  // Determine MIME type based on file extension
+                  const mimeType = fullDoc.file_type === 'pdf' ? 'application/pdf' :
+                                  fullDoc.file_type === 'png' ? 'image/png' :
+                                  fullDoc.file_type === 'jpg' || fullDoc.file_type === 'jpeg' ? 'image/jpeg' :
+                                  fullDoc.file_type === 'gif' ? 'image/gif' :
+                                  fullDoc.file_type === 'bmp' ? 'image/bmp' :
+                                  fullDoc.file_type === 'webp' ? 'image/webp' :
+                                  'application/pdf';
+
+                  scannedDocuments.push({
+                    title: fullDoc.title,
+                    fileUrl: fullDoc.file_url,
+                    mimeType
+                  });
+
+                  // Add placeholder in text content
+                  const docType = documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" ? "Scanned PDF" : "Image";
+                  contentParts.push(`### Document: ${fullDoc.title} (${docType} - processed natively by Gemini) ###\n\n`);
+                }
+                continue;
+              }
+
               const docLength = documentContent.length;
 
               // Send ENTIRE document - Gemini can handle up to 2M tokens (~4000 pages)
@@ -700,9 +733,44 @@ export async function POST(
           }
 
           // Add current user message to contents
+          const userMessageParts: any[] = [{ text: content }];
+
+          // Add scanned documents as inline data if any
+          if (scannedDocuments.length > 0) {
+            for (const scannedDoc of scannedDocuments) {
+              try {
+                // Fetch the file from blob storage
+                const response = await fetch(scannedDoc.fileUrl);
+                const arrayBuffer = await response.arrayBuffer();
+                const base64Data = Buffer.from(arrayBuffer).toString('base64');
+
+                // Add file as inline data part for Gemini to process
+                userMessageParts.push({
+                  inlineData: {
+                    mimeType: scannedDoc.mimeType,
+                    data: base64Data
+                  }
+                });
+
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: 'status',
+                      status: 'processing_document',
+                      message: `Processing scanned document: ${scannedDoc.title}`,
+                    }) + '\n'
+                  )
+                );
+              } catch (error) {
+                console.error(`Error loading scanned document ${scannedDoc.title}:`, error);
+                // Continue without this document if it fails to load
+              }
+            }
+          }
+
           fullContents.push({
             role: 'user',
-            parts: [{ text: content }]
+            parts: userMessageParts
           });
 
           // Stream the response from Gemini using new API with retry logic

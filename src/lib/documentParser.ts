@@ -3,19 +3,18 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import * as XLSX from 'xlsx';
 import * as csv from 'csv-parse/sync';
 import * as mammoth from 'mammoth';
-import { Readable } from 'stream';
-import { ocrService } from './ocrService';
-import { ServerOCRService } from './serverOcrService';
 
 /**
  * Extract text from various file types
+ * For text-based files (PDF, DOCX, Excel, CSV, TXT), extracts text directly
+ * For scanned PDFs and images, returns a marker for Gemini to process natively
  * @param fileBuffer The file buffer
  * @param mimeType The MIME type of the file
- * @param onProgress Optional progress callback for OCR
- * @returns Extracted text content
+ * @param onProgress Optional progress callback (deprecated, kept for compatibility)
+ * @returns Extracted text content or processing marker
  */
 export async function extractTextFromFile(
-  fileBuffer: Buffer, 
+  fileBuffer: Buffer,
   mimeType: string,
   onProgress?: (progress: number) => void
 ): Promise<string> {
@@ -49,59 +48,30 @@ export async function extractTextFromFile(
 
 /**
  * Extract text from PDF files with hybrid approach
- * First tries traditional text extraction, falls back to OCR for scanned PDFs
+ * First tries traditional text extraction for text-based PDFs
+ * For scanned PDFs, returns a marker that indicates Gemini should process it directly
  */
 async function extractTextFromPdf(fileBuffer: Buffer): Promise<string> {
   try {
     // First attempt: Traditional text extraction for text-based PDFs
     const textBasedResult = await extractTextFromPdfTraditional(fileBuffer);
-    
+
     // Check if meaningful text was extracted
     const cleanText = textBasedResult.replace(/[^\w\s]/g, '').trim();
     const wordCount = cleanText.split(/\s+/).filter(word => word.length > 2).length;
-    
+
     // If we got substantial meaningful text, use it
     if (textBasedResult.length > 100 && wordCount > 10) {
       return textBasedResult;
     }
-    
-    // If minimal meaningful text, try OCR (likely scanned PDF)
-    
-    // Only attempt OCR on server-side where Google Vision API is available
-    if (typeof window === 'undefined') {
-      const ocrResult = await ServerOCRService.extractTextFromPdf(fileBuffer);
-      
-      // Check if OCR result is an error message
-      const isOcrError = ocrResult.startsWith('Google Vision API is not configured') || 
-                        ocrResult.startsWith('No readable text could be extracted') ||
-                        ocrResult.startsWith('No meaningful text could be extracted') ||
-                        ocrResult.startsWith('OCR service') ||
-                        ocrResult.startsWith('Text extraction from PDF failed') ||
-                        ocrResult.startsWith('PDF format is not supported');
-      
-      // If OCR was successful and returned meaningful content, use it
-      if (ocrResult && !isOcrError && ocrResult.length > 20) {
-        return ocrResult;
-      }
-    }
-    
-    // If OCR failed or we're client-side, return the traditional result even if minimal
-    return textBasedResult || "Unable to extract text from this PDF. The document may be an image-based or scanned PDF that requires OCR processing.";
-    
+
+    // For scanned PDFs with minimal text, return a marker indicating Gemini should process directly
+    // Gemini 2.0 can read scanned PDFs natively without requiring separate OCR
+    return "[SCANNED_PDF_REQUIRES_PROCESSING]";
+
   } catch (error) {
-    // Try OCR as last resort if traditional extraction completely failed
-    if (typeof window === 'undefined') {
-      try {
-        const ocrResult = await ServerOCRService.extractTextFromPdf(fileBuffer);
-        if (ocrResult && !ocrResult.startsWith('Google Vision API is not configured')) {
-          return ocrResult;
-        }
-      } catch (ocrError) {
-        // OCR fallback also failed
-      }
-    }
-    
-    throw error;
+    // If traditional extraction failed, mark for Gemini processing
+    return "[SCANNED_PDF_REQUIRES_PROCESSING]";
   }
 }
 
@@ -206,39 +176,11 @@ function extractTextFromCsv(fileBuffer: Buffer): string {
 }
 
 /**
- * Extract text from images using OCR
+ * Extract text from images using Gemini's native vision
+ * Gemini 2.0 can read images directly without requiring separate OCR
  */
 async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: number) => void): Promise<string> {
-  try {
-    // Use server-side Google Vision API for OCR
-    if (typeof window === 'undefined') {
-      // Server-side: Use Google Vision API
-      const text = await ServerOCRService.extractTextFromImage(fileBuffer);
-      return text;
-    } else {
-      const blob = new Blob([new Uint8Array(fileBuffer)]);
-      const text = await ocrService.extractTextFromImage(blob, {
-        onProgress,
-        language: 'eng'
-      });
-      
-      if (!text || text.trim().length === 0) {
-        return "No text could be extracted from this image. The image may not contain readable text or the text may be too unclear.";
-      }
-      
-      return text;
-    }
-  } catch (error) {
-    return "Failed to extract text from image. The image may be corrupted or contain unreadable text.";
-  }
-}
-
-/**
- * Convert a buffer to a readable stream
- */
-function bufferToStream(buffer: Buffer): Readable {
-  const stream = new Readable();
-  stream.push(buffer);
-  stream.push(null);
-  return stream;
+  // Mark images to be processed by Gemini natively in chat
+  // This provides better accuracy than separate OCR services
+  return "[SCANNED_IMAGE_REQUIRES_PROCESSING]";
 }

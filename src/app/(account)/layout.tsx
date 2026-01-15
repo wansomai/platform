@@ -17,7 +17,6 @@ import {
   PanelRight,
   Menu,
   X,
-  Briefcase,
   UserCircleIcon,
   FolderOpen,
 } from "lucide-react";

@@ -49,9 +49,8 @@ npx prisma migrate reset
 - **Authentication**: NextAuth.js with JWT (credentials + Google OAuth)
 - **State Management**: Zustand stores
 - **UI Components**: Radix UI + TailwindCSS
-- **AI Integration**: Google Gemini API
+- **AI Integration**: Google Gemini API (multimodal - text and vision)
 - **File Storage**: Vercel Blob Storage
-- **OCR**: Google Cloud Vision API + Tesseract.js
 
 ### Directory Structure
 
@@ -94,9 +93,7 @@ src/
 │   ├── constants/              # App constants (roles, permissions)
 │   ├── data/                   # Data adapters (Contentful, Sanity CMS)
 │   ├── utils/                  # Utility functions
-│   ├── documentParser.ts       # Parse various document formats
-│   ├── ocrService.ts           # OCR processing (client-side)
-│   ├── serverOcrService.ts     # OCR processing (server-side)
+│   ├── documentParser.ts       # Parse various document formats (text extraction)
 │   ├── geminiTools.ts          # Google Gemini API utilities
 │   ├── functionExecutor.ts     # AI function calling execution
 │   ├── associateExecutor.ts    # AI associate workflow execution
@@ -159,7 +156,8 @@ src/
 
 #### 5. Document Management
 - Documents stored in Vercel Blob Storage
-- Text extraction on upload (PDF, DOCX, TXT, images via OCR)
+- Text extraction on upload (text-based PDFs, DOCX, Excel, CSV, TXT)
+- Scanned PDFs and images processed natively by Gemini's vision API during chat
 - Content indexed in `DocumentContent` table
 - Optional vector embeddings for semantic search (not currently active)
 - Folder hierarchy via `Folder` table with parent-child relationships
@@ -225,11 +223,11 @@ Most API operations require organization context:
 - Check permissions using `hasOrganizationPermission()` from `lib/auth/permissions.ts`
 
 ### Document Processing
-- Client-side OCR: Use `lib/ocrService.ts` (Tesseract.js)
-- Server-side OCR: Use `lib/serverOcrService.ts` (Google Vision API)
-- PDF parsing: Uses `pdf-parse` for text extraction
-- DOCX parsing: Uses `mammoth` for conversion to HTML
-- Scanned PDFs require Google Cloud Storage bucket for Vision API processing
+- Text-based PDFs: Uses `pdf-parse` for direct text extraction on upload
+- DOCX files: Uses `mammoth` for conversion to HTML
+- Excel/CSV: Direct text extraction using XLSX and csv-parse libraries
+- Scanned PDFs and images: Marked for processing during chat, sent to Gemini's multimodal API
+- Gemini processes scanned documents natively using vision capabilities (no separate OCR needed)
 
 ### AI Document Generation
 - Service: `services/aiDocumentService.ts` or `src/aiDocumentService.ts`
@@ -243,11 +241,8 @@ Key variables (see `.env`):
 - `DATABASE_URL` - PostgreSQL connection string
 - `NEXTAUTH_SECRET` - NextAuth JWT secret
 - `NEXTAUTH_URL` - App URL (http://localhost:3000 in dev)
-- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Google Gemini API
+- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Google Gemini API (handles both text and vision)
 - `GOOGLE_AUTH_CLIENT_ID/SECRET` - Google OAuth
-- `GOOGLE_APPLICATION_CREDENTIALS` - Path to GCP service account JSON (for Vision API)
-- `GOOGLE_CLOUD_PROJECT_ID` - GCP project ID
-- `GOOGLE_CLOUD_STORAGE_BUCKET` - GCS bucket for OCR temp files
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage token
 - Email credentials for Nodemailer (SMTP)
 
