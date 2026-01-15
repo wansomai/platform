@@ -246,7 +246,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
               Book A Demo
             </Link>
             <Link
-              href="/login"
+              href="/register"
               className="font-medium text-md whitespace-nowrap text-white bg-black hover:bg-black rounded-md py-2 px-4"
             >
               Start For Free
@@ -385,7 +385,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                   Schedule a Demo
                 </Link>
                 <Link
-                  href="/login"
+                  href="/register"
                   className="font-medium text-white bg-primary hover:bg-black rounded-md py-3 px-4 text-center"
                   onClick={() => setIsOpen(false)}
                 >
