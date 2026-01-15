@@ -71,7 +71,8 @@ const SidebarLink = ({
       )}
     />
     {!collapsed && (
-      <span className="flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap">
+
+      <span className="flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap max-w-48">
         {label}
       </span>
     )}

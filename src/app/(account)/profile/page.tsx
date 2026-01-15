@@ -495,9 +495,7 @@ const Page = () => {
                             {new Date(member.joinedAt).toLocaleDateString()}
                           </div>
                           <div className="col-span-3">
-                            <Badge variant={member.role === 'admin' ? 'default' : 'secondary'} className="capitalize">
-                              {member.role}
-                            </Badge>
+                            {member.role}
                           </div>
                           <div className="col-span-2">
                             {member.email !== session?.user?.email && (
