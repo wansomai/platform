@@ -47,8 +47,10 @@ import {
 } from "@/components/ui/tooltip";
 import { JurisdictionSelector } from "@/components/workspace/JurisdictionSelector";
 import { Jurisdiction } from "@/types";
+import { VaultDocsHero } from "../document-vault/DocumentVaultPage";
 
 const LegalDraftingPage = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     jurisdiction: "London, United Kingdom",
     customer: "New customer",
@@ -68,17 +70,15 @@ const LegalDraftingPage = () => {
       {/* Wansom adapts section */}
       <section className="section-spacing bg-white">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-10 ">
+          <div className="flex flex-col-reverse lg:flex-row gap-5 lg:gap-10">
            
 
-            <div>
+            <div className="lg:basis-1/2">
               <h2 className="text-heading-2 mb-4 text-gray-900">
-                Wansom adapts to your documents
+                 Review with Precision
               </h2>
               <p className="text-xl text-gray-600 mb-8">
-                Wansom automatically detects the substance of your document to
-                draft relevant, ready to use clauses. Collaborate with AI to
-                achieve tasks faster.
+                Leverage AI to identify risks, suggest improvements, and ensure compliance with legal standards in your documents.
               </p>
 
               <div className="space-y-4">
@@ -105,7 +105,7 @@ const LegalDraftingPage = () => {
                 </div>
               </div>
             </div>
-             <div>
+             <div className="lg:basis-1/2">
               <div className="bg-primary rounded-lg p-6 flex items-center justify-center">
                 <div className="bg-white rounded-xl p-8 shadow-lg border max-w-md w-full">
                   <h3 className="text-lg font-semibold mb-6 text-gray-900">
@@ -129,7 +129,7 @@ const LegalDraftingPage = () => {
                     <div>Clause Length: Standard</div>
                   </div>
 
-                  <button className="w-full bg-primary text-white py-3 rounded-lg font-medium mt-6 hover:bg-black transition-colors">
+                  <button className="w-full bg-primary text-white py-3 rounded-lg font-medium mt-6 hover:bg-black transition-colors" onClick={() => router.push('/register')}>
                     Generate Document Outline
                   </button>
                 </div>
@@ -140,29 +140,11 @@ const LegalDraftingPage = () => {
       </section>
 
            {/* Draft from scratch section */}
-      <section className="section-spacing bg-primary">
+      <section className="section-spacing bg-white">
         <div className="section-container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-heading-2 mb-6 text-white">
-                1000<sup>+</sup> Professional Legal Templates
-              </h2>
-              <p className="text-xl text-gray-100 mb-8">
-                Start from a professionally drafted legal template and customize
-                it to your needs with Wansom's AI-powered drafting tools.
-              </p>
-
-              <button
-                className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded-lg font-semibold transition-colors"
-                onClick={() => (window.location.href = "/login")}
-              >
-                Explore Legal templates{" "}
-                <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
-              </button>
-            </div>
-
-            <div className="relative">
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+          <div className="flex flex-col lg:flex-row gap-5 lg:gap-10">
+             <div className="relative lg:basis-1/2">
+              <div className="bg-primary p-4 rounded-lg shadow-2xl overflow-hidden">
                 <div className="p-4 border-b bg-gray-50">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 text-sm">1 of 4</span>
@@ -180,7 +162,7 @@ const LegalDraftingPage = () => {
                   <h3 className="font-bold text-gray-900 mb-4">
                     CONFIDENTIALITY AND USE OF SUBCONTRACTORS
                   </h3>
-                  <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                  <p className="text-gray-600 text-xs mb-6 leading-relaxed">
                     Each party (the "Receiving Party") understands that the
                     other party (the "Disclosing Party") has disclosed or may
                     disclose business, technical, or financial information
@@ -196,13 +178,70 @@ const LegalDraftingPage = () => {
                     <button className="p-2 border border-gray-200 rounded hover:bg-gray-50">
                       <BookOpen className="w-4 h-4 text-gray-600" />
                     </button>
-                    <button className="bg-[#355e66] text-white px-4 py-2 rounded font-medium hover:bg-[#2a4d54] transition-colors">
+                    <button className="bg-primary text-white px-4 py-2 rounded font-medium hover:bg-black transition-colors" onClick={() => { router.push('/register'); }}>
                       Continue Editing
                     </button>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="lg:basis-1/2">
+              <h2 className="text-heading-2 mb-6 text-black">
+                Smarter Redlining
+              </h2>
+              <p className="text-xl text-black mb-8">
+                Wansom learns from your writing style, prior documents and guidelines to instantly mark up and redline entire agreements according to your set instructions.
+              </p>
+            </div>
+
+           
+          </div>
+        </div>
+      </section>
+     
+                 {/* Draft from scratch section */}
+      <section className=" bg-white pb-5">
+        <div className="section-container">
+          <div className="flex flex-col-reverse lg:flex-row gap-10">
+            
+            <div className="lg:basis-1/2">
+              <h2 className="text-heading-2 mb-6 text-black">
+                Secure Document Storage
+              </h2>
+              <p className="text-xl text-black mb-8">
+               Organize and store documents into customizable folders and subfolders for easy retrieval and management.
+              </p>
+            </div>
+ <div className="relative lg:basis-1/2">
+              <VaultDocsHero/>
+            </div>
+           
+          </div>
+        </div>
+      </section>
+             {/* Draft from scratch section */}
+      <section className="section-spacing bg-primary">
+        <div className="section-container">
+          <div className="flex gap-16 items-center justify-center">
+            <div>
+              <h2 className="text-heading-2 mb-6 text-white">
+                1000<sup>+</sup> Professional Legal Templates
+              </h2>
+              <p className="text-xl text-gray-100 mb-8">
+                Start from a professionally drafted legal template and customize
+                it to your needs with Wansom's AI-powered drafting tools.
+              </p>
+
+              <button
+                className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded font-semibold transition-colors"
+                onClick={() => (window.location.href = "/login")}
+              >
+                Explore Legal templates{" "}
+                <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
+              </button>
+            </div>
+
+          
           </div>
         </div>
       </section>
@@ -1160,18 +1199,6 @@ export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: stri
 };
 
 function DraftFeatures() {
-  const [expandedSections, setExpandedSections] = useState({
-    review: true,
-    drafts: false,
-    folders: false
-  });
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
 
   return (
     <section className="section-spacing bg-white" id="legal-research">
@@ -1267,104 +1294,12 @@ function DraftFeatures() {
             </div>
           </div>
           <div className="space-y-4 mt-24 lg:mt-0">
-            <h3 className="font-semibold text-lg text-black">
+            <h3 className="font-semibold text-heading-2 text-black">
                  Generate Drafts Instantly
                 </h3>
-            <p className=" text-black mb-8">
+            <p className=" text-black text-xl mb-8">
      Start from Scratch or select from 1,000+ advocate-vetted templates and let AI refine documents in a unified editor.
             </p>
-
-            {/* Enhanced AI Document Review section */}
-            <div className="border-b border-gray-800 pb-4">
-              <button
-                onClick={() => toggleSection('review')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.review}
-                aria-controls="review-content"
-                aria-label={`${expandedSections.review ? 'Collapse' : 'Expand'} Enhanced AI Document Review section`}
-              >
-                <h3 className="font-semibold text-lg text-black">
-                Smarter Redlining
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-black transition-transform duration-200 ${
-                    expandedSections.review ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="review-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-black">
-                 Wansom learns from your writing style, prior documents and guidelines to instantly mark up and redline entire agreements according to your set instructions.
-                </p>
-              </div>
-            </div>
- {/* Document Folders section */}
-            <div className="pb-4 ">
-              <button
-                onClick={() => toggleSection('drafts')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.drafts}
-                aria-controls="draft-content"
-                aria-label={`${expandedSections.drafts ? 'Collapse' : 'Expand'} Document Review section`}
-              >
-                <h3 className="font-semibold text-lg text-black">
-                Review with Precision
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-black transition-transform duration-200 ${
-                    expandedSections.drafts ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="folders-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.drafts ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-black">
-                  Leverage AI to identify risks, suggest improvements, and ensure compliance with legal standards in your documents.
-                </p>
-              </div>
-            </div>
-            {/* Document Folders section */}
-            <div className="pb-4">
-              <button
-                onClick={() => toggleSection('folders')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.folders}
-                aria-controls="folders-content"
-                aria-label={`${expandedSections.folders ? 'Collapse' : 'Expand'} Document Folders section`}
-              >
-                <h3 className="font-semibold text-lg text-black">
-                Secure Document Storage
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-black transition-transform duration-200 ${
-                    expandedSections.folders ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="folders-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.folders ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-black">
-                  Organize and store documents into customizable folders and
-                  subfolders for easy retrieval and management.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
