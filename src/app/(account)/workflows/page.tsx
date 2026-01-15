@@ -30,15 +30,9 @@ import { useSession } from "next-auth/react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog";
 import LogoAnimation from "@/components/commons/LogoAnimation";
+import ProAccessModal from "@/components/modals/ProAccess";
+import { useOrganization } from "@/store/profile.store";
 
-
-interface WorkflowStep {
-  id: string;
-  title: string;
-  completed: boolean;
-  dueDate?: string;
-  assignee?: string;
-}
 
 // Premade AI Associate Templates - Ready to use legal AI assistants
 const premadeAssociates = [
@@ -168,6 +162,7 @@ export default function WorkflowsPage() {
     name: string;
   } | null>(null);
   const [creatingTemplateId, setCreatingTemplateId] = useState<string | null>(null);
+  const [showProAccess, setShowProAccess] = useState(false);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -175,6 +170,7 @@ export default function WorkflowsPage() {
   const { createProject } = useProjectStore();
   const { createConversation } = useChatStore();
   const { notify } = useNotifications();
+  const { isUpgrading, requestUpgrade } = useOrganization();
 
   const {
     associates,
@@ -244,23 +240,37 @@ export default function WorkflowsPage() {
       }
 
       // Create conversation with the associate linked
-      const conversation = await createConversation(
-        newProject.id,
-        `Chat with ${associate.name}`,
-        associate.id
-      );
+      try {
+        const conversation = await createConversation(
+          newProject.id,
+          `Chat with ${associate.name}`,
+          associate.id
+        );
 
-      if (!conversation) {
-        notify.error("Failed to create conversation");
+        if (!conversation) {
+          notify.error("Failed to create conversation");
+          return;
+        }
+
+        // Success notification
+        notify.success(`Workspace created with ${associate.name}!`);
+
+        // Navigate to the new workspace
+        router.push(`/projects/${newProject.id}`);
+      } catch (convError: any) {
+        // Check if this is a subscription limit error
+        if (convError.status === 403 && convError.requiresUpgrade) {
+          setShowProAccess(true);
+          return;
+        }
+        throw convError; // Re-throw other errors
+      }
+    } catch (error: any) {
+      // Check if this is a subscription limit error
+      if (error.status === 403 && error.requiresUpgrade) {
+        setShowProAccess(true);
         return;
       }
-
-      // Success notification
-      notify.success(`Workspace created with ${associate.name}!`);
-
-      // Navigate to the new workspace
-      router.push(`/projects/${newProject.id}`);
-    } catch (error: any) {
       console.error("Error creating workspace with associate:", error);
       notify.error(error.message || "Failed to create workspace");
     }
@@ -403,7 +413,7 @@ export default function WorkflowsPage() {
             disabled={isProcessing || !!creatingTemplateId}
           >
             <Plus className="mr-2 h-4 w-4" />
-            New Associate
+            New AI Associate
           </Button>
         </div>
 
@@ -509,6 +519,19 @@ export default function WorkflowsPage() {
         itemName={associateToDelete?.name}
         itemType="associate"
         isLoading={isProcessing}
+      />
+
+      {/* Pro Access Modal */}
+      <ProAccessModal
+        isOpen={showProAccess}
+        onClose={() => setShowProAccess(false)}
+        onRequestAccess={requestUpgrade}
+        isLoading={isUpgrading}
+        userData={{
+          name: profile?.fullName ?? undefined,
+          email: profile?.email,
+          accountType: profile?.organization?.accountType
+        }}
       />
     </div>
   );

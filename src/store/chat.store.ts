@@ -197,6 +197,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       return newConversation;
     } catch (error: any) {
+      // If this is a subscription limit error, throw it for the component to handle
+      if (error.status === 403 && error.requiresUpgrade) {
+        set({ isLoading: false });
+        throw error;
+      }
       set({
         error: error.message || 'Failed to create conversation',
         isLoading: false
@@ -258,6 +263,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       return true;
     } catch (error: any) {
+      // If this is a subscription limit error, throw it for the component to handle
+      if (error.status === 403 && error.requiresUpgrade) {
+        throw error;
+      }
       set({ error: error.message || 'Failed to assign associate' });
       return false;
     }

@@ -4,6 +4,7 @@ import { PrismaClient } from '@/prisma/client'
 import { z } from 'zod'
 import { checkProjectAccess } from '@/lib/auth/authorization'
 import { withAuth, withErrorHandler } from '@/lib/api/middleware'
+import { canUseAssociates } from '@/lib/subscription'
 
 const prisma = new PrismaClient()
 
@@ -140,6 +141,33 @@ export const POST = withErrorHandler(withAuth(async (
   // Parse and validate request body
   const body = await request.json();
   const { title, aiAssociateId } = createConversationSchema.parse(body);
+
+  // If an AI associate is being assigned, check if user has premium access
+  if (aiAssociateId) {
+    // Get the project to find organization
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { organizationId: true }
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    const associateCheck = await canUseAssociates(project.organizationId);
+    if (!associateCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: associateCheck.reason,
+          requiresUpgrade: true
+        },
+        { status: 403 }
+      );
+    }
+  }
 
   // Create conversation with optional AI associate
   const conversation = await prisma.conversation.create({

@@ -1,6 +1,5 @@
 // src/store/associates.store.ts
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
 import { apiService } from '@/lib/api';
 import { AIAssociate, CreateAssociateInput, UpdateAssociateInput } from '@/types/associates';
 import { ApiResponse } from '@/types';
@@ -10,10 +9,9 @@ interface AssociatesState {
   associatesMap: Map<string, AIAssociate>;
   isLoading: boolean;
   error: string | null;
-  lastFetched: number | null;
 
   // Methods
-  fetchAssociates: (forceRefresh?: boolean) => Promise<AIAssociate[]>;
+  fetchAssociates: () => Promise<AIAssociate[]>;
   createAssociate: (input: CreateAssociateInput) => Promise<AIAssociate | null>;
   updateAssociate: (id: string, input: UpdateAssociateInput) => Promise<AIAssociate | null>;
   deleteAssociate: (id: string) => Promise<boolean>;
@@ -24,7 +22,7 @@ interface AssociatesState {
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   refreshAssociates: () => Promise<void>;
-  invalidateCache: () => void;
+  clearAssociates: () => void;
 
   // Optimized getters
   getAssociateById: (id: string) => AIAssociate | undefined;
@@ -35,54 +33,38 @@ const createAssociatesMap = (associates: AIAssociate[]): Map<string, AIAssociate
   return new Map(associates.map(associate => [associate.id, associate]));
 };
 
-// Cache duration: 5 minutes
-const CACHE_DURATION = 5 * 60 * 1000;
+export const useAssociatesStore = create<AssociatesState>((set, get) => ({
+  associates: [],
+  associatesMap: new Map(),
+  isLoading: false,
+  error: null,
 
-export const useAssociatesStore = create<AssociatesState>()(
-  persist(
-    (set, get) => ({
-      associates: [],
-      associatesMap: new Map(),
-      isLoading: false,
-      error: null,
-      lastFetched: null,
+  fetchAssociates: async (): Promise<AIAssociate[]> => {
+    try {
+      set({ isLoading: true, error: null });
 
-      fetchAssociates: async (forceRefresh = false): Promise<AIAssociate[]> => {
-        const state = get();
+      const response = await apiService.get<ApiResponse<{ associates: AIAssociate[] }>>(
+        '/api/associates'
+      );
+      console.log(response,"associate response")
 
-        // Cache check
-        const now = Date.now();
-        const hasRecentData = state.lastFetched && (now - state.lastFetched) < CACHE_DURATION;
+      const associates = response.data.associates ?? [];
+      console.log(associates,"found these associates")
 
-        if (hasRecentData && !forceRefresh && state.associates.length > 0) {
-          return state.associates;
-        }
+      set({
+        associates,
+        associatesMap: createAssociatesMap(associates),
+        isLoading: false
+      });
 
-        try {
-          set({ isLoading: true, error: null });
+      return associates;
 
-          const response = await apiService.get<ApiResponse<{ associates: AIAssociate[] }>>(
-            '/api/associates'
-          );
-
-          const associates = response.data.associates ?? [];
-          console.log(associates,"found these associates")
-
-          set({
-            associates,
-            associatesMap: createAssociatesMap(associates),
-            isLoading: false,
-            lastFetched: now
-          });
-
-          return associates;
-
-        } catch (error: any) {
-          const errorMessage = error.message || 'Failed to fetch associates';
-          set({ error: errorMessage, isLoading: false });
-          return state.associates;
-        }
-      },
+    } catch (error: any) {
+      const errorMessage = error.message || 'Failed to fetch associates';
+      set({ error: errorMessage, isLoading: false });
+      return [];
+    }
+  },
 
       createAssociate: async (input: CreateAssociateInput) => {
         try {
@@ -101,8 +83,7 @@ export const useAssociatesStore = create<AssociatesState>()(
             return {
               associates: newAssociates,
               associatesMap: createAssociatesMap(newAssociates),
-              isLoading: false,
-              lastFetched: Date.now()
+              isLoading: false
             };
           });
 
@@ -133,8 +114,7 @@ export const useAssociatesStore = create<AssociatesState>()(
             return {
               associates: newAssociates,
               associatesMap: createAssociatesMap(newAssociates),
-              isLoading: false,
-              lastFetched: Date.now()
+              isLoading: false
             };
           });
 
@@ -155,8 +135,7 @@ export const useAssociatesStore = create<AssociatesState>()(
             const newAssociates = state.associates.filter(a => a.id !== id);
             return {
               associates: newAssociates,
-              associatesMap: createAssociatesMap(newAssociates),
-              lastFetched: Date.now()
+              associatesMap: createAssociatesMap(newAssociates)
             };
           });
 
@@ -181,16 +160,14 @@ export const useAssociatesStore = create<AssociatesState>()(
 
       setAssociates: (associates) => set({
         associates,
-        associatesMap: createAssociatesMap(associates),
-        lastFetched: Date.now()
+        associatesMap: createAssociatesMap(associates)
       }),
 
       addAssociate: (associate) => set((state) => {
         const newAssociates = [associate, ...state.associates];
         return {
           associates: newAssociates,
-          associatesMap: createAssociatesMap(newAssociates),
-          lastFetched: Date.now()
+          associatesMap: createAssociatesMap(newAssociates)
         };
       }),
 
@@ -198,8 +175,7 @@ export const useAssociatesStore = create<AssociatesState>()(
         const newAssociates = state.associates.filter(a => a.id !== id);
         return {
           associates: newAssociates,
-          associatesMap: createAssociatesMap(newAssociates),
-          lastFetched: Date.now()
+          associatesMap: createAssociatesMap(newAssociates)
         };
       }),
 
@@ -213,28 +189,16 @@ export const useAssociatesStore = create<AssociatesState>()(
 
       // Force refresh associates
       refreshAssociates: async () => {
-        await get().fetchAssociates(true);
+        await get().fetchAssociates();
       },
 
-      // Clear cache to force next fetch
-      invalidateCache: () => {
-        set({ lastFetched: null });
+      // Clear all associates (useful for logout)
+      clearAssociates: () => {
+        set({
+          associates: [],
+          associatesMap: new Map(),
+          error: null
+        });
       }
-    }),
-    {
-      name: 'associates-store',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        associates: state.associates,
-        lastFetched: state.lastFetched,
-      }),
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // Recreate Map from persisted array
-          state.associatesMap = createAssociatesMap(state.associates);
-        }
-      },
-      version: 1,
     }
-  )
-);
+));

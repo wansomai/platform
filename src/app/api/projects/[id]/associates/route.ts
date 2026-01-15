@@ -4,6 +4,7 @@ import { PrismaClient } from "@/prisma/client";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { checkProjectAccess } from "@/lib/auth/authorization";
 import { getActiveOrganizationId } from "@/lib/api/org-helpers";
+import { canUseAssociates } from "@/lib/subscription";
 import { z } from "zod";
 
 const prisma = new PrismaClient();
@@ -98,6 +99,18 @@ export const POST = withErrorHandler(withAuth(async (
       return NextResponse.json(
         { error: 'Associate not found' },
         { status: 404 }
+      );
+    }
+
+    // Check if user has premium access before allowing assignment
+    const associateCheck = await canUseAssociates(currentOrgId);
+    if (!associateCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: associateCheck.reason,
+          requiresUpgrade: true
+        },
+        { status: 403 }
       );
     }
 

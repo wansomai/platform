@@ -41,9 +41,9 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
   };
 
   // Fetch associates
-  const fetchAssociates = async (forceRefresh = false) => {
+  const fetchAssociates = async () => {
     try {
-      await storeFetchAssociates(forceRefresh);
+      await storeFetchAssociates();
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to fetch associates';
       handleError(errorMessage);

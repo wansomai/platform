@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import Navbar from "@/components/layout/Navbar";
 import PricingSection from "@/components/home/pricing";
 import Footer from "@/components/layout/Footer";
+import { DraftPlus } from '../ai-legal-drafting/DocDraftingPage';
 
 export const metadata: Metadata = {
   title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
@@ -36,14 +37,7 @@ const PricingPage = () => {
     return (
         <div>
             <Navbar/>
-              <section className="pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
-         <div className="container mx-auto px-4 lg:px-8 py-12  text-white">
-    <h1 className=" text-5xl mb-6 text-white">Our Pricing</h1>
-              <div className=" text-sm  mb-5 ">
-                Home / Pricing
-              </div>
-         </div>
-     </section>
+     <DraftPlus title=''/>
             <PricingSection/>
             <Footer/>
         </div>

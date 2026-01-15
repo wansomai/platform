@@ -17,68 +17,69 @@ const PricingSection: React.FC = () => {
       priceMonthly: "0",
       priceAnnually: "0",
       features: [
-        { name: "Access to Legal AI Assistant", included: true },
-        { name: "Upto 200MB Document Vault Storage", included: true },
-        { name: "One dedicated workspace", included: true },
-        { name: "Limited document generation", included: true },
-        { name: "Up to 3 automated processes per month", included: true },
+        { name: "Access to Legal AI Assistant & Tools", included: true },
+        { name: "Up to 500MB Document Vault Storage", included: true },
+        { name: "Two dedicated legal workspaces", included: true },
+        { name: "Upto 200MB documents processed at a time", included: true },
+        { name: "Up to 3 automated Workflows per month", included: true },
         { name: "No Integrations Supported", included: true },
-        { name: "Email support", included: true },
-        { name: "Custom workflows", included: false },
-        { name: "Advanced AI automations", included: false },
-        { name: "Priority support", included: false },
+        { name: "Community support", included: true },
+        { name: "Legal Drafting Templates", included: false },
+        { name: "AI Associates", included: false },
+        { name: "Team Collaboration", included: false },
       ],
       popular: false,
       cta: "Try It Free",
-      ctaColor: "bg-gray-700 hover:bg-[#005c4d]"
+      ctaColor: "bg-gray-800 hover:bg-[#005c4d]"
     },
     {
       name: "Professional",
       description: "For legal professionals and small practices",
-      priceMonthly: "39",
-      priceAnnually: "29",
+      priceMonthly: "15",
+      priceAnnually: "12",
       features: [
-        { name: "Access to Legal AI Assistant", included: true },
-        { name: "Upto 5GB Document Vault Storage", included: true },
-        { name: "Upto 5 dedicated workspaces", included: true },
+        { name: "Access to Legal AI Assistant & Tools", included: true },
+        { name: "Upto 10GB Document Vault Storage", included: true },
+        { name: "Upto 100 dedicated legal workspaces", included: true },
         { name: "Unlimited document generation", included: true },
-        { name: "Up to 15 automated processes", included: true },
-        { name: "Access to All Integrations", included: true },
-        { name: "Email & chat support", included: true },
-        { name: "Custom workflows", included: true },
-        { name: "Advanced AI automations", included: false },
-        { name: "Priority support", included: true },
+        { name: "Unlimited automated workflows", included: true },
+        { name: "Access to All Integrations", included: true },  
+        { name: "AI Associates", included: true },
+        { name: "Legal Drafting Templates", included: true },
+        { name: "Email support", included: true },
+      
+        { name: "Team Collaboration", included: false },
       ],
       popular: true,
       cta: "Request Access",
-      ctaColor: "bg-primary hover:bg-green-800"
+      ctaColor: "bg-secondary hover:bg-green-800"
     },
     {
-      name: "Enterprise",
+      name: "Teams & Enterprise",
       description: "For law firms and legal departments",
-      priceMonthly: "99",
-      priceAnnually: "79",
+      priceMonthly: "149",
+      priceAnnually: "119",
       features: [
-        { name: "Access to Legal AI Assistant", included: true },
-        { name: "Upto 10GB Document Vault Storage", included: true },
+        { name: "Access to Legal AI Assistant & Tools", included: true },
+        { name: "Upto 100GB Document Vault Storage", included: true },
         { name: "Unlimited dedicated workspaces", included: true },
         { name: "Unlimited document generation", included: true },
-        { name: "Unlimited automated processes", included: true },
         { name: "Access to All Integrations", included: true },
         { name: "Request Custom Integrations", included: true },
-        { name: "Email & chat support", included: true },
+        { name: "Legal Drafting Templates", included: true },
+        { name: "Team Collaboration", included: true },
         { name: "Custom workflows", included: true },
         { name: "Advanced AI automations", included: true },
         { name: "Priority support", included: true },
       ],
       popular: false,
       cta: "Book A Demo",
-      ctaColor: "bg-gray-700 hover:bg-yellow-600"
+      ctaColor: "bg-primary hover:bg-yellow-600"
     }
   ];
 
   return (
-    <section className="mt-20 py-20 bg-gray-50" id="pricing">
+    <section className="section-spacing bg-gray-50" id="pricing">
       <div className="container mx-auto px-4">
         {/* Heading */}
         <div className="text-center mb-16">
@@ -134,7 +135,7 @@ const PricingSection: React.FC = () => {
               <h3 className="text-xl font-bold">{plan.name}</h3>
               <p className="text-gray-600 mt-2 mb-6">{plan.description}</p>
               
-              {/* <div className="mb-6">
+              <div className="mb-6">
                 <span className="text-4xl font-bold">
                   ${billingPeriod === 'monthly' ? plan.priceMonthly : plan.priceAnnually}
                 </span>
@@ -146,7 +147,7 @@ const PricingSection: React.FC = () => {
                     ${(Number(plan.priceMonthly) * 12 - Number(plan.priceAnnually) * 12).toFixed(0)} saved per year
                   </div>
                 )}
-              </div> */}
+              </div>
               
               <ul className="space-y-4 mb-8 flex-grow">
                 {plan.features.map((feature, featureIndex) => (

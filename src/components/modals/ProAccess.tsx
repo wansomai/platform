@@ -92,15 +92,15 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 Create Unlimited Workspaces
               </h2>
               <p className="text-sm text-gray-600">
-                Collaborate more with your team,unlimited client/matter workspaces and messages
+                Collaborate more with your team, unlimited client/matter workspaces and messages
               </p>
             </div>
             <div>
               <h2 className="text-lg font-semibold">
-                Automated Workflows
+                AI Associates & Automated Workflows
               </h2>
               <p className="text-sm text-gray-600">
-                Build custom automated workflows for routine tasks and processes
+                Use specialized AI Associates in chat and build custom automated workflows for routine tasks
               </p>
             </div>
              <div>
@@ -108,7 +108,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 10000+ Legal Templates
               </h2>
               <p className="text-sm text-gray-600">
-             Boost legal drafting with access to 10,000+ customizable professional legal templates
+                Boost legal drafting with access to 10,000+ customizable professional legal templates
               </p>
             </div>
           </div>

@@ -171,3 +171,19 @@ export async function getRemainingUsage(organizationId: string): Promise<{
       : Math.max(0, planInfo.limits.maxMessages - planInfo.currentUsage.messageCount),
   };
 }
+
+/**
+ * Check if user can use AI Associates (premium feature)
+ */
+export async function canUseAssociates(organizationId: string): Promise<{ allowed: boolean; reason?: string }> {
+  const planInfo = await getUserPlanInfo(organizationId);
+
+  if (planInfo.limits.hasProAccess) {
+    return { allowed: true };
+  }
+
+  return {
+    allowed: false,
+    reason: 'AI Associates are a premium feature. Upgrade to Enterprise to use associates in chat.'
+  };
+}

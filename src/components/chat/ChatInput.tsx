@@ -613,19 +613,42 @@ export function ChatInput({
       } else {
         // First, assign the associate to the project (if not already assigned)
         // Note: assignAssociateToProject may fail if already assigned, which is fine
-        await assignAssociateToProject(projectId, associateId);
+        try {
+          await assignAssociateToProject(projectId, associateId);
+        } catch (error: any) {
+          // If this is a subscription limit error, show upgrade modal
+          if (error.status === 403 && error.requiresUpgrade) {
+            setShowProAccess(true);
+            return;
+          }
+          // Ignore other errors (like already assigned), continue to assign to conversation
+        }
 
         // Then assign associate to conversation
-        success = await useChatStore.getState().assignAssociateToConversation(
-          projectId,
-          currentConversation.id,
-          associateId
-        );
-        if (success) {
-          notify.success(`${associate?.name} added`);
+        try {
+          success = await useChatStore.getState().assignAssociateToConversation(
+            projectId,
+            currentConversation.id,
+            associateId
+          );
+          if (success) {
+            notify.success(`${associate?.name} added`);
+          }
+        } catch (error: any) {
+          // If this is a subscription limit error, show upgrade modal
+          if (error.status === 403 && error.requiresUpgrade) {
+            setShowProAccess(true);
+            return;
+          }
+          throw error; // Re-throw other errors
         }
       }
     } catch (error: any) {
+      // Check if this is a subscription limit error
+      if (error.status === 403 && error.requiresUpgrade) {
+        setShowProAccess(true);
+        return;
+      }
       notify.error("Failed to update AI Associate");
     }
   };
@@ -1064,7 +1087,7 @@ export function ChatInput({
                               return (
                                 <div
                                   key={associate.id}
-                                  className="flex items-start p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors"
+                                  className="flex items-start p-2 rounded hover:bg-gray-100 cursor-pointer transition-colors relative"
                                   onClick={() => handleAssociateToggle(associate.id, isSelected)}
                                 >
                                   <div className={cn(

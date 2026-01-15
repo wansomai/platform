@@ -26,6 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProjectStore } from "@/store/project.store";
+import { useAssociatesStore } from "@/store/associates.store";
 import {
   Sheet,
   SheetContent,
@@ -89,6 +90,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { projects, fetchProjects } = useProjectStore();
+  const { clearAssociates } = useAssociatesStore();
 
   // Close mobile menu when screen resizes to desktop
   useEffect(() => {
@@ -112,6 +114,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   // Handle logout
   const handleLogout = async () => {
+    // Clear associates store before logging out
+    clearAssociates();
     await signOut({ redirect: true, callbackUrl: "/login" });
   };
 
