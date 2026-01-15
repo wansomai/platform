@@ -193,11 +193,11 @@ const DemoPage = () => {
             <h1 className="text-heading-1 font-serif text-gray-900 mb-6 leading-tight">
               Better legal work <br/>starts here
             </h1>
-            <p className="text-2xl text-gray-600 mb-6">
+            {/* <p className="text-2xl text-gray-600 mb-6">
               Work smarter. Waste Less. See how.
-            </p>
+            </p> */}
             <p className="text-lg text-gray-600 leading-relaxed">
-              Get a personalized walkthrough of the Wansom AI platform. Learn how AI helps firms like yours streamline workflows, accelerate document review, and improve client service across the board.
+              Get a personalized walkthrough of the Wansom AI platform.
             </p>
           </div>
 
