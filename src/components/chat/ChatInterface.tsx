@@ -17,6 +17,7 @@ import LogoAnimation from "../commons/LogoAnimation"
 import { ProcessingStatus } from "./ProcessingStatus"
 import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
 import { ReportDownloadCard } from "./ReportDownloadCard"
+import { DocumentArtifact } from "./DocumentArtifact"
 import { Message } from "@/types"
 
 // Empty state component for when there are no messages
@@ -91,7 +92,7 @@ export function ChatInterface() {
               key={message.id || message.tempId || `temp-${message.timestamp}-${index}`}
               message={message}
               user={session?.user}
-              projectId={currentProject?.id || ''}
+              projectId={currentConversation.projectId}
               onCopy={() => copyMessageToClipboard(message.content)}
             />
           ))}
@@ -242,6 +243,18 @@ const ChatMessageItem = React.memo(({
             <ReportDownloadCard
               report={message.metadata?.report || message.report}
               projectId={projectId}
+            />
+          )}
+
+          {/* Display Document Artifact if available */}
+          {!isUser && message.document && (
+            <DocumentArtifact
+              title={message.document.title}
+              format={message.document.format}
+              htmlContent={message.document.htmlContent}
+              documentId={message.document.documentId}
+              projectId={projectId}
+              conversationId={message.conversationId || ''}
             />
           )}
         </div>

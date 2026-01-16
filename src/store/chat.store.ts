@@ -329,7 +329,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 references: data.references,
                 webSearchSources: data.webSearchSources,
                 report: data.report, // Include report metadata if present
-                metadata: data.report ? { report: data.report } : undefined, // Also add to metadata for UI
+                document: data.document, // Include inline document metadata if present
+                metadata: data.report || data.document
+                  ? {
+                      ...(data.report && { report: data.report }),
+                      ...(data.document && { document: data.document })
+                    }
+                  : undefined,
                 isStreaming: false
               });
               break;

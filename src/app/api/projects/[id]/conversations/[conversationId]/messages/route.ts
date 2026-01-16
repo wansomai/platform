@@ -6,7 +6,7 @@ import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorizati
 import { GoogleGenAI } from '@google/genai';
 
 import { canSendMessage } from '@/lib/subscription';
-import { legalDraftingTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
+import {  coreDocumentTools, canvasTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
 
@@ -34,7 +34,8 @@ const DEFAULT_SETTINGS: {
   googleCalendar?: boolean;
   gmail?: boolean;
   temperature: number;
-  legalDrafting: boolean;
+  canvasMode: boolean;  // Renamed from legalDrafting - controls canvas-specific tools only
+  legalDrafting?: boolean;  // Legacy support - maps to canvasMode
   jurisdiction?: JurisdictionType;
   aiAssociates?: boolean;
 } = {
@@ -43,7 +44,7 @@ const DEFAULT_SETTINGS: {
   webSearch: false,
   model: 'gemini-3-pro-preview',
   temperature: 0.7,
-  legalDrafting: false,
+  canvasMode: false,  // Canvas editing disabled by default (but core document tools are always available)
   googleCalendar: false,
   gmail: false,
   jurisdiction: undefined,
@@ -240,9 +241,12 @@ export async function POST(
             }
           }
 
-          // Check if project is in drafting mode
-          // With function calling enabled, the AI will decide when to draft documents vs ask questions
-          const isDraftingMode = settings.legalDrafting === true;
+          // Canvas Mode: Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
+          // Legacy support: legalDrafting setting maps to canvasMode
+          const isCanvasMode = settings.canvasMode === true || settings.legalDrafting === true;
+
+          // Core document tools are ALWAYS available (no toggle needed)
+          const hasCoreDocumentTools = true;
 
           // Load AI Associates for this project (if enabled)
           const associateToolsPromise = settings.aiAssociates !== false
@@ -256,9 +260,9 @@ export async function POST(
                     let relevantContent = "";
                     const scannedDocuments: Array<{ title: string; fileUrl: string; mimeType: string }> = [];
 
-                    // Perform intent analysis in drafting mode to decide whether to update canvas
+                    // Perform intent analysis in canvas mode to decide whether to update canvas
                     let intentAnalysis: { shouldUpdateCanvas?: boolean } | undefined = undefined;
-                    if (isDraftingMode) {
+                    if (isCanvasMode) {
                       try {
                         const recentMsgs = (messageHistory || []).slice(-3).map((m: any) => m.content);
                         const analysis = await checkIfReadyToDraft(
@@ -275,8 +279,8 @@ export async function POST(
                       }
                     }
 
-                    // Include canvas document if in drafting mode and analysis intent indicates not updating canvas
-                    if (isDraftingMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
+                    // Include canvas document if in canvas mode and analysis intent indicates not updating canvas
+                    if (isCanvasMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
                       relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
                     }
 
@@ -374,10 +378,10 @@ export async function POST(
           // Create unified system message for all queries
           const fullProject = project;
 
-          // Create context-aware system message for drafting mode
-          let draftingContext = '';
-          if (isDraftingMode && canvasDocument) {
-            draftingContext = `
+          // Create context-aware system message for canvas mode
+          let canvasContext = '';
+          if (isCanvasMode && canvasDocument) {
+            canvasContext = `
 
             CANVAS DOCUMENT CONTEXT: A legal document is currently open in the canvas editor.
 
@@ -413,28 +417,54 @@ export async function POST(
           Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
           If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
 
-          ${isDraftingMode ? `
-          **DRAFTING MODE ACTIVE**: You have access to special tools for legal document creation and editing:
+          **📄 DOCUMENT TOOLS AVAILABLE**:
+          You have access to powerful legal document tools to help users with drafting, review, and analysis:
 
-          🔧 **Available Tools**:
-          1. **draftNewDocument** - Creates a new legal document in the canvas editor
-             - ONLY call this when you have ALL required information (all parties, terms, conditions)
-             - If ANY critical information is missing, ask questions in your response instead
+          🔧 **Core Document Tools** (Always Available):
+          1. **generateDocumentInline** - PRIMARY tool for document generation
+             - Generates documents directly in chat with clickable preview card
+             - Users can download or open in editor from the card
+             - Use for: NDAs, contracts, letters, memos, most legal documents
+             - ONLY call when you have ALL required information
+             - Choose format intelligently:
+               • PDF for final documents (NDAs, signed contracts, official letters)
+               • DOCX for working drafts (templates, documents needing edits)
+               • MD for analysis/notes
+             - Explain format choice briefly (e.g., "as DOCX so you can edit terms")
 
-          2. **editCanvasDocument** - Modifies the existing canvas document
-             - Use when user requests changes to the current document
+          2. **reviewDocument** - Comprehensive legal review and analysis
+             - Use when user wants to review, analyze, or assess documents
+             - Generates downloadable review report
+             - When user says "review this", they mean the PRIMARY document in focus
 
           3. **searchProjectDocuments** - Search through attached project documents
              - Use when you need to find specific information or precedents
+             - Searches all documents uploaded to this project
 
-          4. **reviewDocument** - Conducts comprehensive legal review of documents
-             - Use when user wants to review, analyze, or assess documents
-             - When user says "review this", they mean the PRIMARY document in focus
+          ${isCanvasMode ? `
+          **🎨 Canvas Tools** (Canvas Mode Enabled):
+          4. **draftNewDocument** - Write complex documents directly to canvas editor
+             - Use for: Complex documents (10+ pages), explicit canvas requests
+             - Most documents should use generateDocumentInline instead
+             - ONLY call when you have ALL required information
+
+          5. **editCanvasDocument** - Modify the existing canvas document
+             - Use when user requests changes to the canvas document
+          ` : `
+          💡 **Canvas Mode**: Disabled. Users can enable it in settings to access canvas editing tools.
+          For now, use generateDocumentInline for all document generation - it creates clickable cards in chat.
+          `}
+
+          **Document Format Selection Rules**:
+          - **PDF**: Final/read-only documents ready for signing or formal use
+          - **DOCX**: Working drafts, templates, documents needing client edits
+          - **MD**: Analysis, reviews, research notes, informal summaries
+          - Default to DOCX if unsure - it's more flexible
 
           **Important Guidelines**:
-          - When a user requests a document (e.g., "create an NDA"), first assess what information you have
-          - If you're missing critical details (parties, key terms, dates, etc.), respond with questions - DO NOT call draftNewDocument yet
-          - Only call draftNewDocument once you have complete information for a professional legal document
+          - When a user requests a document, first assess what information you have
+          - If you're missing critical details (parties, key terms, dates, etc.), ask questions - DO NOT call generation yet
+          - Use generateDocumentInline for most document requests - it's fast and keeps users in conversation flow
           - Be conversational and helpful - ask for information naturally in your responses
           - After calling a function, explain what you've done in user-friendly language
 
@@ -468,7 +498,6 @@ export async function POST(
           When the user asks for reviews, they likely mean all project documents.
           After providing a review, you can offer to generate a formal report in the canvas by setting generateReport: true.
           `}
-          ` : ''}
 
           ${await (async () => {
             const associateTools = await associateToolsPromise;
@@ -497,7 +526,7 @@ export async function POST(
           })()}
 
           ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
-          ${draftingContext}
+          ${canvasContext}
             
             ${relevantContent ?
               `IMPORTANT: FULL document content is provided below for comprehensive analysis.
@@ -512,7 +541,7 @@ export async function POST(
                 "Use the document information when relevant to the query."
               }`
               :
-              isDraftingMode && canvasDocument
+              isCanvasMode && canvasDocument
                 ? `You are analyzing the current canvas document. The document content is available for your review and analysis.`
                 : conversationDocuments.length > 0
                   ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
@@ -566,28 +595,32 @@ export async function POST(
             });
           }
 
-          // Create agent for Legal Drafting
-          if (isDraftingMode) {
-            agentTools.push({
-              name: 'legalDraftingAgent',
-              description: 'A specialist agent for legal document creation and editing. Use this when you need to draft new documents, edit existing documents, review documents, or search through project documents.',
-              parameters: {
-                type: 'object',
-                properties: {
-                  action: {
-                    type: 'string',
-                    description: 'The action to perform',
-                    enum: ['draft', 'edit', 'review', 'search']
-                  },
-                  details: {
-                    type: 'string',
-                    description: 'Detailed instructions for the legal drafting agent'
-                  }
+          // Create agent for Legal Document Tools (always available)
+          // Core document tools (generate, review, search) are always available
+          // Canvas tools (draft to canvas, edit canvas) only when canvas mode is enabled
+          agentTools.push({
+            name: 'legalDocumentAgent',
+            description: isCanvasMode
+              ? 'A specialist agent for legal document creation, editing, review, and search. Use this when you need to generate documents, draft to canvas, edit canvas documents, review documents, or search through project documents.'
+              : 'A specialist agent for legal document generation, review, and search. Use this when you need to generate documents inline, review documents, or search through project documents.',
+            parameters: {
+              type: 'object',
+              properties: {
+                action: {
+                  type: 'string',
+                  description: 'The action to perform',
+                  enum: isCanvasMode
+                    ? ['generate', 'draftToCanvas', 'editCanvas', 'review', 'search']
+                    : ['generate', 'review', 'search']
                 },
-                required: ['action', 'details']
-              }
-            });
-          }
+                details: {
+                  type: 'string',
+                  description: 'Detailed instructions for the legal document agent'
+                }
+              },
+              required: ['action', 'details']
+            }
+          });
 
           // Create agent for Google Calendar
           if (useGoogleCalendar) {
@@ -637,7 +670,8 @@ export async function POST(
 
           // If we have multiple tool types, use the agent orchestration pattern
           // Otherwise, use direct tool access for better performance
-          const hasMultipleToolTypes = [useGoogleSearch, isDraftingMode, useGoogleCalendar, useGmail].filter(Boolean).length > 1;
+          // Note: Core document tools are always available, so we always have at least one tool type
+          const hasMultipleToolTypes = [useGoogleSearch, hasCoreDocumentTools, useGoogleCalendar, useGmail].filter(Boolean).length > 1;
 
           if (hasMultipleToolTypes && agentTools.length > 0) {
             // Use agent orchestration pattern - root agent calls specialized agents
@@ -654,8 +688,16 @@ export async function POST(
               // Collect all function declarations into a single array
               const allFunctionDeclarations: any[] = [];
 
-              if (isDraftingMode) {
-                allFunctionDeclarations.push(...legalDraftingTools.map(tool => ({
+              // Always include core document tools
+              allFunctionDeclarations.push(...coreDocumentTools.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters
+              })));
+
+              // Add canvas tools only if canvas mode is enabled
+              if (isCanvasMode) {
+                allFunctionDeclarations.push(...canvasTools.map(tool => ({
                   name: tool.name,
                   description: tool.description,
                   parameters: tool.parameters
@@ -917,6 +959,7 @@ export async function POST(
 
           // Variable to store report metadata from function responses
           let reportMetadata: any = null;
+          let documentMetadata: any = null;
 
           // Handle function calls if any
           if (functionCalls.length > 0) {
@@ -1093,6 +1136,11 @@ export async function POST(
             reportMetadata = functionResponses.find(
               (fr: any) => fr.functionResponse?.response?.reportReady === true
             )?.functionResponse?.response;
+
+            // Check if any function response contains inline document metadata
+            documentMetadata = functionResponses.find(
+              (fr: any) => fr.functionResponse?.response?.documentGenerated === true
+            )?.functionResponse?.response;
           }
 
           // Format the final content
@@ -1125,6 +1173,15 @@ export async function POST(
               downloadUrls: reportMetadata.downloadUrls,
               htmlContent: reportMetadata.htmlContent,
               plainText: reportMetadata.plainText,
+            };
+          }
+
+          // Add inline document metadata if present
+          if (documentMetadata && documentMetadata.document) {
+            messageMetadata.document = {
+              title: documentMetadata.document.title,
+              format: documentMetadata.document.format,
+              htmlContent: documentMetadata.document.htmlContent,
             };
           }
 
@@ -1176,7 +1233,7 @@ export async function POST(
             },
           });
           
-          // Send the final message with references and report metadata
+          // Send the final message with references, report metadata, and document metadata
           controller.enqueue(
             encoder.encode(
               JSON.stringify({
@@ -1195,6 +1252,7 @@ export async function POST(
                   page: ref.page,
                 })) || [],
                 report: messageMetadata.report, // Include report metadata if present
+                document: messageMetadata.document, // Include inline document metadata if present
               }) + '\n'
             )
           );
@@ -1319,9 +1377,31 @@ async function executeAgentCall(
         agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${systemMessage}`;
         break;
 
-      case 'legalDraftingAgent':
+      case 'legalDocumentAgent':
+      case 'legalDraftingAgent':  // Legacy support
+        // Determine if canvas mode is enabled
+        let agentCanvasMode = false;
+        if (project?.knowledgeBase?.settings) {
+          try {
+            const agentSettings = typeof project.knowledgeBase.settings === 'string'
+              ? JSON.parse(project.knowledgeBase.settings)
+              : project.knowledgeBase.settings;
+            agentCanvasMode = agentSettings.canvasMode === true || agentSettings.legalDrafting === true;
+          } catch (err) {
+            // Ignore parsing errors
+          }
+        }
+
+        // Always include core document tools
+        const agentDocTools: any[] = [...coreDocumentTools];
+
+        // Add canvas tools if canvas mode is enabled
+        if (agentCanvasMode) {
+          agentDocTools.push(...canvasTools);
+        }
+
         agentTools.push({
-          functionDeclarations: legalDraftingTools.map(tool => ({
+          functionDeclarations: agentDocTools.map((tool: any) => ({
             name: tool.name,
             description: tool.description,
             parameters: tool.parameters

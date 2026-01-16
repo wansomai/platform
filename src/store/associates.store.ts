@@ -49,8 +49,6 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
       console.log(response,"associate response")
 
       const associates = response.data.associates ?? [];
-      console.log(associates,"found these associates")
-
       set({
         associates,
         associatesMap: createAssociatesMap(associates),

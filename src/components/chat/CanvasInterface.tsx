@@ -377,7 +377,7 @@ const LegalCanvas: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-2 md:p-3 flex items-center justify-between bg-gray-50 flex-wrap gap-1 md:gap-2">
+      <div className="border-b mt-8 border-gray-200 p-2 md:p-3 flex items-center justify-between bg-gray-50 flex-wrap gap-1 md:gap-2">
         <div className="flex items-center space-x-1 md:space-x-2">
           <span className="text-sm text-gray-600"></span>
           

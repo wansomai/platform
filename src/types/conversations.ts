@@ -40,6 +40,13 @@ export interface Message {
       word: string;
     };
   };
+  document?: {
+    title: string;
+    format: 'PDF' | 'DOCX' | 'MD';
+    htmlContent: string;
+    documentId?: string;
+    downloadUrl?: string;
+  };
   isStreaming?: boolean;
   isLoading?: boolean;
   tempId?: string;

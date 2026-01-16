@@ -8,9 +8,91 @@ import { Type } from '@google/genai';
  * The AI will intelligently decide when to call these functions
  */
 
+export const generateDocumentInlineTool = {
+  name: "generateDocumentInline",
+  description: `Generates a legal document inline in the chat for quick review and download.
+
+  **WHEN TO USE**: Use this for most document requests - it's faster and keeps the user in flow.
+  - Simple documents (NDAs, letters, memos, simple contracts)
+  - Documents under 5 pages
+  - When user wants quick turnaround
+  - When user hasn't opened canvas editor
+
+  **WHEN NOT TO USE**: Use draftNewDocument for canvas instead when:
+  - Document is complex (10+ pages)
+  - User explicitly asks to "open in editor" or "work in canvas"
+  - Document requires extensive manual editing
+  - User is already in canvas mode
+
+  The generated document will appear as a clickable card in chat with:
+  - Preview of the content
+  - Download button
+  - Click to open in editor
+
+  **CRITICAL**: Only call when you have ALL required information.`,
+
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      documentType: {
+        type: Type.STRING,
+        description: "Type of legal document (e.g., 'Non-Disclosure Agreement', 'Employment Contract', 'Letter')",
+      },
+      title: {
+        type: Type.STRING,
+        description: "Clear, descriptive title for the document (e.g., 'Mutual NDA - Vendor Partnership', 'Employment Offer - Senior Developer')"
+      },
+      parties: {
+        type: Type.ARRAY,
+        description: "All parties with complete legal names and roles",
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            name: {
+              type: Type.STRING,
+              description: "Full legal name of the party"
+            },
+            role: {
+              type: Type.STRING,
+              description: "Role in the agreement"
+            }
+          },
+          required: ["name", "role"]
+        }
+      },
+      terms: {
+        type: Type.OBJECT,
+        description: "Key terms and conditions specific to this document type",
+      },
+      suggestedFormat: {
+        type: Type.STRING,
+        description: "Suggested download format based on purpose: 'PDF' for final/read-only docs (NDAs, letters, notices), 'DOCX' for editable/working docs (drafts, templates), 'MD' for analysis/notes",
+        enum: ['PDF', 'DOCX', 'MD']
+      },
+      formatReason: {
+        type: Type.STRING,
+        description: "Brief explanation for the format choice (e.g., 'as DOCX so you can edit terms', 'as PDF ready for signature')"
+      },
+      additionalContext: {
+        type: Type.STRING,
+        description: "Any additional context or special requirements"
+      }
+    },
+    required: ["documentType", "title", "parties", "terms", "suggestedFormat"]
+  }
+};
+
 export const draftNewDocumentTool = {
   name: "draftNewDocument",
   description: `Creates a new legal document in the canvas editor.
+
+  **WHEN TO USE**: Use this for complex documents or when canvas editing is needed:
+  - Complex documents (10+ pages, multiple sections)
+  - User explicitly requests canvas/editor
+  - Document needs extensive manual editing
+  - User is already working in canvas mode
+
+  **DEFAULT BEHAVIOR**: For most cases, use generateDocumentInline instead - it's faster and better UX.
 
   CRITICAL: Only call this function when you have ALL required information to create a complete, professional legal document.
 
@@ -342,7 +424,31 @@ export const getCalendarAvailabilityTool = {
 /**
  * All available tools for legal drafting mode
  */
+/**
+ * Core document tools - ALWAYS available (no toggle needed)
+ * These are fundamental legal features users expect without configuration
+ */
+export const coreDocumentTools = [
+  generateDocumentInlineTool, // PRIMARY: Generate documents inline in chat
+  reviewDocumentTool,          // Review and analyze documents
+  searchProjectDocumentsTool   // Search uploaded documents
+];
+
+/**
+ * Canvas-specific tools - Only available when Canvas Mode is enabled
+ * These are power-user features for complex document editing
+ */
+export const canvasTools = [
+  draftNewDocumentTool,    // Write complex documents to canvas
+  editCanvasDocumentTool   // Edit canvas documents
+];
+
+/**
+ * Legacy export - all legal drafting tools combined
+ * @deprecated Use coreDocumentTools and canvasTools separately
+ */
 export const legalDraftingTools = [
+  generateDocumentInlineTool,
   draftNewDocumentTool,
   editCanvasDocumentTool,
   searchProjectDocumentsTool,

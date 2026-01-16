@@ -133,8 +133,10 @@ export default function ProjectPage() {
     )
   }
   
-  // Determine which interface to show based on settings and document selection
-  const showLegalDrafting = settings?.legalDrafting || false
+  // Determine which interface to show based on settings, query params, and document selection
+  // Check for view=canvas query parameter OR canvasMode setting (legacy: legalDrafting)
+  const viewParam = searchParams.get('view')
+  const showCanvasView = viewParam === 'canvas' || settings?.canvasMode || settings?.legalDrafting || false
   const showDocumentPreview = !!selectedPreviewDocument
 
   return (
@@ -143,7 +145,7 @@ export default function ProjectPage() {
         <main className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-hidden">
             {showDocumentPreview ? <DocumentPreviewSplitView /> :
-             showLegalDrafting ? <CanvasChatSplitView /> :
+             showCanvasView ? <CanvasChatSplitView /> :
              <ChatInterface />}
           </div>
       

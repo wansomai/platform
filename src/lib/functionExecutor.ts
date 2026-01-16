@@ -27,6 +27,68 @@ export async function executeFunctionCall(
 ): Promise<any> {
   try {
     switch (functionCall.name) {
+      case 'generateDocumentInline': {
+        const { documentType, title, parties, terms, suggestedFormat, formatReason, additionalContext } = functionCall.args as any;
+
+        // Build project context
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || []
+        };
+
+        // Create a detailed drafting request
+        const partiesText = Array.isArray(parties) ? parties.map((p: any) => `- ${p.name} (${p.role})`).join('\n') : 'Not specified';
+        const termsText = typeof terms === 'object' ? JSON.stringify(terms, null, 2) : terms;
+
+        const draftingRequest = `Create a ${documentType} with the following details:
+
+Title: ${title}
+
+Parties:
+${partiesText}
+
+Terms: ${termsText}
+
+${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
+
+        // Send initial status
+        if (streamCallback) {
+          streamCallback({
+            type: 'status',
+            status: 'generating_inline_document',
+            message: `Generating ${documentType}...`,
+          });
+        }
+
+        // Generate the document
+        const result = await AIDocumentService.generateDocument(
+          draftingRequest,
+          projectContext
+        );
+
+        if (!result.success) {
+          return { error: result.error || 'Failed to generate document' };
+        }
+
+        // Return document metadata for inline display
+        return {
+          success: true,
+          documentGenerated: true,
+          document: {
+            title: title,
+            format: suggestedFormat,
+            htmlContent: result.htmlContent || '',
+          },
+          message: `I've created your ${documentType} ${formatReason ? formatReason : ''}.`,
+          formatReason
+        };
+      }
+
       case 'draftNewDocument': {
         const { documentType, parties, terms, additionalContext } = functionCall.args as any;
 
