@@ -62,7 +62,8 @@ export interface ProjectSettings {
   citeSources: boolean;
   suggestActions: boolean;
   webSearch: boolean;
-  legalDrafting: boolean;
+  canvasMode?: boolean;  // Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
+  legalDrafting?: boolean;  // Legacy: maps to canvasMode
   googleCalendar?: boolean;
   gmail?: boolean;
   aiAssociates?: boolean;

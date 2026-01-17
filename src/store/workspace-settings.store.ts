@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS: ProjectSettings = {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  legalDrafting: false,
+  canvasMode: false,  // Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
   aiAssociates: true,
   model: 'gemini-2.0-flash-exp',
   temperature: 0.7,
