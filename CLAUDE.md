@@ -8,37 +8,13 @@ Wansom AI is a legal tech platform built with Next.js 16 that provides AI-powere
 
 ## Development Commands
 
-### Core Commands
 ```bash
-# Development server (runs on http://localhost:3000)
-npm run dev
-
-# Production build (includes Prisma client generation)
-npm run build
-
-# Production server
-npm start
-
-# Linting
-npm run lint
-```
-
-### Database Commands
-```bash
-# Generate Prisma client (required after schema changes)
-npx prisma generate
-
-# Create and apply migrations
-npx prisma migrate dev --name <migration_name>
-
-# Apply migrations in production
-npx prisma migrate deploy
-
-# Open Prisma Studio (database GUI)
-npx prisma studio
-
-# Reset database (development only)
-npx prisma migrate reset
+npm run dev           # Development server (http://localhost:3000)
+npm run build         # Production build (includes prisma generate)
+npm run lint          # ESLint
+npx prisma generate   # Generate Prisma client (required after schema changes)
+npx prisma migrate dev --name <name>  # Create and apply migration
+npx prisma studio     # Database GUI
 ```
 
 ## Architecture Overview
@@ -48,313 +24,173 @@ npx prisma migrate reset
 - **Database**: PostgreSQL via Prisma ORM
 - **Authentication**: NextAuth.js with JWT (credentials + Google OAuth)
 - **State Management**: Zustand stores
-- **UI Components**: Radix UI + TailwindCSS
-- **AI Integration**: Google Gemini API (multimodal - text and vision)
+- **UI Components**: Radix UI + shadcn/ui + TailwindCSS
+- **AI Integration**: Google Gemini API via `@google/genai` (multimodal - text and vision)
 - **File Storage**: Vercel Blob Storage
-
-### Directory Structure
-
-```
-src/
-├── app/                          # Next.js App Router pages
-│   ├── (account)/               # Authenticated user pages (dashboard, projects, vault, workflows)
-│   ├── (admin)/                 # Admin-only pages
-│   ├── (auth)/                  # Authentication pages (login, register, password reset)
-│   ├── (landingpages)/          # Marketing and public pages
-│   ├── (platform)/              # Main platform features
-│   ├── api/                     # API routes
-│   │   ├── auth/               # Authentication endpoints
-│   │   ├── documents/          # Document management
-│   │   ├── organization/       # Organization & team management
-│   │   ├── projects/           # Project & workspace management
-│   │   ├── workspace/          # Shared workspace features
-│   │   └── submissions/        # Form submissions
-│   └── layout.tsx              # Root layout with auth provider
-├── components/                  # React components
-│   ├── admin/                  # Admin dashboard components
-│   ├── associates/             # AI associate management
-│   ├── chat/                   # Chat interface components
-│   ├── documents/              # Document viewer/editor
-│   ├── home/                   # Landing page components
-│   ├── layout/                 # Layout components (navbar, sidebar)
-│   ├── organization/           # Organization settings
-│   ├── projects/               # Project management UI
-│   ├── ui/                     # Reusable UI components (shadcn/ui)
-│   └── workspace/              # Workspace collaboration UI
-├── lib/                        # Core utilities and services
-│   ├── auth/                   # Authentication & authorization
-│   │   ├── auth-options.ts    # NextAuth configuration
-│   │   ├── permissions.ts     # Permission checking utilities
-│   │   └── authorization.ts   # Role-based access control
-│   ├── api/                    # API utilities
-│   │   ├── middleware.ts      # API route middleware
-│   │   ├── validation.ts      # Request validation
-│   │   └── response.ts        # Standardized responses
-│   ├── constants/              # App constants (roles, permissions)
-│   ├── data/                   # Data adapters (Contentful, Sanity CMS)
-│   ├── utils/                  # Utility functions
-│   ├── documentParser.ts       # Parse various document formats (text extraction)
-│   ├── geminiTools.ts          # Google Gemini API utilities
-│   ├── functionExecutor.ts     # AI function calling execution
-│   ├── associateExecutor.ts    # AI associate workflow execution
-│   ├── email-service.ts        # Email sending (Nodemailer)
-│   └── prisma.ts              # Prisma client instance
-├── store/                      # Zustand state stores
-│   ├── chat.store.ts          # Chat state management
-│   ├── documents.store.ts     # Document state
-│   ├── project.store.ts       # Project state
-│   ├── associates.store.ts    # AI associates state
-│   └── onboarding.store.ts    # Onboarding flow state
-├── hooks/                      # Custom React hooks
-│   ├── useAuth.ts             # Authentication hooks
-│   ├── useDocuments.ts        # Document operations
-│   └── useProjects.ts         # Project operations
-├── types/                      # TypeScript type definitions
-├── services/                   # Service layer
-│   ├── aiDocumentService.ts   # AI document generation
-│   ├── gmailService.ts        # Gmail API integration
-│   └── googleCalendarService.ts # Calendar API integration
-├── providers/                  # React context providers
-│   └── AuthProvider.tsx       # NextAuth session provider
-└── prisma/                    # Generated Prisma client (output dir)
-    └── client/
-```
+- **Rich Text Editors**: TipTap, Quill, TinyMCE
 
 ### Key Architectural Patterns
 
-#### 1. Multi-Organization System
+#### 1. Multi-Organization Multi-Tenancy
 - Users belong to a primary `Organization` (auto-created on signup)
 - Users can be invited to multiple organizations via `UserOrganization` join table
-- Organizations have three account types: `personal` (default), `enterprise`
-- Users can switch between organizations using `activeOrganizationId`
-- Organization owners have full control; admins can manage members; members have basic access
+- Account types: `personal` (default), `enterprise`
+- Users switch between organizations using `activeOrganizationId`
+- **Project access**: Users access projects via direct `ProjectMember` membership OR by belonging to the project's organization
 
 #### 2. Authentication Flow
 - JWT-based authentication via NextAuth.js
 - Dual token system:
   - **Session token**: NextAuth JWT (30-day expiry)
   - **Access token**: Custom JWT (1-hour expiry, auto-refreshed)
-- Google OAuth support with automatic account linking
-- Tokens stored in session, accessible via `session.accessToken`
-- API routes use `src/lib/api/middleware.ts` for authentication
+- User ID extracted from Bearer token in API routes via `getUserIdFromRequest()` in `src/lib/auth/authorization.ts`
 
 #### 3. Project-Based Workspace Model
-- `Project` → container for legal work
-- `Conversation` → AI chat sessions within a project
-- `Message` → chat messages with role (user/assistant)
-- `Document` → uploaded files (linked to projects or org-wide)
-- `KnowledgeBase` → project-specific instructions for AI
-- `CanvasDocument` → collaborative rich-text editor content
-- `SharedWorkspace` → external sharing of conversations with access control
-
-#### 4. AI Associates System
-- `AIAssociate` → customizable AI personas with specific practice areas
-- `AssociateStep` → workflow steps for structured task execution
-- `AssociateTool` → available tools (document generation, search, etc.)
-- Associates can be assigned to projects via `ProjectAssociate`
-- Execution handled by `lib/associateExecutor.ts`
-
-#### 5. Document Management
-- Documents stored in Vercel Blob Storage
-- Text extraction on upload (text-based PDFs, DOCX, Excel, CSV, TXT)
-- Scanned PDFs and images processed natively by Gemini's vision API during chat
-- Content indexed in `DocumentContent` table
-- Optional vector embeddings for semantic search (not currently active)
-- Folder hierarchy via `Folder` table with parent-child relationships
-- Document references tracked per conversation via `ConversationDocument`
-
-#### 6. Role-Based Access Control (RBAC)
-- **Organization roles**: `owner` > `admin` > `member`
-- **Project roles**: `owner` > `editor` > `member`
-- Permission utilities in `src/lib/auth/permissions.ts`
-- Key permission types:
-  - `INVITE_MEMBERS` (enterprise only, admin+)
-  - `CHANGE_MEMBER_ROLES` (admin+)
-  - `MANAGE_PROJECTS` (admin+)
-  - `DELETE_ORGANIZATION_DOCUMENTS` (admin+)
-  - `VIEW_ANALYTICS` (admin+)
-
-#### 7. API Response Pattern
-All API routes should use standardized responses from `src/lib/api/response.ts`:
-```typescript
-import { ApiResponse } from '@/lib/api/response';
-
-// Success
-return ApiResponse.success(data, statusCode);
-
-// Error
-return ApiResponse.error(message, statusCode);
+```
+Organization
+  └── Project (legal matter/case)
+        ├── Conversation (AI chat sessions)
+        │     └── Message (user/assistant)
+        ├── Document (uploaded files via ConversationDocument or ProjectDocument)
+        ├── KnowledgeBase (project-specific AI instructions)
+        ├── CanvasDocument (collaborative rich-text editor)
+        └── SharedWorkspace (external sharing with access control)
 ```
 
-#### 8. State Management
-- Zustand stores for client-side state
-- Server state fetched via API routes (no React Query/SWR)
-- Stores typically follow pattern: `{ data, isLoading, error, fetch, update, delete }`
+#### 4. AI Function Calling System
+- Tool definitions in `src/lib/geminiTools.ts`
+- Core document tools (always available): `generateDocumentInline`, `reviewDocument`, `searchProjectDocuments`
+- Canvas tools (when canvas mode enabled): `draftNewDocument`, `editCanvasDocument`
+- Integration tools: Google Calendar (`createCalendarEvent`, `searchCalendarEvents`, etc.), Gmail (`searchEmails`, `readEmail`, `draftEmail`)
+- Execution handled by `src/lib/functionExecutor.ts` and `src/lib/associateExecutor.ts`
+
+#### 5. Document Processing Pipeline
+- Upload → Vercel Blob Storage
+- Text extraction on upload:
+  - PDFs: `pdf-parse` library
+  - DOCX: `mammoth` library
+  - Excel: `xlsx` library
+  - CSV: `csv-parse` library
+- Extracted text stored in `DocumentContent` table (separate from `Document` to avoid loading large text unnecessarily)
+- Scanned PDFs/images: Sent directly to Gemini's vision API during chat (no separate OCR)
+
+#### 6. Role-Based Access Control
+- **Organization roles**: `owner` > `admin` > `member`
+- **Project roles**: `owner` > `editor` > `member`
+- Permission checks via `src/lib/auth/permissions.ts`
+- Enterprise-only features: member invitations, team management
 
 ## Important Implementation Details
 
-### Prisma Client Location
-The Prisma client is generated to `src/prisma/client` (not the default location). Always import as:
+### Prisma Client Location (Critical)
+The Prisma client is generated to a custom location. Always import as:
 ```typescript
 import { PrismaClient } from '@/prisma/client';
+// NOT from '@prisma/client'
+```
+
+### API Response Pattern
+Use functions from `src/lib/api/response.ts`:
+```typescript
+import { createApiResponse, createErrorResponse } from '@/lib/api/response';
+import { AppError } from '@/types/error';
+
+// Success
+return createApiResponse(data, 'Success message', 200);
+
+// Error
+return createErrorResponse('Error message', 500);
+return createErrorResponse(new AppError('Message', 'ERROR_CODE', 401));
 ```
 
 ### Authentication in API Routes
-Use the authentication middleware:
 ```typescript
-import { authenticateRequest } from '@/lib/api/middleware';
+import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization';
 
-export async function GET(req: Request) {
-  const auth = await authenticateRequest(req);
-  if (!auth.authenticated) {
-    return ApiResponse.error(auth.error || 'Unauthorized', 401);
+export async function GET(req: NextRequest) {
+  const userId = getUserIdFromRequest(req);
+  if (!userId) {
+    return createErrorResponse(new AppError('Unauthorized', 'AUTH_REQUIRED', 401));
   }
 
-  const userId = auth.userId;
-  const organizationId = auth.organizationId;
-  // ... route logic
+  // For project-scoped operations
+  const hasAccess = await checkProjectAccess(projectId, userId);
+  if (!hasAccess) {
+    return createErrorResponse(new AppError('Forbidden', 'ACCESS_DENIED', 403));
+  }
+  // ...
 }
 ```
 
-### Organization Context
-Most API operations require organization context:
-- Get from JWT: `session.user.organizationId`
-- Users can switch orgs, so always use `activeOrganizationId` or current session org
-- Check permissions using `hasOrganizationPermission()` from `lib/auth/permissions.ts`
+### Higher-Order API Middleware
+```typescript
+import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 
-### Document Processing
-- Text-based PDFs: Uses `pdf-parse` for direct text extraction on upload
-- DOCX files: Uses `mammoth` for conversion to HTML
-- Excel/CSV: Direct text extraction using XLSX and csv-parse libraries
-- Scanned PDFs and images: Marked for processing during chat, sent to Gemini's multimodal API
-- Gemini processes scanned documents natively using vision capabilities (no separate OCR needed)
+export const GET = withErrorHandler(
+  withAuth(async (request, userId) => {
+    // userId is already validated
+    return createApiResponse(data);
+  })
+);
+```
 
-### AI Document Generation
-- Service: `services/aiDocumentService.ts` or `src/aiDocumentService.ts`
-- Uses Google Gemini 2.0 Flash
-- Context includes: jurisdiction, project instructions, uploaded documents, conversation history
-- Outputs HTML for rich text editors (Quill/TipTap)
-- Streaming support available via `generateDocumentStreaming()`
-
-### Environment Variables
-Key variables (see `.env`):
-- `DATABASE_URL` - PostgreSQL connection string
-- `NEXTAUTH_SECRET` - NextAuth JWT secret
-- `NEXTAUTH_URL` - App URL (http://localhost:3000 in dev)
-- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Google Gemini API (handles both text and vision)
-- `GOOGLE_AUTH_CLIENT_ID/SECRET` - Google OAuth
-- `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage token
-- Email credentials for Nodemailer (SMTP)
+### Path Alias
+All imports use `@/*` which maps to `./src/*`:
+```typescript
+import { Something } from '@/components/ui/something';
+import { prisma } from '@/lib/prisma';
+```
 
 ### Route Groups
-- `(account)` - Requires authentication, shows account layout
-- `(auth)` - Authentication pages, redirects if logged in
+- `(account)` - Authenticated user pages (dashboard, projects, vault)
+- `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
-- `(admin)` - Admin-only pages with permission checks
+- `(admin)` - Admin-only pages
 - `(platform)` - Main application features
 
-### Testing Project Locally
-1. Set up PostgreSQL database
-2. Copy `.env` and configure environment variables
-3. Run `npx prisma generate` to generate Prisma client
-4. Run `npx prisma migrate deploy` to apply migrations
-5. Run `npm run dev` to start development server
-6. Create test user via `/register` or seed database
+### Document Field Mapping
+The `Document` model uses `@map` for some fields:
+```prisma
+project_id    @map("projectId")
+organization_id @map("organizationId")
+file_url      @map("fileUrl")
+created_by    @map("createdBy")
+```
+In TypeScript, use the mapped names (`project_id`, `organization_id`, etc.).
 
-### Common Gotchas
-- Prisma client path is custom (`@/prisma/client`)
-- Always regenerate Prisma client after schema changes
-- Organization switching requires session update (`update` trigger in NextAuth)
-- Google OAuth tokens are stored in `Account` table and auto-refreshed
-- Personal accounts cannot invite members (enterprise feature)
-- Document content is separated into `DocumentContent` table to avoid loading large text unnecessarily
-
-## Content Management
-- Marketing content sourced from **Sanity CMS** (blogs, lawyer profiles, legal documents)
-- Adapters in `src/lib/data/` for fetching and transforming CMS data
-- Some legacy Contentful integration exists but Sanity is primary
+### Environment Variables
+Key variables:
+- `DATABASE_URL` - PostgreSQL connection
+- `NEXTAUTH_SECRET` / `NEXTAUTH_URL`
+- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Gemini API
+- `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - OAuth
+- `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
+- `GOOGLE_APPLICATION_CREDENTIALS` - Service account for Vision API (optional)
 
 ## Key Database Models
 
-### Core Models
-- `User` - user accounts
-- `Organization` - tenant/workspace
-- `UserOrganization` - many-to-many org membership
-- `Project` - legal projects/matters
-- `ProjectMember` - project team membership
-- `Document` - files uploaded to platform
-- `Conversation` - AI chat sessions
-- `Message` - individual chat messages
+### Core Entities
+- `User` → `Organization` (primary org) + `UserOrganization` (multi-org membership)
+- `Project` → `ProjectMember`, `Conversation`, `Document`, `KnowledgeBase`, `CanvasDocument`
+- `Conversation` → `Message`, `ConversationDocument`, `ConversationAction`
+- `Document` → `DocumentContent`, `Embedding` (vector search), `Folder` (hierarchy)
 
-### AI & Collaboration
-- `AIAssociate` - custom AI assistants
-- `KnowledgeBase` - project-specific AI instructions
-- `SharedWorkspace` - external sharing of conversations
-- `CanvasDocument` - collaborative document editor
+### AI System
+- `AIAssociate` - Custom AI personas with practice areas (`PracticeArea` enum)
+- `AssociateStep` - Workflow steps for structured execution
+- `AssociateTool` - Available tools per associate
+- `ProjectAssociate` - Many-to-many assignment to projects
 
-### Organization Management
-- `Invitation` - pending invites to projects/orgs
-- `Subscription` - billing/payment tracking (Paystack)
-- `OnboardingAnalytics` - onboarding step tracking
+### Sharing & Collaboration
+- `SharedWorkspace` - External sharing of conversations
+- `SharedWorkspaceAccess` - Access tracking
+- `SharedMessage` / `SharedMessageReference` - Messages in shared context
 
-### Content (CMS-like features)
-- `Content` - lawyer/firm marketing content
-- `ContentSection` - structured content sections
+### Billing
+- `Subscription` - Paystack integration
+- `Payment` - Payment history
 
-## API Route Patterns
-
-### Standard CRUD Pattern
-```typescript
-// GET /api/resource - List
-export async function GET(req: Request) {
-  const auth = await authenticateRequest(req);
-  if (!auth.authenticated) return ApiResponse.error('Unauthorized', 401);
-
-  const resources = await prisma.resource.findMany({
-    where: { organizationId: auth.organizationId }
-  });
-
-  return ApiResponse.success(resources);
-}
-
-// POST /api/resource - Create
-export async function POST(req: Request) {
-  const auth = await authenticateRequest(req);
-  if (!auth.authenticated) return ApiResponse.error('Unauthorized', 401);
-
-  const body = await req.json();
-  const resource = await prisma.resource.create({
-    data: { ...body, organizationId: auth.organizationId }
-  });
-
-  return ApiResponse.success(resource, 201);
-}
-```
-
-### Dynamic Route Pattern
-```typescript
-// app/api/resource/[id]/route.ts
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const auth = await authenticateRequest(req);
-  if (!auth.authenticated) return ApiResponse.error('Unauthorized', 401);
-
-  const resource = await prisma.resource.findFirst({
-    where: {
-      id: params.id,
-      organizationId: auth.organizationId
-    }
-  });
-
-  if (!resource) return ApiResponse.error('Not found', 404);
-  return ApiResponse.success(resource);
-}
-```
-
-## Testing Considerations
-- No formal test suite currently exists
-- Manual testing via development server
-- Use Prisma Studio to inspect database state
-- Check API endpoints with tools like Postman or curl
+## Content Management
+- Primary: **Sanity CMS** for blogs, lawyer profiles, legal documents
+- Legacy: Contentful integration exists
+- Adapters in `src/lib/data/`

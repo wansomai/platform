@@ -750,6 +750,10 @@ export async function POST(
 
           if (tools.length > 0) {
             generateConfig.tools = tools;
+            // Enable thought signatures for tool use (required by Gemini API)
+            generateConfig.thoughtSignature = {
+              enabled: true
+            };
           }
 
           // Add system instruction
@@ -875,12 +879,26 @@ export async function POST(
 
           // Check if the response contains function calls
           let functionCalls: any[] = [];
+          // Store full parts with thought signatures for function calls
+          let functionCallParts: any[] = [];
           let hasTextContent = false;
 
           for await (const chunk of result) {
-            // Check for function calls in this chunk
-            if (chunk.functionCalls && chunk.functionCalls.length > 0) {
+            // Check for function calls in this chunk - collect FULL parts to preserve thought signatures
+            // The thought_signature is required by Gemini API for function calling to work correctly
+            if (chunk.candidates?.[0]?.content?.parts) {
+              const partsWithFunctionCalls = chunk.candidates[0].content.parts.filter(
+                (part: any) => part.functionCall
+              );
+              if (partsWithFunctionCalls.length > 0) {
+                functionCallParts.push(...partsWithFunctionCalls);
+                // Also extract just the function calls for execution
+                functionCalls.push(...partsWithFunctionCalls.map((p: any) => p.functionCall));
+              }
+            } else if (chunk.functionCalls && chunk.functionCalls.length > 0) {
+              // Fallback for older API versions
               functionCalls.push(...chunk.functionCalls);
+              functionCallParts.push(...chunk.functionCalls.map((fc: any) => ({ functionCall: fc })));
             }
 
             // Check for text content
@@ -1045,9 +1063,10 @@ export async function POST(
 
             // Send function results back to the model for a final response
             // Add model response with function calls to history
+            // IMPORTANT: Use functionCallParts which includes thought_signature (required by Gemini API)
             fullContents.push({
               role: 'model',
-              parts: functionCalls.map(fc => ({ functionCall: fc }))
+              parts: functionCallParts
             });
 
             // Add function responses
@@ -1440,6 +1459,20 @@ async function executeAgentCall(
     const agentQuery = args.query || args.details || JSON.stringify(args);
 
     // Execute the agent with its specialized tool
+    const agentConfig: any = {
+      systemInstruction: agentInstruction,
+      temperature: 0.7,
+      maxOutputTokens: 8192,
+      tools: agentTools
+    };
+
+    // Enable thought signatures if tools are present
+    if (agentTools.length > 0) {
+      agentConfig.thoughtSignature = {
+        enabled: true
+      };
+    }
+
     const agentResult = await genAI.models.generateContent({
       model: modelName,
       contents: [
@@ -1448,12 +1481,7 @@ async function executeAgentCall(
           parts: [{ text: agentQuery }]
         }
       ],
-      config: {
-        systemInstruction: agentInstruction,
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-        tools: agentTools
-      }
+      config: agentConfig
     });
 
     // Check if the agent made function calls (for legal drafting, calendar, gmail agents)
@@ -1489,7 +1517,7 @@ async function executeAgentCall(
     }
 
     // If the specialist agent made function calls, execute them
-    if (agentFunctionCalls.length > 0 && (agentName === 'legalDraftingAgent' || agentName === 'calendarAgent' || agentName === 'gmailAgent')) {
+    if (agentFunctionCalls.length > 0 && (agentName === 'legalDocumentAgent' || agentName === 'legalDraftingAgent' || agentName === 'calendarAgent' || agentName === 'gmailAgent')) {
       // Execute the function calls made by the specialist agent
       const { executeFunctionCall } = await import('@/lib/functionExecutor');
 

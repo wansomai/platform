@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
-import { useCanvasStore, useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
+import {  useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
 import { useChatStore } from '@/store/chat.store';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
