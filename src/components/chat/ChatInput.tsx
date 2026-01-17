@@ -541,6 +541,15 @@ export function ChatInput({
       // Update the setting directly
       await updateSetting(projectId, settingKey, value);
 
+      // If toggling off canvasMode (or legacy legalDrafting), also clear the ?view=canvas URL param
+      if ((settingKey === 'canvasMode' || settingKey === 'legalDrafting') && !value) {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('view') === 'canvas') {
+          url.searchParams.delete('view');
+          router.replace(url.pathname + url.search);
+        }
+      }
+
       addToast({ message: `${settingKey} setting updated`, type: "success" });
     } catch (error) {
       addToast({
@@ -820,21 +829,21 @@ export function ChatInput({
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label
-                          htmlFor="legal-drafting"
+                          htmlFor="canvas-mode"
                           className="font-medium text-sm"
                         >
                           Draft & Review
                         </Label>
                       </div>
                       <Switch
-                        id="legal-drafting"
-                        checked={homepageMode ? false : settings.legalDrafting}
+                        id="canvas-mode"
+                        checked={homepageMode ? false : (settings.canvasMode || settings.legalDrafting || false)}
                         disabled={homepageMode || isLoadingSettings}
                         onCheckedChange={
                           homepageMode
                             ? undefined
                             : (checked) => {
-                                handleSettingChange("legalDrafting", checked);
+                                handleSettingChange("canvasMode", checked);
                               }
                         }
                       />
