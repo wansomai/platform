@@ -1,32 +1,7 @@
-import { createClient } from 'contentful';
 import { createClient as createSanityClient } from '@sanity/client';
 
 // Revalidate once per hour (in seconds)
 export const revalidate = 3600;
-
-/* Helpers ------------------------------------------------------------- */
-
-const slugify = (str = '') =>
-  str
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-
-/** Fetch *all* entries for a content type (handles pagination). */
-async function fetchAllEntries(client, { content_type }) {
-  const pageSize = 1000; // Contentful hard max
-  let skip = 0;
-  let items = [];
-  while (true) {
-    const res = await client.getEntries({ content_type,  select: 'fields.title,sys.createdAt,sys.updatedAt' ,skip, limit: pageSize });
-    items = items.concat(res.items);
-    if (skip + pageSize >= res.total) break;
-    skip += pageSize;
-  }
-  return items;
-}
 
 // Initialize Sanity client
 const sanityClient = createSanityClient({
@@ -42,22 +17,13 @@ export default async function sitemap() {
   // 1. Resolve base URL dynamically (falls back to prod URL)
   // -------------------------------------------------------------------
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ??'https://www.wansom.ai';
-
-  // -------------------------------------------------------------------
-  // 2. Init Contentful
-  // -------------------------------------------------------------------
-  const client = createClient({
-    space: process.env.NEXT_PUBLIC_CONTENTFUL_SPACE_ID,
-    accessToken: process.env.NEXT_PUBLIC_CONTENTFUL_ACCESS_TOKEN,
-  });
+    process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.wansom.ai';
 
   // -------------------------------------------------------------------
   // 3. Static routes
   // -------------------------------------------------------------------
   const staticRoutes = [
     '',
-    'hire-a-lawyer',
     'pricing',
     'demo',
     'blogs',
@@ -78,26 +44,6 @@ export default async function sitemap() {
     url: `${baseUrl}/${path}`,
     lastModified: new Date(),
   }));
-
-  async function fetchLawyerPages(client,{ content_type }) {
-  const limit = 1000;                       // CDN hard limit
-  let skip = 0;
-  const items = [];
-
-  while (true) {
-    const res = await client.getEntries({
-      content_type,
-      select: 'fields.slug,sys.createdAt,sys.updatedAt', // only what we need
-      limit,
-      skip,
-    });
-
-    items.push(...res.items);
-    if (res.items.length < limit) break;
-    skip += limit;
-  }
-  return items;
-}
 
   // -------------------------------------------------------------------
   // 4. Dynamic routes (blogs and documents from Sanity)
@@ -131,12 +77,6 @@ export default async function sitemap() {
     console.error('Error fetching Sanity legal documents for sitemap:', error);
   }
 
-  // Fetch lawyer pages and practice areas from Contentful (still using Contentful)
-  const [lawyerPages, practiceAreas] = await Promise.all([
-    fetchLawyerPages(client, { content_type: 'lawyerPages' }),
-    fetchAllEntries(client, { content_type: 'practiseareas'}),
-  ]);
-
   const blogRoutes = blogPosts.map((post) => {
     return {
       url: `${baseUrl}/blogs/${post.slug}`,
@@ -150,20 +90,9 @@ export default async function sitemap() {
       lastModified: new Date(doc._updatedAt || doc._createdAt),
     };
   });
-    const practiseAreaRoutes = practiceAreas.map((area) => {
-    return {
-      url: `${baseUrl}/lawyer-network/${area.fields.slug}`,
-      lastModified: new Date(area.sys.updatedAt || area.sys.createdAt),
-    };
-  });
-
-  const lawyerRoutes = lawyerPages.map((page) => ({
-    url: `${baseUrl}/hire-a-lawyer/${page.fields.slug}`,
-    lastModified: new Date(page.sys.updatedAt || page.sys.createdAt),
-  }));
 
   // -------------------------------------------------------------------
   // 5. Combine & return
   // -------------------------------------------------------------------
-  return [...staticRoutes, ...blogRoutes, ...legalDocRoutes, ...lawyerRoutes, ...practiseAreaRoutes]
+  return [...staticRoutes, ...blogRoutes, ...legalDocRoutes]
 }

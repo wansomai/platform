@@ -31,24 +31,6 @@ export interface BlogPostFields {
   readingTime?: number;
 }
 
-export interface LawyerPageFields {
-  title: string;
-  slug?: string;
-  description: string;
-  practiceAreas: string[];
-  location: string;
-  experience?: number;
-  education?: string[];
-  certifications?: string[];
-  profileImage?: ContentfulAsset;
-  contactInfo?: {
-    email: string;
-    phone: string;
-    website?: string;
-  };
-  metaDescription?: string;
-}
-
 export interface DocumentTemplateFields {
   title: string;
   slug?: string;
@@ -62,18 +44,6 @@ export interface DocumentTemplateFields {
   complexity: 'simple' | 'intermediate' | 'advanced';
   estimatedTime?: number;
   price?: number;
-  metaDescription?: string;
-}
-
-export interface PracticeAreaFields {
-  title: string;
-  slug?: string;
-  description: string;
-  overview?: any; // Rich text
-  services?: string[];
-  typicalCases?: string[];
-  relatedAreas?: string[];
-  heroImage?: ContentfulAsset;
   metaDescription?: string;
 }
 
@@ -95,6 +65,4 @@ export interface ContentfulEntry<T = any> {
 }
 
 export type BlogPost = ContentfulEntry<BlogPostFields>;
-export type LawyerPage = ContentfulEntry<LawyerPageFields>;
 export type DocumentTemplate = ContentfulEntry<DocumentTemplateFields>;
-export type PracticeAreaType = ContentfulEntry<PracticeAreaFields>;

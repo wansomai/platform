@@ -32,24 +32,6 @@ export interface BlogPostFields {
   };
   tags?: string[]; // Optional tags field
 }
-export interface LawyerPageFields {
-  title: string;
-  preview?: string;
-  practiceArea: string;
-  location: string;
-  slug: string;
-  metaDescription?: string; // Optional meta description field
-  faq?: any; // Rich text content for FAQ
-  keywords?: string[]; // Optional keywords field
-  tags?: string[]; // Optional tags field
-}
-export interface practiseAreaFields {
-  title: string;
-  content: any;
-  slug: string;
-  metaDescription?: string; // Optional meta description field
-  faq?: any; // Rich text content for FAQ
-}
 export interface DocumentTemplateFields {
   title: string;
   preview?: any;
@@ -98,33 +80,6 @@ export interface DocumentTemplate {
     };
   };
   fields: DocumentTemplateFields;
-}
-
-export interface LawyerPages {
-  sys: {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    contentType: {
-      sys: {
-        id: string;
-      };
-    };
-  };
-  fields: LawyerPageFields;
-}
-export interface practiseAreaPages {
-  sys: {
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    contentType: {
-      sys: {
-        id: string;
-      };
-    };
-  };
-  fields: practiseAreaFields;
 }
 
 export async function getAllDocumentTemplates(): Promise<DocumentTemplate[]> {
@@ -277,23 +232,6 @@ export async function getRelatedBlogPosts(
   return otherPosts.slice(0, limit);
 }
 
-export async function getAllPractiseAreas(): Promise<practiseAreaPages[]> {
-  const response = await client.getEntries({
-    content_type: "practiseareas",
-    order: ["-sys.createdAt"],
-  });
-
-  return response.items as unknown as practiseAreaPages[];
-}
-export async function getAllSlugs() {
-  const res = await client.getEntries({
-    content_type: "lawyerLandingPage",
-    select: ["fields.slug"],
-  });
-  console.log('Fetched slugs from Contentful:', res.items);
-  return res.items.map((i) => i.fields.slug);
-}
-
 export async function getPostBySlug({content_type, slug}: {content_type: string, slug: string}): Promise<DocumentTemplate | null> {
   try {
     const entries = await client.getEntries({
@@ -310,19 +248,6 @@ export async function getPostBySlug({content_type, slug}: {content_type: string,
   } catch (error) {
     throw error;
   }
-}
-
-export async function fetchAllEntries( content_type: any ) {
-  const pageSize = 1000; // Contentful hard max
-  let skip = 0;
-  let items: any[] = [];
-  while (true) {
-    const res = await client.getEntries({ content_type, order: ["-sys.createdAt"], skip, limit: pageSize });
-    items = items.concat(res.items);
-    if (skip + pageSize >= res.total) break;
-    skip += pageSize;
-  }
-  return items;
 }
 
 export default client;
