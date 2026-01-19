@@ -19,6 +19,7 @@ import {
   X,
   UserCircleIcon,
   FolderOpen,
+  HelpCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -291,6 +292,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Footer links */}
       <div className={cn("border-t", collapsed && !isMobile ? "p-2" : "p-4")}>
         <nav className="flex flex-col gap-1">
+          <a
+            href="mailto:law@wansom.ai"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100 text-gray-600",
+              collapsed && !isMobile ? "justify-center px-2" : ""
+            )}
+            onClick={isMobile ? handleMobileNavigation : undefined}
+          >
+            <img src="/icons/customer-service.svg" className="h-5 w-5 text-gray-500" />
+            {(!collapsed || isMobile) && <span>Help & Support</span>}
+          </a>
           <button
             onClick={handleLogout}
             className={cn(

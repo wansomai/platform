@@ -23,7 +23,7 @@ npx prisma studio     # Database GUI
 - **Framework**: Next.js 16 (App Router)
 - **Database**: PostgreSQL via Prisma ORM
 - **Authentication**: NextAuth.js with JWT (credentials + Google OAuth)
-- **State Management**: Zustand stores
+- **State Management**: Zustand stores (`src/store/*.store.ts`)
 - **UI Components**: Radix UI + shadcn/ui + TailwindCSS
 - **AI Integration**: Google Gemini API via `@google/genai` (multimodal - text and vision)
 - **File Storage**: Vercel Blob Storage
@@ -63,6 +63,7 @@ Organization
 - Canvas tools (when canvas mode enabled): `draftNewDocument`, `editCanvasDocument`
 - Integration tools: Google Calendar (`createCalendarEvent`, `searchCalendarEvents`, etc.), Gmail (`searchEmails`, `readEmail`, `draftEmail`)
 - Execution handled by `src/lib/functionExecutor.ts` and `src/lib/associateExecutor.ts`
+- Services layer: `src/services/` (AIDocumentService, GoogleCalendarService, GmailService)
 
 #### 5. Document Processing Pipeline
 - Upload → Vercel Blob Storage
@@ -73,6 +74,7 @@ Organization
   - CSV: `csv-parse` library
 - Extracted text stored in `DocumentContent` table (separate from `Document` to avoid loading large text unnecessarily)
 - Scanned PDFs/images: Sent directly to Gemini's vision API during chat (no separate OCR)
+- Optional: Google Cloud Vision API for advanced OCR (requires `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT_ID`, and `GOOGLE_CLOUD_STORAGE_BUCKET`)
 
 #### 6. Role-Based Access Control
 - **Organization roles**: `owner` > `admin` > `member`
@@ -146,7 +148,6 @@ import { prisma } from '@/lib/prisma';
 - `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
 - `(admin)` - Admin-only pages
-- `(platform)` - Main application features
 
 ### Document Field Mapping
 The `Document` model uses `@map` for some fields:
@@ -165,7 +166,11 @@ Key variables:
 - `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Gemini API
 - `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - OAuth
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
-- `GOOGLE_APPLICATION_CREDENTIALS` - Service account for Vision API (optional)
+
+Optional (for Google Cloud Vision OCR):
+- `GOOGLE_APPLICATION_CREDENTIALS` - Path to service account JSON key
+- `GOOGLE_CLOUD_PROJECT_ID` - Google Cloud project ID
+- `GOOGLE_CLOUD_STORAGE_BUCKET` - GCS bucket for temporary PDF processing
 
 ## Key Database Models
 
