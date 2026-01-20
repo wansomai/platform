@@ -1,37 +1,44 @@
 // app/api/auth/me/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { NextRequest } from "next/server";
+import { createApiResponse, createErrorResponse } from "@/lib/api/response";
+import { withErrorHandler } from "@/lib/api/middleware";
+import { getUserIdFromRequest } from "@/lib/auth/authorization";
+import prisma from "@/lib/prisma";
+import { AppError } from "@/types/error";
 
-export async function GET(request: NextRequest) {
-  try {
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error("JWT_SECRET environment variable is not set");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
-    }
+export const GET = withErrorHandler(async (request: NextRequest) => {
+  const userId = await getUserIdFromRequest(request);
 
-    // Get the token from request cookies
-    const authToken = request.cookies.get("auth-token")?.value
-
-    if (!authToken) {
-      return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
-      );
-    }
-
-    // Verify the token
-    const payload = jwt.verify(authToken, jwtSecret);
-    // Return the user info from the token
-    return NextResponse.json({ user: payload });
-  } catch (error) {
-    console.error("Auth check error:", error);
-    return NextResponse.json(
-      { error: "Authentication failed" },
-      { status: 401 }
+  if (!userId) {
+    return createErrorResponse(
+      new AppError("Not authenticated", "AUTH_REQUIRED", 401)
     );
   }
-}
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      role: true,
+      organizationId: true,
+      activeOrganizationId: true,
+      organization: {
+        select: {
+          id: true,
+          name: true,
+          accountType: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return createErrorResponse(
+      new AppError("User not found", "USER_NOT_FOUND", 404)
+    );
+  }
+
+  return createApiResponse({ user }, "User retrieved successfully");
+});
