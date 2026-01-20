@@ -1,8 +1,6 @@
 // src/lib/googleOAuth.ts
 import { google } from 'googleapis';
-import { PrismaClient } from '@/prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 /**
  * Get Google OAuth2 client for a user

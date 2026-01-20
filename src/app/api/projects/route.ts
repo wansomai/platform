@@ -1,11 +1,9 @@
 // app/api/projects/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { canCreateProject } from "@/lib/subscription";
 import { getActiveOrganizationId } from "@/lib/api/org-helpers";
-
-const prisma = new PrismaClient();
 
 // Get all projects (filtered by user access)
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {

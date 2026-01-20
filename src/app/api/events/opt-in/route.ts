@@ -1,9 +1,6 @@
 // src/app/api/events/opt-in/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
 
 /**
  * Generate a secure random password

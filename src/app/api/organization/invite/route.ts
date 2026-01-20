@@ -1,196 +1,171 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
-import { withAuth, withErrorHandler } from "@/lib/api/middleware";
-import { sendInvitationEmail } from "@/lib/email-service";
-import { generateInvitationToken } from "@/lib/utils/token-utils";
-import { getActiveOrganizationId } from "@/lib/api/org-helpers";
+import { NextRequest } from 'next/server';
+import prisma from '@/lib/prisma';
 import {
-  hasOrganizationPermission,
-  canInviteMembers,
-  canAssignRole
-} from "@/lib/auth/permissions";
-import { OrganizationPermission } from "@/lib/constants/permissions";
-import { isValidOrganizationRole } from "@/lib/constants/roles";
-
-const prisma = new PrismaClient();
+  withErrorHandler,
+  withOrganizationAccess,
+  OrganizationContext,
+  OrganizationPermission,
+} from '@/lib/api/middleware';
+import {
+  createApiResponse,
+  createBadRequestResponse,
+  createForbiddenResponse,
+} from '@/lib/api/response';
+import { sendInvitationEmail } from '@/lib/email-service';
+import { generateInvitationToken } from '@/lib/utils/token-utils';
+import { canInviteMembers, canAssignRole } from '@/lib/auth/permissions';
+import { isValidOrganizationRole } from '@/lib/constants/roles';
 
 // Create an invitation
-export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  const { email, role = 'member' } = await request.json();
-  if (!email) {
-    return NextResponse.json(
-      { error: 'Email is required' },
-      { status: 400 }
-    );
-  }
+export const POST = withErrorHandler(
+  withOrganizationAccess(
+    OrganizationPermission.INVITE_MEMBERS,
+    async (request: NextRequest, context: OrganizationContext) => {
+      const { userId, organizationId } = context;
+      const { email, role = 'member' } = await request.json();
 
-  // Validate role format
-  if (!isValidOrganizationRole(role)) {
-    return NextResponse.json(
-      { error: 'Invalid role. Must be owner, admin, or member' },
-      { status: 400 }
-    );
-  }
+      if (!email) {
+        return createBadRequestResponse('Email is required');
+      }
 
-  // ✅ Use helper to get active organization ID (supports org switching)
-  const organizationId = await getActiveOrganizationId(userId);
+      // Validate role format
+      if (!isValidOrganizationRole(role)) {
+        return createBadRequestResponse('Invalid role. Must be owner, admin, or member');
+      }
 
-  // Check if organization can invite members (enterprise check)
-  const { canInvite, reason: accountTypeReason } = await canInviteMembers(organizationId);
-  if (!canInvite) {
-    return NextResponse.json(
-      {
-        error: accountTypeReason || 'Cannot invite members',
-        requiresUpgrade: true
-      },
-      { status: 403 }
-    );
-  }
+      // Check if organization can invite members (enterprise check)
+      const { canInvite, reason: accountTypeReason } = await canInviteMembers(organizationId);
+      if (!canInvite) {
+        return createForbiddenResponse(accountTypeReason || 'Cannot invite members');
+      }
 
-  // Check if current user has permission to invite members
-  const hasPermission = await hasOrganizationPermission(
-    userId,
-    organizationId,
-    OrganizationPermission.INVITE_MEMBERS
-  );
+      // Validate that user can assign the requested role
+      const { canAssign, reason: roleReason } = await canAssignRole(
+        userId,
+        role,
+        organizationId
+      );
 
-  if (!hasPermission) {
-    return NextResponse.json(
-      { error: 'Insufficient permissions to invite members' },
-      { status: 403 }
-    );
-  }
+      if (!canAssign) {
+        return createForbiddenResponse(roleReason || 'Cannot assign this role');
+      }
 
-  // Validate that user can assign the requested role
-  const { canAssign, reason: roleReason } = await canAssignRole(
-    userId,
-    role,
-    organizationId
-  );
+      // Check if user is already a member
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
 
-  if (!canAssign) {
-    return NextResponse.json(
-      { error: roleReason || 'Cannot assign this role' },
-      { status: 403 }
-    );
-  }
+      if (existingUser) {
+        const existingMembership = await prisma.userOrganization.findUnique({
+          where: {
+            userId_organizationId: {
+              userId: existingUser.id,
+              organizationId: organizationId,
+            },
+          },
+        });
 
-  // Check if user is already a member
-  const existingUser = await prisma.user.findUnique({
-    where: { email }
-  });
-
-  if (existingUser) {
-    const existingMembership = await prisma.userOrganization.findUnique({
-      where: {
-        userId_organizationId: {
-          userId: existingUser.id,
-          organizationId: organizationId
+        if (existingMembership) {
+          return createBadRequestResponse('User is already a member of this organization');
         }
       }
-    });
 
-    if (existingMembership) {
-      return NextResponse.json(
-        { error: 'User is already a member of this organization' },
-        { status: 400 }
+      // Check if there's already a pending invitation
+      const existingInvitation = await prisma.invitation.findFirst({
+        where: {
+          email,
+          organizationId: organizationId,
+          status: 'pending',
+          expiresAt: {
+            gt: new Date(),
+          },
+        },
+      });
+
+      if (existingInvitation) {
+        return createBadRequestResponse('An invitation has already been sent to this email');
+      }
+
+      // Generate invitation token
+      const { token, expiresAt } = generateInvitationToken(7);
+
+      // Get or create a project for the invitation
+      const firstProject = await prisma.project.findFirst({
+        where: {
+          organizationId: organizationId,
+        },
+      });
+
+      let projectId = firstProject?.id;
+
+      if (!projectId) {
+        // Create a default project if none exists
+        const defaultProject = await prisma.project.create({
+          data: {
+            title: 'Default Workspace',
+            description: 'Default workspace for the organization',
+            organizationId: organizationId,
+            visibility: 'organization',
+          },
+        });
+        projectId = defaultProject.id;
+      }
+
+      // Get organization and inviter details for email
+      const [organization, inviter] = await Promise.all([
+        prisma.organization.findUnique({
+          where: { id: organizationId },
+          select: { name: true },
+        }),
+        prisma.user.findUnique({
+          where: { id: userId },
+          select: { fullName: true, email: true },
+        }),
+      ]);
+
+      // Create the invitation
+      const invitation = await prisma.invitation.create({
+        data: {
+          email,
+          role,
+          token,
+          expiresAt,
+          organizationId: organizationId,
+          projectId,
+          invitedById: userId,
+          status: 'pending',
+        },
+      });
+
+      // Send invitation email
+      const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://wansom.ai';
+      const inviteUrl = `${baseUrl}/accept-invitation?token=${token}`;
+
+      try {
+        await sendInvitationEmail({
+          email,
+          inviterName: inviter?.fullName || inviter?.email || 'A team member',
+          organizationName: organization?.name || 'the organization',
+          role,
+          inviteUrl,
+        });
+      } catch (emailError) {
+        console.error('Failed to send invitation email:', emailError);
+        // Don't fail the invitation creation if email fails
+      }
+
+      return createApiResponse(
+        {
+          invitation: {
+            id: invitation.id,
+            email: invitation.email,
+            role: invitation.role,
+            createdAt: invitation.createdAt.toISOString(),
+          },
+        },
+        'Invitation sent successfully'
       );
     }
-  }
-
-  // Check if there's already a pending invitation
-  const existingInvitation = await prisma.invitation.findFirst({
-    where: {
-      email,
-      organizationId: organizationId,
-      status: 'pending',
-      expiresAt: {
-        gt: new Date()
-      }
-    }
-  });
-
-  if (existingInvitation) {
-    return NextResponse.json(
-      { error: 'An invitation has already been sent to this email' },
-      { status: 400 }
-    );
-  }
-
-  // ✅ Use helper to create invitation token
-  const { token, expiresAt } = generateInvitationToken(7);
-
-  // We need a project ID for the invitation - let's get the first project or create a default one
-  const firstProject = await prisma.project.findFirst({
-    where: {
-      organizationId: organizationId
-    }
-  });
-
-  let projectId = firstProject?.id;
-
-  if (!projectId) {
-    // Create a default project if none exists
-    const defaultProject = await prisma.project.create({
-      data: {
-        title: 'Default Workspace',
-        description: 'Default workspace for the organization',
-        organizationId: organizationId,
-        visibility: 'organization' // Organization-wide visibility by default
-      }
-    });
-    projectId = defaultProject.id;
-  }
-
-  // Get organization and inviter details for email
-  const organization = await prisma.organization.findUnique({
-    where: { id: organizationId },
-    select: { name: true }
-  });
-
-  const inviter = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { fullName: true, email: true }
-  });
-
-  // Create the invitation
-  const invitation = await prisma.invitation.create({
-    data: {
-      email,
-      role,
-      token,
-      expiresAt,
-      organizationId: organizationId,
-      projectId,
-      invitedById: userId,
-      status: 'pending'
-    }
-  });
-
-  // Send invitation email
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://wansom.ai';
-  const inviteUrl = `${baseUrl}/accept-invitation?token=${token}`;
-
-  try {
-    await sendInvitationEmail({
-      email,
-      inviterName: inviter?.fullName || inviter?.email || 'A team member',
-      organizationName: organization?.name || 'the organization',
-      role,
-      inviteUrl
-    });
-  } catch (emailError) {
-    console.error('Failed to send invitation email:', emailError);
-    // Don't fail the invitation creation if email fails
-  }
-
-  return NextResponse.json({
-    success: true,
-    invitation: {
-      id: invitation.id,
-      email: invitation.email,
-      role: invitation.role,
-      createdAt: invitation.createdAt.toISOString()
-    }
-  });
-}));
+  )
+);

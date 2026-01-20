@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { checkProjectAccess } from "@/lib/auth/authorization";
 import { sendProjectInvitationEmail } from "@/lib/email-service";
 import { canInviteMembers } from "@/lib/auth/permissions";
 import { isValidWorkspaceRole } from "@/lib/constants/roles";
 import crypto from "crypto";
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/projects/[id]/invite

@@ -1,7 +1,5 @@
-
-import { NextResponse } from "next/server";
-import {transporter} from '../utils'
-import { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import { transporter } from '@/lib/email/transporter';
 
 export async function POST(request:NextRequest) {
   if (!request.body) {

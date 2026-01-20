@@ -3,6 +3,44 @@ import { NextResponse } from 'next/server';
 import { ApiResponse, PaginatedApiResponse } from '@/types/api';
 import { AppError, ErrorResponse } from '@/types/error';
 
+/**
+ * Standard API error codes for consistent error handling
+ */
+export const ErrorCodes = {
+  // Authentication errors (401)
+  AUTH_REQUIRED: 'AUTH_REQUIRED',
+  INVALID_TOKEN: 'INVALID_TOKEN',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+
+  // Authorization errors (403)
+  ACCESS_DENIED: 'ACCESS_DENIED',
+  PERMISSION_DENIED: 'PERMISSION_DENIED',
+  PROJECT_ACCESS_DENIED: 'PROJECT_ACCESS_DENIED',
+
+  // Not found errors (404)
+  NOT_FOUND: 'NOT_FOUND',
+  USER_NOT_FOUND: 'USER_NOT_FOUND',
+  PROJECT_NOT_FOUND: 'PROJECT_NOT_FOUND',
+  DOCUMENT_NOT_FOUND: 'DOCUMENT_NOT_FOUND',
+  CONVERSATION_NOT_FOUND: 'CONVERSATION_NOT_FOUND',
+
+  // Validation errors (400)
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  INVALID_INPUT: 'INVALID_INPUT',
+  MISSING_FIELD: 'MISSING_FIELD',
+
+  // Conflict errors (409)
+  ALREADY_EXISTS: 'ALREADY_EXISTS',
+  DUPLICATE_ENTRY: 'DUPLICATE_ENTRY',
+
+  // Server errors (500)
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  DATABASE_ERROR: 'DATABASE_ERROR',
+} as const;
+
+/**
+ * Create a standardized success response
+ */
 export function createApiResponse<T>(
   data: T,
   message: string = 'Success',
@@ -20,6 +58,9 @@ export function createApiResponse<T>(
   );
 }
 
+/**
+ * Create a standardized paginated response
+ */
 export function createPaginatedResponse<T>(
   data: T[],
   pagination: {
@@ -45,6 +86,9 @@ export function createPaginatedResponse<T>(
   );
 }
 
+/**
+ * Create a standardized error response
+ */
 export function createErrorResponse(
   error: string | AppError,
   status: number = 500
@@ -73,5 +117,91 @@ export function createErrorResponse(
     },
     { status }
   );
+}
+
+/**
+ * Shorthand for 201 Created response
+ */
+export function createCreatedResponse<T>(
+  data: T,
+  message: string = 'Created successfully'
+): NextResponse<ApiResponse<T>> {
+  return createApiResponse(data, message, 201);
+}
+
+/**
+ * Shorthand for 204 No Content response (for deletes)
+ */
+export function createNoContentResponse(): NextResponse {
+  return new NextResponse(null, { status: 204 });
+}
+
+/**
+ * Shorthand for 404 Not Found error
+ */
+export function createNotFoundResponse(
+  resource: string = 'Resource'
+): NextResponse<ErrorResponse> {
+  return createErrorResponse(
+    new AppError(`${resource} not found`, ErrorCodes.NOT_FOUND, 404)
+  );
+}
+
+/**
+ * Shorthand for 400 Bad Request error
+ */
+export function createBadRequestResponse(
+  message: string,
+  code: string = ErrorCodes.INVALID_INPUT
+): NextResponse<ErrorResponse> {
+  return createErrorResponse(new AppError(message, code, 400));
+}
+
+/**
+ * Shorthand for 403 Forbidden error
+ */
+export function createForbiddenResponse(
+  message: string = 'Access denied'
+): NextResponse<ErrorResponse> {
+  return createErrorResponse(
+    new AppError(message, ErrorCodes.ACCESS_DENIED, 403)
+  );
+}
+
+/**
+ * Shorthand for 401 Unauthorized error
+ */
+export function createUnauthorizedResponse(
+  message: string = 'Authentication required'
+): NextResponse<ErrorResponse> {
+  return createErrorResponse(
+    new AppError(message, ErrorCodes.AUTH_REQUIRED, 401)
+  );
+}
+
+/**
+ * Calculate pagination metadata from total count, page, and limit
+ */
+export function calculatePagination(
+  total: number,
+  page: number,
+  limit: number
+): {
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+} {
+  const pages = Math.ceil(total / limit);
+  return {
+    total,
+    page,
+    limit,
+    pages,
+    hasNext: page < pages,
+    hasPrev: page > 1,
+  };
 }
 

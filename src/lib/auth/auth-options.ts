@@ -1,13 +1,11 @@
 // src/lib/auth-options.ts
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google"; 
-import { PrismaClient } from "@/prisma/client";
+import GoogleProvider from "next-auth/providers/google";
+import prisma from '@/lib/prisma';
 import bcrypt from "bcryptjs";
 import { User } from "next-auth";
 import * as jose from 'jose';
-
-const prisma = new PrismaClient();
 
 // Define a custom user type that matches what we return from authorize
 interface CustomUser extends User {
@@ -399,7 +397,7 @@ export const authOptions: NextAuthOptions = {
     warn(code) {},
     debug(code, metadata) {},
   },
-  secret: process.env.NEXTAUTH_SECRET || "23cc5f842ca52345400e310985223cbd92444fba095df1bb9cf0f94a3fb6f9acc7b178a9aa8743db278c5d049946941e33099a15663cd45186c38028c87ed227"
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default authOptions;

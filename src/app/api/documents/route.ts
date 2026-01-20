@@ -13,7 +13,7 @@ export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = getUserIdFromRequest(request);
+    const userId = await getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
         { message: 'Authentication required', error: true }, 
@@ -167,8 +167,8 @@ export async function GET(request: NextRequest) {
 // Upload a document
 export async function POST(request: NextRequest) {
   try {
-    // Get user ID and organization from token
-    const userId = getUserIdFromRequest(request);
+    // Get user ID and organization from token (with JWT signature verification)
+    const userId = await getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
         { message: 'Authentication required', error: true }, 

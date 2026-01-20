@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { sendInvitationAcceptedEmail } from "@/lib/email-service";
-
-const prisma = new PrismaClient();
 
 // Accept an organization invitation
 export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {

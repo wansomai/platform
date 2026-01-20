@@ -1,10 +1,8 @@
 // src/app/api/projects/[id]/documents/[documentId]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { checkProjectAccess } from '@/lib/auth/authorization';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
-
-const prisma = new PrismaClient();
 
 // DELETE - Remove document from project (keeps in vault)
 export const DELETE = withErrorHandler(withAuth(async (

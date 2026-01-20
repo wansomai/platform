@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { isOrganizationOwner } from "@/lib/auth/permissions";
 import { OrganizationRole } from "@/lib/constants/roles";
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/organization/transfer-ownership

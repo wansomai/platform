@@ -3,11 +3,9 @@
  * Provides reusable functions for checking user permissions and managing access control
  */
 
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { OrganizationRole, RoleHierarchy, AccountType } from '@/lib/constants/roles';
 import { OrganizationPermission, roleHasPermission, type OrganizationPermissionType } from '@/lib/constants/permissions';
-
-const prisma = new PrismaClient();
 /**
  * Check if a user has a specific permission in an organization
  * @param userId - User ID to check

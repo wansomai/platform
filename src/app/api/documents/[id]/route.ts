@@ -12,17 +12,17 @@ export async function GET(
 ) {
   try {
     const documentId = (await params).id;
-    
-    // Get user ID and organization from token
-    const userId = getUserIdFromRequest(request);
+
+    // Get user ID and organization from token (with JWT signature verification)
+    const userId = await getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
-        { message: 'Authentication required', error: true }, 
+        { message: 'Authentication required', error: true },
         { status: 401 }
       );
     }
-    
-    // ✅ Check user's active organization access (supports org switching)
+
+    // Check user's active organization access (supports org switching)
     const organizationId = await getActiveOrganizationId(userId);
 
     // Get query parameters
@@ -95,16 +95,16 @@ export async function DELETE(
 ) {
   try {
     const documentId = (await params).id;
-    
-    // Get user ID and organization from token
-    const userId = getUserIdFromRequest(request);
+
+    // Get user ID and organization from token (with JWT signature verification)
+    const userId = await getUserIdFromRequest(request);
     if (!userId) {
       return NextResponse.json(
-        { message: 'Authentication required', error: true }, 
+        { message: 'Authentication required', error: true },
         { status: 401 }
       );
     }
-    
+
     // Check user's organization access
     const user = await prisma.user.findUnique({
       where: { id: userId },

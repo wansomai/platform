@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserIdFromRequest } from './authorization';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { isAdminUser } from './admin';
 import { AppError } from '@/types/error';
 import { createErrorResponse } from '../api/response';
-
-const prisma = new PrismaClient();
 
 /**
  * Admin authentication middleware
@@ -21,8 +19,8 @@ export function withAdminAuth(
 ) {
   return async (request: NextRequest, ...args: any[]): Promise<NextResponse> => {
     try {
-      // First, check if user is authenticated
-      const userId = getUserIdFromRequest(request);
+      // First, check if user is authenticated (with JWT signature verification)
+      const userId = await getUserIdFromRequest(request);
 
       if (!userId) {
         return createErrorResponse(

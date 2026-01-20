@@ -2,15 +2,29 @@
 import { JWT, JWTDecodeParams, JWTEncodeParams } from 'next-auth/jwt';
 import * as jose from 'jose';
 
-// We'll use a consistent secret
-const NEXTAUTH_SECRET = "23cc5f842ca52345400e310985223cbd92444fba095df1bb9cf0f94a3fb6f9acc7b178a9aa8743db278c5d049946941e33099a15663cd45186c38028c87ed227";
-const encodedSecret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || NEXTAUTH_SECRET);
+// JWT secret must be provided via environment variable
+const getJwtSecret = (): Uint8Array => {
+  const secret = process.env.NEXTAUTH_SECRET;
+  if (!secret) {
+    throw new Error('NEXTAUTH_SECRET environment variable is required');
+  }
+  return new TextEncoder().encode(secret);
+};
+
+// Lazy initialization to allow environment to be loaded
+let _encodedSecret: Uint8Array | null = null;
+const getEncodedSecret = (): Uint8Array => {
+  if (!_encodedSecret) {
+    _encodedSecret = getJwtSecret();
+  }
+  return _encodedSecret;
+};
 
 const encode = async (params: JWTEncodeParams): Promise<string> => {
   const signedToken = await new jose.SignJWT(params.token as Record<string, any>)
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('1h') // 1 hour expiration
-    .sign(encodedSecret);
+    .sign(getEncodedSecret());
   
   if (!signedToken) {
     throw new Error('Failed to sign token');
@@ -31,7 +45,7 @@ const decode = async (params: JWTDecodeParams): Promise<JWT | null> => {
   }
 
   try {
-    const decoded = await jose.jwtVerify(token, encodedSecret);
+    const decoded = await jose.jwtVerify(token, getEncodedSecret());
 
     if (!decoded.payload) {
       return null;
@@ -47,7 +61,7 @@ const decode = async (params: JWTDecodeParams): Promise<JWT | null> => {
 const jwtConfig = {
   encode,
   decode,
-  encodedSecret,
+  getEncodedSecret,
 };
 
 export default jwtConfig;

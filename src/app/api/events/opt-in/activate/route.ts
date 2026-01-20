@@ -1,12 +1,10 @@
 // src/app/api/events/opt-in/activate/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { generateTokens } from '@/lib/auth/token-service';
 import { sendWansomProCredentialsEmail } from '@/lib/event-email-templates';
-
-const prisma = new PrismaClient();
 
 /**
  * Generate a secure random password
@@ -228,7 +226,5 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

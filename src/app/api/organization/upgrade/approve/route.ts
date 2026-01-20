@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { AccountType } from "@/lib/constants/roles";
-
-const prisma = new PrismaClient();
 
 /**
  * GET /api/organization/upgrade/approve?token=xxx

@@ -1,11 +1,9 @@
 // src/app/api/auth/reset-password-request/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import crypto from 'crypto'
 import { sendPasswordResetEmail } from '@/lib/email-service'
-
-const prisma = new PrismaClient()
 
 // Schema validation
 const resetPasswordRequestSchema = z.object({

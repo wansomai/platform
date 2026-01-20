@@ -2,10 +2,8 @@
 // Converts AIAssociate records into Gemini tool declarations
 
 import { Type } from '@google/genai';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { PRACTICE_AREA_LABELS } from '@/types/associates';
-
-const prisma = new PrismaClient();
 
 export interface AssociateTool {
   name: string;
