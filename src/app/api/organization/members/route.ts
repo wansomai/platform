@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import {
   withErrorHandler,
@@ -60,7 +60,7 @@ export const GET = withErrorHandler(
         isOwner: member.user.id === orgDetails?.ownerId,
       }));
 
-      return createApiResponse({
+      return NextResponse.json({
         members: formattedMembers,
         organization: {
           id: orgDetails?.id,
