@@ -58,7 +58,6 @@ export default async function sitemap() {
       _updatedAt
     }`;
     blogPosts = await sanityClient.fetch(query);
-    console.log(`Sitemap: Fetched ${blogPosts.length} Sanity blog posts`);
   } catch (error) {
     console.error('Error fetching Sanity blog posts for sitemap:', error);
   }
@@ -72,7 +71,6 @@ export default async function sitemap() {
       _updatedAt
     }`;
     legalDocs = await sanityClient.fetch(query);
-    console.log(`Sitemap: Fetched ${legalDocs.length} Sanity legal documents`);
   } catch (error) {
     console.error('Error fetching Sanity legal documents for sitemap:', error);
   }

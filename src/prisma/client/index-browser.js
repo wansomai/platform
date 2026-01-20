@@ -475,14 +475,14 @@ exports.Prisma.AIAssociateScalarFieldEnum = {
   id: 'id',
   name: 'name',
   instructions: 'instructions',
-  description: 'description',
-  practiceAreas: 'practiceAreas',
-  knowledgeBase: 'knowledgeBase',
-  isActive: 'isActive',
   organizationId: 'organizationId',
   createdById: 'createdById',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  description: 'description',
+  isActive: 'isActive',
+  knowledgeBase: 'knowledgeBase',
+  practiceAreas: 'practiceAreas'
 };
 
 exports.Prisma.AssociateStepScalarFieldEnum = {

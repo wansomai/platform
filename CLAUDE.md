@@ -90,10 +90,14 @@ Organization
 ## Important Implementation Details
 
 ### Prisma Client Location (Critical)
-The Prisma client is generated to a custom location. Always import as:
+The Prisma client is generated to a custom location (`src/prisma/client`). Always import as:
 ```typescript
+// For the PrismaClient class itself (rare, usually only in prisma.ts)
 import { PrismaClient } from '@/prisma/client';
 // NOT from '@prisma/client'
+
+// For database operations, use the singleton instance:
+import prisma from '@/lib/prisma';
 ```
 
 ### API Response Pattern
@@ -115,7 +119,7 @@ return createErrorResponse(new AppError('Message', 'ERROR_CODE', 401));
 import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization';
 
 export async function GET(req: NextRequest) {
-  const userId = getUserIdFromRequest(req);
+  const userId = await getUserIdFromRequest(req); // Note: async function
   if (!userId) {
     return createErrorResponse(new AppError('Unauthorized', 'AUTH_REQUIRED', 401));
   }
@@ -130,12 +134,27 @@ export async function GET(req: NextRequest) {
 ```
 
 ### Higher-Order API Middleware
+Use middleware from `src/lib/api/middleware.ts` for cleaner route handlers:
 ```typescript
-import { withAuth, withErrorHandler } from '@/lib/api/middleware';
+import { withAuth, withErrorHandler, withProjectAccess, withOrganizationAccess, OrganizationPermission } from '@/lib/api/middleware';
 
+// Basic auth
 export const GET = withErrorHandler(
   withAuth(async (request, userId) => {
-    // userId is already validated
+    return createApiResponse(data);
+  })
+);
+
+// Project-scoped (auto-extracts projectId from route params)
+export const GET = withErrorHandler(
+  withProjectAccess(async (request, { userId, projectId }, params) => {
+    return createApiResponse(data);
+  })
+);
+
+// Organization-scoped with permission check
+export const GET = withErrorHandler(
+  withOrganizationAccess(OrganizationPermission.VIEW_MEMBERS, async (request, { userId, organizationId }) => {
     return createApiResponse(data);
   })
 );

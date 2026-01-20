@@ -192,11 +192,6 @@ export default function WorkflowsPage() {
     setAssociateToDelete(null);
   };
 
-  const handleEdit = (associate: AIAssociate) => {
-    // TODO: Implement edit functionality
-    alert("Edit functionality coming soon!");
-  };
-
   const handleUseInChat = async (associate: AIAssociate) => {
     try {
       // Check if user is logged in
@@ -482,13 +477,6 @@ export default function WorkflowsPage() {
                         <MessageSquare className="h-4 w-4" />
                         Use in chat
                       </Button>
-                      {/* <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(associate)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button> */}
                       <Button
                         variant="ghost"
                         size="sm"

@@ -46,7 +46,6 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
       const response = await apiService.get<ApiResponse<{ associates: AIAssociate[] }>>(
         '/api/associates'
       );
-      console.log(response,"associate response")
 
       const associates = response.data.associates ?? [];
       set({

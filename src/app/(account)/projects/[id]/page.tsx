@@ -39,7 +39,9 @@ export default function ProjectPage() {
     
   // Load project conversations
   useEffect(() => {
-    fetchConversation(projectId).catch(err => {})
+    fetchConversation(projectId).catch(err => {
+      console.error('[ProjectPage] Failed to fetch conversations:', err);
+    });
   }, [projectId, fetchConversation]);
 
   // Handle Google connection notifications

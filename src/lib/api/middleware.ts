@@ -178,15 +178,3 @@ export function withOrganizationAccess(
     return handler(request, { userId, organizationId });
   };
 }
-
-/**
- * Combine multiple middlewares
- * Applies middlewares in order (left to right)
- */
-export function composeMiddleware<T extends any[]>(
-  ...middlewares: Array<(handler: any) => any>
-) {
-  return (handler: (...args: T) => Promise<NextResponse>) => {
-    return middlewares.reduceRight((acc, middleware) => middleware(acc), handler);
-  };
-}

@@ -130,13 +130,6 @@ export function createCreatedResponse<T>(
 }
 
 /**
- * Shorthand for 204 No Content response (for deletes)
- */
-export function createNoContentResponse(): NextResponse {
-  return new NextResponse(null, { status: 204 });
-}
-
-/**
  * Shorthand for 404 Not Found error
  */
 export function createNotFoundResponse(
