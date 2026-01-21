@@ -1,13 +1,12 @@
 // app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import { generateTokens } from '@/lib/auth/token-service';
+import { prepareUserForToken, prepareUserResponse, generateAuthCookieHeader } from '@/lib/auth/auth-utils';
 import { sendWelcomeEmail } from '@/lib/email-service';
 import { OrganizationRole, AccountType } from '@/lib/constants/roles';
-
-const prisma = new PrismaClient();
 
 // Schema validation for normal registration
 const registerSchema = z.object({
@@ -186,35 +185,11 @@ export async function POST(request: NextRequest) {
       console.error('Error sending welcome email:', emailError);
     }
     
-    // Prepare the user object for token generation
-    const userForToken = {
-      id: user.id,
-      email: user.email,
-      fullName: String(user.fullName || ''),
-      name: String(user.fullName || ''),
-      role: user.role,
-      organizationId: user.organizationId,
-      organization: {
-        id: user.organization.id,
-        name: user.organization.name,
-      }
-    };
-    
-    // Generate tokens using our centralized service
+    // Prepare user data using shared utilities
+    const userForToken = prepareUserForToken(user);
     const { access_token, refresh_token } = generateTokens(userForToken);
-    
-    // Prepare user data for response (without sensitive data)
-    const userData = {
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      organization: {
-        id: user.organization.id,
-        name: user.organization.name,
-      }
-    };
-    
+    const userData = prepareUserResponse(user);
+
     return NextResponse.json({
       status: 201,
       message: 'User registered successfully',
@@ -223,10 +198,10 @@ export async function POST(request: NextRequest) {
         access_token,
         refresh_token
       }
-    }, { 
+    }, {
       status: 201,
       headers: {
-        'Set-Cookie': `auth-token=${access_token}; Path=/; HttpOnly; Max-Age=3600; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}, refresh-token=${refresh_token}; Path=/; HttpOnly; Max-Age=604800; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`
+        'Set-Cookie': generateAuthCookieHeader(access_token, refresh_token)
       }
     });
   } catch (error) {

@@ -346,12 +346,6 @@ const LegalCanvas: React.FC = () => {
       setIsLoadingTemplate(false);
     }
   };
-  const handleTextSelection = (range: any) => {
-    // Handle text selection changes if needed
-    // This can be used to update UI or perform actions based on selection
-    
-  }
-
   // Helper function to get concise status messages
   const getStatusMessage = (status: string, message?: string) => {
     if (message) return message;

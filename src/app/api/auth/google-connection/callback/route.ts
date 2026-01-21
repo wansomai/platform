@@ -1,10 +1,8 @@
 // src/app/api/auth/google-connection/callback/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { withErrorHandler } from '@/lib/api/middleware';
-
-const prisma = new PrismaClient();
 
 /**
  * Handle Google OAuth callback

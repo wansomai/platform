@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
-
-const prisma = new PrismaClient();
+import { getEffectiveRole, getActiveOrgId } from "@/lib/auth/auth-utils";
 
 // Get user profile
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
@@ -45,8 +44,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     );
   }
 
-  // Get the active organization ID (use activeOrganizationId if set, otherwise fall back to organizationId)
-  const activeOrgId = user.activeOrganizationId || user.organizationId;
+  // Get the active organization ID
+  const activeOrgId = getActiveOrgId(user.activeOrganizationId, user.organizationId);
 
   // Auto-fix: Set activeOrganizationId if it's null (for legacy users)
   if (!user.activeOrganizationId) {
@@ -64,29 +63,13 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     });
   }
 
-  // Determine the user's role in the active organization
-  let effectiveRole: string;
-
-  // If the active organization is the user's primary organization, they are the owner
-  if (activeOrgId === user.organizationId) {
-    effectiveRole = 'owner';
-  } else {
-    // Otherwise, get the role from UserOrganization for organizations they've been invited to
-    const userOrganization = await prisma.userOrganization.findUnique({
-      where: {
-        userId_organizationId: {
-          userId: user.id,
-          organizationId: activeOrgId
-        }
-      },
-      select: {
-        role: true
-      }
-    });
-
-    // Use the role from UserOrganization if it exists, otherwise fall back to User.role
-    effectiveRole = userOrganization?.role || user.role;
-  }
+  // Determine the user's effective role in the active organization
+  const effectiveRole = await getEffectiveRole(
+    user.id,
+    user.organizationId,
+    user.activeOrganizationId,
+    user.role
+  );
 
   // Ensure activeOrganization is always present in response (fallback to organization if null)
   const activeOrganizationData = user.activeOrganization || user.organization;
@@ -208,32 +191,13 @@ export const PUT = withErrorHandler(withAuth(async (request: NextRequest, userId
     });
 
     if (refreshedUser) {
-      // Get the active organization ID
-      const activeOrgId = refreshedUser.activeOrganizationId || refreshedUser.organizationId;
-
-      // Determine the user's role in the active organization
-      let effectiveRole: string;
-
-      // If the active organization is the user's primary organization, they are the owner
-      if (activeOrgId === refreshedUser.organizationId) {
-        effectiveRole = 'owner';
-      } else {
-        // Otherwise, get the role from UserOrganization for organizations they've been invited to
-        const userOrganization = await prisma.userOrganization.findUnique({
-          where: {
-            userId_organizationId: {
-              userId: refreshedUser.id,
-              organizationId: activeOrgId
-            }
-          },
-          select: {
-            role: true
-          }
-        });
-
-        // Use the role from UserOrganization if it exists, otherwise fall back to User.role
-        effectiveRole = userOrganization?.role || refreshedUser.role;
-      }
+      // Determine the user's effective role in the active organization
+      const effectiveRole = await getEffectiveRole(
+        refreshedUser.id,
+        refreshedUser.organizationId,
+        refreshedUser.activeOrganizationId,
+        refreshedUser.role
+      );
 
       // Ensure activeOrganization is always present in response (fallback to organization if null)
       const activeOrganizationData = refreshedUser.activeOrganization || refreshedUser.organization;
@@ -250,32 +214,13 @@ export const PUT = withErrorHandler(withAuth(async (request: NextRequest, userId
     }
   }
 
-  // Get the active organization ID
-  const activeOrgId = updatedUser.activeOrganizationId || updatedUser.organizationId;
-
-  // Determine the user's role in the active organization
-  let effectiveRole: string;
-
-  // If the active organization is the user's primary organization, they are the owner
-  if (activeOrgId === updatedUser.organizationId) {
-    effectiveRole = 'owner';
-  } else {
-    // Otherwise, get the role from UserOrganization for organizations they've been invited to
-    const userOrganization = await prisma.userOrganization.findUnique({
-      where: {
-        userId_organizationId: {
-          userId: updatedUser.id,
-          organizationId: activeOrgId
-        }
-      },
-      select: {
-        role: true
-      }
-    });
-
-    // Use the role from UserOrganization if it exists, otherwise fall back to User.role
-    effectiveRole = userOrganization?.role || updatedUser.role;
-  }
+  // Determine the user's effective role in the active organization
+  const effectiveRole = await getEffectiveRole(
+    updatedUser.id,
+    updatedUser.organizationId,
+    updatedUser.activeOrganizationId,
+    updatedUser.role
+  );
 
   // Ensure activeOrganization is always present in response (fallback to organization if null)
   const activeOrganizationData = updatedUser.activeOrganization || updatedUser.organization;

@@ -17,6 +17,8 @@ npx prisma migrate dev --name <name>  # Create and apply migration
 npx prisma studio     # Database GUI
 ```
 
+**Note**: No test suite is currently configured in this project.
+
 ## Architecture Overview
 
 ### Technology Stack
@@ -62,8 +64,11 @@ Organization
 - Core document tools (always available): `generateDocumentInline`, `reviewDocument`, `searchProjectDocuments`
 - Canvas tools (when canvas mode enabled): `draftNewDocument`, `editCanvasDocument`
 - Integration tools: Google Calendar (`createCalendarEvent`, `searchCalendarEvents`, etc.), Gmail (`searchEmails`, `readEmail`, `draftEmail`)
-- Execution handled by `src/lib/functionExecutor.ts` and `src/lib/associateExecutor.ts`
-- Services layer: `src/services/` (AIDocumentService, GoogleCalendarService, GmailService)
+- Execution handled by `src/lib/functionExecutor.ts` (core tools) and `src/lib/associateExecutor.ts` (associate-specific workflows)
+- Services layer in `src/services/`:
+  - `aiDocumentService.ts` - Document generation, review, and inline document creation
+  - `googleCalendarService.ts` - Calendar event CRUD and availability checks
+  - `gmailService.ts` - Email search, read, and draft operations
 
 #### 5. Document Processing Pipeline
 - Upload → Vercel Blob Storage
@@ -85,10 +90,14 @@ Organization
 ## Important Implementation Details
 
 ### Prisma Client Location (Critical)
-The Prisma client is generated to a custom location. Always import as:
+The Prisma client is generated to a custom location (`src/prisma/client`). Always import as:
 ```typescript
+// For the PrismaClient class itself (rare, usually only in prisma.ts)
 import { PrismaClient } from '@/prisma/client';
 // NOT from '@prisma/client'
+
+// For database operations, use the singleton instance:
+import prisma from '@/lib/prisma';
 ```
 
 ### API Response Pattern
@@ -110,7 +119,7 @@ return createErrorResponse(new AppError('Message', 'ERROR_CODE', 401));
 import { getUserIdFromRequest, checkProjectAccess } from '@/lib/auth/authorization';
 
 export async function GET(req: NextRequest) {
-  const userId = getUserIdFromRequest(req);
+  const userId = await getUserIdFromRequest(req); // Note: async function
   if (!userId) {
     return createErrorResponse(new AppError('Unauthorized', 'AUTH_REQUIRED', 401));
   }
@@ -125,12 +134,27 @@ export async function GET(req: NextRequest) {
 ```
 
 ### Higher-Order API Middleware
+Use middleware from `src/lib/api/middleware.ts` for cleaner route handlers:
 ```typescript
-import { withAuth, withErrorHandler } from '@/lib/api/middleware';
+import { withAuth, withErrorHandler, withProjectAccess, withOrganizationAccess, OrganizationPermission } from '@/lib/api/middleware';
 
+// Basic auth
 export const GET = withErrorHandler(
   withAuth(async (request, userId) => {
-    // userId is already validated
+    return createApiResponse(data);
+  })
+);
+
+// Project-scoped (auto-extracts projectId from route params)
+export const GET = withErrorHandler(
+  withProjectAccess(async (request, { userId, projectId }, params) => {
+    return createApiResponse(data);
+  })
+);
+
+// Organization-scoped with permission check
+export const GET = withErrorHandler(
+  withOrganizationAccess(OrganizationPermission.VIEW_MEMBERS, async (request, { userId, organizationId }) => {
     return createApiResponse(data);
   })
 );
@@ -150,14 +174,14 @@ import { prisma } from '@/lib/prisma';
 - `(admin)` - Admin-only pages
 
 ### Document Field Mapping
-The `Document` model uses `@map` for some fields:
+The `Document` model uses `@map` to customize database column names. In TypeScript, use the Prisma field name (left side), NOT the database column name:
 ```prisma
-project_id    @map("projectId")
-organization_id @map("organizationId")
-file_url      @map("fileUrl")
-created_by    @map("createdBy")
+project_id             String?  @map("projectId")      // TypeScript: document.project_id
+organization_id        String   @map("organizationId") // TypeScript: document.organization_id
+file_url               String   @map("fileUrl")        // TypeScript: document.file_url
+created_by             String   @map("createdBy")      // TypeScript: document.created_by
 ```
-In TypeScript, use the mapped names (`project_id`, `organization_id`, etc.).
+Similar pattern applies to `ProjectDocument` and `ConversationDocument` join tables.
 
 ### Environment Variables
 Key variables:
@@ -199,3 +223,19 @@ Optional (for Google Cloud Vision OCR):
 - Primary: **Sanity CMS** for blogs, lawyer profiles, legal documents
 - Legacy: Contentful integration exists
 - Adapters in `src/lib/data/`
+
+## Zustand Stores
+State management uses Zustand stores in `src/store/`:
+- `chat.store.ts` - Conversation and message state
+- `project.store.ts` - Project management
+- `documents.store.ts` - Document state (vault/organization-level)
+- `workspace-documents.store.ts` - Project workspace documents
+- `canvas.store.ts` - Canvas editor state
+- `associates.store.ts` - AI associate management
+- `folder.store.ts` - Folder hierarchy
+- `ui.store.ts` - UI state (modals, sidebars)
+- `profile.store.ts` - User profile state
+- `workspace-instructions.store.ts` - Project knowledge base instructions
+- `workspace-settings.store.ts` - Project workspace settings
+- `content.store.ts` - Content management (SEO pages)
+- `onboarding.store.ts` - User onboarding flow

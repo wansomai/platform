@@ -1,13 +1,11 @@
 // src/lib/functionExecutor.ts
 // Executes Gemini function calls for legal drafting
 
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService';
 import { GoogleCalendarService } from '@/services/googleCalendarService';
 import { GmailService } from '@/services/gmailService';
 import { executeAssociateCall } from './associateExecutor';
-
-const prisma = new PrismaClient();
 
 /**
  * Execute a function call from Gemini

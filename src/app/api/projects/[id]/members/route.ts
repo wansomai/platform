@@ -1,152 +1,128 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
-import { withAuth, withErrorHandler } from '@/lib/api/middleware';
-import { checkProjectAccess } from '@/lib/auth/authorization';
-
-const prisma = new PrismaClient();
+import { NextRequest } from 'next/server';
+import prisma from '@/lib/prisma';
+import { withErrorHandler, withProjectAccess, ProjectContext } from '@/lib/api/middleware';
+import {
+  createApiResponse,
+  createNotFoundResponse,
+  createBadRequestResponse,
+  createForbiddenResponse,
+} from '@/lib/api/response';
 
 /**
  * GET /api/projects/[id]/members
  * Get all members of a specific project
  */
-export const GET = withErrorHandler(withAuth(async (
-  request: NextRequest,
-  userId: string,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  const projectId = (await params).id;
+export const GET = withErrorHandler(
+  withProjectAccess(async (request: NextRequest, context: ProjectContext) => {
+    const { projectId, userId } = context;
 
-  // Check if user has access to this project
-  const hasAccess = await checkProjectAccess(projectId, userId);
-  if (!hasAccess) {
-    return NextResponse.json(
-      { error: 'You do not have access to this project' },
-      { status: 403 }
-    );
-  }
+    // Get project details to check it exists
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { id: true },
+    });
 
-  // Get project details to check creator
-  const project = await prisma.project.findUnique({
-    where: { id: projectId },
-    select: { id: true }
-  });
-
-  if (!project) {
-    return NextResponse.json(
-      { error: 'Project not found' },
-      { status: 404 }
-    );
-  }
-
-  // Get project members
-  const projectMembers = await prisma.projectMember.findMany({
-    where: { projectId },
-    include: {
-      user: {
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'asc'
+    if (!project) {
+      return createNotFoundResponse('Project');
     }
-  });
 
-  // Get current user's role in the project
-  const currentUserMember = projectMembers.find(member => member.userId === userId);
-  const currentUserRole = currentUserMember?.role || null;
+    // Get project members
+    const projectMembers = await prisma.projectMember.findMany({
+      where: { projectId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
 
-  // Format the response
-  const members = projectMembers.map(member => ({
-    id: `${member.userId}-${member.projectId}`,
-    userId: member.userId,
-    name: member.user.fullName || member.user.email || 'Unknown User',
-    email: member.user.email,
-    role: member.role,
-    joinedAt: member.createdAt.toISOString(),
-    isAdmin: member.role === 'admin',
-    canRemove: member.role !== 'admin', // Cannot remove admin
-  }));
+    // Get current user's role in the project
+    const currentUserMember = projectMembers.find((member) => member.userId === userId);
+    const currentUserRole = currentUserMember?.role || null;
 
-  return NextResponse.json({
-    members,
-    count: members.length,
-    currentUserRole
-  });
-}));
+    // Format the response
+    const members = projectMembers.map((member) => ({
+      id: `${member.userId}-${member.projectId}`,
+      userId: member.userId,
+      name: member.user.fullName || member.user.email || 'Unknown User',
+      email: member.user.email,
+      role: member.role,
+      joinedAt: member.createdAt.toISOString(),
+      isAdmin: member.role === 'admin',
+      canRemove: member.role !== 'admin', // Cannot remove admin
+    }));
+
+    return createApiResponse({
+      members,
+      count: members.length,
+      currentUserRole,
+    });
+  })
+);
 
 /**
- * DELETE /api/projects/[id]/members/[memberId]
- * Remove a member from the project
+ * DELETE /api/projects/[id]/members
+ * Remove a member from the project (memberId in request body)
  */
-export const DELETE = withErrorHandler(withAuth(async (
-  request: NextRequest,
-  userId: string,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  const projectId = (await params).id;
+export const DELETE = withErrorHandler(
+  withProjectAccess(async (request: NextRequest, context: ProjectContext) => {
+    const { projectId } = context;
 
-  // Get memberId from URL path
-  const url = new URL(request.url);
-  const pathParts = url.pathname.split('/');
-  const memberId = pathParts[pathParts.length - 1];
+    // Get memberId from request body or URL
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split('/');
+    let memberId = pathParts[pathParts.length - 1];
 
-  if (!memberId) {
-    return NextResponse.json(
-      { error: 'Member ID is required' },
-      { status: 400 }
-    );
-  }
-
-  // Check if user has access to this project
-  const hasAccess = await checkProjectAccess(projectId, userId);
-  if (!hasAccess) {
-    return NextResponse.json(
-      { error: 'You do not have access to this project' },
-      { status: 403 }
-    );
-  }
-
-  // Check if the member to be removed is an admin
-  const memberToRemove = await prisma.projectMember.findUnique({
-    where: {
-      userId_projectId: {
-        userId: memberId,
-        projectId: projectId
+    // If memberId is 'members', try to get it from the request body
+    if (memberId === 'members') {
+      try {
+        const body = await request.json();
+        memberId = body.memberId;
+      } catch {
+        return createBadRequestResponse('Member ID is required');
       }
     }
-  });
 
-  if (!memberToRemove) {
-    return NextResponse.json(
-      { error: 'Member not found in this project' },
-      { status: 404 }
-    );
-  }
-
-  // Prevent removing admin
-  if (memberToRemove.role === 'admin') {
-    return NextResponse.json(
-      { error: 'Cannot remove the workspace admin' },
-      { status: 403 }
-    );
-  }
-
-  // Remove the project member
-  await prisma.projectMember.delete({
-    where: {
-      userId_projectId: {
-        userId: memberId,
-        projectId: projectId
-      }
+    if (!memberId) {
+      return createBadRequestResponse('Member ID is required');
     }
-  });
 
-  return NextResponse.json({
-    success: true,
-    message: 'Member removed successfully'
-  });
-}));
+    // Check if the member to be removed exists and their role
+    const memberToRemove = await prisma.projectMember.findUnique({
+      where: {
+        userId_projectId: {
+          userId: memberId,
+          projectId: projectId,
+        },
+      },
+    });
+
+    if (!memberToRemove) {
+      return createNotFoundResponse('Member in this project');
+    }
+
+    // Prevent removing admin
+    if (memberToRemove.role === 'admin') {
+      return createForbiddenResponse('Cannot remove the workspace admin');
+    }
+
+    // Remove the project member
+    await prisma.projectMember.delete({
+      where: {
+        userId_projectId: {
+          userId: memberId,
+          projectId: projectId,
+        },
+      },
+    });
+
+    return createApiResponse({ removed: true }, 'Member removed successfully');
+  })
+);

@@ -89,7 +89,6 @@ export interface SanityLegalDocument {
 export async function getAllBlogPosts(): Promise<SanityPost[]> {
   try {
     const posts = await client.fetch(postsQuery);
-    console.log('Fetched Sanity blog post:', posts[0]);
     return posts;
   } catch (error) {
     console.error('Error fetching Sanity blog posts:', error);

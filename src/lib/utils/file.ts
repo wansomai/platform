@@ -79,30 +79,6 @@ export function getFileTypeColor(fileType: string): string {
 }
 
 /**
- * Check if file type is an image
- */
-export function isImageFile(fileType: string): boolean {
-  const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'];
-  return imageTypes.includes(fileType.toLowerCase());
-}
-
-/**
- * Check if file type is a document
- */
-export function isDocumentFile(fileType: string): boolean {
-  const documentTypes = ['pdf', 'doc', 'docx', 'txt', 'rtf'];
-  return documentTypes.includes(fileType.toLowerCase());
-}
-
-/**
- * Check if file type is a spreadsheet
- */
-export function isSpreadsheetFile(fileType: string): boolean {
-  const spreadsheetTypes = ['xlsx', 'xls', 'csv', 'ods'];
-  return spreadsheetTypes.includes(fileType.toLowerCase());
-}
-
-/**
  * Get file extension from filename
  */
 export function getFileExtension(fileName: string): string {
@@ -124,40 +100,6 @@ export function validateFileSize(fileSize: number, maxSize: number = 20 * 1024 *
   }
 
   return { isValid: true };
-}
-
-/**
- * Get MIME type from file extension
- */
-export function getMimeTypeFromExtension(extension: string): string {
-  const mimeTypes: Record<string, string> = {
-    // Documents
-    'pdf': 'application/pdf',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'txt': 'text/plain',
-    'rtf': 'application/rtf',
-    
-    // Spreadsheets
-    'xls': 'application/vnd.ms-excel',
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'csv': 'text/csv',
-    
-    // Images
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'gif': 'image/gif',
-    'webp': 'image/webp',
-    'svg': 'image/svg+xml',
-    
-    // Archives
-    'zip': 'application/zip',
-    'rar': 'application/x-rar-compressed',
-    '7z': 'application/x-7z-compressed',
-  };
-  
-  return mimeTypes[extension.toLowerCase()] || 'application/octet-stream';
 }
 
 /**
@@ -216,28 +158,6 @@ export function validateFile(
   }
   
   return { isValid: true };
-}
-
-/**
- * Get MIME type from file extension
- */
-export function getMimeType(fileName: string): string {
-  const extension = fileName.split('.').pop()?.toLowerCase();
-  
-  const mimeTypes: Record<string, string> = {
-    'pdf': 'application/pdf',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'xls': 'application/vnd.ms-excel',
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'csv': 'text/csv',
-    'txt': 'text/plain',
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png'
-  };
-  
-  return mimeTypes[extension || ''] || 'application/octet-stream';
 }
 
 /**

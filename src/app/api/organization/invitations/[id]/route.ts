@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { sendInvitationEmail } from "@/lib/email-service";
 import crypto from "crypto";
-
-const prisma = new PrismaClient();
 
 // Cancel an invitation
 export const DELETE = withErrorHandler(withAuth(async (

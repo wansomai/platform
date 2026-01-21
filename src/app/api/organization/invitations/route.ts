@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
-
-const prisma = new PrismaClient();
 
 // Get pending invitations
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {

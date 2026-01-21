@@ -1,11 +1,9 @@
 // src/app/api/projects/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import { checkProjectAccess } from '@/lib/auth/authorization'
 import { withAuth, withErrorHandler } from '@/lib/api/middleware'
-
-const prisma = new PrismaClient()
 
 // Schema validation
 const updateProjectSchema = z.object({

@@ -3,11 +3,9 @@
  * Manages access control for workspaces (projects) based on visibility settings
  */
 
-import { PrismaClient } from "@/prisma/client";
+import prisma from '@/lib/prisma';
 import { WorkspaceVisibility } from '@/lib/constants/roles';
 import { isAdminOrOwner } from './permissions';
-
-const prisma = new PrismaClient();
 /**
  * Check if user can access a workspace based on visibility settings
  * @param userId - User ID to check

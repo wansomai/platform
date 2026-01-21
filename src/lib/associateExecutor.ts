@@ -2,10 +2,8 @@
 // Executes AI Associate function calls
 
 import { GoogleGenAI } from '@google/genai';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { findAssociateByFunctionName } from './associateTools';
-
-const prisma = new PrismaClient();
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
 
 /**

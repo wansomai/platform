@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { withAdminAuth } from '@/lib/auth/admin-middleware';
 import { withErrorHandler } from '@/lib/api/middleware';
 import { AccountType } from '@/lib/constants/roles';
 import type { OrganizationsResponse, AdminOrganization, UpgradeStatus, FilterType } from '@/types/admin';
-
-const prisma = new PrismaClient();
 
 /**
  * GET /api/admin/organizations

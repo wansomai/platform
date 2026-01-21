@@ -1,6 +1,6 @@
 // app/api/projects/[id]/conversations/[conversationId]/messages/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
 import { GoogleGenAI } from '@google/genai';
@@ -12,9 +12,6 @@ import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/l
 
 // Set a reasonable timeout
 export const maxDuration = 60;
-
-// Initialize Prisma with connection pooling
-const prisma = new PrismaClient();
 
 // Initialize Gemini with the new API
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });

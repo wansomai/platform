@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { withAdminAuth } from '@/lib/auth/admin-middleware';
 import { withErrorHandler } from '@/lib/api/middleware';
 import type { ActionResponse } from '@/types/admin';
 import { AppError } from '@/types/error';
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/admin/organizations/[id]/reject

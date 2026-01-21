@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { hasOrganizationPermission, isOrganizationOwner } from "@/lib/auth/permissions";
 import { OrganizationPermission } from "@/lib/constants/permissions";
 import { AccountType } from "@/lib/constants/roles";
 import { sendUpgradeApprovalEmail } from "@/lib/email-service";
 import crypto from "crypto";
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/organization/upgrade

@@ -1,11 +1,9 @@
 // app/api/associates/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 import { z } from "zod";
-
-const prisma = new PrismaClient();
 
 const updateAssociateSchema = z.object({
   name: z.string().min(1).max(100).optional(),

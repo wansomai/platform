@@ -1,8 +1,6 @@
 // src/lib/api/org-helpers.ts
 import { AppError } from '@/types/error';
-import { PrismaClient } from "@/prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 /**
  * Get user's organization ID

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import {
   hasOrganizationPermission,
@@ -10,8 +10,6 @@ import {
 import { OrganizationPermission } from "@/lib/constants/permissions";
 import { isValidOrganizationRole } from "@/lib/constants/roles";
 import { sendRoleChangeEmail, sendMemberRemovedEmail } from "@/lib/email-service";
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/organization/members/bulk

@@ -1,10 +1,8 @@
 // app/api/projects/[id]/associates/[associateId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { checkProjectAccess } from "@/lib/auth/authorization";
-
-const prisma = new PrismaClient();
 
 // DELETE /api/projects/[id]/associates/[associateId] - Remove associate from project
 export const DELETE = withErrorHandler(withAuth(async (

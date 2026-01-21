@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
+import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import {
   canManageUser,
@@ -8,8 +8,6 @@ import {
 } from "@/lib/auth/permissions";
 import { isValidOrganizationRole } from "@/lib/constants/roles";
 import { sendRoleChangeEmail } from "@/lib/email-service";
-
-const prisma = new PrismaClient();
 
 // Update member role
 export const PATCH = withErrorHandler(withAuth(async (request: NextRequest, userId: string,{ params }: { params: Promise<{ id: string }> }) => {

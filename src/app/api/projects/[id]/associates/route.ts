@@ -1,154 +1,98 @@
 // app/api/projects/[id]/associates/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@/prisma/client";
-import { withAuth, withErrorHandler } from "@/lib/api/middleware";
-import { checkProjectAccess } from "@/lib/auth/authorization";
-import { getActiveOrganizationId } from "@/lib/api/org-helpers";
-import { canUseAssociates } from "@/lib/subscription";
-import { z } from "zod";
-
-const prisma = new PrismaClient();
+import { NextRequest } from 'next/server';
+import prisma from '@/lib/prisma';
+import { withErrorHandler, withProjectAccess, ProjectContext } from '@/lib/api/middleware';
+import {
+  createApiResponse,
+  createCreatedResponse,
+  createNotFoundResponse,
+  createBadRequestResponse,
+  createForbiddenResponse,
+} from '@/lib/api/response';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
+import { canUseAssociates } from '@/lib/subscription';
+import { z } from 'zod';
 
 const assignAssociateSchema = z.object({
-  associateId: z.string()
+  associateId: z.string(),
 });
 
 // GET /api/projects/[id]/associates - Get all associates for project
-export const GET = withErrorHandler(withAuth(async (
-  request: NextRequest,
-  userId: string,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  try {
-    const { id: projectId } = await params;
-
-    const hasAccess = await checkProjectAccess(projectId, userId);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403 }
-      );
-    }
+export const GET = withErrorHandler(
+  withProjectAccess(async (request: NextRequest, context: ProjectContext) => {
+    const { projectId } = context;
 
     const projectAssociates = await prisma.projectAssociate.findMany({
       where: { projectId },
       include: {
         associate: {
           include: {
-            steps: { orderBy: { stepOrder: 'asc' } }
-          }
-        }
+            steps: { orderBy: { stepOrder: 'asc' } },
+          },
+        },
       },
-      orderBy: { addedAt: 'desc' }
+      orderBy: { addedAt: 'desc' },
     });
 
     const associates = projectAssociates
-      .map(pa => pa.associate)
-      .filter(a => a !== null);
+      .map((pa) => pa.associate)
+      .filter((a) => a !== null);
 
-    return NextResponse.json({
-      status: 200,
-      data: { associates }
-    });
-  } catch (error: any) {
-    console.error('Error fetching project associates:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch project associates' },
-      { status: 500 }
-    );
-  }
-}));
+    return createApiResponse({ associates });
+  })
+);
 
 // POST /api/projects/[id]/associates - Assign associate to project
-export const POST = withErrorHandler(withAuth(async (
-  request: NextRequest,
-  userId: string,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  try {
-    const { id: projectId } = await params;
+export const POST = withErrorHandler(
+  withProjectAccess(async (request: NextRequest, context: ProjectContext) => {
+    const { projectId, userId } = context;
+
     const body = await request.json();
     const { associateId } = assignAssociateSchema.parse(body);
 
-    const hasAccess = await checkProjectAccess(projectId, userId);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Access denied' },
-        { status: 403 }
-      );
-    }
-
-    // Verify associate exists and user has access to it
+    // Get user's active organization
     const currentOrgId = await getActiveOrganizationId(userId);
 
     if (!currentOrgId) {
-      return NextResponse.json(
-        { error: 'User not in organization' },
-        { status: 403 }
-      );
+      return createForbiddenResponse('User not in organization');
     }
 
+    // Verify associate exists and user has access to it
     const associate = await prisma.aIAssociate.findFirst({
       where: {
         id: associateId,
-        organizationId: currentOrgId
-      }
+        organizationId: currentOrgId,
+      },
     });
 
     if (!associate) {
-      return NextResponse.json(
-        { error: 'Associate not found' },
-        { status: 404 }
-      );
+      return createNotFoundResponse('Associate');
     }
 
     // Check if user has premium access before allowing assignment
     const associateCheck = await canUseAssociates(currentOrgId);
     if (!associateCheck.allowed) {
-      return NextResponse.json(
-        {
-          error: associateCheck.reason,
-          requiresUpgrade: true
-        },
-        { status: 403 }
-      );
+      return createForbiddenResponse(associateCheck.reason);
     }
 
     // Check if already assigned
     const existing = await prisma.projectAssociate.findUnique({
       where: {
-        associateId_projectId: { associateId, projectId }
-      }
+        associateId_projectId: { associateId, projectId },
+      },
     });
 
     if (existing) {
-      return NextResponse.json(
-        { error: 'Associate already assigned to project' },
-        { status: 400 }
-      );
+      return createBadRequestResponse('Associate already assigned to project');
     }
 
     await prisma.projectAssociate.create({
-      data: { associateId, projectId }
+      data: { associateId, projectId },
     });
 
-    return NextResponse.json({
-      status: 201,
-      message: 'Associate assigned to project'
-    });
-  } catch (error: any) {
-    console.error('Error assigning associate to project:', error);
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: 'Failed to assign associate' },
-      { status: 500 }
+    return createCreatedResponse(
+      { associateId, projectId },
+      'Associate assigned to project'
     );
-  }
-}));
+  })
+);

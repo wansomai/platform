@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 import { checkProjectAccess } from '@/lib/auth/authorization';
-
-const prisma = new PrismaClient();
 
 /**
  * POST /api/projects/[id]/members/add

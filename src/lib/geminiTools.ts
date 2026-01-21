@@ -444,18 +444,6 @@ export const canvasTools = [
 ];
 
 /**
- * Legacy export - all legal drafting tools combined
- * @deprecated Use coreDocumentTools and canvasTools separately
- */
-export const legalDraftingTools = [
-  generateDocumentInlineTool,
-  draftNewDocumentTool,
-  editCanvasDocumentTool,
-  searchProjectDocumentsTool,
-  reviewDocumentTool
-];
-
-/**
  * All available Google Calendar tools
  */
 export const googleCalendarTools = [
@@ -576,16 +564,3 @@ export const gmailTools = [
   readEmailTool,
   draftEmailTool
 ];
-
-/**
- * Tool declarations formatted for Gemini API
- */
-export const getToolDeclarations = () => {
-  return legalDraftingTools.map(tool => ({
-    functionDeclarations: [{
-      name: tool.name,
-      description: tool.description,
-      parameters: tool.parameters
-    }]
-  }));
-};

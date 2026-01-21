@@ -15,9 +15,7 @@ interface ProjectCardProps {
   project: {
     id: string
     title: string
-    description: {
-    String:string
-    }
+    description: string | null
     status: string
     created_at: string
     team_count: number
@@ -66,7 +64,7 @@ export function ProjectCard({ project, onDelete, onUpdate }: ProjectCardProps) {
             </span>
           </div>
           <p className="mt-1 text-sm text-secondary-500 line-clamp-2">
-            {project.description.String}
+            {project.description || 'No description'}
           </p>
         </div>
 

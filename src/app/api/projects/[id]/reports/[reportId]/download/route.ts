@@ -1,10 +1,8 @@
 // src/app/api/projects/[id]/reports/[reportId]/download/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@/prisma/client';
+import prisma from '@/lib/prisma';
 import { checkProjectAccess } from '@/lib/auth/authorization';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
-
-const prisma = new PrismaClient();
 
 // GET handler - Download report in specified format
 export const GET = withErrorHandler(withAuth(async (
