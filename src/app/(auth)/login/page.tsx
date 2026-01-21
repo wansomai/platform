@@ -215,11 +215,11 @@ export default function LoginPage() {
         <meta name="keywords" content="login wansom.ai, legal ai,ai law,legal ai companies " />
         <meta property="og:title" content="Create Your Account | Wansom AI"/>
         <meta property="og:description" content="create you wansom.ai account and start automating your legal processes" />
-        <meta property="og:image" content="/images/features-2.png" />
+        <meta property="og:image" content="/images/features-2.jpg" />
         <meta name="twitter:card" content="Legal AI Assistant pricing for wansom AI" />
         <meta name="twitter:title" content="Create Your Account | Wansom AI" />
         <meta name="twitter:description" content="create you wansom.ai account and start automating your legal processes" />
-        <meta name="twitter:image"  content="/images/features-2.png"/>
+        <meta name="twitter:image"  content="/images/features-2.jpg"/>
       </Head>
       <LoginPageContent />
     </Suspense>

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: 'Wansom AI',
     images: [
       {
-        url: '/images/features-2.png',
+        url: '/images/features-2.jpg',
         width: 1200,
         height: 630,
         alt: 'Wansom AI - Legal AI Platform'
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Wansom AI',
     description: 'Wansom AI is a leading AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.',
-    images: ['/images/features-2.png'],
+    images: ['/images/features-2.jpg'],
   },
   keywords: [
     'legal AI',

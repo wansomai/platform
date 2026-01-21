@@ -93,7 +93,7 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.png)] bg-blend-multiply bg-cover">
+    <section className="relative pt-24 md:pt-32 lg:pt-40 overflow-hidden bg-[#355e66] bg-[url(/1.jpg)] bg-blend-multiply bg-cover">
       
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 text-center ">

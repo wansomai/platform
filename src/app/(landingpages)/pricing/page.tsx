@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/images/features-2.png',
+        url: '/images/features-2.jpg',
         width: 1200,
         height: 630,
         alt: 'Wansom AI Pricing Plans',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Pricing - Wansom AI',
     description: 'Legal AI Assistant pricing for Wansom AI',
-    images: ['/images/features-2.png'],
+    images: ['/images/features-2.jpg'],
   },
 };
 

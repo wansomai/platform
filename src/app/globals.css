@@ -389,14 +389,8 @@ body {
 }
 
 /* Background patterns */
-.auth-bg {
-  background-image: url('../../public/images/auth.png');
-  background-size: cover;
-  background-position: center;
-}
-
 .hero-bg {
-  background-image: url('../../public/1.png');
+  background-image: url('../../public/1.jpg');
   background-size: cover;
   background-position: center;
 }

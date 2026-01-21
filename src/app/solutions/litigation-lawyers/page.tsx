@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     url: 'https://www.wansom.ai/solutions/litigation-lawyers',
     images: [
       {
-        url: '/images/litigation-lawyers.jpg',
+        url: '/images/supreme-court.jpg',
         width: 1200,
         height: 630,
         alt: 'Wansom AI for Litigation Lawyers',
