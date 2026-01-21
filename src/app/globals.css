@@ -197,12 +197,6 @@ body {
   padding-bottom: var(--section-padding-sm);
 }
 
-@screen lg {
-  .section-spacing {
-    padding-top: var(--section-padding-lg);
-    padding-bottom: var(--section-padding-lg);
-  }
-}
 
 .content-spacing {
   @apply space-y-6 lg:space-y-8;
