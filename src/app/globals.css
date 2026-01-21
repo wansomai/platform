@@ -395,7 +395,21 @@ body {
   background-position: center;
 }
 
-
+.bg-research-card{
+  background-image: url('../../public/gradient-bg.png');
+  background-size: cover;
+  background-position: center;
+}
+.bg-vault-docs{
+  background-image: url('../../public/gradient-2.png');
+  background-size: cover;
+  background-position: center;
+}
+.bg-draft{
+  background-image: url('../../public/gradient-4.png');
+  background-size: cover;
+  background-position: center;
+}
 
 /* Force proper bold text in AI responses */
 .message-content strong {
