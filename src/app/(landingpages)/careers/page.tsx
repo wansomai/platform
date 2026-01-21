@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Join wansom AI - Legal Tech Careers',
     description: 'Shape the future of legal technology. View open positions at wansom AI.',
-    images: ['/hero.png'],
+    images: ['/hero.jpg'],
   }
 };
 
