@@ -574,7 +574,7 @@ const LitigationLawyersPage = () => {
             </div>
             {/* Hero image */}
             <img
-              src={"/images/supreme-court.png"}
+              src={"/images/supreme-court.jpg"}
               alt="litigation lawyers"
               className="rounded-lg rounded-b-none "
             />
