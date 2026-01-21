@@ -20,13 +20,28 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Left side - Logo and Title */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <Link href="/admin" className="flex items-center gap-2">
                 <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
               </Link>
               <Badge variant="destructive" className="hidden sm:inline-flex">
                 Admin Access
               </Badge>
+              {/* Navigation Links */}
+              <div className="hidden md:flex items-center gap-4 ml-4">
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Organizations
+                </Link>
+                <Link
+                  href="/admin/legal-knowledge"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Legal Knowledge
+                </Link>
+              </div>
             </div>
 
             {/* Right side - User Info */}

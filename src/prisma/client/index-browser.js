@@ -534,6 +534,38 @@ exports.Prisma.PublicationsScalarFieldEnum = {
   title: 'title'
 };
 
+exports.Prisma.LegalKnowledgeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  type: 'type',
+  jurisdiction: 'jurisdiction',
+  practiceAreas: 'practiceAreas',
+  content: 'content',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  sourceType: 'sourceType',
+  sourceReference: 'sourceReference',
+  effectiveDate: 'effectiveDate',
+  tags: 'tags',
+  status: 'status',
+  isPublished: 'isPublished',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LegalKnowledgeChunkScalarFieldEnum = {
+  id: 'id',
+  legalKnowledgeId: 'legalKnowledgeId',
+  chunkIndex: 'chunkIndex',
+  chunkText: 'chunkText',
+  startOffset: 'startOffset',
+  endOffset: 'endOffset',
+  sectionTitle: 'sectionTitle',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -586,6 +618,22 @@ exports.PracticeArea = exports.$Enums.PracticeArea = {
   GENERAL_PRACTICE: 'GENERAL_PRACTICE'
 };
 
+exports.LegalKnowledgeType = exports.$Enums.LegalKnowledgeType = {
+  TEMPLATE: 'TEMPLATE',
+  CASE_LAW: 'CASE_LAW',
+  STATUTE: 'STATUTE',
+  REGULATION: 'REGULATION',
+  LEGAL_OPINION: 'LEGAL_OPINION',
+  PRACTICE_GUIDE: 'PRACTICE_GUIDE'
+};
+
+exports.Jurisdiction = exports.$Enums.Jurisdiction = {
+  KENYA_NATIONAL: 'KENYA_NATIONAL',
+  KENYA_NAIROBI: 'KENYA_NAIROBI',
+  INTERNATIONAL: 'INTERNATIONAL',
+  GENERAL: 'GENERAL'
+};
+
 exports.Prisma.ModelName = {
   Account: 'Account',
   Session: 'Session',
@@ -624,7 +672,9 @@ exports.Prisma.ModelName = {
   ProjectAssociate: 'ProjectAssociate',
   CanvasDocument: 'CanvasDocument',
   EventRegistration: 'EventRegistration',
-  Publications: 'Publications'
+  Publications: 'Publications',
+  LegalKnowledge: 'LegalKnowledge',
+  LegalKnowledgeChunk: 'LegalKnowledgeChunk'
 };
 
 /**

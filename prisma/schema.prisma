@@ -76,6 +76,7 @@ model User {
   activeOrganization      Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
   organization            Organization            @relation(fields: [organizationId], references: [id])
   organizationMemberships UserOrganization[]
+  createdLegalKnowledge   LegalKnowledge[]
 
   @@index([activeOrganizationId], map: "idx_user_active_org")
 }
@@ -614,6 +615,75 @@ model Publications {
   id    String @id @default(cuid())
   title String
 }
+
+// ==================== LEGAL KNOWLEDGE SYSTEM (RAG) ====================
+
+enum LegalKnowledgeType {
+  TEMPLATE
+  CASE_LAW
+  STATUTE
+  REGULATION
+  LEGAL_OPINION
+  PRACTICE_GUIDE
+}
+
+enum Jurisdiction {
+  KENYA_NATIONAL
+  KENYA_NAIROBI
+  INTERNATIONAL
+  GENERAL
+}
+
+model LegalKnowledge {
+  id              String               @id @default(cuid())
+  title           String
+  description     String?
+  type            LegalKnowledgeType
+  jurisdiction    Jurisdiction
+  practiceAreas   PracticeArea[]
+
+  content         String               // Full text content
+  fileUrl         String?              // Original file (Vercel Blob)
+  fileType        String?
+  sourceType      String               @default("internal") // internal | licensed
+  sourceReference String?              // Citation info
+
+  effectiveDate   DateTime?
+  tags            String[]
+  status          String               @default("active") // active | archived | draft
+  isPublished     Boolean              @default(false)
+
+  createdById     String
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  createdBy       User                 @relation(fields: [createdById], references: [id])
+  chunks          LegalKnowledgeChunk[]
+
+  @@index([jurisdiction, type])
+  @@index([status, isPublished])
+  @@index([createdById])
+  @@map("legal_knowledge")
+}
+
+model LegalKnowledgeChunk {
+  id                String                      @id @default(cuid())
+  legalKnowledgeId  String
+  chunkIndex        Int
+  chunkText         String
+  startOffset       Int
+  endOffset         Int
+  embedding         Unsupported("vector(768)")?
+  sectionTitle      String?
+  createdAt         DateTime                    @default(now())
+
+  legalKnowledge    LegalKnowledge  @relation(fields: [legalKnowledgeId], references: [id], onDelete: Cascade)
+
+  @@index([legalKnowledgeId, chunkIndex])
+  @@map("legal_knowledge_chunks")
+}
+
+// ==================== END LEGAL KNOWLEDGE SYSTEM ====================
 
 enum PracticeArea {
   MERGERS_AND_ACQUISITIONS

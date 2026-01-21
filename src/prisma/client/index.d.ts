@@ -203,12 +203,44 @@ export type EventRegistration = $Result.DefaultSelection<Prisma.$EventRegistrati
  * 
  */
 export type Publications = $Result.DefaultSelection<Prisma.$PublicationsPayload>
+/**
+ * Model LegalKnowledge
+ * 
+ */
+export type LegalKnowledge = $Result.DefaultSelection<Prisma.$LegalKnowledgePayload>
+/**
+ * Model LegalKnowledgeChunk
+ * 
+ */
+export type LegalKnowledgeChunk = $Result.DefaultSelection<Prisma.$LegalKnowledgeChunkPayload>
 
 /**
  * Enums
  */
 export namespace $Enums {
-  export const PracticeArea: {
+  export const LegalKnowledgeType: {
+  TEMPLATE: 'TEMPLATE',
+  CASE_LAW: 'CASE_LAW',
+  STATUTE: 'STATUTE',
+  REGULATION: 'REGULATION',
+  LEGAL_OPINION: 'LEGAL_OPINION',
+  PRACTICE_GUIDE: 'PRACTICE_GUIDE'
+};
+
+export type LegalKnowledgeType = (typeof LegalKnowledgeType)[keyof typeof LegalKnowledgeType]
+
+
+export const Jurisdiction: {
+  KENYA_NATIONAL: 'KENYA_NATIONAL',
+  KENYA_NAIROBI: 'KENYA_NAIROBI',
+  INTERNATIONAL: 'INTERNATIONAL',
+  GENERAL: 'GENERAL'
+};
+
+export type Jurisdiction = (typeof Jurisdiction)[keyof typeof Jurisdiction]
+
+
+export const PracticeArea: {
   MERGERS_AND_ACQUISITIONS: 'MERGERS_AND_ACQUISITIONS',
   TAX_LAW: 'TAX_LAW',
   INTELLECTUAL_PROPERTY: 'INTELLECTUAL_PROPERTY',
@@ -234,6 +266,14 @@ export namespace $Enums {
 export type PracticeArea = (typeof PracticeArea)[keyof typeof PracticeArea]
 
 }
+
+export type LegalKnowledgeType = $Enums.LegalKnowledgeType
+
+export const LegalKnowledgeType: typeof $Enums.LegalKnowledgeType
+
+export type Jurisdiction = $Enums.Jurisdiction
+
+export const Jurisdiction: typeof $Enums.Jurisdiction
 
 export type PracticeArea = $Enums.PracticeArea
 
@@ -736,6 +776,26 @@ export class PrismaClient<
     * ```
     */
   get publications(): Prisma.PublicationsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.legalKnowledge`: Exposes CRUD operations for the **LegalKnowledge** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LegalKnowledges
+    * const legalKnowledges = await prisma.legalKnowledge.findMany()
+    * ```
+    */
+  get legalKnowledge(): Prisma.LegalKnowledgeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.legalKnowledgeChunk`: Exposes CRUD operations for the **LegalKnowledgeChunk** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LegalKnowledgeChunks
+    * const legalKnowledgeChunks = await prisma.legalKnowledgeChunk.findMany()
+    * ```
+    */
+  get legalKnowledgeChunk(): Prisma.LegalKnowledgeChunkDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1214,7 +1274,9 @@ export namespace Prisma {
     ProjectAssociate: 'ProjectAssociate',
     CanvasDocument: 'CanvasDocument',
     EventRegistration: 'EventRegistration',
-    Publications: 'Publications'
+    Publications: 'Publications',
+    LegalKnowledge: 'LegalKnowledge',
+    LegalKnowledgeChunk: 'LegalKnowledgeChunk'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1233,7 +1295,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "legalKnowledge" | "legalKnowledgeChunk"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4049,6 +4111,154 @@ export namespace Prisma {
           }
         }
       }
+      LegalKnowledge: {
+        payload: Prisma.$LegalKnowledgePayload<ExtArgs>
+        fields: Prisma.LegalKnowledgeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LegalKnowledgeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LegalKnowledgeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>
+          }
+          findFirst: {
+            args: Prisma.LegalKnowledgeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LegalKnowledgeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>
+          }
+          findMany: {
+            args: Prisma.LegalKnowledgeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>[]
+          }
+          create: {
+            args: Prisma.LegalKnowledgeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>
+          }
+          createMany: {
+            args: Prisma.LegalKnowledgeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LegalKnowledgeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>[]
+          }
+          delete: {
+            args: Prisma.LegalKnowledgeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>
+          }
+          update: {
+            args: Prisma.LegalKnowledgeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>
+          }
+          deleteMany: {
+            args: Prisma.LegalKnowledgeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LegalKnowledgeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LegalKnowledgeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>[]
+          }
+          upsert: {
+            args: Prisma.LegalKnowledgeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgePayload>
+          }
+          aggregate: {
+            args: Prisma.LegalKnowledgeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLegalKnowledge>
+          }
+          groupBy: {
+            args: Prisma.LegalKnowledgeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LegalKnowledgeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LegalKnowledgeCountArgs<ExtArgs>
+            result: $Utils.Optional<LegalKnowledgeCountAggregateOutputType> | number
+          }
+        }
+      }
+      LegalKnowledgeChunk: {
+        payload: Prisma.$LegalKnowledgeChunkPayload<ExtArgs>
+        fields: Prisma.LegalKnowledgeChunkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LegalKnowledgeChunkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LegalKnowledgeChunkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>
+          }
+          findFirst: {
+            args: Prisma.LegalKnowledgeChunkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LegalKnowledgeChunkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>
+          }
+          findMany: {
+            args: Prisma.LegalKnowledgeChunkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>[]
+          }
+          create: {
+            args: Prisma.LegalKnowledgeChunkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>
+          }
+          createMany: {
+            args: Prisma.LegalKnowledgeChunkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LegalKnowledgeChunkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>[]
+          }
+          delete: {
+            args: Prisma.LegalKnowledgeChunkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>
+          }
+          update: {
+            args: Prisma.LegalKnowledgeChunkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>
+          }
+          deleteMany: {
+            args: Prisma.LegalKnowledgeChunkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LegalKnowledgeChunkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LegalKnowledgeChunkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>[]
+          }
+          upsert: {
+            args: Prisma.LegalKnowledgeChunkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LegalKnowledgeChunkPayload>
+          }
+          aggregate: {
+            args: Prisma.LegalKnowledgeChunkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLegalKnowledgeChunk>
+          }
+          groupBy: {
+            args: Prisma.LegalKnowledgeChunkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LegalKnowledgeChunkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LegalKnowledgeChunkCountArgs<ExtArgs>
+            result: $Utils.Optional<LegalKnowledgeChunkCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4183,6 +4393,8 @@ export namespace Prisma {
     canvasDocument?: CanvasDocumentOmit
     eventRegistration?: EventRegistrationOmit
     publications?: PublicationsOmit
+    legalKnowledge?: LegalKnowledgeOmit
+    legalKnowledgeChunk?: LegalKnowledgeChunkOmit
   }
 
   /* Types for Logging */
@@ -4279,6 +4491,7 @@ export namespace Prisma {
     SharedWorkspace: number
     SharedWorkspaceAccess: number
     organizationMemberships: number
+    createdLegalKnowledge: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4298,6 +4511,7 @@ export namespace Prisma {
     SharedWorkspace?: boolean | UserCountOutputTypeCountSharedWorkspaceArgs
     SharedWorkspaceAccess?: boolean | UserCountOutputTypeCountSharedWorkspaceAccessArgs
     organizationMemberships?: boolean | UserCountOutputTypeCountOrganizationMembershipsArgs
+    createdLegalKnowledge?: boolean | UserCountOutputTypeCountCreatedLegalKnowledgeArgs
   }
 
   // Custom InputTypes
@@ -4421,6 +4635,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountOrganizationMembershipsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserOrganizationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedLegalKnowledgeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LegalKnowledgeWhereInput
   }
 
 
@@ -5014,6 +5235,37 @@ export namespace Prisma {
    */
   export type AIAssociateCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectAssociateWhereInput
+  }
+
+
+  /**
+   * Count Type LegalKnowledgeCountOutputType
+   */
+
+  export type LegalKnowledgeCountOutputType = {
+    chunks: number
+  }
+
+  export type LegalKnowledgeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    chunks?: boolean | LegalKnowledgeCountOutputTypeCountChunksArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * LegalKnowledgeCountOutputType without action
+   */
+  export type LegalKnowledgeCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeCountOutputType
+     */
+    select?: LegalKnowledgeCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * LegalKnowledgeCountOutputType without action
+   */
+  export type LegalKnowledgeCountOutputTypeCountChunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LegalKnowledgeChunkWhereInput
   }
 
 
@@ -8448,6 +8700,7 @@ export namespace Prisma {
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
+    createdLegalKnowledge?: boolean | User$createdLegalKnowledgeArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8517,6 +8770,7 @@ export namespace Prisma {
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
+    createdLegalKnowledge?: boolean | User$createdLegalKnowledgeArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8549,6 +8803,7 @@ export namespace Prisma {
       activeOrganization: Prisma.$OrganizationPayload<ExtArgs> | null
       organization: Prisma.$OrganizationPayload<ExtArgs>
       organizationMemberships: Prisma.$UserOrganizationPayload<ExtArgs>[]
+      createdLegalKnowledge: Prisma.$LegalKnowledgePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8974,6 +9229,7 @@ export namespace Prisma {
     activeOrganization<T extends User$activeOrganizationArgs<ExtArgs> = {}>(args?: Subset<T, User$activeOrganizationArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     organizationMemberships<T extends User$organizationMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$organizationMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdLegalKnowledge<T extends User$createdLegalKnowledgeArgs<ExtArgs> = {}>(args?: Subset<T, User$createdLegalKnowledgeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9810,6 +10066,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserOrganizationScalarFieldEnum | UserOrganizationScalarFieldEnum[]
+  }
+
+  /**
+   * User.createdLegalKnowledge
+   */
+  export type User$createdLegalKnowledgeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    where?: LegalKnowledgeWhereInput
+    orderBy?: LegalKnowledgeOrderByWithRelationInput | LegalKnowledgeOrderByWithRelationInput[]
+    cursor?: LegalKnowledgeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LegalKnowledgeScalarFieldEnum | LegalKnowledgeScalarFieldEnum[]
   }
 
   /**
@@ -48841,6 +49121,2394 @@ export namespace Prisma {
 
 
   /**
+   * Model LegalKnowledge
+   */
+
+  export type AggregateLegalKnowledge = {
+    _count: LegalKnowledgeCountAggregateOutputType | null
+    _min: LegalKnowledgeMinAggregateOutputType | null
+    _max: LegalKnowledgeMaxAggregateOutputType | null
+  }
+
+  export type LegalKnowledgeMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    type: $Enums.LegalKnowledgeType | null
+    jurisdiction: $Enums.Jurisdiction | null
+    content: string | null
+    fileUrl: string | null
+    fileType: string | null
+    sourceType: string | null
+    sourceReference: string | null
+    effectiveDate: Date | null
+    status: string | null
+    isPublished: boolean | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type LegalKnowledgeMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    description: string | null
+    type: $Enums.LegalKnowledgeType | null
+    jurisdiction: $Enums.Jurisdiction | null
+    content: string | null
+    fileUrl: string | null
+    fileType: string | null
+    sourceType: string | null
+    sourceReference: string | null
+    effectiveDate: Date | null
+    status: string | null
+    isPublished: boolean | null
+    createdById: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type LegalKnowledgeCountAggregateOutputType = {
+    id: number
+    title: number
+    description: number
+    type: number
+    jurisdiction: number
+    practiceAreas: number
+    content: number
+    fileUrl: number
+    fileType: number
+    sourceType: number
+    sourceReference: number
+    effectiveDate: number
+    tags: number
+    status: number
+    isPublished: number
+    createdById: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type LegalKnowledgeMinAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    type?: true
+    jurisdiction?: true
+    content?: true
+    fileUrl?: true
+    fileType?: true
+    sourceType?: true
+    sourceReference?: true
+    effectiveDate?: true
+    status?: true
+    isPublished?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type LegalKnowledgeMaxAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    type?: true
+    jurisdiction?: true
+    content?: true
+    fileUrl?: true
+    fileType?: true
+    sourceType?: true
+    sourceReference?: true
+    effectiveDate?: true
+    status?: true
+    isPublished?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type LegalKnowledgeCountAggregateInputType = {
+    id?: true
+    title?: true
+    description?: true
+    type?: true
+    jurisdiction?: true
+    practiceAreas?: true
+    content?: true
+    fileUrl?: true
+    fileType?: true
+    sourceType?: true
+    sourceReference?: true
+    effectiveDate?: true
+    tags?: true
+    status?: true
+    isPublished?: true
+    createdById?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type LegalKnowledgeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LegalKnowledge to aggregate.
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledges to fetch.
+     */
+    orderBy?: LegalKnowledgeOrderByWithRelationInput | LegalKnowledgeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LegalKnowledgeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledges from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledges.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LegalKnowledges
+    **/
+    _count?: true | LegalKnowledgeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LegalKnowledgeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LegalKnowledgeMaxAggregateInputType
+  }
+
+  export type GetLegalKnowledgeAggregateType<T extends LegalKnowledgeAggregateArgs> = {
+        [P in keyof T & keyof AggregateLegalKnowledge]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLegalKnowledge[P]>
+      : GetScalarType<T[P], AggregateLegalKnowledge[P]>
+  }
+
+
+
+
+  export type LegalKnowledgeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LegalKnowledgeWhereInput
+    orderBy?: LegalKnowledgeOrderByWithAggregationInput | LegalKnowledgeOrderByWithAggregationInput[]
+    by: LegalKnowledgeScalarFieldEnum[] | LegalKnowledgeScalarFieldEnum
+    having?: LegalKnowledgeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LegalKnowledgeCountAggregateInputType | true
+    _min?: LegalKnowledgeMinAggregateInputType
+    _max?: LegalKnowledgeMaxAggregateInputType
+  }
+
+  export type LegalKnowledgeGroupByOutputType = {
+    id: string
+    title: string
+    description: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas: $Enums.PracticeArea[]
+    content: string
+    fileUrl: string | null
+    fileType: string | null
+    sourceType: string
+    sourceReference: string | null
+    effectiveDate: Date | null
+    tags: string[]
+    status: string
+    isPublished: boolean
+    createdById: string
+    createdAt: Date
+    updatedAt: Date
+    _count: LegalKnowledgeCountAggregateOutputType | null
+    _min: LegalKnowledgeMinAggregateOutputType | null
+    _max: LegalKnowledgeMaxAggregateOutputType | null
+  }
+
+  type GetLegalKnowledgeGroupByPayload<T extends LegalKnowledgeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LegalKnowledgeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LegalKnowledgeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LegalKnowledgeGroupByOutputType[P]>
+            : GetScalarType<T[P], LegalKnowledgeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LegalKnowledgeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    type?: boolean
+    jurisdiction?: boolean
+    practiceAreas?: boolean
+    content?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    sourceType?: boolean
+    sourceReference?: boolean
+    effectiveDate?: boolean
+    tags?: boolean
+    status?: boolean
+    isPublished?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chunks?: boolean | LegalKnowledge$chunksArgs<ExtArgs>
+    _count?: boolean | LegalKnowledgeCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["legalKnowledge"]>
+
+  export type LegalKnowledgeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    type?: boolean
+    jurisdiction?: boolean
+    practiceAreas?: boolean
+    content?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    sourceType?: boolean
+    sourceReference?: boolean
+    effectiveDate?: boolean
+    tags?: boolean
+    status?: boolean
+    isPublished?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["legalKnowledge"]>
+
+  export type LegalKnowledgeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    type?: boolean
+    jurisdiction?: boolean
+    practiceAreas?: boolean
+    content?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    sourceType?: boolean
+    sourceReference?: boolean
+    effectiveDate?: boolean
+    tags?: boolean
+    status?: boolean
+    isPublished?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["legalKnowledge"]>
+
+  export type LegalKnowledgeSelectScalar = {
+    id?: boolean
+    title?: boolean
+    description?: boolean
+    type?: boolean
+    jurisdiction?: boolean
+    practiceAreas?: boolean
+    content?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    sourceType?: boolean
+    sourceReference?: boolean
+    effectiveDate?: boolean
+    tags?: boolean
+    status?: boolean
+    isPublished?: boolean
+    createdById?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type LegalKnowledgeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "type" | "jurisdiction" | "practiceAreas" | "content" | "fileUrl" | "fileType" | "sourceType" | "sourceReference" | "effectiveDate" | "tags" | "status" | "isPublished" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["legalKnowledge"]>
+  export type LegalKnowledgeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    chunks?: boolean | LegalKnowledge$chunksArgs<ExtArgs>
+    _count?: boolean | LegalKnowledgeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type LegalKnowledgeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type LegalKnowledgeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $LegalKnowledgePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LegalKnowledge"
+    objects: {
+      createdBy: Prisma.$UserPayload<ExtArgs>
+      chunks: Prisma.$LegalKnowledgeChunkPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      description: string | null
+      type: $Enums.LegalKnowledgeType
+      jurisdiction: $Enums.Jurisdiction
+      practiceAreas: $Enums.PracticeArea[]
+      content: string
+      fileUrl: string | null
+      fileType: string | null
+      sourceType: string
+      sourceReference: string | null
+      effectiveDate: Date | null
+      tags: string[]
+      status: string
+      isPublished: boolean
+      createdById: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["legalKnowledge"]>
+    composites: {}
+  }
+
+  type LegalKnowledgeGetPayload<S extends boolean | null | undefined | LegalKnowledgeDefaultArgs> = $Result.GetResult<Prisma.$LegalKnowledgePayload, S>
+
+  type LegalKnowledgeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LegalKnowledgeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LegalKnowledgeCountAggregateInputType | true
+    }
+
+  export interface LegalKnowledgeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LegalKnowledge'], meta: { name: 'LegalKnowledge' } }
+    /**
+     * Find zero or one LegalKnowledge that matches the filter.
+     * @param {LegalKnowledgeFindUniqueArgs} args - Arguments to find a LegalKnowledge
+     * @example
+     * // Get one LegalKnowledge
+     * const legalKnowledge = await prisma.legalKnowledge.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LegalKnowledgeFindUniqueArgs>(args: SelectSubset<T, LegalKnowledgeFindUniqueArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LegalKnowledge that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LegalKnowledgeFindUniqueOrThrowArgs} args - Arguments to find a LegalKnowledge
+     * @example
+     * // Get one LegalKnowledge
+     * const legalKnowledge = await prisma.legalKnowledge.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LegalKnowledgeFindUniqueOrThrowArgs>(args: SelectSubset<T, LegalKnowledgeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LegalKnowledge that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeFindFirstArgs} args - Arguments to find a LegalKnowledge
+     * @example
+     * // Get one LegalKnowledge
+     * const legalKnowledge = await prisma.legalKnowledge.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LegalKnowledgeFindFirstArgs>(args?: SelectSubset<T, LegalKnowledgeFindFirstArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LegalKnowledge that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeFindFirstOrThrowArgs} args - Arguments to find a LegalKnowledge
+     * @example
+     * // Get one LegalKnowledge
+     * const legalKnowledge = await prisma.legalKnowledge.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LegalKnowledgeFindFirstOrThrowArgs>(args?: SelectSubset<T, LegalKnowledgeFindFirstOrThrowArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LegalKnowledges that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LegalKnowledges
+     * const legalKnowledges = await prisma.legalKnowledge.findMany()
+     * 
+     * // Get first 10 LegalKnowledges
+     * const legalKnowledges = await prisma.legalKnowledge.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const legalKnowledgeWithIdOnly = await prisma.legalKnowledge.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LegalKnowledgeFindManyArgs>(args?: SelectSubset<T, LegalKnowledgeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LegalKnowledge.
+     * @param {LegalKnowledgeCreateArgs} args - Arguments to create a LegalKnowledge.
+     * @example
+     * // Create one LegalKnowledge
+     * const LegalKnowledge = await prisma.legalKnowledge.create({
+     *   data: {
+     *     // ... data to create a LegalKnowledge
+     *   }
+     * })
+     * 
+     */
+    create<T extends LegalKnowledgeCreateArgs>(args: SelectSubset<T, LegalKnowledgeCreateArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LegalKnowledges.
+     * @param {LegalKnowledgeCreateManyArgs} args - Arguments to create many LegalKnowledges.
+     * @example
+     * // Create many LegalKnowledges
+     * const legalKnowledge = await prisma.legalKnowledge.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LegalKnowledgeCreateManyArgs>(args?: SelectSubset<T, LegalKnowledgeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LegalKnowledges and returns the data saved in the database.
+     * @param {LegalKnowledgeCreateManyAndReturnArgs} args - Arguments to create many LegalKnowledges.
+     * @example
+     * // Create many LegalKnowledges
+     * const legalKnowledge = await prisma.legalKnowledge.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LegalKnowledges and only return the `id`
+     * const legalKnowledgeWithIdOnly = await prisma.legalKnowledge.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LegalKnowledgeCreateManyAndReturnArgs>(args?: SelectSubset<T, LegalKnowledgeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LegalKnowledge.
+     * @param {LegalKnowledgeDeleteArgs} args - Arguments to delete one LegalKnowledge.
+     * @example
+     * // Delete one LegalKnowledge
+     * const LegalKnowledge = await prisma.legalKnowledge.delete({
+     *   where: {
+     *     // ... filter to delete one LegalKnowledge
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LegalKnowledgeDeleteArgs>(args: SelectSubset<T, LegalKnowledgeDeleteArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LegalKnowledge.
+     * @param {LegalKnowledgeUpdateArgs} args - Arguments to update one LegalKnowledge.
+     * @example
+     * // Update one LegalKnowledge
+     * const legalKnowledge = await prisma.legalKnowledge.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LegalKnowledgeUpdateArgs>(args: SelectSubset<T, LegalKnowledgeUpdateArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LegalKnowledges.
+     * @param {LegalKnowledgeDeleteManyArgs} args - Arguments to filter LegalKnowledges to delete.
+     * @example
+     * // Delete a few LegalKnowledges
+     * const { count } = await prisma.legalKnowledge.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LegalKnowledgeDeleteManyArgs>(args?: SelectSubset<T, LegalKnowledgeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LegalKnowledges.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LegalKnowledges
+     * const legalKnowledge = await prisma.legalKnowledge.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LegalKnowledgeUpdateManyArgs>(args: SelectSubset<T, LegalKnowledgeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LegalKnowledges and returns the data updated in the database.
+     * @param {LegalKnowledgeUpdateManyAndReturnArgs} args - Arguments to update many LegalKnowledges.
+     * @example
+     * // Update many LegalKnowledges
+     * const legalKnowledge = await prisma.legalKnowledge.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LegalKnowledges and only return the `id`
+     * const legalKnowledgeWithIdOnly = await prisma.legalKnowledge.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LegalKnowledgeUpdateManyAndReturnArgs>(args: SelectSubset<T, LegalKnowledgeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LegalKnowledge.
+     * @param {LegalKnowledgeUpsertArgs} args - Arguments to update or create a LegalKnowledge.
+     * @example
+     * // Update or create a LegalKnowledge
+     * const legalKnowledge = await prisma.legalKnowledge.upsert({
+     *   create: {
+     *     // ... data to create a LegalKnowledge
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LegalKnowledge we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LegalKnowledgeUpsertArgs>(args: SelectSubset<T, LegalKnowledgeUpsertArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LegalKnowledges.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeCountArgs} args - Arguments to filter LegalKnowledges to count.
+     * @example
+     * // Count the number of LegalKnowledges
+     * const count = await prisma.legalKnowledge.count({
+     *   where: {
+     *     // ... the filter for the LegalKnowledges we want to count
+     *   }
+     * })
+    **/
+    count<T extends LegalKnowledgeCountArgs>(
+      args?: Subset<T, LegalKnowledgeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LegalKnowledgeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LegalKnowledge.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LegalKnowledgeAggregateArgs>(args: Subset<T, LegalKnowledgeAggregateArgs>): Prisma.PrismaPromise<GetLegalKnowledgeAggregateType<T>>
+
+    /**
+     * Group by LegalKnowledge.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LegalKnowledgeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LegalKnowledgeGroupByArgs['orderBy'] }
+        : { orderBy?: LegalKnowledgeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LegalKnowledgeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLegalKnowledgeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LegalKnowledge model
+   */
+  readonly fields: LegalKnowledgeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LegalKnowledge.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LegalKnowledgeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    chunks<T extends LegalKnowledge$chunksArgs<ExtArgs> = {}>(args?: Subset<T, LegalKnowledge$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LegalKnowledge model
+   */
+  interface LegalKnowledgeFieldRefs {
+    readonly id: FieldRef<"LegalKnowledge", 'String'>
+    readonly title: FieldRef<"LegalKnowledge", 'String'>
+    readonly description: FieldRef<"LegalKnowledge", 'String'>
+    readonly type: FieldRef<"LegalKnowledge", 'LegalKnowledgeType'>
+    readonly jurisdiction: FieldRef<"LegalKnowledge", 'Jurisdiction'>
+    readonly practiceAreas: FieldRef<"LegalKnowledge", 'PracticeArea[]'>
+    readonly content: FieldRef<"LegalKnowledge", 'String'>
+    readonly fileUrl: FieldRef<"LegalKnowledge", 'String'>
+    readonly fileType: FieldRef<"LegalKnowledge", 'String'>
+    readonly sourceType: FieldRef<"LegalKnowledge", 'String'>
+    readonly sourceReference: FieldRef<"LegalKnowledge", 'String'>
+    readonly effectiveDate: FieldRef<"LegalKnowledge", 'DateTime'>
+    readonly tags: FieldRef<"LegalKnowledge", 'String[]'>
+    readonly status: FieldRef<"LegalKnowledge", 'String'>
+    readonly isPublished: FieldRef<"LegalKnowledge", 'Boolean'>
+    readonly createdById: FieldRef<"LegalKnowledge", 'String'>
+    readonly createdAt: FieldRef<"LegalKnowledge", 'DateTime'>
+    readonly updatedAt: FieldRef<"LegalKnowledge", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LegalKnowledge findUnique
+   */
+  export type LegalKnowledgeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledge to fetch.
+     */
+    where: LegalKnowledgeWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledge findUniqueOrThrow
+   */
+  export type LegalKnowledgeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledge to fetch.
+     */
+    where: LegalKnowledgeWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledge findFirst
+   */
+  export type LegalKnowledgeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledge to fetch.
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledges to fetch.
+     */
+    orderBy?: LegalKnowledgeOrderByWithRelationInput | LegalKnowledgeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LegalKnowledges.
+     */
+    cursor?: LegalKnowledgeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledges from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledges.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LegalKnowledges.
+     */
+    distinct?: LegalKnowledgeScalarFieldEnum | LegalKnowledgeScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledge findFirstOrThrow
+   */
+  export type LegalKnowledgeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledge to fetch.
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledges to fetch.
+     */
+    orderBy?: LegalKnowledgeOrderByWithRelationInput | LegalKnowledgeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LegalKnowledges.
+     */
+    cursor?: LegalKnowledgeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledges from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledges.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LegalKnowledges.
+     */
+    distinct?: LegalKnowledgeScalarFieldEnum | LegalKnowledgeScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledge findMany
+   */
+  export type LegalKnowledgeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledges to fetch.
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledges to fetch.
+     */
+    orderBy?: LegalKnowledgeOrderByWithRelationInput | LegalKnowledgeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LegalKnowledges.
+     */
+    cursor?: LegalKnowledgeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledges from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledges.
+     */
+    skip?: number
+    distinct?: LegalKnowledgeScalarFieldEnum | LegalKnowledgeScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledge create
+   */
+  export type LegalKnowledgeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LegalKnowledge.
+     */
+    data: XOR<LegalKnowledgeCreateInput, LegalKnowledgeUncheckedCreateInput>
+  }
+
+  /**
+   * LegalKnowledge createMany
+   */
+  export type LegalKnowledgeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LegalKnowledges.
+     */
+    data: LegalKnowledgeCreateManyInput | LegalKnowledgeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LegalKnowledge createManyAndReturn
+   */
+  export type LegalKnowledgeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * The data used to create many LegalKnowledges.
+     */
+    data: LegalKnowledgeCreateManyInput | LegalKnowledgeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LegalKnowledge update
+   */
+  export type LegalKnowledgeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LegalKnowledge.
+     */
+    data: XOR<LegalKnowledgeUpdateInput, LegalKnowledgeUncheckedUpdateInput>
+    /**
+     * Choose, which LegalKnowledge to update.
+     */
+    where: LegalKnowledgeWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledge updateMany
+   */
+  export type LegalKnowledgeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LegalKnowledges.
+     */
+    data: XOR<LegalKnowledgeUpdateManyMutationInput, LegalKnowledgeUncheckedUpdateManyInput>
+    /**
+     * Filter which LegalKnowledges to update
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * Limit how many LegalKnowledges to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LegalKnowledge updateManyAndReturn
+   */
+  export type LegalKnowledgeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * The data used to update LegalKnowledges.
+     */
+    data: XOR<LegalKnowledgeUpdateManyMutationInput, LegalKnowledgeUncheckedUpdateManyInput>
+    /**
+     * Filter which LegalKnowledges to update
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * Limit how many LegalKnowledges to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LegalKnowledge upsert
+   */
+  export type LegalKnowledgeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LegalKnowledge to update in case it exists.
+     */
+    where: LegalKnowledgeWhereUniqueInput
+    /**
+     * In case the LegalKnowledge found by the `where` argument doesn't exist, create a new LegalKnowledge with this data.
+     */
+    create: XOR<LegalKnowledgeCreateInput, LegalKnowledgeUncheckedCreateInput>
+    /**
+     * In case the LegalKnowledge was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LegalKnowledgeUpdateInput, LegalKnowledgeUncheckedUpdateInput>
+  }
+
+  /**
+   * LegalKnowledge delete
+   */
+  export type LegalKnowledgeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+    /**
+     * Filter which LegalKnowledge to delete.
+     */
+    where: LegalKnowledgeWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledge deleteMany
+   */
+  export type LegalKnowledgeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LegalKnowledges to delete
+     */
+    where?: LegalKnowledgeWhereInput
+    /**
+     * Limit how many LegalKnowledges to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LegalKnowledge.chunks
+   */
+  export type LegalKnowledge$chunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    where?: LegalKnowledgeChunkWhereInput
+    orderBy?: LegalKnowledgeChunkOrderByWithRelationInput | LegalKnowledgeChunkOrderByWithRelationInput[]
+    cursor?: LegalKnowledgeChunkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LegalKnowledgeChunkScalarFieldEnum | LegalKnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledge without action
+   */
+  export type LegalKnowledgeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledge
+     */
+    select?: LegalKnowledgeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledge
+     */
+    omit?: LegalKnowledgeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model LegalKnowledgeChunk
+   */
+
+  export type AggregateLegalKnowledgeChunk = {
+    _count: LegalKnowledgeChunkCountAggregateOutputType | null
+    _avg: LegalKnowledgeChunkAvgAggregateOutputType | null
+    _sum: LegalKnowledgeChunkSumAggregateOutputType | null
+    _min: LegalKnowledgeChunkMinAggregateOutputType | null
+    _max: LegalKnowledgeChunkMaxAggregateOutputType | null
+  }
+
+  export type LegalKnowledgeChunkAvgAggregateOutputType = {
+    chunkIndex: number | null
+    startOffset: number | null
+    endOffset: number | null
+  }
+
+  export type LegalKnowledgeChunkSumAggregateOutputType = {
+    chunkIndex: number | null
+    startOffset: number | null
+    endOffset: number | null
+  }
+
+  export type LegalKnowledgeChunkMinAggregateOutputType = {
+    id: string | null
+    legalKnowledgeId: string | null
+    chunkIndex: number | null
+    chunkText: string | null
+    startOffset: number | null
+    endOffset: number | null
+    sectionTitle: string | null
+    createdAt: Date | null
+  }
+
+  export type LegalKnowledgeChunkMaxAggregateOutputType = {
+    id: string | null
+    legalKnowledgeId: string | null
+    chunkIndex: number | null
+    chunkText: string | null
+    startOffset: number | null
+    endOffset: number | null
+    sectionTitle: string | null
+    createdAt: Date | null
+  }
+
+  export type LegalKnowledgeChunkCountAggregateOutputType = {
+    id: number
+    legalKnowledgeId: number
+    chunkIndex: number
+    chunkText: number
+    startOffset: number
+    endOffset: number
+    sectionTitle: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type LegalKnowledgeChunkAvgAggregateInputType = {
+    chunkIndex?: true
+    startOffset?: true
+    endOffset?: true
+  }
+
+  export type LegalKnowledgeChunkSumAggregateInputType = {
+    chunkIndex?: true
+    startOffset?: true
+    endOffset?: true
+  }
+
+  export type LegalKnowledgeChunkMinAggregateInputType = {
+    id?: true
+    legalKnowledgeId?: true
+    chunkIndex?: true
+    chunkText?: true
+    startOffset?: true
+    endOffset?: true
+    sectionTitle?: true
+    createdAt?: true
+  }
+
+  export type LegalKnowledgeChunkMaxAggregateInputType = {
+    id?: true
+    legalKnowledgeId?: true
+    chunkIndex?: true
+    chunkText?: true
+    startOffset?: true
+    endOffset?: true
+    sectionTitle?: true
+    createdAt?: true
+  }
+
+  export type LegalKnowledgeChunkCountAggregateInputType = {
+    id?: true
+    legalKnowledgeId?: true
+    chunkIndex?: true
+    chunkText?: true
+    startOffset?: true
+    endOffset?: true
+    sectionTitle?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type LegalKnowledgeChunkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LegalKnowledgeChunk to aggregate.
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledgeChunks to fetch.
+     */
+    orderBy?: LegalKnowledgeChunkOrderByWithRelationInput | LegalKnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LegalKnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LegalKnowledgeChunks
+    **/
+    _count?: true | LegalKnowledgeChunkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LegalKnowledgeChunkAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LegalKnowledgeChunkSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LegalKnowledgeChunkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LegalKnowledgeChunkMaxAggregateInputType
+  }
+
+  export type GetLegalKnowledgeChunkAggregateType<T extends LegalKnowledgeChunkAggregateArgs> = {
+        [P in keyof T & keyof AggregateLegalKnowledgeChunk]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLegalKnowledgeChunk[P]>
+      : GetScalarType<T[P], AggregateLegalKnowledgeChunk[P]>
+  }
+
+
+
+
+  export type LegalKnowledgeChunkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LegalKnowledgeChunkWhereInput
+    orderBy?: LegalKnowledgeChunkOrderByWithAggregationInput | LegalKnowledgeChunkOrderByWithAggregationInput[]
+    by: LegalKnowledgeChunkScalarFieldEnum[] | LegalKnowledgeChunkScalarFieldEnum
+    having?: LegalKnowledgeChunkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LegalKnowledgeChunkCountAggregateInputType | true
+    _avg?: LegalKnowledgeChunkAvgAggregateInputType
+    _sum?: LegalKnowledgeChunkSumAggregateInputType
+    _min?: LegalKnowledgeChunkMinAggregateInputType
+    _max?: LegalKnowledgeChunkMaxAggregateInputType
+  }
+
+  export type LegalKnowledgeChunkGroupByOutputType = {
+    id: string
+    legalKnowledgeId: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle: string | null
+    createdAt: Date
+    _count: LegalKnowledgeChunkCountAggregateOutputType | null
+    _avg: LegalKnowledgeChunkAvgAggregateOutputType | null
+    _sum: LegalKnowledgeChunkSumAggregateOutputType | null
+    _min: LegalKnowledgeChunkMinAggregateOutputType | null
+    _max: LegalKnowledgeChunkMaxAggregateOutputType | null
+  }
+
+  type GetLegalKnowledgeChunkGroupByPayload<T extends LegalKnowledgeChunkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LegalKnowledgeChunkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LegalKnowledgeChunkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LegalKnowledgeChunkGroupByOutputType[P]>
+            : GetScalarType<T[P], LegalKnowledgeChunkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LegalKnowledgeChunkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    legalKnowledgeId?: boolean
+    chunkIndex?: boolean
+    chunkText?: boolean
+    startOffset?: boolean
+    endOffset?: boolean
+    sectionTitle?: boolean
+    createdAt?: boolean
+    legalKnowledge?: boolean | LegalKnowledgeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["legalKnowledgeChunk"]>
+
+  export type LegalKnowledgeChunkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    legalKnowledgeId?: boolean
+    chunkIndex?: boolean
+    chunkText?: boolean
+    startOffset?: boolean
+    endOffset?: boolean
+    sectionTitle?: boolean
+    createdAt?: boolean
+    legalKnowledge?: boolean | LegalKnowledgeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["legalKnowledgeChunk"]>
+
+  export type LegalKnowledgeChunkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    legalKnowledgeId?: boolean
+    chunkIndex?: boolean
+    chunkText?: boolean
+    startOffset?: boolean
+    endOffset?: boolean
+    sectionTitle?: boolean
+    createdAt?: boolean
+    legalKnowledge?: boolean | LegalKnowledgeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["legalKnowledgeChunk"]>
+
+  export type LegalKnowledgeChunkSelectScalar = {
+    id?: boolean
+    legalKnowledgeId?: boolean
+    chunkIndex?: boolean
+    chunkText?: boolean
+    startOffset?: boolean
+    endOffset?: boolean
+    sectionTitle?: boolean
+    createdAt?: boolean
+  }
+
+  export type LegalKnowledgeChunkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "legalKnowledgeId" | "chunkIndex" | "chunkText" | "startOffset" | "endOffset" | "sectionTitle" | "createdAt", ExtArgs["result"]["legalKnowledgeChunk"]>
+  export type LegalKnowledgeChunkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    legalKnowledge?: boolean | LegalKnowledgeDefaultArgs<ExtArgs>
+  }
+  export type LegalKnowledgeChunkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    legalKnowledge?: boolean | LegalKnowledgeDefaultArgs<ExtArgs>
+  }
+  export type LegalKnowledgeChunkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    legalKnowledge?: boolean | LegalKnowledgeDefaultArgs<ExtArgs>
+  }
+
+  export type $LegalKnowledgeChunkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LegalKnowledgeChunk"
+    objects: {
+      legalKnowledge: Prisma.$LegalKnowledgePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      legalKnowledgeId: string
+      chunkIndex: number
+      chunkText: string
+      startOffset: number
+      endOffset: number
+      sectionTitle: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["legalKnowledgeChunk"]>
+    composites: {}
+  }
+
+  type LegalKnowledgeChunkGetPayload<S extends boolean | null | undefined | LegalKnowledgeChunkDefaultArgs> = $Result.GetResult<Prisma.$LegalKnowledgeChunkPayload, S>
+
+  type LegalKnowledgeChunkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LegalKnowledgeChunkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LegalKnowledgeChunkCountAggregateInputType | true
+    }
+
+  export interface LegalKnowledgeChunkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LegalKnowledgeChunk'], meta: { name: 'LegalKnowledgeChunk' } }
+    /**
+     * Find zero or one LegalKnowledgeChunk that matches the filter.
+     * @param {LegalKnowledgeChunkFindUniqueArgs} args - Arguments to find a LegalKnowledgeChunk
+     * @example
+     * // Get one LegalKnowledgeChunk
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LegalKnowledgeChunkFindUniqueArgs>(args: SelectSubset<T, LegalKnowledgeChunkFindUniqueArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LegalKnowledgeChunk that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LegalKnowledgeChunkFindUniqueOrThrowArgs} args - Arguments to find a LegalKnowledgeChunk
+     * @example
+     * // Get one LegalKnowledgeChunk
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LegalKnowledgeChunkFindUniqueOrThrowArgs>(args: SelectSubset<T, LegalKnowledgeChunkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LegalKnowledgeChunk that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkFindFirstArgs} args - Arguments to find a LegalKnowledgeChunk
+     * @example
+     * // Get one LegalKnowledgeChunk
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LegalKnowledgeChunkFindFirstArgs>(args?: SelectSubset<T, LegalKnowledgeChunkFindFirstArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LegalKnowledgeChunk that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkFindFirstOrThrowArgs} args - Arguments to find a LegalKnowledgeChunk
+     * @example
+     * // Get one LegalKnowledgeChunk
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LegalKnowledgeChunkFindFirstOrThrowArgs>(args?: SelectSubset<T, LegalKnowledgeChunkFindFirstOrThrowArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LegalKnowledgeChunks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LegalKnowledgeChunks
+     * const legalKnowledgeChunks = await prisma.legalKnowledgeChunk.findMany()
+     * 
+     * // Get first 10 LegalKnowledgeChunks
+     * const legalKnowledgeChunks = await prisma.legalKnowledgeChunk.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const legalKnowledgeChunkWithIdOnly = await prisma.legalKnowledgeChunk.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LegalKnowledgeChunkFindManyArgs>(args?: SelectSubset<T, LegalKnowledgeChunkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LegalKnowledgeChunk.
+     * @param {LegalKnowledgeChunkCreateArgs} args - Arguments to create a LegalKnowledgeChunk.
+     * @example
+     * // Create one LegalKnowledgeChunk
+     * const LegalKnowledgeChunk = await prisma.legalKnowledgeChunk.create({
+     *   data: {
+     *     // ... data to create a LegalKnowledgeChunk
+     *   }
+     * })
+     * 
+     */
+    create<T extends LegalKnowledgeChunkCreateArgs>(args: SelectSubset<T, LegalKnowledgeChunkCreateArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LegalKnowledgeChunks.
+     * @param {LegalKnowledgeChunkCreateManyArgs} args - Arguments to create many LegalKnowledgeChunks.
+     * @example
+     * // Create many LegalKnowledgeChunks
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LegalKnowledgeChunkCreateManyArgs>(args?: SelectSubset<T, LegalKnowledgeChunkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LegalKnowledgeChunks and returns the data saved in the database.
+     * @param {LegalKnowledgeChunkCreateManyAndReturnArgs} args - Arguments to create many LegalKnowledgeChunks.
+     * @example
+     * // Create many LegalKnowledgeChunks
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LegalKnowledgeChunks and only return the `id`
+     * const legalKnowledgeChunkWithIdOnly = await prisma.legalKnowledgeChunk.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LegalKnowledgeChunkCreateManyAndReturnArgs>(args?: SelectSubset<T, LegalKnowledgeChunkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LegalKnowledgeChunk.
+     * @param {LegalKnowledgeChunkDeleteArgs} args - Arguments to delete one LegalKnowledgeChunk.
+     * @example
+     * // Delete one LegalKnowledgeChunk
+     * const LegalKnowledgeChunk = await prisma.legalKnowledgeChunk.delete({
+     *   where: {
+     *     // ... filter to delete one LegalKnowledgeChunk
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LegalKnowledgeChunkDeleteArgs>(args: SelectSubset<T, LegalKnowledgeChunkDeleteArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LegalKnowledgeChunk.
+     * @param {LegalKnowledgeChunkUpdateArgs} args - Arguments to update one LegalKnowledgeChunk.
+     * @example
+     * // Update one LegalKnowledgeChunk
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LegalKnowledgeChunkUpdateArgs>(args: SelectSubset<T, LegalKnowledgeChunkUpdateArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LegalKnowledgeChunks.
+     * @param {LegalKnowledgeChunkDeleteManyArgs} args - Arguments to filter LegalKnowledgeChunks to delete.
+     * @example
+     * // Delete a few LegalKnowledgeChunks
+     * const { count } = await prisma.legalKnowledgeChunk.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LegalKnowledgeChunkDeleteManyArgs>(args?: SelectSubset<T, LegalKnowledgeChunkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LegalKnowledgeChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LegalKnowledgeChunks
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LegalKnowledgeChunkUpdateManyArgs>(args: SelectSubset<T, LegalKnowledgeChunkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LegalKnowledgeChunks and returns the data updated in the database.
+     * @param {LegalKnowledgeChunkUpdateManyAndReturnArgs} args - Arguments to update many LegalKnowledgeChunks.
+     * @example
+     * // Update many LegalKnowledgeChunks
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LegalKnowledgeChunks and only return the `id`
+     * const legalKnowledgeChunkWithIdOnly = await prisma.legalKnowledgeChunk.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LegalKnowledgeChunkUpdateManyAndReturnArgs>(args: SelectSubset<T, LegalKnowledgeChunkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LegalKnowledgeChunk.
+     * @param {LegalKnowledgeChunkUpsertArgs} args - Arguments to update or create a LegalKnowledgeChunk.
+     * @example
+     * // Update or create a LegalKnowledgeChunk
+     * const legalKnowledgeChunk = await prisma.legalKnowledgeChunk.upsert({
+     *   create: {
+     *     // ... data to create a LegalKnowledgeChunk
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LegalKnowledgeChunk we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LegalKnowledgeChunkUpsertArgs>(args: SelectSubset<T, LegalKnowledgeChunkUpsertArgs<ExtArgs>>): Prisma__LegalKnowledgeChunkClient<$Result.GetResult<Prisma.$LegalKnowledgeChunkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LegalKnowledgeChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkCountArgs} args - Arguments to filter LegalKnowledgeChunks to count.
+     * @example
+     * // Count the number of LegalKnowledgeChunks
+     * const count = await prisma.legalKnowledgeChunk.count({
+     *   where: {
+     *     // ... the filter for the LegalKnowledgeChunks we want to count
+     *   }
+     * })
+    **/
+    count<T extends LegalKnowledgeChunkCountArgs>(
+      args?: Subset<T, LegalKnowledgeChunkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LegalKnowledgeChunkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LegalKnowledgeChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LegalKnowledgeChunkAggregateArgs>(args: Subset<T, LegalKnowledgeChunkAggregateArgs>): Prisma.PrismaPromise<GetLegalKnowledgeChunkAggregateType<T>>
+
+    /**
+     * Group by LegalKnowledgeChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LegalKnowledgeChunkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LegalKnowledgeChunkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LegalKnowledgeChunkGroupByArgs['orderBy'] }
+        : { orderBy?: LegalKnowledgeChunkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LegalKnowledgeChunkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLegalKnowledgeChunkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LegalKnowledgeChunk model
+   */
+  readonly fields: LegalKnowledgeChunkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LegalKnowledgeChunk.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LegalKnowledgeChunkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    legalKnowledge<T extends LegalKnowledgeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, LegalKnowledgeDefaultArgs<ExtArgs>>): Prisma__LegalKnowledgeClient<$Result.GetResult<Prisma.$LegalKnowledgePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LegalKnowledgeChunk model
+   */
+  interface LegalKnowledgeChunkFieldRefs {
+    readonly id: FieldRef<"LegalKnowledgeChunk", 'String'>
+    readonly legalKnowledgeId: FieldRef<"LegalKnowledgeChunk", 'String'>
+    readonly chunkIndex: FieldRef<"LegalKnowledgeChunk", 'Int'>
+    readonly chunkText: FieldRef<"LegalKnowledgeChunk", 'String'>
+    readonly startOffset: FieldRef<"LegalKnowledgeChunk", 'Int'>
+    readonly endOffset: FieldRef<"LegalKnowledgeChunk", 'Int'>
+    readonly sectionTitle: FieldRef<"LegalKnowledgeChunk", 'String'>
+    readonly createdAt: FieldRef<"LegalKnowledgeChunk", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LegalKnowledgeChunk findUnique
+   */
+  export type LegalKnowledgeChunkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledgeChunk to fetch.
+     */
+    where: LegalKnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledgeChunk findUniqueOrThrow
+   */
+  export type LegalKnowledgeChunkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledgeChunk to fetch.
+     */
+    where: LegalKnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledgeChunk findFirst
+   */
+  export type LegalKnowledgeChunkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledgeChunk to fetch.
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledgeChunks to fetch.
+     */
+    orderBy?: LegalKnowledgeChunkOrderByWithRelationInput | LegalKnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LegalKnowledgeChunks.
+     */
+    cursor?: LegalKnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LegalKnowledgeChunks.
+     */
+    distinct?: LegalKnowledgeChunkScalarFieldEnum | LegalKnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledgeChunk findFirstOrThrow
+   */
+  export type LegalKnowledgeChunkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledgeChunk to fetch.
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledgeChunks to fetch.
+     */
+    orderBy?: LegalKnowledgeChunkOrderByWithRelationInput | LegalKnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LegalKnowledgeChunks.
+     */
+    cursor?: LegalKnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LegalKnowledgeChunks.
+     */
+    distinct?: LegalKnowledgeChunkScalarFieldEnum | LegalKnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledgeChunk findMany
+   */
+  export type LegalKnowledgeChunkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which LegalKnowledgeChunks to fetch.
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LegalKnowledgeChunks to fetch.
+     */
+    orderBy?: LegalKnowledgeChunkOrderByWithRelationInput | LegalKnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LegalKnowledgeChunks.
+     */
+    cursor?: LegalKnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LegalKnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LegalKnowledgeChunks.
+     */
+    skip?: number
+    distinct?: LegalKnowledgeChunkScalarFieldEnum | LegalKnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * LegalKnowledgeChunk create
+   */
+  export type LegalKnowledgeChunkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LegalKnowledgeChunk.
+     */
+    data: XOR<LegalKnowledgeChunkCreateInput, LegalKnowledgeChunkUncheckedCreateInput>
+  }
+
+  /**
+   * LegalKnowledgeChunk createMany
+   */
+  export type LegalKnowledgeChunkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LegalKnowledgeChunks.
+     */
+    data: LegalKnowledgeChunkCreateManyInput | LegalKnowledgeChunkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LegalKnowledgeChunk createManyAndReturn
+   */
+  export type LegalKnowledgeChunkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * The data used to create many LegalKnowledgeChunks.
+     */
+    data: LegalKnowledgeChunkCreateManyInput | LegalKnowledgeChunkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LegalKnowledgeChunk update
+   */
+  export type LegalKnowledgeChunkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LegalKnowledgeChunk.
+     */
+    data: XOR<LegalKnowledgeChunkUpdateInput, LegalKnowledgeChunkUncheckedUpdateInput>
+    /**
+     * Choose, which LegalKnowledgeChunk to update.
+     */
+    where: LegalKnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledgeChunk updateMany
+   */
+  export type LegalKnowledgeChunkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LegalKnowledgeChunks.
+     */
+    data: XOR<LegalKnowledgeChunkUpdateManyMutationInput, LegalKnowledgeChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which LegalKnowledgeChunks to update
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * Limit how many LegalKnowledgeChunks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LegalKnowledgeChunk updateManyAndReturn
+   */
+  export type LegalKnowledgeChunkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * The data used to update LegalKnowledgeChunks.
+     */
+    data: XOR<LegalKnowledgeChunkUpdateManyMutationInput, LegalKnowledgeChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which LegalKnowledgeChunks to update
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * Limit how many LegalKnowledgeChunks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LegalKnowledgeChunk upsert
+   */
+  export type LegalKnowledgeChunkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LegalKnowledgeChunk to update in case it exists.
+     */
+    where: LegalKnowledgeChunkWhereUniqueInput
+    /**
+     * In case the LegalKnowledgeChunk found by the `where` argument doesn't exist, create a new LegalKnowledgeChunk with this data.
+     */
+    create: XOR<LegalKnowledgeChunkCreateInput, LegalKnowledgeChunkUncheckedCreateInput>
+    /**
+     * In case the LegalKnowledgeChunk was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LegalKnowledgeChunkUpdateInput, LegalKnowledgeChunkUncheckedUpdateInput>
+  }
+
+  /**
+   * LegalKnowledgeChunk delete
+   */
+  export type LegalKnowledgeChunkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter which LegalKnowledgeChunk to delete.
+     */
+    where: LegalKnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * LegalKnowledgeChunk deleteMany
+   */
+  export type LegalKnowledgeChunkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LegalKnowledgeChunks to delete
+     */
+    where?: LegalKnowledgeChunkWhereInput
+    /**
+     * Limit how many LegalKnowledgeChunks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LegalKnowledgeChunk without action
+   */
+  export type LegalKnowledgeChunkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LegalKnowledgeChunk
+     */
+    select?: LegalKnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LegalKnowledgeChunk
+     */
+    omit?: LegalKnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LegalKnowledgeChunkInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -49381,6 +52049,44 @@ export namespace Prisma {
   export type PublicationsScalarFieldEnum = (typeof PublicationsScalarFieldEnum)[keyof typeof PublicationsScalarFieldEnum]
 
 
+  export const LegalKnowledgeScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    description: 'description',
+    type: 'type',
+    jurisdiction: 'jurisdiction',
+    practiceAreas: 'practiceAreas',
+    content: 'content',
+    fileUrl: 'fileUrl',
+    fileType: 'fileType',
+    sourceType: 'sourceType',
+    sourceReference: 'sourceReference',
+    effectiveDate: 'effectiveDate',
+    tags: 'tags',
+    status: 'status',
+    isPublished: 'isPublished',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type LegalKnowledgeScalarFieldEnum = (typeof LegalKnowledgeScalarFieldEnum)[keyof typeof LegalKnowledgeScalarFieldEnum]
+
+
+  export const LegalKnowledgeChunkScalarFieldEnum: {
+    id: 'id',
+    legalKnowledgeId: 'legalKnowledgeId',
+    chunkIndex: 'chunkIndex',
+    chunkText: 'chunkText',
+    startOffset: 'startOffset',
+    endOffset: 'endOffset',
+    sectionTitle: 'sectionTitle',
+    createdAt: 'createdAt'
+  };
+
+  export type LegalKnowledgeChunkScalarFieldEnum = (typeof LegalKnowledgeChunkScalarFieldEnum)[keyof typeof LegalKnowledgeChunkScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -49529,6 +52235,34 @@ export namespace Prisma {
    * Reference to a field of type 'PracticeArea'
    */
   export type EnumPracticeAreaFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PracticeArea'>
+    
+
+
+  /**
+   * Reference to a field of type 'LegalKnowledgeType'
+   */
+  export type EnumLegalKnowledgeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LegalKnowledgeType'>
+    
+
+
+  /**
+   * Reference to a field of type 'LegalKnowledgeType[]'
+   */
+  export type ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LegalKnowledgeType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Jurisdiction'
+   */
+  export type EnumJurisdictionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Jurisdiction'>
+    
+
+
+  /**
+   * Reference to a field of type 'Jurisdiction[]'
+   */
+  export type ListEnumJurisdictionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Jurisdiction[]'>
     
   /**
    * Deep Input Types
@@ -49754,6 +52488,7 @@ export namespace Prisma {
     activeOrganization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     organizationMemberships?: UserOrganizationListRelationFilter
+    createdLegalKnowledge?: LegalKnowledgeListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -49786,6 +52521,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationOrderByWithRelationInput
     organization?: OrganizationOrderByWithRelationInput
     organizationMemberships?: UserOrganizationOrderByRelationAggregateInput
+    createdLegalKnowledge?: LegalKnowledgeOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -49821,6 +52557,7 @@ export namespace Prisma {
     activeOrganization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     organizationMemberships?: UserOrganizationListRelationFilter
+    createdLegalKnowledge?: LegalKnowledgeListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -52446,6 +55183,201 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Publications"> | string
   }
 
+  export type LegalKnowledgeWhereInput = {
+    AND?: LegalKnowledgeWhereInput | LegalKnowledgeWhereInput[]
+    OR?: LegalKnowledgeWhereInput[]
+    NOT?: LegalKnowledgeWhereInput | LegalKnowledgeWhereInput[]
+    id?: StringFilter<"LegalKnowledge"> | string
+    title?: StringFilter<"LegalKnowledge"> | string
+    description?: StringNullableFilter<"LegalKnowledge"> | string | null
+    type?: EnumLegalKnowledgeTypeFilter<"LegalKnowledge"> | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFilter<"LegalKnowledge"> | $Enums.Jurisdiction
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"LegalKnowledge">
+    content?: StringFilter<"LegalKnowledge"> | string
+    fileUrl?: StringNullableFilter<"LegalKnowledge"> | string | null
+    fileType?: StringNullableFilter<"LegalKnowledge"> | string | null
+    sourceType?: StringFilter<"LegalKnowledge"> | string
+    sourceReference?: StringNullableFilter<"LegalKnowledge"> | string | null
+    effectiveDate?: DateTimeNullableFilter<"LegalKnowledge"> | Date | string | null
+    tags?: StringNullableListFilter<"LegalKnowledge">
+    status?: StringFilter<"LegalKnowledge"> | string
+    isPublished?: BoolFilter<"LegalKnowledge"> | boolean
+    createdById?: StringFilter<"LegalKnowledge"> | string
+    createdAt?: DateTimeFilter<"LegalKnowledge"> | Date | string
+    updatedAt?: DateTimeFilter<"LegalKnowledge"> | Date | string
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chunks?: LegalKnowledgeChunkListRelationFilter
+  }
+
+  export type LegalKnowledgeOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    type?: SortOrder
+    jurisdiction?: SortOrder
+    practiceAreas?: SortOrder
+    content?: SortOrder
+    fileUrl?: SortOrderInput | SortOrder
+    fileType?: SortOrderInput | SortOrder
+    sourceType?: SortOrder
+    sourceReference?: SortOrderInput | SortOrder
+    effectiveDate?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    status?: SortOrder
+    isPublished?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdBy?: UserOrderByWithRelationInput
+    chunks?: LegalKnowledgeChunkOrderByRelationAggregateInput
+  }
+
+  export type LegalKnowledgeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: LegalKnowledgeWhereInput | LegalKnowledgeWhereInput[]
+    OR?: LegalKnowledgeWhereInput[]
+    NOT?: LegalKnowledgeWhereInput | LegalKnowledgeWhereInput[]
+    title?: StringFilter<"LegalKnowledge"> | string
+    description?: StringNullableFilter<"LegalKnowledge"> | string | null
+    type?: EnumLegalKnowledgeTypeFilter<"LegalKnowledge"> | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFilter<"LegalKnowledge"> | $Enums.Jurisdiction
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"LegalKnowledge">
+    content?: StringFilter<"LegalKnowledge"> | string
+    fileUrl?: StringNullableFilter<"LegalKnowledge"> | string | null
+    fileType?: StringNullableFilter<"LegalKnowledge"> | string | null
+    sourceType?: StringFilter<"LegalKnowledge"> | string
+    sourceReference?: StringNullableFilter<"LegalKnowledge"> | string | null
+    effectiveDate?: DateTimeNullableFilter<"LegalKnowledge"> | Date | string | null
+    tags?: StringNullableListFilter<"LegalKnowledge">
+    status?: StringFilter<"LegalKnowledge"> | string
+    isPublished?: BoolFilter<"LegalKnowledge"> | boolean
+    createdById?: StringFilter<"LegalKnowledge"> | string
+    createdAt?: DateTimeFilter<"LegalKnowledge"> | Date | string
+    updatedAt?: DateTimeFilter<"LegalKnowledge"> | Date | string
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    chunks?: LegalKnowledgeChunkListRelationFilter
+  }, "id">
+
+  export type LegalKnowledgeOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrderInput | SortOrder
+    type?: SortOrder
+    jurisdiction?: SortOrder
+    practiceAreas?: SortOrder
+    content?: SortOrder
+    fileUrl?: SortOrderInput | SortOrder
+    fileType?: SortOrderInput | SortOrder
+    sourceType?: SortOrder
+    sourceReference?: SortOrderInput | SortOrder
+    effectiveDate?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    status?: SortOrder
+    isPublished?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: LegalKnowledgeCountOrderByAggregateInput
+    _max?: LegalKnowledgeMaxOrderByAggregateInput
+    _min?: LegalKnowledgeMinOrderByAggregateInput
+  }
+
+  export type LegalKnowledgeScalarWhereWithAggregatesInput = {
+    AND?: LegalKnowledgeScalarWhereWithAggregatesInput | LegalKnowledgeScalarWhereWithAggregatesInput[]
+    OR?: LegalKnowledgeScalarWhereWithAggregatesInput[]
+    NOT?: LegalKnowledgeScalarWhereWithAggregatesInput | LegalKnowledgeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LegalKnowledge"> | string
+    title?: StringWithAggregatesFilter<"LegalKnowledge"> | string
+    description?: StringNullableWithAggregatesFilter<"LegalKnowledge"> | string | null
+    type?: EnumLegalKnowledgeTypeWithAggregatesFilter<"LegalKnowledge"> | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionWithAggregatesFilter<"LegalKnowledge"> | $Enums.Jurisdiction
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"LegalKnowledge">
+    content?: StringWithAggregatesFilter<"LegalKnowledge"> | string
+    fileUrl?: StringNullableWithAggregatesFilter<"LegalKnowledge"> | string | null
+    fileType?: StringNullableWithAggregatesFilter<"LegalKnowledge"> | string | null
+    sourceType?: StringWithAggregatesFilter<"LegalKnowledge"> | string
+    sourceReference?: StringNullableWithAggregatesFilter<"LegalKnowledge"> | string | null
+    effectiveDate?: DateTimeNullableWithAggregatesFilter<"LegalKnowledge"> | Date | string | null
+    tags?: StringNullableListFilter<"LegalKnowledge">
+    status?: StringWithAggregatesFilter<"LegalKnowledge"> | string
+    isPublished?: BoolWithAggregatesFilter<"LegalKnowledge"> | boolean
+    createdById?: StringWithAggregatesFilter<"LegalKnowledge"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"LegalKnowledge"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"LegalKnowledge"> | Date | string
+  }
+
+  export type LegalKnowledgeChunkWhereInput = {
+    AND?: LegalKnowledgeChunkWhereInput | LegalKnowledgeChunkWhereInput[]
+    OR?: LegalKnowledgeChunkWhereInput[]
+    NOT?: LegalKnowledgeChunkWhereInput | LegalKnowledgeChunkWhereInput[]
+    id?: StringFilter<"LegalKnowledgeChunk"> | string
+    legalKnowledgeId?: StringFilter<"LegalKnowledgeChunk"> | string
+    chunkIndex?: IntFilter<"LegalKnowledgeChunk"> | number
+    chunkText?: StringFilter<"LegalKnowledgeChunk"> | string
+    startOffset?: IntFilter<"LegalKnowledgeChunk"> | number
+    endOffset?: IntFilter<"LegalKnowledgeChunk"> | number
+    sectionTitle?: StringNullableFilter<"LegalKnowledgeChunk"> | string | null
+    createdAt?: DateTimeFilter<"LegalKnowledgeChunk"> | Date | string
+    legalKnowledge?: XOR<LegalKnowledgeScalarRelationFilter, LegalKnowledgeWhereInput>
+  }
+
+  export type LegalKnowledgeChunkOrderByWithRelationInput = {
+    id?: SortOrder
+    legalKnowledgeId?: SortOrder
+    chunkIndex?: SortOrder
+    chunkText?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+    sectionTitle?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    legalKnowledge?: LegalKnowledgeOrderByWithRelationInput
+  }
+
+  export type LegalKnowledgeChunkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: LegalKnowledgeChunkWhereInput | LegalKnowledgeChunkWhereInput[]
+    OR?: LegalKnowledgeChunkWhereInput[]
+    NOT?: LegalKnowledgeChunkWhereInput | LegalKnowledgeChunkWhereInput[]
+    legalKnowledgeId?: StringFilter<"LegalKnowledgeChunk"> | string
+    chunkIndex?: IntFilter<"LegalKnowledgeChunk"> | number
+    chunkText?: StringFilter<"LegalKnowledgeChunk"> | string
+    startOffset?: IntFilter<"LegalKnowledgeChunk"> | number
+    endOffset?: IntFilter<"LegalKnowledgeChunk"> | number
+    sectionTitle?: StringNullableFilter<"LegalKnowledgeChunk"> | string | null
+    createdAt?: DateTimeFilter<"LegalKnowledgeChunk"> | Date | string
+    legalKnowledge?: XOR<LegalKnowledgeScalarRelationFilter, LegalKnowledgeWhereInput>
+  }, "id">
+
+  export type LegalKnowledgeChunkOrderByWithAggregationInput = {
+    id?: SortOrder
+    legalKnowledgeId?: SortOrder
+    chunkIndex?: SortOrder
+    chunkText?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+    sectionTitle?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: LegalKnowledgeChunkCountOrderByAggregateInput
+    _avg?: LegalKnowledgeChunkAvgOrderByAggregateInput
+    _max?: LegalKnowledgeChunkMaxOrderByAggregateInput
+    _min?: LegalKnowledgeChunkMinOrderByAggregateInput
+    _sum?: LegalKnowledgeChunkSumOrderByAggregateInput
+  }
+
+  export type LegalKnowledgeChunkScalarWhereWithAggregatesInput = {
+    AND?: LegalKnowledgeChunkScalarWhereWithAggregatesInput | LegalKnowledgeChunkScalarWhereWithAggregatesInput[]
+    OR?: LegalKnowledgeChunkScalarWhereWithAggregatesInput[]
+    NOT?: LegalKnowledgeChunkScalarWhereWithAggregatesInput | LegalKnowledgeChunkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LegalKnowledgeChunk"> | string
+    legalKnowledgeId?: StringWithAggregatesFilter<"LegalKnowledgeChunk"> | string
+    chunkIndex?: IntWithAggregatesFilter<"LegalKnowledgeChunk"> | number
+    chunkText?: StringWithAggregatesFilter<"LegalKnowledgeChunk"> | string
+    startOffset?: IntWithAggregatesFilter<"LegalKnowledgeChunk"> | number
+    endOffset?: IntWithAggregatesFilter<"LegalKnowledgeChunk"> | number
+    sectionTitle?: StringNullableWithAggregatesFilter<"LegalKnowledgeChunk"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"LegalKnowledgeChunk"> | Date | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -52668,6 +55600,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -52698,6 +55631,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUpdateInput = {
@@ -52728,6 +55662,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -52758,6 +55693,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -55517,6 +58453,232 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
   }
 
+  export type LegalKnowledgeCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutCreatedLegalKnowledgeInput
+    chunks?: LegalKnowledgeChunkCreateNestedManyWithoutLegalKnowledgeInput
+  }
+
+  export type LegalKnowledgeUncheckedCreateInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chunks?: LegalKnowledgeChunkUncheckedCreateNestedManyWithoutLegalKnowledgeInput
+  }
+
+  export type LegalKnowledgeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutCreatedLegalKnowledgeNestedInput
+    chunks?: LegalKnowledgeChunkUpdateManyWithoutLegalKnowledgeNestedInput
+  }
+
+  export type LegalKnowledgeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: LegalKnowledgeChunkUncheckedUpdateManyWithoutLegalKnowledgeNestedInput
+  }
+
+  export type LegalKnowledgeCreateManyInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LegalKnowledgeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeChunkCreateInput = {
+    id?: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle?: string | null
+    createdAt?: Date | string
+    legalKnowledge: LegalKnowledgeCreateNestedOneWithoutChunksInput
+  }
+
+  export type LegalKnowledgeChunkUncheckedCreateInput = {
+    id?: string
+    legalKnowledgeId: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LegalKnowledgeChunkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    legalKnowledge?: LegalKnowledgeUpdateOneRequiredWithoutChunksNestedInput
+  }
+
+  export type LegalKnowledgeChunkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    legalKnowledgeId?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeChunkCreateManyInput = {
+    id?: string
+    legalKnowledgeId: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LegalKnowledgeChunkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeChunkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    legalKnowledgeId?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -55864,6 +59026,12 @@ export namespace Prisma {
     none?: UserOrganizationWhereInput
   }
 
+  export type LegalKnowledgeListRelationFilter = {
+    every?: LegalKnowledgeWhereInput
+    some?: LegalKnowledgeWhereInput
+    none?: LegalKnowledgeWhereInput
+  }
+
   export type AIAssociateOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -55925,6 +59093,10 @@ export namespace Prisma {
   }
 
   export type UserOrganizationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LegalKnowledgeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -57604,6 +60776,159 @@ export namespace Prisma {
     title?: SortOrder
   }
 
+  export type EnumLegalKnowledgeTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LegalKnowledgeType | EnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLegalKnowledgeTypeFilter<$PrismaModel> | $Enums.LegalKnowledgeType
+  }
+
+  export type EnumJurisdictionFilter<$PrismaModel = never> = {
+    equals?: $Enums.Jurisdiction | EnumJurisdictionFieldRefInput<$PrismaModel>
+    in?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    not?: NestedEnumJurisdictionFilter<$PrismaModel> | $Enums.Jurisdiction
+  }
+
+  export type LegalKnowledgeChunkListRelationFilter = {
+    every?: LegalKnowledgeChunkWhereInput
+    some?: LegalKnowledgeChunkWhereInput
+    none?: LegalKnowledgeChunkWhereInput
+  }
+
+  export type LegalKnowledgeChunkOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LegalKnowledgeCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    type?: SortOrder
+    jurisdiction?: SortOrder
+    practiceAreas?: SortOrder
+    content?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    sourceType?: SortOrder
+    sourceReference?: SortOrder
+    effectiveDate?: SortOrder
+    tags?: SortOrder
+    status?: SortOrder
+    isPublished?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LegalKnowledgeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    type?: SortOrder
+    jurisdiction?: SortOrder
+    content?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    sourceType?: SortOrder
+    sourceReference?: SortOrder
+    effectiveDate?: SortOrder
+    status?: SortOrder
+    isPublished?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type LegalKnowledgeMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    description?: SortOrder
+    type?: SortOrder
+    jurisdiction?: SortOrder
+    content?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    sourceType?: SortOrder
+    sourceReference?: SortOrder
+    effectiveDate?: SortOrder
+    status?: SortOrder
+    isPublished?: SortOrder
+    createdById?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumLegalKnowledgeTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LegalKnowledgeType | EnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLegalKnowledgeTypeWithAggregatesFilter<$PrismaModel> | $Enums.LegalKnowledgeType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLegalKnowledgeTypeFilter<$PrismaModel>
+    _max?: NestedEnumLegalKnowledgeTypeFilter<$PrismaModel>
+  }
+
+  export type EnumJurisdictionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Jurisdiction | EnumJurisdictionFieldRefInput<$PrismaModel>
+    in?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    not?: NestedEnumJurisdictionWithAggregatesFilter<$PrismaModel> | $Enums.Jurisdiction
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumJurisdictionFilter<$PrismaModel>
+    _max?: NestedEnumJurisdictionFilter<$PrismaModel>
+  }
+
+  export type LegalKnowledgeScalarRelationFilter = {
+    is?: LegalKnowledgeWhereInput
+    isNot?: LegalKnowledgeWhereInput
+  }
+
+  export type LegalKnowledgeChunkCountOrderByAggregateInput = {
+    id?: SortOrder
+    legalKnowledgeId?: SortOrder
+    chunkIndex?: SortOrder
+    chunkText?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+    sectionTitle?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LegalKnowledgeChunkAvgOrderByAggregateInput = {
+    chunkIndex?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+  }
+
+  export type LegalKnowledgeChunkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    legalKnowledgeId?: SortOrder
+    chunkIndex?: SortOrder
+    chunkText?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+    sectionTitle?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LegalKnowledgeChunkMinOrderByAggregateInput = {
+    id?: SortOrder
+    legalKnowledgeId?: SortOrder
+    chunkIndex?: SortOrder
+    chunkText?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+    sectionTitle?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LegalKnowledgeChunkSumOrderByAggregateInput = {
+    chunkIndex?: SortOrder
+    startOffset?: SortOrder
+    endOffset?: SortOrder
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -57776,6 +61101,13 @@ export namespace Prisma {
     connect?: UserOrganizationWhereUniqueInput | UserOrganizationWhereUniqueInput[]
   }
 
+  export type LegalKnowledgeCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<LegalKnowledgeCreateWithoutCreatedByInput, LegalKnowledgeUncheckedCreateWithoutCreatedByInput> | LegalKnowledgeCreateWithoutCreatedByInput[] | LegalKnowledgeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: LegalKnowledgeCreateOrConnectWithoutCreatedByInput | LegalKnowledgeCreateOrConnectWithoutCreatedByInput[]
+    createMany?: LegalKnowledgeCreateManyCreatedByInputEnvelope
+    connect?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -57886,6 +61218,13 @@ export namespace Prisma {
     connectOrCreate?: UserOrganizationCreateOrConnectWithoutUserInput | UserOrganizationCreateOrConnectWithoutUserInput[]
     createMany?: UserOrganizationCreateManyUserInputEnvelope
     connect?: UserOrganizationWhereUniqueInput | UserOrganizationWhereUniqueInput[]
+  }
+
+  export type LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<LegalKnowledgeCreateWithoutCreatedByInput, LegalKnowledgeUncheckedCreateWithoutCreatedByInput> | LegalKnowledgeCreateWithoutCreatedByInput[] | LegalKnowledgeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: LegalKnowledgeCreateOrConnectWithoutCreatedByInput | LegalKnowledgeCreateOrConnectWithoutCreatedByInput[]
+    createMany?: LegalKnowledgeCreateManyCreatedByInputEnvelope
+    connect?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -58134,6 +61473,20 @@ export namespace Prisma {
     deleteMany?: UserOrganizationScalarWhereInput | UserOrganizationScalarWhereInput[]
   }
 
+  export type LegalKnowledgeUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<LegalKnowledgeCreateWithoutCreatedByInput, LegalKnowledgeUncheckedCreateWithoutCreatedByInput> | LegalKnowledgeCreateWithoutCreatedByInput[] | LegalKnowledgeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: LegalKnowledgeCreateOrConnectWithoutCreatedByInput | LegalKnowledgeCreateOrConnectWithoutCreatedByInput[]
+    upsert?: LegalKnowledgeUpsertWithWhereUniqueWithoutCreatedByInput | LegalKnowledgeUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: LegalKnowledgeCreateManyCreatedByInputEnvelope
+    set?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    disconnect?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    delete?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    connect?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    update?: LegalKnowledgeUpdateWithWhereUniqueWithoutCreatedByInput | LegalKnowledgeUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: LegalKnowledgeUpdateManyWithWhereWithoutCreatedByInput | LegalKnowledgeUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: LegalKnowledgeScalarWhereInput | LegalKnowledgeScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -58356,6 +61709,20 @@ export namespace Prisma {
     update?: UserOrganizationUpdateWithWhereUniqueWithoutUserInput | UserOrganizationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserOrganizationUpdateManyWithWhereWithoutUserInput | UserOrganizationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserOrganizationScalarWhereInput | UserOrganizationScalarWhereInput[]
+  }
+
+  export type LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<LegalKnowledgeCreateWithoutCreatedByInput, LegalKnowledgeUncheckedCreateWithoutCreatedByInput> | LegalKnowledgeCreateWithoutCreatedByInput[] | LegalKnowledgeUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: LegalKnowledgeCreateOrConnectWithoutCreatedByInput | LegalKnowledgeCreateOrConnectWithoutCreatedByInput[]
+    upsert?: LegalKnowledgeUpsertWithWhereUniqueWithoutCreatedByInput | LegalKnowledgeUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: LegalKnowledgeCreateManyCreatedByInputEnvelope
+    set?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    disconnect?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    delete?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    connect?: LegalKnowledgeWhereUniqueInput | LegalKnowledgeWhereUniqueInput[]
+    update?: LegalKnowledgeUpdateWithWhereUniqueWithoutCreatedByInput | LegalKnowledgeUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: LegalKnowledgeUpdateManyWithWhereWithoutCreatedByInput | LegalKnowledgeUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: LegalKnowledgeScalarWhereInput | LegalKnowledgeScalarWhereInput[]
   }
 
   export type OrganizationCreatepracticeAreasInput = {
@@ -61041,6 +64408,102 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type LegalKnowledgeCreatepracticeAreasInput = {
+    set: $Enums.PracticeArea[]
+  }
+
+  export type LegalKnowledgeCreatetagsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutCreatedLegalKnowledgeInput = {
+    create?: XOR<UserCreateWithoutCreatedLegalKnowledgeInput, UserUncheckedCreateWithoutCreatedLegalKnowledgeInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedLegalKnowledgeInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type LegalKnowledgeChunkCreateNestedManyWithoutLegalKnowledgeInput = {
+    create?: XOR<LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput> | LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput[] | LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput[]
+    connectOrCreate?: LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput | LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput[]
+    createMany?: LegalKnowledgeChunkCreateManyLegalKnowledgeInputEnvelope
+    connect?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+  }
+
+  export type LegalKnowledgeChunkUncheckedCreateNestedManyWithoutLegalKnowledgeInput = {
+    create?: XOR<LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput> | LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput[] | LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput[]
+    connectOrCreate?: LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput | LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput[]
+    createMany?: LegalKnowledgeChunkCreateManyLegalKnowledgeInputEnvelope
+    connect?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+  }
+
+  export type EnumLegalKnowledgeTypeFieldUpdateOperationsInput = {
+    set?: $Enums.LegalKnowledgeType
+  }
+
+  export type EnumJurisdictionFieldUpdateOperationsInput = {
+    set?: $Enums.Jurisdiction
+  }
+
+  export type LegalKnowledgeUpdatepracticeAreasInput = {
+    set?: $Enums.PracticeArea[]
+    push?: $Enums.PracticeArea | $Enums.PracticeArea[]
+  }
+
+  export type LegalKnowledgeUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutCreatedLegalKnowledgeNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedLegalKnowledgeInput, UserUncheckedCreateWithoutCreatedLegalKnowledgeInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedLegalKnowledgeInput
+    upsert?: UserUpsertWithoutCreatedLegalKnowledgeInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedLegalKnowledgeInput, UserUpdateWithoutCreatedLegalKnowledgeInput>, UserUncheckedUpdateWithoutCreatedLegalKnowledgeInput>
+  }
+
+  export type LegalKnowledgeChunkUpdateManyWithoutLegalKnowledgeNestedInput = {
+    create?: XOR<LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput> | LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput[] | LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput[]
+    connectOrCreate?: LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput | LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput[]
+    upsert?: LegalKnowledgeChunkUpsertWithWhereUniqueWithoutLegalKnowledgeInput | LegalKnowledgeChunkUpsertWithWhereUniqueWithoutLegalKnowledgeInput[]
+    createMany?: LegalKnowledgeChunkCreateManyLegalKnowledgeInputEnvelope
+    set?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    disconnect?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    delete?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    connect?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    update?: LegalKnowledgeChunkUpdateWithWhereUniqueWithoutLegalKnowledgeInput | LegalKnowledgeChunkUpdateWithWhereUniqueWithoutLegalKnowledgeInput[]
+    updateMany?: LegalKnowledgeChunkUpdateManyWithWhereWithoutLegalKnowledgeInput | LegalKnowledgeChunkUpdateManyWithWhereWithoutLegalKnowledgeInput[]
+    deleteMany?: LegalKnowledgeChunkScalarWhereInput | LegalKnowledgeChunkScalarWhereInput[]
+  }
+
+  export type LegalKnowledgeChunkUncheckedUpdateManyWithoutLegalKnowledgeNestedInput = {
+    create?: XOR<LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput> | LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput[] | LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput[]
+    connectOrCreate?: LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput | LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput[]
+    upsert?: LegalKnowledgeChunkUpsertWithWhereUniqueWithoutLegalKnowledgeInput | LegalKnowledgeChunkUpsertWithWhereUniqueWithoutLegalKnowledgeInput[]
+    createMany?: LegalKnowledgeChunkCreateManyLegalKnowledgeInputEnvelope
+    set?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    disconnect?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    delete?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    connect?: LegalKnowledgeChunkWhereUniqueInput | LegalKnowledgeChunkWhereUniqueInput[]
+    update?: LegalKnowledgeChunkUpdateWithWhereUniqueWithoutLegalKnowledgeInput | LegalKnowledgeChunkUpdateWithWhereUniqueWithoutLegalKnowledgeInput[]
+    updateMany?: LegalKnowledgeChunkUpdateManyWithWhereWithoutLegalKnowledgeInput | LegalKnowledgeChunkUpdateManyWithWhereWithoutLegalKnowledgeInput[]
+    deleteMany?: LegalKnowledgeChunkScalarWhereInput | LegalKnowledgeChunkScalarWhereInput[]
+  }
+
+  export type LegalKnowledgeCreateNestedOneWithoutChunksInput = {
+    create?: XOR<LegalKnowledgeCreateWithoutChunksInput, LegalKnowledgeUncheckedCreateWithoutChunksInput>
+    connectOrCreate?: LegalKnowledgeCreateOrConnectWithoutChunksInput
+    connect?: LegalKnowledgeWhereUniqueInput
+  }
+
+  export type LegalKnowledgeUpdateOneRequiredWithoutChunksNestedInput = {
+    create?: XOR<LegalKnowledgeCreateWithoutChunksInput, LegalKnowledgeUncheckedCreateWithoutChunksInput>
+    connectOrCreate?: LegalKnowledgeCreateOrConnectWithoutChunksInput
+    upsert?: LegalKnowledgeUpsertWithoutChunksInput
+    connect?: LegalKnowledgeWhereUniqueInput
+    update?: XOR<XOR<LegalKnowledgeUpdateToOneWithWhereWithoutChunksInput, LegalKnowledgeUpdateWithoutChunksInput>, LegalKnowledgeUncheckedUpdateWithoutChunksInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -61304,6 +64767,40 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumLegalKnowledgeTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LegalKnowledgeType | EnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLegalKnowledgeTypeFilter<$PrismaModel> | $Enums.LegalKnowledgeType
+  }
+
+  export type NestedEnumJurisdictionFilter<$PrismaModel = never> = {
+    equals?: $Enums.Jurisdiction | EnumJurisdictionFieldRefInput<$PrismaModel>
+    in?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    not?: NestedEnumJurisdictionFilter<$PrismaModel> | $Enums.Jurisdiction
+  }
+
+  export type NestedEnumLegalKnowledgeTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LegalKnowledgeType | EnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLegalKnowledgeTypeWithAggregatesFilter<$PrismaModel> | $Enums.LegalKnowledgeType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLegalKnowledgeTypeFilter<$PrismaModel>
+    _max?: NestedEnumLegalKnowledgeTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumJurisdictionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Jurisdiction | EnumJurisdictionFieldRefInput<$PrismaModel>
+    in?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Jurisdiction[] | ListEnumJurisdictionFieldRefInput<$PrismaModel>
+    not?: NestedEnumJurisdictionWithAggregatesFilter<$PrismaModel> | $Enums.Jurisdiction
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumJurisdictionFilter<$PrismaModel>
+    _max?: NestedEnumJurisdictionFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutAccountsInput = {
     id?: string
     email: string
@@ -61331,6 +64828,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -61360,6 +64858,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -61405,6 +64904,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -61434,6 +64934,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -61463,6 +64964,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -61492,6 +64994,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -61537,6 +65040,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -61566,6 +65070,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type AIAssociateCreateWithoutCreatedByInput = {
@@ -62274,6 +65779,58 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type LegalKnowledgeCreateWithoutCreatedByInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chunks?: LegalKnowledgeChunkCreateNestedManyWithoutLegalKnowledgeInput
+  }
+
+  export type LegalKnowledgeUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    chunks?: LegalKnowledgeChunkUncheckedCreateNestedManyWithoutLegalKnowledgeInput
+  }
+
+  export type LegalKnowledgeCreateOrConnectWithoutCreatedByInput = {
+    where: LegalKnowledgeWhereUniqueInput
+    create: XOR<LegalKnowledgeCreateWithoutCreatedByInput, LegalKnowledgeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type LegalKnowledgeCreateManyCreatedByInputEnvelope = {
+    data: LegalKnowledgeCreateManyCreatedByInput | LegalKnowledgeCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AIAssociateUpsertWithWhereUniqueWithoutCreatedByInput = {
     where: AIAssociateWhereUniqueInput
     update: XOR<AIAssociateUpdateWithoutCreatedByInput, AIAssociateUncheckedUpdateWithoutCreatedByInput>
@@ -62923,6 +66480,46 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"UserOrganization"> | Date | string
   }
 
+  export type LegalKnowledgeUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: LegalKnowledgeWhereUniqueInput
+    update: XOR<LegalKnowledgeUpdateWithoutCreatedByInput, LegalKnowledgeUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<LegalKnowledgeCreateWithoutCreatedByInput, LegalKnowledgeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type LegalKnowledgeUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: LegalKnowledgeWhereUniqueInput
+    data: XOR<LegalKnowledgeUpdateWithoutCreatedByInput, LegalKnowledgeUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type LegalKnowledgeUpdateManyWithWhereWithoutCreatedByInput = {
+    where: LegalKnowledgeScalarWhereInput
+    data: XOR<LegalKnowledgeUpdateManyMutationInput, LegalKnowledgeUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type LegalKnowledgeScalarWhereInput = {
+    AND?: LegalKnowledgeScalarWhereInput | LegalKnowledgeScalarWhereInput[]
+    OR?: LegalKnowledgeScalarWhereInput[]
+    NOT?: LegalKnowledgeScalarWhereInput | LegalKnowledgeScalarWhereInput[]
+    id?: StringFilter<"LegalKnowledge"> | string
+    title?: StringFilter<"LegalKnowledge"> | string
+    description?: StringNullableFilter<"LegalKnowledge"> | string | null
+    type?: EnumLegalKnowledgeTypeFilter<"LegalKnowledge"> | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFilter<"LegalKnowledge"> | $Enums.Jurisdiction
+    practiceAreas?: EnumPracticeAreaNullableListFilter<"LegalKnowledge">
+    content?: StringFilter<"LegalKnowledge"> | string
+    fileUrl?: StringNullableFilter<"LegalKnowledge"> | string | null
+    fileType?: StringNullableFilter<"LegalKnowledge"> | string | null
+    sourceType?: StringFilter<"LegalKnowledge"> | string
+    sourceReference?: StringNullableFilter<"LegalKnowledge"> | string | null
+    effectiveDate?: DateTimeNullableFilter<"LegalKnowledge"> | Date | string | null
+    tags?: StringNullableListFilter<"LegalKnowledge">
+    status?: StringFilter<"LegalKnowledge"> | string
+    isPublished?: BoolFilter<"LegalKnowledge"> | boolean
+    createdById?: StringFilter<"LegalKnowledge"> | string
+    createdAt?: DateTimeFilter<"LegalKnowledge"> | Date | string
+    updatedAt?: DateTimeFilter<"LegalKnowledge"> | Date | string
+  }
+
   export type AIAssociateCreateWithoutOrganizationInput = {
     id?: string
     name: string
@@ -63120,6 +66717,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutOwnedOrganizationsInput = {
@@ -63149,6 +66747,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutOwnedOrganizationsInput = {
@@ -63233,6 +66832,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutActiveOrganizationInput = {
@@ -63262,6 +66862,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutActiveOrganizationInput = {
@@ -63301,6 +66902,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -63330,6 +66932,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -63587,6 +67190,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedOrganizationsInput = {
@@ -63616,6 +67220,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -64667,6 +68272,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
@@ -64696,6 +68302,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
@@ -64818,6 +68425,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
@@ -64847,6 +68455,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type CanvasDocumentCreateWithoutProjectInput = {
@@ -65603,6 +69212,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembersInput = {
@@ -65632,6 +69242,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembersInput = {
@@ -65728,6 +69339,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembersInput = {
@@ -65757,6 +69369,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ConversationDocumentCreateWithoutDocumentInput = {
@@ -65808,6 +69421,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutDocumentsInput = {
@@ -65837,6 +69451,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -66158,6 +69773,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentsInput = {
@@ -66187,6 +69803,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type FolderUpsertWithoutDocumentsInput = {
@@ -66558,6 +70175,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutFolderInput = {
@@ -66587,6 +70205,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutFolderInput = {
@@ -66778,6 +70397,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderInput = {
@@ -66807,6 +70427,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type OrganizationUpsertWithoutFolderInput = {
@@ -66962,6 +70583,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutProjectDocumentsInput = {
@@ -66991,6 +70613,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutProjectDocumentsInput = {
@@ -67134,6 +70757,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectDocumentsInput = {
@@ -67163,6 +70787,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type DocumentUpsertWithoutProjectReferencesInput = {
@@ -67302,6 +70927,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutConversationDocumentsInput = {
@@ -67331,6 +70957,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutConversationDocumentsInput = {
@@ -67462,6 +71089,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationDocumentsInput = {
@@ -67491,6 +71119,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ConversationUpsertWithoutDocumentReferencesInput = {
@@ -68293,6 +71922,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -68322,6 +71952,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -68432,6 +72063,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -68461,6 +72093,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type MessageReferenceUpsertWithWhereUniqueWithoutMessageInput = {
@@ -68866,6 +72499,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -68895,6 +72529,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -69056,6 +72691,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -69085,6 +72721,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type OrganizationUpsertWithoutInvitationsInput = {
@@ -69347,6 +72984,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -69376,6 +73014,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -69460,6 +73099,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -69489,6 +73129,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SharedWorkspaceCreateWithoutSharedMessageInput = {
@@ -69555,6 +73196,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSharedMessageInput = {
@@ -69584,6 +73226,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSharedMessageInput = {
@@ -69698,6 +73341,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedMessageInput = {
@@ -69727,6 +73371,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type SharedMessageReferenceUpsertWithWhereUniqueWithoutSharedMessageInput = {
@@ -70009,6 +73654,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceInput = {
@@ -70038,6 +73684,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceInput = {
@@ -70209,6 +73856,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceInput = {
@@ -70238,6 +73886,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type ProjectUpsertWithoutSharedWorkspaceInput = {
@@ -70371,6 +74020,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceAccessInput = {
@@ -70400,6 +74050,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceAccessInput = {
@@ -70488,6 +74139,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceAccessInput = {
@@ -70517,6 +74169,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserCreateWithoutCreatedAIAssociatesInput = {
@@ -70546,6 +74199,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedAIAssociatesInput = {
@@ -70575,6 +74229,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedAIAssociatesInput = {
@@ -70791,6 +74446,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedAIAssociatesInput = {
@@ -70820,6 +74476,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type OrganizationUpsertWithoutAiAssociatesInput = {
@@ -71426,6 +75083,302 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutProjectNestedInput
   }
 
+  export type UserCreateWithoutCreatedLegalKnowledgeInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedLegalKnowledgeInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedLegalKnowledgeInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedLegalKnowledgeInput, UserUncheckedCreateWithoutCreatedLegalKnowledgeInput>
+  }
+
+  export type LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput = {
+    id?: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput = {
+    id?: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LegalKnowledgeChunkCreateOrConnectWithoutLegalKnowledgeInput = {
+    where: LegalKnowledgeChunkWhereUniqueInput
+    create: XOR<LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput>
+  }
+
+  export type LegalKnowledgeChunkCreateManyLegalKnowledgeInputEnvelope = {
+    data: LegalKnowledgeChunkCreateManyLegalKnowledgeInput | LegalKnowledgeChunkCreateManyLegalKnowledgeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutCreatedLegalKnowledgeInput = {
+    update: XOR<UserUpdateWithoutCreatedLegalKnowledgeInput, UserUncheckedUpdateWithoutCreatedLegalKnowledgeInput>
+    create: XOR<UserCreateWithoutCreatedLegalKnowledgeInput, UserUncheckedCreateWithoutCreatedLegalKnowledgeInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedLegalKnowledgeInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedLegalKnowledgeInput, UserUncheckedUpdateWithoutCreatedLegalKnowledgeInput>
+  }
+
+  export type UserUpdateWithoutCreatedLegalKnowledgeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedLegalKnowledgeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type LegalKnowledgeChunkUpsertWithWhereUniqueWithoutLegalKnowledgeInput = {
+    where: LegalKnowledgeChunkWhereUniqueInput
+    update: XOR<LegalKnowledgeChunkUpdateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedUpdateWithoutLegalKnowledgeInput>
+    create: XOR<LegalKnowledgeChunkCreateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedCreateWithoutLegalKnowledgeInput>
+  }
+
+  export type LegalKnowledgeChunkUpdateWithWhereUniqueWithoutLegalKnowledgeInput = {
+    where: LegalKnowledgeChunkWhereUniqueInput
+    data: XOR<LegalKnowledgeChunkUpdateWithoutLegalKnowledgeInput, LegalKnowledgeChunkUncheckedUpdateWithoutLegalKnowledgeInput>
+  }
+
+  export type LegalKnowledgeChunkUpdateManyWithWhereWithoutLegalKnowledgeInput = {
+    where: LegalKnowledgeChunkScalarWhereInput
+    data: XOR<LegalKnowledgeChunkUpdateManyMutationInput, LegalKnowledgeChunkUncheckedUpdateManyWithoutLegalKnowledgeInput>
+  }
+
+  export type LegalKnowledgeChunkScalarWhereInput = {
+    AND?: LegalKnowledgeChunkScalarWhereInput | LegalKnowledgeChunkScalarWhereInput[]
+    OR?: LegalKnowledgeChunkScalarWhereInput[]
+    NOT?: LegalKnowledgeChunkScalarWhereInput | LegalKnowledgeChunkScalarWhereInput[]
+    id?: StringFilter<"LegalKnowledgeChunk"> | string
+    legalKnowledgeId?: StringFilter<"LegalKnowledgeChunk"> | string
+    chunkIndex?: IntFilter<"LegalKnowledgeChunk"> | number
+    chunkText?: StringFilter<"LegalKnowledgeChunk"> | string
+    startOffset?: IntFilter<"LegalKnowledgeChunk"> | number
+    endOffset?: IntFilter<"LegalKnowledgeChunk"> | number
+    sectionTitle?: StringNullableFilter<"LegalKnowledgeChunk"> | string | null
+    createdAt?: DateTimeFilter<"LegalKnowledgeChunk"> | Date | string
+  }
+
+  export type LegalKnowledgeCreateWithoutChunksInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutCreatedLegalKnowledgeInput
+  }
+
+  export type LegalKnowledgeUncheckedCreateWithoutChunksInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LegalKnowledgeCreateOrConnectWithoutChunksInput = {
+    where: LegalKnowledgeWhereUniqueInput
+    create: XOR<LegalKnowledgeCreateWithoutChunksInput, LegalKnowledgeUncheckedCreateWithoutChunksInput>
+  }
+
+  export type LegalKnowledgeUpsertWithoutChunksInput = {
+    update: XOR<LegalKnowledgeUpdateWithoutChunksInput, LegalKnowledgeUncheckedUpdateWithoutChunksInput>
+    create: XOR<LegalKnowledgeCreateWithoutChunksInput, LegalKnowledgeUncheckedCreateWithoutChunksInput>
+    where?: LegalKnowledgeWhereInput
+  }
+
+  export type LegalKnowledgeUpdateToOneWithWhereWithoutChunksInput = {
+    where?: LegalKnowledgeWhereInput
+    data: XOR<LegalKnowledgeUpdateWithoutChunksInput, LegalKnowledgeUncheckedUpdateWithoutChunksInput>
+  }
+
+  export type LegalKnowledgeUpdateWithoutChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutCreatedLegalKnowledgeNestedInput
+  }
+
+  export type LegalKnowledgeUncheckedUpdateWithoutChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyCreatedByInput = {
     id?: string
     name: string
@@ -71598,6 +75551,26 @@ export namespace Prisma {
     organizationId: string
     role?: string
     joinedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LegalKnowledgeCreateManyCreatedByInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type: $Enums.LegalKnowledgeType
+    jurisdiction: $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeCreatepracticeAreasInput | $Enums.PracticeArea[]
+    content: string
+    fileUrl?: string | null
+    fileType?: string | null
+    sourceType?: string
+    sourceReference?: string | null
+    effectiveDate?: Date | string | null
+    tags?: LegalKnowledgeCreatetagsInput | string[]
+    status?: string
+    isPublished?: boolean
+    createdAt?: Date | string
     updatedAt?: Date | string
   }
 
@@ -72180,6 +76153,68 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LegalKnowledgeUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: LegalKnowledgeChunkUpdateManyWithoutLegalKnowledgeNestedInput
+  }
+
+  export type LegalKnowledgeUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: LegalKnowledgeChunkUncheckedUpdateManyWithoutLegalKnowledgeNestedInput
+  }
+
+  export type LegalKnowledgeUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumLegalKnowledgeTypeFieldUpdateOperationsInput | $Enums.LegalKnowledgeType
+    jurisdiction?: EnumJurisdictionFieldUpdateOperationsInput | $Enums.Jurisdiction
+    practiceAreas?: LegalKnowledgeUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    content?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileType?: NullableStringFieldUpdateOperationsInput | string | null
+    sourceType?: StringFieldUpdateOperationsInput | string
+    sourceReference?: NullableStringFieldUpdateOperationsInput | string | null
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tags?: LegalKnowledgeUpdatetagsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    isPublished?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyOrganizationInput = {
     id?: string
     name: string
@@ -72567,6 +76602,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActiveOrganizationInput = {
@@ -72596,6 +76632,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutActiveOrganizationInput = {
@@ -72638,6 +76675,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -72667,6 +76705,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    createdLegalKnowledge?: LegalKnowledgeUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -73920,6 +77959,46 @@ export namespace Prisma {
   export type ProjectAssociateUncheckedUpdateManyWithoutAssociateInput = {
     projectId?: StringFieldUpdateOperationsInput | string
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeChunkCreateManyLegalKnowledgeInput = {
+    id?: string
+    chunkIndex: number
+    chunkText: string
+    startOffset: number
+    endOffset: number
+    sectionTitle?: string | null
+    createdAt?: Date | string
+  }
+
+  export type LegalKnowledgeChunkUpdateWithoutLegalKnowledgeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeChunkUncheckedUpdateWithoutLegalKnowledgeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LegalKnowledgeChunkUncheckedUpdateManyWithoutLegalKnowledgeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    chunkIndex?: IntFieldUpdateOperationsInput | number
+    chunkText?: StringFieldUpdateOperationsInput | string
+    startOffset?: IntFieldUpdateOperationsInput | number
+    endOffset?: IntFieldUpdateOperationsInput | number
+    sectionTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

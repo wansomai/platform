@@ -1,4 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
+import { RAGResult } from '@/types/legalKnowledge';
+import { RAGService } from './ragService';
 
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
 
@@ -10,6 +12,7 @@ export interface ProjectContext {
     content: string;
   }>;
   conversationHistory?: string[];
+  ragContext?: RAGResult;  // Legal knowledge from RAG retrieval
 }
 
 export class AIDocumentService {
@@ -269,6 +272,11 @@ export class AIDocumentService {
   }
   
   private static buildGenerationPrompt(instruction: string, context: ProjectContext): string {
+    // Build RAG context string if available
+    const ragContextStr = context.ragContext && context.ragContext.chunks.length > 0
+      ? RAGService.buildContextString(context.ragContext)
+      : '';
+
     return `
 Generate a legal document based on this request: ${instruction}
 
@@ -289,6 +297,15 @@ Reference Materials:
 ${context.documents.map(d => `### ${d.title} ###\n${d.content}`).join('\n\n')}
 ` : ''}
 
+${ragContextStr ? `
+**APPLICABLE LEGAL FRAMEWORK**:
+The following legal templates, statutes, and reference materials are relevant to this document. Use these references to ensure legal accuracy, proper structure, and appropriate clauses.
+
+${ragContextStr}
+
+When drafting, incorporate relevant provisions and language from these sources while adapting them to the specific context of this document. Cite the source when using specific clauses or provisions.
+` : ''}
+
 Requirements:
 - Use proper legal language and structure
 - Include standard clauses where appropriate
@@ -296,6 +313,7 @@ Requirements:
 - Make it comprehensive and professionally drafted
 - Structure should be logical and easy to read
 - Focus on the substantive legal content without meta-commentary about AI limitations
+${ragContextStr ? '- Reference and adapt provisions from the legal framework provided above where applicable' : ''}
 `;
   }
   
