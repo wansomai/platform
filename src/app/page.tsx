@@ -1372,7 +1372,7 @@ const KnowledgeBase = () => {
     setSelectedJurisdictions(jurisdictions);
   };
   return (
-    <section className="section-spacing bg-white" id="knowledge-base">
+    <section className="section-spacing bg-cta" id="knowledge-base">
       <div className="section-container pb-12">
         <div className="text-center mb-12 ">
           <h2 className="text-heading-1 text-gray-900 mb-2">

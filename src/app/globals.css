@@ -410,7 +410,11 @@ body {
   background-size: cover;
   background-position: center;
 }
-
+.bg-cta{
+  background-image: url('../../public/gradient-3.png');
+  background-size: cover;
+  background-position: center;
+}
 /* Force proper bold text in AI responses */
 .message-content strong {
   font-weight: 700 !important;
