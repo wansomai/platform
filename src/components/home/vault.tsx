@@ -39,8 +39,8 @@ const VaultSection: React.FC = () => {
       id="security"
     >
       <div className="section-container">
-        <h2 className="text-heading-1 text-center max-w-4xl text-black mb-6 mx-auto">
-          Wansom AI is built with enterprise-level security
+        <h2 className="text-3xl lg:text-4xl  font-bold  text-center max-w-4xl text-black mb-6 mx-auto">
+          Enterprise-grade security for your most sensitive contracts and data.
           
         </h2>
         
