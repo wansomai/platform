@@ -12,6 +12,7 @@ interface PageProps {
     id: string;
   };
 }
+import Image from "next/image";
 
 const BlogDetailPageClient = ({ params }: PageProps) => {
   const { slug, id } = params;
@@ -107,15 +108,22 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
             {/* Featured Image with overlay text */}
             {blog.image && (
               <div className="relative mb-6 rounded-lg overflow-hidden max-h-[500px]">
-                <img
+             
+                  <Image
                   src={blog.image}
                   alt={blog.title}
+                  height={500}
+                  width={800}
                   className="w-full h-auto object-cover"
-                  loading="eager"
-                  fetchPriority="high"
+                  priority
+                  sizes="(max-width: 768px), (max-width: 1024px) 75vw, 66vw"
+                  style={{ objectFit: 'cover' }}
                 />
+
+                
                 {/* Dark overlay for text visibility - Desktop only */}
                 <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                
 
                 {/* Text content overlay - Desktop only */}
                 <div className="hidden lg:block absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -146,6 +154,8 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
               </h1>
               <div className="text-sm text-gray-500">{blog.date}</div>
             </div>
+              
+
             {/* Blog Content */}
             <div
               className="blog-content mb-12"
