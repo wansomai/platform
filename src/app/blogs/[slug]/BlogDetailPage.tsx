@@ -111,6 +111,8 @@ const BlogDetailPageClient = ({ params }: PageProps) => {
                   src={blog.image}
                   alt={blog.title}
                   className="w-full h-auto object-cover"
+                  loading="eager"
+                  fetchPriority="high"
                 />
                 {/* Dark overlay for text visibility - Desktop only */}
                 <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
