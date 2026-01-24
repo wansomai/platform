@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     url: 'https://wansom.ai/webinar',
     images: [
       {
-        url: '/wansom-webinar.png',
+        url: '/wansom-webinar.jpg',
         width: 1200,
         height: 630,
         alt: 'Wansom AI Webinar',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'ai in law podcast where we talk everything ai,law,data privcay,governance and policy',
-    images: ['/wansom-webinar.png'],
+    images: ['/wansom-webinar.jpg'],
   }
 };
 

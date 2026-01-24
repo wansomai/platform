@@ -1,6 +1,5 @@
 // src/app/api/auth/google-connection/callback/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { google } from 'googleapis';
 import prisma from '@/lib/prisma';
 import { withErrorHandler } from '@/lib/api/middleware';
 
@@ -29,6 +28,9 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
     }
 
     const userId = state;
+
+    // Dynamically import googleapis to reduce bundle size
+    const { google } = await import('googleapis');
 
     // Create OAuth2 client
     const oauth2Client = new google.auth.OAuth2(

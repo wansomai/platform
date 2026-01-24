@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         url: `https://www.wansom.ai/blogs/${slug}`, // Fix: Use slug instead of params
         images: [
           {
-            url: adaptedPost.image || '/images/features-1.png',
+            url: adaptedPost.image || '/images/features-1.jpg',
             width: 1200,
             height: 630,
             alt: adaptedPost.title,
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         card: 'summary_large_image',
         title: adaptedPost.title,
         description: adaptedPost.preview,
-        images: [adaptedPost.image || '/images/features-1.png'],
+        images: [adaptedPost.image || '/images/features-1.jpg'],
       },
     };
   } catch (error) {

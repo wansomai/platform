@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     url: 'https://www.wansom.ai/blogs',
     images: [
       {
-        url: '/images/features-2.png',
+        url: '/images/features-2.jpg',
         width: 1200,
         height: 630,
         alt: 'wansom AI Legal Tech Blog',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Legal Tech Insights & Resources | wansom AI Blog',
     description: 'Expert insights on AI law, digital ethics, and legal technology.',
-    images: ['/images/features-2.png'],
+    images: ['/images/features-2.jpg'],
   }
 };
 

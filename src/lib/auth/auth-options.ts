@@ -45,7 +45,7 @@ const generateAccessToken = async (user: CustomUser) => {
     organization: user.organization
   })
     .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('1h')
+    .setExpirationTime('7d')
     .sign(encodedSecret);
 
   return token;
@@ -299,12 +299,12 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // Check if custom access token needs refresh (15 minutes before expiry)
+      // Check if custom access token needs refresh (1 day before expiry)
       const tokenExpiry = token.exp as number;
       const currentTime = Math.floor(Date.now() / 1000);
       const timeRemaining = tokenExpiry - currentTime;
 
-      if (timeRemaining < 15 * 60) {
+      if (timeRemaining < 24 * 60 * 60) {
         const user = {
           id: token.userId as string,
           email: token.email as string,

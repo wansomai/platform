@@ -478,9 +478,9 @@ const InHouseCounselPage = () => {
                 +5hrs
               </h3>
               <p className="text-md text-gray-600">
-                Weekly time savings by
+                Weekly time savings
                 <br />
-                &gt;from routine tasks
+                from routine tasks
               </p>
             </div>
 

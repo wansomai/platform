@@ -1,23 +1,52 @@
 "use client";
-import { useState, useEffect } from "react";
-import { CheckCircle,ChevronDown, SquareArrowOutUpRight, ArrowUpRight} from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import {
+  CheckCircle,
+  ChevronDown,
+  SquareArrowOutUpRight,
+  ArrowUpRight,
+  Loader,
+  Send,
+  Folder,
+  BarChart3,
+  Building,
+  Calendar,
+  ChevronRight,
+  Lock,
+  Circle,
+  FolderLock,
+  FileText,
+  X,
+  Loader2,
+  Plus,
+  Globe2,
+  Zap,
+  Paperclip,
+  SlidersHorizontal,
+  Globe
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import VaultSection, { VaultDocs } from "@/components/home/vault";
+import VaultSection from "@/components/home/vault";
 import CookieConsent, { Cookies } from "react-cookie-consent";
-import {
-  ResearchInterfaceCards,
-  ResearchSourcesWorkflow,
-} from "./(landingpages)/ai-assistant/LegalResearchPage";
-import DocumentAutomation from "@/components/home/DocumentAutomation";
-import KnowledgeBase from "@/components/home/Knowledgebase";
 import LogoAnimation from "@/components/commons/LogoAnimation";
-import BrandLogos, { PatnerLogoSection } from "@/components/home/Partnerlogos";
+import BrandLogos from "@/components/home/Partnerlogos";
 import React from "react";
-import { partnerLogos } from "@/lib/data";
+import { link } from "fs";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Jurisdiction } from "@/types";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { JurisdictionSelector } from "@/components/workspace/JurisdictionSelector";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -26,8 +55,8 @@ export default function Home() {
 
   // Redirect authenticated users to dashboard
   useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/dashboard');
+    if (status === "authenticated") {
+      router.push("/dashboard");
     }
   }, [status, router]);
 
@@ -42,15 +71,13 @@ export default function Home() {
   }, []);
 
   // Show loading state while checking auth
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="w-full flex items-center justify-center min-h-screen">
-      <LogoAnimation />
+        <LogoAnimation />
       </div>
-
     );
   }
- 
 
   return (
     <div className="overflow-x-hidden">
@@ -58,16 +85,62 @@ export default function Home() {
 
       <main>
         {/* <HeroSection /> */}
-            <HeroSection />
-            <NewFeaturesSection />      
-        <LegalDraftingSection />
+        <HeroSection />
+        <NewFeaturesSection />
         <LegalResearchSection />
-        <DocumentAutomation />
-        <DocumentReview />
- <KnowledgeBase />
-        <AutomateProcesses />
-       
+        <LegalDraftingSection />
+         <DocumentReview />
+<AutomateProcesses />
+    <section className="section-spacing bg-white">
+        <div className="section-container flex flex-col justify-between lg:flex-row gap-16">
+          {/* Active Stats */}
+          <div className="text-left mb-2 lg:mb-8">
+            <p className="text-heading-4  text-gray-900 uppercase tracking-wider text-center lg:text-left">
+              Get Immediate Return On Investment
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+            {/* Stat 1 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                30%
+              </h3>
+              <p className="text-md text-gray-600">
+                Average measured
+                <br />
+                boost in productivity
+              </p>
+            </div>
+
+            {/* Stat 2 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                +5hrs
+              </h3>
+              <p className="text-md text-gray-600">
+                Weekly time savings
+                <br />
+              from routine tasks
+              </p>
+            </div>
+
+            {/* Stat 3 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                $2.3m
+              </h3>
+              <p className="text-md text-gray-600">
+                potential additional billing
+                per 100 lawyers annually
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+     <SolutionsForAllLawyers />
+      
         <VaultSection />
+        <KnowledgeBase />
       </main>
       <CookieConsent
         location="bottom"
@@ -88,8 +161,6 @@ export default function Home() {
   );
 }
 
-
-
 const NewFeaturesSection = () => {
   const features = [
     {
@@ -97,46 +168,47 @@ const NewFeaturesSection = () => {
       description:
         "Automate routine legal tasks with AI so your team can focus on high-value work.",
       href: "/login",
-      image:"/drafting-feature.webp",
+      image: "/drafting-feature.webp",
     },
     {
       title: "Collaborate Better",
       description:
         "Organize projects,files into shared team workspaces for seamless collaboration.",
       href: "/login",
-      image:"/wansom-dashboard.webp",
+      image: "/wansom-dashboard.webp",
     },
     {
       title: "Get More Billable Hours",
       description:
         "Create Specialised AI associates to do quality work faster so you can bill more.",
       href: "/login",
-      image:"/contract-negotiation.webp",
+      image: "/contract-negotiation.webp",
     },
   ];
 
   return (
-    <section className=" ">
-      <div className="section-container">
-
+    <section className="section-container ">
+      <div className=" section-spacing">
+        <h2 className="text-heading-2 mb-12 text-center text-gray-900">
+          Safe. Flexible. Built for Legal Work.
+        </h2>
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((feature, index) => (
             <div
               key={index}
               className="group relative rounded-lg py-6 px-3 transition-all duration-300 space-y-3"
-              onClick={() => window.location.href = "/login"}
+              onClick={() => (window.location.href = "/login")}
             >
               <div className="mb-4">
-                 <Image
-                   src={feature.image}
-                   alt={feature.title}
-                   width={600}
-                   height={400}
-                   className="rounded-lg object-cover "
-                 />
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  width={600}
+                  height={400}
+                  className="rounded-lg object-cover "
+                />
               </div>
-            
 
               {/* Content */}
               <h3 className="text-xl font-semibold text-gray-900">
@@ -149,9 +221,10 @@ const NewFeaturesSection = () => {
               {/* Arrow Link */}
               <a
                 href={feature.href}
-                className="inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                className="inline-flex gap-2 items-center justify-center  group-hover:text-amber-500 transition-all duration-300"
                 aria-label={`Learn more about ${feature.title}`}
               >
+                Learn More
                 <ArrowUpRight className="w-5 h-5" />
               </a>
             </div>
@@ -166,10 +239,14 @@ function LegalDraftingSection() {
   return (
     <section className="section-spacing  bg-white" id="legal-drafting">
       <div className="section-container">
-        <div className="grid lg:grid-cols-2 gap-10 ">
-          <div className="bg-primary rounded-lg p-6 flex items-center justify-center order-2 lg:order-1">
-            <div className="bg-white rounded-xl p-8 shadow-lg border max-w-md w-full">
-              <label htmlFor="jurisdiction-input" className="text-lg font-semibold mb-6 text-gray-900 block">
+        <div className="flex flex-col-reverse lg:flex-row gap-10 items-center">
+          <div className=" rounded-lg flex items-center justify-start md:basis-1/2 ">
+          <div className="w-full md:max-w-4xl bg-draft p-6 rounded-lg">
+            <div className="bg-white rounded-xl p-8 shadow-lg border w-full">
+              <label
+                htmlFor="jurisdiction-input"
+                className="text-lg font-semibold mb-6 text-gray-900 block"
+              >
                 Jurisdiction
               </label>
               <input
@@ -190,25 +267,24 @@ function LegalDraftingSection() {
                 <div>Clause Length: Standard</div>
               </div>
 
-                <button onClick={() => window.location.href = "/login"}
+              <button
+                onClick={() => (window.location.href = "/login")}
                 className="w-full bg-primary hover:bg-[#F18F01] text-white py-3 rounded-lg font-medium mt-6 transition-colors"
                 aria-label="Generate document outline for Employment Agreement in London, UK jurisdiction"
-                >
+              >
                 Generate Document Outline
-                </button>
-            </div>
+              </button>
+            </div></div>
           </div>
 
-          <div className="order-1 lg:order-2 ">
+          <div className="lg:basis-1/2 ">
             <h2 className="text-heading-2 mb-4 text-gray-900">
-              Draft Correct Legally formatted Documents and Clauses quickly with
-              AI
+              Draft, review, negotiate legal contracts
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Wansom automatically detects the substance of your document to
-              draft relevant, ready to use clauses.Start from Scratch or
-              from a template library and collaborate with AI in an Inline
-              document editor. Save and export ready Word documents .
+              Accelerate document creation, automatically flag high-risk
+              clauses, and verify compliance against templates in minutes, not
+              hours
             </p>
 
             <div className="space-y-4">
@@ -243,150 +319,75 @@ function LegalDraftingSection() {
 
 function LegalResearchSection() {
   return (
-    <section className="section-spacing bg-gray-50" id="legal-research">
-      <div className="section-container pb-12">
-        <div className="text-center mb-12 ">
+    <section className="section-spacing bg-white" id="legal-research">
+      <div className="section-container pb-12 flex flex-col lg:flex-row items-center">
+        <div className=" lg:basis-1/2 mb-8 lg:mb-0 lg:pr-10">
+          <h3 className="text-md font-light text-gray-600 mb-2">
+            Your work companion
+          </h3>
           <h2 className="text-heading-2 text-gray-900 mb-2">
-           Turn Days of Legal Research into Minutes 
+            Legal AI Assistant
           </h2>
-          <p className="text-body-large text-gray-600 max-w-3xl mx-auto">
-            Get instant answers to complex legal questions with AI that searches
-            through cases, statutes, and legal authorities in seconds and return
-            verified results.
+          <p className="text-body-large text-gray-600 max-w-3xl mx-auto mb-5">
+            Get instant, cited answers to complex legal questions using Wansom's
+            proprietary, jurisdiction-specific models built on verified case law
+            and statutes
           </p>
+          <button
+            className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+            onClick={() => (window.location.href = "/ai-assistant")}
+            aria-label="Try Wansom AI for free - Start your free trial"
+          >
+            LEARN MORE{" "}
+            <SquareArrowOutUpRight
+              className="w-5 h-5 text-white"
+              aria-hidden="true"
+            />
+          </button>
         </div>
         {/* Add your AI Legal Research component here */}
-        <ResearchInterfaceCards />
+        <div>
+    <ResearchInterfaceCards />
+        </div>
       </div>
     </section>
   );
 }
 function AutomateProcesses() {
-  const [expandedSections, setExpandedSections] = useState({
-    tax: true,
-    diligence: false,
-    appointments: false
-  });
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
 
   return (
-    <section className="section-spacing bg-gray-100" id="workflows">
-      <div className="section-container pb-12">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-4">
+    <section className="section-spacing bg-white" id="workflows">
+      <div className="section-container">
+        <div className="flex flex-col-reverse lg:flex-row gap-5 md:gap-10 items-center">
+         <div className="md:basis-1/2">
+           <ResearchSourcesWorkflow />
+         </div>
+          <div className="md:basis-1/2">
+               <h3 className="text-md font-light text-gray-600 mb-2">
+            AI Associates
+          </h3>
             <h2 className="text-heading-2 mb-6 text-gray-900">
               Automate Legal Workflows
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Legal processes can be tedious and time-consuming. We save you
-              time by automating them.
+              Reduce manual overhead by creating and 
+training AI assistants to handle repetitive tasks 
+such  Due Diligence, reporting,compliance and tax
+filings
             </p>
-
-            {/* Tax Filings & Compliance section */}
-            <div className="border-b border-gray-200 pb-4">
-              <button
-                onClick={() => toggleSection('tax')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.tax}
-                aria-controls="tax-content"
-                aria-label={`${expandedSections.tax ? 'Collapse' : 'Expand'} Tax Filings & Compliance section`}
-              >
-                <h3 className="font-semibold text-lg text-gray-900">
-                  Tax Filings & Compliance
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.tax ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="tax-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.tax ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-gray-600">
-                  Streamline tax preparation, automate regulatory filings, and
-                  stay compliant with ever-changing legal requirements and
-                  deadlines.
-                </p>
-              </div>
-            </div>
-
-            {/* Due Diligence section */}
-            <div className="border-b border-gray-200 pb-4">
-              <button
-                onClick={() => toggleSection('diligence')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.diligence}
-                aria-controls="diligence-content"
-                aria-label={`${expandedSections.diligence ? 'Collapse' : 'Expand'} Due Diligence section`}
-              >
-                <h3 className="font-semibold text-lg text-gray-900">
-                  Due Diligence
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.diligence ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="diligence-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.diligence ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-gray-600">
-                  Automate due diligence for mergers, acquisitions, and
-                  investments with advanced document analysis and risk
-                  assessment.
-                </p>
-              </div>
-            </div>
-
-            {/* Legal Appointments & Deadlines section */}
-            <div className="pb-4">
-              <button
-                onClick={() => toggleSection('appointments')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.appointments}
-                aria-controls="appointments-content"
-                aria-label={`${expandedSections.appointments ? 'Collapse' : 'Expand'} Legal Appointments & Deadlines section`}
-              >
-                <h3 className="font-semibold text-lg text-gray-900">
-                  Legal Appointments & Deadlines
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-500 transition-transform duration-200 ${
-                    expandedSections.appointments ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="appointments-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.appointments ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-gray-600">
-                  Automate scheduling, client onboarding, and deadline
-                  tracking with smart reminders and calendar integration.
-                </p>
-              </div>
-            </div>
+            <button
+            className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+            onClick={() => (window.location.href = "/login")}
+            aria-label="Try Wansom AI for free - Start your free trial"
+          >
+            Explore Workflows{" "}
+            <SquareArrowOutUpRight
+              className="w-5 h-5 text-white"
+              aria-hidden="true"
+            />
+          </button>
           </div>
-          <ResearchSourcesWorkflow />
+
         </div>
       </div>
     </section>
@@ -396,106 +397,47 @@ function AutomateProcesses() {
 function DocumentReview() {
   const [expandedSections, setExpandedSections] = useState({
     review: true,
-    folders: false
+    folders: false,
   });
 
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
 
   return (
-    <section className="section-spacing bg-primary" id="legal-research">
+    <section className="section-spacing bg-white" id="legal-research">
       <div className="section-container ">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <VaultDocs />
-          <div className="space-y-4">
-            <h2 className="text-heading-2 mb-4 text-white">
-              Secure Document Vault to store and manage all your legal documents in one place
+         
+          <div className="">
+             <h3 className="text-md font-light text-gray-600 mb-2">
+            Project workspaces
+          </h3>
+            <h2 className="text-heading-2 mb-4 text-black">
+              Secure Document Vault
             </h2>
-            <p className="text-xl text-gray-100 mb-8">
-              Wansom's Document Vault offers a secure, organized repository for
-              all your legal documents, ensuring easy access and management
-              whenever you need them.
+            <p className="text-xl text-black mb-8">
+             Centralize and securely manage your firm's files,matters,and projects wwithin a collaborative AI workspace
             </p>
-
-            {/* Enhanced AI Document Review section */}
-            <div className="border-b border-gray-400 pb-4">
-              <button
-                onClick={() => toggleSection('review')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.review}
-                aria-controls="review-content"
-                aria-label={`${expandedSections.review ? 'Collapse' : 'Expand'} Enhanced AI Document Review section`}
-              >
-                <h3 className="font-semibold text-lg text-gray-100">
-                  Enhanced AI Document Review
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
-                    expandedSections.review ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="review-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.review ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-gray-100">
-                  Leverage advanced AI to review and analyze legal documents
-                  for accuracy, compliance, and risk assessment.Suport for both word,PDFs,Images and scanned documents.
-                </p>
-              </div>
-            </div>
-
-            {/* Document Folders section */}
-            <div className="pb-4">
-              <button
-                onClick={() => toggleSection('folders')}
-                className="w-full flex items-center justify-between text-left group"
-                aria-expanded={expandedSections.folders}
-                aria-controls="folders-content"
-                aria-label={`${expandedSections.folders ? 'Collapse' : 'Expand'} Document Folders section`}
-              >
-                <h3 className="font-semibold text-lg text-gray-100">
-                  Document Folders
-                </h3>
-                <ChevronDown
-                  className={`w-6 h-6 text-gray-300 transition-transform duration-200 ${
-                    expandedSections.folders ? 'rotate-180' : ''
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-              <div
-                id="folders-content"
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  expandedSections.folders ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="text-gray-100">
-                  Organize documents into customizable folders and
-                  subfolders for easy retrieval and management.
-                </p>
-              </div>
-            </div>
+                    <button
+            className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+            onClick={() => (window.location.href = "/document-vault")}
+            aria-label="Try Wansom AI for free - Start your free trial"
+          >
+            LEARN MORE{" "}
+            <SquareArrowOutUpRight
+              className="w-5 h-5 text-white"
+              aria-hidden="true"
+            />
+          </button>
           </div>
+           <VaultDocs />
         </div>
       </div>
     </section>
   );
 }
 
- function HeroSection() {
+function HeroSection() {
   return (
-    <section
-      className=" pt-24 md:pt-28  px-5 bg-white  relative overflow-hidden"
-    >
+    <section className=" pt-24 md:pt-28  px-5 bg-white  relative overflow-hidden">
       {/* SVG Background */}
       <div className="absolute inset-0 z-0">
         <svg
@@ -516,7 +458,13 @@ function DocumentReview() {
               width="1200"
               height="812"
             >
-              <rect x="10" y="-0.84668" width="1200" height="811.693" fill="url(#paint0_linear_186_1134)" />
+              <rect
+                x="10"
+                y="-0.84668"
+                width="1200"
+                height="811.693"
+                fill="url(#paint0_linear_186_1134)"
+              />
             </mask>
             <g mask="url(#mask0_186_1134)">
               {/* Grid Rectangles */}
@@ -745,18 +693,102 @@ function DocumentReview() {
                 </React.Fragment>
               ))}
               {/* Specific Rectangles with fill */}
-              <rect x="699.711" y="81" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.08" />
-              <rect x="195.711" y="153" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="1023.71" y="153" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="123.711" y="225" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="1095.71" y="225" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="951.711" y="297" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="231.711" y="333" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.07" />
-              <rect x="303.711" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.07" />
-              <rect x="87.7109" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="519.711" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.08" />
-              <rect x="771.711" y="405" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.09" />
-              <rect x="591.711" y="477" width="36" height="36" fill="hsl(var(--primary))" fillOpacity="0.07" />
+              <rect
+                x="699.711"
+                y="81"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.08"
+              />
+              <rect
+                x="195.711"
+                y="153"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="1023.71"
+                y="153"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="123.711"
+                y="225"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="1095.71"
+                y="225"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="951.711"
+                y="297"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="231.711"
+                y="333"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.07"
+              />
+              <rect
+                x="303.711"
+                y="405"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.07"
+              />
+              <rect
+                x="87.7109"
+                y="405"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="519.711"
+                y="405"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.08"
+              />
+              <rect
+                x="771.711"
+                y="405"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.09"
+              />
+              <rect
+                x="591.711"
+                y="477"
+                width="36"
+                height="36"
+                fill="hsl(var(--primary))"
+                fillOpacity="0.07"
+              />
             </g>
           </g>
 
@@ -781,8 +813,16 @@ function DocumentReview() {
               colorInterpolationFilters="sRGB"
             >
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="159.394" result="effect1_foregroundBlur_186_1134" />
+              <feBlend
+                mode="normal"
+                in="SourceGraphic"
+                in2="BackgroundImageFix"
+                result="shape"
+              />
+              <feGaussianBlur
+                stdDeviation="159.394"
+                result="effect1_foregroundBlur_186_1134"
+              />
             </filter>
             <filter
               id="filter1_f_186_1134"
@@ -794,8 +834,16 @@ function DocumentReview() {
               colorInterpolationFilters="sRGB"
             >
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="478.182" result="effect1_foregroundBlur_186_1134" />
+              <feBlend
+                mode="normal"
+                in="SourceGraphic"
+                in2="BackgroundImageFix"
+                result="shape"
+              />
+              <feGaussianBlur
+                stdDeviation="478.182"
+                result="effect1_foregroundBlur_186_1134"
+              />
             </filter>
             <filter
               id="filter2_f_186_1134"
@@ -807,8 +855,16 @@ function DocumentReview() {
               colorInterpolationFilters="sRGB"
             >
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="79.6969" result="effect1_foregroundBlur_186_1134" />
+              <feBlend
+                mode="normal"
+                in="SourceGraphic"
+                in2="BackgroundImageFix"
+                result="shape"
+              />
+              <feGaussianBlur
+                stdDeviation="79.6969"
+                result="effect1_foregroundBlur_186_1134"
+              />
             </filter>
             <filter
               id="filter3_f_186_1134"
@@ -820,8 +876,16 @@ function DocumentReview() {
               colorInterpolationFilters="sRGB"
             >
               <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-              <feGaussianBlur stdDeviation="159.394" result="effect1_foregroundBlur_186_1134" />
+              <feBlend
+                mode="normal"
+                in="SourceGraphic"
+                in2="BackgroundImageFix"
+                result="shape"
+              />
+              <feGaussianBlur
+                stdDeviation="159.394"
+                result="effect1_foregroundBlur_186_1134"
+              />
             </filter>
             <linearGradient
               id="paint0_linear_186_1134"
@@ -883,40 +947,824 @@ function DocumentReview() {
               <stop offset="1" stopColor="hsl(var(--primary))" />
             </radialGradient>
             <clipPath id="clip0_186_1134">
-              <rect width="1220" height="810" rx="16" fill="hsl(var(--foreground))" />
+              <rect
+                width="1220"
+                height="810"
+                rx="16"
+                fill="hsl(var(--foreground))"
+              />
             </clipPath>
           </defs>
         </svg>
       </div>
 
       {/* Header positioned at top of hero container */}
-      <div className="absolute top-0 left-0 right-0 z-20">
+      <div className="absolute top-0 left-0 right-0 z-20"></div>
+
+      <div className="section-container mx-auto grid lg:grid-cols-1 gap-5 items-center my-20  relative z-10">
+        {/* Left Side - Content */}
+        <div className=" space-y-8">
+          <div className="space-y-6">
+            <h1 className=" text-heading-1 mb-4 text-black text-shadow-2xs font-bold font-serif">
+              Where Lawyers <br className="hidden lg:block" /> are doing their
+              best work
+            </h1>
+
+            <p className="text-lg md:text-xl max-w-3xl  mb-8  text-gray-600Book">
+              Wansom is the only legal AI that enables you to scale your ability
+              to deliver big law results without the big law budget
+            </p>
+            <button
+              className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+              onClick={() => (window.location.href = "/register")}
+              aria-label="Try Wansom AI for free - Start your free trial"
+            >
+              TRY WANSOM FOR FREE{" "}
+              <SquareArrowOutUpRight
+                className="w-5 h-5 text-white"
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+      <BrandLogos />
+    </section>
+  );
+}
+export const ResearchInterfaceCards = () => {
+  const [query, setQuery] = useState("");
+
+  return (
+    <div className="lg:max-w-4xl mx-auto space-y-6 md:space-y-16 relative bg-research-card p-6 rounded-lg">
+      {/* Top Card with Input */}
+      <div className="bg-white rounded-2xl px-8 py-4 shadow-lg border border-gray-200 relative z-10 w-full md:w-[70%] mx-auto">
+        <div className="space-y-4 mb-6">
+          <div className="h-2 bg-gray-200 rounded-full w-full"></div>
+          <div className="h-2 bg-gray-200 rounded-full w-3/4 "></div>
+          <div className="h-2 bg-gray-200 rounded-full w-1/2"></div>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ask any legal question..."
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 text-sm focus:ring-[#355e66] focus:border-transparent"
+          />
+          <button className="bg-[#355e66] hover:bg-[#2a4d54] text-white px-4 text-sm py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
+            <span>Search</span>
+            <Send className="w-3 h-3" />
+          </button>
+        </div>
       </div>
 
-<div className="section-container mx-auto grid lg:grid-cols-1 gap-5 items-center my-20  relative z-10">
-            {/* Left Side - Content */}
-            <div className=" space-y-8">
-              <div className="space-y-6">
-                <h1 className=" text-heading-1 mb-4 text-primary text-shadow-2xs font-bold font-serif">
-                  Where Lawyers <br className="hidden lg:block"/> are doing their best work
-                </h1>
+      {/* Connecting Lines */}
+      <div className="absolute top-16 left-1/2 transform  z-0">
+        {/* Vertical line down */}
+        <div className="w-0.5 h-[500px] md:h-16 bg-white"></div>
+        {/* Horizontal line */}
+        <div className="hidden md:block w-96 h-0.5 bg-white -ml-48"></div>
+        {/* Three vertical lines down to cards */}
+        <div className="hidden md:flex justify-between w-96 -ml-48 ">
+          <div className="w-0.5 h-16 bg-white"></div>
+          <div className="w-0.5 h-16 bg-white"></div>
+          <div className="w-0.5 h-16 bg-white"></div>
+        </div>
+      </div>
 
-                <p className="text-lg md:text-xl max-w-3xl  mb-8  text-primary">
-                  Wansom is the only legal AI that enables you to scale your ability to deliver big law results without the big law budget
-                </p>
-                <button
-                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
-                  onClick={() => (window.location.href = "/register")}
-                  aria-label="Try Wansom AI for free - Start your free trial"
-                >
-                  TRY WANSOM FOR FREE{" "}
-                  <SquareArrowOutUpRight className="w-5 h-5 text-white" aria-hidden="true" />
-                </button>
+      {/* Bottom Row - Three Research Source Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 relative z-10">
+        {/* Federal Cases Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+          <div className="flex items-center justify-start mb-4 gap-4">
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">
+              Case Law
+            </h3>
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-2 bg-gray-200 rounded-full w-full"></div>
+            <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
+            <div className="h-2 bg-gray-200 rounded-full w-1/2"></div>
+          </div>
+        </div>
+        {/* State Statutes Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+          <div className="flex items-center justify-start gap-4 mb-4">
+            <Loader className="w-8 h-8 text-[#4a7279]" />
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">
+              Statutes
+            </h3>
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-2 bg-gray-200 rounded-full w-full"></div>
+            <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
+            <div className="h-2 bg-gray-200 rounded-full w-1/2"></div>
+          </div>
+        </div>
+
+        {/* Regulations Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hidden md:block">
+          <div className="flex items-center justify-start gap-4 mb-4">
+            <Loader className="w-8 h-8 text-[#4a7279]" />
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">
+              Regulations
+            </h3>
+          </div>
+
+          <div className="space-y-2">
+            <div className="h-2 bg-gray-200 rounded-full w-full"></div>
+            <div className="h-2 bg-gray-200 rounded-full w-3/4"></div>
+            <div className="h-2 bg-gray-200 rounded-full w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+function VaultDocs() {
+  const documentCategories = [
+    {
+      title: "Financial Statements & Audits",
+      rules: 16,
+      icon: BarChart3,
+      description:
+        "Comprehensive analysis of financial data, cash flows, and audit reports",
+    },
+    {
+      title: "Corporate Governance Documents",
+      rules: 8,
+      icon: Building,
+      description:
+        "Board resolutions, bylaws, and organizational structure analysis",
+    },
+
+  ];
+
+  return (
+    <div className="relative bg-primary bg-vault-docs rounded-xl shadow-xl overflow-hidden p-6 w-full">
+      <div className="space-y-3">
+        {documentCategories.map((category, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-[#355e66]" />
+                </div>
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <Folder className="w-4 h-4" />
+                  <span className="text-sm font-medium">
+                    {category.rules} Documents
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-lg font-bold text-gray-900 mb-3">
+              {category.title}
+            </h3>
+
+            <div className="space-y-2">
+              {/* Placeholder content bars */}
+              <div className="flex space-x-2">
+                <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                <div className="h-2 bg-gray-200 rounded-full w-16"></div>
+              </div>
+              <div className="flex space-x-2">
+                <div className="h-2 bg-gray-200 rounded-full w-24"></div>
+                <div className="h-2 bg-gray-200 rounded-full flex-1"></div>
+                <div className="h-2 bg-gray-200 rounded-full w-20"></div>
               </div>
             </div>
           </div>
-          <BrandLogos/>
-    </section>
-  )
-}
+        ))}
+      </div>
+    </div>
+  );
+};
 
+ const ResearchSourcesWorkflow = () => {
+  return (
+    <div className="max-w-4xl  bg-primary p-6 rounded-lg">
+      {/* Top Card */}
+      <div className="bg-white rounded-2xl p-6 mb-6 shadow-lg">
+        <div className="flex items-center gap-3 justify-between">
+          <h2 className="text-md font-semibold text-gray-900">
+            Search Legal Authorities & Case Law
+          </h2>
+          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <ChevronRight className="w-6 h-6 text-white" />
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Card with Workflow Steps */}
+      <div className="bg-white rounded-2xl p-8 shadow-lg">
+        <div className="space-y-4">
+          {/* Step 1 - Completed */}
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-md font-medium text-gray-900">
+            Verifying legal sources
+            </span>
+          </div>
+
+          {/* Step 2 - In Progress */}
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 flex items-center justify-center">
+              <Loader className="w-6 h-6 text-primary animate-spin" />
+            </div>
+            <span className="text-md font-medium text-gray-900">
+              Getting related case law
+            </span>
+          </div>
+
+          {/* Step 3 - Pending */}
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 flex items-center justify-center">
+              <Circle className="w-6 h-6 text-gray-400" />
+            </div>
+            <span className="text-md font-medium text-gray-500">
+              Create citations
+            </span>
+          </div>
+
+          {/* Step 4 - Pending */}
+          <div className="flex items-center space-x-4">
+            <div className="w-10 h-10 flex items-center justify-center">
+              <Circle className="w-6 h-6 text-gray-400" />
+            </div>
+            <span className="text-md font-medium text-gray-500">
+              Generate response
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SolutionsForAllLawyers = () => {
+  const [activeTab, setActiveTab] = useState(2);
+
+  const tabs = [
+    {
+      title: "In-House Counsel",
+      image: "/images/in-house-counsel.jpg",
+      alt: "document vault",
+      description: "Automate contract review, streamline compliance, and manage legal risks effectively with Wansom AI.",
+      link: "/solutions/in-house-counsel"
+    },
+    {
+      title: "Litigation lawyers",
+      image: "/images/supreme-court.jpg",
+      alt: "redline contracts",
+      description: "Leverage AI to analyze case law, draft pleadings, and manage discovery with unparalleled efficiency.",
+      link: "/solutions/litigation-lawyers"
+
+    },
+    {
+      title: "M&A Lawyers",
+      image: "/images/law-firm-boardroom.jpg",
+      alt: "review legal documents",
+      description: "Streamline due diligence, contract drafting, and regulatory compliance with Wansom AI's powerful automation tools.",
+      link: "/solutions/ma-lawyers"
+    }
+  ];
+
+  return (
+    <section className="section-spacing bg-white" id="document-automation">
+      <div className="section-container pb-12">
+        <h2 className="text-heading-2 mb-4 text-gray-900 text-center max-w-3xl mx-auto">
+          How Lawyers Use Wansom AI
+        </h2>
+
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-12 pt-5">
+          <div className="flex space-x-0 border-b border-gray-300">
+            {tabs.map((tab, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveTab(index)}
+                className={`px-8 py-4 font-medium transition-all relative ${
+                  activeTab === index
+                    ? "text-[#355e66] border-b-2 border-[#355e66]"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.title}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tab Content - Flex Layout */}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center  gap-10">
+            <div className="text-left lg:basis-1/2 max-w-lg">
+              
+              <p className="text-lg text-gray-600 leading-relaxed ">
+                {tabs[activeTab].description}
+              </p>
+                   <button
+                  className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-amber-500 rounded-md py-3 px-6 my-5"
+                  onClick={() => (window.location.href = tabs[activeTab].link)}
+                >
+                  View Solutions{" "}
+                  <ArrowUpRight className="w-5 h-5 text-white" />
+                </button>
+            </div>
+            <div className="flex-1 lg:basis-1/2 order-1 lg:order-2">
+              <Image
+                src={tabs[activeTab].image}
+                width={800}
+                height={600}
+                className="rounded-lg w-full h-auto"
+                alt={tabs[activeTab].alt}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const KnowledgeBase = () => {
+  const router = useRouter();
+  const [chatInput, setChatInput] = useState("Ask wansom anything...");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showToolsDropdown, setShowToolsDropdown] = useState(false);
+  const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedJurisdictions, setSelectedJurisdictions] = useState<Jurisdiction[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [chatInput]);
+
+  // Handle chat input send
+  const handleSend = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      // Navigate to register page when send is clicked
+      router.push("/register");
+    } catch (error) {
+      console.error("Navigation error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+      // Reset input so same file can be selected again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Handle file removal
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Trigger file input click
+  const handlePaperclipClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // Handle jurisdiction change
+  const handleJurisdictionsChange = (jurisdictions: Jurisdiction[]) => {
+    setSelectedJurisdictions(jurisdictions);
+  };
+  return (
+    <section className="section-spacing bg-cta" id="knowledge-base">
+      <div className="section-container pb-12">
+        <div className="text-center mb-12 ">
+          <h2 className="text-heading-1 text-gray-900 mb-2">
+            Ready to put AI to work?
+          </h2>
+        </div>
+        {/* Chat Input Area */}
+        <div className="relative w-full max-w-4xl mx-auto">
+          <div className="w-full">
+            <div className="bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative shadow-sm focus-within:shadow-md">
+              {/* Left side icons */}
+              <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
+                {/* Documents Tool */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePaperclipClick}
+                  className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
+                  title={
+                    selectedFiles.length > 0
+                      ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected`
+                      : "Attach files"
+                  }
+                  aria-labelledby="upload documents"
+                >
+                  <Paperclip className="h-6 w-6 text-gray-600" />
+                </Button>
+
+                {/* Tools Dropdown */}
+                <DropdownMenu
+                  open={showToolsDropdown}
+                  onOpenChange={setShowToolsDropdown}
+                >
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
+                      title="AI Tools (preview - will be configurable after registration)"
+                      aria-labelledby="AI tools"
+                    >
+                      <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
+                      Tools
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-72 p-4 mb-2"
+                    side="top"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-sm text-gray-700">
+                          Available AI Tools
+                        </h4>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowToolsDropdown(false)}
+                          className="h-6 w-6 p-0"
+                          aria-labelledby="Close Tools"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="web-search"
+                            className="font-medium text-sm"
+                          >
+                            Deep Research
+                          </Label>
+                        </div>
+                        <Switch
+                          id="web-search"
+                          checked={false}
+                          disabled={true}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="legal-drafting"
+                            className="font-medium text-sm"
+                          >
+                            Draft & Review
+                          </Label>
+                        </div>
+                        <Switch
+                          id="legal-drafting"
+                          checked={false}
+                          disabled={true}
+                        />
+                      </div>
+    <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="contract-review"
+                            className="font-medium text-sm flex items-center gap-2"
+                          >
+                           <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
+                          </Label>
+                        </div>
+                        <Switch
+                          id="contract-review"
+                          checked={false}
+                          disabled={true}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="case-preparation"
+                            className="font-medium text-sm flex items-center gap-2"
+                          > <img src={'/icons/gmail.svg'} className="w-6 h-6"/>
+                            Gmail
+                          </Label>
+                        </div>
+                        <Switch
+                          id="case-preparation"
+                          checked={false}
+                          disabled={true}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="case-preparation"
+                            className="font-medium text-sm"
+                          >
+                            Case Preparation
+                          </Label>
+                        </div>
+                        <Switch
+                          id="case-preparation"
+                          checked={false}
+                          disabled={true}
+                        />
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="cite-sources"
+                              className="font-medium text-sm"
+                            >
+                              Cite sources
+                            </Label>
+                          </div>
+                          <Switch
+                            id="cite-sources"
+                            checked={false}
+                            disabled={true}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <Label
+                              htmlFor="suggest-actions"
+                              className="font-medium text-sm"
+                            >
+                              Suggest actions
+                            </Label>
+                          </div>
+                          <Switch
+                            id="suggest-actions"
+                            checked={false}
+                            disabled={true}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Jurisdiction Selector Dropdown */}
+                <DropdownMenu
+                  open={showJurisdictionDropdown}
+                  onOpenChange={setShowJurisdictionDropdown}
+                >
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                  variant="ghost"
+                  size="sm"
+                       className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
+                      title={
+                        selectedJurisdictions.length > 0
+                          ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
+                          : "Select jurisdiction"
+                      }
+                    >
+                      <Globe className="h-5 w-5 text-gray-500" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[340px] p-3 mb-2"
+                    side="top"
+                  >
+                    <JurisdictionSelector
+                      inline={true}
+                      multiSelect={true}
+                      values={selectedJurisdictions}
+                      onChangeMulti={handleJurisdictionsChange}
+                      placeholder="Search jurisdictions..."
+                      maxSelections={5}
+                    />
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Settings Button */}
+                <button
+                  className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
+                  disabled={true}
+                  title="Settings (available after registration)"
+                  aria-labelledby="settings"
+                >
+                  <Zap className="h-4 w-4 text-gray-700 text-xs" />
+                  Workflows
+                </button>
+              </div>
+
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
+              {/* Selected Files Chips - Show above textarea */}
+              {selectedFiles.length > 0 && (
+                <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
+                  {selectedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-[#E9F5F3] rounded-lg"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="bg-[#74C6B8] rounded-md p-1.5">
+                          <FileText className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 max-w-[150px] truncate">
+                            {file.name}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveFile(index)}
+                        className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                        type="button"
+                      >
+                        <X className="h-3.5 w-3.5 text-gray-600" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Textarea
+                ref={textareaRef}
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  selectedFiles.length > 0
+                    ? "Ask anything about your document..."
+                    : "Ask wansom anything..."
+                }
+                className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-600 px-6 pr-16 text-[13px] md:text-base ${
+                  selectedFiles.length > 0
+                    ? "min-h-[100px] max-h-[250px] pt-2 pb-4"
+                    : "min-h-[150px] max-h-[250px] py-4"
+                }`}
+                disabled={isSubmitting}
+              />
+
+              {/* Send button positioned inside textarea */}
+              <div className="absolute right-3 bottom-3 z-10">
+                <Button
+                  className="bg-primary hover:bg-[#d47b0f] text-white z-10 shadow-md h-10 w-10 rounded-lg"
+                  disabled={isSubmitting}
+                  onClick={handleSend}
+                  aria-label="Send message"
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="animate-spin text-white h-5 w-5" />
+                  ) : (
+                    <Send className="text-white h-5 w-5" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Helper text */}
+          <div className="flex items-center justify-center flex-wrap gap-5 mt-4">
+            <a
+              href="https://eur-lex.europa.eu/homepage.html"
+              target="_blank"
+              className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+            >
+              <img
+                src="/logos/eu.jpg"
+                alt="euro-lex"
+                className="h-8 w-8 rounded-full"
+              />
+              Euro Lex
+              <Plus className="h-4 w-4 text-gray-500" />
+            </a>
+            <a
+              href="https://www.kenyalaw.org/"
+              target="_blank"
+              className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+            >
+              <img
+                src="/logos/kenya-law.jpg"
+                alt="Kenya Law"
+                className="h-8 w-8 rounded-full"
+              />
+              Kenya Law
+              <Plus className="h-4 w-4 text-gray-500" />
+            </a>
+            <a
+              href="https://africanlii.org/en/indexes/case-indexes/case-indexes-commercial"
+              target="_blank"
+              className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+            >
+              <img
+                src="/logos/African+union.webp"
+                alt="Afcomm"
+                className="h-8 w-8 rounded-full"
+              />
+              Afcomm
+              <Plus className="h-4 w-4 text-gray-500" />
+            </a>
+            <div className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
+              <img
+                src="/logos/CommonLII.jpg"
+                alt=" CommonLII"
+                className="h-8 w-8 rounded-full"
+              />
+              CommonLII
+              <Plus className="h-4 w-4 text-gray-500" />
+            </div>
+            <div className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
+              <img
+                src="/logos/SAFLII_small.png"
+                alt=" SAFLII"
+                className="h-8 w-8 rounded-full"
+              />
+              SAFLII
+              <Plus className="h-4 w-4 text-gray-500" />
+            </div>
+            <a
+              href="https://www.worldlii.org/"
+              className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
+            >
+              <img
+                src="/logos/WorldLII.gif"
+                alt=" WorldLII"
+                className="h-8 w-8 rounded-full"
+              />
+              WorldLII
+              <Plus className="h-4 w-4 text-gray-500" />
+            </a>
+            <div className="tex-xs lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
+              <img
+                src="/logos/ZambiaLII.webp"
+                alt="ZambiaLII"
+                className="h-6 md:h-8 w-6 md:w-8 rounded-full"
+              />
+              ZambiaLII
+              <Plus className="h-4 w-4 text-gray-500" />
+            </div>
+            <div className="tex-xs lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
+              <Globe2 className="h-6 md:h-8 w-6 md:w-8 rounded-full" />
+              Web Search
+              <Plus className="h-4 w-4 text-gray-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

@@ -22,14 +22,15 @@ npx prisma studio     # Database GUI
 ## Architecture Overview
 
 ### Technology Stack
-- **Framework**: Next.js 16 (App Router)
-- **Database**: PostgreSQL via Prisma ORM
-- **Authentication**: NextAuth.js with JWT (credentials + Google OAuth)
+- **Framework**: Next.js 16.x (App Router with Turbopack)
+- **Database**: PostgreSQL via Prisma ORM (v7.x)
+- **Authentication**: NextAuth.js v4 with JWT (credentials + Google OAuth)
 - **State Management**: Zustand stores (`src/store/*.store.ts`)
 - **UI Components**: Radix UI + shadcn/ui + TailwindCSS
 - **AI Integration**: Google Gemini API via `@google/genai` (multimodal - text and vision)
 - **File Storage**: Vercel Blob Storage
 - **Rich Text Editors**: TipTap, Quill, TinyMCE
+- **Form Handling**: React Hook Form + Zod validation
 
 ### Key Architectural Patterns
 
@@ -103,15 +104,26 @@ import prisma from '@/lib/prisma';
 ### API Response Pattern
 Use functions from `src/lib/api/response.ts`:
 ```typescript
-import { createApiResponse, createErrorResponse } from '@/lib/api/response';
+import { createApiResponse, createErrorResponse, createNotFoundResponse, createBadRequestResponse, createPaginatedResponse, calculatePagination } from '@/lib/api/response';
 import { AppError } from '@/types/error';
 
 // Success
 return createApiResponse(data, 'Success message', 200);
 
-// Error
+// Paginated response
+const pagination = calculatePagination(total, page, limit);
+return createPaginatedResponse(items, pagination);
+
+// Error (multiple options)
 return createErrorResponse('Error message', 500);
 return createErrorResponse(new AppError('Message', 'ERROR_CODE', 401));
+
+// Shorthand helpers
+return createNotFoundResponse('User');           // 404: "User not found"
+return createBadRequestResponse('Invalid input'); // 400
+return createForbiddenResponse('Access denied');  // 403
+return createUnauthorizedResponse();              // 401
+return createCreatedResponse(data);               // 201
 ```
 
 ### Authentication in API Routes
@@ -239,3 +251,14 @@ State management uses Zustand stores in `src/store/`:
 - `workspace-settings.store.ts` - Project workspace settings
 - `content.store.ts` - Content management (SEO pages)
 - `onboarding.store.ts` - User onboarding flow
+
+## API Route Structure
+API routes follow Next.js App Router conventions in `src/app/api/`:
+- `/api/auth/*` - Authentication (NextAuth, login, register, password reset, Google connection)
+- `/api/projects/[id]/*` - Project-scoped operations (conversations, documents, members, associates)
+- `/api/organization/*` - Organization management (members, invitations, switching)
+- `/api/documents/*` - Vault/organization-level document operations
+- `/api/folders/*` - Folder hierarchy for documents
+- `/api/associates/*` - AI associate CRUD
+- `/api/workspace/[id]/*` - Project workspace settings
+- `/api/admin/*` - Admin-only organization management

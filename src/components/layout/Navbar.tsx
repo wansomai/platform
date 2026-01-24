@@ -88,7 +88,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-      isScrolled || isOpen||darkmode ? 'bg-white shadow-sm backdrop-filter lg:backdrop-blur-lg  text-primary bg-opacity-40' : 'bg-transparent text-primary'
+      isScrolled || isOpen||darkmode ? 'bg-white shadow-sm backdrop-filter lg:backdrop-blur-lg  text-black bg-opacity-40' : 'bg-transparent text-black'
     }`}>
       <div className="section-container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="lg:hidden">
@@ -242,7 +242,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <Link href="/demo" className="font-medium text-md whitespace-nowrap text-primary hover:text-[#F18F01]  border border-gray-300 rounded-md py-2 px-4">
+            <Link href="/demo" className="font-medium text-md whitespace-nowrap text-black hover:text-[#F18F01]  border border-gray-300 rounded-md py-2 px-4">
               Book A Demo
             </Link>
             <Link

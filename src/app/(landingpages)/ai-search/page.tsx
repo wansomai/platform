@@ -15,7 +15,7 @@ export const metadata: Metadata = {
       siteName: 'Wansom AI',
       images: [
         {
-          url: '/images/features-2.png',
+          url: '/images/features-2.jpg',
           width: 1200,
           height: 630,
           alt: 'Wansom AI - Legal SEO AI Platform'
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       card: 'summary_large_image',
       title: 'Wansom AI Academy',
       description: 'Wansom AI Academy is the leading marketing and SEO automation platform for lawyers.',
-      images: ['/images/features-2.png'],
+      images: ['/images/features-2.jpg'],
     },
     keywords: [
       'AI Academy',
