@@ -5,8 +5,9 @@ import { withErrorHandler } from '@/lib/api/middleware';
 import { createCreatedResponse, createErrorResponse } from '@/lib/api/response';
 import { AppError } from '@/types/error';
 import { LegalKnowledgeService } from '@/services/legalKnowledgeService';
+import { classifyLegalDocument } from '@/services/legalClassificationService';
 import type { LegalKnowledgeType, Jurisdiction } from '@/types/legalKnowledge';
-import { PracticeArea } from '@/prisma/client';
+import type { PracticeArea } from '@/prisma/client';
 
 // Allowed file types for upload
 const ALLOWED_MIME_TYPES = [
@@ -22,17 +23,15 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
  * POST /api/admin/legal-knowledge/upload
  * Upload a file and create a legal knowledge entry
  *
- * Form data:
+ * Simplified form data:
  * - file: File (required)
  * - title: string (required)
- * - description: string
- * - type: LegalKnowledgeType (required)
- * - jurisdiction: Jurisdiction (required)
- * - practiceAreas: JSON string of PracticeArea[]
- * - sourceType: string
- * - sourceReference: string
- * - effectiveDate: ISO date string
- * - tags: JSON string of string[]
+ *
+ * The AI will automatically classify:
+ * - type (TEMPLATE, CASE_LAW, STATUTE, etc.)
+ * - jurisdiction
+ * - practiceAreas
+ * - tags
  */
 export const POST = withErrorHandler(
   withAdminAuth(async (request: NextRequest, userId: string) => {
@@ -68,81 +67,12 @@ export const POST = withErrorHandler(
       );
     }
 
-    // Get required metadata
+    // Get title (only required field now)
     const title = formData.get('title') as string;
-    const type = formData.get('type') as LegalKnowledgeType;
-    const jurisdiction = formData.get('jurisdiction') as Jurisdiction;
-
-    if (!title || !type || !jurisdiction) {
+    if (!title) {
       return createErrorResponse(
-        new AppError(
-          'Missing required fields: title, type, jurisdiction',
-          'VALIDATION_ERROR',
-          400
-        )
+        new AppError('Title is required', 'VALIDATION_ERROR', 400)
       );
-    }
-
-    // Validate type
-    const validTypes: LegalKnowledgeType[] = [
-      'TEMPLATE',
-      'CASE_LAW',
-      'STATUTE',
-      'REGULATION',
-      'LEGAL_OPINION',
-      'PRACTICE_GUIDE'
-    ];
-    if (!validTypes.includes(type)) {
-      return createErrorResponse(
-        new AppError(`Invalid type. Must be one of: ${validTypes.join(', ')}`, 'VALIDATION_ERROR', 400)
-      );
-    }
-
-    // Validate jurisdiction
-    const validJurisdictions: Jurisdiction[] = [
-      'KENYA_NATIONAL',
-      'KENYA_NAIROBI',
-      'INTERNATIONAL',
-      'GENERAL'
-    ];
-    if (!validJurisdictions.includes(jurisdiction)) {
-      return createErrorResponse(
-        new AppError(
-          `Invalid jurisdiction. Must be one of: ${validJurisdictions.join(', ')}`,
-          'VALIDATION_ERROR',
-          400
-        )
-      );
-    }
-
-    // Parse optional fields
-    const description = formData.get('description') as string | null;
-    const sourceType = formData.get('sourceType') as string | null;
-    const sourceReference = formData.get('sourceReference') as string | null;
-    const effectiveDateStr = formData.get('effectiveDate') as string | null;
-
-    let practiceAreas: PracticeArea[] = [];
-    const practiceAreasStr = formData.get('practiceAreas') as string | null;
-    if (practiceAreasStr) {
-      try {
-        practiceAreas = JSON.parse(practiceAreasStr);
-      } catch {
-        return createErrorResponse(
-          new AppError('Invalid practiceAreas format. Expected JSON array.', 'VALIDATION_ERROR', 400)
-        );
-      }
-    }
-
-    let tags: string[] = [];
-    const tagsStr = formData.get('tags') as string | null;
-    if (tagsStr) {
-      try {
-        tags = JSON.parse(tagsStr);
-      } catch {
-        return createErrorResponse(
-          new AppError('Invalid tags format. Expected JSON array.', 'VALIDATION_ERROR', 400)
-        );
-      }
     }
 
     // Upload file to Vercel Blob
@@ -154,7 +84,54 @@ export const POST = withErrorHandler(
       contentType: file.type
     });
 
-    // Create legal knowledge entry with text extraction
+    // Extract text first (needed for classification)
+    let extractedText: string;
+    try {
+      extractedText = await LegalKnowledgeService.extractText(fileBuffer, file.type);
+      if (!extractedText || extractedText.trim().length === 0) {
+        return createErrorResponse(
+          new AppError('Could not extract text from file', 'PROCESSING_ERROR', 400)
+        );
+      }
+    } catch (error: any) {
+      console.error('Text extraction failed:', error);
+      return createErrorResponse(
+        new AppError(
+          error.message || 'Failed to extract text from file',
+          'PROCESSING_ERROR',
+          500
+        )
+      );
+    }
+
+    // AI classification (defaults used if classification fails)
+    let classification: {
+      type: LegalKnowledgeType;
+      jurisdiction: Jurisdiction;
+      practiceAreas: PracticeArea[];
+      tags: string[];
+    } = {
+      type: 'TEMPLATE',
+      jurisdiction: 'GENERAL',
+      practiceAreas: [],
+      tags: []
+    };
+
+    try {
+      const aiClassification = await classifyLegalDocument(title, extractedText);
+      classification = {
+        type: aiClassification.type,
+        jurisdiction: aiClassification.jurisdiction,
+        practiceAreas: aiClassification.practiceAreas,
+        tags: aiClassification.tags
+      };
+      console.log('AI classification result:', classification);
+    } catch (error) {
+      console.error('AI classification failed, using defaults:', error);
+      // Continue with defaults
+    }
+
+    // Create legal knowledge entry
     try {
       const legalKnowledge = await LegalKnowledgeService.createFromFile(
         fileBuffer,
@@ -162,14 +139,10 @@ export const POST = withErrorHandler(
         file.type,
         {
           title,
-          description: description || undefined,
-          type,
-          jurisdiction,
-          practiceAreas,
-          sourceType: sourceType || undefined,
-          sourceReference: sourceReference || undefined,
-          effectiveDate: effectiveDateStr ? new Date(effectiveDateStr) : undefined,
-          tags
+          type: classification.type,
+          jurisdiction: classification.jurisdiction,
+          practiceAreas: classification.practiceAreas,
+          tags: classification.tags
         },
         blob.url,
         userId
@@ -177,10 +150,9 @@ export const POST = withErrorHandler(
 
       return createCreatedResponse(
         legalKnowledge,
-        'File uploaded and legal knowledge created successfully. Processing chunks in background.'
+        'File uploaded successfully. AI classification complete. Processing chunks in background.'
       );
     } catch (error: any) {
-      // If creation fails, try to clean up the uploaded file
       console.error('Failed to create legal knowledge:', error);
       return createErrorResponse(
         new AppError(

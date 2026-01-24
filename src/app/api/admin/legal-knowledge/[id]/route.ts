@@ -68,8 +68,7 @@ export const PATCH = withErrorHandler(
     // Validate jurisdiction if provided
     if (body.jurisdiction) {
       const validJurisdictions: Jurisdiction[] = [
-        'KENYA_NATIONAL',
-        'KENYA_NAIROBI',
+        'KENYA',
         'INTERNATIONAL',
         'GENERAL'
       ];

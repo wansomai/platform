@@ -627,8 +627,7 @@ enum LegalKnowledgeType {
 }
 
 enum Jurisdiction {
-  KENYA_NATIONAL
-  KENYA_NAIROBI
+  KENYA
   INTERNATIONAL
   GENERAL
 }

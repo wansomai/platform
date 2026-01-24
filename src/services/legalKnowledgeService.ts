@@ -14,9 +14,8 @@ import {
 } from '@/types/legalKnowledge';
 import { PracticeArea } from '@/prisma/client';
 
-// Text extraction imports
-import mammoth from 'mammoth';
-import pdfParse from 'pdf-parse';
+// Use the shared document parser (handles pdf-parse Turbopack issue)
+import { extractTextFromFile } from '@/lib/documentParser';
 
 export class LegalKnowledgeService {
   /**
@@ -26,7 +25,7 @@ export class LegalKnowledgeService {
     input: CreateLegalKnowledgeInput,
     createdById: string
   ): Promise<LegalKnowledge> {
-    // Create the legal knowledge entry
+    // Create the legal knowledge entry (auto-published)
     const legalKnowledge = await prisma.legalKnowledge.create({
       data: {
         title: input.title,
@@ -41,6 +40,8 @@ export class LegalKnowledgeService {
         sourceReference: input.sourceReference,
         effectiveDate: input.effectiveDate,
         tags: input.tags || [],
+        status: 'active',
+        isPublished: true,
         createdById
       }
     });
@@ -75,7 +76,7 @@ export class LegalKnowledgeService {
     createdById: string
   ): Promise<LegalKnowledge> {
     // Extract text from file
-    const content = await this.extractTextFromFile(file, fileType);
+    const content = await this.extractText(file, fileType);
 
     if (!content || content.trim().length === 0) {
       throw new Error('Could not extract text from file');
@@ -93,33 +94,42 @@ export class LegalKnowledgeService {
   }
 
   /**
-   * Extract text from various file types
+   * Extract text from various file types using shared document parser
    */
-  static async extractTextFromFile(
+  static async extractText(
     file: Buffer,
     fileType: string
   ): Promise<string> {
-    const mimeType = fileType.toLowerCase();
+    // Map file extension to MIME type
+    const mimeType = this.getMimeType(fileType);
+    return extractTextFromFile(file, mimeType);
+  }
 
-    if (mimeType.includes('pdf') || mimeType === 'application/pdf') {
-      const data = await pdfParse(file);
-      return data.text;
+  /**
+   * Get MIME type from file extension or type string
+   */
+  private static getMimeType(fileType: string): string {
+    const type = fileType.toLowerCase();
+
+    if (type.includes('pdf') || type === 'pdf') {
+      return 'application/pdf';
+    }
+    if (type.includes('docx') || type === 'docx') {
+      return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    }
+    if (type.includes('doc') || type === 'doc') {
+      return 'application/msword';
+    }
+    if (type.includes('txt') || type === 'txt' || type.includes('text/plain')) {
+      return 'text/plain';
     }
 
-    if (
-      mimeType.includes('word') ||
-      mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-      mimeType === 'application/msword'
-    ) {
-      const result = await mammoth.extractRawText({ buffer: file });
-      return result.value;
+    // Return as-is if it looks like a MIME type
+    if (type.includes('/')) {
+      return type;
     }
 
-    if (mimeType.includes('text/plain')) {
-      return file.toString('utf-8');
-    }
-
-    throw new Error(`Unsupported file type: ${fileType}`);
+    return 'application/octet-stream';
   }
 
   /**

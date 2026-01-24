@@ -55,13 +55,13 @@ const TYPE_CONFIG: Record<LegalKnowledgeType, { label: string; icon: React.Eleme
 };
 
 const JURISDICTION_LABELS: Record<Jurisdiction, string> = {
-  KENYA_NATIONAL: 'Kenya (National)',
-  KENYA_NAIROBI: 'Kenya (Nairobi)',
+  KENYA: 'Kenya',
   INTERNATIONAL: 'International',
   GENERAL: 'General',
 };
 
-export function LegalKnowledgeTable({
+export function 
+LegalKnowledgeTable({
   items,
   isLoading,
   onPublish,
@@ -104,7 +104,7 @@ export function LegalKnowledgeTable({
               <TableHead>Type</TableHead>
               <TableHead>Jurisdiction</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Chunks</TableHead>
+             
               <TableHead>Updated</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
@@ -126,7 +126,7 @@ export function LegalKnowledgeTable({
                           {item.description}
                         </span>
                       )}
-                      {item.tags && item.tags.length > 0 && (
+                      {/* {item.tags && item.tags.length > 0 && (
                         <div className="flex gap-1 mt-1">
                           {item.tags.slice(0, 3).map((tag) => (
                             <Badge key={tag} variant="secondary" className="text-xs">
@@ -139,7 +139,7 @@ export function LegalKnowledgeTable({
                             </Badge>
                           )}
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -155,20 +155,9 @@ export function LegalKnowledgeTable({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
-                      <Badge
-                        variant={item.status === 'active' ? 'default' : 'secondary'}
-                        className={
-                          item.status === 'active'
-                            ? 'bg-green-100 text-green-800'
-                            : item.status === 'archived'
-                            ? 'bg-gray-100 text-gray-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }
-                      >
-                        {item.status}
-                      </Badge>
+                  
                       {item.isPublished ? (
-                        <Badge className="bg-blue-100 text-blue-800">
+                        <Badge className="bg-green-100 text-primary">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Published
                         </Badge>
@@ -179,11 +168,6 @@ export function LegalKnowledgeTable({
                         </Badge>
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-gray-600">
-                      {item.chunks?.length || 0}
-                    </span>
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-gray-500">

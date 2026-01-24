@@ -337,6 +337,74 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
         };
       }
 
+      case 'searchLegalKnowledge': {
+        const { query, documentType } = functionCall.args as any;
+
+        try {
+          // Use RAG service to search legal knowledge base
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+
+          const ragResults = await RAGService.retrieve({
+            query,
+            jurisdiction: projectJurisdiction,
+            documentTypes: documentType ? [documentType] : ['TEMPLATE'],
+            topK: 5,
+            minSimilarityScore: 0.6
+          });
+
+          if (ragResults.chunks.length === 0) {
+            return {
+              success: true,
+              found: false,
+              templates: [],
+              message: `No templates found for "${query}". You'll need to create this document from scratch.`,
+              suggestion: 'Ask the user for all necessary details to draft the document.'
+            };
+          }
+
+          // Group by source document and format results
+          const templatesMap = new Map<string, any>();
+          for (const chunk of ragResults.chunks) {
+            const key = chunk.legalKnowledge.id;
+            if (!templatesMap.has(key)) {
+              templatesMap.set(key, {
+                id: chunk.legalKnowledge.id,
+                title: chunk.legalKnowledge.title,
+                type: chunk.legalKnowledge.type,
+                jurisdiction: chunk.legalKnowledge.jurisdiction,
+                relevanceScore: chunk.score,
+                excerpts: []
+              });
+            }
+            templatesMap.get(key).excerpts.push({
+              section: chunk.sectionTitle || 'Content',
+              text: chunk.chunkText.substring(0, 500) + '...'
+            });
+          }
+
+          const templates = Array.from(templatesMap.values());
+
+          return {
+            success: true,
+            found: true,
+            templates,
+            message: `Found ${templates.length} relevant template(s) in the knowledge base.`,
+            suggestion: templates.length > 0
+              ? `Use "${templates[0].title}" as a reference. You only need to ask for: party names and any specific terms they want to customize.`
+              : undefined
+          };
+        } catch (error: any) {
+          console.error('Legal knowledge search failed:', error);
+          return {
+            success: false,
+            found: false,
+            templates: [],
+            message: 'Could not search legal knowledge base. Proceeding without template reference.',
+            error: error.message
+          };
+        }
+      }
+
       case 'reviewDocument': {
         const { documentIds, reviewFocus, specificInstructions } = functionCall.args as any;
 

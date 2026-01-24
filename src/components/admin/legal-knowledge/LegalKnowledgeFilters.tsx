@@ -37,8 +37,7 @@ const LEGAL_KNOWLEDGE_TYPES: { value: LegalKnowledgeType; label: string }[] = [
 ];
 
 const JURISDICTIONS: { value: Jurisdiction; label: string }[] = [
-  { value: 'KENYA_NATIONAL', label: 'Kenya (National)' },
-  { value: 'KENYA_NAIROBI', label: 'Kenya (Nairobi)' },
+  { value: 'KENYA', label: 'Kenya' },
   { value: 'INTERNATIONAL', label: 'International' },
   { value: 'GENERAL', label: 'General' },
 ];
@@ -72,12 +71,12 @@ export function LegalKnowledgeFilters({
         </div>
 
         {/* Type Filter */}
-        <Select value={type} onValueChange={(v) => onTypeChange(v as LegalKnowledgeType | '')}>
+        <Select value={type || "all-types"} onValueChange={(v) => onTypeChange(v === "all-types" ? '' : v as LegalKnowledgeType)}>
           <SelectTrigger className="w-full lg:w-[180px]">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all-types">All Types</SelectItem>
             {LEGAL_KNOWLEDGE_TYPES.map((t) => (
               <SelectItem key={t.value} value={t.value}>
                 {t.label}
@@ -87,12 +86,12 @@ export function LegalKnowledgeFilters({
         </Select>
 
         {/* Jurisdiction Filter */}
-        <Select value={jurisdiction} onValueChange={(v) => onJurisdictionChange(v as Jurisdiction | '')}>
+        <Select value={jurisdiction || "all-jurisdictions"} onValueChange={(v) => onJurisdictionChange(v === "all-jurisdictions" ? '' : v as Jurisdiction)}>
           <SelectTrigger className="w-full lg:w-[180px]">
             <SelectValue placeholder="All Jurisdictions" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Jurisdictions</SelectItem>
+            <SelectItem value="all-jurisdictions">All Jurisdictions</SelectItem>
             {JURISDICTIONS.map((j) => (
               <SelectItem key={j.value} value={j.value}>
                 {j.label}
@@ -102,12 +101,12 @@ export function LegalKnowledgeFilters({
         </Select>
 
         {/* Status Filter */}
-        <Select value={status} onValueChange={(v) => onStatusChange(v as 'active' | 'archived' | 'draft' | '')}>
+        <Select value={status || "all-status"} onValueChange={(v) => onStatusChange(v === "all-status" ? '' : v as 'active' | 'archived' | 'draft')}>
           <SelectTrigger className="w-full lg:w-[140px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
+            <SelectItem value="all-status">All Status</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="archived">Archived</SelectItem>
@@ -116,14 +115,14 @@ export function LegalKnowledgeFilters({
 
         {/* Published Filter */}
         <Select
-          value={isPublished === undefined ? '' : isPublished.toString()}
-          onValueChange={(v) => onIsPublishedChange(v === '' ? undefined : v === 'true')}
+          value={isPublished === undefined ? "all-published" : isPublished.toString()}
+          onValueChange={(v) => onIsPublishedChange(v === "all-published" ? undefined : v === 'true')}
         >
           <SelectTrigger className="w-full lg:w-[140px]">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All</SelectItem>
+            <SelectItem value="all-published">All</SelectItem>
             <SelectItem value="true">Published</SelectItem>
             <SelectItem value="false">Unpublished</SelectItem>
           </SelectContent>

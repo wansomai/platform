@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { apiService } from '@/lib/api';
+import { useLegalKnowledgeStore } from '@/store/legal-knowledge.store';
 import type { LegalKnowledgeType, Jurisdiction } from '@/types/legalKnowledge';
 import { PracticeArea } from '@/prisma/client';
 
@@ -43,8 +43,7 @@ const LEGAL_KNOWLEDGE_TYPES: { value: LegalKnowledgeType; label: string }[] = [
 ];
 
 const JURISDICTIONS: { value: Jurisdiction; label: string }[] = [
-  { value: 'KENYA_NATIONAL', label: 'Kenya (National)' },
-  { value: 'KENYA_NAIROBI', label: 'Kenya (Nairobi)' },
+  { value: 'KENYA', label: 'Kenya' },
   { value: 'INTERNATIONAL', label: 'International' },
   { value: 'GENERAL', label: 'General' },
 ];
@@ -72,10 +71,12 @@ export function LegalKnowledgeCreateDialog({
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
   const [type, setType] = useState<LegalKnowledgeType>('TEMPLATE');
-  const [jurisdiction, setJurisdiction] = useState<Jurisdiction>('KENYA_NATIONAL');
+  const [jurisdiction, setJurisdiction] = useState<Jurisdiction>('KENYA');
   const [practiceAreas, setPracticeAreas] = useState<PracticeArea[]>([]);
   const [sourceReference, setSourceReference] = useState('');
   const [tags, setTags] = useState('');
+
+  const { createFromText } = useLegalKnowledgeStore();
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -95,28 +96,22 @@ export function LegalKnowledgeCreateDialog({
         ? tags.split(',').map((t) => t.trim()).filter(Boolean)
         : [];
 
-      await apiService.post(
-        '/api/admin/legal-knowledge',
-        {
-          title: title.trim(),
-          description: description.trim() || undefined,
-          content: content.trim(),
-          type,
-          jurisdiction,
-          practiceAreas: practiceAreas.length > 0 ? practiceAreas : undefined,
-          sourceReference: sourceReference.trim() || undefined,
-          tags: tagsArray.length > 0 ? tagsArray : undefined,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        }
-      );
+      const result = await createFromText({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        content: content.trim(),
+        type,
+        jurisdiction,
+        practiceAreas: practiceAreas.length > 0 ? practiceAreas : undefined,
+        sourceReference: sourceReference.trim() || undefined,
+        tags: tagsArray.length > 0 ? tagsArray : undefined,
+      });
 
-      toast.success('Legal knowledge created successfully. Processing in background.');
-      resetForm();
-      onSuccess();
+      if (result) {
+        toast.success('Legal knowledge created successfully. Processing in background.');
+        resetForm();
+        onSuccess();
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Creation failed');
     } finally {
@@ -129,7 +124,7 @@ export function LegalKnowledgeCreateDialog({
     setDescription('');
     setContent('');
     setType('TEMPLATE');
-    setJurisdiction('KENYA_NATIONAL');
+    setJurisdiction('KENYA');
     setPracticeAreas([]);
     setSourceReference('');
     setTags('');

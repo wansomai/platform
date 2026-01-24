@@ -30,8 +30,7 @@ const TYPE_LABELS: Record<LegalKnowledgeType, string> = {
 };
 
 const JURISDICTION_LABELS: Record<Jurisdiction, string> = {
-  KENYA_NATIONAL: 'Kenya (National)',
-  KENYA_NAIROBI: 'Kenya (Nairobi)',
+  KENYA: 'Kenya',
   INTERNATIONAL: 'International',
   GENERAL: 'General',
 };

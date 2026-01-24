@@ -11,8 +11,7 @@ export type LegalKnowledgeType =
   | 'PRACTICE_GUIDE';
 
 export type Jurisdiction =
-  | 'KENYA_NATIONAL'
-  | 'KENYA_NAIROBI'
+  | 'KENYA'
   | 'INTERNATIONAL'
   | 'GENERAL';
 

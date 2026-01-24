@@ -231,8 +231,7 @@ export type LegalKnowledgeType = (typeof LegalKnowledgeType)[keyof typeof LegalK
 
 
 export const Jurisdiction: {
-  KENYA_NATIONAL: 'KENYA_NATIONAL',
-  KENYA_NAIROBI: 'KENYA_NAIROBI',
+  KENYA: 'KENYA',
   INTERNATIONAL: 'INTERNATIONAL',
   GENERAL: 'GENERAL'
 };

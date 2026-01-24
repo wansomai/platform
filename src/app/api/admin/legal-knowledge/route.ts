@@ -115,8 +115,7 @@ export const POST = withErrorHandler(
 
     // Validate jurisdiction
     const validJurisdictions: Jurisdiction[] = [
-      'KENYA_NATIONAL',
-      'KENYA_NAIROBI',
+      'KENYA',
       'INTERNATIONAL',
       'GENERAL'
     ];

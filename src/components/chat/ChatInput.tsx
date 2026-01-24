@@ -295,11 +295,11 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-   setShowProAccess(true);
-    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-    //   type
-    // )}`;
-    // window.location.href = url;
+  //  setShowProAccess(true);
+    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+      type
+    )}`;
+    window.location.href = url;
   };
 
   // Helper function to generate meaningful project names

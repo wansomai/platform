@@ -3,14 +3,14 @@ import { Metadata } from 'next';
 import LegalResearchPage from './LegalResearchPage';
 
 export const metadata: Metadata = {
-  title: 'Best AI Legal Research Platform | Wansom AI',
-  description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
+  title: 'Best Legal AI Assistant | Wansom AI',
+  description: 'Wansom Legal AI assistant helps you get instant answers to complex legal questions by searching through millions of cases, statutes, and legal authorities in seconds.',
   alternates: {
     canonical: 'https://www.wansom.ai/ai-assistant',
   },
   openGraph: {
-    title: 'Best AI Legal Research | Wansom AI',
-    description: 'Get instant answers to complex legal questions with AI that searches through millions of cases, statutes, and legal authorities in seconds.',
+    title: 'Best Legal AI Assistant | Wansom AI',
+    description: 'Wansom Legal AI assistant helps you get instant answers to complex legal questions by searching through millions of cases, statutes, and legal authorities in seconds.',
     type: 'website',
     url: 'https://www.wansom.ai/ai-assistant',
     images: [

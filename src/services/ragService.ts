@@ -39,8 +39,7 @@ const DOCUMENT_TYPE_KEYWORDS: Record<string, string[]> = {
 
 // Jurisdiction detection keywords
 const JURISDICTION_KEYWORDS: Record<Jurisdiction, string[]> = {
-  KENYA_NATIONAL: ['kenya', 'kenyan law', 'laws of kenya', 'republic of kenya'],
-  KENYA_NAIROBI: ['nairobi', 'nairobi county'],
+  KENYA: ['kenya', 'kenyan law', 'laws of kenya', 'republic of kenya', 'nairobi'],
   INTERNATIONAL: ['international', 'cross-border', 'multi-jurisdiction', 'uncitral', 'icc'],
   GENERAL: []
 };
@@ -63,23 +62,13 @@ export class RAGService {
       ? `AND lk.type IN (${query.documentTypes.map(t => `'${t}'`).join(',')})`
       : '';
 
-    // Vector similarity search with filters using pgvector cosine distance
-    const results = await prisma.$queryRaw<Array<{
-      id: string;
-      chunk_text: string;
-      section_title: string | null;
-      score: number;
-      lk_id: string;
-      lk_title: string;
-      lk_type: string;
-      lk_jurisdiction: string;
-      lk_source_reference: string | null;
-    }>>`
+    // Build the full query string (using $queryRawUnsafe for dynamic filters)
+    const sqlQuery = `
       SELECT
         lkc.id,
         lkc."chunkText" as chunk_text,
         lkc."sectionTitle" as section_title,
-        1 - (lkc.embedding <=> ${embeddingStr}::vector) as score,
+        1 - (lkc.embedding <=> '${embeddingStr}'::vector) as score,
         lk.id as lk_id,
         lk.title as lk_title,
         lk.type::text as lk_type,
@@ -90,11 +79,24 @@ export class RAGService {
       WHERE lk.status = 'active'
         AND lk."isPublished" = true
         AND lkc.embedding IS NOT NULL
-        ${prisma.$queryRawUnsafe(jurisdictionFilter)}
-        ${prisma.$queryRawUnsafe(typeFilter)}
+        ${jurisdictionFilter}
+        ${typeFilter}
       ORDER BY score DESC
       LIMIT ${topK}
     `;
+
+    // Vector similarity search with filters using pgvector cosine distance
+    const results = await prisma.$queryRawUnsafe<Array<{
+      id: string;
+      chunk_text: string;
+      section_title: string | null;
+      score: number;
+      lk_id: string;
+      lk_title: string;
+      lk_type: string;
+      lk_jurisdiction: string;
+      lk_source_reference: string | null;
+    }>>(sqlQuery);
 
     // Filter by minimum similarity score
     const filteredResults = results.filter(r => r.score >= minScore);
@@ -290,7 +292,7 @@ Request: "${message}"
 Respond in JSON format:
 {
   "documentType": "string or null",
-  "jurisdiction": "KENYA_NATIONAL | KENYA_NAIROBI | INTERNATIONAL | GENERAL | null",
+  "jurisdiction": "KENYA | INTERNATIONAL | GENERAL | null",
   "practiceAreas": ["array of practice areas"],
   "confidence": 0.0 to 1.0
 }`;

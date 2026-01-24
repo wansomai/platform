@@ -627,8 +627,7 @@ exports.LegalKnowledgeType = exports.$Enums.LegalKnowledgeType = {
 };
 
 exports.Jurisdiction = exports.$Enums.Jurisdiction = {
-  KENYA_NATIONAL: 'KENYA_NATIONAL',
-  KENYA_NAIROBI: 'KENYA_NAIROBI',
+  KENYA: 'KENYA',
   INTERNATIONAL: 'INTERNATIONAL',
   GENERAL: 'GENERAL'
 };

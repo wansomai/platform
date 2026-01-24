@@ -6,7 +6,7 @@ import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 // Required scopes for Calendar and Gmail
 const REQUIRED_SCOPES = {
   calendar: 'https://www.googleapis.com/auth/calendar',
-  gmail: 'https://www.googleapis.com/auth/gmail.readonly',
+  gmail: 'https://www.googleapis.com/auth/gmail.addons.current.message.readonly',
 };
 
 /**
