@@ -64,7 +64,8 @@ const PrivacyPolicyContent = () => {
               When you connect third-party services to your account:
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700 space-y-2">
-              <li><strong>Google Account:</strong> With your permission, we access your Google Calendar events, Gmail messages (read-only), and basic profile information</li>
+              <li><strong>Google Account:</strong> We use Google as an authentication provider</li>
+               <li><strong>Calendar and Gmail integration:</strong>  If you connect your Google Calendar or Gmail, we collect necessary data to create and organize events in your google calendar as well as summarize your emails</li>
               <li><strong>OAuth Tokens:</strong> We securely store OAuth tokens to maintain these integrations</li>
               <li><strong>Third-Party Data:</strong> Information from integrated services as necessary to provide the requested functionality</li>
             </ul>
