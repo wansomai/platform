@@ -167,6 +167,32 @@ export const JURISDICTIONS: Jurisdiction[] = [
     isPopular: true
   },
 
+  // Uganda
+  {
+    id: 'ug',
+    name: 'Uganda',
+    country: 'Uganda',
+    region: 'Africa',
+    legalSystem: 'mixed',
+    citationStyle: 'local',
+    courtSystem: ['Supreme Court', 'Court of Appeal', 'High Court', 'Magistrate Courts'],
+    languages: ['English', 'Swahili'],
+    isPopular: true
+  },
+
+  // Tanzania
+  {
+    id: 'tz',
+    name: 'Tanzania',
+    country: 'Tanzania',
+    region: 'Africa',
+    legalSystem: 'mixed',
+    citationStyle: 'local',
+    courtSystem: ['Supreme Court', 'Court of Appeal', 'High Court', 'District Courts'],
+    languages: ['English', 'Swahili'],
+    isPopular: true
+  },
+
   // Nigeria
   {
     id: 'ng',
