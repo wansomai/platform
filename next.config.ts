@@ -52,22 +52,6 @@ const nextConfig: NextConfig = {
         destination: '/ai-assistant',
         permanent: true, // 301 redirect - SEO friendly
       },
-      // Redirect hire-a-lawyer and lawyer-network pages to clarie.co (moved domain)
-      {
-        source: '/hire-a-lawyer',
-        destination: 'https://clarie.co/hire-a-lawyer',
-        permanent: true, // 301 redirect - preserves SEO
-      },
-      {
-        source: '/hire-a-lawyer/:slug*',
-        destination: 'https://clarie.co/hire-a-lawyer/:slug*',
-        permanent: true, // 301 redirect - preserves SEO
-      },
-      {
-        source: '/lawyer-network/:slug*',
-        destination: 'https://clarie.co/lawyer-network/:slug*',
-        permanent: true, // 301 redirect - preserves SEO
-      },
     ];
   },
 };
