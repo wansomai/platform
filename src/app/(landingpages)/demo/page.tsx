@@ -202,32 +202,7 @@ const DemoPage = () => {
           </div>
 
           {/* Stats Section */}
-          <div className="mt-10 pt-8 border-t border-gray-200">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Stat 1 */}
-              <div>
-                <div className="text-heading-1 font-bold font-serif text-gray-900 mb-2">30%</div>
-                <p className="text-sm text-gray-600">
-                  Average measured boost in productivity
-                </p>
-              </div>
-
-              {/* Stat 2 */}
-              <div>
-                <div className="text-heading-1 font-bold font-serif text-gray-900 mb-2">+5hrs</div>
-                <p className="text-sm text-gray-600">
-                  Weekly time savings from routine tasks
-                </p>
-              </div>
-
-              {/* Stat 3 */}
-              <div>
-                <div className="text-heading-1 font-bold font-serif text-gray-900 mb-2">$2.3m</div>
-                <p className="text-sm text-gray-600">
-                  Potential additional billing per 100 lawyers
-                </p>
-              </div>
-            </div>
+          <div className="mt-10 pt-8 border-t border-gray-200">      
 
             {/* Partner Logos */}
             <div className="mt-12">
