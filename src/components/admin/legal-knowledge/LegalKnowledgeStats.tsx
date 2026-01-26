@@ -30,13 +30,6 @@ export function LegalKnowledgeStats({ stats, isLoading }: LegalKnowledgeStatsPro
       bgColor: 'bg-green-50',
     },
     {
-      title: 'Total Chunks',
-      value: stats.totalChunks,
-      icon: Layers,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
-    },
-    {
       title: 'Jurisdictions',
       value: Object.keys(stats.byJurisdiction).length,
       icon: Globe,
@@ -46,7 +39,7 @@ export function LegalKnowledgeStats({ stats, isLoading }: LegalKnowledgeStatsPro
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {statCards.map((stat) => (
         <div
           key={stat.title}

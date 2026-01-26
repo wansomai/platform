@@ -615,7 +615,49 @@ model Publications {
   title String
 }
 
-// ==================== LEGAL KNOWLEDGE SYSTEM (RAG) ====================
+model LegalKnowledge {
+  id              String                @id @default(cuid())
+  title           String
+  description     String?
+  type            LegalKnowledgeType
+  jurisdiction    Jurisdiction
+  practiceAreas   PracticeArea[]
+  content         String
+  fileUrl         String?
+  fileType        String?
+  sourceType      String                @default("internal")
+  sourceReference String?
+  effectiveDate   DateTime?
+  tags            String[]
+  status          String                @default("active")
+  isPublished     Boolean               @default(false)
+  createdById     String
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  createdBy       User                  @relation(fields: [createdById], references: [id])
+  chunks          LegalKnowledgeChunk[]
+
+  @@index([jurisdiction, type])
+  @@index([status, isPublished])
+  @@index([createdById])
+  @@map("legal_knowledge")
+}
+
+model LegalKnowledgeChunk {
+  id               String                 @id @default(cuid())
+  legalKnowledgeId String
+  chunkIndex       Int
+  chunkText        String
+  startOffset      Int
+  endOffset        Int
+  embedding        Unsupported("vector")?
+  sectionTitle     String?
+  createdAt        DateTime               @default(now())
+  legalKnowledge   LegalKnowledge         @relation(fields: [legalKnowledgeId], references: [id], onDelete: Cascade)
+
+  @@index([legalKnowledgeId, chunkIndex])
+  @@map("legal_knowledge_chunks")
+}
 
 enum LegalKnowledgeType {
   TEMPLATE
@@ -631,57 +673,6 @@ enum Jurisdiction {
   INTERNATIONAL
   GENERAL
 }
-
-model LegalKnowledge {
-  id            String             @id @default(cuid())
-  title         String
-  description   String?
-  type          LegalKnowledgeType
-  jurisdiction  Jurisdiction
-  practiceAreas PracticeArea[]
-
-  content         String // Full text content
-  fileUrl         String? // Original file (Vercel Blob)
-  fileType        String?
-  sourceType      String  @default("internal") // internal | licensed
-  sourceReference String? // Citation info
-
-  effectiveDate DateTime?
-  tags          String[]
-  status        String    @default("active") // active | archived | draft
-  isPublished   Boolean   @default(false)
-
-  createdById String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  createdBy User                  @relation(fields: [createdById], references: [id])
-  chunks    LegalKnowledgeChunk[]
-
-  @@index([jurisdiction, type])
-  @@index([status, isPublished])
-  @@index([createdById])
-  @@map("legal_knowledge")
-}
-
-model LegalKnowledgeChunk {
-  id               String                      @id @default(cuid())
-  legalKnowledgeId String
-  chunkIndex       Int
-  chunkText        String
-  startOffset      Int
-  endOffset        Int
-  embedding        Unsupported("vector(768)")?
-  sectionTitle     String?
-  createdAt        DateTime                    @default(now())
-
-  legalKnowledge LegalKnowledge @relation(fields: [legalKnowledgeId], references: [id], onDelete: Cascade)
-
-  @@index([legalKnowledgeId, chunkIndex])
-  @@map("legal_knowledge_chunks")
-}
-
-// ==================== END LEGAL KNOWLEDGE SYSTEM ====================
 
 enum PracticeArea {
   MERGERS_AND_ACQUISITIONS
