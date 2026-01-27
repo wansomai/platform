@@ -45,7 +45,7 @@ npx prisma studio     # Database GUI
 - JWT-based authentication via NextAuth.js
 - Dual token system:
   - **Session token**: NextAuth JWT (30-day expiry)
-  - **Access token**: Custom JWT (1-hour expiry, auto-refreshed)
+  - **Access token**: Custom JWT (7-day expiry, auto-refreshed)
 - User ID extracted from Bearer token in API routes via `getUserIdFromRequest()` in `src/lib/auth/authorization.ts`
 
 #### 3. Project-Based Workspace Model
@@ -176,7 +176,7 @@ export const GET = withErrorHandler(
 All imports use `@/*` which maps to `./src/*`:
 ```typescript
 import { Something } from '@/components/ui/something';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 ```
 
 ### Route Groups
@@ -196,12 +196,15 @@ created_by             String   @map("createdBy")      // TypeScript: document.c
 Similar pattern applies to `ProjectDocument` and `ConversationDocument` join tables.
 
 ### Environment Variables
-Key variables:
+See `.env.example` for the full list. Key variables:
 - `DATABASE_URL` - PostgreSQL connection
-- `NEXTAUTH_SECRET` / `NEXTAUTH_URL`
-- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Gemini API
-- `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - OAuth
+- `NEXTAUTH_SECRET` / `NEXTAUTH_URL` - NextAuth configuration
+- `JWT_SECRET` / `JWT_REFRESH_SECRET` - Custom token handling
+- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Gemini API (only one required)
+- `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - Google OAuth
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
+- `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` / `PAYSTACK_PLAN_CODE` - Payments
+- `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` - Sanity CMS
 
 Optional (for Google Cloud Vision OCR):
 - `GOOGLE_APPLICATION_CREDENTIALS` - Path to service account JSON key
@@ -230,6 +233,12 @@ Optional (for Google Cloud Vision OCR):
 ### Billing
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
+
+### Subscription Limits (`src/lib/subscription.ts`)
+- **Free plan**: 2 projects, 10 messages/month
+- **Pro/Enterprise plan**: Unlimited projects and messages
+- AI Associates are a premium feature (Pro/Enterprise only)
+- Enterprise accounts (`accountType: 'enterprise'`) automatically get Pro features
 
 ## Content Management
 - Primary: **Sanity CMS** for blogs, lawyer profiles, legal documents

@@ -71,8 +71,9 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
 
     // Determine plan and limits
     // Check both Subscription record AND organization accountType
+    // 'non_renewing' status means cancelled but still active until period end
     const hasActiveSubscription = subscription &&
-      subscription.status === 'active' &&
+      ['active', 'non_renewing'].includes(subscription.status) &&
       ['professional', 'enterprise', 'pro'].includes(subscription.planName.toLowerCase());
 
     const isEnterpriseAccount = organization?.accountType === 'enterprise';

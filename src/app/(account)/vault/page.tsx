@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { 
   Table, 
   TableBody, 
@@ -20,13 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { 
@@ -35,14 +28,11 @@ import {
   Trash2, 
   Search, 
   Plus, 
-  MoreVertical,
   File,
   FileSpreadsheet,
   FileImage,
   Eye,
   FolderPlus,
-  Grid,
-  List,
   RefreshCw,
   FileIcon,
   Folder,
@@ -117,23 +107,6 @@ export default function VaultPage() {
   const [fileType, setFileType] = useState<string | undefined>(undefined);
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isClient, setIsClient] = useState(false);
-  
-  // Set responsive view mode on client
-  useEffect(() => {
-    setIsClient(true);
-    const handleResize = () => {
-      setViewMode(window.innerWidth < 768 ? "grid" : "list");
-    };
-    
-    handleResize(); // Set initial value
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
   
   // Modal states
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -168,7 +141,7 @@ export default function VaultPage() {
       params.folder = activeFolder;
     }
     
-    fetchDocuments(params);
+    fetchDocuments(params, true);
   }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
   
   // Error handling
@@ -181,11 +154,6 @@ export default function VaultPage() {
     }
   }, [error, addToast]);
   
-  // Clear selected documents when view changes
-  useEffect(() => {
-    clearSelectedDocuments();
-  }, [viewMode, clearSelectedDocuments]);
-
   // Handle document deletion
   const handleDeleteDocument = async () => {
     if (!documentToDelete) return;
@@ -374,114 +342,6 @@ export default function VaultPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   };
   
-  // Render grid view
-  const renderGridView = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {documents.map((document) => (
-        <Card 
-          key={document.id} 
-          className={`overflow-hidden hover:shadow-md transition-all cursor-pointer ${
-            selectedDocuments.includes(document.id) ? "ring-2 ring-primary-500" : ""
-          }`}
-          onClick={() => toggleDocumentSelection(document.id)}
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-start space-x-2">
-              <div className="flex-shrink-0 mt-1">
-                <DocumentTypeIcon fileType={document.fileType || ""} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-base truncate">{document.title}</CardTitle>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-gray-500 hover:text-gray-700"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(document.fileUrl, '_blank');
-                        }}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View
-                      </DropdownMenuItem>
-                     
-                      <DropdownMenuItem 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDocumentToMove(document.id);
-                          setShowMoveFolderDialog(true);
-                        }}
-                      >
-                        <FolderSymlinkIcon className="h-4 w-4 mr-2" />
-                        Move
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownloadDocument(document);
-                        }}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        className="text-red-600"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDocumentToDelete({
-                            id: document.id,
-                            name: document.title
-                          });
-                          setShowDeleteDialog(true);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="pb-3">
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-gray-500">Type:</span>{" "}
-                <Badge variant="outline" className="ml-1">{document.fileType}</Badge>
-              </div>
-              <div>
-                <span className="text-gray-500">Size:</span>{" "}
-                <span>{formatBytes(document.fileSize)}</span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-gray-500">Uploaded:</span>{" "}
-                <span>{formatDate(document.createdAt)}</span>
-              </div>
-              <div className="col-span-2">
-                <span className="text-gray-500">By:</span>{" "}
-                <span>{document.createdBy}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
-  
   // Render list view
   const renderListView = () => (
     <Card>
@@ -596,20 +456,6 @@ export default function VaultPage() {
           </div>
           
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={() => setViewMode(viewMode === "grid" ? "list" : "grid")}>
-              {viewMode === "grid" ? (
-                <>
-                  <List className="h-4 w-4 mr-2" />
-                  List View
-                </>
-              ) : (
-                <>
-                  <Grid className="h-4 w-4 mr-2" />
-                  Grid View
-                </>
-              )}
-            </Button>
-            
             <Button variant="outline" onClick={() => {
               setEditFolder(null);
               setShowFolderModal(true);
@@ -800,7 +646,7 @@ export default function VaultPage() {
             ) : documents.length === 0 ? (
               <EmptyDocuments onUpload={() => setShowUploadModal(true)} />
             ) : (
-              viewMode === "grid" ? renderGridView() : renderListView()
+              renderListView()
             )}
             
             {/* Pagination */}

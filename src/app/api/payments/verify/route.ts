@@ -151,6 +151,35 @@ async function processPayment(transaction: any, organizationId: string, referenc
   const planInterval = plan.interval || 'monthly';
   const planName = plan.name || 'Professional';
 
+  // Extract Paystack subscription code if available
+  // When a transaction is initialized with a plan, Paystack creates a subscription
+  const paystackSubscriptionId = transaction.subscription_code
+    || transaction.plan_object?.subscriptions?.[0]?.subscription_code
+    || null;
+
+  // If no subscription code in transaction, try to fetch it from Paystack using customer code
+  let resolvedSubscriptionId = paystackSubscriptionId;
+  if (!resolvedSubscriptionId && transaction.customer?.customer_code && PAYSTACK_SECRET_KEY) {
+    try {
+      const customerResponse = await fetch(
+        `${PAYSTACK_BASE_URL}/subscription?customer=${transaction.customer.customer_code}`,
+        {
+          headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
+        }
+      );
+      const customerData = await customerResponse.json();
+      if (customerData.status && customerData.data?.length > 0) {
+        // Find the most recent active subscription
+        const activeSub = customerData.data.find(
+          (s: any) => s.status === 'active' || s.status === 'non-renewing'
+        ) || customerData.data[0];
+        resolvedSubscriptionId = activeSub.subscription_code || null;
+      }
+    } catch (err) {
+      console.error('Failed to fetch subscription code from Paystack:', err);
+    }
+  }
+
   // Calculate subscription period
   const now = new Date();
   const periodEnd = calculatePeriodEnd(planInterval);
@@ -167,6 +196,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
         billingCycle: planInterval,
         status: 'active',
         paystackCustomerId: transaction.customer?.customer_code || null,
+        paystackSubscriptionId: resolvedSubscriptionId,
         currentPeriodStart: now,
         currentPeriodEnd: periodEnd,
       },
@@ -176,6 +206,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
         billingCycle: planInterval,
         status: 'active',
         paystackCustomerId: transaction.customer?.customer_code || null,
+        ...(resolvedSubscriptionId ? { paystackSubscriptionId: resolvedSubscriptionId } : {}),
         currentPeriodStart: now,
         currentPeriodEnd: periodEnd,
       },

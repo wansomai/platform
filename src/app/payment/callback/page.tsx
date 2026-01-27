@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useProfileStore } from '@/store/profile.store';
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2, AlertCircle } from "lucide-react";
 
@@ -47,6 +48,8 @@ function PaymentCallbackContent() {
             ? 'Payment was already processed successfully!'
             : 'Payment successful! Your subscription is now active.');
           setSubscriptionDetails(data.data.subscription || null);
+          // Invalidate profile cache so profile page shows updated subscription status
+          useProfileStore.getState().invalidateCache();
         } else if (response.ok && data.data?.status) {
           setStatus('failed');
           setMessage(data.data?.message || 'Payment was not successful. Please try again.');
@@ -146,13 +149,6 @@ function PaymentCallbackContent() {
                   className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
                 >
                   Go to Dashboard
-                </Button>
-                <Button
-                  onClick={handleGoToProfile}
-                  variant="outline"
-                  className="w-full"
-                >
-                  View Subscription
                 </Button>
               </>
             )}

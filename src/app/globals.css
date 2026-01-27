@@ -389,6 +389,11 @@ body {
   background-position: center;
 }
 
+.bg-personal-upgrade{
+  background-image: url('../../public/gradient-2.png');
+  background-size: cover;
+  background-position: center;
+}
 .bg-research-card{
   background-image: url('../../public/gradient-bg.png');
   background-size: cover;

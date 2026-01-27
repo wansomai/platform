@@ -31,10 +31,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
             {/* Right side - User Info */}
             <div className="flex items-center gap-3">
-              <div className="hidden md:flex flex-col items-end text-sm">
-                <span className="text-gray-500">Signed in as</span>
-                <span className="font-medium text-gray-900">{email}</span>
-              </div>
+       
               <Link
                 href="/dashboard"
                 className="text-sm text-primary-600 hover:text-primary-700 font-medium"

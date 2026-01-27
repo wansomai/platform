@@ -51,13 +51,89 @@ export const POST = withErrorHandler(
       return createBadRequestResponse(`Cannot cancel subscription with status: ${subscription.status}`);
     }
 
-    if (!subscription.paystackSubscriptionId) {
-      return createBadRequestResponse('Subscription not linked to Paystack');
+    // If no Paystack subscription ID stored locally, try to resolve it
+    let paystackSubId = subscription.paystackSubscriptionId;
+
+    if (!paystackSubId) {
+      try {
+        // If we have a customer code, query subscriptions directly
+        if (subscription.paystackCustomerId) {
+          const listResponse = await fetch(
+            `${PAYSTACK_BASE_URL}/subscription?customer=${subscription.paystackCustomerId}`,
+            {
+              headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
+            }
+          );
+          const listData = await listResponse.json();
+          if (listData.status && listData.data?.length > 0) {
+            const activeSub = listData.data.find(
+              (s: any) => s.status === 'active' || s.status === 'non-renewing'
+            ) || listData.data[0];
+            paystackSubId = activeSub.subscription_code || null;
+          }
+        }
+
+        // If still no subscription ID, look up customer by email first
+        if (!paystackSubId) {
+          // Find customer on Paystack by email
+          const customerListResponse = await fetch(
+            `${PAYSTACK_BASE_URL}/customer/${encodeURIComponent(user.email)}`,
+            {
+              headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
+            }
+          );
+          const customerData = await customerListResponse.json();
+
+          if (customerData.status && customerData.data) {
+            const customerCode = customerData.data.customer_code;
+
+            // Now fetch subscriptions for this customer
+            if (customerCode) {
+              // Update the stored customer ID while we're at it
+              if (!subscription.paystackCustomerId) {
+                await prisma.subscription.update({
+                  where: { id: subscription.id },
+                  data: { paystackCustomerId: customerCode },
+                });
+              }
+                console.log('Fetching subscriptions for customer code:', customerCode);
+              const subListResponse = await fetch(
+                `${PAYSTACK_BASE_URL}/subscription?customer=${customerCode}`,
+                {
+                  headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` },
+                }
+              );
+              const subListData = await subListResponse.json();
+              console.log('Subscription list data:', subListData);
+              if (subListData.status && subListData.data?.length > 0) {
+                const activeSub = subListData.data.find(
+                  (s: any) => s.status === 'active' || s.status === 'non-renewing'
+                ) || subListData.data[0];
+                paystackSubId = activeSub.subscription_code || null;
+              }
+            }
+          }
+        }
+
+        // Persist the subscription ID for future use
+        if (paystackSubId) {
+          await prisma.subscription.update({
+            where: { id: subscription.id },
+            data: { paystackSubscriptionId: paystackSubId },
+          });
+        }
+      } catch (err) {
+        console.error('Error cancelling subscription:', err);
+      }
+    }
+
+    if (!paystackSubId) {
+      return createBadRequestResponse('Error cancelling subscription. Please contact support.');
     }
 
     // First, get the subscription details from Paystack to get the email token
     const fetchResponse = await fetch(
-      `${PAYSTACK_BASE_URL}/subscription/${subscription.paystackSubscriptionId}`,
+      `${PAYSTACK_BASE_URL}/subscription/${paystackSubId}`,
       {
         method: 'GET',
         headers: {
@@ -69,7 +145,7 @@ export const POST = withErrorHandler(
     const fetchData = await fetchResponse.json();
 
     if (!fetchData.status) {
-      console.error('Failed to fetch subscription from Paystack:', fetchData);
+      console.error('Failed to fetch subscription:', fetchData);
       return createErrorResponse(
         new AppError('Failed to fetch subscription details', 'PAYSTACK_ERROR', 500)
       );
@@ -93,7 +169,7 @@ export const POST = withErrorHandler(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code: subscription.paystackSubscriptionId,
+          code: paystackSubId,
           token: emailToken,
         }),
       }

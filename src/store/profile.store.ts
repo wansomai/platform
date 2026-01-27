@@ -55,6 +55,42 @@ interface Invitation {
   expiresAt: string;
 }
 
+interface SubscriptionPayment {
+  id: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+interface Subscription {
+  id: string;
+  planName: string;
+  planPrice: string | null;
+  billingCycle: string | null;
+  status: string;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  paystackSubscriptionId: string | null;
+  recentPayments: SubscriptionPayment[];
+}
+
+interface SubscriptionStatus {
+  subscription: Subscription | null;
+  organization: {
+    id: string;
+    name: string;
+    accountType: string;
+  };
+  effectiveStatus: 'free' | 'active' | 'attention' | 'cancelled' | 'non_renewing';
+  isEnterprise: boolean;
+  isOwner: boolean;
+  canUpgrade: boolean;
+  canCancel: boolean;
+  hasProAccess: boolean;
+}
+
 interface UpdateProfileData {
   name?: string;
   email?: string;
@@ -86,6 +122,12 @@ interface ProfileState {
   invitations: Invitation[];
   organizations: Organization[];
   currentOrgId: string;
+
+  // Subscription data
+  subscriptionStatus: SubscriptionStatus | null;
+  isLoadingSubscription: boolean;
+  isCancellingSubscription: boolean;
+  isRetryingPayment: boolean;
 
   // UI state
   isLoading: boolean;
@@ -119,6 +161,11 @@ interface ProfileState {
   requestUpgrade: () => Promise<boolean>;
   downgradeAccount: () => Promise<{ success: boolean; removedMembers?: number }>;
 
+  // Actions - Subscription Management
+  fetchSubscriptionStatus: () => Promise<SubscriptionStatus | null>;
+  cancelSubscription: () => Promise<{ success: boolean; message: string; effectiveUntil?: string }>;
+  retryPayment: () => Promise<{ success: boolean; message: string }>;
+
   // Actions - UI
   setSearchQuery: (query: string) => void;
   setLoading: (loading: boolean) => void;
@@ -148,6 +195,10 @@ export const useProfileStore = create<ProfileState>()(
       invitations: [],
       organizations: [],
       currentOrgId: '',
+      subscriptionStatus: null,
+      isLoadingSubscription: false,
+      isCancellingSubscription: false,
+      isRetryingPayment: false,
       isLoading: false,
       isSaving: false,
       isInviting: false,
@@ -533,6 +584,104 @@ export const useProfileStore = create<ProfileState>()(
         }
       },
 
+      // Fetch subscription status
+      fetchSubscriptionStatus: async (): Promise<SubscriptionStatus | null> => {
+        try {
+          set({ isLoadingSubscription: true, error: null });
+
+          const response = await apiService.get('/api/subscription/status') as {
+            data: SubscriptionStatus;
+          };
+
+          if (response.data) {
+            set({
+              subscriptionStatus: response.data,
+              isLoadingSubscription: false
+            });
+            return response.data;
+          }
+
+          set({ isLoadingSubscription: false });
+          return null;
+        } catch (error: any) {
+          console.error('Error fetching subscription status:', error);
+          set({ isLoadingSubscription: false });
+          return null;
+        }
+      },
+
+      // Cancel subscription
+      cancelSubscription: async (): Promise<{ success: boolean; message: string; effectiveUntil?: string }> => {
+        try {
+          set({ isCancellingSubscription: true, error: null });
+
+          const response = await apiService.post('/api/subscription/cancel', {}) as {
+            data: {
+              message: string;
+              effectiveUntil: string;
+              status: string;
+            };
+            message: string;
+          };
+
+          // Refresh subscription status
+          await get().fetchSubscriptionStatus();
+
+          set({ isCancellingSubscription: false });
+          return {
+            success: true,
+            message: response.message || 'Subscription cancelled successfully',
+            effectiveUntil: response.data?.effectiveUntil
+          };
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || error.message || 'Failed to cancel subscription';
+          set({
+            error: errorMessage,
+            isCancellingSubscription: false
+          });
+          return { success: false, message: errorMessage };
+        }
+      },
+
+      // Retry failed payment
+      retryPayment: async (): Promise<{ success: boolean; message: string }> => {
+        try {
+          set({ isRetryingPayment: true, error: null });
+
+          const response = await apiService.post('/api/subscription/retry', {}) as {
+            data: {
+              status: string;
+              message: string;
+            };
+            message: string;
+          };
+
+          if (response.data?.status === 'success') {
+            // Refresh subscription status
+            await get().fetchSubscriptionStatus();
+
+            set({ isRetryingPayment: false });
+            return {
+              success: true,
+              message: response.message || 'Payment successful'
+            };
+          }
+
+          set({ isRetryingPayment: false });
+          return {
+            success: false,
+            message: response.data?.message || 'Payment processing'
+          };
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || error.message || 'Failed to retry payment';
+          set({
+            error: errorMessage,
+            isRetryingPayment: false
+          });
+          return { success: false, message: errorMessage };
+        }
+      },
+
       // UI Actions
       setSearchQuery: (query: string) => set({ searchQuery: query }),
       setLoading: (loading: boolean) => set({ isLoading: loading }),
@@ -666,5 +815,28 @@ export const useOrganization = () => {
     requestUpgrade,
     downgradeAccount,
     setUpgrading,
+  };
+};
+
+export const useSubscription = () => {
+  const subscriptionStatus = useProfileStore(state => state.subscriptionStatus);
+  const isLoadingSubscription = useProfileStore(state => state.isLoadingSubscription);
+  const isCancellingSubscription = useProfileStore(state => state.isCancellingSubscription);
+  const isRetryingPayment = useProfileStore(state => state.isRetryingPayment);
+  const error = useProfileStore(state => state.error);
+
+  const fetchSubscriptionStatus = useProfileStore(state => state.fetchSubscriptionStatus);
+  const cancelSubscription = useProfileStore(state => state.cancelSubscription);
+  const retryPayment = useProfileStore(state => state.retryPayment);
+
+  return {
+    subscriptionStatus,
+    isLoadingSubscription,
+    isCancellingSubscription,
+    isRetryingPayment,
+    error,
+    fetchSubscriptionStatus,
+    cancelSubscription,
+    retryPayment,
   };
 };

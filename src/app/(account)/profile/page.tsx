@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import ProAccessModal from '@/components/modals/ProAccess';
 import { useNotifications } from '@/hooks/useNotifications';
-import { useProfile, useTeamManagement, useOrganization } from '@/store/profile.store';
+import { useProfile, useTeamManagement, useOrganization, useSubscription, useProfileStore } from '@/store/profile.store';
 
 const Page = () => {
   const { data: session, update: updateSession } = useSession();
@@ -74,6 +74,7 @@ const Page = () => {
     downgradeAccount: performDowngrade,
     setUpgrading
   } = useOrganization();
+  const { subscriptionStatus, fetchSubscriptionStatus, cancelSubscription } = useSubscription();
 
   // Local UI state only
   const [isEditing, setIsEditing] = useState(false);
@@ -94,6 +95,7 @@ const Page = () => {
     fetchProfile();
     fetchTeamData();
     fetchOrganizations();
+    fetchSubscriptionStatus();
   }, []);
 
   // Sync fullName and organizationName with profile
@@ -197,12 +199,32 @@ const Page = () => {
 
   const handleDowngradeAccount = async () => {
     setShowDowngradeDialog(false);
-    const result = await performDowngrade();
 
-    if (result.success) {
-      notify.success(`Account downgraded. ${result.removedMembers || 0} members removed.`);
+    const isEnterprise = profile?.organization?.accountType === 'enterprise' ||
+      profile?.activeOrganization?.accountType === 'enterprise';
+
+    if (isEnterprise) {
+      // Enterprise accountType: downgrade org and remove members
+      const result = await performDowngrade();
+      if (result.success) {
+        notify.success(`Account downgraded. ${result.removedMembers || 0} members removed.`);
+      } else {
+        notify.error('Failed to downgrade account');
+      }
     } else {
-      notify.error('Failed to downgrade account');
+      // Personal accountType with Paystack subscription: cancel subscription
+      const result = await cancelSubscription();
+      if (result.success) {
+        notify.success(result.effectiveUntil
+          ? `Subscription cancelled. Access continues until ${new Date(result.effectiveUntil).toLocaleDateString()}.`
+          : 'Subscription cancelled successfully.');
+        // Refresh subscription status to update UI
+        await fetchSubscriptionStatus();
+        useProfileStore.getState().invalidateCache();
+        await fetchProfile(true);
+      } else {
+        notify.error(result.message || 'Failed to cancel subscription');
+      }
     }
   };
 
@@ -226,6 +248,10 @@ const Page = () => {
     }
   };
 
+  // Determine pro access from subscription status (covers both Paystack subscription and enterprise accountType)
+  const hasProAccess = subscriptionStatus?.hasProAccess || false;
+  const isNonRenewing = subscriptionStatus?.effectiveStatus === 'non_renewing';
+
   const filteredMembers = getFilteredMembers();
 
   const getUserInitials = (name: string) => {
@@ -243,7 +269,7 @@ const Page = () => {
           <p className="text-gray-600">Manage your organization.</p>
         </div>
 
-        {(profile?.role === 'admin' || profile?.role === 'owner') && (profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise') ? (
+        {(profile?.role === 'admin' || profile?.role === 'owner') && (profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise' || hasProAccess) ? (
           // Enterprise accounts - show tabs with Members
           <Tabs defaultValue="general" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
@@ -370,13 +396,23 @@ const Page = () => {
                       </Button>
                       {profile?.role === 'owner' && (
                         <>
-                          {profile.organization?.accountType !== 'enterprise' ? (
+                          {!hasProAccess ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
                               disabled={isUpgrading}
                             >
                               <Crown className="h-4 w-4 mr-2" />
-                              {isUpgrading ? "Loading..." : "Switch to Enterprise"}
+                              {isUpgrading ? "Loading..." : "Upgrade Plan"}
+                            </Button>
+                          ) : isNonRenewing ? (
+                            <Button
+                              disabled
+                              variant="outline"
+                            >
+                              <Crown className="h-4 w-4 mr-2" />
+                              Plan ends {subscriptionStatus?.subscription?.currentPeriodEnd
+                                ? new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()
+                                : 'soon'}
                             </Button>
                           ) : (
                             <Button
@@ -384,7 +420,7 @@ const Page = () => {
                               disabled={isDowngrading}
                               variant="destructive"
                             >
-                              {isDowngrading ? "Switching..." : "Switch to Personal"}
+                              {isDowngrading ? "Switching..." : "Switch to Free Plan"}
                             </Button>
                           )}
                         </>
@@ -732,7 +768,7 @@ const Page = () => {
                       </Button>
                       {profile?.role === 'owner' && (
                         <>
-                          {profile.organization?.accountType !== 'enterprise' ? (
+                          {!hasProAccess ? (
                             profile.organization?.upgradeRequestedAt ? (
                               <Button
                                 disabled
@@ -748,16 +784,26 @@ const Page = () => {
                                 className='bg-secondary'
                               >
                                 <Crown className="h-4 w-4 mr-1" />
-                                {isUpgrading ? "Requesting..." : "Switch to Enterprise"}
+                                {isUpgrading ? "Requesting..." : "Request Pro Access"}
                               </Button>
                             )
+                          ) : isNonRenewing ? (
+                            <Button
+                              disabled
+                              variant="outline"
+                            >
+                              <Crown className="h-4 w-4 mr-1" />
+                              Plan ends {subscriptionStatus?.subscription?.currentPeriodEnd
+                                ? new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()
+                                : 'soon'}
+                            </Button>
                           ) : (
                             <Button
                               onClick={() => setShowDowngradeDialog(true)}
                               disabled={isDowngrading}
                               variant="destructive"
                             >
-                              {isDowngrading ? "Downgrading..." : "Switch to Personal"}
+                              {isDowngrading ? "Downgrading..." : "Switch to Free Plan"}
                             </Button>
                           )}
                         </>
@@ -777,7 +823,7 @@ const Page = () => {
               onClose={() => setShowProAccess(false)}
               onRequestAccess={handleRequestProAccess}
               isLoading={isUpgrading}
-              errorMessage="You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
+              errorMessage="You have reached your message limit. Request Pro access to send unlimited messages."
               userData={{
                 name: session?.user?.name || '',
                 email: session?.user?.email || '',
@@ -785,30 +831,52 @@ const Page = () => {
               }}
             />
 
-      {/* Downgrade Confirmation Dialog */}
+      {/* Downgrade/Cancel Confirmation Dialog */}
       <AlertDialog open={showDowngradeDialog} onOpenChange={setShowDowngradeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Downgrade to Personal Account?</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p className="font-semibold text-destructive">Warning: This action cannot be undone.</p>
-              <p>
-                Downgrading to a Personal account will:
-              </p>
-              <ul className="list-disc pl-6 space-y-1">
-                <li>Remove all team members from your organization</li>
-                <li>Cancel all pending invitations</li>
-                <li>Disable team collaboration features</li>
-              </ul>
-            </AlertDialogDescription>
+            {profile?.organization?.accountType === 'enterprise' ? (
+              <>
+                <AlertDialogTitle>Downgrade to Personal Account?</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-2">
+                  <p className="font-semibold text-destructive">Warning: This action cannot be undone.</p>
+                  <p>Downgrading to a Personal account will:</p>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Remove all team members from your organization</li>
+                    <li>Cancel all pending invitations</li>
+                    <li>Disable team collaboration features</li>
+                  </ul>
+                </AlertDialogDescription>
+              </>
+            ) : (
+              <>
+                <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+                <AlertDialogDescription className="space-y-2">
+                  <p>Cancelling your subscription will:</p>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Revert to the free plan at the end of your billing period</li>
+                    <li>Limit you to {2} projects and {10} messages per month</li>
+                    <li>Disable premium features like AI Associates</li>
+                  </ul>
+                  {subscriptionStatus?.subscription?.currentPeriodEnd && (
+                    <p className="text-sm mt-2">
+                      You will retain access current plan until{' '}
+                      <span className="font-semibold">
+                        {new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()}
+                      </span>.
+                    </p>
+                  )}
+                </AlertDialogDescription>
+              </>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Keep Plan</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDowngradeAccount}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Downgrade Account
+              {profile?.organization?.accountType === 'enterprise' ? 'Downgrade Account' : 'Cancel Subscription'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

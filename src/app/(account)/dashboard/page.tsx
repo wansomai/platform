@@ -69,11 +69,11 @@ const QuickActionCard = React.memo(
               {loading ? (
                 <Loader2 className={`h-6 w-6 animate-spin ${color}`} />
               ) : (
-                <Icon className={`h-6 w-6 text-gray-600`} />
+                <Icon className={` h-4 w-4 text-gray-600`} />
               )}
             </div>
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-sm text-gray-600">{title}</h3>
+              <h3 className="font-medium text-xs md:text-sm text-gray-600">{title}</h3>
               {loading && (
                 <span className="text-xs text-gray-500 animate-pulse">
                   Creating...
@@ -188,8 +188,8 @@ export default function DashboardPage() {
       {/* Quick Actions & Activity Feed */}
       <div className="">
         {/* Quick Actions */}
-        <div className=" space-y-6">
-          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-">
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-">
             {/* Draft A Contract Dropdown */}
             <DropdownMenu
               open={showDraftDropdown}

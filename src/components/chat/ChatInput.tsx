@@ -1277,8 +1277,8 @@ export function ChatInput({
         isLoading={isUpgrading}
         errorMessage={
           projectRequiresUpgrade
-            ? "You have reached your workspace limit (1 workspace on free plan). Request Pro access to create unlimited workspaces."
-            : "You have reached your message limit (20 messages on free plan). Request Pro access to send unlimited messages."
+            ? "You have reached your workspace limit. Request Pro access to create unlimited workspaces."
+            : "You have reached your message limit. Request Pro access to send unlimited messages."
         }
         userData={{
           name: session?.user?.name || "",

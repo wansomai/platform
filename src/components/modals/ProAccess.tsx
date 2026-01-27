@@ -8,8 +8,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
-import {  Crown } from "lucide-react";
+import { ChartNoAxesCombined, Crown, Zap, Loader2 } from "lucide-react";
+import { apiService } from "@/lib/api";
 
 interface ProAccessModalProps {
   isOpen: boolean;
@@ -41,6 +41,8 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
     email: "",
     accountType: "",
   });
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   // Pre-populate form when modal opens or user data changes
   useEffect(() => {
@@ -53,10 +55,49 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
     }
   }, [userData, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onRequestAccess(formData);
+  // Clear payment error when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setPaymentError(null);
+    }
+  }, [isOpen]);
+
+  // Handle Personal Plan Upgrade - Paystack Payment
+  const handlePersonalUpgrade = async () => {
+    setIsProcessingPayment(true);
+    setPaymentError(null);
+
+    try {
+      const response = await apiService.post<{
+        data: {
+          authorizationUrl: string;
+          accessCode: string;
+          reference: string;
+        };
+      }>('/api/payments/initialize', {});
+
+      if (response.data?.authorizationUrl) {
+        // Redirect to Paystack payment page
+        window.location.href = response.data.authorizationUrl;
+      } else {
+        setPaymentError('Failed to initialize payment. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Payment initialization error:', error);
+      const message = error.response?.data?.message || error.message || 'Failed to initialize payment';
+      setPaymentError(message);
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
+
+  // Handle Team Plan Request - Existing flow
+  const handleTeamRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    onRequestAccess({ ...formData, accountType: 'enterprise' });
+  };
+
+  const isAnyLoading = isLoading || isProcessingPayment;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -67,70 +108,75 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <Crown className="h-6 w-6 text-amber-600" />
             </div>
             <div>
-              <DialogTitle>Upgrade to wansom Pro</DialogTitle>
+              <DialogTitle>Keep Using Wansom?</DialogTitle>
             </div>
           </div>
         </DialogHeader>
 
         {/* Error Message */}
-        {/* {errorMessage && (
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm text-amber-800 font-medium">{errorMessage}</p>
+        {(errorMessage || paymentError) && (
+          <p className={`text-sm font-medium ${paymentError ? 'text-red-500' : 'text-gray-500'}`}>
+            {paymentError || errorMessage}
+          </p>
+        )}
+
+        <div className="flex flex-col md:flex-row gap-2">
+          {/* Personal Plan - Paystack Payment */}
+          <div className="bg-gray-100 p-4 rounded-lg basis-1/2">
+            <div>
+              <h2 className="text-md font-semibold">Upgrade Personal Plan</h2>
+              <p className="text-xs text-gray-600 mb-12 md:mb-28">
+                Get more work done faster, All your favorite legal tools in a unified workspace
+              </p>
+              <Button
+                type="button"
+                onClick={handlePersonalUpgrade}
+                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                disabled={isAnyLoading}
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Upgrade Now <Zap className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-        )} */}
 
-        <div className="flex flex-col gap-5">
-            <img
-              src="/gradient-bg.png"
-              alt="Pro Access Illustration"
-              className="rounded-lg max-h-[150px] w-full object-cover"
-            />
-
-          <div className="space-y-3">
+          {/* Team Plan - Request Flow */}
+          <div className="bg-gray-100 p-4 rounded-lg basis-1/2">
             <div>
-              <h2 className="text-lg font-semibold">
-                Create Unlimited Workspaces
-              </h2>
-              <p className="text-sm text-gray-600">
-                Collaborate more with your team, unlimited client/matter workspaces and messages
+              <h2 className="text-md font-semibold">Upgrade For Team</h2>
+              <p className="text-xs text-gray-600 mb-12 md:mb-28">
+                Collaborate more, unlimited client/matter workspaces and
+                messages
               </p>
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold">
-                AI Associates & Automated Workflows
-              </h2>
-              <p className="text-sm text-gray-600">
-                Use specialized AI Associates in chat and build custom automated workflows for routine tasks
-              </p>
-            </div>
-             <div>
-              <h2 className="text-lg font-semibold">
-                10000+ Legal Templates
-              </h2>
-              <p className="text-sm text-gray-600">
-                Boost legal drafting with access to 10,000+ customizable professional legal templates
-              </p>
+              <Button
+                variant="outline"
+                onClick={handleTeamRequest}
+                className="w-full"
+                disabled={isAnyLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Request Pro Access <ChartNoAxesCombined className="ml-2 h-4 w-4"/>
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>
-        <DialogFooter className="flex flex-col sm:flex-row gap-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="sm:flex-1"
-            disabled={isLoading}
-          >
-            Not Now
-          </Button>
-          <Button
-            type="submit"
-            onClick={handleSubmit}
-            className="sm:flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-            disabled={isLoading}
-          >
-            {isLoading ? "Processing..." : "Request Pro Access"}
-          </Button>
-        </DialogFooter>
+        <DialogFooter className="flex flex-col sm:flex-row gap-2"></DialogFooter>
       </DialogContent>
     </Dialog>
   );
