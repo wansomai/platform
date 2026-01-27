@@ -53,7 +53,6 @@ interface PageProps {
 const DocDetailPageClient = ({ blog }: PageProps) => {
   const router = useRouter();
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
-  const [isFavorited, setIsFavorited] = useState(false);
   const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
 
   // Fetch related documents
@@ -115,9 +114,9 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pt-14 lg:pt-32">
        <Navbar darkmode/>
-     <DraftPlus title="Write, review, negotiate, and manage legal contracts" initialPrompt={blog?.title ? `Draft a document using the "${blog.title}" template` : ""} initialTemplateName={blog?.title || ''} />
+
       {/* Header Section with Breadcrumb */}
       <div className="section-spacing">
         <div className="container mx-auto px-4 max-w-6xl">
@@ -166,9 +165,9 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
           </div>
         </div>
       </div>
-      
-
-      {/* Main Content Area */}
+     
+             <DraftPlus title="Write, review, negotiate, and manage legal contracts" initialPrompt={blog?.title ? `Draft a document using the "${blog.title}" template` : ""} initialTemplateName={blog?.title || ''} />
+          {/* Main Content Area */}
       <div className="container mx-auto px-4  max-w-6xl">
         <div className="flex gap-8">
         </div>
@@ -201,6 +200,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
           </div>
         )}
       </div>
+      
 
       <Footer />
     </div>
@@ -422,7 +422,7 @@ const DraftPlus = ({ title, subtitle, initialPrompt, initialTemplateName }: { ti
   };
   return (
     <section
-      className="relative pt-32"
+      className="relative section-spacing"
       id="knowledge-base"
     >
       <div className="section-container">
@@ -687,7 +687,7 @@ Tools
                 placeholder=""
                 className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-600 px-6 pr-16 text-[13px] md:text-base ${
                   selectedFiles.length > 0
-                    ? "min-h-[100px] max-h-[200px] pt-2 pb-4"
+                    ? "min-h-[120px] pt-2 pb-4 text-overflow-hidden"
                     : "min-h-[120px] max-h-[200px] py-4"
                 }`}
                 disabled={isSubmitting || isGenerating}
