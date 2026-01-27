@@ -40,19 +40,18 @@ export async function checkProjectAccess(projectId: string, userId: string): Pro
     if (projectMember) return true;
 
     // If not a direct member, check if user belongs to the project's organization
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
+    const [user, project] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { organizationId: true }
+      }),
+      prisma.project.findUnique({
+        where: { id: projectId },
+        select: { organizationId: true }
+      })
+    ]);
 
-    if (!user) return false;
-
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { organizationId: true }
-    });
-
-    if (!project || project.organizationId !== user.organizationId) {
+    if (!user || !project || project.organizationId !== user.organizationId) {
       return false;
     }
 

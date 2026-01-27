@@ -76,16 +76,9 @@ export async function POST(
     const body = await request.json();
     const { content, previewDocument } = createMessageSchema.parse(body);
 
-    // Start parallel operations immediately
+    // Phase 1: Validate access and fetch context — do NOT create user message yet
     const accessCheckPromise = checkProjectAccess(projectId, userId);
 
-    // Get project's organization for subscription check (not user's primary org)
-    const projectOrgPromise = prisma.project.findUnique({
-      where: { id: projectId },
-      select: { organizationId: true }
-    });
-
-    // Only fetch what we need based on query type
     const conversationPromise = prisma.conversation.findFirst({
       where: { id: conversationId, projectId },
       select: {
@@ -96,30 +89,22 @@ export async function POST(
       }
     });
 
-    // Create the user message in parallel with other operations
-    const userMessagePromise = prisma.message.create({
-      data: {
-        content,
-        role: "user",
-        conversationId,
-        userId,
-      }
-    });
-
     // Always get message history and metadata for proper context
     const messageHistoryPromise = prisma.message.findMany({
       where: { conversationId },
       orderBy: { createdAt: "desc" },
-      take: 6, // Reduced to 6 most recent messages to save tokens
+      take: 10, // Increased from 6 — token savings from trimmed prompts offset this
       select: {
         role: true,
         content: true,
       }
     });
 
+    // Merged project query — includes organizationId for subscription check
     const projectPromise = prisma.project.findUnique({
       where: { id: projectId },
       select: {
+        organizationId: true,
         title: true,
         description: true,
         knowledgeBase: {
@@ -133,7 +118,7 @@ export async function POST(
       where: { projectId }
     });
 
-    // Load all documents for context - Gemini handles large contexts efficiently
+    // Load all documents for context — include file_url and file_type to avoid N+1 for scanned docs
     const documentsPromise = prisma.projectDocument.findMany({
       where: { project_id: projectId },
       select: {
@@ -141,6 +126,8 @@ export async function POST(
           select: {
             id: true,
             title: true,
+            file_url: true,
+            file_type: true,
             content: {
               select: { content: true }
             }
@@ -149,17 +136,15 @@ export async function POST(
       }
     });
 
-    // Wait for all data in parallel — access, conversation, subscription, and content
-    // Subscription check starts immediately alongside other queries instead of sequentially
-    const subscriptionCheckPromise = projectOrgPromise.then(async (org) => {
-      if (!org?.organizationId) return { allowed: true } as { allowed: boolean; reason?: string };
-      return canSendMessage(org.organizationId);
+    // Subscription check chains off projectPromise (merged query)
+    const subscriptionCheckPromise = projectPromise.then(async (proj) => {
+      if (!proj?.organizationId) return { allowed: true } as { allowed: boolean; reason?: string };
+      return canSendMessage(proj.organizationId);
     });
 
     const [
       hasAccess,
       conversation,
-      userMessage,
       messageHistory,
       project,
       conversationDocuments,
@@ -168,7 +153,6 @@ export async function POST(
     ] = await Promise.all([
       accessCheckPromise,
       conversationPromise,
-      userMessagePromise,
       messageHistoryPromise,
       projectPromise,
       documentsPromise,
@@ -200,6 +184,16 @@ export async function POST(
         { status: 403 }
       );
     }
+
+    // Phase 2: Validation passed — now create user message
+    const userMessage = await prisma.message.create({
+      data: {
+        content,
+        role: "user",
+        conversationId,
+        userId,
+      }
+    });
 
     // Create a stream for the response
     const stream = new ReadableStream({
@@ -274,31 +268,26 @@ export async function POST(
 
               // Check if this is a scanned PDF or image that requires Gemini processing
               if (documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" || documentContent === "[SCANNED_IMAGE_REQUIRES_PROCESSING]") {
-                // Fetch full document details to get fileUrl
-                const fullDoc = await prisma.document.findUnique({
-                  where: { id: docRef.document.id },
-                  select: { file_url: true, file_type: true, title: true }
-                });
-
-                if (fullDoc?.file_url) {
+                if (docRef.document.file_url) {
                   // Determine MIME type based on file extension
-                  const mimeType = fullDoc.file_type === 'pdf' ? 'application/pdf' :
-                                  fullDoc.file_type === 'png' ? 'image/png' :
-                                  fullDoc.file_type === 'jpg' || fullDoc.file_type === 'jpeg' ? 'image/jpeg' :
-                                  fullDoc.file_type === 'gif' ? 'image/gif' :
-                                  fullDoc.file_type === 'bmp' ? 'image/bmp' :
-                                  fullDoc.file_type === 'webp' ? 'image/webp' :
+                  const fileType = docRef.document.file_type;
+                  const mimeType = fileType === 'pdf' ? 'application/pdf' :
+                                  fileType === 'png' ? 'image/png' :
+                                  fileType === 'jpg' || fileType === 'jpeg' ? 'image/jpeg' :
+                                  fileType === 'gif' ? 'image/gif' :
+                                  fileType === 'bmp' ? 'image/bmp' :
+                                  fileType === 'webp' ? 'image/webp' :
                                   'application/pdf';
 
                   scannedDocuments.push({
-                    title: fullDoc.title,
-                    fileUrl: fullDoc.file_url,
+                    title: docRef.document.title,
+                    fileUrl: docRef.document.file_url,
                     mimeType
                   });
 
                   // Add placeholder in text content
                   const docType = documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" ? "Scanned PDF" : "Image";
-                  contentParts.push(`### Document: ${fullDoc.title} (${docType} - processed natively by Gemini) ###\n\n`);
+                  contentParts.push(`### Document: ${docRef.document.title} (${docType} - processed natively by Gemini) ###\n\n`);
                 }
                 continue;
               }
@@ -357,6 +346,13 @@ export async function POST(
           // Create unified system message for all queries
           const fullProject = project;
 
+          // Base context for agent sub-calls (lightweight — no document content or verbose instructions)
+          const baseContext = `Project: "${fullProject?.title || 'Untitled'}"
+${fullProject?.description ? `Description: ${fullProject.description}` : ''}
+${settings.jurisdiction ? `Jurisdiction: ${typeof settings.jurisdiction === 'object' && settings.jurisdiction !== null && 'name' in settings.jurisdiction ? `${settings.jurisdiction.name}` : settings.jurisdiction}` : ''}
+Today: ${new Date().toISOString().split('T')[0]}
+${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
+
           // Create context-aware system message for canvas mode
           let canvasContext = '';
           if (isCanvasMode && canvasDocument) {
@@ -398,56 +394,13 @@ export async function POST(
           Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
           If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
 
-          **📄 DOCUMENT TOOLS AVAILABLE**:
-          You have access to powerful legal document tools to help users with drafting, review, and analysis:
-
-          🔧 **Core Document Tools** (Always Available):
-          1. **generateDocumentInline** - PRIMARY tool for document generation
-             - Generates documents directly in chat with clickable preview card
-             - Users can download or open in editor from the card
-             - Use for: NDAs, contracts, letters, memos, most legal documents
-             - ONLY call when you have ALL required information
-             - Choose format intelligently:
-               • PDF for final documents (NDAs, signed contracts, official letters)
-               • DOCX for working drafts (templates, documents needing edits)
-               • MD for analysis/notes
-             - Explain format choice briefly (e.g., "as DOCX so you can edit terms")
-
-          2. **reviewDocument** - Comprehensive legal review and analysis
-             - Use when user wants to review, analyze, or assess documents
-             - Generates downloadable review report
-             - When user says "review this", they mean the PRIMARY document in focus
-
-          3. **searchProjectDocuments** - Search through attached project documents
-             - Use when you need to find specific information or precedents
-             - Searches all documents uploaded to this project
-
-          ${isCanvasMode ? `
-          **🎨 Canvas Tools** (Canvas Mode Enabled):
-          4. **draftNewDocument** - Write complex documents directly to canvas editor
-             - Use for: Complex documents (10+ pages), explicit canvas requests
-             - Most documents should use generateDocumentInline instead
-             - ONLY call when you have ALL required information
-
-          5. **editCanvasDocument** - Modify the existing canvas document
-             - Use when user requests changes to the canvas document
-          ` : `
-          💡 **Canvas Mode**: Disabled. Users can enable it in settings to access canvas editing tools.
-          For now, use generateDocumentInline for all document generation - it creates clickable cards in chat.
-          `}
-
-          **Document Format Selection Rules**:
-          - **PDF**: Final/read-only documents ready for signing or formal use
-          - **DOCX**: Working drafts, templates, documents needing client edits
-          - **MD**: Analysis, reviews, research notes, informal summaries
-          - Default to DOCX if unsure - it's more flexible
-
-          **Important Guidelines**:
-          - When a user requests a document, first assess what information you have
-          - If you're missing critical details (parties, key terms, dates, etc.), ask questions - DO NOT call generation yet
-          - Use generateDocumentInline for most document requests - it's fast and keeps users in conversation flow
-          - Be conversational and helpful - ask for information naturally in your responses
-          - After calling a function, explain what you've done in user-friendly language
+          ${useGoogleSearch
+            ? `**AVAILABLE AGENTS**: Use legalDocumentAgent for document drafting/review/search, searchAgent for web research.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
+          When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
+            : `**DOCUMENT TOOLS**: You have generateDocumentInline (drafting documents inline — preferred for most requests), reviewDocument (legal review/analysis), and searchProjectDocuments (search project docs).
+          ${isCanvasMode ? `Canvas tools also available: draftNewDocument (complex docs to canvas), editCanvasDocument (modify canvas doc).` : ''}`}
+          Format: PDF for final docs, DOCX for drafts (default if unsure), MD for notes/analysis.
+          Before generating, ensure you have all required information — ask if not.
 
           ${previewDocument ? `
           **🔍 PREVIEW MODE CONTEXT**:
@@ -991,7 +944,8 @@ export async function POST(
                     fc,
                     genAI,
                     modelName,
-                    systemMessage,
+                    baseContext,
+                    relevantContent,
                     content,
                     projectId,
                     project,
@@ -1356,7 +1310,8 @@ async function executeAgentCall(
   functionCall: any,
   genAI: any,
   modelName: string,
-  systemMessage: string,
+  baseContext: string,
+  relevantContent: string,
   userQuery: string,
   projectId: string,
   project?: any,
@@ -1372,12 +1327,12 @@ async function executeAgentCall(
 
     // Determine which tool this agent needs
     let agentTools: any[] = [];
-    let agentInstruction = systemMessage;
+    let agentInstruction = baseContext;
 
     switch (agentName) {
       case 'searchAgent':
         agentTools.push({ googleSearch: {} });
-        agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${systemMessage}`;
+        agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${baseContext}`;
         break;
 
       case 'legalDocumentAgent':
@@ -1410,7 +1365,7 @@ async function executeAgentCall(
             parameters: tool.parameters
           }))
         });
-        agentInstruction = `You are a legal document specialist. ${systemMessage}`;
+        agentInstruction = `You are a legal document specialist.\n\n${baseContext}${relevantContent ? `\n\nDocument context:\n${relevantContent}` : ''}`;
         break;
 
       case 'calendarAgent':
@@ -1421,7 +1376,7 @@ async function executeAgentCall(
             parameters: tool.parameters
           }))
         });
-        agentInstruction = `You are a calendar management specialist. ${systemMessage}`;
+        agentInstruction = `You are a calendar management specialist.\n\n${baseContext}`;
         break;
 
       case 'gmailAgent':
@@ -1432,7 +1387,7 @@ async function executeAgentCall(
             parameters: tool.parameters
           }))
         });
-        agentInstruction = `You are an email management specialist. ${systemMessage}`;
+        agentInstruction = `You are an email management specialist.\n\n${baseContext}`;
         break;
 
       default:
