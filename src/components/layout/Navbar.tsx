@@ -249,7 +249,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
               href="/register"
               className="font-medium text-md whitespace-nowrap text-white bg-black hover:bg-black rounded-md py-2 px-4"
             >
-              Start For Free
+              TRY WANSOM
             </Link>
           </div>
         </div>
@@ -389,7 +389,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
                   className="font-medium text-white bg-primary hover:bg-black rounded-md py-3 px-4 text-center"
                   onClick={() => setIsOpen(false)}
                 >
-                  Start For Free
+                  TRY WANSOM
                 </Link>
               </div>
             </nav>

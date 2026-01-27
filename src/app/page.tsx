@@ -458,17 +458,29 @@ function HeroSection() {
               Wansom is the only legal AI that enables you to scale your ability
               to deliver big law results without the big law budget
             </p>
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
             <button
-              className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+              className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 md:mb-10 w-fit min-w-[130px]"
               onClick={() => (window.location.href = "/register")}
               aria-label="Try Wansom AI for free - Start your free trial"
             >
-              TRY WANSOM FOR FREE{" "}
+              TRY WANSOM AI{" "}
               <SquareArrowOutUpRight
                 className="w-5 h-5 text-white"
                 aria-hidden="true"
               />
             </button>
+              <button
+              className="text-sm font-medium uppercase flex gap-1 items-center  text-black bg-transparent border-black border  rounded-md py-3 px-6 mb-10 w-fit min-w-[130px]"
+              onClick={() => (window.location.href = "/demo")}
+              aria-label="Try Wansom AI for free - Start your free trial"
+            >
+              SCHEDULE A DEMO{" "}
+              <SquareArrowOutUpRight
+                className="w-5 h-5 text-white"
+                aria-hidden="true"
+              />
+            </button></div>
           </div>
         </div>
       </div>
