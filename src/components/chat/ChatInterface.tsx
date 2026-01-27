@@ -14,11 +14,24 @@ import { useProjectStore } from "@/store/project.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
-import { ProcessingStatus } from "./ProcessingStatus"
 import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
 import { ReportDownloadCard } from "./ReportDownloadCard"
 import { DocumentArtifact } from "./DocumentArtifact"
 import { Message } from "@/types"
+
+const STATUS_TEXT: Record<string, string> = {
+  started: "Processing your request...",
+  processing_document: "Reading documents...",
+  searching_web: "Searching the web...",
+  executing_functions: "Running tools...",
+  retrying: "Retrying connection...",
+  saving_response: "Saving response...",
+};
+
+function getStatusText(status?: string): string {
+  if (!status) return "Thinking...";
+  return STATUS_TEXT[status] || "Thinking...";
+}
 
 // Empty state component for when there are no messages
 const EmptyState = () => (
@@ -164,17 +177,15 @@ const ChatMessageItem = React.memo(({
                 ) : (
                   <div className="flex flex-col items-center justify-center">
                     {message.processingStatus && isCanvasProcessingStatus(message.processingStatus) ? (
-                      <CanvasProcessingStatus 
-                        status={message.processingStatus} 
+                      <CanvasProcessingStatus
+                        status={message.processingStatus}
                         message={message.canvasMessage}
                       />
-                    ) : message.processingStatus && message.processingStatus !== 'completed' ? (
-                      <ProcessingStatus status={message.processingStatus} />
                     ) : (
                       <div className="flex items-center">
                         <LogoAnimation size="sm" className="text-gray-500" />
                         <span className="animate-pulse ml-2">
-                          {message.processingStatus || "Processing..."}
+                          {getStatusText(message.processingStatus)}
                         </span>
                       </div>
                     )}

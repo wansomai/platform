@@ -392,6 +392,8 @@ export async function POST(
           - Use appropriate legal terminology and citation styles for this jurisdiction
           - Consider local legal precedents and practices
           ` : ""}
+          **TODAY'S DATE**: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} (${new Date().toISOString().split('T')[0]})
+
           Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
           Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
           If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.

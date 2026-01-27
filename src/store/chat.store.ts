@@ -385,6 +385,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
               break;
               
             case 'status':
+              get().updateStreamingMessage(streamingId, {
+                processingStatus: data.status,
+                statusMessage: data.statusMessage || data.message
+              });
               break;
               
             case 'error':
