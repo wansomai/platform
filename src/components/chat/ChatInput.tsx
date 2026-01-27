@@ -295,11 +295,10 @@ export function ChatInput({
     type: "calendar" | "gmail"
   ) => {
     setIsConnecting(true);
-   setShowProAccess(true);
-    // const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
-    //   type
-    // )}`;
-    // window.location.href = url;
+    const url = `/api/auth/google-connection/connect?type=${encodeURIComponent(
+      type
+    )}`;
+    window.location.href = url;
   };
 
   // Helper function to generate meaningful project names
@@ -895,38 +894,16 @@ export function ChatInput({
                         <Label className="font-medium text-sm flex items-center gap-1">
                          <img src={'/icons/gmail.svg'} className="w-6 h-6"/> Gmail
                         </Label>
-                        {googleConnectionStatus?.hasGmailAccess ? (
-                          <Switch
-                            id="gmail"
-                            checked={
-                              homepageMode
-                                ? false
-                                : settings.gmail || false
-                            }
-                            disabled={homepageMode || isLoadingSettings}
-                            onCheckedChange={
-                              homepageMode
-                                ? undefined
-                                : (checked) => {
-                                    handleSettingChange(
-                                      "gmail",
-                                      checked
-                                    );
-                                  }
-                            }
-                          />
-                        ) : (
-                          <Button
-                            onClick={() => handleConnectGoogle("gmail")}
-                            variant="ghost"
-                            size="sm"
-                            disabled={homepageMode || isConnecting}
-                            className="flex items-center gap-1 h-7 px-2"
-                          >
-                            {isConnecting ? "Connecting..." : "Connect"}
-                            <ArrowUpRightFromSquare className="h-3 w-3" />
-                          </Button>
-                        )}
+                        <Button
+                          onClick={() => setShowProAccess(true)}
+                          variant="ghost"
+                          size="sm"
+                          disabled={homepageMode}
+                          className="flex items-center gap-1 h-7 px-2"
+                        >
+                          {isConnecting ? "Connecting..." : "Connect"}
+                          <ArrowUpRightFromSquare className="h-3 w-3" />
+                        </Button>
                       </div>
 
                     </div>
