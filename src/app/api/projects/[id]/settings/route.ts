@@ -101,14 +101,31 @@ export const PUT = withErrorHandler(withAuth(async (
     aiAssociates: typeof settings.aiAssociates === 'boolean' ? settings.aiAssociates : DEFAULT_SETTINGS.aiAssociates,
     model: typeof settings.model === 'string' ? settings.model : DEFAULT_SETTINGS.model,
     temperature: typeof settings.temperature === 'number' ? settings.temperature : DEFAULT_SETTINGS.temperature,
-    jurisdiction: settings.jurisdiction && typeof settings.jurisdiction === 'object' ? {
+    // Support both singular jurisdiction and plural jurisdictions (from UI)
+    // The AI prompt reads settings.jurisdiction, so we normalize here
+    jurisdiction: settings.jurisdiction && typeof settings.jurisdiction === 'object' && !Array.isArray(settings.jurisdiction) ? {
       id: settings.jurisdiction.id,
       name: settings.jurisdiction.name,
       country: settings.jurisdiction.country,
       state: settings.jurisdiction.state,
       legalSystem: settings.jurisdiction.legalSystem,
       citationStyle: settings.jurisdiction.citationStyle
-    } : undefined
+    } : Array.isArray(settings.jurisdictions) && settings.jurisdictions.length > 0 ? {
+      id: settings.jurisdictions[0].id,
+      name: settings.jurisdictions[0].name,
+      country: settings.jurisdictions[0].country,
+      state: settings.jurisdictions[0].state,
+      legalSystem: settings.jurisdictions[0].legalSystem,
+      citationStyle: settings.jurisdictions[0].citationStyle
+    } : undefined,
+    jurisdictions: Array.isArray(settings.jurisdictions) ? settings.jurisdictions.map((j: any) => ({
+      id: j.id,
+      name: j.name,
+      country: j.country,
+      state: j.state,
+      legalSystem: j.legalSystem,
+      citationStyle: j.citationStyle
+    })) : undefined
   };
 
   // Get current project

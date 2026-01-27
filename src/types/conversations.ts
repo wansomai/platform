@@ -52,6 +52,7 @@ export interface Message {
   tempId?: string;
   metadata?: any;
   processingStatus?: string;
+  statusMessage?: string;
   actionType?: string;
   canvasUpdated?: boolean;
   canvasMessage?: string; // Message for canvas processing status
