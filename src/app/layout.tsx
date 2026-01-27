@@ -18,10 +18,10 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: "Wansom | AI workspace for lawyers",
-  description: "Wansom AI is a leading AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.",
+  description: "Wansom AI is a leading Legal AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.",
   openGraph: {
     title: 'Wansom AI',
-    description: 'Wansom AI is a leading AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.',
+    description: 'Wansom AI is a leading Legal AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.',
     url: 'https://www.wansom.ai/',
     siteName: 'Wansom AI',
     images: [
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Wansom AI',
-    description: 'Wansom AI is a leading AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.',
+    description: 'Wansom AI is a leading Legal AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.',
     images: ['/images/features-2.jpg'],
   },
   keywords: [
