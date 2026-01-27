@@ -5,7 +5,7 @@ import { apiService } from '@/lib/api'
 export interface CanvasDocument {
   id: string;
   projectId: string;
-  content: any; // Quill Delta format
+  content: any; // Lexical EditorState JSON
   htmlContent: string;
   plainText: string;
   createdAt: string;
