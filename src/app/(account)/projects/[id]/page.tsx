@@ -33,16 +33,19 @@ export default function ProjectPage() {
   const project = projects.find(p => p.id === projectId)
 
   // Get settings from dedicated store
-  const { settings, updateSetting } = useProjectSettingsStore()
+  const { settings, updateSetting, fetchSettings } = useProjectSettingsStore()
   const { selectedPreviewDocument } = useUIStore();
   const { fetchConversation, isLoading: chatLoading } = useChatStore();
-    
-  // Load project conversations
+
+  // Load project settings and conversations
   useEffect(() => {
+    fetchSettings(projectId).catch(err => {
+      console.error('[ProjectPage] Failed to fetch settings:', err);
+    });
     fetchConversation(projectId).catch(err => {
       console.error('[ProjectPage] Failed to fetch conversations:', err);
     });
-  }, [projectId, fetchConversation]);
+  }, [projectId, fetchSettings, fetchConversation]);
 
   // Handle Google connection notifications
   useEffect(() => {
