@@ -149,11 +149,31 @@ export async function POST(
       }
     });
 
-    // Wait for essential checks first
-    const [hasAccess, conversation, projectOrg] = await Promise.all([
+    // Wait for all data in parallel — access, conversation, subscription, and content
+    // Subscription check starts immediately alongside other queries instead of sequentially
+    const subscriptionCheckPromise = projectOrgPromise.then(async (org) => {
+      if (!org?.organizationId) return { allowed: true } as { allowed: boolean; reason?: string };
+      return canSendMessage(org.organizationId);
+    });
+
+    const [
+      hasAccess,
+      conversation,
+      userMessage,
+      messageHistory,
+      project,
+      conversationDocuments,
+      canvasDocument,
+      messageLimitCheck
+    ] = await Promise.all([
       accessCheckPromise,
       conversationPromise,
-      projectOrgPromise
+      userMessagePromise,
+      messageHistoryPromise,
+      projectPromise,
+      documentsPromise,
+      canvasDocumentPromise,
+      subscriptionCheckPromise
     ]);
 
     if (!hasAccess) {
@@ -170,35 +190,16 @@ export async function POST(
       );
     }
 
-    // Check subscription limits before processing message
-    // Use the project's organization (not user's primary org) for subscription limits
-    if (projectOrg?.organizationId) {
-      const messageLimitCheck = await canSendMessage(projectOrg.organizationId);
-      if (!messageLimitCheck.allowed) {
-        return NextResponse.json(
-          {
-            error: messageLimitCheck.reason,
-            requiresUpgrade: true
-          },
-          { status: 403 }
-        );
-      }
+    // Check subscription limits
+    if (!messageLimitCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: messageLimitCheck.reason,
+          requiresUpgrade: true
+        },
+        { status: 403 }
+      );
     }
-
-    // Now that we've validated access, wait for the remaining data in parallel
-    const [
-      userMessage,
-      messageHistory,
-      project,
-      conversationDocuments,
-      canvasDocument
-    ] = await Promise.all([
-      userMessagePromise,
-      messageHistoryPromise,
-      projectPromise,
-      documentsPromise,
-      canvasDocumentPromise
-    ]);
 
     // Create a stream for the response
     const stream = new ReadableStream({
@@ -257,27 +258,8 @@ export async function POST(
                     let relevantContent = "";
                     const scannedDocuments: Array<{ title: string; fileUrl: string; mimeType: string }> = [];
 
-                    // Perform intent analysis in canvas mode to decide whether to update canvas
-                    let intentAnalysis: { shouldUpdateCanvas?: boolean } | undefined = undefined;
-                    if (isCanvasMode) {
-                      try {
-                        const recentMsgs = (messageHistory || []).slice(-3).map((m: any) => m.content);
-                        const analysis = await checkIfReadyToDraft(
-                          content,
-                          project,
-                          conversationDocuments,
-                          canvasDocument,
-                          recentMsgs
-                        );
-                        intentAnalysis = { shouldUpdateCanvas: analysis.readyToDraft };
-                      } catch (err) {
-                        console.error('Error running intent analysis:', err);
-                        intentAnalysis = { shouldUpdateCanvas: false };
-                      }
-                    }
-
-                    // Include canvas document if in canvas mode and analysis intent indicates not updating canvas
-                    if (isCanvasMode && canvasDocument && !intentAnalysis?.shouldUpdateCanvas) {
+                    // Always include canvas document content when in canvas mode so the AI can reference it
+                    if (isCanvasMode && canvasDocument) {
                       relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
                     }
 
@@ -668,7 +650,10 @@ export async function POST(
           // If we have multiple tool types, use the agent orchestration pattern
           // Otherwise, use direct tool access for better performance
           // Note: Core document tools are always available, so we always have at least one tool type
-          const hasMultipleToolTypes = [useGoogleSearch, hasCoreDocumentTools, useGoogleCalendar, useGmail].filter(Boolean).length > 1;
+          // Only use agent orchestration when Google Search is combined with other tools
+          // (Gemini can't mix googleSearch with functionDeclarations in one request)
+          // When there's no Google Search, use direct function declarations for better performance
+          const hasMultipleToolTypes = useGoogleSearch && [hasCoreDocumentTools, useGoogleCalendar, useGmail].some(Boolean);
 
           if (hasMultipleToolTypes && agentTools.length > 0) {
             // Use agent orchestration pattern - root agent calls specialized agents
@@ -1569,81 +1554,4 @@ function formatAIMessage(content: string): string {
   return formattedContent;
 }
 
-/**
- * Pre-flight check to determine if AI has enough information to draft
- */
-async function checkIfReadyToDraft(
-  userRequest: string,
-  project: any,
-  conversationDocuments: any[],
-  canvasDocument: any,
-  recentMessages?: string[]
-): Promise<{ readyToDraft: boolean; reasoning?: string }> {
-  try {
-    const conversationContext = recentMessages && recentMessages.length > 0
-      ? `\n\nRECENT CONVERSATION CONTEXT:\n${recentMessages.map((msg, i) => `${i % 2 === 0 ? 'User' : 'Assistant'}: ${msg}`).join('\n')}`
-      : '';
-
-    const checkPrompt = `You are a legal document expert. Analyze if there's enough information to draft a complete, accurate legal document.
-
-CURRENT USER MESSAGE: "${userRequest}"
-${conversationContext}
-
-AVAILABLE CONTEXT:
-- Jurisdiction: ${project?.knowledgeBase?.settings?.jurisdiction ? JSON.stringify(project.knowledgeBase.settings.jurisdiction) : 'Not specified'}
-- Project Instructions: ${project?.knowledgeBase?.instructions || 'None'}
-- Available Documents: ${conversationDocuments.length > 0 ? conversationDocuments.map((d: any) => d.document.title).join(', ') : 'None'}
-- Existing Canvas Document: ${canvasDocument ? 'Yes (editing mode)' : 'No (new document)'}
-
-STRICT ANALYSIS CRITERIA:
-You must be STRICT. For legal documents, you NEED:
-1. Document type clearly specified (e.g., "NDA", "employment contract", "lease agreement")
-2. ALL parties/entities with full legal names (not just "two parties" or partial info)
-3. Critical terms:
-   - For NDAs: parties, confidentiality scope, duration
-   - For employment: employer, employee, role, salary, start date, benefits
-   - For service agreements: parties, services, payment terms, duration
-   - For amendments: specific clauses to modify and new language
-4. Key dates, amounts, and conditions (if applicable to document type)
-5. Any jurisdiction-specific requirements
-
-IMPORTANT RULES:
-- If user just said "ABC Corp and John Smith" but you don't know the document type → NEED_INFO
-- If user said "draft an NDA" but didn't specify parties → NEED_INFO
-- If user provided SOME but NOT ALL critical information → NEED_INFO
-- If this is a short response (< 20 words) to a follow-up question, check if it answers ALL your previous questions → likely NEED_INFO
-- Only say READY if you can draft a COMPLETE, professional legal document right now
-
-Respond with ONLY one of these:
-READY - ONLY if you have ALL information needed for a complete, professional legal document
-NEED_INFO - if ANY critical information is missing
-
-Then explain in 1 sentence what's missing or what you have.
-
-Format: [READY|NEED_INFO]: <one sentence explanation>`;
-
-    const result = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: [{ role: 'user', parts: [{ text: checkPrompt }] }],
-      config: {
-        systemInstruction: 'You are a legal document expert analyzing whether sufficient information exists to draft legal documents. Be thorough and precise.',
-        temperature: 0.3
-      }
-    });
-
-    const response = result.text || '';
-
-    const isReady = response.trim().toUpperCase().startsWith('READY');
-    const reasoning = response.split(':')[1]?.trim() || '';
-
-    return {
-      readyToDraft: isReady,
-      reasoning
-    };
-  } catch (error) {
-    console.error('Pre-flight check error:', error);
-    // On error, default to allowing drafting (fail open)
-    return { readyToDraft: true };
-  }
-}
 

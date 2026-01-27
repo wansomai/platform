@@ -1,13 +1,11 @@
 // src/components/chat/DocumentArtifact.tsx
 'use client'
-
-import React, { useState } from 'react'
-import { FileText, Download, Loader2, ExternalLink } from 'lucide-react'
+import { FileText, } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { useDocumentsStore } from '@/store/documents.store'
 import { useCanvasStore } from '@/store/canvas.store'
+import { useProjectSettingsStore } from '@/store/workspace-settings.store'
 
 interface DocumentArtifactProps {
   title: string
@@ -26,9 +24,9 @@ export function DocumentArtifact({
   projectId,
   onOpenInCanvas
 }: DocumentArtifactProps) {
-  const [isDownloading, setIsDownloading] = useState(false)
   const router = useRouter()
   const saveCanvasDocument = useCanvasStore(state => state.saveCanvasDocument)
+  const updateSetting = useProjectSettingsStore(state => state.updateSetting)
 
   const handleCardClick = async () => {
 
@@ -38,7 +36,7 @@ export function DocumentArtifact({
       try {
         // Validate projectId before proceeding
         if (!projectId) {
-          toast.error('Unable to open in editor - project not found')
+          toast.error('Unable to open in editor')
           return;
         }
 
@@ -50,6 +48,9 @@ export function DocumentArtifact({
           throw new Error('Failed to save to canvas')
         }
 
+        // Enable canvas mode so Draft & Review is toggled on
+        await updateSetting(projectId, 'canvasMode', true)
+
         // Navigate to canvas view
         router.push(`/projects/${projectId}?view=canvas`)
         toast.success('Document opened in editor')
@@ -57,25 +58,6 @@ export function DocumentArtifact({
         console.error('Error opening in canvas:', error)
         toast.error('Failed to open document in editor')
       }
-    }
-  }
-
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation() // Don't trigger card click
-    e.preventDefault() // Prevent any default behavior
-
-    try {
-      setIsDownloading(true)
-
-      // Call store method to generate and download document
-      await useDocumentsStore.getState().downloadGeneratedDocument(htmlContent, format, title)
-
-      toast.success(`${format} downloaded successfully!`)
-    } catch (error) {
-      console.error('Download error:', error)
-      toast.error('Failed to download document')
-    } finally {
-      setIsDownloading(false)
     }
   }
 
@@ -104,32 +86,14 @@ export function DocumentArtifact({
           <Button
             variant="outline"
             size="sm"
-            onClick={handleDownload}
-            disabled={isDownloading}
+            onClick={handleCardClick}
             className="flex-shrink-0"
           >
-            {isDownloading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                <span className="hidden sm:inline">Downloading...</span>
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Download</span>
-              </>
-            )}
+             <span className="hidden sm:inline">Open in Editor</span>
+  
           </Button>
         </div>
 
-
-        {/* Footer */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t">
-          <p className="text-sm text-gray-500 flex items-center gap-1">
-            <ExternalLink className="h-3 w-3" />
-             open in editor
-          </p>
-        </div>
       </div>
     </div>
   )
