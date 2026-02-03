@@ -9,7 +9,7 @@ interface ProcessingStatusProps {
 
 export const ProcessingStatus: React.FC<ProcessingStatusProps> = ({ status }) => {
   const steps = [
-    { key: 'started', label: 'Processing your request', icon: Circle },
+    { key: 'started', label: 'Securing your workspace...', icon: Circle },
     { key: 'processing_documents', label: 'Searching through documents', icon: Circle },
     { key: 'searching_web', label: 'Searching the web', icon: Circle },
     { key: 'generating_response', label: 'Generating response', icon: Circle },
