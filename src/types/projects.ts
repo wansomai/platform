@@ -9,7 +9,11 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   organizationId: string;
-  
+
+  // Conversation info (returned from project creation)
+  conversationId?: string;
+  conversationTitle?: string;
+
   // Computed fields
   teamCount: number;
   messagesCount: number;

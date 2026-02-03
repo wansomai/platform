@@ -371,27 +371,18 @@ export function ChatInput({
                 notify.success("AI workspace created successfully!");
               }
 
-              // Always create a conversation for the new project
-              try {
-                const selectedAssociate = selectedAssociateId
-                  ? associates.find(a => a.id === selectedAssociateId)
-                  : null;
-                const conversationTitle = selectedAssociate
-                  ? `Chat with ${selectedAssociate.name}`
-                  : 'New Conversation';
-
-                const conversation = await useChatStore.getState().createConversation(
-                  newProject.id,
-                  conversationTitle,
-                  selectedAssociateId || undefined
-                );
-
-                if (!conversation) {
-                  console.error("Failed to create conversation");
-                }
-              } catch (error: any) {
-                console.error("Error creating conversation:", error);
-                // Don't block navigation if conversation creation fails
+              // The project API already creates a conversation - use it directly
+              // Set currentConversation in chat store to avoid redundant fetch
+              if (newProject.conversationId) {
+                useChatStore.getState().setCurrentConversation({
+                  id: newProject.conversationId,
+                  title: newProject.conversationTitle || 'New Conversation',
+                  projectId: newProject.id,
+                  messages: [],
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                  isPinned: false
+                });
               }
 
               // Store the message in sessionStorage to preserve it across navigation
