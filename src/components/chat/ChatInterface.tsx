@@ -40,13 +40,25 @@ const EmptyState = () => (
       {/* Logo and greeting */}
       <div className="space-y-4">
         <div className="space-y-2">
-        
+
           <p className="text-gray-600 text-3xl capitalize">
           All Your favorite legal tools in a unified AI workspace
           </p>
         </div>
       </div>
 
+    </div>
+  </div>
+);
+
+// Loading state for when a pending message is about to be sent
+const PendingMessageState = () => (
+  <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 text-center">
+    <div className="max-w-md mx-auto space-y-6">
+      <div className="flex items-center justify-center">
+        <LogoAnimation size="md" className="text-primary" />
+      </div>
+      <p className="text-gray-600 text-lg">Starting your conversation...</p>
     </div>
   </div>
 );
@@ -58,11 +70,15 @@ export function ChatInterface() {
   const { addToast } = useUIStore()
   const {
     currentConversation,
-    error
+    error,
+    isLoading
   } = useChatStore()
   const { currentProject } = useProjectStore()
 
   const {data: session} = useSession()
+
+  // Check for pending message directly (more reliable than state)
+  const hasPendingMessage = typeof window !== "undefined" && !!sessionStorage.getItem("pendingMessage")
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -84,8 +100,12 @@ export function ChatInterface() {
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }, [addToast])
 
-  // Show empty state if no messages
+  // Show loading state if there's a pending message about to be sent or if loading
+  // Show empty state if no messages and no pending message
   if (!currentConversation?.messages || currentConversation.messages.length === 0) {
+    if (hasPendingMessage || isLoading) {
+      return <PendingMessageState />
+    }
     return <EmptyState />
   }
   
