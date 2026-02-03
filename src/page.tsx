@@ -137,7 +137,7 @@ export default function ProjectsPage() {
       setProjectToDelete(null);
     } catch (error: any) {
       console.error('Error deleting project:', error);
-      notify.error(error.message || 'Failed to delete workspace. Please try again.');
+      notify.error(error.message || 'Failed to delete workspace. Please try again');
     } finally {
       setIsDeleting(false);
     }

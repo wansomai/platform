@@ -315,10 +315,6 @@ export function sendInvitationEmail({
 
           <p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Wansom AI as a <strong>${role}</strong>.</p>
 
-          <div class="info-box">
-            <p>Wansom AI helps legal professionals collaborate on client/case matters, manage documents, automate workflows, and leverage AI for research and drafting.</p>
-          </div>
-
           <p>To accept this invitation, click the button below:</p>
 
           <p style="text-align: center;">
