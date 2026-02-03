@@ -259,7 +259,6 @@ State management uses Zustand stores in `src/store/`:
 - `workspace-instructions.store.ts` - Project knowledge base instructions
 - `workspace-settings.store.ts` - Project workspace settings
 - `content.store.ts` - Content management (SEO pages)
-- `onboarding.store.ts` - User onboarding flow
 
 ## API Route Structure
 API routes follow Next.js App Router conventions in `src/app/api/`:
