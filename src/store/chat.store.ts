@@ -76,11 +76,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
   // Message management
   addMessage: (message) => set((state) => {
     if (!state.currentConversation) return state;
-    
+
+    const currentMessages = state.currentConversation.messages || [];
     return {
       currentConversation: {
         ...state.currentConversation,
-        messages: [...state.currentConversation.messages, message],
+        messages: [...currentMessages, message],
         updatedAt: new Date().toISOString()
       }
     };
@@ -162,16 +163,37 @@ export const useChatStore = create<ChatState>((set, get) => ({
   fetchConversation: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
+
       const response = await apiService.get<{ data: Conversation }>(
         `/api/projects/${projectId}/conversations`
       );
       const conversation = response.data;
-      set({ currentConversation: conversation, isLoading: false });
-      return conversation;
+
+      // Check AFTER API call if we already have messages locally
+      // This prevents overwriting locally-added messages during auto-send race condition
+      const existingConversation = get().currentConversation;
+      if (existingConversation?.projectId === projectId && existingConversation?.messages?.length > 0) {
+        set({ isLoading: false });
+        return existingConversation;
+      }
+
+      // If no conversation exists in DB, return null
+      if (!conversation) {
+        set({ currentConversation: null, isLoading: false });
+        return null;
+      }
+
+      // Ensure messages array is always initialized
+      const conversationWithMessages = {
+        ...conversation,
+        messages: conversation?.messages || []
+      };
+      set({ currentConversation: conversationWithMessages, isLoading: false });
+      return conversationWithMessages;
     } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to fetch conversation', 
-        isLoading: false 
+      set({
+        error: error.message || 'Failed to fetch conversation',
+        isLoading: false
       });
       return null;
     }

@@ -69,6 +69,7 @@ export function ChatInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
+  const pendingMessageProcessedRef = useRef(false);
 
   // Google connection state
   const [googleConnectionStatus, setGoogleConnectionStatus] = useState<{
@@ -164,19 +165,6 @@ export function ChatInput({
       textareaRef.current.style.height = `${Math.min(newHeight, maxHeight)}px`;
     }
   }, [input, homepageMode]);
-
-  // Restore pending message from homepage when in workspace mode
-  useEffect(() => {
-    if (!homepageMode && typeof window !== "undefined") {
-      const pendingMessage = sessionStorage.getItem("pendingMessage");
-      if (pendingMessage && !input) {
-        // Restore the message to the input
-        setInput(pendingMessage);
-        // Clear the stored message to prevent it from being restored again
-        sessionStorage.removeItem("pendingMessage");
-      }
-    }
-  }, [homepageMode, input]);
 
   // Handle direct prompt sending from external components
   useEffect(() => {
@@ -383,23 +371,27 @@ export function ChatInput({
                 notify.success("AI workspace created successfully!");
               }
 
-              // If an associate was selected, create a conversation with that associate
-              if (selectedAssociateId) {
-                try {
-                  const selectedAssociate = associates.find(a => a.id === selectedAssociateId);
-                  const conversation = await useChatStore.getState().createConversation(
-                    newProject.id,
-                    `Chat with ${selectedAssociate?.name || 'AI Associate'}`,
-                    selectedAssociateId
-                  );
+              // Always create a conversation for the new project
+              try {
+                const selectedAssociate = selectedAssociateId
+                  ? associates.find(a => a.id === selectedAssociateId)
+                  : null;
+                const conversationTitle = selectedAssociate
+                  ? `Chat with ${selectedAssociate.name}`
+                  : 'New Conversation';
 
-                  if (!conversation) {
-                    console.error("Failed to create conversation with associate");
-                  }
-                } catch (error: any) {
-                  console.error("Error creating conversation with associate:", error);
-                  // Don't block navigation if conversation creation fails
+                const conversation = await useChatStore.getState().createConversation(
+                  newProject.id,
+                  conversationTitle,
+                  selectedAssociateId || undefined
+                );
+
+                if (!conversation) {
+                  console.error("Failed to create conversation");
                 }
+              } catch (error: any) {
+                console.error("Error creating conversation:", error);
+                // Don't block navigation if conversation creation fails
               }
 
               // Store the message in sessionStorage to preserve it across navigation
@@ -521,6 +513,24 @@ export function ChatInput({
       profile?.organizationId,
     ]
   );
+
+  // Auto-send pending message from homepage when conversation is ready
+  useEffect(() => {
+    if (homepageMode || typeof window === "undefined") return;
+    if (pendingMessageProcessedRef.current) return;
+
+    const pendingMessage = sessionStorage.getItem("pendingMessage");
+    if (!pendingMessage) return;
+
+    // If conversation is ready with a valid ID, auto-send the message
+    if (currentConversation?.id && !isSubmitting) {
+      pendingMessageProcessedRef.current = true;
+      sessionStorage.removeItem("pendingMessage");
+
+      // Auto-send the pending message
+      handleSend(pendingMessage);
+    }
+  }, [homepageMode, currentConversation, isSubmitting, handleSend]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

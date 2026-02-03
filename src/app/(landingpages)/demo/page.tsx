@@ -18,6 +18,7 @@ const DemoPage = () => {
     name: "",
     email: "",
     accountType: "",
+    teamSize: "",
   });
 
   const { notify } = useNotifications();
@@ -36,6 +37,11 @@ const DemoPage = () => {
 
     if (!formData.name || !formData.email || !formData.accountType) {
       setError("Please fill in all fields");
+      return;
+    }
+
+    if (formData.accountType === "law-firm" && !formData.teamSize) {
+      setError("Please select the number of team members");
       return;
     }
 
@@ -63,6 +69,7 @@ const DemoPage = () => {
         name: "",
         email: "",
         accountType: "",
+        teamSize: "",
       });
 
       // Optionally redirect to thank you page or calendly
@@ -147,7 +154,7 @@ const DemoPage = () => {
                 </Label>
                 <Select
                   value={formData.accountType}
-                  onValueChange={(value) => setFormData({ ...formData, accountType: value })}
+                  onValueChange={(value) => setFormData({ ...formData, accountType: value, teamSize: value !== "law-firm" ? "" : formData.teamSize })}
                   disabled={isSubmitting}
                 >
                   <SelectTrigger className="h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
@@ -161,10 +168,36 @@ const DemoPage = () => {
                 </Select>
               </div>
 
+              {/* Team Size Field - Only shown for Law Firm */}
+              {formData.accountType === "law-firm" && (
+                <div>
+                  <Label htmlFor="teamSize" className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2 block">
+                    Number of Team Members
+                  </Label>
+                  <Select
+                    value={formData.teamSize}
+                    onValueChange={(value) => setFormData({ ...formData, teamSize: value })}
+                    disabled={isSubmitting}
+                  >
+                    <SelectTrigger className="h-12 rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
+                      <SelectValue placeholder="Select Team Size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-5">1-5 members</SelectItem>
+                      <SelectItem value="6-10">6-10 members</SelectItem>
+                      <SelectItem value="11-25">11-25 members</SelectItem>
+                      <SelectItem value="26-50">26-50 members</SelectItem>
+                      <SelectItem value="51-100">51-100 members</SelectItem>
+                      <SelectItem value="100+">100+ members</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isSubmitting || !formData.name || !formData.email || !formData.accountType}
+                disabled={isSubmitting || !formData.name || !formData.email || !formData.accountType || (formData.accountType === "law-firm" && !formData.teamSize)}
                 className="w-full h-12 bg-primary hover:bg-[#F18F01] text-white font-semibold rounded-lg text-base shadow-lg hover:shadow-xl transition-all"
               >
                 {isSubmitting ? (
