@@ -1232,6 +1232,15 @@ const KnowledgeBase = () => {
               SAFLII
               <Plus className="h-4 w-4 text-gray-500" />
             </div>
+                      <div className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2">
+              <img
+                src="/logos/TANZII.png"
+                alt=" TANZII"
+                className="h-8 w-20 rounded-full object-contain"
+              />
+              
+              <Plus className="h-4 w-4 text-gray-500" />
+            </div>
             <a
               href="https://www.worldlii.org/"
               className="tex-sm lg:text-lg border border-gray-200 text-gray-500 rounded-lg px-4 py-2 flex items-center gap-2"
