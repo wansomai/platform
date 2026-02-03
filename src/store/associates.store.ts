@@ -11,7 +11,7 @@ interface AssociatesState {
   error: string | null;
 
   // Methods
-  fetchAssociates: () => Promise<AIAssociate[]>;
+  fetchAssociates: (forceRefresh?: boolean) => Promise<AIAssociate[]>;
   createAssociate: (input: CreateAssociateInput) => Promise<AIAssociate | null>;
   updateAssociate: (id: string, input: UpdateAssociateInput) => Promise<AIAssociate | null>;
   deleteAssociate: (id: string) => Promise<boolean>;
@@ -39,7 +39,18 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  fetchAssociates: async (): Promise<AIAssociate[]> => {
+  fetchAssociates: async (forceRefresh = false): Promise<AIAssociate[]> => {
+    // Skip fetch if already loaded and not forcing refresh
+    const currentState = get();
+    if (!forceRefresh && currentState.associates.length > 0 && !currentState.isLoading) {
+      return currentState.associates;
+    }
+
+    // Prevent concurrent fetches
+    if (currentState.isLoading) {
+      return currentState.associates;
+    }
+
     try {
       set({ isLoading: true, error: null });
 
