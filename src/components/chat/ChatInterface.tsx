@@ -20,7 +20,7 @@ import { DocumentArtifact } from "./DocumentArtifact"
 import { Message } from "@/types"
 
 const STATUS_TEXT: Record<string, string> = {
-  started: "Processing your request...",
+  started: "Securing your workspace...",
   processing_document: "Reading documents...",
   searching_web: "Searching the web...",
   executing_functions: "Running tools...",
