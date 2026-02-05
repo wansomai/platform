@@ -496,11 +496,11 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
 
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
-          let modelName = settings.model || 'gemini-2.0-flash-exp';
+          let modelName = settings.model || 'gemini-3.0-flash';
 
           // Check if someone accidentally set a non-Gemini model (e.g., gpt-4)
           if (!modelName.toLowerCase().startsWith('gemini')) {
-            modelName = 'gemini-2.0-flash-exp';
+            modelName = 'gemini-3.0-flash';
           }
 
           // Configure tools based on mode
