@@ -33,7 +33,6 @@ import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
 import { useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
 import { useChatStore } from '@/store/chat.store';
-import * as mammoth from 'mammoth';
 
 // Lexical imports
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -561,23 +560,6 @@ const LegalCanvas: React.FC = () => {
     // Content changed - could add debounced indicators here if needed
   };
 
-  // Handle document export as HTML
-  const handleExport = () => {
-    try {
-      const content = canvasDocument?.htmlContent || '';
-      const element = document.createElement('a');
-      const file = new Blob([content], { type: 'text/html' });
-      element.href = URL.createObjectURL(file);
-      element.download = `legal_document_${new Date().getTime()}.html`;
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
-
-      addToast({ message: 'Document exported successfully', type: 'success' });
-    } catch (error) {
-      addToast({ message: 'Failed to export document', type: 'error' });
-    }
-  };
 
   // Handle Word document export
   const handleExportWord = async () => {
@@ -676,10 +658,37 @@ const LegalCanvas: React.FC = () => {
   // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
     setIsLoadingTemplate(true);
+    console.log('[Template] Starting insertion for file:', file.name, 'size:', file.size);
+
+    // Mammoth only supports .docx — reject .doc (old binary format)
+    if (file.name.toLowerCase().endsWith('.doc') && !file.name.toLowerCase().endsWith('.docx')) {
+      addToast({
+        message: 'Only .docx files are supported. Please convert your .doc file to .docx format first.',
+        type: 'error'
+      });
+      setIsLoadingTemplate(false);
+      return;
+    }
 
     try {
+      console.log('[Template] Importing mammoth...');
+      const mammothModule = await import('mammoth/mammoth.browser');
+      console.log('[Template] mammothModule keys:', Object.keys(mammothModule));
+      console.log('[Template] mammothModule.default type:', typeof mammothModule.default);
+      console.log('[Template] mammothModule.convertToHtml type:', typeof mammothModule.convertToHtml);
+
+      const mammoth = mammothModule.default || mammothModule;
+      console.log('[Template] Resolved mammoth keys:', Object.keys(mammoth));
+      console.log('[Template] mammoth.convertToHtml type:', typeof mammoth.convertToHtml);
+
       const arrayBuffer = await file.arrayBuffer();
+      console.log('[Template] ArrayBuffer size:', arrayBuffer.byteLength);
+
       const result = await mammoth.convertToHtml({ arrayBuffer });
+      console.log('[Template] Conversion done. HTML length:', result.value?.length ?? 0);
+      if (result.messages?.length > 0) {
+        console.log('[Template] Mammoth messages:', result.messages);
+      }
 
       if (result.value) {
         let cleanHtml = result.value
@@ -689,45 +698,61 @@ const LegalCanvas: React.FC = () => {
           .replace(/<span[^>]*><\/span>/g, '')
           .replace(/\s+/g, ' ')
           .trim();
+        console.log('[Template] Cleaned HTML length:', cleanHtml.length);
+        console.log('[Template] Cleaned HTML preview:', cleanHtml.substring(0, 300));
 
         const editor = editorRef.current;
-        if (editor) {
-          let htmlContent = '';
-          let plainText = '';
-          let content: any = null;
+        console.log('[Template] Editor ref available:', !!editor);
 
+        if (editor) {
+          // Use discrete: true to make the update synchronous
           editor.update(() => {
             const root = $getRoot();
             root.clear();
             const parser = new DOMParser();
             const dom = parser.parseFromString(cleanHtml, 'text/html');
             const nodes = $generateNodesFromDOM(editor, dom);
-            if (nodes.length > 0) {
-              root.append(...wrapTopLevelNodes(nodes));
+            console.log('[Template] Parsed nodes count:', nodes.length);
+            const wrapped = wrapTopLevelNodes(nodes);
+            console.log('[Template] Wrapped nodes count:', wrapped.length);
+            if (wrapped.length > 0) {
+              root.append(...wrapped);
             }
+            console.log('[Template] Root children after insert:', root.getChildrenSize());
+          }, { discrete: true });
+
+          // State is now available after discrete update
+          let htmlContent = '';
+          let plainText = '';
+          editor.getEditorState().read(() => {
+            htmlContent = $generateHtmlFromNodes(editor);
+            plainText = $getRoot().getTextContent();
           });
+          const content = editor.getEditorState().toJSON();
+          console.log('[Template] Generated HTML length:', htmlContent.length);
+          console.log('[Template] Plain text length:', plainText.length);
+          console.log('[Template] Content JSON root children:', (content as any)?.root?.children?.length);
 
-          // Wait for update to apply, then save
-          setTimeout(async () => {
-            editor.getEditorState().read(() => {
-              htmlContent = $generateHtmlFromNodes(editor);
-              plainText = $getRoot().getTextContent();
-            });
-            content = editor.getEditorState().toJSON();
-
-            const saveResult = await saveCanvasDocument(projectId, content, htmlContent, plainText);
-            if (!saveResult) {
-              throw new Error('Failed to save template to canvas');
-            }
-          }, 100);
+          console.log('[Template] Saving to canvas...');
+          const saveResult = await saveCanvasDocument(projectId, content, htmlContent, plainText);
+          console.log('[Template] Save result:', !!saveResult);
+          if (!saveResult) {
+            addToast({ message: 'Failed to save template to canvas', type: 'error' });
+            return;
+          }
+        } else {
+          console.error('[Template] Editor ref is null — cannot insert template');
         }
 
         setShowTemplateModal(false);
+        console.log('[Template] Insertion complete');
       } else {
+        console.error('[Template] Mammoth returned empty value');
         throw new Error('Failed to extract content from the document');
       }
 
     } catch (error) {
+      console.error('[Template] Error:', error);
       addToast({
         message: 'Failed to process template document',
         type: 'error'
@@ -886,7 +911,7 @@ const LegalCanvas: React.FC = () => {
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <input
                   type="file"
-                  accept=".docx,.doc"
+                  accept=".docx"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
@@ -908,7 +933,7 @@ const LegalCanvas: React.FC = () => {
                     {isLoadingTemplate ? 'Processing template...' : 'Click to upload template'}
                   </span>
                   <span className="text-xs text-gray-500 mt-1">
-                    Supports .docx and .doc files
+                    Supports .docx files only
                   </span>
                 </label>
               </div>
