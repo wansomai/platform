@@ -120,7 +120,7 @@ Be thorough, professional, and demonstrate your expertise in your responses.
 
     // Call Gemini with associate-specific context
     const result = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-3.0-flash',
       contents: [{
         role: 'user',
         parts: [{ text: fullPrompt }]

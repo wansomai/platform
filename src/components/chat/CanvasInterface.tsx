@@ -168,6 +168,73 @@ function LoadContentPlugin({ canvasDocument }: { canvasDocument: any }) {
   return null;
 }
 
+// A4 page dimensions at 96 DPI
+const A4_WIDTH_PX = 794; // 210mm
+const A4_HEIGHT_PX = 1123; // 297mm
+const PAGE_MARGIN_TOP = 96; // 1 inch
+const PAGE_MARGIN_BOTTOM = 96; // 1 inch
+const PAGE_CONTENT_HEIGHT = A4_HEIGHT_PX - PAGE_MARGIN_TOP - PAGE_MARGIN_BOTTOM; // ~931px
+
+// Page break overlay plugin — renders visual page separators and page numbers
+function PageLayoutPlugin() {
+  const [editor] = useLexicalComposerContext();
+  const [pageBreaks, setPageBreaks] = useState<number[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const rootElement = editor.getRootElement();
+    if (!rootElement) return;
+
+    const calculatePages = () => {
+      const scrollHeight = rootElement.scrollHeight;
+      const pages = Math.max(1, Math.ceil(scrollHeight / PAGE_CONTENT_HEIGHT));
+      setTotalPages(pages);
+
+      const breaks: number[] = [];
+      for (let i = 1; i < pages; i++) {
+        breaks.push(i * PAGE_CONTENT_HEIGHT);
+      }
+      setPageBreaks(breaks);
+    };
+
+    calculatePages();
+
+    const observer = new ResizeObserver(calculatePages);
+    observer.observe(rootElement);
+
+    const removeListener = editor.registerUpdateListener(() => {
+      requestAnimationFrame(calculatePages);
+    });
+
+    return () => {
+      observer.disconnect();
+      removeListener();
+    };
+  }, [editor]);
+
+  return (
+    <>
+      {/* Page break lines */}
+      {pageBreaks.map((top, index) => (
+        <div
+          key={index}
+          className="page-break-indicator"
+          style={{ top: `${top}px` }}
+        >
+          <div className="page-break-line" />
+          <div className="page-number-label">
+            Page {index + 1} of {totalPages}
+          </div>
+        </div>
+      ))}
+      {/* Current page footer */}
+      <div className="page-footer-current">
+        Page {totalPages} of {totalPages}
+      </div>
+    </>
+  );
+}
+
 // Toolbar Plugin
 function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -581,10 +648,21 @@ const LegalCanvas: React.FC = () => {
       const htmlDocx = await import('html-docx-js/dist/html-docx');
 
       let cleanHtml = htmlContent
-        .replace(/^/, '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Legal Document</title></head><body>')
+        .replace(/^/, `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Legal Document</title>
+<style>
+  @page { size: A4; margin: 1in 1in 1in 1.5in; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: #000; margin: 0; }
+  h1 { font-size: 16pt; font-weight: bold; text-align: center; text-transform: uppercase; margin: 24pt 0 12pt; }
+  h2 { font-size: 14pt; font-weight: bold; margin: 18pt 0 6pt; }
+  h3 { font-size: 12pt; font-weight: bold; text-decoration: underline; margin: 12pt 0 6pt; }
+  p { margin: 0; padding: 2px 0; }
+  ol { padding-left: 36pt; }
+  ul { padding-left: 36pt; }
+  blockquote { border-left: 3px solid #000; padding-left: 24pt; margin: 12pt 0 12pt 36pt; font-style: italic; }
+</style>
+</head><body>`)
         .replace(/$/, '</body></html>')
-        .replace(/class="lexical-[^"]*"/g, '')
-        .replace('<body>', '<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 40px;">');
+        .replace(/class="lexical-[^"]*"/g, '');
 
       const docx = htmlDocx.asBlob(cleanHtml);
 
@@ -658,7 +736,6 @@ const LegalCanvas: React.FC = () => {
   // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
     setIsLoadingTemplate(true);
-    console.log('[Template] Starting insertion for file:', file.name, 'size:', file.size);
 
     // Mammoth only supports .docx — reject .doc (old binary format)
     if (file.name.toLowerCase().endsWith('.doc') && !file.name.toLowerCase().endsWith('.docx')) {
@@ -671,24 +748,10 @@ const LegalCanvas: React.FC = () => {
     }
 
     try {
-      console.log('[Template] Importing mammoth...');
       const mammothModule = await import('mammoth/mammoth.browser');
-      console.log('[Template] mammothModule keys:', Object.keys(mammothModule));
-      console.log('[Template] mammothModule.default type:', typeof mammothModule.default);
-      console.log('[Template] mammothModule.convertToHtml type:', typeof mammothModule.convertToHtml);
-
       const mammoth = mammothModule.default || mammothModule;
-      console.log('[Template] Resolved mammoth keys:', Object.keys(mammoth));
-      console.log('[Template] mammoth.convertToHtml type:', typeof mammoth.convertToHtml);
-
       const arrayBuffer = await file.arrayBuffer();
-      console.log('[Template] ArrayBuffer size:', arrayBuffer.byteLength);
-
       const result = await mammoth.convertToHtml({ arrayBuffer });
-      console.log('[Template] Conversion done. HTML length:', result.value?.length ?? 0);
-      if (result.messages?.length > 0) {
-        console.log('[Template] Mammoth messages:', result.messages);
-      }
 
       if (result.value) {
         let cleanHtml = result.value
@@ -698,30 +761,20 @@ const LegalCanvas: React.FC = () => {
           .replace(/<span[^>]*><\/span>/g, '')
           .replace(/\s+/g, ' ')
           .trim();
-        console.log('[Template] Cleaned HTML length:', cleanHtml.length);
-        console.log('[Template] Cleaned HTML preview:', cleanHtml.substring(0, 300));
 
         const editor = editorRef.current;
-        console.log('[Template] Editor ref available:', !!editor);
-
         if (editor) {
-          // Use discrete: true to make the update synchronous
           editor.update(() => {
             const root = $getRoot();
             root.clear();
             const parser = new DOMParser();
             const dom = parser.parseFromString(cleanHtml, 'text/html');
             const nodes = $generateNodesFromDOM(editor, dom);
-            console.log('[Template] Parsed nodes count:', nodes.length);
-            const wrapped = wrapTopLevelNodes(nodes);
-            console.log('[Template] Wrapped nodes count:', wrapped.length);
-            if (wrapped.length > 0) {
-              root.append(...wrapped);
+            if (nodes.length > 0) {
+              root.append(...wrapTopLevelNodes(nodes));
             }
-            console.log('[Template] Root children after insert:', root.getChildrenSize());
           }, { discrete: true });
 
-          // State is now available after discrete update
           let htmlContent = '';
           let plainText = '';
           editor.getEditorState().read(() => {
@@ -729,30 +782,20 @@ const LegalCanvas: React.FC = () => {
             plainText = $getRoot().getTextContent();
           });
           const content = editor.getEditorState().toJSON();
-          console.log('[Template] Generated HTML length:', htmlContent.length);
-          console.log('[Template] Plain text length:', plainText.length);
-          console.log('[Template] Content JSON root children:', (content as any)?.root?.children?.length);
 
-          console.log('[Template] Saving to canvas...');
           const saveResult = await saveCanvasDocument(projectId, content, htmlContent, plainText);
-          console.log('[Template] Save result:', !!saveResult);
           if (!saveResult) {
             addToast({ message: 'Failed to save template to canvas', type: 'error' });
             return;
           }
-        } else {
-          console.error('[Template] Editor ref is null — cannot insert template');
         }
 
         setShowTemplateModal(false);
-        console.log('[Template] Insertion complete');
       } else {
-        console.error('[Template] Mammoth returned empty value');
         throw new Error('Failed to extract content from the document');
       }
 
     } catch (error) {
-      console.error('[Template] Error:', error);
       addToast({
         message: 'Failed to process template document',
         type: 'error'
@@ -873,10 +916,17 @@ const LegalCanvas: React.FC = () => {
         <LexicalComposer initialConfig={initialConfig}>
           <ToolbarPlugin />
           <div className="flex-1 overflow-y-auto lexical-container">
-            <RichTextPlugin
-              contentEditable={<ContentEditable className="lexical-editor outline-none min-h-[750px] p-8" />}
-              ErrorBoundary={LexicalErrorBoundary}
-            />
+            <div className="legal-page-wrapper">
+              <div className="legal-page">
+                <div className="legal-page-content relative">
+                  <RichTextPlugin
+                    contentEditable={<ContentEditable className="lexical-editor outline-none" />}
+                    ErrorBoundary={LexicalErrorBoundary}
+                  />
+                  <PageLayoutPlugin />
+                </div>
+              </div>
+            </div>
           </div>
           <HistoryPlugin />
           <ListPlugin />
@@ -949,67 +999,114 @@ const LegalCanvas: React.FC = () => {
         </div>
       )}
 
-      {/* Lexical Editor Styles */}
+      {/* Legal Document Styles — A4 format with page numbering & line numbering */}
       <style jsx global>{`
+        /* ── Scroll container ── */
         .lexical-container {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
+          background-color: #e5e7eb;
+          scrollbar-width: thin;
+          scrollbar-color: #c4c4c4 transparent;
         }
         .lexical-container::-webkit-scrollbar {
-          display: none;
+          width: 6px;
+        }
+        .lexical-container::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .lexical-container::-webkit-scrollbar-thumb {
+          background-color: #c4c4c4;
+          border-radius: 3px;
         }
 
+        /* ── A4 page wrapper ── */
+        .legal-page-wrapper {
+          display: flex;
+          justify-content: center;
+          padding: 24px 16px;
+          min-height: 100%;
+        }
+
+        .legal-page {
+          width: 794px;          /* A4 width at 96 DPI (210mm) */
+          max-width: 100%;
+          background: #ffffff;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
+          border-radius: 2px;
+        }
+
+        .legal-page-content {
+          position: relative;
+        }
+
+        /* ── Editor — legal document defaults ── */
         .lexical-editor {
-          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-          font-size: 16px;
-          line-height: 1.8;
-          color: #111827;
+          font-family: "Times New Roman", Times, Georgia, serif;
+          font-size: 12pt;
+          line-height: 1.5;
+          color: #000000;
+          /* A4 legal margins: 1.5in left (binding), 1in right, 1in top, 1in bottom */
+          padding: 96px 96px 96px 144px;
+          min-height: 1123px;   /* A4 height at 96 DPI (297mm) */
         }
 
         .lexical-paragraph {
-          margin: 0.75rem 0;
+          margin: 0;
+          padding: 2px 0;
         }
 
+        /* ── Headings ── */
         .lexical-h1 {
-          font-size: 1.5rem;
+          font-family: "Times New Roman", Times, Georgia, serif;
+          font-size: 16pt;
           font-weight: 700;
-          margin: 1.5rem 0 1rem 0;
+          text-align: center;
+          text-transform: uppercase;
+          margin: 24pt 0 12pt 0;
+          line-height: 1.5;
         }
 
         .lexical-h2 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin: 1.25rem 0 0.75rem 0;
+          font-family: "Times New Roman", Times, Georgia, serif;
+          font-size: 14pt;
+          font-weight: 700;
+          margin: 18pt 0 6pt 0;
+          line-height: 1.5;
         }
 
         .lexical-h3 {
-          font-size: 1.125rem;
-          font-weight: 600;
-          margin: 1rem 0 0.5rem 0;
+          font-family: "Times New Roman", Times, Georgia, serif;
+          font-size: 12pt;
+          font-weight: 700;
+          text-decoration: underline;
+          margin: 12pt 0 6pt 0;
+          line-height: 1.5;
         }
 
+        /* ── Lists ── */
         .lexical-ol {
           list-style-type: decimal;
-          padding-left: 1.5rem;
-          margin: 0.5rem 0;
+          padding-left: 36pt;
+          margin: 6pt 0;
         }
 
         .lexical-ul {
           list-style-type: disc;
-          padding-left: 1.5rem;
-          margin: 0.5rem 0;
+          padding-left: 36pt;
+          margin: 6pt 0;
         }
 
         .lexical-li {
-          margin: 0.25rem 0;
+          margin: 2pt 0;
+          line-height: 1.5;
         }
 
         .lexical-nested-li {
           list-style-type: none;
         }
 
+        /* ── Inline formatting ── */
         .lexical-link {
-          color: #2563eb;
+          color: #0000ee;
           text-decoration: underline;
         }
 
@@ -1032,25 +1129,122 @@ const LegalCanvas: React.FC = () => {
         .lexical-code {
           background-color: #f3f4f6;
           color: #374151;
-          padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
-          font-family: ui-monospace, monospace;
-          font-size: 0.875em;
+          padding: 1px 4px;
+          border-radius: 2px;
+          font-family: "Courier New", Courier, monospace;
+          font-size: 11pt;
         }
 
         .lexical-quote {
-          border-left: 4px solid #e5e7eb;
-          padding-left: 1rem;
-          margin: 1rem 0;
-          color: #6b7280;
+          border-left: 3px solid #000;
+          padding-left: 24pt;
+          margin: 12pt 0 12pt 36pt;
+          color: #000;
           font-style: italic;
+          line-height: 1.5;
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
+        /* ── Page break indicators ── */
+        .page-break-indicator {
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 32px;
+          z-index: 5;
+          pointer-events: none;
+          transform: translateY(-16px);
+        }
+
+        .page-break-line {
+          position: absolute;
+          top: 50%;
+          left: 24px;
+          right: 24px;
+          height: 0;
+          border-top: 1px dashed #9ca3af;
+        }
+
+        .page-number-label {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: #e5e7eb;
+          color: #6b7280;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          font-size: 10px;
+          padding: 2px 10px;
+          border-radius: 8px;
+          white-space: nowrap;
+          user-select: none;
+        }
+
+        /* Last page footer */
+        .page-footer-current {
+          text-align: center;
+          padding: 8px 0 16px;
+          color: #9ca3af;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          font-size: 10px;
+          user-select: none;
+        }
+
+        /* ── Print / PDF output ── */
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .legal-page,
+          .legal-page * {
+            visibility: visible;
+          }
+          .legal-page {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            border-radius: 0;
+          }
+
           .lexical-editor {
-            padding: 1rem !important;
-            font-size: 15px;
+            padding: 0;
+            min-height: auto;
+          }
+
+          .page-break-indicator,
+          .page-footer-current {
+            display: none;
+          }
+
+          @page {
+            size: A4;
+            margin: 1in 1in 1in 1.5in;
+
+            @bottom-center {
+              content: counter(page);
+              font-family: "Times New Roman", Times, serif;
+              font-size: 12pt;
+            }
+          }
+        }
+
+        /* ── Mobile Responsiveness ── */
+        @media (max-width: 840px) {
+          .legal-page-wrapper {
+            padding: 12px 4px;
+          }
+
+          .legal-page {
+            width: 100%;
+            box-shadow: none;
+            border-radius: 0;
+          }
+
+          .lexical-editor {
+            padding: 16px;
+            font-size: 11pt;
+            min-height: 600px;
           }
         }
       `}</style>
