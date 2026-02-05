@@ -24,7 +24,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
       const result = await genAI.models.generateContent({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -55,7 +55,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
       const result = await genAI.models.generateContentStream({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -108,7 +108,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
 
       const result = await genAI.models.generateContent({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -140,7 +140,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
 
       const result = await genAI.models.generateContentStream({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -194,7 +194,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer conducting professional legal document reviews. Provide comprehensive, structured reviews in HTML format. Your reviews should be thorough, actionable, and organized into clear sections. Focus on identifying issues, risks, and providing specific recommendations. Be direct and professional without disclaimers about AI limitations.`;
 
       const result = await genAI.models.generateContent({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -227,7 +227,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer conducting professional legal document reviews. Provide comprehensive, structured reviews in HTML format. Your reviews should be thorough, actionable, and organized into clear sections. Focus on identifying issues, risks, and providing specific recommendations. Be direct and professional without disclaimers about AI limitations.`;
 
       const result = await genAI.models.generateContentStream({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,

@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS = {
   googleCalendar: false,
   gmail: false,
   aiAssociates: true,
-  model: 'gemini-3.0-flash',
+  model: 'gemini-3-flash-preview',
   temperature: 0.7,
   jurisdiction: undefined
 };
