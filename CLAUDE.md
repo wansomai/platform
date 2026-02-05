@@ -29,7 +29,7 @@ npx prisma studio     # Database GUI
 - **UI Components**: Radix UI + shadcn/ui + TailwindCSS
 - **AI Integration**: Google Gemini API via `@google/genai` (multimodal - text and vision)
 - **File Storage**: Vercel Blob Storage
-- **Rich Text Editors**: TipTap, Quill, TinyMCE
+- **Rich Text Editors**: Lexical (primary), TipTap, Quill, TinyMCE
 - **Form Handling**: React Hook Form + Zod validation
 
 ### Key Architectural Patterns
@@ -180,7 +180,8 @@ import prisma from '@/lib/prisma';
 ```
 
 ### Route Groups
-- `(account)` - Authenticated user pages (dashboard, projects, vault)
+- `(account)` - Authenticated user pages (dashboard, projects, vault, workflows)
+- `(platform)` - Workspace/app pages (project workspace UI)
 - `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
 - `(admin)` - Admin-only pages
@@ -269,4 +270,7 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/folders/*` - Folder hierarchy for documents
 - `/api/associates/*` - AI associate CRUD
 - `/api/workspace/[id]/*` - Project workspace settings
+- `/api/payments/*` - Payment processing
+- `/api/subscription/*` - Subscription management
+- `/api/profile/*` - User profile operations
 - `/api/admin/*` - Admin-only organization management
