@@ -88,10 +88,13 @@ export function ProjectMembersModal({
 
   const fetchMembers = async () => {
     try {
-      const data = await apiService.get(`/api/projects/${projectId}/members`) as {
-        members: Member[];
-        currentUserRole: string | null;
+      const response = await apiService.get(`/api/projects/${projectId}/members`) as {
+        data: {
+          members: Member[];
+          currentUserRole: string | null;
+        };
       };
+      const data = response.data;
       setMembers(data.members || []);
       setCurrentUserRole(data.currentUserRole || null);
     } catch (error) {

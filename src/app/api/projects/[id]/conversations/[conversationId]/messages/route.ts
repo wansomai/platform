@@ -39,7 +39,7 @@ const DEFAULT_SETTINGS: {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  model: 'gemini-3-flash-preview',
+  model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
   temperature: 0.7,
   canvasMode: false,  // Canvas editing disabled by default (but core document tools are always available)
   googleCalendar: false,
@@ -496,11 +496,11 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
 
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
-          let modelName = settings.model || 'gemini-3-flash-preview';
+          let modelName = settings.model || process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 
           // Check if someone accidentally set a non-Gemini model (e.g., gpt-4)
           if (!modelName.toLowerCase().startsWith('gemini')) {
-            modelName = 'gemini-3-flash-preview';
+            modelName = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
           }
 
           // Configure tools based on mode
