@@ -23,7 +23,7 @@ const STATUS_TEXT: Record<string, string> = {
   started: "Securing your workspace...",
   processing_document: "Reading documents...",
   searching_web: "Searching the web...",
-  executing_functions: "Running tools...",
+  executing_functions: "Perfecting answers...",
   retrying: "Retrying connection...",
   saving_response: "Saving response...",
 };
