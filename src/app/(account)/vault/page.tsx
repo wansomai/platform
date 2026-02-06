@@ -22,12 +22,12 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { 
-  FileText, 
-  Download, 
-  Trash2, 
-  Search, 
-  Plus, 
+import {
+  FileText,
+  Download,
+  Trash2,
+  Search,
+  Plus,
   File,
   FileSpreadsheet,
   FileImage,
@@ -38,11 +38,17 @@ import {
   Folder,
   Edit,
   FolderSymlinkIcon,
+  Sparkles,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
 import { useDocuments } from "@/hooks/useDocuments"
 import { useUIStore } from "@/store/ui.store"
 import { useFolderStore } from "@/store/folder.store"
+import { useProjectStore } from "@/store/project.store"
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
+import { useProfile } from "@/store/profile.store"
+import { useChatStore } from "@/store/chat.store"
 import { formatDistanceToNow } from "date-fns"
 import { FolderTree } from "@/components/documents/FolderTree"
 import { FolderModal } from "@/components/documents/FolderModal"
@@ -121,6 +127,15 @@ export default function VaultPage() {
   const [editFolder, setEditFolder] = useState<{ id: string; name: string; parentId: string | null } | null>(null);
   const [showMoveFolderDialog, setShowMoveFolderDialog] = useState(false);
   const [targetFolder, setTargetFolder] = useState<string | null>(null);
+
+  // Add to Workspace state
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+
+  // Project store & profile for workspace integration
+  const { createProject } = useProjectStore();
+  const { attachDocumentsToProject } = useProjectDocumentsStore();
+  const { user } = useProfile();
+  const router = useRouter();
 
   // Fetch documents and folders on mount
   useEffect(() => {
@@ -290,7 +305,7 @@ export default function VaultPage() {
       message: `${count} document${count > 1 ? 's' : ''} uploaded successfully`,
       type: "success"
     });
-    
+
     // Refresh documents list
     fetchDocuments({
       search: searchTerm || undefined,
@@ -300,6 +315,74 @@ export default function VaultPage() {
       limit: 20,
       folder: activeFolder || undefined
     });
+  };
+
+  // Handle "Add to Workspace" — creates a new workspace, attaches documents, sends review message, and navigates
+  const handleAddToWorkspace = async (documentIds: string[]) => {
+    if (documentIds.length === 0 || isCreatingWorkspace) return;
+
+    const organizationId = user?.activeOrganizationId || user?.organizationId;
+    if (!organizationId) {
+      addToast({ message: "Something went wrong. Please try again.", type: "error" });
+      return;
+    }
+
+    setIsCreatingWorkspace(true);
+    try {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true });
+      const dateStr = now.toLocaleDateString([], { month: "short", day: "numeric" });
+      const projectTitle = `Wansom - ${dateStr} ${timeStr}`;
+
+      const newProject = await createProject({
+        title: projectTitle,
+        description: "Created from Document Vault",
+        organizationId,
+      });
+
+      if (newProject) {
+        await attachDocumentsToProject(newProject.id, documentIds);
+
+        // Build document names for the review message
+        const docNames = documentIds
+          .map(id => documents.find(d => d.id === id)?.title)
+          .filter(Boolean);
+        const docList = docNames.length > 0
+          ? docNames.join(", ")
+          : `${documentIds.length} document${documentIds.length > 1 ? 's' : ''}`;
+
+        // Store pending message so it auto-sends when workspace loads
+        sessionStorage.setItem("pendingMessage", `Review the following documents: ${docList}`);
+
+        // Pre-set conversation in chat store to avoid redundant fetch
+        if (newProject.conversationId) {
+          useChatStore.getState().setCurrentConversation({
+            id: newProject.conversationId,
+            title: newProject.conversationTitle || 'New Conversation',
+            projectId: newProject.id,
+            messages: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            isPinned: false
+          });
+        }
+
+        addToast({
+          message: "AI workspace created!",
+          type: "success"
+        });
+        clearSelectedDocuments();
+        router.push(`/projects/${newProject.id}`);
+      }
+    } catch (error: any) {
+      if (error.status === 403 && error.requiresUpgrade) {
+        addToast({ message: "Upgrade to Pro to create more workspaces.", type: "error" });
+      } else {
+        addToast({ message: "Failed to create workspace. Please try again.", type: "error" });
+      }
+    } finally {
+      setIsCreatingWorkspace(false);
+    }
   };
   
   // File type options
@@ -361,7 +444,7 @@ export default function VaultPage() {
             {documents.map((document) => (
               <TableRow 
                 key={document.id}
-                className={`cursor-pointer ${selectedDocuments.includes(document.id) ? "bg-primary-50" : ""}`}
+                className={`cursor-pointer ${selectedDocuments.includes(document.id) ? "bg-primary/10" : ""}`}
                 onClick={() => toggleDocumentSelection(document.id)}
               >
                 <TableCell>
@@ -402,9 +485,9 @@ export default function VaultPage() {
                     >
                       <Download className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-8 w-8"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -414,9 +497,22 @@ export default function VaultPage() {
                     >
                       <FolderSymlinkIcon className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      title="Add to Workspace"
+                      disabled={isCreatingWorkspace}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToWorkspace([document.id]);
+                      }}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-8 w-8 text-red-600"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -610,13 +706,22 @@ export default function VaultPage() {
                   <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
                     Cancel
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => setShowMoveFolderDialog(true)}
                   >
                     <FolderSymlinkIcon className="mr-2 h-4 w-4" />
                     Move to Folder
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isCreatingWorkspace}
+                    onClick={() => handleAddToWorkspace(selectedDocuments)}
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Add to Workspace
                   </Button>
                   <Button 
                     variant="destructive" 
@@ -631,8 +736,8 @@ export default function VaultPage() {
                       </>
                     ) : (
                       <>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Selected
+                        <Trash2 className=" h-4 w-4" />
+                        Delete 
                       </>
                     )}
                   </Button>
