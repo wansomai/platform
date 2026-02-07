@@ -81,9 +81,10 @@ export function UploadDocumentModal({
     isLoading: isLoadingDocuments 
   } = useDocumentsStore();
   
-  const { 
-    documents: projectDocuments, 
-    attachDocumentsToProject
+  const {
+    documents: projectDocuments,
+    attachDocumentsToProject,
+    removeDocumentFromProject
   } = useProjectDocumentsStore();
   
   const { folders, fetchFolders, createFolder } = useFolderStore();
@@ -102,17 +103,17 @@ export function UploadDocumentModal({
     'upload-and-attach': 'Select existing files or upload new ones to add to the conversation.'
   }[mode];
 
-  // Available documents for selection (excluding already attached ones)
-  const availableDocuments = projectId 
-    ? documents.filter(doc => 
-        !projectDocuments.some(convDoc => convDoc.id === doc.id)
-      )
-    : documents;
-  
-  // Filter documents based on search
-  const filteredDocuments = availableDocuments.filter(
-    doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Set of already-attached document IDs for quick lookup
+  const attachedDocIds = new Set(projectDocuments.map(doc => doc.id));
+
+  // Filter and sort documents: attached first, then by title
+  const filteredDocuments = documents
+    .filter(doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      const aAttached = attachedDocIds.has(a.id) ? 0 : 1;
+      const bAttached = attachedDocIds.has(b.id) ? 0 : 1;
+      return aAttached - bAttached;
+    });
 
   // Effects
   useEffect(() => {
@@ -243,35 +244,52 @@ export function UploadDocumentModal({
     }
   };
   
-  const toggleDocumentSelection = (documentId: string) => {
-    setSelectedDocumentsToAdd(prev => 
-      prev.includes(documentId)
-        ? prev.filter(id => id !== documentId)
-        : [...prev, documentId]
-    );
+  const [isRemoving, setIsRemoving] = useState<string | null>(null);
+
+  const toggleDocumentSelection = async (documentId: string) => {
+    const isAttached = attachedDocIds.has(documentId);
+
+    if (isAttached) {
+      // Immediately remove from project
+      if (projectId) {
+        setIsRemoving(documentId);
+        const success = await removeDocumentFromProject(projectId, documentId);
+        setIsRemoving(null);
+        if (success) {
+          notify.success("Document removed from conversation");
+        }
+      }
+    } else {
+      // Toggle selection of a new document
+      setSelectedDocumentsToAdd(prev =>
+        prev.includes(documentId)
+          ? prev.filter(id => id !== documentId)
+          : [...prev, documentId]
+      );
+    }
   };
   
   const handleAddSelectedDocuments = async () => {
     if (selectedDocumentsToAdd.length === 0) return;
-    
+
     try {
       setIsAttachingDocuments(true);
-      
+
       if (projectId) {
         const success = await attachDocumentsToProject(
-          projectId, 
+          projectId,
           selectedDocumentsToAdd
         );
-        
+
         if (success) {
           notify.success(`${selectedDocumentsToAdd.length} document(s) added to conversation`);
         }
       }
-      
-      const selectedDocs = documents.filter(doc => 
+
+      const selectedDocs = documents.filter(doc =>
         selectedDocumentsToAdd.includes(doc.id)
       );
-      
+
       onDocumentsAdded?.(selectedDocs);
       onOpenChange(false);
     } catch (error) {
@@ -393,9 +411,6 @@ export function UploadDocumentModal({
                 <Plus className="h-5 w-5 mr-2" />
                 Open File Selector
               </Button>
-              {/* <p className="text-xs text-gray-500 mt-2">
-                Select a file from your computer
-              </p> */}
             </div>
           )}
         </div>
@@ -601,29 +616,57 @@ export function UploadDocumentModal({
           </div>
         ) : filteredDocuments.length > 0 ? (
           <div className="divide-y">
-            {filteredDocuments.map((doc) => (
-              <div 
-                key={doc.id} 
-                className={`flex items-center p-3 hover:bg-gray-50 cursor-pointer ${
-                  selectedDocumentsToAdd.includes(doc.id) ? "bg-blue-50" : ""
-                }`}
-                onClick={() => toggleDocumentSelection(doc.id)}
-              >
-                <Checkbox 
-                  checked={selectedDocumentsToAdd.includes(doc.id)}
-                  className="mr-3"
-                  onChange={() => toggleDocumentSelection(doc.id)}
-                />
-                <FileText className="h-4 w-4 mr-3 text-primary-600" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{doc.title}</p>
-                  <div className="flex items-center text-xs text-muted-foreground">
-                    <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
-                    <span>{formatFileSize(doc.fileSize)}</span>
+            {filteredDocuments.map((doc) => {
+              const isAttached = attachedDocIds.has(doc.id);
+              const isNewlySelected = selectedDocumentsToAdd.includes(doc.id);
+              const isBeingRemoved = isRemoving === doc.id;
+              const isChecked = isAttached || isNewlySelected;
+
+              return (
+                <div
+                  key={doc.id}
+                  className={`flex items-center p-3 cursor-pointer transition-colors ${
+                    isBeingRemoved
+                      ? "bg-red-50 opacity-60 pointer-events-none"
+                      : isAttached
+                      ? "bg-green-50 hover:bg-green-100"
+                      : isNewlySelected
+                      ? "bg-blue-50 hover:bg-blue-100"
+                      : "hover:bg-gray-50"
+                  }`}
+                  onClick={() => !isBeingRemoved && toggleDocumentSelection(doc.id)}
+                >
+                  {isBeingRemoved ? (
+                    <Loader2 className="h-4 w-4 mr-3 animate-spin text-red-400" />
+                  ) : (
+                    <Checkbox
+                      checked={isChecked}
+                      className="mr-3"
+                      onChange={() => toggleDocumentSelection(doc.id)}
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{doc.title}</p>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
+                      <span>{formatFileSize(doc.fileSize)}</span>
+                    </div>
                   </div>
+                  {isAttached && !isBeingRemoved && (
+                    <button
+                      className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
+                      title="Remove from workspace"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDocumentSelection(doc.id);
+                      }}
+                    >
+                      <X className="h-3.5 w-3.5 text-gray-400 hover:text-red-500" />
+                    </button>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-8">
@@ -677,7 +720,7 @@ export function UploadDocumentModal({
           
           {mode === 'upload-and-attach' ? (
             activeTab === 'select' ? (
-              <Button 
+              <Button
                 onClick={handleAddSelectedDocuments}
                 disabled={selectedDocumentsToAdd.length === 0 || isAttachingDocuments}
               >
@@ -686,8 +729,10 @@ export function UploadDocumentModal({
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Adding...
                   </>
+                ) : selectedDocumentsToAdd.length > 0 ? (
+                  `Add ${selectedDocumentsToAdd.length} to chat`
                 ) : (
-                  `Add ${selectedDocumentsToAdd.length} Document${selectedDocumentsToAdd.length !== 1 ? 's' : ''}`
+                  'Add to chat'
                 )}
               </Button>
             ) : (
@@ -711,17 +756,19 @@ export function UploadDocumentModal({
               </Button>
             )
           ) : mode === 'select' ? (
-            <Button 
+            <Button
               onClick={handleAddSelectedDocuments}
               disabled={selectedDocumentsToAdd.length === 0 || isAttachingDocuments}
             >
               {isAttachingDocuments ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Selecting...
+                  Adding...
                 </>
+              ) : selectedDocumentsToAdd.length > 0 ? (
+                `Add ${selectedDocumentsToAdd.length} to chat`
               ) : (
-                `Select ${selectedDocumentsToAdd.length} Document${selectedDocumentsToAdd.length !== 1 ? 's' : ''}`
+                'Add to chat'
               )}
             </Button>
           ) : (

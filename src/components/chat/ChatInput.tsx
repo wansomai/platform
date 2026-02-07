@@ -17,6 +17,7 @@ import {
   FileText,
   User,
   Zap,
+  Layers,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -61,10 +62,12 @@ export function ChatInput({
   const [input, setInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [showVaultModal, setShowVaultModal] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const [showJurisdictionDropdown, setShowJurisdictionDropdown] = useState(false);
   const [showAssociatesDropdown, setShowAssociatesDropdown] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedVaultDocIds, setSelectedVaultDocIds] = useState<string[]>([]);
   const [selectedAssociateId, setSelectedAssociateId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -100,7 +103,7 @@ export function ChatInput({
     isLoading: isLoadingSettings,
   } = useProjectSettingsStore();
 
-  const { documents: conversationDocuments, fetchProjectDocuments } =
+  const { documents: conversationDocuments, fetchProjectDocuments, removeDocumentFromProject, clearDocuments } =
     useProjectDocumentsStore();
 
   // Stable error handler for associates
@@ -234,6 +237,15 @@ export function ChatInput({
     checkGoogleConnection();
   }, [homepageMode]);
 
+  // Fetch project documents on mount / project change (workspace mode)
+  useEffect(() => {
+    if (!homepageMode && projectId) {
+      clearDocuments();
+      fetchProjectDocuments(projectId);
+    }
+    return () => clearDocuments();
+  }, [homepageMode, projectId, fetchProjectDocuments, clearDocuments]);
+
   // Listen for Google connection success event and refresh status
   useEffect(() => {
     const handleConnectionSuccess = async () => {
@@ -337,36 +349,38 @@ export function ChatInput({
             const newProject = await createProject(payload);
 
             if (newProject) {
-              // If there are files to upload, handle them first
+              // Collect all document IDs to attach (uploaded files + vault selections)
+              const allDocIds: string[] = [...selectedVaultDocIds];
+
+              // Upload new files first
               if (selectedFiles.length > 0) {
                 try {
-                  // Upload each file
-                  const uploadedDocIds: string[] = [];
                   for (const file of selectedFiles) {
                     const formData = new FormData();
                     formData.append('file', file);
-
-                    // Upload document
                     const doc = await useDocumentsStore.getState().uploadDocument(formData);
                     if (doc) {
-                      uploadedDocIds.push(doc.id);
+                      allDocIds.push(doc.id);
                     }
-                  }
-
-                  // Attach documents to project if any were uploaded
-                  if (uploadedDocIds.length > 0) {
-                    await useProjectDocumentsStore.getState().attachDocumentsToProject(
-                      newProject.id,
-                      uploadedDocIds
-                    );
-                    notify.success(`AI workspace created with ${uploadedDocIds.length} file${uploadedDocIds.length !== 1 ? 's' : ''}!`);
-                  } else {
-                    notify.success("AI workspace created successfully!");
                   }
                 } catch (uploadError: any) {
                   console.error("Error uploading files:", uploadError);
                   notify.error("Workspace created but some files failed to upload");
                 }
+              }
+
+              // Attach all documents to project
+              if (allDocIds.length > 0) {
+                try {
+                  await useProjectDocumentsStore.getState().attachDocumentsToProject(
+                    newProject.id,
+                    allDocIds
+                  );
+                  notify.success(`AI workspace created with ${allDocIds.length} document${allDocIds.length !== 1 ? 's' : ''}!`);
+                } catch {
+                  notify.error("Workspace created but some documents failed to attach");
+                }
+                setSelectedVaultDocIds([]);
               } else {
                 notify.success("AI workspace created successfully!");
               }
@@ -972,7 +986,7 @@ export function ChatInput({
               >
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                    className="h-8 w-8 p-0 rounded-md  flex items-center justify-center hover:bg-gray-100"
                     title={
                       currentJurisdictions.length > 0
                         ? `${currentJurisdictions.length} jurisdiction${currentJurisdictions.length !== 1 ? 's' : ''} selected`
@@ -1007,7 +1021,7 @@ export function ChatInput({
                 >
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="h-8 w-8 p-0 rounded-md border border-gray-10 flex items-center justify-center hover:bg-gray-100"
+                      className="h-8 w-8 p-0 rounded-md flex items-center justify-center hover:bg-gray-100"
                       title="Select AI Associate"
                       disabled={isLoadingAssociates}
                     >
@@ -1110,6 +1124,17 @@ export function ChatInput({
                 </DropdownMenu>
               )}
 
+              {/* Vault Documents Button */}
+              <button
+                className="h-8 w-8 p-0 rounded-md flex items-center justify-center hover:bg-gray-100"
+                title="Add documents from vault"
+                onClick={() => setShowVaultModal(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-gray-500">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                </svg>
+              </button>
+
               {/* Active AI Associate Badge */}
               {((homepageMode && selectedAssociateId) || (!homepageMode && currentConversation?.aiAssociate)) && (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg">
@@ -1163,8 +1188,9 @@ export function ChatInput({
             />
 
             {/* Selected Files Chips - Show above textarea */}
-            {selectedFiles.length > 0 && (
+            {(selectedFiles.length > 0 || (homepageMode && selectedVaultDocIds.length > 0)) && (
               <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
+                {/* Uploaded files (pending) */}
                 {selectedFiles.map((file, index) => (
                   <div
                     key={index}
@@ -1189,6 +1215,28 @@ export function ChatInput({
                     </button>
                   </div>
                 ))}
+                {/* Homepage: vault doc count badge */}
+                {homepageMode && selectedVaultDocIds.length > 0 && (
+                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-blue-500 rounded-md p-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-white">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-900">
+                        {selectedVaultDocIds.length} vault document{selectedVaultDocIds.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setSelectedVaultDocIds([])}
+                      className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                      type="button"
+                    >
+                      <X className="h-3.5 w-3.5 text-gray-600" />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1198,7 +1246,7 @@ export function ChatInput({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                selectedFiles.length > 0
+                selectedFiles.length > 0 || selectedVaultDocIds.length > 0
                   ? "Ask anything about your document..."
                   : homepageMode
                   ? "Ask wansom anything... (e.g., 'Help me draft a contract','Review this agreement')"
@@ -1206,7 +1254,7 @@ export function ChatInput({
               }
               className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 overflow-y-auto ${
                 homepageMode
-                  ? selectedFiles.length > 0
+                  ? selectedFiles.length > 0 || selectedVaultDocIds.length > 0
                     ? "min-h-[80px] max-h-[400px] px-6 pt-2 pb-16 pr-16 text-[13px] md:text-base"
                     : "min-h-[120px] max-h-[400px] px-6 pt-4 pb-16 pr-16 text-[13px] md:text-base"
                   : selectedFiles.length > 0
@@ -1274,6 +1322,29 @@ export function ChatInput({
           onDocumentsAdded={handleDocumentsAdded}
         />
       )}
+
+      {/* Vault Document Selection Modal */}
+      <UploadDocumentModal
+        open={showVaultModal}
+        mode="select"
+        onOpenChange={setShowVaultModal}
+        projectId={homepageMode ? undefined : projectId}
+        onDocumentsAdded={(docs) => {
+          if (homepageMode) {
+            // Store doc IDs to attach after project creation
+            const newIds = docs.map((d: any) => d.id);
+            setSelectedVaultDocIds(prev => [...prev, ...newIds.filter((id: string) => !prev.includes(id))]);
+            addToast({ message: `${docs.length} document${docs.length > 1 ? 's' : ''} selected`, type: "success" });
+          } else {
+            handleDocumentsAdded(docs);
+          }
+        }}
+        title="Add Documents from Vault"
+        description={homepageMode
+          ? "Select documents to include when you start a new conversation"
+          : "Select documents from your vault to add to this workspace"
+        }
+      />
     </>
   );
 }
