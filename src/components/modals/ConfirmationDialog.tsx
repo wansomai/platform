@@ -190,6 +190,10 @@ export function DeleteConfirmationDialog({
   isLoading = false,
   permanentDelete = true
 }: DeleteConfirmationProps) {
+  const truncatedName = itemName && itemName.length > 40
+    ? itemName.slice(0, 40) + '...'
+    : itemName;
+
   return (
     <ConfirmationDialog
       open={open}
@@ -198,10 +202,10 @@ export function DeleteConfirmationDialog({
       title={`Delete ${itemType}`}
       description={
         permanentDelete
-          ? `Are you sure you want to delete ${itemName ? `"${itemName}"` : `this ${itemType}`}? This action cannot be undone and all associated data will be permanently lost.`
-          : `Are you sure you want to delete ${itemName ? `"${itemName}"` : `this ${itemType}`}? You can restore it from the trash later.`
+          ? `Are you sure you want to delete ${truncatedName ? `"${truncatedName}"` : `this ${itemType}`}? This action cannot be undone and all associated data will be permanently lost.`
+          : `Are you sure you want to delete ${truncatedName ? `"${truncatedName}"` : `this ${itemType}`}? You can restore it from the trash later.`
       }
-      itemName={itemName}
+      itemName={truncatedName}
       isLoading={isLoading}
       variant="destructive"
       type="delete"

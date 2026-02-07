@@ -22,6 +22,14 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   FileText,
   Download,
@@ -39,6 +47,8 @@ import {
   Edit,
   FolderSymlinkIcon,
   Sparkles,
+  MoreVertical,
+  X,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
@@ -77,15 +87,16 @@ const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
 export default function VaultPage() {
   
   // Get state from stores
-  const { 
-    documents, 
-    isLoading, 
-    error, 
-    pagination, 
-    fetchDocuments, 
+  const {
+    documents,
+    isLoading,
+    error,
+    pagination,
+    fetchDocuments,
     selectedDocuments,
     toggleDocumentSelection,
-    clearSelectedDocuments
+    clearSelectedDocuments,
+    deleteDocument: storeDeleteDocument
   } = useDocumentsStore();
   
   const {
@@ -121,6 +132,8 @@ export default function VaultPage() {
   const [documentToMove, setDocumentToMove] = useState<string | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [previewDocument, setPreviewDocument] = useState<{ title: string; fileUrl: string; fileType: string } | null>(null);
+  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   
   // Folder-related state
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
@@ -187,10 +200,29 @@ export default function VaultPage() {
   
   // Handle bulk document deletion
   const handleBulkDelete = async () => {
+    if (selectedDocuments.length === 0) return;
+
+    setIsBulkDeleting(true);
     try {
-      await deleteSelectedDocuments();
+      const deletePromises = selectedDocuments.map(id => storeDeleteDocument(id));
+      const results = await Promise.allSettled(deletePromises);
+
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.length - successful;
+
+      if (successful > 0) {
+        addToast({ message: `${successful} document${successful > 1 ? 's' : ''} deleted`, type: "success" });
+      }
+      if (failed > 0) {
+        addToast({ message: `Failed to delete ${failed} document${failed > 1 ? 's' : ''}`, type: "error" });
+      }
+
+      clearSelectedDocuments();
+      setShowBulkDeleteDialog(false);
     } catch (error) {
-      // Bulk delete error occurred
+      addToast({ message: "Failed to delete documents", type: "error" });
+    } finally {
+      setIsBulkDeleting(false);
     }
   };
   
@@ -463,74 +495,72 @@ export default function VaultPage() {
                 <TableCell>{formatDate(document.createdAt)}</TableCell>
                 <TableCell>{document.createdBy}</TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPreviewDocument({
-                          title: document.title,
-                          fileUrl: document.fileUrl,
-                          fileType: (document.fileType || '').toLowerCase()
-                        });
-                      }}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadDocument(document);
-                      }}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDocumentToMove(document.id);
-                        setShowMoveFolderDialog(true);
-                      }}
-                    >
-                      <FolderSymlinkIcon className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      title="Add to Workspace"
-                      disabled={isCreatingWorkspace}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToWorkspace([document.id]);
-                      }}
-                    >
-                      <Sparkles className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDocumentToDelete({
-                          id: document.id,
-                          name: document.title
-                        });
-                        setShowDeleteDialog(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewDocument({
+                            title: document.title,
+                            fileUrl: document.fileUrl,
+                            fileType: (document.fileType || '').toLowerCase()
+                          });
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadDocument(document);
+                        }}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDocumentToMove(document.id);
+                          setShowMoveFolderDialog(true);
+                        }}
+                      >
+                        <FolderSymlinkIcon className="h-4 w-4 mr-2" />
+                        Move to Folder
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        disabled={isCreatingWorkspace}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToWorkspace([document.id]);
+                        }}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Add to Workspace
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDocumentToDelete({
+                            id: document.id,
+                            name: document.title
+                          });
+                          setShowDeleteDialog(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
@@ -703,46 +733,49 @@ export default function VaultPage() {
             
             {/* Selected Documents Actions */}
             {selectedDocuments.length > 0 && (
-              <div className="flex flex-wrapitems-center justify-between bg-blue-50 p-4 rounded-lg">
+              <div className="flex flex-wrap items-center justify-between bg-blue-50 p-4 rounded-lg gap-2">
                 <div className="flex items-center">
-                  <span className="font-medium">{selectedDocuments.length} documents selected</span>
+                  <span className="font-medium">{selectedDocuments.length} selected</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowMoveFolderDialog(true)}
-                  >
-                    <FolderSymlinkIcon className="mr-2 h-4 w-4" />
-                    Move to Folder
+                    <span className="sm:inline hidden">Cancel</span>
+                    <X className="h-4 w-4 sm:hidden" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     disabled={isCreatingWorkspace}
                     onClick={() => handleAddToWorkspace(selectedDocuments)}
+                    title="Add to Workspace"
                   >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Add to Workspace
+                    <Sparkles className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Add to Workspace</span>
                   </Button>
-                  <Button 
-                    variant="destructive" 
-                    size="sm" 
-                    onClick={handleBulkDelete}
-                    disabled={isProcessing}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowMoveFolderDialog(true)}
+                    title="Move to Folder"
                   >
-                    {isProcessing ? (
+                    <FolderSymlinkIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Move to Folder</span>
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setShowBulkDeleteDialog(true)}
+                    title="Delete"
+                  >
+                    {isBulkDeleting ? (
                       <>
-                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                        Deleting...
+                        <RefreshCw className="h-4 w-4 animate-spin sm:mr-2" />
+                        <span className="hidden sm:inline">Deleting...</span>
                       </>
                     ) : (
                       <>
-                        <Trash2 className=" h-4 w-4" />
-                        Delete 
+                        <Trash2 className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Delete</span>
                       </>
                     )}
                   </Button>
@@ -830,7 +863,17 @@ export default function VaultPage() {
         itemType="document"
         isLoading={isProcessing}
       />
-      
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <DeleteConfirmationDialog
+        open={showBulkDeleteDialog}
+        onOpenChange={setShowBulkDeleteDialog}
+        onConfirm={handleBulkDelete}
+        itemName={`${selectedDocuments.length} document${selectedDocuments.length > 1 ? 's' : ''}`}
+        itemType="document"
+        isLoading={isBulkDeleting}
+      />
+
       {/* Folder Modal */}
       <FolderModal
         open={showFolderModal}
@@ -841,12 +884,12 @@ export default function VaultPage() {
         title={editFolder ? 'Edit Folder' : 'Create New Folder'}
       />
       
-      {/* Document Preview Dialog */}
-      <Dialog open={!!previewDocument} onOpenChange={(open) => !open && setPreviewDocument(null)}>
-        <DialogContent className="max-w-4xl w-[90vw] h-[85vh] flex flex-col p-0">
-          <DialogHeader className="px-6 pt-6 pb-2">
-            <DialogTitle className="truncate pr-8">{previewDocument?.title}</DialogTitle>
-          </DialogHeader>
+      {/* Document Preview Drawer */}
+      <Sheet open={!!previewDocument} onOpenChange={(open) => !open && setPreviewDocument(null)}>
+        <SheetContent side="right" className="w-[90vw] sm:max-w-2xl flex flex-col p-0">
+          <SheetHeader className="px-6 pt-6 pb-2">
+            <SheetTitle className="truncate pr-8">{previewDocument?.title}</SheetTitle>
+          </SheetHeader>
           <div className="flex-1 min-h-0 px-6 pb-6">
             {previewDocument && (() => {
               const { fileType, fileUrl, title } = previewDocument;
@@ -885,8 +928,8 @@ export default function VaultPage() {
               );
             })()}
           </div>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
 
       {/* Move to Folder Dialog */}
       <Dialog open={showMoveFolderDialog} onOpenChange={setShowMoveFolderDialog}>
