@@ -120,6 +120,7 @@ export default function VaultPage() {
   const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
   const [documentToMove, setDocumentToMove] = useState<string | null>(null);
   const [isMoving, setIsMoving] = useState(false);
+  const [previewDocument, setPreviewDocument] = useState<{ title: string; fileUrl: string; fileType: string } | null>(null);
   
   // Folder-related state
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
@@ -463,13 +464,17 @@ export default function VaultPage() {
                 <TableCell>{document.createdBy}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end space-x-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="h-8 w-8"
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.open(document.fileUrl, '_blank');
+                        setPreviewDocument({
+                          title: document.title,
+                          fileUrl: document.fileUrl,
+                          fileType: (document.fileType || '').toLowerCase()
+                        });
                       }}
                     >
                       <Eye className="h-4 w-4" />
@@ -836,6 +841,53 @@ export default function VaultPage() {
         title={editFolder ? 'Edit Folder' : 'Create New Folder'}
       />
       
+      {/* Document Preview Dialog */}
+      <Dialog open={!!previewDocument} onOpenChange={(open) => !open && setPreviewDocument(null)}>
+        <DialogContent className="max-w-4xl w-[90vw] h-[85vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle className="truncate pr-8">{previewDocument?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 px-6 pb-6">
+            {previewDocument && (() => {
+              const { fileType, fileUrl, title } = previewDocument;
+              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileType);
+              const isPdf = fileType === 'pdf';
+
+              if (isImage) {
+                return (
+                  <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg overflow-auto">
+                    <img
+                      src={fileUrl}
+                      alt={title}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                );
+              }
+
+              if (isPdf) {
+                return (
+                  <iframe
+                    src={fileUrl}
+                    title={title}
+                    className="w-full h-full rounded-lg border"
+                  />
+                );
+              }
+
+              // For other file types (docx, xlsx, csv, etc.), use Google Docs Viewer
+              return (
+                <iframe
+                  src={`https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`}
+                  title={title}
+                  className="w-full h-full rounded-lg border"
+                />
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Move to Folder Dialog */}
       <Dialog open={showMoveFolderDialog} onOpenChange={setShowMoveFolderDialog}>
         <DialogContent>
