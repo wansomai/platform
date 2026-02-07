@@ -425,19 +425,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
           }
         },
         (error) => {
-          // Update the streaming message to show the error
           const errorMessage = error.message || 'Failed to send message';
-          get().updateStreamingMessage(streamingId, {
-            content: `Error: ${errorMessage}`,
-            isStreaming: false,
-            isLoading: false
-          });
 
           // Check if this is a subscription limit error
           if (error.status === 403 && error.requiresUpgrade) {
+            // Remove the streaming message — the upgrade modal will handle UX
+            get().deleteMessage(streamingId);
             set({ error: errorMessage, requiresUpgrade: true });
             throw error; // Re-throw so component can handle it
           } else {
+            // Update the streaming message to show the error
+            get().updateStreamingMessage(streamingId, {
+              content: `Error: ${errorMessage}`,
+              isStreaming: false,
+              isLoading: false
+            });
             set({ error: errorMessage });
           }
         }

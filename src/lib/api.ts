@@ -407,7 +407,7 @@ export const apiService = {
         // Handle 403 with possible subscription limit errors
         if (response.status === 403) {
           const errorData = await response.json().catch(() => null);
-          const customError = new Error(errorData?.message || 'Access denied') as any;
+          const customError = new Error(errorData?.error || errorData?.message || 'Access denied') as any;
           customError.status = 403;
           customError.requiresUpgrade = errorData?.requiresUpgrade;
           throw customError;

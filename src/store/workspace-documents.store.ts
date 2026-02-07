@@ -12,6 +12,7 @@ interface ProjectDocumentsState {
   fetchProjectDocuments: (projectId: string) => Promise<Document[]>;
   attachDocumentsToProject: (projectId: string, documentIds: string[]) => Promise<boolean>;
   removeDocumentFromProject: (projectId: string, documentId: string) => Promise<boolean>;
+  clearDocuments: () => void;
 }
 
 export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get) => ({
@@ -77,5 +78,7 @@ export const useProjectDocumentsStore = create<ProjectDocumentsState>((set, get)
       });
       return false;
     }
-  }
+  },
+
+  clearDocuments: () => set({ documents: [], error: null })
 }));
