@@ -34,6 +34,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import LogoAnimation from "@/components/commons/LogoAnimation";
+import OrgSwitcher from "@/components/sidebar/OrgSwitcher";
 
 interface SidebarLinkProps {
   href: string;
@@ -179,6 +180,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         )}
       </div>
+
+      {/* Organization switcher */}
+      <OrgSwitcher
+        collapsed={collapsed && !isMobile}
+        isMobile={isMobile}
+        onSwitch={isMobile ? handleMobileNavigation : undefined}
+      />
 
       {/* Main navigation */}
       <ScrollArea className="flex-1 py-4">
