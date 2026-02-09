@@ -19,6 +19,8 @@ npx prisma studio     # Database GUI
 
 **Note**: No test suite is currently configured in this project.
 
+**Package manager**: npm (not yarn or pnpm)
+
 ## Architecture Overview
 
 ### Technology Stack
@@ -171,6 +173,12 @@ export const GET = withErrorHandler(
   })
 );
 ```
+
+### No Next.js Edge Middleware
+This project does NOT use Next.js Edge middleware (`middleware.ts`). All authentication and authorization is handled via API route middleware (`withAuth`, `withProjectAccess`, etc.) in `src/lib/api/middleware.ts`.
+
+### Database Connection
+Uses `@prisma/adapter-pg` with a PostgreSQL connection pool (`pg` Pool). Both the Prisma client and pg Pool use a global singleton pattern to persist connections in development.
 
 ### Path Alias
 All imports use `@/*` which maps to `./src/*`:
