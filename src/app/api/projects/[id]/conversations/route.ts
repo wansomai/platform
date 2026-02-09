@@ -78,13 +78,28 @@ export const GET = withErrorHandler(
             description: conversation.aiAssociate.description,
           }
         : undefined,
-      messages: conversation.messages.map((message: any) => ({
-        id: message.id,
-        content: message.content,
-        role: message.role,
-        timestamp: message.createdAt.toISOString(),
-        userId: message.userId,
-      })),
+      messages: conversation.messages.map((message: any) => {
+        const metadata = message.metadata
+          ? (typeof message.metadata === 'string' ? JSON.parse(message.metadata) : message.metadata)
+          : null;
+
+        return {
+          id: message.id,
+          content: message.content,
+          role: message.role,
+          timestamp: message.createdAt.toISOString(),
+          userId: message.userId,
+          ...(metadata?.document && { document: metadata.document }),
+          ...(metadata?.report && { report: metadata.report }),
+          ...(metadata?.webSearchSources && { webSearchSources: metadata.webSearchSources }),
+          references: message.references?.map((ref: any) => ({
+            id: ref.id,
+            documentId: ref.documentId,
+            text: ref.text,
+            document: ref.document,
+          })) || [],
+        };
+      }),
       last_message:
         conversation.messages[conversation.messages.length - 1]?.content || '',
       messages_count: conversation._count.messages,
