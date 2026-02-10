@@ -631,6 +631,11 @@ const FAQSection = () => {
   const [openFAQ, setOpenFAQ] = useState<number | null>(0);
 
   const faqs = [
+       {
+      question: "What is the pricing for law schools?",
+      answer:
+        "Wansom is free for students and faculty at partner law schools. We offer a comprehensive package that includes full access to the Wansom AI platform, training resources, and dedicated support. Our goal is to make cutting-edge AI technology accessible to all law students, regardless of their institution's budget. For more information on partnership opportunities and pricing for institutions, please contact our team.",
+    },
     {
       question: "How does Wansom AI benefit law school curriculum?",
       answer:
@@ -651,11 +656,7 @@ const FAQSection = () => {
       answer:
         "Yes, Wansom offers flexible integration options with common law school platforms including learning management systems (Canvas, Blackboard, Moodle), legal research databases (Westlaw, LexisNexis), and single sign-on (SSO) systems. We can work with your IT team to implement seamless integration that fits your institution's technology infrastructure. Our API allows for custom integrations based on your specific needs.",
     },
-    {
-      question: "What is the pricing for law schools?",
-      answer:
-        "We offer special educational pricing for law schools with flexible plans based on institution size and needs. Pricing is typically structured per student or as an institutional license. We provide discounted rates for academic use, including free trials for faculty evaluation and pilot programs. Small clinics and legal aid organizations may qualify for additional discounts. Contact our education team for a customized quote and to discuss grant funding opportunities that may be available.",
-    },
+ 
   ];
 
   const toggleFAQ = (index: number) => {

@@ -155,7 +155,7 @@ export default function Home() {
         }}
         expires={150}
       >
-        We use cookies to personalize content, run ads, and analyze traffic.
+        We use cookies to provide a better personalized experience.
       </CookieConsent>
       <Footer />
     </div>
