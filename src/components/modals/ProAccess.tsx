@@ -115,19 +115,26 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
         {/* Error Message */}
         {(errorMessage || paymentError) && (
-          <p className={`text-sm font-medium ${paymentError ? 'text-red-500' : 'text-gray-500'}`}>
+          <p className={`text-xs font-light ${paymentError ? 'text-red-500' : 'text-gray-500'}`}>
             {paymentError || errorMessage}
           </p>
         )}
 
-        <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex flex-col md:flex-row">
           {/* Personal Plan - Paystack Payment */}
-          <div className="bg-gray-100 p-4 rounded-lg basis-1/2">
+          <div className="border border-1 border-gray-300 rounded-tl-lg lg:rounded-bl-lg p-4  basis-1/2">
             <div>
-              <h2 className="text-md font-semibold">Upgrade Personal Plan</h2>
-              <p className="text-xs text-gray-600 mb-12 md:mb-28">
-                Get more work done faster, All your favorite legal tools in a unified workspace
+              <h2 className="text-md font-semibold"> Personal Plan</h2>
+              <p className="text-xs text-gray-600 mb-8">
+                Best for solo practitioners who want to explore Wansom
               </p>
+              <ul className="text-xs text-gray-600 mb-4 space-y-1">
+                <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Unlimited client/matter workspaces </li>
+                <li className="flex items-center gap-1"> <Zap className="h-3 w-3 text-green-500" /> Unlimited messages </li>
+                <li className="flex items-center gap-1"> <Zap className="h-3 w-3 text-green-500" /> Upto 5GB Vault Storage </li>
+                <li className="flex items-center gap-1"> <Zap className="h-3 w-3 text-green-500" /> Upto 10 AI Associates </li>
+                <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Draft,Research,Calendar integrations </li>
+              </ul>
               <Button
                 type="button"
                 onClick={handlePersonalUpgrade}
@@ -141,7 +148,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                   </>
                 ) : (
                   <>
-                    Upgrade Now <Zap className="ml-2 h-4 w-4" />
+                    Upgrade Now
                   </>
                 )}
               </Button>
@@ -149,13 +156,21 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
 
           {/* Team Plan - Request Flow */}
-          <div className="bg-gray-100 p-4 rounded-lg basis-1/2">
+          <div className="border border-1 border-gray-300 p-4 lg:rounded-tr-lg rounded-br-lg  basis-1/2">
             <div>
-              <h2 className="text-md font-semibold">Upgrade For Team</h2>
-              <p className="text-xs text-gray-600 mb-12 md:mb-28">
-                Collaborate more, unlimited client/matter workspaces and
-                messages
+              <h2 className="text-md font-semibold">Team Plan</h2>
+              <p className="text-xs text-gray-600 mb-8">
+                Collaborate more on client/matter workspaces with AI
               </p>
+               <ul className="text-xs text-gray-600 mb-4 space-y-1">
+                <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Everything in Personal Plan </li>
+                <li className="flex items-center gap-1"> <Zap className="h-3 w-3 text-green-500" /> Unlimited AI Associates </li>
+                <li className="flex items-center gap-1"> <Zap className="h-3 w-3 text-green-500" /> Upto 50 GB Vault Storage </li>
+                <li className="flex items-center gap-1"> <Zap className="h-3 w-3 text-green-500" /> Unlimited AI Associates </li>
+                <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Custom Workflows,Integrations </li>
+                <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Custom Deployments </li>
+                <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Team Training & Support </li>
+              </ul>
               <Button
                 variant="outline"
                 onClick={handleTeamRequest}
@@ -169,7 +184,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                   </>
                 ) : (
                   <>
-                    Request Pro Access <ChartNoAxesCombined className="ml-2 h-4 w-4"/>
+                    Request Pro Access
                   </>
                 )}
               </Button>
