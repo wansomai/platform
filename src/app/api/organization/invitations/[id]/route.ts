@@ -8,9 +8,9 @@ import crypto from "crypto";
 export const DELETE = withErrorHandler(withAuth(async (
   request: NextRequest,
   userId: string,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const invitationId = params.id;
+  const invitationId = (await params).id;
 
   if (!invitationId) {
     return NextResponse.json(
