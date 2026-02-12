@@ -17,8 +17,7 @@ import {
   Loader2,
   AlertTriangle,
   UserPlus,
-  CheckCircle,
-  LogOut
+  CheckCircle
 } from "lucide-react"
 import { apiService } from "@/lib/api"
 import { toast } from "sonner"
@@ -31,7 +30,6 @@ function AcceptInvitationContent() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [isAccepting, setIsAccepting] = useState(false)
-  const [isSwitching, setIsSwitching] = useState(false)
   const [invitation, setInvitation] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -47,7 +45,17 @@ function AcceptInvitationContent() {
 
       try {
         const response: any = await apiService.get(`/api/organization/invitations/verify?token=${token}`)
-        setInvitation(response.invitation)
+        const inv = response.invitation
+
+        // If logged-in user's email doesn't match, sign them out and redirect to login
+        if (session?.user?.email && session.user.email !== inv.email) {
+          const returnUrl = encodeURIComponent(`/accept-invitation?token=${token}`)
+          await signOut({ redirect: false })
+          router.push(`/login?callbackUrl=${returnUrl}&email=${encodeURIComponent(inv.email)}&invitation=true`)
+          return
+        }
+
+        setInvitation(inv)
       } catch (error: any) {
         setError(error.response?.data?.error || error.message || "Failed to load invitation details")
       } finally {
@@ -109,18 +117,6 @@ function AcceptInvitationContent() {
     } finally {
       setIsAccepting(false)
     }
-  }
-
-  // Handle switching to the correct account
-  const handleSwitchAccount = async () => {
-    if (!token || !invitation) return
-    setIsSwitching(true)
-    const returnUrl = encodeURIComponent(`/accept-invitation?token=${token}`)
-    // Sign out and redirect to login with the invitation email pre-filled
-    await signOut({
-      redirect: false
-    })
-    router.push(`/login?callbackUrl=${returnUrl}&email=${encodeURIComponent(invitation.email)}&invitation=true`)
   }
 
   // Handle decline invitation
@@ -268,8 +264,6 @@ function AcceptInvitationContent() {
     )
   }
 
-  const isEmailMismatch = session?.user?.email !== invitation?.email
-
   // Show invitation details
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -295,38 +289,6 @@ function AcceptInvitationContent() {
                 </p>
               </div>
 
-              {isEmailMismatch && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm">
-                      <p className="font-medium text-yellow-700">Signed in with a different account</p>
-                      <p className="text-yellow-600">
-                        This invitation was sent to <strong>{invitation.email}</strong>, but you're signed in as <strong>{session?.user?.email}</strong>.
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
-                    onClick={handleSwitchAccount}
-                    disabled={isSwitching}
-                  >
-                    {isSwitching ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Switching...
-                      </>
-                    ) : (
-                      <>
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign in as {invitation.email}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
             </>
           )}
         </CardContent>
@@ -336,7 +298,7 @@ function AcceptInvitationContent() {
           </Button>
           <Button
             onClick={handleAccept}
-            disabled={isAccepting || isEmailMismatch}
+            disabled={isAccepting}
           >
             {isAccepting ? (
               <>
