@@ -21,7 +21,7 @@ export const DELETE = withErrorHandler(withAuth(async (
 
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true, role: true }
+    select: { organizationId: true }
   });
 
   if (!currentUser?.organizationId) {
@@ -31,8 +31,18 @@ export const DELETE = withErrorHandler(withAuth(async (
     );
   }
 
-  // Check if current user has permission to cancel invitations
-  if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
+  // Check organization-level role from UserOrganization table
+  const membership = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId,
+        organizationId: currentUser.organizationId
+      }
+    },
+    select: { role: true }
+  });
+
+  if (!membership || (membership.role !== 'admin' && membership.role !== 'owner')) {
     return NextResponse.json(
       { error: 'Insufficient permissions' },
       { status: 403 }
@@ -81,7 +91,7 @@ export const POST = withErrorHandler(withAuth(async (
 
   const currentUser = await prisma.user.findUnique({
     where: { id: userId },
-    select: { organizationId: true, role: true, fullName: true, email: true }
+    select: { organizationId: true, fullName: true, email: true }
   });
 
   if (!currentUser?.organizationId) {
@@ -91,8 +101,18 @@ export const POST = withErrorHandler(withAuth(async (
     );
   }
 
-  // Check if current user has permission to resend invitations
-  if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
+  // Check organization-level role from UserOrganization table
+  const membership = await prisma.userOrganization.findUnique({
+    where: {
+      userId_organizationId: {
+        userId,
+        organizationId: currentUser.organizationId
+      }
+    },
+    select: { role: true }
+  });
+
+  if (!membership || (membership.role !== 'admin' && membership.role !== 'owner')) {
     return NextResponse.json(
       { error: 'Insufficient permissions' },
       { status: 403 }
