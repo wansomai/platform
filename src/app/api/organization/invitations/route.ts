@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
+import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 
 // Get pending invitations
 export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true, role: true }
-  });
-
-  if (!user?.organizationId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
+  const organizationId = await getActiveOrganizationId(userId);
 
   const invitations = await prisma.invitation.findMany({
     where: {
-      organizationId: user.organizationId,
+      organizationId,
       status: 'pending', // Only show pending invitations
       expiresAt: {
         gt: new Date()

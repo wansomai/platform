@@ -494,16 +494,20 @@ export const useProfileStore = create<ProfileState>()(
 
 
           if (response.success) {
-            // ✅ CRITICAL: Invalidate cache by clearing lastFetched timestamp
-            // This ensures any future fetchProfile() calls will get fresh data
+            // ✅ CRITICAL: Invalidate cache and clear stale org-scoped data
             set({
               currentOrgId: organizationId,
               isSwitching: false,
-              lastFetched: null  // Clear cache timestamp
+              lastFetched: null,  // Clear cache timestamp
+              teamMembers: [],    // Clear stale members from previous org
+              invitations: [],    // Clear stale invitations from previous org
             });
 
-            // ✅ Force profile refresh after organization switch
-            await get().fetchProfile(true);  // Force refresh = true bypasses cache
+            // ✅ Force refresh after organization switch
+            await Promise.all([
+              get().fetchProfile(true),
+              get().fetchTeamData(true),
+            ]);
 
             return true;
           }
