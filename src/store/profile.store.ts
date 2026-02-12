@@ -360,7 +360,7 @@ export const useProfileStore = create<ProfileState>()(
         try {
           set({ error: null });
 
-          await apiService.delete(`/api/organization/members/${memberId}`);
+          await apiService.delete('/api/organization/members', { data: { memberId } });
 
           // Remove from team members list
           set((state) => ({
