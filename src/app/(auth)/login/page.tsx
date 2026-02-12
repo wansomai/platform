@@ -5,7 +5,7 @@ import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signIn, useSession } from "next-auth/react"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Eye, EyeOff, Loader2, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -27,6 +27,15 @@ function LoginPageContent() {
   const searchParams = useSearchParams();
 
   const callbackUrl = searchParams?.get('callbackUrl') || '/dashboard';
+  const invitationEmail = searchParams?.get('email');
+  const isInvitation = searchParams?.get('invitation') === 'true';
+
+  // Pre-fill email from invitation link
+  useEffect(() => {
+    if (invitationEmail && !formData.email) {
+      updateField('email', decodeURIComponent(invitationEmail));
+    }
+  }, [invitationEmail]);
 
   // If already authenticated, redirect to callback URL
   useEffect(() => {
@@ -79,6 +88,20 @@ function LoginPageContent() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 text-center">Sign in to your account</h1>
           </div>
+
+          {isInvitation && (
+            <div className="mb-4 rounded-md bg-blue-50 border border-blue-200 p-4">
+              <div className="flex items-start gap-3">
+                <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-blue-700">You've been invited to join an organization!</p>
+                  <p className="text-blue-600">
+                    Sign in to accept your invitation. {invitationEmail && <>Use <strong>{decodeURIComponent(invitationEmail)}</strong> to sign in.</>}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <ErrorAlert error={error} onDismiss={() => setError(null)} />
 
@@ -194,7 +217,17 @@ function LoginPageContent() {
                 )}
               </Button>
               <p className="text-gray-600 text-center mt-4">
-                Don't have an account? <Link href={callbackUrl && callbackUrl !== '/dashboard' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/register"} className="text-[#005c4d] font-medium">Register</Link>
+                Don't have an account?{' '}
+                <Link
+                  href={
+                    callbackUrl && callbackUrl !== '/dashboard'
+                      ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}${invitationEmail ? `&email=${invitationEmail}` : ''}`
+                      : "/register"
+                  }
+                  className="text-[#005c4d] font-medium"
+                >
+                  Register
+                </Link>
               </p>
             </div>
           </form>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import {
   Card,
   CardContent,
@@ -17,8 +17,8 @@ import {
   Loader2,
   AlertTriangle,
   UserPlus,
-  Building,
-  CheckCircle
+  CheckCircle,
+  LogOut
 } from "lucide-react"
 import { apiService } from "@/lib/api"
 import { toast } from "sonner"
@@ -31,6 +31,7 @@ function AcceptInvitationContent() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [isAccepting, setIsAccepting] = useState(false)
+  const [isSwitching, setIsSwitching] = useState(false)
   const [invitation, setInvitation] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -58,19 +59,25 @@ function AcceptInvitationContent() {
     if (status === "authenticated") {
       fetchInvitation()
     } else if (status === "unauthenticated") {
-      // First, verify the token to get invitation details
+      // Verify the token and route to login or register based on whether user exists
       const verifyAndRedirect = async () => {
         try {
           const response: any = await apiService.get(`/api/organization/invitations/verify?token=${token}`)
           const invitationEmail = response.invitation.email
+          const userExists = response.userExists
+          const returnUrl = encodeURIComponent(`/accept-invitation?token=${token}`)
 
-          // Check if user exists with this email
-          const returnUrl = encodeURIComponent(`/accept-invitation?token=${token}`)
-          router.push(`/register?invitationToken=${token}&email=${encodeURIComponent(invitationEmail)}&callbackUrl=${returnUrl}`)
+          if (userExists) {
+            // Existing user → send to login with pre-filled email
+            router.push(`/login?callbackUrl=${returnUrl}&email=${encodeURIComponent(invitationEmail)}&invitation=true`)
+          } else {
+            // New user → send to register
+            router.push(`/register?invitationToken=${token}&email=${encodeURIComponent(invitationEmail)}&callbackUrl=${returnUrl}`)
+          }
         } catch (error) {
-          // If verification fails, just redirect to register
+          // If verification fails, redirect to login as a safe default
           const returnUrl = encodeURIComponent(`/accept-invitation?token=${token}`)
-          router.push(`/register?callbackUrl=${returnUrl}`)
+          router.push(`/login?callbackUrl=${returnUrl}`)
         }
       }
 
@@ -90,9 +97,9 @@ function AcceptInvitationContent() {
       setSuccess(true)
       toast.success("You've successfully joined the organization!")
 
-      // Redirect to profile after delay
+      // Redirect to dashboard after delay
       setTimeout(() => {
-        router.push("/profile")
+        router.push("/dashboard")
       }, 2000)
     } catch (error: any) {
       console.error("Error accepting invitation:", error)
@@ -104,10 +111,22 @@ function AcceptInvitationContent() {
     }
   }
 
+  // Handle switching to the correct account
+  const handleSwitchAccount = async () => {
+    if (!token || !invitation) return
+    setIsSwitching(true)
+    const returnUrl = encodeURIComponent(`/accept-invitation?token=${token}`)
+    // Sign out and redirect to login with the invitation email pre-filled
+    await signOut({
+      redirect: false
+    })
+    router.push(`/login?callbackUrl=${returnUrl}&email=${encodeURIComponent(invitation.email)}&invitation=true`)
+  }
+
   // Handle decline invitation
   const handleDecline = () => {
     toast.info("Invitation declined")
-    router.push("/profile")
+    router.push("/dashboard")
   }
 
   // Show loading state
@@ -145,7 +164,7 @@ function AcceptInvitationContent() {
           </CardHeader>
           <CardContent>
             <p className="text-center text-sm text-muted-foreground">
-              Redirecting you to your profile...
+              Redirecting you to your dashboard...
             </p>
           </CardContent>
         </Card>
@@ -249,18 +268,19 @@ function AcceptInvitationContent() {
     )
   }
 
+  const isEmailMismatch = session?.user?.email !== invitation?.email
+
   // Show invitation details
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <Card className="w-full max-w-md">
-   
-        <CardContent className="space-y-4 ">
+        <CardContent className="space-y-4">
           {invitation && (
             <>
               <div className="text-center space-y-4 py-4">
                 <p className="text-gray-700 leading-relaxed">
                   You have been invited by <strong className="text-gray-900">{invitation.inviterName}</strong> to join{' '}
-                  <strong className="text-gray-900">{invitation.organizationName}</strong> on Wansom AI onas a{' '}
+                  <strong className="text-gray-900">{invitation.organizationName}</strong> on Wansom AI as a{' '}
                   <strong className="text-gray-900 capitalize">{invitation.role}</strong>.
                 </p>
                 <p className="text-sm text-gray-500">
@@ -275,18 +295,36 @@ function AcceptInvitationContent() {
                 </p>
               </div>
 
-              {session?.user?.email !== invitation.email && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-medium text-yellow-700">Email mismatch</p>
-                    <p className="text-yellow-600">
-                      This invitation was sent to <strong>{invitation.email}</strong>, but you're logged in as <strong>{session?.user?.email}</strong>.
-                    </p>
-                    <p className="text-yellow-600 mt-1">
-                      Please log out and sign in with the invited email address to accept this invitation.
-                    </p>
+              {isEmailMismatch && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm">
+                      <p className="font-medium text-yellow-700">Signed in with a different account</p>
+                      <p className="text-yellow-600">
+                        This invitation was sent to <strong>{invitation.email}</strong>, but you're signed in as <strong>{session?.user?.email}</strong>.
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+                    onClick={handleSwitchAccount}
+                    disabled={isSwitching}
+                  >
+                    {isSwitching ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Switching...
+                      </>
+                    ) : (
+                      <>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign in as {invitation.email}
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
             </>
@@ -298,7 +336,7 @@ function AcceptInvitationContent() {
           </Button>
           <Button
             onClick={handleAccept}
-            disabled={isAccepting || session?.user?.email !== invitation?.email}
+            disabled={isAccepting || isEmailMismatch}
           >
             {isAccepting ? (
               <>

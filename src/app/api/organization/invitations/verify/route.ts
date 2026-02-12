@@ -49,6 +49,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if a user already exists with this email
+    const existingUser = await prisma.user.findUnique({
+      where: { email: invitation.email },
+      select: { id: true }
+    });
+
     return NextResponse.json({
       invitation: {
         id: invitation.id,
@@ -59,7 +65,8 @@ export async function GET(request: NextRequest) {
         inviterName: invitation.invitedBy.fullName || invitation.invitedBy.email,
         expiresAt: invitation.expiresAt.toISOString(),
         createdAt: invitation.createdAt.toISOString()
-      }
+      },
+      userExists: !!existingUser
     });
   } catch (error) {
     console.error('Error verifying invitation:', error);
