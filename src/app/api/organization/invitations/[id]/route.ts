@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { withAuth, withErrorHandler } from "@/lib/api/middleware";
+import { withAuth, withErrorHandler, OrganizationPermission } from "@/lib/api/middleware";
+import { getActiveOrganizationId } from "@/lib/api/org-helpers";
+import { hasOrganizationPermission } from "@/lib/auth/permissions";
 import { sendInvitationEmail } from "@/lib/email-service";
 import crypto from "crypto";
 
@@ -19,30 +21,15 @@ export const DELETE = withErrorHandler(withAuth(async (
     );
   }
 
-  const currentUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
+  const organizationId = await getActiveOrganizationId(userId);
 
-  if (!currentUser?.organizationId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
+  const hasPermission = await hasOrganizationPermission(
+    userId,
+    organizationId,
+    OrganizationPermission.INVITE_MEMBERS
+  );
 
-  // Check organization-level role from UserOrganization table
-  const membership = await prisma.userOrganization.findUnique({
-    where: {
-      userId_organizationId: {
-        userId,
-        organizationId: currentUser.organizationId
-      }
-    },
-    select: { role: true }
-  });
-
-  if (!membership || (membership.role !== 'admin' && membership.role !== 'owner')) {
+  if (!hasPermission) {
     return NextResponse.json(
       { error: 'Insufficient permissions' },
       { status: 403 }
@@ -53,7 +40,7 @@ export const DELETE = withErrorHandler(withAuth(async (
   const invitation = await prisma.invitation.findFirst({
     where: {
       id: invitationId,
-      organizationId: currentUser.organizationId
+      organizationId
     }
   });
 
@@ -89,41 +76,31 @@ export const POST = withErrorHandler(withAuth(async (
     );
   }
 
-  const currentUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true, fullName: true, email: true }
-  });
+  const organizationId = await getActiveOrganizationId(userId);
 
-  if (!currentUser?.organizationId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
+  const hasPermission = await hasOrganizationPermission(
+    userId,
+    organizationId,
+    OrganizationPermission.INVITE_MEMBERS
+  );
 
-  // Check organization-level role from UserOrganization table
-  const membership = await prisma.userOrganization.findUnique({
-    where: {
-      userId_organizationId: {
-        userId,
-        organizationId: currentUser.organizationId
-      }
-    },
-    select: { role: true }
-  });
-
-  if (!membership || (membership.role !== 'admin' && membership.role !== 'owner')) {
+  if (!hasPermission) {
     return NextResponse.json(
       { error: 'Insufficient permissions' },
       { status: 403 }
     );
   }
 
+  const currentUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { fullName: true, email: true }
+  });
+
   // Find the invitation
   const invitation = await prisma.invitation.findFirst({
     where: {
       id: invitationId,
-      organizationId: currentUser.organizationId
+      organizationId
     },
     include: {
       organization: {
@@ -170,7 +147,7 @@ export const POST = withErrorHandler(withAuth(async (
   try {
     await sendInvitationEmail({
       email: invitation.email,
-      inviterName: currentUser.fullName || currentUser.email || 'A team member',
+      inviterName: currentUser?.fullName || currentUser?.email || 'A team member',
       organizationName: invitation.organization.name,
       role: invitation.role,
       inviteUrl
