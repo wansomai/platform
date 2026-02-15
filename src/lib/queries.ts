@@ -73,7 +73,7 @@ export const postBySlugQuery = `*[_type == "post" && slug.current == $slug][0] {
 // ============================================
 
 // Fetch all legal documents
-export const legalDocumentsQuery = `*[_type == "legalDocument"] | order(_createdAt desc) {
+export const legalDocumentsQuery = `*[_type == "legalDocument"] | order(_updatedAt desc) {
   _id,
   title,
   "slug": slug.current,
