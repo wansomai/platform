@@ -502,6 +502,16 @@ export default function VaultPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                        disabled={isCreatingWorkspace}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToWorkspace([document.id]);
+                        }}
+                      >
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Review in Chat
+                      </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(e) => {
                           e.stopPropagation();
@@ -534,16 +544,7 @@ export default function VaultPage() {
                         <FolderSymlinkIcon className="h-4 w-4 mr-2" />
                         Move to Folder
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        disabled={isCreatingWorkspace}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToWorkspace([document.id]);
-                        }}
-                      >
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        Add to Workspace
-                      </DropdownMenuItem>
+                  
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
@@ -738,10 +739,7 @@ export default function VaultPage() {
                   <span className="font-medium">{selectedDocuments.length} selected</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
-                    <span className="sm:inline hidden">Cancel</span>
-                    <X className="h-4 w-4 sm:hidden" />
-                  </Button>
+                 
                   <Button
                     variant="outline"
                     size="sm"
@@ -750,7 +748,7 @@ export default function VaultPage() {
                     title="Add to Workspace"
                   >
                     <Sparkles className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Add to Workspace</span>
+                    <span className="hidden sm:inline">Review in Chat</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -760,6 +758,11 @@ export default function VaultPage() {
                   >
                     <FolderSymlinkIcon className="h-4 w-4 sm:mr-2" />
                     <span className="hidden sm:inline">Move to Folder</span>
+                  </Button>
+
+                 <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
+                    <span className="sm:inline hidden">Cancel</span>
+                    <X className="h-4 w-4 sm:hidden" />
                   </Button>
                   <Button
                     variant="destructive"
@@ -779,6 +782,7 @@ export default function VaultPage() {
                       </>
                     )}
                   </Button>
+                  
                 </div>
               </div>
             )}
