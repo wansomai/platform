@@ -107,8 +107,18 @@ function RegisterPageContent() {
           router.push(`/login?callbackUrl=${callbackUrl}`);
         }
       } else {
-        // Normal registration flow - redirect to login
-        router.push('/login?registered=true');
+        // Normal registration flow - auto sign in and redirect to dashboard
+        const signInResult = await signIn('credentials', {
+          redirect: false,
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (signInResult?.ok) {
+          router.push('/dashboard');
+        } else {
+          router.push('/login?registered=true');
+        }
       }
     }
   };
