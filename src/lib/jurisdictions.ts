@@ -245,6 +245,32 @@ export const JURISDICTIONS: Jurisdiction[] = [
     isPopular: false
   },
 
+  // Ethiopia
+  {
+    id: 'et',
+    name: 'Ethiopia',
+    country: 'Ethiopia',
+    region: 'Africa',
+    legalSystem: 'civil-law',
+    citationStyle: 'local',
+    courtSystem: ['Federal Supreme Court', 'Federal High Court', 'Federal First Instance Court'],
+    languages: ['Amharic', 'English'],
+    isPopular: false
+  },
+
+  // Rwanda
+  {
+    id: 'rw',
+    name: 'Rwanda',
+    country: 'Rwanda',
+    region: 'Africa',
+    legalSystem: 'civil-law',
+    citationStyle: 'local',
+    courtSystem: ['Supreme Court', 'High Court', 'Intermediate Courts', 'Primary Courts'],
+    languages: ['Kinyarwanda', 'English', 'French'],
+    isPopular: false
+  },
+
   // European Union
   {
     id: 'eu',
