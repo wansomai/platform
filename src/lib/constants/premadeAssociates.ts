@@ -1,8 +1,26 @@
 import { PracticeArea } from '@/types/associates';
-import { FileText, CheckCircle2, Scale, Clipboard, User } from 'lucide-react';
+import { FileText, CheckCircle2, Scale, Clipboard, User, Newspaper } from 'lucide-react';
 import { LightBulbIcon } from '@heroicons/react/24/outline';
 
 export const premadeAssociates = [
+   {
+    id: "law-360",
+    name: "Law 360",
+    description:
+      "Automatically delivers summarized legal news, case law updates, and regulatory changes from your selected jurisdictions to your inbox",
+    instructions: `Law 360 is a digest subscription service that automatically searches the web for recent legal news, case law updates, and regulatory changes specific to your selected jurisdictions and practice areas, then sends a professionally formatted summary directly to your email inbox.
+
+Features:
+- Jurisdiction-specific legal news (e.g. Kenya Law, Tanzania Law, Uganda Law)
+- Categorized updates: Case Law, Regulatory Changes, and Legal News
+- Source citations with links for further reading
+- Customizable practice area topics and jurisdictions
+- Daily or weekly delivery frequency`,
+    practiceAreas: [PracticeArea.GENERAL_PRACTICE],
+    icon: Newspaper,
+    color: "text-orange-600",
+    isDigest: true,
+  },
   {
     id: "contract-review",
     name: "Contract Review Specialist",
@@ -120,4 +138,5 @@ Balance legal compliance with practical HR considerations and business needs.`,
     icon: User,
     color: "text-teal-600",
   },
+ 
 ];

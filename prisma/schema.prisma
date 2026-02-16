@@ -75,6 +75,8 @@ model User {
   activeOrganization      Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
   organization            Organization            @relation(fields: [organizationId], references: [id])
   organizationMemberships UserOrganization[]
+  digestSubscriptions     DigestSubscription[]
+  legal_knowledge         legal_knowledge[]
 
   @@index([activeOrganizationId], map: "idx_user_active_org")
 }
@@ -110,6 +112,7 @@ model Organization {
   users               User[]
   members             UserOrganization[]
   content             Content[]
+  digestSubscriptions DigestSubscription[]
   onboardingSteps     OnboardingAnalytics[]
   subscription        Subscription?
 }
@@ -347,13 +350,16 @@ model DocumentContent {
 }
 
 model Embedding {
-  id         String   @id @default(cuid())
-  documentId String
-  vector     String
-  chunkText  String
-  chunkIndex Int
-  createdAt  DateTime @default(now())
-  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  id           String                 @id @default(cuid())
+  documentId   String
+  chunkText    String
+  chunkIndex   Int
+  createdAt    DateTime               @default(now())
+  vector       Unsupported("vector")?
+  sectionTitle String?
+  startOffset  Int?
+  endOffset    Int?
+  document     Document               @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId], map: "idx_embedding_document")
   @@index([documentId, chunkIndex], map: "idx_embedding_document_chunk")
@@ -367,6 +373,7 @@ model Conversation {
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
   aiAssociateId      String?
+  selectedTemplateId String?
   aiAssociate        AIAssociate?           @relation(fields: [aiAssociateId], references: [id])
   project            Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
   actions            ConversationAction[]
@@ -614,6 +621,81 @@ model Publications {
   title String
 }
 
+model DigestSubscription {
+  id             String          @id @default(cuid())
+  userId         String
+  organizationId String
+  frequency      String          @default("weekly")
+  topics         String[]
+  jurisdictions  String[]
+  isActive       Boolean         @default(true)
+  lastSentAt     DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  history        DigestHistory[]
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([isActive, frequency])
+  @@map("digest_subscriptions")
+}
+
+model DigestHistory {
+  id             String             @id @default(cuid())
+  subscriptionId String
+  subject        String
+  contentSummary String
+  sourceCount    Int                @default(0)
+  sentAt         DateTime           @default(now())
+  subscription   DigestSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId, sentAt(sort: Desc)])
+  @@map("digest_history")
+}
+
+model legal_knowledge {
+  id                     String                   @id
+  title                  String
+  description            String?
+  type                   LegalKnowledgeType
+  jurisdiction           Jurisdiction
+  practiceAreas          PracticeArea[]
+  content                String
+  fileUrl                String?
+  fileType               String?
+  sourceType             String                   @default("internal")
+  sourceReference        String?
+  effectiveDate          DateTime?
+  tags                   String[]
+  status                 String                   @default("active")
+  isPublished            Boolean                  @default(false)
+  createdById            String
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime
+  User                   User                     @relation(fields: [createdById], references: [id])
+  legal_knowledge_chunks legal_knowledge_chunks[]
+
+  @@index([createdById])
+  @@index([jurisdiction, type])
+  @@index([status, isPublished])
+}
+
+model legal_knowledge_chunks {
+  id               String                 @id
+  legalKnowledgeId String
+  chunkIndex       Int
+  chunkText        String
+  startOffset      Int
+  endOffset        Int
+  embedding        Unsupported("vector")?
+  sectionTitle     String?
+  createdAt        DateTime               @default(now())
+  legal_knowledge  legal_knowledge        @relation(fields: [legalKnowledgeId], references: [id], onDelete: Cascade)
+
+  @@index([legalKnowledgeId, chunkIndex])
+}
+
 enum PracticeArea {
   MERGERS_AND_ACQUISITIONS
   TAX_LAW
@@ -635,4 +717,19 @@ enum PracticeArea {
   TECHNOLOGY_LICENSING
   INTERNATIONAL_TRADE
   GENERAL_PRACTICE
+}
+
+enum Jurisdiction {
+  KENYA
+  INTERNATIONAL
+  GENERAL
+}
+
+enum LegalKnowledgeType {
+  TEMPLATE
+  CASE_LAW
+  STATUTE
+  REGULATION
+  LEGAL_OPINION
+  PRACTICE_GUIDE
 }

@@ -335,10 +335,12 @@ exports.Prisma.DocumentContentScalarFieldEnum = {
 exports.Prisma.EmbeddingScalarFieldEnum = {
   id: 'id',
   documentId: 'documentId',
-  vector: 'vector',
   chunkText: 'chunkText',
   chunkIndex: 'chunkIndex',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  sectionTitle: 'sectionTitle',
+  startOffset: 'startOffset',
+  endOffset: 'endOffset'
 };
 
 exports.Prisma.ConversationScalarFieldEnum = {
@@ -348,7 +350,8 @@ exports.Prisma.ConversationScalarFieldEnum = {
   isPinned: 'isPinned',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  aiAssociateId: 'aiAssociateId'
+  aiAssociateId: 'aiAssociateId',
+  selectedTemplateId: 'selectedTemplateId'
 };
 
 exports.Prisma.MessageScalarFieldEnum = {
@@ -533,6 +536,60 @@ exports.Prisma.PublicationsScalarFieldEnum = {
   title: 'title'
 };
 
+exports.Prisma.DigestSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  frequency: 'frequency',
+  topics: 'topics',
+  jurisdictions: 'jurisdictions',
+  isActive: 'isActive',
+  lastSentAt: 'lastSentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DigestHistoryScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  subject: 'subject',
+  contentSummary: 'contentSummary',
+  sourceCount: 'sourceCount',
+  sentAt: 'sentAt'
+};
+
+exports.Prisma.Legal_knowledgeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  type: 'type',
+  jurisdiction: 'jurisdiction',
+  practiceAreas: 'practiceAreas',
+  content: 'content',
+  fileUrl: 'fileUrl',
+  fileType: 'fileType',
+  sourceType: 'sourceType',
+  sourceReference: 'sourceReference',
+  effectiveDate: 'effectiveDate',
+  tags: 'tags',
+  status: 'status',
+  isPublished: 'isPublished',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.Legal_knowledge_chunksScalarFieldEnum = {
+  id: 'id',
+  legalKnowledgeId: 'legalKnowledgeId',
+  chunkIndex: 'chunkIndex',
+  chunkText: 'chunkText',
+  startOffset: 'startOffset',
+  endOffset: 'endOffset',
+  sectionTitle: 'sectionTitle',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -585,6 +642,21 @@ exports.PracticeArea = exports.$Enums.PracticeArea = {
   GENERAL_PRACTICE: 'GENERAL_PRACTICE'
 };
 
+exports.LegalKnowledgeType = exports.$Enums.LegalKnowledgeType = {
+  TEMPLATE: 'TEMPLATE',
+  CASE_LAW: 'CASE_LAW',
+  STATUTE: 'STATUTE',
+  REGULATION: 'REGULATION',
+  LEGAL_OPINION: 'LEGAL_OPINION',
+  PRACTICE_GUIDE: 'PRACTICE_GUIDE'
+};
+
+exports.Jurisdiction = exports.$Enums.Jurisdiction = {
+  KENYA: 'KENYA',
+  INTERNATIONAL: 'INTERNATIONAL',
+  GENERAL: 'GENERAL'
+};
+
 exports.Prisma.ModelName = {
   Account: 'Account',
   Session: 'Session',
@@ -623,7 +695,11 @@ exports.Prisma.ModelName = {
   ProjectAssociate: 'ProjectAssociate',
   CanvasDocument: 'CanvasDocument',
   EventRegistration: 'EventRegistration',
-  Publications: 'Publications'
+  Publications: 'Publications',
+  DigestSubscription: 'DigestSubscription',
+  DigestHistory: 'DigestHistory',
+  legal_knowledge: 'legal_knowledge',
+  legal_knowledge_chunks: 'legal_knowledge_chunks'
 };
 
 /**
