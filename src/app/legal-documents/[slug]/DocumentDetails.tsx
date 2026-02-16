@@ -87,7 +87,7 @@ const DocDetailPageClient = ({ blog }: PageProps) => {
 
   if (!blog) {
     return (
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-gray-50 min-h-screen pt-14 lg:pt-32">
           <Navbar darkmode />
             <DraftPlus title="Write, review, negotiate, and manage legal contracts" initialPrompt={blog?.title ? `Draft a document using the "${blog.title}" template` : ""} initialTemplateName={blog?.title || ''} />
         <div className="container mx-auto px-4 py-16">
