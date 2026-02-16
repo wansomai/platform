@@ -299,23 +299,37 @@ export const apiService = {
       throw new Error('No response body');
     }
     
+    let buffer = '';
     while (true) {
       const { done, value } = await reader.read();
-      
+
       if (done) break;
-      
-      const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
-      
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      // Keep the last (potentially incomplete) line in the buffer
+      buffer = lines.pop() || '';
+
       for (const line of lines) {
         if (line.trim() === '') continue;
-        
+
         try {
           const data = JSON.parse(line);
           if (onMessage) onMessage(data);
         } catch (parseError) {
-          if (onError) onError(parseError);
+          // Ignore JSON parse errors from malformed chunks
+          console.warn('Stream JSON parse error:', parseError);
         }
+      }
+    }
+
+    // Process any remaining data in the buffer
+    if (buffer.trim()) {
+      try {
+        const data = JSON.parse(buffer);
+        if (onMessage) onMessage(data);
+      } catch (parseError) {
+        console.warn('Stream final buffer parse error:', parseError);
       }
     }
   },
@@ -454,25 +468,38 @@ export const apiService = {
         throw new Error('No response body');
       }
       
-      // Read the stream
+      // Read the stream with buffering for partial chunks
+      let buffer = '';
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        // Keep the last (potentially incomplete) line in the buffer
+        buffer = lines.pop() || '';
+
         for (const line of lines) {
           if (line.trim() === '') continue;
-          
+
           try {
             const data = JSON.parse(line);
             if (onMessage) onMessage(data);
           } catch (parseError) {
-            
-            if (onError) onError(parseError);
+            // Ignore JSON parse errors from malformed chunks
+            console.warn('Stream JSON parse error:', parseError);
           }
+        }
+      }
+
+      // Process any remaining data in the buffer
+      if (buffer.trim()) {
+        try {
+          const data = JSON.parse(buffer);
+          if (onMessage) onMessage(data);
+        } catch (parseError) {
+          console.warn('Stream final buffer parse error:', parseError);
         }
       }
     } catch (error: any) {

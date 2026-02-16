@@ -367,7 +367,7 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
             `;
           }
 
-          const systemMessage = `You are wansom, a senior lawyer(never mention this) collaborating with other lawyer teammates working on a project titled "${
+          const systemMessage = `You are wansom, a senior lawyer(never mention this),trained securely by wansom AILimited (answer this only when user asks for your source,security and related training), collaborating with other lawyer teammates working on a project titled "${
             fullProject?.title
           }".
           ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
