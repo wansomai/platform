@@ -7,20 +7,15 @@ import { Button } from "@/components/ui/button";
 
 import {
   Plus,
-  CheckCircle2,
-  FileText,
-  Clipboard,
   Crown,
-  User,
   ChevronRight,
-  Loader2,
   Scale,
   MessageSquare,
   Trash2,
-  Zap,
+  Pencil,
+  MoreVertical,
 } from "lucide-react";
-import { LightBulbIcon } from "@heroicons/react/24/outline";
-import { AIAssociate, PracticeArea } from "@/types";
+import { AIAssociate, PracticeArea, PRACTICE_AREA_LABELS } from "@/types";
 import { useAssociates } from "@/hooks/useAssociates";
 import { useRouter } from "next/navigation";
 import { useProjectStore } from "@/store/project.store";
@@ -32,128 +27,14 @@ import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import ProAccessModal from "@/components/modals/ProAccess";
 import { useOrganization } from "@/store/profile.store";
-
-
-// Premade AI Associate Templates - Ready to use legal AI assistants
-const premadeAssociates = [
-  {
-    id: "contract-review",
-    name: "Contract Review Specialist",
-    description:
-      "Expert at reviewing, analyzing, and drafting commercial contracts",
-    instructions: `You are a Contract Review Specialist AI with expertise in commercial contracts, NDAs, service agreements, and terms of service. Your role is to:
-
-1. Carefully review contracts for key terms, obligations, and potential risks
-2. Identify unfavorable clauses, ambiguous language, and missing provisions
-3. Suggest specific improvements and redlines with clear explanations
-4. Flag critical issues like unlimited liability, unfavorable termination clauses, or missing indemnification
-5. Ensure contracts align with industry best practices and client interests
-
-Always be thorough, precise, and explain your reasoning in business-friendly language.`,
-    practiceAreas: [PracticeArea.CONTRACTS_COMMERCIAL],
-    icon: FileText,
-    color: "text-blue-600",
-  },
-  {
-    id: "compliance-advisor",
-    name: "Compliance & Regulatory Advisor",
-    description:
-      "Helps navigate regulatory requirements and compliance obligations",
-    instructions: `You are a Compliance & Regulatory Advisor AI specializing in corporate compliance, data privacy (GDPR, CCPA), and regulatory frameworks. Your role is to:
-
-1. Identify applicable regulatory requirements for specific business activities
-2. Assess compliance gaps and recommend remediation steps
-3. Help draft privacy policies, terms of service, and compliance documentation
-4. Provide guidance on data protection, consent management, and security requirements
-5. Explain complex regulations in clear, actionable terms
-
-Focus on practical, implementable compliance strategies that balance legal requirements with business operations.`,
-    practiceAreas: [
-      PracticeArea.COMPLIANCE_REGULATORY,
-      PracticeArea.PRIVACY_DATA_PROTECTION,
-    ],
-    icon: CheckCircle2,
-    color: "text-green-600",
-  },
-  {
-    id: "litigation-assistant",
-    name: "Litigation Research Assistant",
-    description:
-      "Conducts legal research, analyzes case law, and prepares litigation materials",
-    instructions: `You are a Litigation Research Assistant AI with expertise in case law analysis, legal research, and litigation strategy. Your role is to:
-
-1. Research relevant case law, statutes, and legal precedents
-2. Analyze fact patterns and identify applicable legal principles
-3. Draft case summaries, legal memoranda, and research reports
-4. Identify strengths and weaknesses in legal arguments
-5. Suggest litigation strategies based on precedent and legal analysis
-
-Provide thorough, well-cited analysis with proper legal reasoning and attention to jurisdictional differences.`,
-    practiceAreas: [PracticeArea.LITIGATION_DISPUTE_RESOLUTION],
-    icon: Scale,
-    color: "text-purple-600",
-  },
-  {
-    id: "ip-specialist",
-    name: "IP & Trademark Specialist",
-    description:
-      "Assists with trademark searches, IP protection, and licensing matters",
-    instructions: `You are an Intellectual Property Specialist AI focusing on trademarks, copyrights, and licensing. Your role is to:
-
-1. Guide trademark clearance searches and registration strategy
-2. Analyze trademark conflicts and likelihood of confusion
-3. Draft and review IP licensing agreements and assignments
-4. Provide guidance on copyright protection and fair use
-5. Help develop IP protection strategies for brands and creative works
-
-Combine technical IP knowledge with practical business considerations to provide actionable IP guidance.`,
-    practiceAreas: [
-      PracticeArea.INTELLECTUAL_PROPERTY,
-      PracticeArea.TECHNOLOGY_LICENSING,
-    ],
-    icon: LightBulbIcon,
-    color: "text-amber-600",
-  },
-  {
-    id: "ma-advisor",
-    name: "M&A Due Diligence Advisor",
-    description:
-      "Assists with mergers, acquisitions, and due diligence processes",
-    instructions: `You are an M&A Due Diligence Advisor AI specializing in mergers, acquisitions, and corporate transactions. Your role is to:
-
-1. Guide due diligence checklists and document review processes
-2. Identify key legal and business risks in target companies
-3. Analyze corporate structure, contracts, and liabilities
-4. Review material agreements, employment matters, and IP holdings
-5. Help prepare due diligence reports and transaction summaries
-
-Focus on practical risk identification and clear communication of findings to facilitate informed transaction decisions.`,
-    practiceAreas: [
-      PracticeArea.MERGERS_AND_ACQUISITIONS,
-      PracticeArea.CORPORATE_GOVERNANCE,
-    ],
-    icon: Clipboard,
-    color: "text-indigo-600",
-  },
-  {
-    id: "employment-advisor",
-    name: "Employment & HR Legal Advisor",
-    description:
-      "Provides guidance on employment law, policies, and workplace compliance",
-    instructions: `You are an Employment & HR Legal Advisor AI with expertise in employment law, workplace policies, and labor compliance. Your role is to:
-
-1. Draft and review employment agreements, offer letters, and separation agreements
-2. Provide guidance on employee handbooks, workplace policies, and HR procedures
-3. Advise on employment law compliance (wage and hour, discrimination, FMLA, etc.)
-4. Help navigate employee relations issues and termination processes
-5. Explain employment law risks and recommend compliant approaches
-
-Balance legal compliance with practical HR considerations and business needs.`,
-    practiceAreas: [PracticeArea.EMPLOYMENT_LABOR],
-    icon: User,
-    color: "text-teal-600",
-  },
-];
+import { premadeAssociates } from "@/lib/constants/premadeAssociates";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function WorkflowsPage() {
   const [showAllTemplates, setShowAllTemplates] = useState(false);
@@ -161,7 +42,6 @@ export default function WorkflowsPage() {
     id: string;
     name: string;
   } | null>(null);
-  const [creatingTemplateId, setCreatingTemplateId] = useState<string | null>(null);
   const [showProAccess, setShowProAccess] = useState(false);
 
   const router = useRouter();
@@ -178,7 +58,6 @@ export default function WorkflowsPage() {
     error,
     fetchAssociates,
     deleteAssociate,
-    createAssociate,
     isProcessing,
   } = useAssociates();
 
@@ -271,40 +150,6 @@ export default function WorkflowsPage() {
     }
   };
 
-  // Handle premade associate selection - creates the associate for the user
-  const handlePremadeAssociate = async (
-    template: (typeof premadeAssociates)[0]
-  ) => {
-    // Prevent multiple clicks
-    if (creatingTemplateId) return;
-
-    try {
-      setCreatingTemplateId(template.id);
-
-      // Create the associate from the template
-      const newAssociate = await createAssociate({
-        name: template.name,
-        description: template.description,
-        instructions: template.instructions,
-        practiceAreas: template.practiceAreas,
-      });
-
-      if (!newAssociate) {
-        notify.error("Failed to create associate");
-        return;
-      }
-
-      // Success - associate is now in their collection
-      notify.success(`${template.name} added! Click "Use in chat" to start.`);
-    } catch (error: any) {
-      console.error("Error creating associate from template:", error);
-      notify.error(error.message || "Failed to create associate");
-    } finally {
-      setCreatingTemplateId(null);
-    }
-  };
-
-  // Update the JSX to use filteredResults instead of filteredAssociates
   return (
     <div className="container mx-auto p-6 space-y-6 max-w-6xl">
       {/* "Header */}
@@ -349,36 +194,18 @@ export default function WorkflowsPage() {
               <Card
                 key={template.id}
                 className="hover:shadow-sm transition-all border-gray-200 hover:border-gray-300 cursor-pointer"
+                onClick={() => router.push(`/workflows/template/${template.id}`)}
               >
                 <CardContent className="p-4">
-                  <div className="mb-1 flex items-center justify-between">
+                  <div className="mb-1">
                     <div
                       className={`rounded-lg p-2 ${template.color.replace(
                         "text",
                         "bg"
-                      )}/10 flex-shrink-0`}
+                      )}/10 flex-shrink-0 w-fit`}
                     >
                       <template.icon className={`h-5 w-5 ${template.color}`} />
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs px-2 py-1 h-auto"
-                      onClick={() => handlePremadeAssociate(template)}
-                      disabled={!!creatingTemplateId || isProcessing}
-                    >
-                      {creatingTemplateId === template.id ? (
-                        <>
-                          <LogoAnimation/>
-                          
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="h-3 w-3 mr-1" />
-                          Use Template
-                        </>
-                      )}
-                    </Button>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="flex-1 min-w-0">
@@ -387,6 +214,7 @@ export default function WorkflowsPage() {
                         {template.description}
                       </p>
                     </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                   </div>
                 </CardContent>
               </Card>
@@ -405,7 +233,7 @@ export default function WorkflowsPage() {
           <Button
             className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
             onClick={() => router.push("/workflows/new")}
-            disabled={isProcessing || !!creatingTemplateId}
+            disabled={isProcessing}
           >
             <Plus className="mr-2 h-4 w-4" />
             New AI Associate
@@ -429,7 +257,7 @@ export default function WorkflowsPage() {
               </p>
               <Button
                 onClick={() => router.push("/workflows/new")}
-                disabled={isProcessing || !!creatingTemplateId}
+                disabled={isProcessing}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Associate
@@ -463,33 +291,78 @@ export default function WorkflowsPage() {
                         {associate.description ||
                           associate.instructions?.substring(0, 60) + "..."}
                       </p>
+                      {associate.practiceAreas?.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {associate.practiceAreas.slice(0, 3).map((area) => (
+                            <span
+                              key={area}
+                              className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full"
+                            >
+                              {PRACTICE_AREA_LABELS[area] || area}
+                            </span>
+                          ))}
+                          {associate.practiceAreas.length > 3 && (
+                            <span className="text-xs px-2 py-0.5 text-muted-foreground">
+                              +{associate.practiceAreas.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-2">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        onClick={() => handleUseInChat(associate)}
                         className="gap-2"
-                        disabled={isProcessing || !!creatingTemplateId}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUseInChat(associate);
+                        }}
+                        disabled={isProcessing}
                       >
                         <MessageSquare className="h-4 w-4" />
-                        Use in chat
+                        Use in Chat
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          setAssociateToDelete({
-                            id: associate.id,
-                            name: associate.name,
-                          })
-                        }
-                        disabled={isProcessing || !!creatingTemplateId}
-                      >
-                        <Trash2 className="h-4 w-4 text-red-600" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={(e) => e.stopPropagation()}
+                            disabled={isProcessing}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/workflows/${associate.id}`);
+                            }}
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAssociateToDelete({
+                                id: associate.id,
+                                name: associate.name,
+                              });
+                            }}
+                            className="text-red-600 focus:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </CardContent>
