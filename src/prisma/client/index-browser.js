@@ -533,6 +533,27 @@ exports.Prisma.PublicationsScalarFieldEnum = {
   title: 'title'
 };
 
+exports.Prisma.DigestSubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  organizationId: 'organizationId',
+  frequency: 'frequency',
+  topics: 'topics',
+  isActive: 'isActive',
+  lastSentAt: 'lastSentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DigestHistoryScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  subject: 'subject',
+  contentSummary: 'contentSummary',
+  sourceCount: 'sourceCount',
+  sentAt: 'sentAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -623,7 +644,9 @@ exports.Prisma.ModelName = {
   ProjectAssociate: 'ProjectAssociate',
   CanvasDocument: 'CanvasDocument',
   EventRegistration: 'EventRegistration',
-  Publications: 'Publications'
+  Publications: 'Publications',
+  DigestSubscription: 'DigestSubscription',
+  DigestHistory: 'DigestHistory'
 };
 
 /**

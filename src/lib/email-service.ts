@@ -1,5 +1,6 @@
 // src/lib/email-service.ts
 import nodemailer from 'nodemailer';
+import type { DigestContent } from '@/services/legalDigestService';
 
 interface EmailOptions {
   to: string;
@@ -1045,6 +1046,121 @@ export function sendPasswordResetEmail({
             <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
           </div>
           <p>You're receiving this email because a password reset was requested for your account.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+  });
+}
+
+/**
+ * Sends a legal news digest email
+ */
+export function sendLegalDigestEmail({
+  email,
+  fullName,
+  digest,
+  frequency,
+}: {
+  email: string;
+  fullName: string;
+  digest: DigestContent;
+  frequency: string;
+}) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
+  const unsubscribeUrl = `${appUrl}/workflows/template/law-360`;
+  const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
+  const subject = `Law 360 ${frequencyLabel} Digest: ${digest.headline}`;
+
+  const sectionsHtml = digest.sections
+    .filter((s) => s.items.length > 0)
+    .map(
+      (section) => `
+      <div style="margin-bottom: 28px;">
+        <h2 style="color: #0a4b5e; font-size: 18px; border-bottom: 2px solid #0a4b5e; padding-bottom: 8px; margin-bottom: 16px;">
+          ${section.category}
+        </h2>
+        ${section.items
+          .map(
+            (item) => `
+          <div style="margin-bottom: 16px; padding: 12px; background-color: #f8fafc; border-radius: 6px; border-left: 3px solid #0a4b5e;">
+            <h3 style="color: #1a1a1a; font-size: 15px; margin: 0 0 6px 0;">${item.title}</h3>
+            <p style="color: #4a4a4a; font-size: 14px; line-height: 1.5; margin: 0 0 8px 0;">${item.summary}</p>
+            ${
+              item.sourceUrl
+                ? `<a href="${item.sourceUrl}" style="color: #0a4b5e; font-size: 13px; text-decoration: none;">${item.sourceName || 'Read more'} &rarr;</a>`
+                : item.sourceName
+                  ? `<span style="color: #666; font-size: 13px;">Source: ${item.sourceName}</span>`
+                  : ''
+            }
+          </div>`
+          )
+          .join('')}
+      </div>`
+    )
+    .join('');
+
+  const sourcesHtml =
+    digest.sources.length > 0
+      ? `
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e5e5;">
+      <h3 style="color: #666; font-size: 14px; margin-bottom: 8px;">Sources</h3>
+      <ul style="list-style: none; padding: 0; margin: 0;">
+        ${digest.sources
+          .map(
+            (s) =>
+              `<li style="margin-bottom: 4px;"><a href="${s.url}" style="color: #0a4b5e; font-size: 13px; text-decoration: none;">${s.title}</a></li>`
+          )
+          .join('')}
+      </ul>
+    </div>`
+      : '';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 640px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">${frequencyLabel} Legal News Digest</h1>
+          <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hello ${fullName},</p>
+
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px; margin: 16px 0; border-radius: 0 6px 6px 0;">
+            <p style="margin: 0; font-size: 15px; font-weight: 600; color: #0a4b5e;">${digest.headline}</p>
+            <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a4a4a;">${digest.summary}</p>
+          </div>
+
+          ${sectionsHtml}
+          ${sourcesHtml}
+
+          <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e5e5; text-align: center;">
+            <a href="${appUrl}/dashboard" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600;">Open Wansom Workspace</a>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this because you subscribed to the ${frequencyLabel} Legal Digest on Wansom.</p>
+          <p><a href="${unsubscribeUrl}" style="color: #0a4b5e;">Manage subscription</a></p>
         </div>
       </div>
     </body>

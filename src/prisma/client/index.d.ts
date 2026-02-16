@@ -203,6 +203,16 @@ export type EventRegistration = $Result.DefaultSelection<Prisma.$EventRegistrati
  * 
  */
 export type Publications = $Result.DefaultSelection<Prisma.$PublicationsPayload>
+/**
+ * Model DigestSubscription
+ * 
+ */
+export type DigestSubscription = $Result.DefaultSelection<Prisma.$DigestSubscriptionPayload>
+/**
+ * Model DigestHistory
+ * 
+ */
+export type DigestHistory = $Result.DefaultSelection<Prisma.$DigestHistoryPayload>
 
 /**
  * Enums
@@ -735,6 +745,26 @@ export class PrismaClient<
     * ```
     */
   get publications(): Prisma.PublicationsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.digestSubscription`: Exposes CRUD operations for the **DigestSubscription** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DigestSubscriptions
+    * const digestSubscriptions = await prisma.digestSubscription.findMany()
+    * ```
+    */
+  get digestSubscription(): Prisma.DigestSubscriptionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.digestHistory`: Exposes CRUD operations for the **DigestHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DigestHistories
+    * const digestHistories = await prisma.digestHistory.findMany()
+    * ```
+    */
+  get digestHistory(): Prisma.DigestHistoryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1206,7 +1236,9 @@ export namespace Prisma {
     ProjectAssociate: 'ProjectAssociate',
     CanvasDocument: 'CanvasDocument',
     EventRegistration: 'EventRegistration',
-    Publications: 'Publications'
+    Publications: 'Publications',
+    DigestSubscription: 'DigestSubscription',
+    DigestHistory: 'DigestHistory'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1222,7 +1254,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4038,6 +4070,154 @@ export namespace Prisma {
           }
         }
       }
+      DigestSubscription: {
+        payload: Prisma.$DigestSubscriptionPayload<ExtArgs>
+        fields: Prisma.DigestSubscriptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DigestSubscriptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DigestSubscriptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>
+          }
+          findFirst: {
+            args: Prisma.DigestSubscriptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DigestSubscriptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>
+          }
+          findMany: {
+            args: Prisma.DigestSubscriptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>[]
+          }
+          create: {
+            args: Prisma.DigestSubscriptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>
+          }
+          createMany: {
+            args: Prisma.DigestSubscriptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DigestSubscriptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>[]
+          }
+          delete: {
+            args: Prisma.DigestSubscriptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>
+          }
+          update: {
+            args: Prisma.DigestSubscriptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DigestSubscriptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DigestSubscriptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DigestSubscriptionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>[]
+          }
+          upsert: {
+            args: Prisma.DigestSubscriptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestSubscriptionPayload>
+          }
+          aggregate: {
+            args: Prisma.DigestSubscriptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDigestSubscription>
+          }
+          groupBy: {
+            args: Prisma.DigestSubscriptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DigestSubscriptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DigestSubscriptionCountArgs<ExtArgs>
+            result: $Utils.Optional<DigestSubscriptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      DigestHistory: {
+        payload: Prisma.$DigestHistoryPayload<ExtArgs>
+        fields: Prisma.DigestHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DigestHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DigestHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.DigestHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DigestHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.DigestHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.DigestHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.DigestHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DigestHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.DigestHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>
+          }
+          update: {
+            args: Prisma.DigestHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.DigestHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DigestHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DigestHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.DigestHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.DigestHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDigestHistory>
+          }
+          groupBy: {
+            args: Prisma.DigestHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DigestHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DigestHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<DigestHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4184,6 +4364,8 @@ export namespace Prisma {
     canvasDocument?: CanvasDocumentOmit
     eventRegistration?: EventRegistrationOmit
     publications?: PublicationsOmit
+    digestSubscription?: DigestSubscriptionOmit
+    digestHistory?: DigestHistoryOmit
   }
 
   /* Types for Logging */
@@ -4280,6 +4462,7 @@ export namespace Prisma {
     SharedWorkspace: number
     SharedWorkspaceAccess: number
     organizationMemberships: number
+    digestSubscriptions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4299,6 +4482,7 @@ export namespace Prisma {
     SharedWorkspace?: boolean | UserCountOutputTypeCountSharedWorkspaceArgs
     SharedWorkspaceAccess?: boolean | UserCountOutputTypeCountSharedWorkspaceAccessArgs
     organizationMemberships?: boolean | UserCountOutputTypeCountOrganizationMembershipsArgs
+    digestSubscriptions?: boolean | UserCountOutputTypeCountDigestSubscriptionsArgs
   }
 
   // Custom InputTypes
@@ -4424,6 +4608,13 @@ export namespace Prisma {
     where?: UserOrganizationWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDigestSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestSubscriptionWhereInput
+  }
+
 
   /**
    * Count Type OrganizationCountOutputType
@@ -4440,6 +4631,7 @@ export namespace Prisma {
     members: number
     content: number
     onboardingSteps: number
+    digestSubscriptions: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4453,6 +4645,7 @@ export namespace Prisma {
     members?: boolean | OrganizationCountOutputTypeCountMembersArgs
     content?: boolean | OrganizationCountOutputTypeCountContentArgs
     onboardingSteps?: boolean | OrganizationCountOutputTypeCountOnboardingStepsArgs
+    digestSubscriptions?: boolean | OrganizationCountOutputTypeCountDigestSubscriptionsArgs
   }
 
   // Custom InputTypes
@@ -4534,6 +4727,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountOnboardingStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OnboardingAnalyticsWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountDigestSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestSubscriptionWhereInput
   }
 
 
@@ -5015,6 +5215,37 @@ export namespace Prisma {
    */
   export type AIAssociateCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectAssociateWhereInput
+  }
+
+
+  /**
+   * Count Type DigestSubscriptionCountOutputType
+   */
+
+  export type DigestSubscriptionCountOutputType = {
+    history: number
+  }
+
+  export type DigestSubscriptionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    history?: boolean | DigestSubscriptionCountOutputTypeCountHistoryArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DigestSubscriptionCountOutputType without action
+   */
+  export type DigestSubscriptionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscriptionCountOutputType
+     */
+    select?: DigestSubscriptionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DigestSubscriptionCountOutputType without action
+   */
+  export type DigestSubscriptionCountOutputTypeCountHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestHistoryWhereInput
   }
 
 
@@ -8449,6 +8680,7 @@ export namespace Prisma {
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
+    digestSubscriptions?: boolean | User$digestSubscriptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -8518,6 +8750,7 @@ export namespace Prisma {
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
+    digestSubscriptions?: boolean | User$digestSubscriptionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8550,6 +8783,7 @@ export namespace Prisma {
       activeOrganization: Prisma.$OrganizationPayload<ExtArgs> | null
       organization: Prisma.$OrganizationPayload<ExtArgs>
       organizationMemberships: Prisma.$UserOrganizationPayload<ExtArgs>[]
+      digestSubscriptions: Prisma.$DigestSubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8975,6 +9209,7 @@ export namespace Prisma {
     activeOrganization<T extends User$activeOrganizationArgs<ExtArgs> = {}>(args?: Subset<T, User$activeOrganizationArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     organizationMemberships<T extends User$organizationMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$organizationMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    digestSubscriptions<T extends User$digestSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$digestSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9814,6 +10049,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.digestSubscriptions
+   */
+  export type User$digestSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    where?: DigestSubscriptionWhereInput
+    orderBy?: DigestSubscriptionOrderByWithRelationInput | DigestSubscriptionOrderByWithRelationInput[]
+    cursor?: DigestSubscriptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DigestSubscriptionScalarFieldEnum | DigestSubscriptionScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10150,6 +10409,7 @@ export namespace Prisma {
     content?: boolean | Organization$contentArgs<ExtArgs>
     onboardingSteps?: boolean | Organization$onboardingStepsArgs<ExtArgs>
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
+    digestSubscriptions?: boolean | Organization$digestSubscriptionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -10238,6 +10498,7 @@ export namespace Prisma {
     content?: boolean | Organization$contentArgs<ExtArgs>
     onboardingSteps?: boolean | Organization$onboardingStepsArgs<ExtArgs>
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
+    digestSubscriptions?: boolean | Organization$digestSubscriptionsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10262,6 +10523,7 @@ export namespace Prisma {
       content: Prisma.$ContentPayload<ExtArgs>[]
       onboardingSteps: Prisma.$OnboardingAnalyticsPayload<ExtArgs>[]
       subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
+      digestSubscriptions: Prisma.$DigestSubscriptionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10690,6 +10952,7 @@ export namespace Prisma {
     content<T extends Organization$contentArgs<ExtArgs> = {}>(args?: Subset<T, Organization$contentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     onboardingSteps<T extends Organization$onboardingStepsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$onboardingStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OnboardingAnalyticsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscription<T extends Organization$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Organization$subscriptionArgs<ExtArgs>>): Prisma__SubscriptionClient<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    digestSubscriptions<T extends Organization$digestSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$digestSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11410,6 +11673,30 @@ export namespace Prisma {
      */
     include?: SubscriptionInclude<ExtArgs> | null
     where?: SubscriptionWhereInput
+  }
+
+  /**
+   * Organization.digestSubscriptions
+   */
+  export type Organization$digestSubscriptionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    where?: DigestSubscriptionWhereInput
+    orderBy?: DigestSubscriptionOrderByWithRelationInput | DigestSubscriptionOrderByWithRelationInput[]
+    cursor?: DigestSubscriptionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DigestSubscriptionScalarFieldEnum | DigestSubscriptionScalarFieldEnum[]
   }
 
   /**
@@ -48842,6 +49129,2255 @@ export namespace Prisma {
 
 
   /**
+   * Model DigestSubscription
+   */
+
+  export type AggregateDigestSubscription = {
+    _count: DigestSubscriptionCountAggregateOutputType | null
+    _min: DigestSubscriptionMinAggregateOutputType | null
+    _max: DigestSubscriptionMaxAggregateOutputType | null
+  }
+
+  export type DigestSubscriptionMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    organizationId: string | null
+    frequency: string | null
+    isActive: boolean | null
+    lastSentAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DigestSubscriptionMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    organizationId: string | null
+    frequency: string | null
+    isActive: boolean | null
+    lastSentAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DigestSubscriptionCountAggregateOutputType = {
+    id: number
+    userId: number
+    organizationId: number
+    frequency: number
+    topics: number
+    isActive: number
+    lastSentAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DigestSubscriptionMinAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    frequency?: true
+    isActive?: true
+    lastSentAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DigestSubscriptionMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    frequency?: true
+    isActive?: true
+    lastSentAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DigestSubscriptionCountAggregateInputType = {
+    id?: true
+    userId?: true
+    organizationId?: true
+    frequency?: true
+    topics?: true
+    isActive?: true
+    lastSentAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DigestSubscriptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestSubscription to aggregate.
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestSubscriptions to fetch.
+     */
+    orderBy?: DigestSubscriptionOrderByWithRelationInput | DigestSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DigestSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DigestSubscriptions
+    **/
+    _count?: true | DigestSubscriptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DigestSubscriptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DigestSubscriptionMaxAggregateInputType
+  }
+
+  export type GetDigestSubscriptionAggregateType<T extends DigestSubscriptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDigestSubscription]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDigestSubscription[P]>
+      : GetScalarType<T[P], AggregateDigestSubscription[P]>
+  }
+
+
+
+
+  export type DigestSubscriptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestSubscriptionWhereInput
+    orderBy?: DigestSubscriptionOrderByWithAggregationInput | DigestSubscriptionOrderByWithAggregationInput[]
+    by: DigestSubscriptionScalarFieldEnum[] | DigestSubscriptionScalarFieldEnum
+    having?: DigestSubscriptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DigestSubscriptionCountAggregateInputType | true
+    _min?: DigestSubscriptionMinAggregateInputType
+    _max?: DigestSubscriptionMaxAggregateInputType
+  }
+
+  export type DigestSubscriptionGroupByOutputType = {
+    id: string
+    userId: string
+    organizationId: string
+    frequency: string
+    topics: string[]
+    isActive: boolean
+    lastSentAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: DigestSubscriptionCountAggregateOutputType | null
+    _min: DigestSubscriptionMinAggregateOutputType | null
+    _max: DigestSubscriptionMaxAggregateOutputType | null
+  }
+
+  type GetDigestSubscriptionGroupByPayload<T extends DigestSubscriptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DigestSubscriptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DigestSubscriptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DigestSubscriptionGroupByOutputType[P]>
+            : GetScalarType<T[P], DigestSubscriptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DigestSubscriptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    frequency?: boolean
+    topics?: boolean
+    isActive?: boolean
+    lastSentAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    history?: boolean | DigestSubscription$historyArgs<ExtArgs>
+    _count?: boolean | DigestSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digestSubscription"]>
+
+  export type DigestSubscriptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    frequency?: boolean
+    topics?: boolean
+    isActive?: boolean
+    lastSentAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digestSubscription"]>
+
+  export type DigestSubscriptionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    frequency?: boolean
+    topics?: boolean
+    isActive?: boolean
+    lastSentAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digestSubscription"]>
+
+  export type DigestSubscriptionSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    organizationId?: boolean
+    frequency?: boolean
+    topics?: boolean
+    isActive?: boolean
+    lastSentAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DigestSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "organizationId" | "frequency" | "topics" | "isActive" | "lastSentAt" | "createdAt" | "updatedAt", ExtArgs["result"]["digestSubscription"]>
+  export type DigestSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    history?: boolean | DigestSubscription$historyArgs<ExtArgs>
+    _count?: boolean | DigestSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DigestSubscriptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type DigestSubscriptionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $DigestSubscriptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DigestSubscription"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      history: Prisma.$DigestHistoryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      organizationId: string
+      frequency: string
+      topics: string[]
+      isActive: boolean
+      lastSentAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["digestSubscription"]>
+    composites: {}
+  }
+
+  type DigestSubscriptionGetPayload<S extends boolean | null | undefined | DigestSubscriptionDefaultArgs> = $Result.GetResult<Prisma.$DigestSubscriptionPayload, S>
+
+  type DigestSubscriptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DigestSubscriptionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DigestSubscriptionCountAggregateInputType | true
+    }
+
+  export interface DigestSubscriptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DigestSubscription'], meta: { name: 'DigestSubscription' } }
+    /**
+     * Find zero or one DigestSubscription that matches the filter.
+     * @param {DigestSubscriptionFindUniqueArgs} args - Arguments to find a DigestSubscription
+     * @example
+     * // Get one DigestSubscription
+     * const digestSubscription = await prisma.digestSubscription.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DigestSubscriptionFindUniqueArgs>(args: SelectSubset<T, DigestSubscriptionFindUniqueArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DigestSubscription that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DigestSubscriptionFindUniqueOrThrowArgs} args - Arguments to find a DigestSubscription
+     * @example
+     * // Get one DigestSubscription
+     * const digestSubscription = await prisma.digestSubscription.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DigestSubscriptionFindUniqueOrThrowArgs>(args: SelectSubset<T, DigestSubscriptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestSubscription that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionFindFirstArgs} args - Arguments to find a DigestSubscription
+     * @example
+     * // Get one DigestSubscription
+     * const digestSubscription = await prisma.digestSubscription.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DigestSubscriptionFindFirstArgs>(args?: SelectSubset<T, DigestSubscriptionFindFirstArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestSubscription that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionFindFirstOrThrowArgs} args - Arguments to find a DigestSubscription
+     * @example
+     * // Get one DigestSubscription
+     * const digestSubscription = await prisma.digestSubscription.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DigestSubscriptionFindFirstOrThrowArgs>(args?: SelectSubset<T, DigestSubscriptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DigestSubscriptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DigestSubscriptions
+     * const digestSubscriptions = await prisma.digestSubscription.findMany()
+     * 
+     * // Get first 10 DigestSubscriptions
+     * const digestSubscriptions = await prisma.digestSubscription.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const digestSubscriptionWithIdOnly = await prisma.digestSubscription.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DigestSubscriptionFindManyArgs>(args?: SelectSubset<T, DigestSubscriptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DigestSubscription.
+     * @param {DigestSubscriptionCreateArgs} args - Arguments to create a DigestSubscription.
+     * @example
+     * // Create one DigestSubscription
+     * const DigestSubscription = await prisma.digestSubscription.create({
+     *   data: {
+     *     // ... data to create a DigestSubscription
+     *   }
+     * })
+     * 
+     */
+    create<T extends DigestSubscriptionCreateArgs>(args: SelectSubset<T, DigestSubscriptionCreateArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DigestSubscriptions.
+     * @param {DigestSubscriptionCreateManyArgs} args - Arguments to create many DigestSubscriptions.
+     * @example
+     * // Create many DigestSubscriptions
+     * const digestSubscription = await prisma.digestSubscription.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DigestSubscriptionCreateManyArgs>(args?: SelectSubset<T, DigestSubscriptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DigestSubscriptions and returns the data saved in the database.
+     * @param {DigestSubscriptionCreateManyAndReturnArgs} args - Arguments to create many DigestSubscriptions.
+     * @example
+     * // Create many DigestSubscriptions
+     * const digestSubscription = await prisma.digestSubscription.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DigestSubscriptions and only return the `id`
+     * const digestSubscriptionWithIdOnly = await prisma.digestSubscription.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DigestSubscriptionCreateManyAndReturnArgs>(args?: SelectSubset<T, DigestSubscriptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DigestSubscription.
+     * @param {DigestSubscriptionDeleteArgs} args - Arguments to delete one DigestSubscription.
+     * @example
+     * // Delete one DigestSubscription
+     * const DigestSubscription = await prisma.digestSubscription.delete({
+     *   where: {
+     *     // ... filter to delete one DigestSubscription
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DigestSubscriptionDeleteArgs>(args: SelectSubset<T, DigestSubscriptionDeleteArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DigestSubscription.
+     * @param {DigestSubscriptionUpdateArgs} args - Arguments to update one DigestSubscription.
+     * @example
+     * // Update one DigestSubscription
+     * const digestSubscription = await prisma.digestSubscription.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DigestSubscriptionUpdateArgs>(args: SelectSubset<T, DigestSubscriptionUpdateArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DigestSubscriptions.
+     * @param {DigestSubscriptionDeleteManyArgs} args - Arguments to filter DigestSubscriptions to delete.
+     * @example
+     * // Delete a few DigestSubscriptions
+     * const { count } = await prisma.digestSubscription.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DigestSubscriptionDeleteManyArgs>(args?: SelectSubset<T, DigestSubscriptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestSubscriptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DigestSubscriptions
+     * const digestSubscription = await prisma.digestSubscription.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DigestSubscriptionUpdateManyArgs>(args: SelectSubset<T, DigestSubscriptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestSubscriptions and returns the data updated in the database.
+     * @param {DigestSubscriptionUpdateManyAndReturnArgs} args - Arguments to update many DigestSubscriptions.
+     * @example
+     * // Update many DigestSubscriptions
+     * const digestSubscription = await prisma.digestSubscription.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DigestSubscriptions and only return the `id`
+     * const digestSubscriptionWithIdOnly = await prisma.digestSubscription.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DigestSubscriptionUpdateManyAndReturnArgs>(args: SelectSubset<T, DigestSubscriptionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DigestSubscription.
+     * @param {DigestSubscriptionUpsertArgs} args - Arguments to update or create a DigestSubscription.
+     * @example
+     * // Update or create a DigestSubscription
+     * const digestSubscription = await prisma.digestSubscription.upsert({
+     *   create: {
+     *     // ... data to create a DigestSubscription
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DigestSubscription we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DigestSubscriptionUpsertArgs>(args: SelectSubset<T, DigestSubscriptionUpsertArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DigestSubscriptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionCountArgs} args - Arguments to filter DigestSubscriptions to count.
+     * @example
+     * // Count the number of DigestSubscriptions
+     * const count = await prisma.digestSubscription.count({
+     *   where: {
+     *     // ... the filter for the DigestSubscriptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DigestSubscriptionCountArgs>(
+      args?: Subset<T, DigestSubscriptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DigestSubscriptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DigestSubscription.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DigestSubscriptionAggregateArgs>(args: Subset<T, DigestSubscriptionAggregateArgs>): Prisma.PrismaPromise<GetDigestSubscriptionAggregateType<T>>
+
+    /**
+     * Group by DigestSubscription.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestSubscriptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DigestSubscriptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DigestSubscriptionGroupByArgs['orderBy'] }
+        : { orderBy?: DigestSubscriptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DigestSubscriptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDigestSubscriptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DigestSubscription model
+   */
+  readonly fields: DigestSubscriptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DigestSubscription.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DigestSubscriptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    history<T extends DigestSubscription$historyArgs<ExtArgs> = {}>(args?: Subset<T, DigestSubscription$historyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DigestSubscription model
+   */
+  interface DigestSubscriptionFieldRefs {
+    readonly id: FieldRef<"DigestSubscription", 'String'>
+    readonly userId: FieldRef<"DigestSubscription", 'String'>
+    readonly organizationId: FieldRef<"DigestSubscription", 'String'>
+    readonly frequency: FieldRef<"DigestSubscription", 'String'>
+    readonly topics: FieldRef<"DigestSubscription", 'String[]'>
+    readonly isActive: FieldRef<"DigestSubscription", 'Boolean'>
+    readonly lastSentAt: FieldRef<"DigestSubscription", 'DateTime'>
+    readonly createdAt: FieldRef<"DigestSubscription", 'DateTime'>
+    readonly updatedAt: FieldRef<"DigestSubscription", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DigestSubscription findUnique
+   */
+  export type DigestSubscriptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestSubscription to fetch.
+     */
+    where: DigestSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * DigestSubscription findUniqueOrThrow
+   */
+  export type DigestSubscriptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestSubscription to fetch.
+     */
+    where: DigestSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * DigestSubscription findFirst
+   */
+  export type DigestSubscriptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestSubscription to fetch.
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestSubscriptions to fetch.
+     */
+    orderBy?: DigestSubscriptionOrderByWithRelationInput | DigestSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestSubscriptions.
+     */
+    cursor?: DigestSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestSubscriptions.
+     */
+    distinct?: DigestSubscriptionScalarFieldEnum | DigestSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * DigestSubscription findFirstOrThrow
+   */
+  export type DigestSubscriptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestSubscription to fetch.
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestSubscriptions to fetch.
+     */
+    orderBy?: DigestSubscriptionOrderByWithRelationInput | DigestSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestSubscriptions.
+     */
+    cursor?: DigestSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestSubscriptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestSubscriptions.
+     */
+    distinct?: DigestSubscriptionScalarFieldEnum | DigestSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * DigestSubscription findMany
+   */
+  export type DigestSubscriptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestSubscriptions to fetch.
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestSubscriptions to fetch.
+     */
+    orderBy?: DigestSubscriptionOrderByWithRelationInput | DigestSubscriptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DigestSubscriptions.
+     */
+    cursor?: DigestSubscriptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestSubscriptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestSubscriptions.
+     */
+    skip?: number
+    distinct?: DigestSubscriptionScalarFieldEnum | DigestSubscriptionScalarFieldEnum[]
+  }
+
+  /**
+   * DigestSubscription create
+   */
+  export type DigestSubscriptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DigestSubscription.
+     */
+    data: XOR<DigestSubscriptionCreateInput, DigestSubscriptionUncheckedCreateInput>
+  }
+
+  /**
+   * DigestSubscription createMany
+   */
+  export type DigestSubscriptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DigestSubscriptions.
+     */
+    data: DigestSubscriptionCreateManyInput | DigestSubscriptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigestSubscription createManyAndReturn
+   */
+  export type DigestSubscriptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * The data used to create many DigestSubscriptions.
+     */
+    data: DigestSubscriptionCreateManyInput | DigestSubscriptionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DigestSubscription update
+   */
+  export type DigestSubscriptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DigestSubscription.
+     */
+    data: XOR<DigestSubscriptionUpdateInput, DigestSubscriptionUncheckedUpdateInput>
+    /**
+     * Choose, which DigestSubscription to update.
+     */
+    where: DigestSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * DigestSubscription updateMany
+   */
+  export type DigestSubscriptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DigestSubscriptions.
+     */
+    data: XOR<DigestSubscriptionUpdateManyMutationInput, DigestSubscriptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestSubscriptions to update
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * Limit how many DigestSubscriptions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestSubscription updateManyAndReturn
+   */
+  export type DigestSubscriptionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * The data used to update DigestSubscriptions.
+     */
+    data: XOR<DigestSubscriptionUpdateManyMutationInput, DigestSubscriptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestSubscriptions to update
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * Limit how many DigestSubscriptions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DigestSubscription upsert
+   */
+  export type DigestSubscriptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DigestSubscription to update in case it exists.
+     */
+    where: DigestSubscriptionWhereUniqueInput
+    /**
+     * In case the DigestSubscription found by the `where` argument doesn't exist, create a new DigestSubscription with this data.
+     */
+    create: XOR<DigestSubscriptionCreateInput, DigestSubscriptionUncheckedCreateInput>
+    /**
+     * In case the DigestSubscription was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DigestSubscriptionUpdateInput, DigestSubscriptionUncheckedUpdateInput>
+  }
+
+  /**
+   * DigestSubscription delete
+   */
+  export type DigestSubscriptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+    /**
+     * Filter which DigestSubscription to delete.
+     */
+    where: DigestSubscriptionWhereUniqueInput
+  }
+
+  /**
+   * DigestSubscription deleteMany
+   */
+  export type DigestSubscriptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestSubscriptions to delete
+     */
+    where?: DigestSubscriptionWhereInput
+    /**
+     * Limit how many DigestSubscriptions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestSubscription.history
+   */
+  export type DigestSubscription$historyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    where?: DigestHistoryWhereInput
+    orderBy?: DigestHistoryOrderByWithRelationInput | DigestHistoryOrderByWithRelationInput[]
+    cursor?: DigestHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DigestHistoryScalarFieldEnum | DigestHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * DigestSubscription without action
+   */
+  export type DigestSubscriptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestSubscription
+     */
+    select?: DigestSubscriptionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestSubscription
+     */
+    omit?: DigestSubscriptionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestSubscriptionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DigestHistory
+   */
+
+  export type AggregateDigestHistory = {
+    _count: DigestHistoryCountAggregateOutputType | null
+    _avg: DigestHistoryAvgAggregateOutputType | null
+    _sum: DigestHistorySumAggregateOutputType | null
+    _min: DigestHistoryMinAggregateOutputType | null
+    _max: DigestHistoryMaxAggregateOutputType | null
+  }
+
+  export type DigestHistoryAvgAggregateOutputType = {
+    sourceCount: number | null
+  }
+
+  export type DigestHistorySumAggregateOutputType = {
+    sourceCount: number | null
+  }
+
+  export type DigestHistoryMinAggregateOutputType = {
+    id: string | null
+    subscriptionId: string | null
+    subject: string | null
+    contentSummary: string | null
+    sourceCount: number | null
+    sentAt: Date | null
+  }
+
+  export type DigestHistoryMaxAggregateOutputType = {
+    id: string | null
+    subscriptionId: string | null
+    subject: string | null
+    contentSummary: string | null
+    sourceCount: number | null
+    sentAt: Date | null
+  }
+
+  export type DigestHistoryCountAggregateOutputType = {
+    id: number
+    subscriptionId: number
+    subject: number
+    contentSummary: number
+    sourceCount: number
+    sentAt: number
+    _all: number
+  }
+
+
+  export type DigestHistoryAvgAggregateInputType = {
+    sourceCount?: true
+  }
+
+  export type DigestHistorySumAggregateInputType = {
+    sourceCount?: true
+  }
+
+  export type DigestHistoryMinAggregateInputType = {
+    id?: true
+    subscriptionId?: true
+    subject?: true
+    contentSummary?: true
+    sourceCount?: true
+    sentAt?: true
+  }
+
+  export type DigestHistoryMaxAggregateInputType = {
+    id?: true
+    subscriptionId?: true
+    subject?: true
+    contentSummary?: true
+    sourceCount?: true
+    sentAt?: true
+  }
+
+  export type DigestHistoryCountAggregateInputType = {
+    id?: true
+    subscriptionId?: true
+    subject?: true
+    contentSummary?: true
+    sourceCount?: true
+    sentAt?: true
+    _all?: true
+  }
+
+  export type DigestHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestHistory to aggregate.
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestHistories to fetch.
+     */
+    orderBy?: DigestHistoryOrderByWithRelationInput | DigestHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DigestHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DigestHistories
+    **/
+    _count?: true | DigestHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DigestHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DigestHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DigestHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DigestHistoryMaxAggregateInputType
+  }
+
+  export type GetDigestHistoryAggregateType<T extends DigestHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateDigestHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDigestHistory[P]>
+      : GetScalarType<T[P], AggregateDigestHistory[P]>
+  }
+
+
+
+
+  export type DigestHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestHistoryWhereInput
+    orderBy?: DigestHistoryOrderByWithAggregationInput | DigestHistoryOrderByWithAggregationInput[]
+    by: DigestHistoryScalarFieldEnum[] | DigestHistoryScalarFieldEnum
+    having?: DigestHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DigestHistoryCountAggregateInputType | true
+    _avg?: DigestHistoryAvgAggregateInputType
+    _sum?: DigestHistorySumAggregateInputType
+    _min?: DigestHistoryMinAggregateInputType
+    _max?: DigestHistoryMaxAggregateInputType
+  }
+
+  export type DigestHistoryGroupByOutputType = {
+    id: string
+    subscriptionId: string
+    subject: string
+    contentSummary: string
+    sourceCount: number
+    sentAt: Date
+    _count: DigestHistoryCountAggregateOutputType | null
+    _avg: DigestHistoryAvgAggregateOutputType | null
+    _sum: DigestHistorySumAggregateOutputType | null
+    _min: DigestHistoryMinAggregateOutputType | null
+    _max: DigestHistoryMaxAggregateOutputType | null
+  }
+
+  type GetDigestHistoryGroupByPayload<T extends DigestHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DigestHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DigestHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DigestHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], DigestHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DigestHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    subscriptionId?: boolean
+    subject?: boolean
+    contentSummary?: boolean
+    sourceCount?: boolean
+    sentAt?: boolean
+    subscription?: boolean | DigestSubscriptionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digestHistory"]>
+
+  export type DigestHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    subscriptionId?: boolean
+    subject?: boolean
+    contentSummary?: boolean
+    sourceCount?: boolean
+    sentAt?: boolean
+    subscription?: boolean | DigestSubscriptionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digestHistory"]>
+
+  export type DigestHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    subscriptionId?: boolean
+    subject?: boolean
+    contentSummary?: boolean
+    sourceCount?: boolean
+    sentAt?: boolean
+    subscription?: boolean | DigestSubscriptionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["digestHistory"]>
+
+  export type DigestHistorySelectScalar = {
+    id?: boolean
+    subscriptionId?: boolean
+    subject?: boolean
+    contentSummary?: boolean
+    sourceCount?: boolean
+    sentAt?: boolean
+  }
+
+  export type DigestHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "subscriptionId" | "subject" | "contentSummary" | "sourceCount" | "sentAt", ExtArgs["result"]["digestHistory"]>
+  export type DigestHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subscription?: boolean | DigestSubscriptionDefaultArgs<ExtArgs>
+  }
+  export type DigestHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subscription?: boolean | DigestSubscriptionDefaultArgs<ExtArgs>
+  }
+  export type DigestHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subscription?: boolean | DigestSubscriptionDefaultArgs<ExtArgs>
+  }
+
+  export type $DigestHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DigestHistory"
+    objects: {
+      subscription: Prisma.$DigestSubscriptionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      subscriptionId: string
+      subject: string
+      contentSummary: string
+      sourceCount: number
+      sentAt: Date
+    }, ExtArgs["result"]["digestHistory"]>
+    composites: {}
+  }
+
+  type DigestHistoryGetPayload<S extends boolean | null | undefined | DigestHistoryDefaultArgs> = $Result.GetResult<Prisma.$DigestHistoryPayload, S>
+
+  type DigestHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DigestHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DigestHistoryCountAggregateInputType | true
+    }
+
+  export interface DigestHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DigestHistory'], meta: { name: 'DigestHistory' } }
+    /**
+     * Find zero or one DigestHistory that matches the filter.
+     * @param {DigestHistoryFindUniqueArgs} args - Arguments to find a DigestHistory
+     * @example
+     * // Get one DigestHistory
+     * const digestHistory = await prisma.digestHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DigestHistoryFindUniqueArgs>(args: SelectSubset<T, DigestHistoryFindUniqueArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DigestHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DigestHistoryFindUniqueOrThrowArgs} args - Arguments to find a DigestHistory
+     * @example
+     * // Get one DigestHistory
+     * const digestHistory = await prisma.digestHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DigestHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, DigestHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryFindFirstArgs} args - Arguments to find a DigestHistory
+     * @example
+     * // Get one DigestHistory
+     * const digestHistory = await prisma.digestHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DigestHistoryFindFirstArgs>(args?: SelectSubset<T, DigestHistoryFindFirstArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryFindFirstOrThrowArgs} args - Arguments to find a DigestHistory
+     * @example
+     * // Get one DigestHistory
+     * const digestHistory = await prisma.digestHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DigestHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, DigestHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DigestHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DigestHistories
+     * const digestHistories = await prisma.digestHistory.findMany()
+     * 
+     * // Get first 10 DigestHistories
+     * const digestHistories = await prisma.digestHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const digestHistoryWithIdOnly = await prisma.digestHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DigestHistoryFindManyArgs>(args?: SelectSubset<T, DigestHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DigestHistory.
+     * @param {DigestHistoryCreateArgs} args - Arguments to create a DigestHistory.
+     * @example
+     * // Create one DigestHistory
+     * const DigestHistory = await prisma.digestHistory.create({
+     *   data: {
+     *     // ... data to create a DigestHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends DigestHistoryCreateArgs>(args: SelectSubset<T, DigestHistoryCreateArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DigestHistories.
+     * @param {DigestHistoryCreateManyArgs} args - Arguments to create many DigestHistories.
+     * @example
+     * // Create many DigestHistories
+     * const digestHistory = await prisma.digestHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DigestHistoryCreateManyArgs>(args?: SelectSubset<T, DigestHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DigestHistories and returns the data saved in the database.
+     * @param {DigestHistoryCreateManyAndReturnArgs} args - Arguments to create many DigestHistories.
+     * @example
+     * // Create many DigestHistories
+     * const digestHistory = await prisma.digestHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DigestHistories and only return the `id`
+     * const digestHistoryWithIdOnly = await prisma.digestHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DigestHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, DigestHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DigestHistory.
+     * @param {DigestHistoryDeleteArgs} args - Arguments to delete one DigestHistory.
+     * @example
+     * // Delete one DigestHistory
+     * const DigestHistory = await prisma.digestHistory.delete({
+     *   where: {
+     *     // ... filter to delete one DigestHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DigestHistoryDeleteArgs>(args: SelectSubset<T, DigestHistoryDeleteArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DigestHistory.
+     * @param {DigestHistoryUpdateArgs} args - Arguments to update one DigestHistory.
+     * @example
+     * // Update one DigestHistory
+     * const digestHistory = await prisma.digestHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DigestHistoryUpdateArgs>(args: SelectSubset<T, DigestHistoryUpdateArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DigestHistories.
+     * @param {DigestHistoryDeleteManyArgs} args - Arguments to filter DigestHistories to delete.
+     * @example
+     * // Delete a few DigestHistories
+     * const { count } = await prisma.digestHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DigestHistoryDeleteManyArgs>(args?: SelectSubset<T, DigestHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DigestHistories
+     * const digestHistory = await prisma.digestHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DigestHistoryUpdateManyArgs>(args: SelectSubset<T, DigestHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestHistories and returns the data updated in the database.
+     * @param {DigestHistoryUpdateManyAndReturnArgs} args - Arguments to update many DigestHistories.
+     * @example
+     * // Update many DigestHistories
+     * const digestHistory = await prisma.digestHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DigestHistories and only return the `id`
+     * const digestHistoryWithIdOnly = await prisma.digestHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DigestHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, DigestHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DigestHistory.
+     * @param {DigestHistoryUpsertArgs} args - Arguments to update or create a DigestHistory.
+     * @example
+     * // Update or create a DigestHistory
+     * const digestHistory = await prisma.digestHistory.upsert({
+     *   create: {
+     *     // ... data to create a DigestHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DigestHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DigestHistoryUpsertArgs>(args: SelectSubset<T, DigestHistoryUpsertArgs<ExtArgs>>): Prisma__DigestHistoryClient<$Result.GetResult<Prisma.$DigestHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DigestHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryCountArgs} args - Arguments to filter DigestHistories to count.
+     * @example
+     * // Count the number of DigestHistories
+     * const count = await prisma.digestHistory.count({
+     *   where: {
+     *     // ... the filter for the DigestHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends DigestHistoryCountArgs>(
+      args?: Subset<T, DigestHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DigestHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DigestHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DigestHistoryAggregateArgs>(args: Subset<T, DigestHistoryAggregateArgs>): Prisma.PrismaPromise<GetDigestHistoryAggregateType<T>>
+
+    /**
+     * Group by DigestHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DigestHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DigestHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: DigestHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DigestHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDigestHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DigestHistory model
+   */
+  readonly fields: DigestHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DigestHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DigestHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    subscription<T extends DigestSubscriptionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DigestSubscriptionDefaultArgs<ExtArgs>>): Prisma__DigestSubscriptionClient<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DigestHistory model
+   */
+  interface DigestHistoryFieldRefs {
+    readonly id: FieldRef<"DigestHistory", 'String'>
+    readonly subscriptionId: FieldRef<"DigestHistory", 'String'>
+    readonly subject: FieldRef<"DigestHistory", 'String'>
+    readonly contentSummary: FieldRef<"DigestHistory", 'String'>
+    readonly sourceCount: FieldRef<"DigestHistory", 'Int'>
+    readonly sentAt: FieldRef<"DigestHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DigestHistory findUnique
+   */
+  export type DigestHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestHistory to fetch.
+     */
+    where: DigestHistoryWhereUniqueInput
+  }
+
+  /**
+   * DigestHistory findUniqueOrThrow
+   */
+  export type DigestHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestHistory to fetch.
+     */
+    where: DigestHistoryWhereUniqueInput
+  }
+
+  /**
+   * DigestHistory findFirst
+   */
+  export type DigestHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestHistory to fetch.
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestHistories to fetch.
+     */
+    orderBy?: DigestHistoryOrderByWithRelationInput | DigestHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestHistories.
+     */
+    cursor?: DigestHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestHistories.
+     */
+    distinct?: DigestHistoryScalarFieldEnum | DigestHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * DigestHistory findFirstOrThrow
+   */
+  export type DigestHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestHistory to fetch.
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestHistories to fetch.
+     */
+    orderBy?: DigestHistoryOrderByWithRelationInput | DigestHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestHistories.
+     */
+    cursor?: DigestHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestHistories.
+     */
+    distinct?: DigestHistoryScalarFieldEnum | DigestHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * DigestHistory findMany
+   */
+  export type DigestHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which DigestHistories to fetch.
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestHistories to fetch.
+     */
+    orderBy?: DigestHistoryOrderByWithRelationInput | DigestHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DigestHistories.
+     */
+    cursor?: DigestHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestHistories.
+     */
+    skip?: number
+    distinct?: DigestHistoryScalarFieldEnum | DigestHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * DigestHistory create
+   */
+  export type DigestHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DigestHistory.
+     */
+    data: XOR<DigestHistoryCreateInput, DigestHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * DigestHistory createMany
+   */
+  export type DigestHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DigestHistories.
+     */
+    data: DigestHistoryCreateManyInput | DigestHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigestHistory createManyAndReturn
+   */
+  export type DigestHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many DigestHistories.
+     */
+    data: DigestHistoryCreateManyInput | DigestHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DigestHistory update
+   */
+  export type DigestHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DigestHistory.
+     */
+    data: XOR<DigestHistoryUpdateInput, DigestHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which DigestHistory to update.
+     */
+    where: DigestHistoryWhereUniqueInput
+  }
+
+  /**
+   * DigestHistory updateMany
+   */
+  export type DigestHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DigestHistories.
+     */
+    data: XOR<DigestHistoryUpdateManyMutationInput, DigestHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestHistories to update
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * Limit how many DigestHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestHistory updateManyAndReturn
+   */
+  export type DigestHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update DigestHistories.
+     */
+    data: XOR<DigestHistoryUpdateManyMutationInput, DigestHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestHistories to update
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * Limit how many DigestHistories to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DigestHistory upsert
+   */
+  export type DigestHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DigestHistory to update in case it exists.
+     */
+    where: DigestHistoryWhereUniqueInput
+    /**
+     * In case the DigestHistory found by the `where` argument doesn't exist, create a new DigestHistory with this data.
+     */
+    create: XOR<DigestHistoryCreateInput, DigestHistoryUncheckedCreateInput>
+    /**
+     * In case the DigestHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DigestHistoryUpdateInput, DigestHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * DigestHistory delete
+   */
+  export type DigestHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which DigestHistory to delete.
+     */
+    where: DigestHistoryWhereUniqueInput
+  }
+
+  /**
+   * DigestHistory deleteMany
+   */
+  export type DigestHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestHistories to delete
+     */
+    where?: DigestHistoryWhereInput
+    /**
+     * Limit how many DigestHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestHistory without action
+   */
+  export type DigestHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestHistory
+     */
+    select?: DigestHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestHistory
+     */
+    omit?: DigestHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DigestHistoryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -49382,6 +51918,33 @@ export namespace Prisma {
   export type PublicationsScalarFieldEnum = (typeof PublicationsScalarFieldEnum)[keyof typeof PublicationsScalarFieldEnum]
 
 
+  export const DigestSubscriptionScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    organizationId: 'organizationId',
+    frequency: 'frequency',
+    topics: 'topics',
+    isActive: 'isActive',
+    lastSentAt: 'lastSentAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DigestSubscriptionScalarFieldEnum = (typeof DigestSubscriptionScalarFieldEnum)[keyof typeof DigestSubscriptionScalarFieldEnum]
+
+
+  export const DigestHistoryScalarFieldEnum: {
+    id: 'id',
+    subscriptionId: 'subscriptionId',
+    subject: 'subject',
+    contentSummary: 'contentSummary',
+    sourceCount: 'sourceCount',
+    sentAt: 'sentAt'
+  };
+
+  export type DigestHistoryScalarFieldEnum = (typeof DigestHistoryScalarFieldEnum)[keyof typeof DigestHistoryScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -49755,6 +52318,7 @@ export namespace Prisma {
     activeOrganization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     organizationMemberships?: UserOrganizationListRelationFilter
+    digestSubscriptions?: DigestSubscriptionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -49787,6 +52351,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationOrderByWithRelationInput
     organization?: OrganizationOrderByWithRelationInput
     organizationMemberships?: UserOrganizationOrderByRelationAggregateInput
+    digestSubscriptions?: DigestSubscriptionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -49822,6 +52387,7 @@ export namespace Prisma {
     activeOrganization?: XOR<OrganizationNullableScalarRelationFilter, OrganizationWhereInput> | null
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     organizationMemberships?: UserOrganizationListRelationFilter
+    digestSubscriptions?: DigestSubscriptionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -49894,6 +52460,7 @@ export namespace Prisma {
     content?: ContentListRelationFilter
     onboardingSteps?: OnboardingAnalyticsListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
+    digestSubscriptions?: DigestSubscriptionListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -49929,6 +52496,7 @@ export namespace Prisma {
     content?: ContentOrderByRelationAggregateInput
     onboardingSteps?: OnboardingAnalyticsOrderByRelationAggregateInput
     subscription?: SubscriptionOrderByWithRelationInput
+    digestSubscriptions?: DigestSubscriptionOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -49967,6 +52535,7 @@ export namespace Prisma {
     content?: ContentListRelationFilter
     onboardingSteps?: OnboardingAnalyticsListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
+    digestSubscriptions?: DigestSubscriptionListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -52447,6 +55016,150 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Publications"> | string
   }
 
+  export type DigestSubscriptionWhereInput = {
+    AND?: DigestSubscriptionWhereInput | DigestSubscriptionWhereInput[]
+    OR?: DigestSubscriptionWhereInput[]
+    NOT?: DigestSubscriptionWhereInput | DigestSubscriptionWhereInput[]
+    id?: StringFilter<"DigestSubscription"> | string
+    userId?: StringFilter<"DigestSubscription"> | string
+    organizationId?: StringFilter<"DigestSubscription"> | string
+    frequency?: StringFilter<"DigestSubscription"> | string
+    topics?: StringNullableListFilter<"DigestSubscription">
+    isActive?: BoolFilter<"DigestSubscription"> | boolean
+    lastSentAt?: DateTimeNullableFilter<"DigestSubscription"> | Date | string | null
+    createdAt?: DateTimeFilter<"DigestSubscription"> | Date | string
+    updatedAt?: DateTimeFilter<"DigestSubscription"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    history?: DigestHistoryListRelationFilter
+  }
+
+  export type DigestSubscriptionOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    frequency?: SortOrder
+    topics?: SortOrder
+    isActive?: SortOrder
+    lastSentAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    organization?: OrganizationOrderByWithRelationInput
+    history?: DigestHistoryOrderByRelationAggregateInput
+  }
+
+  export type DigestSubscriptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_organizationId?: DigestSubscriptionUserIdOrganizationIdCompoundUniqueInput
+    AND?: DigestSubscriptionWhereInput | DigestSubscriptionWhereInput[]
+    OR?: DigestSubscriptionWhereInput[]
+    NOT?: DigestSubscriptionWhereInput | DigestSubscriptionWhereInput[]
+    userId?: StringFilter<"DigestSubscription"> | string
+    organizationId?: StringFilter<"DigestSubscription"> | string
+    frequency?: StringFilter<"DigestSubscription"> | string
+    topics?: StringNullableListFilter<"DigestSubscription">
+    isActive?: BoolFilter<"DigestSubscription"> | boolean
+    lastSentAt?: DateTimeNullableFilter<"DigestSubscription"> | Date | string | null
+    createdAt?: DateTimeFilter<"DigestSubscription"> | Date | string
+    updatedAt?: DateTimeFilter<"DigestSubscription"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    history?: DigestHistoryListRelationFilter
+  }, "id" | "userId_organizationId">
+
+  export type DigestSubscriptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    frequency?: SortOrder
+    topics?: SortOrder
+    isActive?: SortOrder
+    lastSentAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DigestSubscriptionCountOrderByAggregateInput
+    _max?: DigestSubscriptionMaxOrderByAggregateInput
+    _min?: DigestSubscriptionMinOrderByAggregateInput
+  }
+
+  export type DigestSubscriptionScalarWhereWithAggregatesInput = {
+    AND?: DigestSubscriptionScalarWhereWithAggregatesInput | DigestSubscriptionScalarWhereWithAggregatesInput[]
+    OR?: DigestSubscriptionScalarWhereWithAggregatesInput[]
+    NOT?: DigestSubscriptionScalarWhereWithAggregatesInput | DigestSubscriptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DigestSubscription"> | string
+    userId?: StringWithAggregatesFilter<"DigestSubscription"> | string
+    organizationId?: StringWithAggregatesFilter<"DigestSubscription"> | string
+    frequency?: StringWithAggregatesFilter<"DigestSubscription"> | string
+    topics?: StringNullableListFilter<"DigestSubscription">
+    isActive?: BoolWithAggregatesFilter<"DigestSubscription"> | boolean
+    lastSentAt?: DateTimeNullableWithAggregatesFilter<"DigestSubscription"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DigestSubscription"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DigestSubscription"> | Date | string
+  }
+
+  export type DigestHistoryWhereInput = {
+    AND?: DigestHistoryWhereInput | DigestHistoryWhereInput[]
+    OR?: DigestHistoryWhereInput[]
+    NOT?: DigestHistoryWhereInput | DigestHistoryWhereInput[]
+    id?: StringFilter<"DigestHistory"> | string
+    subscriptionId?: StringFilter<"DigestHistory"> | string
+    subject?: StringFilter<"DigestHistory"> | string
+    contentSummary?: StringFilter<"DigestHistory"> | string
+    sourceCount?: IntFilter<"DigestHistory"> | number
+    sentAt?: DateTimeFilter<"DigestHistory"> | Date | string
+    subscription?: XOR<DigestSubscriptionScalarRelationFilter, DigestSubscriptionWhereInput>
+  }
+
+  export type DigestHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    subscriptionId?: SortOrder
+    subject?: SortOrder
+    contentSummary?: SortOrder
+    sourceCount?: SortOrder
+    sentAt?: SortOrder
+    subscription?: DigestSubscriptionOrderByWithRelationInput
+  }
+
+  export type DigestHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DigestHistoryWhereInput | DigestHistoryWhereInput[]
+    OR?: DigestHistoryWhereInput[]
+    NOT?: DigestHistoryWhereInput | DigestHistoryWhereInput[]
+    subscriptionId?: StringFilter<"DigestHistory"> | string
+    subject?: StringFilter<"DigestHistory"> | string
+    contentSummary?: StringFilter<"DigestHistory"> | string
+    sourceCount?: IntFilter<"DigestHistory"> | number
+    sentAt?: DateTimeFilter<"DigestHistory"> | Date | string
+    subscription?: XOR<DigestSubscriptionScalarRelationFilter, DigestSubscriptionWhereInput>
+  }, "id">
+
+  export type DigestHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    subscriptionId?: SortOrder
+    subject?: SortOrder
+    contentSummary?: SortOrder
+    sourceCount?: SortOrder
+    sentAt?: SortOrder
+    _count?: DigestHistoryCountOrderByAggregateInput
+    _avg?: DigestHistoryAvgOrderByAggregateInput
+    _max?: DigestHistoryMaxOrderByAggregateInput
+    _min?: DigestHistoryMinOrderByAggregateInput
+    _sum?: DigestHistorySumOrderByAggregateInput
+  }
+
+  export type DigestHistoryScalarWhereWithAggregatesInput = {
+    AND?: DigestHistoryScalarWhereWithAggregatesInput | DigestHistoryScalarWhereWithAggregatesInput[]
+    OR?: DigestHistoryScalarWhereWithAggregatesInput[]
+    NOT?: DigestHistoryScalarWhereWithAggregatesInput | DigestHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DigestHistory"> | string
+    subscriptionId?: StringWithAggregatesFilter<"DigestHistory"> | string
+    subject?: StringWithAggregatesFilter<"DigestHistory"> | string
+    contentSummary?: StringWithAggregatesFilter<"DigestHistory"> | string
+    sourceCount?: IntWithAggregatesFilter<"DigestHistory"> | number
+    sentAt?: DateTimeWithAggregatesFilter<"DigestHistory"> | Date | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -52669,6 +55382,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -52699,6 +55413,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -52729,6 +55444,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -52759,6 +55475,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -52833,6 +55550,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -52867,6 +55585,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -52901,6 +55620,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -52935,6 +55655,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -55518,6 +58239,154 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
   }
 
+  export type DigestSubscriptionCreateInput = {
+    id?: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDigestSubscriptionsInput
+    organization: OrganizationCreateNestedOneWithoutDigestSubscriptionsInput
+    history?: DigestHistoryCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type DigestSubscriptionUncheckedCreateInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: DigestHistoryUncheckedCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type DigestSubscriptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDigestSubscriptionsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutDigestSubscriptionsNestedInput
+    history?: DigestHistoryUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type DigestSubscriptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: DigestHistoryUncheckedUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type DigestSubscriptionCreateManyInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DigestSubscriptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestSubscriptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestHistoryCreateInput = {
+    id?: string
+    subject: string
+    contentSummary: string
+    sourceCount?: number
+    sentAt?: Date | string
+    subscription: DigestSubscriptionCreateNestedOneWithoutHistoryInput
+  }
+
+  export type DigestHistoryUncheckedCreateInput = {
+    id?: string
+    subscriptionId: string
+    subject: string
+    contentSummary: string
+    sourceCount?: number
+    sentAt?: Date | string
+  }
+
+  export type DigestHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subscription?: DigestSubscriptionUpdateOneRequiredWithoutHistoryNestedInput
+  }
+
+  export type DigestHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestHistoryCreateManyInput = {
+    id?: string
+    subscriptionId: string
+    subject: string
+    contentSummary: string
+    sourceCount?: number
+    sentAt?: Date | string
+  }
+
+  export type DigestHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subscriptionId?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -55865,6 +58734,12 @@ export namespace Prisma {
     none?: UserOrganizationWhereInput
   }
 
+  export type DigestSubscriptionListRelationFilter = {
+    every?: DigestSubscriptionWhereInput
+    some?: DigestSubscriptionWhereInput
+    none?: DigestSubscriptionWhereInput
+  }
+
   export type AIAssociateOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -55926,6 +58801,10 @@ export namespace Prisma {
   }
 
   export type UserOrganizationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DigestSubscriptionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -57605,6 +60484,95 @@ export namespace Prisma {
     title?: SortOrder
   }
 
+  export type DigestHistoryListRelationFilter = {
+    every?: DigestHistoryWhereInput
+    some?: DigestHistoryWhereInput
+    none?: DigestHistoryWhereInput
+  }
+
+  export type DigestHistoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DigestSubscriptionUserIdOrganizationIdCompoundUniqueInput = {
+    userId: string
+    organizationId: string
+  }
+
+  export type DigestSubscriptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    frequency?: SortOrder
+    topics?: SortOrder
+    isActive?: SortOrder
+    lastSentAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DigestSubscriptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    frequency?: SortOrder
+    isActive?: SortOrder
+    lastSentAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DigestSubscriptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    organizationId?: SortOrder
+    frequency?: SortOrder
+    isActive?: SortOrder
+    lastSentAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DigestSubscriptionScalarRelationFilter = {
+    is?: DigestSubscriptionWhereInput
+    isNot?: DigestSubscriptionWhereInput
+  }
+
+  export type DigestHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionId?: SortOrder
+    subject?: SortOrder
+    contentSummary?: SortOrder
+    sourceCount?: SortOrder
+    sentAt?: SortOrder
+  }
+
+  export type DigestHistoryAvgOrderByAggregateInput = {
+    sourceCount?: SortOrder
+  }
+
+  export type DigestHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionId?: SortOrder
+    subject?: SortOrder
+    contentSummary?: SortOrder
+    sourceCount?: SortOrder
+    sentAt?: SortOrder
+  }
+
+  export type DigestHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    subscriptionId?: SortOrder
+    subject?: SortOrder
+    contentSummary?: SortOrder
+    sourceCount?: SortOrder
+    sentAt?: SortOrder
+  }
+
+  export type DigestHistorySumOrderByAggregateInput = {
+    sourceCount?: SortOrder
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -57777,6 +60745,13 @@ export namespace Prisma {
     connect?: UserOrganizationWhereUniqueInput | UserOrganizationWhereUniqueInput[]
   }
 
+  export type DigestSubscriptionCreateNestedManyWithoutUserInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutUserInput, DigestSubscriptionUncheckedCreateWithoutUserInput> | DigestSubscriptionCreateWithoutUserInput[] | DigestSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutUserInput | DigestSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: DigestSubscriptionCreateManyUserInputEnvelope
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -57887,6 +60862,13 @@ export namespace Prisma {
     connectOrCreate?: UserOrganizationCreateOrConnectWithoutUserInput | UserOrganizationCreateOrConnectWithoutUserInput[]
     createMany?: UserOrganizationCreateManyUserInputEnvelope
     connect?: UserOrganizationWhereUniqueInput | UserOrganizationWhereUniqueInput[]
+  }
+
+  export type DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutUserInput, DigestSubscriptionUncheckedCreateWithoutUserInput> | DigestSubscriptionCreateWithoutUserInput[] | DigestSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutUserInput | DigestSubscriptionCreateOrConnectWithoutUserInput[]
+    createMany?: DigestSubscriptionCreateManyUserInputEnvelope
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -58135,6 +61117,20 @@ export namespace Prisma {
     deleteMany?: UserOrganizationScalarWhereInput | UserOrganizationScalarWhereInput[]
   }
 
+  export type DigestSubscriptionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutUserInput, DigestSubscriptionUncheckedCreateWithoutUserInput> | DigestSubscriptionCreateWithoutUserInput[] | DigestSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutUserInput | DigestSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: DigestSubscriptionUpsertWithWhereUniqueWithoutUserInput | DigestSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DigestSubscriptionCreateManyUserInputEnvelope
+    set?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    disconnect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    delete?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    update?: DigestSubscriptionUpdateWithWhereUniqueWithoutUserInput | DigestSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DigestSubscriptionUpdateManyWithWhereWithoutUserInput | DigestSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DigestSubscriptionScalarWhereInput | DigestSubscriptionScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -58359,6 +61355,20 @@ export namespace Prisma {
     deleteMany?: UserOrganizationScalarWhereInput | UserOrganizationScalarWhereInput[]
   }
 
+  export type DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutUserInput, DigestSubscriptionUncheckedCreateWithoutUserInput> | DigestSubscriptionCreateWithoutUserInput[] | DigestSubscriptionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutUserInput | DigestSubscriptionCreateOrConnectWithoutUserInput[]
+    upsert?: DigestSubscriptionUpsertWithWhereUniqueWithoutUserInput | DigestSubscriptionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DigestSubscriptionCreateManyUserInputEnvelope
+    set?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    disconnect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    delete?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    update?: DigestSubscriptionUpdateWithWhereUniqueWithoutUserInput | DigestSubscriptionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DigestSubscriptionUpdateManyWithWhereWithoutUserInput | DigestSubscriptionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DigestSubscriptionScalarWhereInput | DigestSubscriptionScalarWhereInput[]
+  }
+
   export type OrganizationCreatepracticeAreasInput = {
     set: string[]
   }
@@ -58449,6 +61459,13 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput
   }
 
+  export type DigestSubscriptionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutOrganizationInput, DigestSubscriptionUncheckedCreateWithoutOrganizationInput> | DigestSubscriptionCreateWithoutOrganizationInput[] | DigestSubscriptionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutOrganizationInput | DigestSubscriptionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DigestSubscriptionCreateManyOrganizationInputEnvelope
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<AIAssociateCreateWithoutOrganizationInput, AIAssociateUncheckedCreateWithoutOrganizationInput> | AIAssociateCreateWithoutOrganizationInput[] | AIAssociateUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutOrganizationInput | AIAssociateCreateOrConnectWithoutOrganizationInput[]
@@ -58523,6 +61540,13 @@ export namespace Prisma {
     create?: XOR<SubscriptionCreateWithoutOrganizationInput, SubscriptionUncheckedCreateWithoutOrganizationInput>
     connectOrCreate?: SubscriptionCreateOrConnectWithoutOrganizationInput
     connect?: SubscriptionWhereUniqueInput
+  }
+
+  export type DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutOrganizationInput, DigestSubscriptionUncheckedCreateWithoutOrganizationInput> | DigestSubscriptionCreateWithoutOrganizationInput[] | DigestSubscriptionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutOrganizationInput | DigestSubscriptionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: DigestSubscriptionCreateManyOrganizationInputEnvelope
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -58707,6 +61731,20 @@ export namespace Prisma {
     update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutOrganizationInput, SubscriptionUpdateWithoutOrganizationInput>, SubscriptionUncheckedUpdateWithoutOrganizationInput>
   }
 
+  export type DigestSubscriptionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutOrganizationInput, DigestSubscriptionUncheckedCreateWithoutOrganizationInput> | DigestSubscriptionCreateWithoutOrganizationInput[] | DigestSubscriptionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutOrganizationInput | DigestSubscriptionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DigestSubscriptionUpsertWithWhereUniqueWithoutOrganizationInput | DigestSubscriptionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DigestSubscriptionCreateManyOrganizationInputEnvelope
+    set?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    disconnect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    delete?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    update?: DigestSubscriptionUpdateWithWhereUniqueWithoutOrganizationInput | DigestSubscriptionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DigestSubscriptionUpdateManyWithWhereWithoutOrganizationInput | DigestSubscriptionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DigestSubscriptionScalarWhereInput | DigestSubscriptionScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AIAssociateCreateWithoutOrganizationInput, AIAssociateUncheckedCreateWithoutOrganizationInput> | AIAssociateCreateWithoutOrganizationInput[] | AIAssociateUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutOrganizationInput | AIAssociateCreateOrConnectWithoutOrganizationInput[]
@@ -58855,6 +61893,20 @@ export namespace Prisma {
     delete?: SubscriptionWhereInput | boolean
     connect?: SubscriptionWhereUniqueInput
     update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutOrganizationInput, SubscriptionUpdateWithoutOrganizationInput>, SubscriptionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutOrganizationInput, DigestSubscriptionUncheckedCreateWithoutOrganizationInput> | DigestSubscriptionCreateWithoutOrganizationInput[] | DigestSubscriptionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutOrganizationInput | DigestSubscriptionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: DigestSubscriptionUpsertWithWhereUniqueWithoutOrganizationInput | DigestSubscriptionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: DigestSubscriptionCreateManyOrganizationInputEnvelope
+    set?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    disconnect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    delete?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    connect?: DigestSubscriptionWhereUniqueInput | DigestSubscriptionWhereUniqueInput[]
+    update?: DigestSubscriptionUpdateWithWhereUniqueWithoutOrganizationInput | DigestSubscriptionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: DigestSubscriptionUpdateManyWithWhereWithoutOrganizationInput | DigestSubscriptionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: DigestSubscriptionScalarWhereInput | DigestSubscriptionScalarWhereInput[]
   }
 
   export type ContentCreatekeywordsInput = {
@@ -61042,6 +64094,99 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type DigestSubscriptionCreatetopicsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutDigestSubscriptionsInput = {
+    create?: XOR<UserCreateWithoutDigestSubscriptionsInput, UserUncheckedCreateWithoutDigestSubscriptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDigestSubscriptionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrganizationCreateNestedOneWithoutDigestSubscriptionsInput = {
+    create?: XOR<OrganizationCreateWithoutDigestSubscriptionsInput, OrganizationUncheckedCreateWithoutDigestSubscriptionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDigestSubscriptionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type DigestHistoryCreateNestedManyWithoutSubscriptionInput = {
+    create?: XOR<DigestHistoryCreateWithoutSubscriptionInput, DigestHistoryUncheckedCreateWithoutSubscriptionInput> | DigestHistoryCreateWithoutSubscriptionInput[] | DigestHistoryUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: DigestHistoryCreateOrConnectWithoutSubscriptionInput | DigestHistoryCreateOrConnectWithoutSubscriptionInput[]
+    createMany?: DigestHistoryCreateManySubscriptionInputEnvelope
+    connect?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+  }
+
+  export type DigestHistoryUncheckedCreateNestedManyWithoutSubscriptionInput = {
+    create?: XOR<DigestHistoryCreateWithoutSubscriptionInput, DigestHistoryUncheckedCreateWithoutSubscriptionInput> | DigestHistoryCreateWithoutSubscriptionInput[] | DigestHistoryUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: DigestHistoryCreateOrConnectWithoutSubscriptionInput | DigestHistoryCreateOrConnectWithoutSubscriptionInput[]
+    createMany?: DigestHistoryCreateManySubscriptionInputEnvelope
+    connect?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+  }
+
+  export type DigestSubscriptionUpdatetopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutDigestSubscriptionsNestedInput = {
+    create?: XOR<UserCreateWithoutDigestSubscriptionsInput, UserUncheckedCreateWithoutDigestSubscriptionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDigestSubscriptionsInput
+    upsert?: UserUpsertWithoutDigestSubscriptionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDigestSubscriptionsInput, UserUpdateWithoutDigestSubscriptionsInput>, UserUncheckedUpdateWithoutDigestSubscriptionsInput>
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutDigestSubscriptionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutDigestSubscriptionsInput, OrganizationUncheckedCreateWithoutDigestSubscriptionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutDigestSubscriptionsInput
+    upsert?: OrganizationUpsertWithoutDigestSubscriptionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutDigestSubscriptionsInput, OrganizationUpdateWithoutDigestSubscriptionsInput>, OrganizationUncheckedUpdateWithoutDigestSubscriptionsInput>
+  }
+
+  export type DigestHistoryUpdateManyWithoutSubscriptionNestedInput = {
+    create?: XOR<DigestHistoryCreateWithoutSubscriptionInput, DigestHistoryUncheckedCreateWithoutSubscriptionInput> | DigestHistoryCreateWithoutSubscriptionInput[] | DigestHistoryUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: DigestHistoryCreateOrConnectWithoutSubscriptionInput | DigestHistoryCreateOrConnectWithoutSubscriptionInput[]
+    upsert?: DigestHistoryUpsertWithWhereUniqueWithoutSubscriptionInput | DigestHistoryUpsertWithWhereUniqueWithoutSubscriptionInput[]
+    createMany?: DigestHistoryCreateManySubscriptionInputEnvelope
+    set?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    disconnect?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    delete?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    connect?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    update?: DigestHistoryUpdateWithWhereUniqueWithoutSubscriptionInput | DigestHistoryUpdateWithWhereUniqueWithoutSubscriptionInput[]
+    updateMany?: DigestHistoryUpdateManyWithWhereWithoutSubscriptionInput | DigestHistoryUpdateManyWithWhereWithoutSubscriptionInput[]
+    deleteMany?: DigestHistoryScalarWhereInput | DigestHistoryScalarWhereInput[]
+  }
+
+  export type DigestHistoryUncheckedUpdateManyWithoutSubscriptionNestedInput = {
+    create?: XOR<DigestHistoryCreateWithoutSubscriptionInput, DigestHistoryUncheckedCreateWithoutSubscriptionInput> | DigestHistoryCreateWithoutSubscriptionInput[] | DigestHistoryUncheckedCreateWithoutSubscriptionInput[]
+    connectOrCreate?: DigestHistoryCreateOrConnectWithoutSubscriptionInput | DigestHistoryCreateOrConnectWithoutSubscriptionInput[]
+    upsert?: DigestHistoryUpsertWithWhereUniqueWithoutSubscriptionInput | DigestHistoryUpsertWithWhereUniqueWithoutSubscriptionInput[]
+    createMany?: DigestHistoryCreateManySubscriptionInputEnvelope
+    set?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    disconnect?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    delete?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    connect?: DigestHistoryWhereUniqueInput | DigestHistoryWhereUniqueInput[]
+    update?: DigestHistoryUpdateWithWhereUniqueWithoutSubscriptionInput | DigestHistoryUpdateWithWhereUniqueWithoutSubscriptionInput[]
+    updateMany?: DigestHistoryUpdateManyWithWhereWithoutSubscriptionInput | DigestHistoryUpdateManyWithWhereWithoutSubscriptionInput[]
+    deleteMany?: DigestHistoryScalarWhereInput | DigestHistoryScalarWhereInput[]
+  }
+
+  export type DigestSubscriptionCreateNestedOneWithoutHistoryInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutHistoryInput, DigestSubscriptionUncheckedCreateWithoutHistoryInput>
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutHistoryInput
+    connect?: DigestSubscriptionWhereUniqueInput
+  }
+
+  export type DigestSubscriptionUpdateOneRequiredWithoutHistoryNestedInput = {
+    create?: XOR<DigestSubscriptionCreateWithoutHistoryInput, DigestSubscriptionUncheckedCreateWithoutHistoryInput>
+    connectOrCreate?: DigestSubscriptionCreateOrConnectWithoutHistoryInput
+    upsert?: DigestSubscriptionUpsertWithoutHistoryInput
+    connect?: DigestSubscriptionWhereUniqueInput
+    update?: XOR<XOR<DigestSubscriptionUpdateToOneWithWhereWithoutHistoryInput, DigestSubscriptionUpdateWithoutHistoryInput>, DigestSubscriptionUncheckedUpdateWithoutHistoryInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -61332,6 +64477,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -61361,6 +64507,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -61406,6 +64553,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -61435,6 +64583,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -61464,6 +64613,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -61493,6 +64643,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -61538,6 +64689,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -61567,6 +64719,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AIAssociateCreateWithoutCreatedByInput = {
@@ -61896,6 +65049,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOwnerInput = {
@@ -61929,6 +65083,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOwnerInput = {
@@ -62140,6 +65295,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutActiveUsersInput = {
@@ -62173,6 +65329,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutActiveUsersInput = {
@@ -62211,6 +65368,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -62244,6 +65402,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -62272,6 +65431,40 @@ export namespace Prisma {
 
   export type UserOrganizationCreateManyUserInputEnvelope = {
     data: UserOrganizationCreateManyUserInput | UserOrganizationCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DigestSubscriptionCreateWithoutUserInput = {
+    id?: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutDigestSubscriptionsInput
+    history?: DigestHistoryCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type DigestSubscriptionUncheckedCreateWithoutUserInput = {
+    id?: string
+    organizationId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: DigestHistoryUncheckedCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type DigestSubscriptionCreateOrConnectWithoutUserInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    create: XOR<DigestSubscriptionCreateWithoutUserInput, DigestSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type DigestSubscriptionCreateManyUserInputEnvelope = {
+    data: DigestSubscriptionCreateManyUserInput | DigestSubscriptionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -62785,6 +65978,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutActiveUsersInput = {
@@ -62818,6 +66012,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUpsertWithoutUsersInput = {
@@ -62862,6 +66057,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -62895,6 +66091,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserOrganizationUpsertWithWhereUniqueWithoutUserInput = {
@@ -62922,6 +66119,37 @@ export namespace Prisma {
     role?: StringFilter<"UserOrganization"> | string
     joinedAt?: DateTimeFilter<"UserOrganization"> | Date | string
     updatedAt?: DateTimeFilter<"UserOrganization"> | Date | string
+  }
+
+  export type DigestSubscriptionUpsertWithWhereUniqueWithoutUserInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    update: XOR<DigestSubscriptionUpdateWithoutUserInput, DigestSubscriptionUncheckedUpdateWithoutUserInput>
+    create: XOR<DigestSubscriptionCreateWithoutUserInput, DigestSubscriptionUncheckedCreateWithoutUserInput>
+  }
+
+  export type DigestSubscriptionUpdateWithWhereUniqueWithoutUserInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    data: XOR<DigestSubscriptionUpdateWithoutUserInput, DigestSubscriptionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DigestSubscriptionUpdateManyWithWhereWithoutUserInput = {
+    where: DigestSubscriptionScalarWhereInput
+    data: XOR<DigestSubscriptionUpdateManyMutationInput, DigestSubscriptionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DigestSubscriptionScalarWhereInput = {
+    AND?: DigestSubscriptionScalarWhereInput | DigestSubscriptionScalarWhereInput[]
+    OR?: DigestSubscriptionScalarWhereInput[]
+    NOT?: DigestSubscriptionScalarWhereInput | DigestSubscriptionScalarWhereInput[]
+    id?: StringFilter<"DigestSubscription"> | string
+    userId?: StringFilter<"DigestSubscription"> | string
+    organizationId?: StringFilter<"DigestSubscription"> | string
+    frequency?: StringFilter<"DigestSubscription"> | string
+    topics?: StringNullableListFilter<"DigestSubscription">
+    isActive?: BoolFilter<"DigestSubscription"> | boolean
+    lastSentAt?: DateTimeNullableFilter<"DigestSubscription"> | Date | string | null
+    createdAt?: DateTimeFilter<"DigestSubscription"> | Date | string
+    updatedAt?: DateTimeFilter<"DigestSubscription"> | Date | string
   }
 
   export type AIAssociateCreateWithoutOrganizationInput = {
@@ -63121,6 +66349,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedOrganizationsInput = {
@@ -63150,6 +66379,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedOrganizationsInput = {
@@ -63234,6 +66464,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActiveOrganizationInput = {
@@ -63263,6 +66494,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActiveOrganizationInput = {
@@ -63302,6 +66534,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -63331,6 +66564,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -63486,6 +66720,40 @@ export namespace Prisma {
     create: XOR<SubscriptionCreateWithoutOrganizationInput, SubscriptionUncheckedCreateWithoutOrganizationInput>
   }
 
+  export type DigestSubscriptionCreateWithoutOrganizationInput = {
+    id?: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDigestSubscriptionsInput
+    history?: DigestHistoryCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type DigestSubscriptionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    userId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    history?: DigestHistoryUncheckedCreateNestedManyWithoutSubscriptionInput
+  }
+
+  export type DigestSubscriptionCreateOrConnectWithoutOrganizationInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    create: XOR<DigestSubscriptionCreateWithoutOrganizationInput, DigestSubscriptionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DigestSubscriptionCreateManyOrganizationInputEnvelope = {
+    data: DigestSubscriptionCreateManyOrganizationInput | DigestSubscriptionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AIAssociateUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: AIAssociateWhereUniqueInput
     update: XOR<AIAssociateUpdateWithoutOrganizationInput, AIAssociateUncheckedUpdateWithoutOrganizationInput>
@@ -63588,6 +66856,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedOrganizationsInput = {
@@ -63617,6 +66886,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -63826,6 +67096,22 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
+  export type DigestSubscriptionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    update: XOR<DigestSubscriptionUpdateWithoutOrganizationInput, DigestSubscriptionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<DigestSubscriptionCreateWithoutOrganizationInput, DigestSubscriptionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type DigestSubscriptionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    data: XOR<DigestSubscriptionUpdateWithoutOrganizationInput, DigestSubscriptionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type DigestSubscriptionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: DigestSubscriptionScalarWhereInput
+    data: XOR<DigestSubscriptionUpdateManyMutationInput, DigestSubscriptionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
   export type OrganizationCreateWithoutContentInput = {
     id?: string
     name: string
@@ -63857,6 +67143,7 @@ export namespace Prisma {
     members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutContentInput = {
@@ -63890,6 +67177,7 @@ export namespace Prisma {
     members?: UserOrganizationUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutContentInput = {
@@ -63965,6 +67253,7 @@ export namespace Prisma {
     members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutContentInput = {
@@ -63998,6 +67287,7 @@ export namespace Prisma {
     members?: UserOrganizationUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ContentSectionUpsertWithWhereUniqueWithoutContentInput = {
@@ -64197,6 +67487,7 @@ export namespace Prisma {
     members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSubscriptionInput = {
@@ -64230,6 +67521,7 @@ export namespace Prisma {
     members?: UserOrganizationUncheckedCreateNestedManyWithoutOrganizationInput
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSubscriptionInput = {
@@ -64311,6 +67603,7 @@ export namespace Prisma {
     members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSubscriptionInput = {
@@ -64344,6 +67637,7 @@ export namespace Prisma {
     members?: UserOrganizationUncheckedUpdateManyWithoutOrganizationNestedInput
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type SubscriptionCreateWithoutPaymentsInput = {
@@ -64453,6 +67747,7 @@ export namespace Prisma {
     members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
     content?: ContentCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOnboardingStepsInput = {
@@ -64486,6 +67781,7 @@ export namespace Prisma {
     members?: UserOrganizationUncheckedCreateNestedManyWithoutOrganizationInput
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOnboardingStepsInput = {
@@ -64535,6 +67831,7 @@ export namespace Prisma {
     members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOnboardingStepsInput = {
@@ -64568,6 +67865,7 @@ export namespace Prisma {
     members?: UserOrganizationUncheckedUpdateManyWithoutOrganizationNestedInput
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutMembersInput = {
@@ -64601,6 +67899,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -64634,6 +67933,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -64668,6 +67968,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
@@ -64697,6 +67998,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
@@ -64746,6 +68048,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -64779,6 +68082,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOrganizationMembershipsInput = {
@@ -64819,6 +68123,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
@@ -64848,6 +68153,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CanvasDocumentCreateWithoutProjectInput = {
@@ -65087,6 +68393,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutProjectsInput = {
@@ -65120,6 +68427,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutProjectsInput = {
@@ -65424,6 +68732,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutProjectsInput = {
@@ -65457,6 +68766,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectAssociateUpsertWithWhereUniqueWithoutProjectInput = {
@@ -65604,6 +68914,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembersInput = {
@@ -65633,6 +68944,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembersInput = {
@@ -65729,6 +69041,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembersInput = {
@@ -65758,6 +69071,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationDocumentCreateWithoutDocumentInput = {
@@ -65809,6 +69123,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentsInput = {
@@ -65838,6 +69153,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -65903,6 +69219,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDocumentsInput = {
@@ -65936,6 +69253,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDocumentsInput = {
@@ -66159,6 +69477,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentsInput = {
@@ -66188,6 +69507,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FolderUpsertWithoutDocumentsInput = {
@@ -66265,6 +69585,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDocumentsInput = {
@@ -66298,6 +69619,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectUpsertWithoutDocumentsInput = {
@@ -66559,6 +69881,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderInput = {
@@ -66588,6 +69911,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderInput = {
@@ -66626,6 +69950,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFolderInput = {
@@ -66659,6 +69984,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFolderInput = {
@@ -66779,6 +70105,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderInput = {
@@ -66808,6 +70135,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutFolderInput = {
@@ -66852,6 +70180,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFolderInput = {
@@ -66885,6 +70214,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FolderUpsertWithoutChildrenInput = {
@@ -66963,6 +70293,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectDocumentsInput = {
@@ -66992,6 +70323,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectDocumentsInput = {
@@ -67135,6 +70467,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectDocumentsInput = {
@@ -67164,6 +70497,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithoutProjectReferencesInput = {
@@ -67303,6 +70637,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationDocumentsInput = {
@@ -67332,6 +70667,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationDocumentsInput = {
@@ -67463,6 +70799,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationDocumentsInput = {
@@ -67492,6 +70829,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutDocumentReferencesInput = {
@@ -68294,6 +71632,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -68323,6 +71662,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -68433,6 +71773,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -68462,6 +71803,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageReferenceUpsertWithWhereUniqueWithoutMessageInput = {
@@ -68867,6 +72209,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -68896,6 +72239,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -68934,6 +72278,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -68967,6 +72312,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -69057,6 +72403,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -69086,6 +72433,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutInvitationsInput = {
@@ -69130,6 +72478,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -69163,6 +72512,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectUpsertWithoutInvitationsInput = {
@@ -69348,6 +72698,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -69377,6 +72728,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -69461,6 +72813,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -69490,6 +72843,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedWorkspaceCreateWithoutSharedMessageInput = {
@@ -69556,6 +72910,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedMessageInput = {
@@ -69585,6 +72940,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedMessageInput = {
@@ -69699,6 +73055,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedMessageInput = {
@@ -69728,6 +73085,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedMessageReferenceUpsertWithWhereUniqueWithoutSharedMessageInput = {
@@ -70010,6 +73368,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceInput = {
@@ -70039,6 +73398,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceInput = {
@@ -70210,6 +73570,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceInput = {
@@ -70239,6 +73600,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithoutSharedWorkspaceInput = {
@@ -70372,6 +73734,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceAccessInput = {
@@ -70401,6 +73764,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceAccessInput = {
@@ -70489,6 +73853,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceAccessInput = {
@@ -70518,6 +73883,7 @@ export namespace Prisma {
     SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedAIAssociatesInput = {
@@ -70547,6 +73913,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedAIAssociatesInput = {
@@ -70576,6 +73943,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedAIAssociatesInput = {
@@ -70614,6 +73982,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiAssociatesInput = {
@@ -70647,6 +74016,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiAssociatesInput = {
@@ -70792,6 +74162,7 @@ export namespace Prisma {
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedAIAssociatesInput = {
@@ -70821,6 +74192,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutAiAssociatesInput = {
@@ -70865,6 +74237,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiAssociatesInput = {
@@ -70898,6 +74271,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type AssociateStepUpsertWithWhereUniqueWithoutAssociateInput = {
@@ -71427,6 +74801,412 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutProjectNestedInput
   }
 
+  export type UserCreateWithoutDigestSubscriptionsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutDigestSubscriptionsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutDigestSubscriptionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDigestSubscriptionsInput, UserUncheckedCreateWithoutDigestSubscriptionsInput>
+  }
+
+  export type OrganizationCreateWithoutDigestSubscriptionsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
+    documents?: DocumentCreateNestedManyWithoutOrganizationInput
+    Folder?: FolderCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
+    projects?: ProjectCreateNestedManyWithoutOrganizationInput
+    activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
+    content?: ContentCreateNestedManyWithoutOrganizationInput
+    onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutDigestSubscriptionsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    ownerId?: string | null
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+    activeUsers?: UserUncheckedCreateNestedManyWithoutActiveOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    members?: UserOrganizationUncheckedCreateNestedManyWithoutOrganizationInput
+    content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
+    onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutDigestSubscriptionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutDigestSubscriptionsInput, OrganizationUncheckedCreateWithoutDigestSubscriptionsInput>
+  }
+
+  export type DigestHistoryCreateWithoutSubscriptionInput = {
+    id?: string
+    subject: string
+    contentSummary: string
+    sourceCount?: number
+    sentAt?: Date | string
+  }
+
+  export type DigestHistoryUncheckedCreateWithoutSubscriptionInput = {
+    id?: string
+    subject: string
+    contentSummary: string
+    sourceCount?: number
+    sentAt?: Date | string
+  }
+
+  export type DigestHistoryCreateOrConnectWithoutSubscriptionInput = {
+    where: DigestHistoryWhereUniqueInput
+    create: XOR<DigestHistoryCreateWithoutSubscriptionInput, DigestHistoryUncheckedCreateWithoutSubscriptionInput>
+  }
+
+  export type DigestHistoryCreateManySubscriptionInputEnvelope = {
+    data: DigestHistoryCreateManySubscriptionInput | DigestHistoryCreateManySubscriptionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutDigestSubscriptionsInput = {
+    update: XOR<UserUpdateWithoutDigestSubscriptionsInput, UserUncheckedUpdateWithoutDigestSubscriptionsInput>
+    create: XOR<UserCreateWithoutDigestSubscriptionsInput, UserUncheckedCreateWithoutDigestSubscriptionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDigestSubscriptionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDigestSubscriptionsInput, UserUncheckedUpdateWithoutDigestSubscriptionsInput>
+  }
+
+  export type UserUpdateWithoutDigestSubscriptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDigestSubscriptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type OrganizationUpsertWithoutDigestSubscriptionsInput = {
+    update: XOR<OrganizationUpdateWithoutDigestSubscriptionsInput, OrganizationUncheckedUpdateWithoutDigestSubscriptionsInput>
+    create: XOR<OrganizationCreateWithoutDigestSubscriptionsInput, OrganizationUncheckedCreateWithoutDigestSubscriptionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutDigestSubscriptionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutDigestSubscriptionsInput, OrganizationUncheckedUpdateWithoutDigestSubscriptionsInput>
+  }
+
+  export type OrganizationUpdateWithoutDigestSubscriptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
+    documents?: DocumentUpdateManyWithoutOrganizationNestedInput
+    Folder?: FolderUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
+    projects?: ProjectUpdateManyWithoutOrganizationNestedInput
+    activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
+    content?: ContentUpdateManyWithoutOrganizationNestedInput
+    onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutDigestSubscriptionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+    activeUsers?: UserUncheckedUpdateManyWithoutActiveOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    members?: UserOrganizationUncheckedUpdateManyWithoutOrganizationNestedInput
+    content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
+    onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+  }
+
+  export type DigestHistoryUpsertWithWhereUniqueWithoutSubscriptionInput = {
+    where: DigestHistoryWhereUniqueInput
+    update: XOR<DigestHistoryUpdateWithoutSubscriptionInput, DigestHistoryUncheckedUpdateWithoutSubscriptionInput>
+    create: XOR<DigestHistoryCreateWithoutSubscriptionInput, DigestHistoryUncheckedCreateWithoutSubscriptionInput>
+  }
+
+  export type DigestHistoryUpdateWithWhereUniqueWithoutSubscriptionInput = {
+    where: DigestHistoryWhereUniqueInput
+    data: XOR<DigestHistoryUpdateWithoutSubscriptionInput, DigestHistoryUncheckedUpdateWithoutSubscriptionInput>
+  }
+
+  export type DigestHistoryUpdateManyWithWhereWithoutSubscriptionInput = {
+    where: DigestHistoryScalarWhereInput
+    data: XOR<DigestHistoryUpdateManyMutationInput, DigestHistoryUncheckedUpdateManyWithoutSubscriptionInput>
+  }
+
+  export type DigestHistoryScalarWhereInput = {
+    AND?: DigestHistoryScalarWhereInput | DigestHistoryScalarWhereInput[]
+    OR?: DigestHistoryScalarWhereInput[]
+    NOT?: DigestHistoryScalarWhereInput | DigestHistoryScalarWhereInput[]
+    id?: StringFilter<"DigestHistory"> | string
+    subscriptionId?: StringFilter<"DigestHistory"> | string
+    subject?: StringFilter<"DigestHistory"> | string
+    contentSummary?: StringFilter<"DigestHistory"> | string
+    sourceCount?: IntFilter<"DigestHistory"> | number
+    sentAt?: DateTimeFilter<"DigestHistory"> | Date | string
+  }
+
+  export type DigestSubscriptionCreateWithoutHistoryInput = {
+    id?: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDigestSubscriptionsInput
+    organization: OrganizationCreateNestedOneWithoutDigestSubscriptionsInput
+  }
+
+  export type DigestSubscriptionUncheckedCreateWithoutHistoryInput = {
+    id?: string
+    userId: string
+    organizationId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DigestSubscriptionCreateOrConnectWithoutHistoryInput = {
+    where: DigestSubscriptionWhereUniqueInput
+    create: XOR<DigestSubscriptionCreateWithoutHistoryInput, DigestSubscriptionUncheckedCreateWithoutHistoryInput>
+  }
+
+  export type DigestSubscriptionUpsertWithoutHistoryInput = {
+    update: XOR<DigestSubscriptionUpdateWithoutHistoryInput, DigestSubscriptionUncheckedUpdateWithoutHistoryInput>
+    create: XOR<DigestSubscriptionCreateWithoutHistoryInput, DigestSubscriptionUncheckedCreateWithoutHistoryInput>
+    where?: DigestSubscriptionWhereInput
+  }
+
+  export type DigestSubscriptionUpdateToOneWithWhereWithoutHistoryInput = {
+    where?: DigestSubscriptionWhereInput
+    data: XOR<DigestSubscriptionUpdateWithoutHistoryInput, DigestSubscriptionUncheckedUpdateWithoutHistoryInput>
+  }
+
+  export type DigestSubscriptionUpdateWithoutHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDigestSubscriptionsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutDigestSubscriptionsNestedInput
+  }
+
+  export type DigestSubscriptionUncheckedUpdateWithoutHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyCreatedByInput = {
     id?: string
     name: string
@@ -71599,6 +75379,17 @@ export namespace Prisma {
     organizationId: string
     role?: string
     joinedAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DigestSubscriptionCreateManyUserInput = {
+    id?: string
+    organizationId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
     updatedAt?: Date | string
   }
 
@@ -71944,6 +75735,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOwnerInput = {
@@ -71977,6 +75769,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateManyWithoutOwnerInput = {
@@ -72181,6 +75974,41 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DigestSubscriptionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutDigestSubscriptionsNestedInput
+    history?: DigestHistoryUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type DigestSubscriptionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: DigestHistoryUncheckedUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type DigestSubscriptionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyOrganizationInput = {
     id?: string
     name: string
@@ -72306,6 +76134,17 @@ export namespace Prisma {
     timeSpent?: number | null
     completedAt?: Date | string
     createdAt?: Date | string
+  }
+
+  export type DigestSubscriptionCreateManyOrganizationInput = {
+    id?: string
+    userId: string
+    frequency?: string
+    topics?: DigestSubscriptionCreatetopicsInput | string[]
+    isActive?: boolean
+    lastSentAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AIAssociateUpdateWithoutOrganizationInput = {
@@ -72568,6 +76407,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActiveOrganizationInput = {
@@ -72597,6 +76437,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutActiveOrganizationInput = {
@@ -72639,6 +76480,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
     activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -72668,6 +76510,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -72797,6 +76640,41 @@ export namespace Prisma {
     timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestSubscriptionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDigestSubscriptionsNestedInput
+    history?: DigestHistoryUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type DigestSubscriptionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    history?: DigestHistoryUncheckedUpdateManyWithoutSubscriptionNestedInput
+  }
+
+  export type DigestSubscriptionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    topics?: DigestSubscriptionUpdatetopicsInput | string[]
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    lastSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ContentSectionCreateManyContentInput = {
@@ -73921,6 +77799,38 @@ export namespace Prisma {
   export type ProjectAssociateUncheckedUpdateManyWithoutAssociateInput = {
     projectId?: StringFieldUpdateOperationsInput | string
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestHistoryCreateManySubscriptionInput = {
+    id?: string
+    subject: string
+    contentSummary: string
+    sourceCount?: number
+    sentAt?: Date | string
+  }
+
+  export type DigestHistoryUpdateWithoutSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestHistoryUncheckedUpdateWithoutSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestHistoryUncheckedUpdateManyWithoutSubscriptionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    contentSummary?: StringFieldUpdateOperationsInput | string
+    sourceCount?: IntFieldUpdateOperationsInput | number
+    sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

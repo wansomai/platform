@@ -75,6 +75,7 @@ model User {
   activeOrganization      Organization?           @relation("ActiveOrganization", fields: [activeOrganizationId], references: [id])
   organization            Organization            @relation(fields: [organizationId], references: [id])
   organizationMemberships UserOrganization[]
+  digestSubscriptions     DigestSubscription[]
 
   @@index([activeOrganizationId], map: "idx_user_active_org")
 }
@@ -112,6 +113,7 @@ model Organization {
   content             Content[]
   onboardingSteps     OnboardingAnalytics[]
   subscription        Subscription?
+  digestSubscriptions DigestSubscription[]
 }
 
 model Content {
@@ -612,6 +614,39 @@ model EventRegistration {
 model Publications {
   id    String @id @default(cuid())
   title String
+}
+
+model DigestSubscription {
+  id             String          @id @default(cuid())
+  userId         String
+  organizationId String
+  frequency      String          @default("weekly") // "daily" or "weekly"
+  topics         String[]
+  jurisdictions  String[]        // Country/jurisdiction codes e.g. ["KE", "TZ", "UG"]
+  isActive       Boolean         @default(true)
+  lastSentAt     DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  history        DigestHistory[]
+
+  @@unique([userId, organizationId])
+  @@index([isActive, frequency])
+  @@map("digest_subscriptions")
+}
+
+model DigestHistory {
+  id             String             @id @default(cuid())
+  subscriptionId String
+  subject        String
+  contentSummary String
+  sourceCount    Int                @default(0)
+  sentAt         DateTime           @default(now())
+  subscription   DigestSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId, sentAt(sort: Desc)])
+  @@map("digest_history")
 }
 
 enum PracticeArea {
