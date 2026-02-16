@@ -136,7 +136,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 <li className="flex items-start gap-1"> <Zap className="h-3 w-3 text-green-500" /> Draft,Research,Calendar integrations </li>
               </ul>
               <div className="bg-gray-300 my-2 h-0.5 w-full"></div>
-              <h1 className="text-2xl font-bold font-serif mb-2">$ 12/month</h1>
+              {/* <h1 className="text-2xl font-bold font-serif mb-2">$ 12/month</h1> */}
               <Button
                 type="button"
                 onClick={handlePersonalUpgrade}
