@@ -1060,6 +1060,88 @@ export function sendPasswordResetEmail({
 }
 
 /**
+ * Sends a confirmation email when a user subscribes to Law 360
+ */
+export function sendDigestSubscriptionEmail({
+  email,
+  fullName,
+  frequency,
+  jurisdictions,
+  topics,
+}: {
+  email: string;
+  fullName: string;
+  frequency: string;
+  jurisdictions: string[];
+  topics: string[];
+}) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
+  const manageUrl = `${appUrl}/workflows/template/law-360`;
+  const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
+  const scheduleNote = frequency === 'daily'
+    ? 'every morning at 8:00 AM UTC'
+    : 'every Monday morning at 8:00 AM UTC';
+
+  const subject = `You're subscribed to Law 360 - ${frequencyLabel} Legal Digest`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">Law 360</h1>
+          <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">Legal News Digest</p>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hello ${fullName},</p>
+
+          <p>You've successfully subscribed to <strong>Law 360</strong>, your personalized legal news digest powered by Wansom AI.</p>
+
+          <h3 style="color: #0a4b5e; font-size: 15px;">What to Expect</h3>
+          <p>Each digest will include:</p>
+          <ul style="padding-left: 20px; color: #4a4a4a;">
+            <li>Case law updates and notable court decisions from your selected jurisdictions</li>
+            <li>Regulatory changes and government policy updates</li>
+            <li>Legal industry news and developments</li>
+            <li>Source citations with links for further reading</li>
+          </ul>
+
+          <p>Your first digest will arrive ${frequency === 'daily' ? 'tomorrow morning' : 'next Monday morning'}.</p>
+
+          <div style="margin-top: 24px; text-align: center;">
+            <a href="${manageUrl}" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600;">Manage Subscription</a>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this because you subscribed to Law 360 on Wansom.</p>
+          <p><a href="${manageUrl}" style="color: #0a4b5e;">Unsubscribe</a></p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+  });
+}
+
+/**
  * Sends a legal news digest email
  */
 export function sendLegalDigestEmail({
@@ -1133,7 +1215,7 @@ export function sendLegalDigestEmail({
       <div style="max-width: 640px; margin: 0 auto; padding: 20px;">
         <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
           <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
-          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">${frequencyLabel} Legal News Digest</h1>
+          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">Law 360 - ${frequencyLabel} Digest</h1>
           <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
 
@@ -1159,7 +1241,7 @@ export function sendLegalDigestEmail({
             <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
           </p>
-          <p>You're receiving this because you subscribed to the ${frequencyLabel} Legal Digest on Wansom.</p>
+          <p>You're receiving this because you subscribed to Law 360 on Wansom.</p>
           <p><a href="${unsubscribeUrl}" style="color: #0a4b5e;">Manage subscription</a></p>
         </div>
       </div>

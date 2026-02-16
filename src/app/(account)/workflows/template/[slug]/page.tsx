@@ -8,17 +8,36 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PracticeArea, PRACTICE_AREA_LABELS } from '@/types/associates';
-import { CircleChevronLeft, Zap, Mail, Clock, CheckCircle } from 'lucide-react';
+import { CircleChevronLeft, Zap, Mail, Clock, CheckCircle, Globe } from 'lucide-react';
 import { useAssociates } from '@/hooks/useAssociates';
 import { Card, CardContent } from '@/components/ui/card';
 import { premadeAssociates } from '@/lib/constants/premadeAssociates';
 import LogoAnimation from '@/components/commons/LogoAnimation';
 import { toast } from 'sonner';
+import { apiService } from '@/lib/api';
+
+const JURISDICTION_OPTIONS: { code: string; name: string; flag: string }[] = [
+  { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
+  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿' },
+  { code: 'UG', name: 'Uganda', flag: '🇺🇬' },
+  { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+  { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
+  { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+  { code: 'RW', name: 'Rwanda', flag: '🇷🇼' },
+  { code: 'ET', name: 'Ethiopia', flag: '🇪🇹' },
+  { code: 'US', name: 'United States', flag: '🇺🇸' },
+  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+  { code: 'IN', name: 'India', flag: '🇮🇳' },
+  { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+  { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+  { code: 'EU', name: 'European Union', flag: '🇪🇺' },
+];
 
 interface DigestSubscription {
   id: string;
   frequency: string;
   topics: string[];
+  jurisdictions: string[];
   isActive: boolean;
   lastSentAt: string | null;
   history: {
@@ -40,6 +59,7 @@ function DigestSubscriptionForm({
   const [selectedTopics, setSelectedTopics] = useState<string[]>([
     PracticeArea.GENERAL_PRACTICE,
   ]);
+  const [selectedJurisdictions, setSelectedJurisdictions] = useState<string[]>(['KE']);
   const [subscription, setSubscription] = useState<DigestSubscription | null>(
     null
   );
@@ -50,13 +70,15 @@ function DigestSubscriptionForm({
   useEffect(() => {
     async function loadSubscription() {
       try {
-        const res = await fetch('/api/digest/subscription');
-        const data = await res.json();
+        const data = await apiService.get<{ data: DigestSubscription | null }>('/api/digest/subscription');
         if (data.data) {
-          const sub = data.data as DigestSubscription;
+          const sub = data.data;
           setSubscription(sub);
           setFrequency(sub.frequency as 'daily' | 'weekly');
           setSelectedTopics(sub.topics);
+          if (sub.jurisdictions?.length > 0) {
+            setSelectedJurisdictions(sub.jurisdictions);
+          }
         }
       } catch {
         // No subscription yet
@@ -73,31 +95,36 @@ function DigestSubscriptionForm({
     );
   };
 
+  const toggleJurisdiction = (code: string) => {
+    setSelectedJurisdictions((prev) =>
+      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+    );
+  };
+
   const handleSubscribe = async () => {
     if (selectedTopics.length === 0) {
       toast.error('Please select at least one practice area');
       return;
     }
+    if (selectedJurisdictions.length === 0) {
+      toast.error('Please select at least one jurisdiction');
+      return;
+    }
     setIsSaving(true);
     try {
-      const res = await fetch('/api/digest/subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ frequency, topics: selectedTopics }),
+      const data = await apiService.post<{ data: DigestSubscription }>('/api/digest/subscription', {
+        frequency,
+        topics: selectedTopics,
+        jurisdictions: selectedJurisdictions,
       });
-      const data = await res.json();
-      if (res.ok) {
-        setSubscription({ ...data.data, history: subscription?.history || [] });
-        toast.success(
-          subscription?.isActive
-            ? 'Subscription updated!'
-            : 'Subscribed to Legal News Digest!'
-        );
-      } else {
-        toast.error(data.message || 'Failed to subscribe');
-      }
+      setSubscription({ ...data.data, history: subscription?.history || [] });
+      toast.success(
+        subscription?.isActive
+          ? 'Subscription updated!'
+          : 'Subscribed to Law 360!'
+      );
     } catch {
-      toast.error('Something went wrong');
+      // apiService handles error toasts automatically
     } finally {
       setIsSaving(false);
     }
@@ -106,15 +133,13 @@ function DigestSubscriptionForm({
   const handleUnsubscribe = async () => {
     setIsSaving(true);
     try {
-      const res = await fetch('/api/digest/subscription', { method: 'DELETE' });
-      if (res.ok) {
-        setSubscription((prev) =>
-          prev ? { ...prev, isActive: false } : null
-        );
-        toast.success('Unsubscribed from Legal News Digest');
-      }
+      await apiService.delete('/api/digest/subscription');
+      setSubscription((prev) =>
+        prev ? { ...prev, isActive: false } : null
+      );
+      toast.success('Unsubscribed from Law 360');
     } catch {
-      toast.error('Something went wrong');
+      // apiService handles error toasts automatically
     } finally {
       setIsSaving(false);
     }
@@ -167,6 +192,38 @@ function DigestSubscriptionForm({
                     )}
                   </div>
 
+                  {/* Jurisdictions */}
+                  <div>
+                    <Label className="text-base flex items-center gap-2">
+                      <Globe className="h-4 w-4" />
+                      Jurisdictions
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1 mb-3">
+                      Select the countries whose case law, regulations, and legal news you want to track
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4 border rounded-lg max-h-64 overflow-y-auto">
+                      {JURISDICTION_OPTIONS.map((j) => (
+                        <div key={j.code} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`jurisdiction-${j.code}`}
+                            checked={selectedJurisdictions.includes(j.code)}
+                            onCheckedChange={() => toggleJurisdiction(j.code)}
+                          />
+                          <label
+                            htmlFor={`jurisdiction-${j.code}`}
+                            className="text-sm cursor-pointer flex items-center gap-1.5"
+                          >
+                            <span>{j.flag}</span>
+                            {j.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {selectedJurisdictions.length} jurisdiction{selectedJurisdictions.length !== 1 ? 's' : ''} selected
+                    </p>
+                  </div>
+
                   {/* Frequency */}
                   <div>
                     <Label className="text-base flex items-center gap-2">
@@ -209,12 +266,12 @@ function DigestSubscriptionForm({
                   <div>
                     <Label className="text-base flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      Topics to Follow
+                      Practice Areas
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1 mb-3">
-                      Select the practice areas you want to receive news about
+                      Filter news by practice area
                     </p>
-                    <div className="grid grid-cols-2 gap-3 p-4 border rounded-lg max-h-64 overflow-y-auto">
+                    <div className="grid grid-cols-2 gap-3 p-4 border rounded-lg max-h-52 overflow-y-auto">
                       {Object.entries(PRACTICE_AREA_LABELS).map(
                         ([area, label]) => (
                           <div
@@ -266,7 +323,7 @@ function DigestSubscriptionForm({
                       </Button>
                       <Button
                         onClick={handleSubscribe}
-                        disabled={isSaving || selectedTopics.length === 0}
+                        disabled={isSaving || selectedTopics.length === 0 || selectedJurisdictions.length === 0}
                         className="min-w-[180px]"
                       >
                         {isSaving ? (

@@ -7,6 +7,9 @@ import {
   createBadRequestResponse,
 } from '@/lib/api/response';
 import { getActiveOrganizationId } from '@/lib/api/org-helpers';
+import { sendDigestSubscriptionEmail } from '@/lib/email-service';
+import { PRACTICE_AREA_LABELS } from '@/types/associates';
+import { JURISDICTIONS } from '@/services/legalDigestService';
 import { z } from 'zod';
 
 const subscriptionSchema = z.object({
@@ -59,6 +62,12 @@ export const POST = withErrorHandler(
 
     const { frequency, topics, jurisdictions } = parsed.data;
 
+    // Check if this is a new subscription (not an update)
+    const existing = await prisma.digestSubscription.findUnique({
+      where: { userId_organizationId: { userId, organizationId } },
+    });
+    const isNewSubscription = !existing || !existing.isActive;
+
     const subscription = await prisma.digestSubscription.upsert({
       where: {
         userId_organizationId: { userId, organizationId },
@@ -78,6 +87,31 @@ export const POST = withErrorHandler(
         isActive: true,
       },
     });
+
+    // Send confirmation email for new subscriptions
+    if (isNewSubscription) {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, fullName: true },
+      });
+
+      if (user) {
+        const jurisdictionNames = jurisdictions.map(
+          (code) => JURISDICTIONS[code]?.name || code
+        );
+        const topicLabels = topics.map(
+          (t) => PRACTICE_AREA_LABELS[t as keyof typeof PRACTICE_AREA_LABELS] || t
+        );
+
+        sendDigestSubscriptionEmail({
+          email: user.email,
+          fullName: user.fullName || 'there',
+          frequency,
+          jurisdictions: jurisdictionNames,
+          topics: topicLabels,
+        });
+      }
+    }
 
     return createApiResponse(subscription, 'Subscription updated');
   })
