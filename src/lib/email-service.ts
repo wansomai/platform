@@ -1095,8 +1095,7 @@ export function sendDigestSubscriptionEmail({
       <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
           <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
-          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">Law 360</h1>
-          <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">Legal News Digest</p>
+          <h1 style="color: white; font-size: 24px; margin: 12px 0 4px 0;">Law 360</h1>
         </div>
 
         <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
