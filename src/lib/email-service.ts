@@ -1066,8 +1066,6 @@ export function sendDigestSubscriptionEmail({
   email,
   fullName,
   frequency,
-  jurisdictions,
-  topics,
 }: {
   email: string;
   fullName: string;
@@ -1078,11 +1076,8 @@ export function sendDigestSubscriptionEmail({
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const manageUrl = `${appUrl}/workflows/template/law-360`;
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
-  const scheduleNote = frequency === 'daily'
-    ? 'every morning at 8:00 AM UTC'
-    : 'every Monday morning at 8:00 AM UTC';
 
-  const subject = `You're subscribed to Law 360 - ${frequencyLabel} Legal Digest`;
+  const subject = `You're subscribed to ${frequencyLabel} Law 360`;
 
   const html = `
     <!DOCTYPE html>

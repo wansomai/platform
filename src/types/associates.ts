@@ -1,4 +1,5 @@
 export enum PracticeArea {
+  GENERAL_PRACTICE = 'GENERAL_PRACTICE',
   MERGERS_AND_ACQUISITIONS = 'MERGERS_AND_ACQUISITIONS',
   TAX_LAW = 'TAX_LAW',
   INTELLECTUAL_PROPERTY = 'INTELLECTUAL_PROPERTY',
@@ -18,10 +19,11 @@ export enum PracticeArea {
   PRIVACY_DATA_PROTECTION = 'PRIVACY_DATA_PROTECTION',
   TECHNOLOGY_LICENSING = 'TECHNOLOGY_LICENSING',
   INTERNATIONAL_TRADE = 'INTERNATIONAL_TRADE',
-  GENERAL_PRACTICE = 'GENERAL_PRACTICE',
+  
 }
 
 export const PRACTICE_AREA_LABELS: Record<PracticeArea, string> = {
+  [PracticeArea.GENERAL_PRACTICE]: 'General Practice',
   [PracticeArea.MERGERS_AND_ACQUISITIONS]: 'Mergers & Acquisitions',
   [PracticeArea.TAX_LAW]: 'Tax Law',
   [PracticeArea.INTELLECTUAL_PROPERTY]: 'Intellectual Property',
@@ -41,7 +43,7 @@ export const PRACTICE_AREA_LABELS: Record<PracticeArea, string> = {
   [PracticeArea.PRIVACY_DATA_PROTECTION]: 'Privacy & Data Protection',
   [PracticeArea.TECHNOLOGY_LICENSING]: 'Technology & Licensing',
   [PracticeArea.INTERNATIONAL_TRADE]: 'International Trade',
-  [PracticeArea.GENERAL_PRACTICE]: 'General Practice',
+  
 };
 
 export interface AIAssociate {
