@@ -429,192 +429,235 @@ export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: stri
                 </div>
               )}
 
-              <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
-                {/* Documents Tool */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handlePaperclipClick}
-                  className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
-                  title={
-                    selectedFiles.length > 0
-                      ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected`
-                      : "Attach files"
-                  }
-                  aria-labelledby="upload documents"
-                >
-                  <Paperclip className="h-6 w-6 text-gray-600" />
-                </Button>
-
-                {/* Tools Dropdown */}
-                <DropdownMenu
-                  open={showToolsDropdown}
-                  onOpenChange={setShowToolsDropdown}
-                >
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
-                      title="AI Tools (preview - will be configurable after registration)"
-                      aria-labelledby="AI tools"
-                    >
-                      <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}Tools
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="start"
-                    className="w-72 p-4 mb-2"
-                    side="top"
-                  >
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-sm text-gray-700">
-                          Workspace Settings
-                        </h4>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowToolsDropdown(false)}
-                          className="h-6 w-6 p-0"
-                          aria-labelledby="Close Tools"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label
-                            htmlFor="web-search"
-                            className="font-medium text-sm"
-                          >
-                            Deep Research
-                          </Label>
-                        </div>
-                        <Switch
-                          id="web-search"
-                          checked={false}
-                          disabled={true}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label
-                            htmlFor="legal-drafting"
-                            className="font-medium text-sm"
-                          >
-                            Draft & Review
-                          </Label>
-                        </div>
-                        <Switch
-                          id="legal-drafting"
-                          checked={true}
-                          disabled={true}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label
-                            htmlFor="contract-review"
-                            className="font-medium text-sm flex items-center gap-2"
-                          >
-                           <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
-                          </Label>
-                        </div>
-                        <Switch
-                          id="contract-review"
-                          checked={false}
-                          disabled={true}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <Label
-                            htmlFor="case-preparation"
-                            className="font-medium text-sm flex items-center gap-2"
-                          > <img src={'/icons/gmail.svg'} className="w-6 h-6"/>
-                            Gmail
-                          </Label>
-                        </div>
-                        <Switch
-                          id="case-preparation"
-                          checked={false}
-                          disabled={true}
-                        />
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <Label
-                              htmlFor="cite-sources"
-                              className="font-medium text-sm"
-                            >
-                              Cite sources
-                            </Label>
-                          </div>
-                          <Switch
-                            id="cite-sources"
-                            checked={false}
-                            disabled={true}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Jurisdiction Selector Dropdown */}
-                <DropdownMenu
-                  open={showJurisdictionDropdown}
-                  onOpenChange={setShowJurisdictionDropdown}
-                >
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
-                      title={
-                        selectedJurisdictions.length > 0
-                          ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
-                          : "Select jurisdiction"
-                      }
-                    >
-                      <Globe className="h-5 w-5 text-gray-500" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="start"
-                    className="w-[340px] p-3 mb-2"
-                    side="top"
-                  >
-                    <JurisdictionSelector
-                      inline={true}
-                      multiSelect={true}
-                      values={selectedJurisdictions}
-                      onChangeMulti={handleJurisdictionsChange}
-                      placeholder="Search jurisdictions..."
-                      maxSelections={5}
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Settings Button */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"> <Zap className="h-6 w-6 text-gray-700" /></Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Register to start new workflow</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-
-              </div>
+            {/* Left side icons */}
+                         <div className="absolute flex items-center gap-2 z-10 w-full left-4 right-4 bottom-3 pr-20">
+                           {/* Documents Tool */}
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={handlePaperclipClick}
+                             className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
+                             title={
+                               selectedFiles.length > 0
+                                 ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected`
+                                 : "Attach files"
+                             }
+                             aria-labelledby="upload documents"
+                           >
+                             <Paperclip className="h-6 w-6 text-gray-600" />
+                           </Button>
+           
+                           {/* Tools Dropdown */}
+                           <DropdownMenu
+                             open={showToolsDropdown}
+                             onOpenChange={setShowToolsDropdown}
+                           >
+                             <DropdownMenuTrigger asChild>
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
+                                 title="AI Tools (preview - will be configurable after registration)"
+                                 aria-labelledby="AI tools"
+                               >
+                                 <SlidersHorizontal className="h-6 w-6 text-gray-700" />{" "}
+                                 Tools
+                               </Button>
+                             </DropdownMenuTrigger>
+                             <DropdownMenuContent
+                               align="start"
+                               className="w-72 p-4 mb-2"
+                               side="top"
+                             >
+                               <div className="space-y-4">
+                                 <div className="flex items-center justify-between">
+                                   <h4 className="font-medium text-sm text-gray-700">
+                                     Available AI Tools
+                                   </h4>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     onClick={() => setShowToolsDropdown(false)}
+                                     className="h-6 w-6 p-0"
+                                     aria-labelledby="Close Tools"
+                                   >
+                                     <X className="h-3 w-3" />
+                                   </Button>
+                                 </div>
+                                 <div className="flex items-center justify-between">
+                                   <div className="space-y-1">
+                                     <Label
+                                       htmlFor="web-search"
+                                       className="font-medium text-sm"
+                                     >
+                                       Deep Research
+                                     </Label>
+                                   </div>
+                                   <Switch
+                                     id="web-search"
+                                     checked={false}
+                                     disabled={true}
+                                   />
+                                 </div>
+           
+                                 <div className="flex items-center justify-between">
+                                   <div className="space-y-1">
+                                     <Label
+                                       htmlFor="legal-drafting"
+                                       className="font-medium text-sm"
+                                     >
+                                       Draft & Review
+                                     </Label>
+                                   </div>
+                                   <Switch
+                                     id="legal-drafting"
+                                     checked={false}
+                                     disabled={true}
+                                   />
+                                 </div>
+               <div className="flex items-center justify-between">
+                                   <div className="space-y-1">
+                                     <Label
+                                       htmlFor="contract-review"
+                                       className="font-medium text-sm flex items-center gap-2"
+                                     >
+                                      <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
+                                     </Label>
+                                   </div>
+                                   <Switch
+                                     id="contract-review"
+                                     checked={false}
+                                     disabled={true}
+                                   />
+                                 </div>
+           
+                                 <div className="flex items-center justify-between">
+                                   <div className="space-y-1">
+                                     <Label
+                                       htmlFor="case-preparation"
+                                       className="font-medium text-sm flex items-center gap-2"
+                                     > <img src={'/icons/gmail.svg'} className="w-6 h-6"/>
+                                       Gmail
+                                     </Label>
+                                   </div>
+                                   <Switch
+                                     id="case-preparation"
+                                     checked={false}
+                                     disabled={true}
+                                   />
+                                 </div>
+           
+                                 <div className="flex items-center justify-between">
+                                   <div className="space-y-1">
+                                     <Label
+                                       htmlFor="case-preparation"
+                                       className="font-medium text-sm"
+                                     >
+                                       Case Preparation
+                                     </Label>
+                                   </div>
+                                   <Switch
+                                     id="case-preparation"
+                                     checked={false}
+                                     disabled={true}
+                                   />
+                                 </div>
+           
+                                 <div className="space-y-4">
+                                   <div className="flex items-center justify-between">
+                                     <div className="space-y-1">
+                                       <Label
+                                         htmlFor="cite-sources"
+                                         className="font-medium text-sm"
+                                       >
+                                         Cite sources
+                                       </Label>
+                                     </div>
+                                     <Switch
+                                       id="cite-sources"
+                                       checked={false}
+                                       disabled={true}
+                                     />
+                                   </div>
+           
+                                   <div className="flex items-center justify-between">
+                                     <div className="space-y-1">
+                                       <Label
+                                         htmlFor="suggest-actions"
+                                         className="font-medium text-sm"
+                                       >
+                                         Suggest actions
+                                       </Label>
+                                     </div>
+                                     <Switch
+                                       id="suggest-actions"
+                                       checked={false}
+                                       disabled={true}
+                                     />
+                                   </div>
+                                 </div>
+                               </div>
+                             </DropdownMenuContent>
+                           </DropdownMenu>
+           
+                           {/* Jurisdiction Selector Dropdown */}
+                           <DropdownMenu
+                             open={showJurisdictionDropdown}
+                             onOpenChange={setShowJurisdictionDropdown}
+                           >
+                             <DropdownMenuTrigger asChild>
+                               <Button
+                             variant="ghost"
+                             size="sm"
+                                  className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
+                                 title={
+                                   selectedJurisdictions.length > 0
+                                     ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
+                                     : "Select jurisdiction"
+                                 }
+                                 aria-labelledby="Select jurisdiction">
+                                 <Globe className="h-5 w-5 text-gray-500" />
+                                 Jurisdictions
+                               </Button>
+                             </DropdownMenuTrigger>
+                             <DropdownMenuContent
+                               align="start"
+                               className="w-[340px] p-3 mb-2"
+                               side="top"
+                             >
+                               <JurisdictionSelector
+                                 inline={true}
+                                 multiSelect={true}
+                                 values={selectedJurisdictions}
+                                 onChangeMulti={handleJurisdictionsChange}
+                                 placeholder="Search jurisdictions..."
+                                 maxSelections={5}
+                               />
+                             </DropdownMenuContent>
+                           </DropdownMenu>
+           
+                           {/* Settings Button */}
+                           <button
+                             className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center  cursor-not-allowed opacity-60 text-sm"
+                             disabled={true}
+                             title="Settings (available after registration)"
+                             aria-labelledby="settings"
+                           >
+                             <Zap className="h-4 w-4 text-black text-xs" />
+                             Workflows
+                           </button>
+                             <button
+                             className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center  cursor-not-allowed text-sm "
+                             disabled={true}
+                             title="projects (available after registration)"
+                             aria-labelledby="projects"
+                           >
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-black">
+                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                                   </svg>
+                             Projects
+                           </button>
+                         </div>
 
               {/* Hidden file input */}
               <input

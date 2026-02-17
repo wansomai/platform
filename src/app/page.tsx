@@ -880,7 +880,7 @@ const KnowledgeBase = () => {
           <div className="w-full">
             <div className="bg-white rounded-xl border-2 border-gray-200 focus-within:border-primary-300 transition-colors relative shadow-sm focus-within:shadow-md">
               {/* Left side icons */}
-              <div className="absolute flex items-center gap-1 z-10 w-full left-6 bottom-3">
+              <div className="absolute flex items-center gap-2 z-10 w-full left-4 right-4 bottom-3 pr-20">
                 {/* Documents Tool */}
                 <Button
                   variant="ghost"
@@ -1059,14 +1059,15 @@ const KnowledgeBase = () => {
                     <Button
                   variant="ghost"
                   size="sm"
-                       className="h-8 w-8 p-0 rounded-md hover:bg-gray-100"
+                       className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
                       title={
                         selectedJurisdictions.length > 0
                           ? `${selectedJurisdictions.length} jurisdiction${selectedJurisdictions.length !== 1 ? 's' : ''} selected`
                           : "Select jurisdiction"
                       }
-                    >
+                      aria-labelledby="Select jurisdiction">
                       <Globe className="h-5 w-5 text-gray-500" />
+                      Jurisdictions
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -1087,13 +1088,24 @@ const KnowledgeBase = () => {
 
                 {/* Settings Button */}
                 <button
-                  className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center border-gray-10 border cursor-not-allowed opacity-60"
+                  className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center  cursor-not-allowed opacity-60"
                   disabled={true}
                   title="Settings (available after registration)"
                   aria-labelledby="settings"
                 >
-                  <Zap className="h-4 w-4 text-gray-700 text-xs" />
+                  <Zap className="h-4 w-4 text-black text-xs" />
                   Workflows
+                </button>
+                  <button
+                  className="h-8 w-fit px-3 py-2 rounded-lg  flex gap-1 items-center  cursor-not-allowed text-sm "
+                  disabled={true}
+                  title="projects (available after registration)"
+                  aria-labelledby="projects"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-black">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                        </svg>
+                  Projects
                 </button>
               </div>
 
