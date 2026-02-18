@@ -76,7 +76,7 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
           </div>
         </div>
       </div>
-      <BrandLogos />
+      {/* <BrandLogos /> */}
     </section>
   );
 }
@@ -160,7 +160,7 @@ const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
 const StatSection = () => {
     return (
         <section className="bg-gray-50 py-16">
-        <div className="section-container">
+        <div className="section-container mb-10">
             <h2 className="text-heading-2 mb-12 text-center text-gray-900">
             Trusted by Legal Professionals Worldwide
             </h2>
@@ -196,6 +196,7 @@ const StatSection = () => {
             </div>
           </div>
         </div>
+        <BrandLogos />
       </section>
     );  
 }
@@ -206,7 +207,7 @@ function CTASection({ onActivate }: { onActivate: () => void }) {
       <div className="section-container flex flex-col-reverse lg:flex-row items-center">
         <div className=" lg:basis-1/2 mb-8 lg:mb-0 lg:pr-10">
           <h3 className="text-md font-light text-gray-600 mb-2">
-            Your AI companion
+            Your Legal AI companion
           </h3>
           <h2 className="text-heading-2 text-gray-900 mb-2">
            Ready to Start Receiving legal intelligence in your inbox?.
