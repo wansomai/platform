@@ -73,25 +73,25 @@ function HeroSection() {
 const FeaturesSection = () => {
   const features = [
     {
-      title: "Work Smarter",
+      title: "Laws & Monitoring",
       description:
-        "Automate routine legal tasks with AI so your team can focus on high-value work.",
+        "Stay informed with real-time updates on legal news, caselaw summaries, and emerging trends tailored to your practice areas.",
       href: "/login",
-      image: "/drafting-feature.webp",
+      image: "/images/law-monitoring.jpg",
     },
     {
-      title: "Collaborate Better",
+      title: "Legal Intelligence",
       description:
-        "Organize projects,files into shared team workspaces for seamless collaboration.",
+        "Make better decisions with AI-powered insights and expert analysis of legal developments, helping you stay ahead in the ever-evolving legal landscape.",
       href: "/login",
-      image: "/wansom-dashboard.webp",
+      image: "/images/compliance-tracking.jpg",
     },
     {
-      title: "Get More Billable Hours",
+      title: "Compliance Tracking",
       description:
-        "Create Specialised AI associates to do quality work faster so you can bill more.",
+        "Never be caught off guard by regulatory changes. Our AI monitors and tracks compliance requirements for you",
       href: "/login",
-      image: "/contract-negotiation.webp",
+      image: "/images/legal-intelligence.jpg",
     },
   ];
 
@@ -99,10 +99,11 @@ const FeaturesSection = () => {
     <section className="section-container ">
       <div className=" section-spacing">
         <h2 className="text-heading-2 mb-12 text-center text-gray-900">
-          Safe. Flexible. Built for Legal Work.
+          Never Miss a Beat in the Legal World
         </h2>
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            
           {features.map((feature, index) => (
             <div
               key={index}

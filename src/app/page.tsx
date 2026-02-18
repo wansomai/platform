@@ -693,7 +693,7 @@ function VaultDocs() {
               <Circle className="w-6 h-6 text-gray-400" />
             </div>
             <span className="text-md font-medium text-gray-500">
-              Create citations
+              Doing a risk assessment
             </span>
           </div>
 
@@ -703,7 +703,7 @@ function VaultDocs() {
               <Circle className="w-6 h-6 text-gray-400" />
             </div>
             <span className="text-md font-medium text-gray-500">
-              Generate response
+              Generate complaince report
             </span>
           </div>
         </div>
