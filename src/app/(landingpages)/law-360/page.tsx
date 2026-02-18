@@ -4,29 +4,29 @@ import { Metadata } from "next";
 import Law360Components from "./components";
 
 export const metadata: Metadata = {
-  title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
-  description: 'Legal AI Assistant pricing for Wansom AI. Choose from our flexible plans designed for legal professionals.',
-  keywords: 'pricing, legal ai, ai law, legal ai companies, legal software pricing',
+  title: 'Law 360  | Wansom AI',
+  description: 'Legal intelligence in your inbox, all year round powered by Wansom AI.',
+  keywords: 'law 360, legal ai, ai law, legal news, legal updates, legal insights, legal trends, caselaw summaries, legal intelligence, legal assistant',
   alternates: {
     canonical: 'https://www.wansom.ai/pricing',
   },
   openGraph: {
-    title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
-    description: 'Legal AI Assistant pricing for Wansom AI. Choose from our flexible plans designed for legal professionals.',
+    title: 'Law 360 - Wansom AI',
+    description: 'Legal intelligence in your inbox, all year round powered by Wansom AI.',
     type: 'website',
     images: [
       {
         url: '/images/features-2.jpg',
         width: 1200,
         height: 630,
-        alt: 'Wansom AI Pricing Plans',
+        alt: 'Wansom AI - Law 360',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pricing - Wansom AI',
-    description: 'Legal AI Assistant pricing for Wansom AI',
+    title: 'Law 360 - Wansom AI',
+    description: 'Legal intelligence in your inbox, all year round powered by Wansom AI.',
     images: ['/images/features-2.jpg'],
   },
 };

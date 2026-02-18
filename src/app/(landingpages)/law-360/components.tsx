@@ -1,9 +1,10 @@
 'use client';
 
+import Image from "next/image";
 import BrandLogos from "@/components/home/Partnerlogos";
 import HerroPattern from "@/components/layout/HeroPattern";
 import Navbar from "@/components/layout/Navbar";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { SquareArrowOutUpRight, ArrowUpRight } from "lucide-react";
 
 const Law360Components = () => {
     return (    <div className="overflow-x-hidden">
@@ -11,6 +12,7 @@ const Law360Components = () => {
 
       <main>
         <HeroSection />
+        <FeaturesSection />
       </main>
         </div> );
 }
@@ -67,3 +69,77 @@ function HeroSection() {
     </section>
   );
 }
+
+const FeaturesSection = () => {
+  const features = [
+    {
+      title: "Work Smarter",
+      description:
+        "Automate routine legal tasks with AI so your team can focus on high-value work.",
+      href: "/login",
+      image: "/drafting-feature.webp",
+    },
+    {
+      title: "Collaborate Better",
+      description:
+        "Organize projects,files into shared team workspaces for seamless collaboration.",
+      href: "/login",
+      image: "/wansom-dashboard.webp",
+    },
+    {
+      title: "Get More Billable Hours",
+      description:
+        "Create Specialised AI associates to do quality work faster so you can bill more.",
+      href: "/login",
+      image: "/contract-negotiation.webp",
+    },
+  ];
+
+  return (
+    <section className="section-container ">
+      <div className=" section-spacing">
+        <h2 className="text-heading-2 mb-12 text-center text-gray-900">
+          Safe. Flexible. Built for Legal Work.
+        </h2>
+        {/* Feature Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="group relative rounded-lg py-6 px-3 transition-all duration-300 space-y-3"
+              onClick={() => (window.location.href = "/login")}
+            >
+              <div className="mb-4">
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  width={600}
+                  height={400}
+                  className="rounded-lg object-cover "
+                />
+              </div>
+
+              {/* Content */}
+              <h3 className="text-xl font-semibold text-gray-900">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+                {feature.description}
+              </p>
+
+              {/* Arrow Link */}
+              <a
+                href={feature.href}
+                className="inline-flex gap-2 items-center justify-center  group-hover:text-amber-500 transition-all duration-300"
+                aria-label={`Learn more about ${feature.title}`}
+              >
+                Learn More
+                <ArrowUpRight className="w-5 h-5" />
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
