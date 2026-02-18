@@ -36,9 +36,6 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
     <section className=" pt-20 md:pt-28  px-5 bg-white  relative overflow-hidden  ">
       {/* SVG Background */}
      <HerroPattern />
-<div className="hidden lg:block absolute right-1 top-10">
-  <RotatingGlobe />
-</div>
       {/* Header positioned at top of hero container */}
       <div className="absolute top-0 left-0 right-0 z-20"></div>
 
