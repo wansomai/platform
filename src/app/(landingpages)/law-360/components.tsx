@@ -5,6 +5,8 @@ import BrandLogos from "@/components/home/Partnerlogos";
 import HerroPattern from "@/components/layout/HeroPattern";
 import Navbar from "@/components/layout/Navbar";
 import { SquareArrowOutUpRight, ArrowUpRight } from "lucide-react";
+import RotatingGlobe from "@/components/law360/RotatingGlobe";
+import Footer from "@/components/layout/Footer";
 
 const Law360Components = () => {
     return (    <div className="overflow-x-hidden">
@@ -13,7 +15,11 @@ const Law360Components = () => {
       <main>
         <HeroSection />
         <FeaturesSection />
+        
+        <CTASection />
+        <StatSection />
       </main>
+      <Footer/>
         </div> );
 }
  
@@ -134,7 +140,7 @@ const FeaturesSection = () => {
                 className="inline-flex gap-2 items-center justify-center  group-hover:text-amber-500 transition-all duration-300"
                 aria-label={`Learn more about ${feature.title}`}
               >
-                Learn More
+                Get Started
                 <ArrowUpRight className="w-5 h-5" />
               </a>
             </div>
@@ -144,3 +150,92 @@ const FeaturesSection = () => {
     </section>
   );
 };
+
+const StatSection = () => {
+    return (
+        <section className="bg-gray-50 py-16">
+        <div className="section-container">
+            <h2 className="text-heading-2 mb-12 text-center text-gray-900">
+            Trusted by Legal Professionals Worldwide
+            </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                 {/* Stat 1 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                3000+
+              </h3>
+              <p className="text-md text-gray-600">
+                Daily Insights Delivered
+              </p>
+            </div>
+
+            {/* Stat 2 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                50+
+              </h3>
+              <p className="text-md text-gray-600">
+                Practise areas covered
+              </p>
+            </div>
+
+            {/* Stat 3 */}
+            <div className="text-center">
+              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
+                97%
+              </h3>
+              <p className="text-md text-gray-600">
+  Customization and Accuracy Rate
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );  
+}
+
+function CTASection() {
+  return (
+    <section className="section-spacing bg-white" id="legal-research">
+      <div className="section-container flex flex-col-reverse lg:flex-row items-center">
+        <div className=" lg:basis-1/2 mb-8 lg:mb-0 lg:pr-10">
+          <h3 className="text-md font-light text-gray-600 mb-2">
+            Your AI companion
+          </h3>
+          <h2 className="text-heading-2 text-gray-900 mb-2">
+           Ready to Start Receiving legal intelligence in your inbox?.
+          </h2>
+          <ul className="my-5">
+            <li className="text-gray-600 mb-2 text-lg flex items-center gap-2">
+              <SquareArrowOutUpRight className="w-5 h-5 text-gray-400" />
+              Stay informed with real-time legal updates
+            </li>
+            <li className="text-gray-600 mb-2 text-lg flex items-center gap-2">
+              <SquareArrowOutUpRight className="w-5 h-5 text-gray-400" />
+                Make informed decisions with AI-powered insights
+            </li>
+            <li className="text-gray-600 mb-2 text-lg flex items-center gap-2">
+              <SquareArrowOutUpRight className="w-5 h-5 text-gray-400" />
+              Never miss critical legal developments again
+            </li>
+          </ul>
+          <button
+            className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
+            onClick={() => (window.location.href = "/ai-assistant")}
+            aria-label="Try Wansom AI for free - Start your free trial"
+          >
+            Activate Law 360{" "}
+            <SquareArrowOutUpRight
+              className="w-5 h-5 text-white"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+        {/* rotating globe section*/}
+        <div className="lg:basis-1/2 flex items-center justify-center">
+          <RotatingGlobe />
+        </div>
+      </div>
+    </section>
+  );
+}
