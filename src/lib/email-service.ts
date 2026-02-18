@@ -1060,6 +1060,89 @@ export function sendPasswordResetEmail({
 }
 
 /**
+ * Sends a Law 360 welcome email with credentials and subscription summary
+ */
+export function sendLaw360WelcomeEmail({
+  email,
+  fullName,
+  password,
+  frequency,
+  jurisdictions,
+  topics,
+}: {
+  email: string;
+  fullName: string;
+  password: string;
+  frequency: string;
+  jurisdictions: string[];
+  topics: string[];
+}) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
+  const loginUrl = `${appUrl}/login`;
+  const manageUrl = `${appUrl}/workflows/template/law-360`;
+  const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
+
+  const subject = `Welcome to Law 360 - Your Login Credentials`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 24px; margin: 12px 0 4px 0;">Welcome to Law 360</h1>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hello ${fullName},</p>
+
+          <p>Your Law 360 subscription has been activated! Here are your login credentials:</p>
+
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 16px; margin: 16px 0; border-radius: 0 6px 6px 0;">
+            <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Email:</strong> ${email}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>Password:</strong> ${password}</p>
+          </div>
+
+          <p style="color: #dc2626; font-size: 13px;">Please change your password after your first login for security.</p>
+
+          <h3 style="color: #0a4b5e; font-size: 15px; margin-top: 24px;">Your Subscription</h3>
+          <div style="background-color: #f8fafc; padding: 14px; border-radius: 6px; margin-bottom: 16px;">
+            <p style="margin: 0 0 6px 0; font-size: 14px;"><strong>Frequency:</strong> ${frequencyLabel}</p>
+            <p style="margin: 0 0 6px 0; font-size: 14px;"><strong>Jurisdictions:</strong> ${jurisdictions.join(', ')}</p>
+            <p style="margin: 0; font-size: 14px;"><strong>Topics:</strong> ${topics.join(', ')}</p>
+          </div>
+
+          <div style="margin-top: 24px; text-align: center;">
+            <a href="${loginUrl}" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600; margin-right: 8px;">Login to Dashboard</a>
+            <a href="${manageUrl}" style="display: inline-block; background-color: white; color: #0a4b5e; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600; border: 1px solid #0a4b5e;">Manage Subscription</a>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+  });
+}
+
+/**
  * Sends a confirmation email when a user subscribes to Law 360
  */
 export function sendDigestSubscriptionEmail({

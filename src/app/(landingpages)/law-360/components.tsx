@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from "react";
 import Image from "next/image";
 import BrandLogos from "@/components/home/Partnerlogos";
 import HerroPattern from "@/components/layout/HeroPattern";
@@ -7,25 +8,30 @@ import Navbar from "@/components/layout/Navbar";
 import { SquareArrowOutUpRight, ArrowUpRight } from "lucide-react";
 import RotatingGlobe from "@/components/law360/RotatingGlobe";
 import Footer from "@/components/layout/Footer";
+import ActivationModal from "@/components/law360/ActivationModal";
 
 const Law360Components = () => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const handleActivate = () => setModalOpen(true);
+
     return (    <div className="overflow-x-hidden">
       <Navbar />
 
       <main>
-        <HeroSection />
+        <HeroSection onActivate={handleActivate} />
         <FeaturesSection />
-        
-        <CTASection />
+
+        <CTASection onActivate={handleActivate} />
         <StatSection />
       </main>
       <Footer/>
+      <ActivationModal open={modalOpen} onOpenChange={setModalOpen} />
         </div> );
 }
- 
+
 export default Law360Components;
 
-function HeroSection() {
+function HeroSection({ onActivate }: { onActivate: () => void }) {
   return (
     <section className=" pt-20 md:pt-28  px-5 bg-white  relative overflow-hidden">
       {/* SVG Background */}
@@ -48,7 +54,7 @@ function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
             <button
               className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 md:mb-10 w-fit min-w-[130px]"
-              onClick={() => (window.location.href = "/register")}
+              onClick={onActivate}
               aria-label="Try law 360 for free - Start your free trial"
             >
               TRY Law 360{" "}
@@ -194,7 +200,7 @@ const StatSection = () => {
     );  
 }
 
-function CTASection() {
+function CTASection({ onActivate }: { onActivate: () => void }) {
   return (
     <section className="section-spacing bg-white" id="legal-research">
       <div className="section-container flex flex-col-reverse lg:flex-row items-center">
@@ -221,8 +227,8 @@ function CTASection() {
           </ul>
           <button
             className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
-            onClick={() => (window.location.href = "/ai-assistant")}
-            aria-label="Try Wansom AI for free - Start your free trial"
+            onClick={onActivate}
+            aria-label="Activate Law 360 - Start your subscription"
           >
             Activate Law 360{" "}
             <SquareArrowOutUpRight
