@@ -95,7 +95,7 @@ const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
       description:
         "Make better decisions with AI-powered insights and expert analysis of legal developments, helping you stay ahead in the ever-evolving legal landscape.",
       href: "/login",
-      image: "/images/compliance-tracking.jpg",
+      image: "/images/legal-insights.jpg",
     },
     {
       title: "Compliance Tracking",
