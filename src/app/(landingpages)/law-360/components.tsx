@@ -19,7 +19,7 @@ const Law360Components = () => {
 
       <main>
         <HeroSection onActivate={handleActivate} />
-        <FeaturesSection />
+        <FeaturesSection onActivate={handleActivate} />
 
         <CTASection onActivate={handleActivate} />
         <StatSection />
@@ -81,7 +81,7 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
   );
 }
 
-const FeaturesSection = () => {
+const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
   const features = [
     {
       title: "Laws & Monitoring",
@@ -118,8 +118,8 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative rounded-lg py-6 px-3 transition-all duration-300 space-y-3"
-              onClick={() => (window.location.href = "/login")}
+              className="group relative rounded-lg py-6 px-3 transition-all duration-300 space-y-3 cursor-pointer"
+              onClick={onActivate}
             >
               <div className="mb-4">
                 <Image
@@ -140,14 +140,15 @@ const FeaturesSection = () => {
               </p>
 
               {/* Arrow Link */}
-              <a
-                href={feature.href}
-                className="inline-flex gap-2 items-center justify-center  group-hover:text-amber-500 transition-all duration-300"
-                aria-label={`Learn more about ${feature.title}`}
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onActivate(); }}
+                className="inline-flex gap-2 items-center justify-center group-hover:text-amber-500 transition-all duration-300"
+                aria-label={`Get started with ${feature.title}`}
               >
                 Get Started
                 <ArrowUpRight className="w-5 h-5" />
-              </a>
+              </button>
             </div>
           ))}
         </div>
