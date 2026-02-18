@@ -438,14 +438,14 @@ function DocumentReview() {
 
 function HeroSection() {
   return (
-    <section className=" pt-24 md:pt-28  px-5 bg-white  relative overflow-hidden">
+    <section className=" pt-20 md:pt-28  px-5 bg-white  relative overflow-hidden">
       {/* SVG Background */}
      <HerroPattern />
 
       {/* Header positioned at top of hero container */}
       <div className="absolute top-0 left-0 right-0 z-20"></div>
 
-      <div className="section-container mx-auto grid lg:grid-cols-1 gap-5 items-center my-20  relative z-10">
+      <div className="section-container mx-auto grid lg:grid-cols-1 gap-5 items-center my-10  relative z-10">
         {/* Left Side - Content */}
         <div className=" space-y-8">
           <div className="space-y-6">

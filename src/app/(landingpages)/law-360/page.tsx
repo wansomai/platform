@@ -1,0 +1,39 @@
+
+
+import { Metadata } from "next";
+import Law360Components from "./components";
+
+export const metadata: Metadata = {
+  title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
+  description: 'Legal AI Assistant pricing for Wansom AI. Choose from our flexible plans designed for legal professionals.',
+  keywords: 'pricing, legal ai, ai law, legal ai companies, legal software pricing',
+  alternates: {
+    canonical: 'https://www.wansom.ai/pricing',
+  },
+  openGraph: {
+    title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
+    description: 'Legal AI Assistant pricing for Wansom AI. Choose from our flexible plans designed for legal professionals.',
+    type: 'website',
+    images: [
+      {
+        url: '/images/features-2.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Wansom AI Pricing Plans',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pricing - Wansom AI',
+    description: 'Legal AI Assistant pricing for Wansom AI',
+    images: ['/images/features-2.jpg'],
+  },
+};
+
+export default function Law360Page() {
+    return ( 
+        <Law360Components/>
+        
+     );
+}
