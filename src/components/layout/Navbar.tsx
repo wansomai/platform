@@ -62,6 +62,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   const aiPlatformItems = [
     { name: 'AI Assistant', href: '/ai-assistant' },
     { name: 'Draft & Review', href: '/ai-legal-drafting' },
+    { name: 'Legal Intelligence', href: '/law-360' },
     { name: 'Document Vault', href: '/document-vault' },
      { name: 'Workflows', href: '/#workflows' },
     { name: 'Knowledge Base', href: '/#knowledge-base' },

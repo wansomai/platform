@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PracticeArea, PRACTICE_AREA_LABELS } from '@/types/associates';
 import { CircleChevronLeft, Zap, Mail, Clock, CheckCircle, Globe } from 'lucide-react';
+import MultiCountrySelector from '@/components/commons/multi-country-selector';
 import { useAssociates } from '@/hooks/useAssociates';
 import { Card, CardContent } from '@/components/ui/card';
 import { premadeAssociates } from '@/lib/constants/premadeAssociates';
@@ -16,22 +17,6 @@ import LogoAnimation from '@/components/commons/LogoAnimation';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api';
 
-const JURISDICTION_OPTIONS: { code: string; name: string; flag: string }[] = [
-  { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
-  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿' },
-  { code: 'UG', name: 'Uganda', flag: '🇺🇬' },
-  { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
-  { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
-  { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
-  { code: 'RW', name: 'Rwanda', flag: '🇷🇼' },
-  { code: 'ET', name: 'Ethiopia', flag: '🇪🇹' },
-  { code: 'US', name: 'United States', flag: '🇺🇸' },
-  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
-  { code: 'IN', name: 'India', flag: '🇮🇳' },
-  { code: 'AU', name: 'Australia', flag: '🇦🇺' },
-  { code: 'CA', name: 'Canada', flag: '🇨🇦' },
-  { code: 'EU', name: 'European Union', flag: '🇪🇺' },
-];
 
 interface DigestSubscription {
   id: string;
@@ -65,6 +50,7 @@ function DigestSubscriptionForm({
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [jurisdictionSelectorOpen, setJurisdictionSelectorOpen] = useState(false);
 
   // Load existing subscription
   useEffect(() => {
@@ -92,12 +78,6 @@ function DigestSubscriptionForm({
   const toggleTopic = (topic: string) => {
     setSelectedTopics((prev) =>
       prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
-    );
-  };
-
-  const toggleJurisdiction = (code: string) => {
-    setSelectedJurisdictions((prev) =>
-      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
     );
   };
 
@@ -201,24 +181,14 @@ function DigestSubscriptionForm({
                     <p className="text-sm text-muted-foreground mt-1 mb-3">
                       Select the countries whose case law, regulations, and legal news you want to track
                     </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4 border rounded-lg max-h-64 overflow-y-auto">
-                      {JURISDICTION_OPTIONS.map((j) => (
-                        <div key={j.code} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`jurisdiction-${j.code}`}
-                            checked={selectedJurisdictions.includes(j.code)}
-                            onCheckedChange={() => toggleJurisdiction(j.code)}
-                          />
-                          <label
-                            htmlFor={`jurisdiction-${j.code}`}
-                            className="text-sm cursor-pointer flex items-center gap-1.5"
-                          >
-                            <span>{j.flag}</span>
-                            {j.name}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
+                    <MultiCountrySelector
+                      id="digest-jurisdictions"
+                      open={jurisdictionSelectorOpen}
+                      onToggle={() => setJurisdictionSelectorOpen(!jurisdictionSelectorOpen)}
+                      selectedValues={selectedJurisdictions}
+                      onChange={setSelectedJurisdictions}
+                      placeholder="Select jurisdictions..."
+                    />
                     <p className="text-sm text-muted-foreground mt-2">
                       {selectedJurisdictions.length} jurisdiction{selectedJurisdictions.length !== 1 ? 's' : ''} selected
                     </p>
@@ -228,7 +198,7 @@ function DigestSubscriptionForm({
                   <div>
                     <Label className="text-base flex items-center gap-2">
                       <Clock className="h-4 w-4" />
-                      Delivery Frequency
+                      How frequenctly do you want to receive updates?
                     </Label>
                     <div className="flex gap-3 mt-3">
                       <button
