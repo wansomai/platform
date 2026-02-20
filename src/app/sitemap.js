@@ -40,6 +40,7 @@ export default async function sitemap() {
     'solutions/litigation-lawyers',
     'solutions/ma-lawyers',
     'programs/law-schools',
+    'briefly-by-wansom',
   ].map((path) => ({
     url: `${baseUrl}/${path}`,
     lastModified: new Date(),

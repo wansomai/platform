@@ -4,11 +4,11 @@ import { LightBulbIcon } from '@heroicons/react/24/outline';
 
 export const premadeAssociates = [
    {
-    id: "law-360",
-    name: "Law 360",
+    id: "briefly-by-wansom",
+    name: "Briefly by Wansom",
     description:
       "Automatically delivers summarized legal news, case law updates, and regulatory changes from your selected jurisdictions to your inbox",
-    instructions: `Law 360 is a digest subscription service that automatically searches the web for recent legal news, case law updates, and regulatory changes specific to your selected jurisdictions and practice areas, then sends a professionally formatted summary directly to your email inbox.
+    instructions: `Briefly by Wansom is a digest subscription service that automatically searches the web for recent legal news, case law updates, and regulatory changes specific to your selected jurisdictions and practice areas, then sends a professionally formatted summary directly to your email inbox.
 
 Features:
 - Jurisdiction-specific legal news (e.g. Kenya Law, Tanzania Law, Uganda Law)

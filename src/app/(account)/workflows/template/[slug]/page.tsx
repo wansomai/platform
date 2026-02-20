@@ -101,7 +101,7 @@ function DigestSubscriptionForm({
       toast.success(
         subscription?.isActive
           ? 'Subscription updated!'
-          : 'Subscribed to Law 360!'
+          : 'Subscribed to Briefly by Wansom!'
       );
     } catch {
       // apiService handles error toasts automatically
@@ -117,7 +117,7 @@ function DigestSubscriptionForm({
       setSubscription((prev) =>
         prev ? { ...prev, isActive: false } : null
       );
-      toast.success('Unsubscribed from Law 360');
+      toast.success('Unsubscribed from Briefly by Wansom');
     } catch {
       // apiService handles error toasts automatically
     } finally {

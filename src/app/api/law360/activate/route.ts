@@ -27,7 +27,7 @@ export const POST = withErrorHandler(
 
     if (!LAW360_PLAN_CODE && !LAW360KENYA_PLAN_CODE) {
       return createErrorResponse(
-        new AppError('Law 360 plan not configured', 'PLAN_NOT_CONFIGURED', 500)
+        new AppError('Briefly by Wansom plan not configured', 'PLAN_NOT_CONFIGURED', 500)
       );
     }
 
@@ -91,7 +91,7 @@ export const POST = withErrorHandler(
     if (!planCode) {
       return createErrorResponse(
         new AppError(
-          `Law 360 ${isKenya ? 'Kenya' : 'USD'} plan not configured`,
+          `Briefly by Wansom ${isKenya ? 'Kenya' : 'USD'} plan not configured`,
           'PLAN_NOT_CONFIGURED',
           500
         )
@@ -99,7 +99,7 @@ export const POST = withErrorHandler(
     }
 
     // Initialize Paystack transaction
-    const reference = `LAW360-${user.id.slice(0, 8)}-${Date.now()}`;
+    const reference = `BRIEFLY-${user.id.slice(0, 8)}-${Date.now()}`;
 
     const paystackResponse = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
       method: 'POST',
@@ -125,7 +125,7 @@ export const POST = withErrorHandler(
             {
               display_name: 'Product',
               variable_name: 'product',
-              value: 'Law 360',
+              value: 'Briefly by Wansom',
             },
             {
               display_name: 'User',

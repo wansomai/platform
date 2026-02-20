@@ -1060,7 +1060,7 @@ export function sendPasswordResetEmail({
 }
 
 /**
- * Sends a Law 360 welcome email with credentials and subscription summary
+ * Sends a Briefly by Wansom welcome email with credentials and subscription summary
  */
 export function sendLaw360WelcomeEmail({
   email,
@@ -1082,7 +1082,7 @@ export function sendLaw360WelcomeEmail({
   const manageUrl = `${appUrl}/workflows/template/law-360`;
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
 
-  const subject = `Welcome to Law 360 - Your Login Credentials`;
+  const subject = `Welcome to Briefly by Wansom - Your Login Credentials`;
 
   const html = `
     <!DOCTYPE html>
@@ -1095,13 +1095,13 @@ export function sendLaw360WelcomeEmail({
       <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
           <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
-          <h1 style="color: white; font-size: 24px; margin: 12px 0 4px 0;">Welcome to Law 360</h1>
+          <h1 style="color: white; font-size: 24px; margin: 12px 0 4px 0;">Welcome to Briefly by Wansom</h1>
         </div>
 
         <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
           <p style="font-size: 15px;">Hello ${fullName},</p>
 
-          <p>Your Law 360 subscription has been activated! Here are your login credentials:</p>
+          <p>Your Briefly by Wansom subscription has been activated! Here are your login credentials:</p>
 
           <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 16px; margin: 16px 0; border-radius: 0 6px 6px 0;">
             <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Email:</strong> ${email}</p>
@@ -1143,7 +1143,7 @@ export function sendLaw360WelcomeEmail({
 }
 
 /**
- * Sends a confirmation email when a user subscribes to Law 360
+ * Sends a confirmation email when a user subscribes to Briefly by Wansom
  */
 export function sendDigestSubscriptionEmail({
   email,
@@ -1160,7 +1160,7 @@ export function sendDigestSubscriptionEmail({
   const manageUrl = `${appUrl}/workflows/template/law-360`;
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
 
-  const subject = `You're subscribed to ${frequencyLabel} Law 360`;
+  const subject = `You're subscribed to ${frequencyLabel} Briefly by Wansom`;
 
   const html = `
     <!DOCTYPE html>
@@ -1173,13 +1173,13 @@ export function sendDigestSubscriptionEmail({
       <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
           <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
-          <h1 style="color: white; font-size: 24px; margin: 12px 0 4px 0;">Law 360</h1>
+          <h1 style="color: white; font-size: 24px; margin: 12px 0 4px 0;">Briefly by Wansom</h1>
         </div>
 
         <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
           <p style="font-size: 15px;">Hello ${fullName},</p>
 
-          <p>You've successfully subscribed to <strong>Law 360</strong>, your personalized legal news digest powered by Wansom AI.</p>
+          <p>You've successfully subscribed to <strong>Briefly by Wansom</strong>, your personalized legal news digest powered by Wansom AI.</p>
 
           <h3 style="color: #0a4b5e; font-size: 15px;">What to Expect</h3>
           <p>Each digest will include:</p>
@@ -1203,7 +1203,7 @@ export function sendDigestSubscriptionEmail({
             <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
           </p>
-          <p>You're receiving this because you subscribed to Law 360 on Wansom.</p>
+          <p>You're receiving this because you subscribed to Briefly by Wansom.</p>
           <p><a href="${manageUrl}" style="color: #0a4b5e;">Unsubscribe</a></p>
         </div>
       </div>
@@ -1235,7 +1235,7 @@ export function sendLegalDigestEmail({
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const unsubscribeUrl = `${appUrl}/workflows/template/law-360`;
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
-  const subject = `Law 360 ${frequencyLabel} Digest: ${digest.headline}`;
+  const subject = `Briefly by Wansom ${frequencyLabel} Digest: ${digest.headline}`;
 
   const sectionsHtml = digest.sections
     .filter((s) => s.items.length > 0)
@@ -1292,7 +1292,7 @@ export function sendLegalDigestEmail({
       <div style="max-width: 640px; margin: 0 auto; padding: 20px;">
         <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
           <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
-          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">Law 360 - ${frequencyLabel} Digest</h1>
+          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">Briefly by Wansom - ${frequencyLabel}</h1>
           <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin: 0;">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
 
@@ -1318,7 +1318,7 @@ export function sendLegalDigestEmail({
             <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
             <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
           </p>
-          <p>You're receiving this because you subscribed to Law 360 on Wansom.</p>
+          <p>You're receiving this because you subscribed to Briefly by Wansom.</p>
           <p><a href="${unsubscribeUrl}" style="color: #0a4b5e;">Manage subscription</a></p>
         </div>
       </div>

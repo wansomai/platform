@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
           prisma.digestHistory.create({
             data: {
               subscriptionId: sub.id,
-              subject: `Law 360 ${sub.frequency === 'daily' ? 'Daily' : 'Weekly'} Digest: ${digest.headline}`,
+              subject: `Briefly by Wansom ${sub.frequency === 'daily' ? 'Daily' : 'Weekly'} Digest: ${digest.headline}`,
               contentSummary: digest.summary,
               sourceCount: digest.sources.length,
             },

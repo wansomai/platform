@@ -221,7 +221,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
           <DialogTitle className="text-xl">
             {step === 1 && 'Customize Your Legal Digest'}
             {step === 2 && 'Your Account Details'}
-            {step === 3 && 'Activate Law 360'}
+            {step === 3 && 'Activate Briefly by Wansom'}
           </DialogTitle>
           {/* Progress indicator */}
           <div className="flex items-center gap-2 pt-2">
@@ -456,7 +456,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
                 ) : (
                   <>
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Activate Law 360
+                    Activate Briefly by Wansom
                   </>
                 )}
               </Button>
