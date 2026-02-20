@@ -1,5 +1,6 @@
 // lib/data/blogAdapter.ts
 import { SanityPost, SanityLegalDocument } from './sanity';
+import { urlFor } from '../sanity';
 
 export function createSlug(title: string): string {
   return title
@@ -73,7 +74,16 @@ function portableTextToHtml(blocks: any[]): string {
 
       // Handle images
       if (block._type === 'image') {
-        const imageUrl = block.asset?.url || '';
+        // Use the resolved URL from the GROQ query, or fall back to urlFor for _ref-only assets
+        let imageUrl = block.asset?.url || '';
+        if (!imageUrl && block.asset) {
+          try {
+            imageUrl = urlFor(block.asset).url();
+          } catch {
+            imageUrl = '';
+          }
+        }
+        if (!imageUrl) return '';
         const alt = block.alt || 'Image';
         return `
           <div class="my-6 text-center">
