@@ -33,6 +33,14 @@ const CareersPageClient = () => {
       date: "1st December, 2025",
       description: "We are seeking a creative and data-driven Digital Marketer to join our growing team. The ideal candidate will help develop and implement innovative marketing strategies to increase brand awareness and drive customer acquisition for our AI-powered legal solutions.To apply,send your resume and cover letter to law@wansom.ai",
     },
+    {
+      id: 4,
+      title: "Legal Associate",
+      location: "Hybrid",
+      department: "Legal",
+      date: "1st December, 2025",
+      description: "We are looking for a qualified Legal Associate to join our team and help shape the future of AI-powered legal services. The ideal candidate holds an LLB or equivalent qualification, has a strong understanding of Nigerian law, and is passionate about the intersection of technology and legal practice. You will work closely with our product and AI teams to ensure our platform meets the highest legal standards, assist in developing legal content and workflows, and provide guidance on compliance and regulatory matters. To apply, send your resume, cover letter, and a brief note on how you see AI transforming legal practice in Nigeria to law@wansom.ai",
+    },
   ]);
 
   return (

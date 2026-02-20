@@ -1,6 +1,6 @@
 // src/lib/api.ts
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { getSession, signOut } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 import { toast } from 'sonner';
 
 // Retry configuration
@@ -153,13 +153,11 @@ apiClient.interceptors.response.use(
 
     // Handle 401 Unauthorized - session expired
     if (status === 401) {
-      toast.error(ERROR_MESSAGES.UNAUTHORIZED);
-      try {
-        await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
-      } catch (signOutError) {
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login?session=expired';
-        }
+      if (typeof window !== 'undefined') {
+        const currentPath = window.location.pathname + window.location.search;
+        window.dispatchEvent(
+          new CustomEvent('session-expired', { detail: { callbackUrl: currentPath } })
+        );
       }
       return Promise.reject(error);
     }
@@ -353,8 +351,12 @@ export const apiService = {
     if (!response.ok) {
       // Handle 401 specifically
       if (response.status === 401) {
-        toast.error(ERROR_MESSAGES.UNAUTHORIZED);
-        await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
+        if (typeof window !== 'undefined') {
+          const currentPath = window.location.pathname + window.location.search;
+          window.dispatchEvent(
+            new CustomEvent('session-expired', { detail: { callbackUrl: currentPath } })
+          );
+        }
         throw new Error(ERROR_MESSAGES.UNAUTHORIZED);
       }
 
@@ -414,7 +416,12 @@ export const apiService = {
       if (!response.ok) {
         // Handle 401 specifically
         if (response.status === 401) {
-          await signOut({ redirect: true, callbackUrl: '/login?session=expired' });
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname + window.location.search;
+            window.dispatchEvent(
+              new CustomEvent('session-expired', { detail: { callbackUrl: currentPath } })
+            );
+          }
           return;
         }
 

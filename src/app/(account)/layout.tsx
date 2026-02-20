@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/sheet";
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import OrgSwitcher from "@/components/sidebar/OrgSwitcher";
+import { SessionExpiryModal } from "@/components/session-expiry-modal";
 
 interface SidebarLinkProps {
   href: string;
@@ -468,6 +469,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Main content area */}
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+
+      {/* Session expiry modal — shown globally across all authenticated pages */}
+      <SessionExpiryModal />
     </div>
   );
 }
