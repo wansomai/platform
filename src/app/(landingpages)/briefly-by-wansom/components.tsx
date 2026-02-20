@@ -54,9 +54,9 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
             <button
               className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 md:mb-10 w-fit min-w-[130px]"
               onClick={onActivate}
-              aria-label="Try law 360 for free - Start your free trial"
+              aria-label="Try Briefly by Wansom for free - Start your free trial"
             >
-              TRY Law 360{" "}
+              TRY BRIEFLY{" "}
               <SquareArrowOutUpRight
                 className="w-5 h-5 text-white"
                 aria-hidden="true"
@@ -65,7 +65,7 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
               <button
               className="text-sm font-medium uppercase flex gap-1 items-center  text-black bg-transparent border-black border  rounded-md py-3 px-6 mb-10 w-fit min-w-[130px]"
               onClick={() => (window.location.href = "/demo")}
-              aria-label="Try Wansom AI for free - Start your free trial"
+              aria-label="Schedule a demo with Briefly by Wansom"
             >
               SCHEDULE A DEMO{" "}
               <SquareArrowOutUpRight
@@ -181,7 +181,7 @@ const StatSection = () => {
                 50+
               </h3>
               <p className="text-md text-gray-600">
-                Practise areas covered
+                PARTNER FIRMS AND LEGAL ORGANIZATIONS
               </p>
             </div>
 
@@ -191,7 +191,7 @@ const StatSection = () => {
                 97%
               </h3>
               <p className="text-md text-gray-600">
-  Customization and Accuracy Rate
+  Practice areas covered across multiple jurisdictions
               </p>
             </div>
           </div>
@@ -229,9 +229,9 @@ function CTASection({ onActivate }: { onActivate: () => void }) {
           <button
             className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
             onClick={onActivate}
-            aria-label="Activate Law 360 - Start your subscription"
+            aria-label="Activate Briefly by Wansom - Start your subscription"
           >
-            Activate Law 360{" "}
+            Activate Briefly
             <SquareArrowOutUpRight
               className="w-5 h-5 text-white"
               aria-hidden="true"

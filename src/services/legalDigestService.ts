@@ -153,7 +153,7 @@ Return ONLY valid JSON, no markdown code fences.`;
   } catch {
     // If JSON parsing fails, create a structured response from the raw text
     return {
-      headline: 'Law 360 Digest',
+      headline: 'Briefly',
       summary: text.slice(0, 300),
       sections: [
         {

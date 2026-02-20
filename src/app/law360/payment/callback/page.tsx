@@ -31,7 +31,7 @@ function Law360PaymentCallbackContent() {
           setStatus('success');
           setMessage(data.data.alreadyProcessed
             ? 'Payment was already processed successfully!'
-            : 'Law 360 Activated! Your legal intelligence digest is now active.');
+            : 'Briefly by Wansom Activated! Your legal intelligence digest is now active.');
         } else if (response.ok && data.data?.status) {
           setStatus('failed');
           setMessage(data.data?.message || 'Payment was not successful. Please try again.');
@@ -68,7 +68,7 @@ function Law360PaymentCallbackContent() {
               <div className="mx-auto mb-4">
                 <CheckCircle2 className="h-16 w-16 text-green-500" />
               </div>
-              <CardTitle className="text-green-700">Law 360 Activated!</CardTitle>
+              <CardTitle className="text-green-700">Briefly by Wansom Activated!</CardTitle>
               <CardDescription>{message}</CardDescription>
             </>
           )}
