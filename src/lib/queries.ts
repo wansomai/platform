@@ -48,7 +48,16 @@ export const postBySlugQuery = `*[_type == "post" && slug.current == $slug][0] {
     },
     alt
   },
-  body,
+  body[] {
+    ...,
+    _type == "image" => {
+      ...,
+      asset->{
+        _id,
+        url
+      }
+    }
+  },
   author->{
     _id,
     name,

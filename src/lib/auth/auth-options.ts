@@ -266,7 +266,22 @@ export const authOptions: NextAuthOptions = {
       }
     },
 
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
+      // If session update was triggered (user clicked "Continue Session" on the expiry modal),
+      // force-regenerate the access token regardless of its remaining lifetime
+      if (trigger === "update") {
+        const refreshedUser = {
+          id: token.userId as string,
+          email: token.email as string,
+          name: token.name as string,
+          role: token.role as string,
+          organizationId: token.organizationId as string,
+          organization: token.organization as { id: string; name: string },
+        } as CustomUser;
+        const newAccessToken = await generateAccessToken(refreshedUser);
+        return { ...token, accessToken: newAccessToken };
+      }
+
       // Initial sign in - save Google OAuth tokens to JWT
       if (account && user) {
         const accessToken = await generateAccessToken(user as CustomUser);
