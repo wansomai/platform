@@ -168,7 +168,7 @@ export function sendWelcomeEmail(user: { email: string; fullName?: string | null
           <p>Here's a qucik look at what you can do on the platform:</p>
           
           <div class="feature">
-            <h3>🤖 Create AI Associates</h3>
+            <h3>🤖 Create and Train AI Associates</h3>
             <p>Boost your productivity with AI teammates specialized in specific legal tasks.Create,train and use AI associates that adapt to your work style and help you complete tasks faster</p>
           </div>
           <div class="feature">
@@ -1079,7 +1079,7 @@ export function sendLaw360WelcomeEmail({
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const loginUrl = `${appUrl}/login`;
-  const manageUrl = `${appUrl}/workflows/template/law-360`;
+  const manageUrl = `${appUrl}/workflows/template/briefly-by-wansom`;
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
 
   const subject = `Welcome to Briefly by Wansom - Your Login Credentials`;

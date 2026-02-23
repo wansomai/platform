@@ -12,15 +12,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PracticeArea, PRACTICE_AREA_LABELS } from '@/types/associates';
-import { COUNTRIES } from '@/lib/country-picker/countries';
 import MultiCountrySelector from '@/components/commons/multi-country-selector';
 import { toast } from 'sonner';
 import {
   Globe,
   Clock,
   Mail,
-  ArrowLeft,
-  ArrowRight,
   CreditCard,
   Loader2,
   Eye,
@@ -34,7 +31,6 @@ interface ActivationModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-/** Derive a readable display name from an email address. */
 function getNameFromEmail(email: string): string {
   const local = email.split('@')[0];
   return local
@@ -43,7 +39,6 @@ function getNameFromEmail(email: string): string {
     .join(' ');
 }
 
-/** Generate a 12-char alphanumeric temporary password (no ambiguous chars). */
 function generateTempPassword(): string {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   let pwd = '';
@@ -54,8 +49,6 @@ function generateTempPassword(): string {
 }
 
 export default function ActivationModal({ open, onOpenChange }: ActivationModalProps) {
-  const [step, setStep] = useState(1);
-
   // Preferences
   const [jurisdictions, setJurisdictions] = useState<string[]>([]);
   const [frequency, setFrequency] = useState<'daily' | 'weekly'>('weekly');
@@ -69,13 +62,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
   const [emailChecked, setEmailChecked] = useState(false);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [isExistingUser, setIsExistingUser] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-
-  // Stored after auth — used in step 2 to activate
-  const [accessToken, setAccessToken] = useState('');
-  const [tempPassword, setTempPassword] = useState('');
-
-  // Step 2
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -86,13 +72,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     );
   };
 
-  const getJurisdictionNames = () =>
-    jurisdictions.map((code) => COUNTRIES.find((c) => c.value === code)?.title || code);
-
-  const getTopicLabels = () =>
-    topics.map((t) => (PRACTICE_AREA_LABELS as Record<string, string>)[t] || t);
-
-  // ─── Step 1 handlers ──────────────────────────────────────────────────────
+  // ─── Email check ───────────────────────────────────────────────────────────
 
   const handleEmailCheck = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -117,8 +97,9 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     }
   };
 
-  /** Authenticate (login or auto-register), store access token, advance to step 2. */
-  const handleStep1Next = async () => {
+  // ─── Activate (auth + subscribe + redirect) ────────────────────────────────
+
+  const handleActivate = async () => {
     if (jurisdictions.length === 0) {
       toast.error('Please select at least one jurisdiction');
       return;
@@ -131,16 +112,17 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
       toast.error('Please enter and verify your email address');
       return;
     }
+    if (isExistingUser && password.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
 
-    setIsAuthenticating(true);
+    setIsSubmitting(true);
     try {
       let token = '';
+      let tempPwd: string | undefined;
 
       if (isExistingUser) {
-        if (password.length < 8) {
-          toast.error('Password must be at least 8 characters');
-          return;
-        }
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -153,14 +135,13 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
         }
         token = data.data.access_token;
       } else {
-        // Auto-register — no extra fields needed
-        const pwd = generateTempPassword();
+        tempPwd = generateTempPassword();
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: email.trim(),
-            password: pwd,
+            password: tempPwd,
             fullName: getNameFromEmail(email.trim()),
           }),
         });
@@ -170,45 +151,30 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
           return;
         }
         token = data.data.access_token;
-        setTempPassword(pwd);
       }
 
-      setAccessToken(token);
-      setStep(2);
-    } catch {
-      toast.error('Network error. Please check your connection and try again.');
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
-
-  // ─── Step 2 handler ────────────────────────────────────────────────────────
-
-  const handleActivate = async () => {
-    setIsSubmitting(true);
-    try {
-      const res = await fetch('/api/law360/activate', {
+      const activateRes = await fetch('/api/law360/activate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           frequency,
           topics,
           jurisdictions,
-          ...(tempPassword ? { tempPassword } : {}),
+          ...(tempPwd ? { tempPassword: tempPwd } : {}),
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.message || data.error?.message || 'Something went wrong. Please try again.');
+      const activateData = await activateRes.json();
+      if (!activateRes.ok) {
+        toast.error(activateData.message || 'Something went wrong. Please try again.');
         return;
       }
 
-      if (data.data?.authorizationUrl) {
-        window.location.href = data.data.authorizationUrl;
+      if (activateData.data?.authorizationUrl) {
+        window.location.href = activateData.data.authorizationUrl;
       }
     } catch {
       toast.error('Network error. Please check your connection and try again.');
@@ -221,7 +187,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      setStep(1);
       setJurisdictions([]);
       setFrequency('weekly');
       setTopics([PracticeArea.GENERAL_PRACTICE]);
@@ -231,9 +196,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
       setEmailChecked(false);
       setIsCheckingEmail(false);
       setIsExistingUser(false);
-      setIsAuthenticating(false);
-      setAccessToken('');
-      setTempPassword('');
       setIsSubmitting(false);
       setJurisdictionSelectorOpen(false);
     }
@@ -246,278 +208,191 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">
-            {step === 1 ? 'Set Up Your Legal Digest' : 'Review & Activate'}
-          </DialogTitle>
-          <div className="flex items-center gap-2 pt-2">
-            {[1, 2].map((s) => (
-              <div
-                key={s}
-                className={`h-1.5 flex-1 rounded-full transition-colors ${
-                  s <= step ? 'bg-[#0a4b5e]' : 'bg-gray-200'
-                }`}
-              />
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground">Step {step} of 2</p>
+          <DialogTitle className="text-xl">Set Up Your Legal Digest</DialogTitle>
         </DialogHeader>
 
-        {/* ── Step 1: Preferences + Account ── */}
-        {step === 1 && (
-          <div className="space-y-5 py-2">
-            {/* Jurisdictions */}
-            <div>
-              <Label className="text-sm font-medium flex items-center gap-2">
-                <Globe className="h-4 w-4" />
-                Jurisdictions
-              </Label>
-              <p className="text-xs text-muted-foreground mt-1 mb-2">
-                Select countries whose legal updates you want to receive
-              </p>
-              <MultiCountrySelector
-                id="activation-jurisdictions"
-                open={jurisdictionSelectorOpen}
-                onToggle={() => setJurisdictionSelectorOpen(!jurisdictionSelectorOpen)}
-                selectedValues={jurisdictions}
-                onChange={setJurisdictions}
-                placeholder="Select jurisdictions..."
-              />
-            </div>
+        <div className="space-y-5 py-2">
+          {/* Jurisdictions */}
+          <div>
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              Jurisdictions
+            </Label>
+            <p className="text-xs text-muted-foreground mt-1 mb-2">
+              Select countries whose legal updates you want to receive
+            </p>
+            <MultiCountrySelector
+              id="activation-jurisdictions"
+              open={jurisdictionSelectorOpen}
+              onToggle={() => setJurisdictionSelectorOpen(!jurisdictionSelectorOpen)}
+              selectedValues={jurisdictions}
+              onChange={setJurisdictions}
+              placeholder="Select jurisdictions..."
+            />
+          </div>
 
-            {/* Frequency */}
-            <div>
-              <Label className="text-sm font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Delivery frequency
-              </Label>
-              <div className="flex gap-3 mt-2">
-                {(['daily', 'weekly'] as const).map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => setFrequency(f)}
-                    className={`flex-1 p-3 rounded-lg border-2 transition-colors text-left ${
-                      frequency === f
-                        ? 'border-[#0a4b5e] bg-[#0a4b5e]/5'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <p className="font-medium text-sm capitalize">{f}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {f === 'daily' ? 'Every morning' : 'Every Monday'}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Practice Areas */}
-            <div>
-              <Label className="text-sm font-medium flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                Practice Areas
-              </Label>
-              <p className="text-xs text-muted-foreground mt-1 mb-2">
-                Select the topics you want covered
-              </p>
-              <div className="grid grid-cols-2 gap-2 p-3 border rounded-lg max-h-32 overflow-y-auto">
-                {Object.entries(PRACTICE_AREA_LABELS).map(([area, label]) => (
-                  <div key={area} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`modal-topic-${area}`}
-                      checked={topics.includes(area)}
-                      onCheckedChange={() => toggleTopic(area)}
-                    />
-                    <label htmlFor={`modal-topic-${area}`} className="text-xs cursor-pointer">
-                      {label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="h-px bg-gray-100" />
-
-            {/* Email */}
-            <div>
-              <Label htmlFor="activation-email" className="text-sm font-medium">
-                Email Address
-              </Label>
-              <div className="flex gap-2 mt-1.5">
-                <Input
-                  id="activation-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailChecked) {
-                      setEmailChecked(false);
-                      setPassword('');
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !emailChecked) handleEmailCheck();
-                  }}
-                  placeholder="you@example.com"
-                  disabled={isCheckingEmail || isAuthenticating}
-                />
-                {!emailChecked && (
-                  <Button
-                    onClick={handleEmailCheck}
-                    disabled={isCheckingEmail || !email.trim()}
-                    className="shrink-0"
-                  >
-                    {isCheckingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify'}
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Existing user: password */}
-            {emailChecked && isExistingUser && (
-              <div className="space-y-3">
-                <div className="flex items-start gap-2 p-2.5 bg-blue-50 border border-blue-100 rounded-lg">
-                  <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-blue-700">
-                    Welcome back! Enter your Wansom password to continue.
+          {/* Frequency */}
+          <div>
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Delivery frequency
+            </Label>
+            <div className="flex gap-3 mt-2">
+              {(['daily', 'weekly'] as const).map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFrequency(f)}
+                  className={`flex-1 p-3 rounded-lg border-2 transition-colors text-left ${
+                    frequency === f
+                      ? 'border-[#0a4b5e] bg-[#0a4b5e]/5'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <p className="font-medium text-sm capitalize">{f}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {f === 'daily' ? 'Every morning' : 'Every Monday'}
                   </p>
-                </div>
-                <div>
-                  <Label htmlFor="activation-password" className="text-sm font-medium">
-                    Password
-                  </Label>
-                  <div className="relative mt-1.5">
-                    <Input
-                      id="activation-password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleStep1Next();
-                      }}
-                      placeholder="Your Wansom password"
-                      className="pr-10"
-                      disabled={isAuthenticating}
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+                </button>
+              ))}
+            </div>
+          </div>
 
-            {/* New user: reassurance */}
-            {emailChecked && !isExistingUser && (
-              <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg">
-                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-green-700">
-                  We&apos;ll create your account and email your login details to{' '}
-                  <strong>{email}</strong>.
-                </p>
-              </div>
-            )}
+          {/* Practice Areas */}
+          <div>
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Practice Areas
+            </Label>
+            <p className="text-xs text-muted-foreground mt-1 mb-2">
+              Select the topics you want covered
+            </p>
+            <div className="grid grid-cols-2 gap-2 p-3 border rounded-lg max-h-24 overflow-y-auto">
+              {Object.entries(PRACTICE_AREA_LABELS).map(([area, label]) => (
+                <div key={area} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`modal-topic-${area}`}
+                    checked={topics.includes(area)}
+                    onCheckedChange={() => toggleTopic(area)}
+                  />
+                  <label htmlFor={`modal-topic-${area}`} className="text-xs cursor-pointer">
+                    {label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
 
-            <Button
-              onClick={handleStep1Next}
-              className="w-full bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
-              disabled={isAuthenticating || isCheckingEmail || !emailChecked}
-            >
-              {isAuthenticating ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Please wait...
-                </>
-              ) : (
-                <>
-                  Activate Briefly
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </>
+          <div className="h-px bg-gray-100" />
+
+          {/* Email */}
+          <div>
+            <Label htmlFor="activation-email" className="text-sm font-medium">
+              Email Address
+            </Label>
+            <div className="flex gap-2 mt-1.5">
+              <Input
+                id="activation-email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailChecked) {
+                    setEmailChecked(false);
+                    setPassword('');
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !emailChecked) handleEmailCheck();
+                }}
+                placeholder="you@example.com"
+                disabled={isCheckingEmail || isSubmitting}
+              />
+              {!emailChecked && (
+                <Button
+                  onClick={handleEmailCheck}
+                  disabled={isCheckingEmail || !email.trim()}
+                  className="shrink-0"
+                >
+                  {isCheckingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Verify'}
+                </Button>
               )}
-            </Button>
-          </div>
-        )}
-
-        {/* ── Step 2: Review & Pay ── */}
-        {step === 2 && (
-          <div className="space-y-5 py-2">
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <h3 className="font-medium text-sm">Subscription Summary</h3>
-              <div className="space-y-2 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Account:</span>{' '}
-                  <span className="font-medium">{email}</span>
-                  {!isExistingUser && (
-                    <span className="ml-2 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
-                      New account
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Frequency:</span>{' '}
-                  <span className="font-medium capitalize">{frequency}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Jurisdictions:</span>{' '}
-                  <span className="font-medium">{getJurisdictionNames().join(', ')}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Topics:</span>{' '}
-                  <span className="font-medium">{getTopicLabels().join(', ')}</span>
-                </div>
-              </div>
             </div>
+          </div>
 
-            {!isExistingUser && (
-              <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-100 rounded-lg">
-                <Mail className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-amber-700">
-                  A welcome email with your login details will be sent to{' '}
-                  <strong>{email}</strong> after activation.
+          {/* Existing user: password */}
+          {emailChecked && isExistingUser && (
+            <div className="space-y-3">
+              <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg">
+                <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-primary">
+                  Welcome back! Enter your Wansom password to continue.
                 </p>
               </div>
+              <div>
+                <Label htmlFor="activation-password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <div className="relative mt-1.5">
+                  <Input
+                    id="activation-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleActivate();
+                    }}
+                    placeholder="Your Wansom password"
+                    className="pr-10"
+                    disabled={isSubmitting}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* New user: reassurance */}
+          {emailChecked && !isExistingUser && (
+            <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg">
+              <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+              <p className="text-sm text-green-700">
+                We&apos;ll create your account and email your login details to{' '}
+                <strong>{email}</strong>.
+              </p>
+            </div>
+          )}
+
+          <Button
+            onClick={handleActivate}
+            className="w-full bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
+            disabled={isSubmitting || isCheckingEmail || !emailChecked}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Please wait...
+              </>
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4 mr-2" />
+                Activate Briefly
+              </>
             )}
+          </Button>
 
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setStep(1)}
-                className="flex-1"
-                disabled={isSubmitting}
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-              <Button
-                onClick={handleActivate}
-                disabled={isSubmitting}
-                className="flex-1 bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Activate Briefly
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400">
-              <Lock className="h-3 w-3" />
-              <span>Secure payment · No spam · Cancel anytime</span>
-            </div>
+          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400">
+            <Lock className="h-3 w-3" />
+            <span>Secure payment · Cancel anytime</span>
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );
