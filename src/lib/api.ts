@@ -3,6 +3,29 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } f
 import { getSession } from 'next-auth/react';
 import { toast } from 'sonner';
 
+// ─── Token cache ────────────────────────────────────────────────────────────
+// Cache the access token for 5 minutes to avoid calling /api/auth/session on
+// every single API request. The cache is invalidated on 401 responses.
+const TOKEN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let _cachedToken: string | null = null;
+let _cacheExpiresAt = 0;
+
+async function getCachedToken(): Promise<string | null> {
+  if (_cachedToken && Date.now() < _cacheExpiresAt) {
+    return _cachedToken;
+  }
+  const session = await getSession();
+  _cachedToken = (session as any)?.accessToken ?? null;
+  _cacheExpiresAt = Date.now() + TOKEN_CACHE_TTL;
+  return _cachedToken;
+}
+
+function clearTokenCache() {
+  _cachedToken = null;
+  _cacheExpiresAt = 0;
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 // Retry configuration
 const RETRY_CONFIG = {
   maxRetries: 3,
@@ -105,11 +128,10 @@ const apiClient: AxiosInstance = axios.create({
 // Request interceptor to add auth token and retry count
 apiClient.interceptors.request.use(
   async (config: any) => {
-    // Get the session which contains the token
-    const session = await getSession();
+    const token = await getCachedToken();
 
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     // Initialize retry count if not present
@@ -153,6 +175,7 @@ apiClient.interceptors.response.use(
 
     // Handle 401 Unauthorized - session expired
     if (status === 401) {
+      clearTokenCache(); // force fresh token on next request
       if (typeof window !== 'undefined') {
         const currentPath = window.location.pathname + window.location.search;
         window.dispatchEvent(
@@ -274,14 +297,14 @@ export const apiService = {
   
   // Add stream support for SSE
   stream: async (url: string, data?: any, onMessage?: (data: any) => void, onError?: (error: any) => void) => {
-    const session = await getSession();
-    
+    const token = await getCachedToken();
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'text/event-stream',
-        'Authorization': session?.accessToken ? `Bearer ${session.accessToken}` : '',
+        'Authorization': token ? `Bearer ${token}` : '',
       },
       body: JSON.stringify(data),
     });
@@ -334,7 +357,7 @@ export const apiService = {
 
   // Download file as blob
   downloadFile: async (url: string): Promise<Blob> => {
-    const session = await getSession();
+    const token = await getCachedToken();
 
     const fullUrl = url.startsWith('http')
       ? url
@@ -343,7 +366,7 @@ export const apiService = {
     const response = await fetch(fullUrl, {
       method: 'GET',
       headers: {
-        'Authorization': session?.accessToken ? `Bearer ${session.accessToken}` : '',
+        'Authorization': token ? `Bearer ${token}` : '',
       },
       credentials: 'include',
     });
@@ -392,22 +415,22 @@ export const apiService = {
     onError?: (error: any) => void
   ) => {
     try {
-      const session = await getSession();
-      
-      if (!session?.accessToken) {
+      const token = await getCachedToken();
+
+      if (!token) {
         throw new Error('No authentication token available');
       }
-      
-      const fullUrl = url.startsWith('http') 
-        ? url 
+
+      const fullUrl = url.startsWith('http')
+        ? url
         : `${process.env.NEXT_PUBLIC_API_URL || 'https://wansom.ai'}${url}`;
-      
+
       const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'text/event-stream',
-          'Authorization': `Bearer ${session.accessToken}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(data),
         credentials: 'include', // Important for cookies
@@ -416,6 +439,7 @@ export const apiService = {
       if (!response.ok) {
         // Handle 401 specifically
         if (response.status === 401) {
+          clearTokenCache();
           if (typeof window !== 'undefined') {
             const currentPath = window.location.pathname + window.location.search;
             window.dispatchEvent(

@@ -19,8 +19,8 @@ export interface UserPlanInfo {
 
 // Default limits for free plan
 const FREE_PLAN_LIMITS: SubscriptionLimits = {
-  maxProjects: 2,
-  maxMessages: 10,
+  maxProjects: 10,
+  maxMessages: 500,
   hasProAccess: false,
 };
 
@@ -47,55 +47,44 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
       })
     ]);
 
-    // Get current usage
-    const [projectCount, messageCount] = await Promise.all([
-      // Count projects for the organization
-      prisma.project.count({
-        where: { organizationId },
-      }),
-      // Count messages in the last 30 days for this organization
-      prisma.message.count({
-        where: {
-          conversation: {
-            project: {
-              organizationId,
-            }
-          },
-          role: 'user', // Only count user messages
-          createdAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
-          },
-        },
-      }),
-    ]);
-
-    // Determine plan and limits
-    // Check both Subscription record AND organization accountType
-    // 'non_renewing' status means cancelled but still active until period end
+    // Determine plan from subscription + org type before counting usage
     const hasActiveSubscription = subscription &&
       ['active', 'non_renewing'].includes(subscription.status) &&
       ['professional', 'enterprise', 'pro'].includes(subscription.planName.toLowerCase());
 
     const isEnterpriseAccount = organization?.accountType === 'enterprise';
-
     const isProPlan = hasActiveSubscription || isEnterpriseAccount;
 
-    const planName = isEnterpriseAccount
-      ? 'enterprise'
-      : (subscription?.planName || 'free');
-    const status = isEnterpriseAccount
-      ? 'active'
-      : (subscription?.status || 'free');
-    const limits = isProPlan ? PRO_PLAN_LIMITS : FREE_PLAN_LIMITS;
+    const planName = isEnterpriseAccount ? 'enterprise' : (subscription?.planName || 'free');
+    const status = isEnterpriseAccount ? 'active' : (subscription?.status || 'free');
+
+    // Pro/Enterprise plans are unlimited — skip the count queries entirely
+    if (isProPlan) {
+      return {
+        planName,
+        status,
+        limits: PRO_PLAN_LIMITS,
+        currentUsage: { projectCount: 0, messageCount: 0 },
+      };
+    }
+
+    // Free plan — count usage to enforce limits
+    const [projectCount, messageCount] = await Promise.all([
+      prisma.project.count({ where: { organizationId } }),
+      prisma.message.count({
+        where: {
+          conversation: { project: { organizationId } },
+          role: 'user',
+          createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+        },
+      }),
+    ]);
 
     return {
       planName,
       status,
-      limits,
-      currentUsage: {
-        projectCount,
-        messageCount,
-      },
+      limits: FREE_PLAN_LIMITS,
+      currentUsage: { projectCount, messageCount },
     };
   } catch (error) {
     console.error('Error fetching user plan info:', error);

@@ -77,6 +77,9 @@ export async function POST(
     const { content, previewDocument } = createMessageSchema.parse(body);
 
     // Phase 1: Validate access and fetch context — do NOT create user message yet
+    // Start associate tools fetch immediately (runs in parallel with all other Phase 1 queries)
+    const associateToolsEarlyPromise = generateProjectAssociateTools(projectId);
+
     const accessCheckPromise = checkProjectAccess(projectId, userId);
 
     const conversationPromise = prisma.conversation.findFirst({
@@ -240,9 +243,9 @@ export async function POST(
           // Core document tools are ALWAYS available (no toggle needed)
           const hasCoreDocumentTools = true;
 
-          // Load AI Associates for this project (if enabled)
+          // Reuse the associate tools already fetched in Phase 1 (already resolving)
           const associateToolsPromise = settings.aiAssociates !== false
-            ? generateProjectAssociateTools(projectId)
+            ? associateToolsEarlyPromise
             : Promise.resolve([]);
 
           // Create the custom instructions
@@ -1156,12 +1159,12 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
             }
           });
 
-          // Save references if needed
+          // Save references and build response data — no extra findUnique needed
+          let savedReferences: Array<{ id: string; documentId: string; documentName: string; text: string; page: number | null }> = [];
           if (settings.citeSources && documentReferences.size > 0) {
-            const refPromises = Array.from(documentReferences).map((docId:any) => {
+            const refPromises = Array.from(documentReferences).map((docId: any) => {
               const doc = conversationDocuments.find(d => d.document.id === docId);
               if (!doc) return null;
-              
               return prisma.messageReference.create({
                 data: {
                   messageId: assistantMessage.id,
@@ -1170,25 +1173,19 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
                 }
               });
             });
-            
-            await Promise.all(refPromises.filter(Boolean));
+
+            const createdRefs = await Promise.all(refPromises.filter(Boolean));
+            savedReferences = createdRefs.filter(Boolean).map((ref: any) => {
+              const doc = conversationDocuments.find(d => d.document.id === ref.documentId);
+              return {
+                id: ref.id,
+                documentId: ref.documentId,
+                documentName: doc?.document.title || 'Unknown Document',
+                text: ref.text,
+                page: ref.page ?? null,
+              };
+            });
           }
-          // Fetch the complete message with references
-          const completeMessage = await prisma.message.findUnique({
-            where: { id: assistantMessage.id },
-            include: {
-              references: {
-                include: {
-                  document: {
-                    select: {
-                      id: true,
-                      title: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
           
           // Send the final message with references, report metadata, and document metadata
           controller.enqueue(
@@ -1201,13 +1198,7 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
                 content: formattedContent,
                 googleSearchEnabled: useGoogleSearch,
                 webSearchSources: webSearchSources.length > 0 ? webSearchSources : undefined,
-                references: completeMessage?.references.map((ref:any) => ({
-                  id: ref.id,
-                  documentId: ref.documentId,
-                  documentName: ref.document?.title || "Unknown Document",
-                  text: ref.text,
-                  page: ref.page,
-                })) || [],
+                references: savedReferences,
                 report: messageMetadata.report, // Include report metadata if present
                 document: messageMetadata.document, // Include inline document metadata if present
               }) + '\n'
