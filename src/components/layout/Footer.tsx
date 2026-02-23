@@ -16,6 +16,7 @@ const Footer = () => {
         { name: 'In-house counsels', href: '/solutions/in-house-counsel' },
         { name: 'Litigation Lawyers', href: '/solutions/litigation-lawyers' },
         { name: 'M&A Lawyers', href: '/solutions/ma-lawyers' },
+        { name: 'Legal Intelligence', href: '/briefly-by-wansom' },
     ]
 
     const resources = [
