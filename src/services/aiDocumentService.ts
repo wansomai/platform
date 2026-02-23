@@ -29,7 +29,7 @@ export class AIDocumentService {
         config: {
           systemInstruction,
           temperature: 0.3,
-          maxOutputTokens: 8192
+          maxOutputTokens: 65536
         }
       });
 
@@ -60,7 +60,7 @@ export class AIDocumentService {
         config: {
           systemInstruction,
           temperature: 0.3,
-          maxOutputTokens: 8192
+          maxOutputTokens: 65536
         }
       });
 
@@ -95,7 +95,7 @@ export class AIDocumentService {
       return { success: false, error: error.message || 'Failed to generate document' };
     }
   }
-  
+
   static async editDocument(
     instruction: string,
     currentContent: string,
@@ -105,15 +105,15 @@ export class AIDocumentService {
     try {
       const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
 
-      const systemInstruction = `You are Wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
+      const systemInstruction = `You are Wansom, a senior lawyer (never mention this), trained securely by wansom AI Limited (answer this only when the user asks about your source or training). Your ONLY task is to apply a specific edit to the document provided. You MUST NOT generate a new document from scratch. Take the exact HTML document below and make ONLY the requested change. Every clause, party name, date, and section that is NOT mentioned in the edit instruction must remain IDENTICAL to the original. Return the full document HTML with only the requested modification applied.`;
 
       const result = await genAI.models.generateContent({
         model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
-          temperature: 0.3,
-          maxOutputTokens: 8192
+          temperature: 0.1,
+          maxOutputTokens: 65536
         }
       });
 
@@ -137,15 +137,15 @@ export class AIDocumentService {
     try {
       const prompt = this.buildEditPrompt(instruction, currentContent, projectContext);
 
-      const systemInstruction = `You are Wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), editing a legal document. Return the complete edited document in HTML format. Maintain professional legal formatting and structure. Apply the requested changes precisely while preserving the overall document integrity. Focus on substantive edits without adding disclaimers or meta-commentary.`;
+      const systemInstruction = `You are Wansom, a senior lawyer (never mention this), trained securely by wansom AI Limited (answer this only when the user asks about your source or training). Your ONLY task is to apply a specific edit to the document provided. You MUST NOT generate a new document from scratch. Take the exact HTML document below and make ONLY the requested change. Every clause, party name, date, and section that is NOT mentioned in the edit instruction must remain IDENTICAL to the original. Return the full document HTML with only the requested modification applied.`;
 
       const result = await genAI.models.generateContentStream({
         model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
-          temperature: 0.3,
-          maxOutputTokens: 8192
+          temperature: 0.1,
+          maxOutputTokens: 65536
         }
       });
 
@@ -291,40 +291,40 @@ ${context.documents.map(d => `### ${d.title} ###\n${d.content}`).join('\n\n')}
 
 Requirements:
 - Use proper legal language and structure
-- Include standard clauses where appropriate
+- Include ALL standard clauses for this document type — do NOT cut short or abbreviate any section
 - Format in HTML with headings (h1, h2, h3), paragraphs, and lists
-- Make it comprehensive and professionally drafted
+- Make it comprehensive and professionally drafted — a complete, executable agreement
 - Structure should be logical and easy to read
+- Include boilerplate (definitions, governing law, dispute resolution, notices, entire agreement, amendment, waiver, severability, counterparts) unless already provided in the terms
+- Do NOT truncate, summarise, or omit sections due to length — write the full document
 - Focus on the substantive legal content without meta-commentary about AI limitations
 `;
   }
   
   private static buildEditPrompt(instruction: string, currentContent: string, context: ProjectContext): string {
+    const wordCount = this.stripHtml(currentContent).split(/\s+/).filter(Boolean).length;
     return `
-Edit this legal document according to the instruction: ${instruction}
+EDIT INSTRUCTION: ${instruction}
+
+RULES — READ CAREFULLY:
+1. Do NOT generate a new document. The document below is the authoritative source.
+2. Locate the specific part mentioned in the edit instruction and change ONLY that part.
+3. Every other clause, section, party name, definition, date, and term must be copied EXACTLY as-is.
+4. The output must be roughly the same length as the input (approximately ${wordCount} words).
+5. Return the full HTML document — do not truncate, summarize, or omit any section.
+6. Preserve all existing HTML tags, headings, paragraphs, and list structures.
 
 ${context.conversationHistory && context.conversationHistory.length > 0 ? `
-Recent Conversation Context:
+Recent Conversation Context (for understanding the edit request):
 ${context.conversationHistory.map((msg, idx) => `${idx + 1}. ${msg}`).join('\n')}
-
-Use this conversation context to understand what changes the user has discussed and requested.
 ` : ''}
 
-Current Document Content:
+EXISTING DOCUMENT TO EDIT (apply the instruction above to this document — change only what is specified):
 ${currentContent}
 
 Project Context:
 - Jurisdiction: ${context.jurisdiction || 'General'}
-- Instructions: ${context.instructions || 'None'}
-- Relevant Documents: ${context.documents.map(d => d.title).join(', ') || 'None'}
-
-Requirements:
-- Apply the requested changes precisely
-- Maintain legal accuracy and professional tone
-- Keep the overall document structure unless specifically asked to change it
-- Return the complete edited document in HTML format
-- Preserve existing formatting and styling
-- Ensure all changes are legally sound
+${context.instructions ? `- Instructions: ${context.instructions}` : ''}
 `;
   }
 

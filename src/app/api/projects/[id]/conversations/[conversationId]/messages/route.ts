@@ -363,8 +363,10 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
 
             CANVAS DOCUMENT CONTEXT: A legal document is currently open in the canvas editor.
 
-            - For analysis questions ("what's missing?", "review this", "any issues?"), provide analysis and suggestions in your response
-            - If the user requests changes ("add a clause", "update the terms", "modify section X"), use the editCanvasDocument tool
+            TOOL SELECTION RULES (strictly follow these):
+            - If the user requests ANY change to the document — no matter how small (a date, a name, a clause, a number) — call editCanvasDocument. Examples: "change the date", "update the party name", "add a termination clause", "remove section 4".
+            - Do NOT call draftNewDocument when a canvas document is already open. That tool replaces the entire document. Use it only when the canvas is empty.
+            - For analysis or questions ("what's missing?", "review this", "any issues?") — answer in your response text, do not call any canvas tool.
 
             The current canvas document content is included in the context below for your reference.
             `;
@@ -401,7 +403,7 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
             ? `**AVAILABLE AGENTS**: Use legalDocumentAgent for document drafting/review/search, searchAgent for web research.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
           When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
             : `**DOCUMENT TOOLS**: You have generateDocumentInline (drafting documents inline — preferred for most requests), reviewDocument (legal review/analysis), and searchProjectDocuments (search project docs).
-          ${isCanvasMode ? `Canvas tools also available: draftNewDocument (complex docs to canvas), editCanvasDocument (modify canvas doc).` : ''}`}
+          ${isCanvasMode ? `Canvas tools also available: ${canvasDocument ? `editCanvasDocument (apply targeted edits to the open canvas document — use for ALL edit requests), draftNewDocument (create a NEW document in canvas — only use when canvas is empty)` : `draftNewDocument (create a new document in canvas), editCanvasDocument (edit existing canvas document)`}.` : ''}`}
           Format: PDF for final docs, DOCX for drafts (default if unsure), MD for notes/analysis.
           Before generating, ensure you have all required information — ask if not.
 

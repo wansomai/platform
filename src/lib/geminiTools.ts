@@ -84,15 +84,17 @@ export const generateDocumentInlineTool = {
 
 export const draftNewDocumentTool = {
   name: "draftNewDocument",
-  description: `Creates a new legal document in the canvas editor.
+  description: `Creates a BRAND NEW legal document in the canvas editor when no document currently exists there.
 
-  **WHEN TO USE**: Use this for complex documents or when canvas editing is needed:
-  - Complex documents (10+ pages, multiple sections)
-  - User explicitly requests canvas/editor
-  - Document needs extensive manual editing
-  - User is already working in canvas mode
+  **WHEN TO USE**: Only for creating a NEW document from scratch:
+  - Canvas editor is empty (no existing document)
+  - User explicitly asks to create a new document in canvas
+  - Complex documents (10+ pages) that need canvas editing
 
-  **DEFAULT BEHAVIOR**: For most cases, use generateDocumentInline instead - it's faster and better UX.
+  **⚠️ CRITICAL — DO NOT USE when a canvas document is already open.**
+  If the user is asking to modify, edit, update, or change any part of an existing canvas document, use editCanvasDocument instead. This tool replaces the entire canvas content.
+
+  **DEFAULT BEHAVIOR**: For most document requests, use generateDocumentInline instead — it's faster and better UX.
 
   CRITICAL: Only call this function when you have ALL required information to create a complete, professional legal document.
 
@@ -144,15 +146,20 @@ export const draftNewDocumentTool = {
 
 export const editCanvasDocumentTool = {
   name: "editCanvasDocument",
-  description: `Modifies the existing legal document currently open in the canvas editor.
+  description: `Applies targeted edits to the existing legal document open in the canvas editor.
 
-  Use this when the user requests changes to the current document, such as:
-  - Adding new clauses or sections
-  - Modifying existing terms
+  **ALWAYS use this tool when a canvas document is open and the user asks for ANY modification**, including:
+  - Changing a date, name, number, or any specific value ("change the effective date to…")
+  - Adding a new clause or section
   - Removing or replacing content
-  - Updating party names or details
+  - Updating party names, addresses, or details
+  - Modifying existing terms or conditions
+  - Any other change, no matter how small
 
-  Be specific in your changeDescription about what to modify.`,
+  **NEVER use draftNewDocument for edits** — that tool replaces the entire canvas content with a new document.
+
+  In changeDescription, describe the specific change precisely (e.g. "Change the effective date from [current] to 10 March 2025").
+  In targetSection, name the section/clause where the change is located if known (e.g. "Effective Date", "Payment Terms").`,
 
   parameters: {
     type: Type.OBJECT,
