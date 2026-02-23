@@ -62,9 +62,9 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
   const aiPlatformItems = [
     { name: 'AI Assistant', href: '/ai-assistant' },
     { name: 'Draft & Review', href: '/ai-legal-drafting' },
-    { name: 'Briefly', href: '/briefly-by-wansom' },
     { name: 'Document Vault', href: '/document-vault' },
      { name: 'Workflows', href: '/#workflows' },
+     { name: 'Legal Intelligence', href: '/briefly-by-wansom' },
     { name: 'Knowledge Base', href: '/#knowledge-base' },
   ]
     const solutions = [
@@ -73,7 +73,7 @@ const Navbar = ({ darkmode = false }: NavbarProps) => {
     { name: 'M&A Lawyers', href: '/solutions/ma-lawyers' },
     // { name: 'Judiciary & Courts', href: '/ai-due-diligence' },
  
-  ]
+  ] 
       const resources = [
     { name: 'Articles ', href: '/blogs' },
     // { name: 'Legal Templates', href: '/legal-documents' },

@@ -258,6 +258,19 @@ export const JURISDICTIONS: Jurisdiction[] = [
     isPopular: false
   },
 
+  // Democratic Republic of the Congo
+  {
+    id: 'cd',
+    name: 'Democratic Republic of the Congo',
+    country: 'Democratic Republic of the Congo',
+    region: 'Africa',
+    legalSystem: 'civil-law',
+    citationStyle: 'local',
+    courtSystem: ['Supreme Court', 'Court of Appeal', 'High Court', 'District Courts'],
+    languages: ['French', 'Lingala', 'Swahili', 'Tshiluba', 'Kikongo'],
+    isPopular: false
+  },
+
   // Rwanda
   {
     id: 'rw',
