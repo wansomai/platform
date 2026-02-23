@@ -757,7 +757,7 @@ export function ChatInput({
           >
             {/* Left side icons - show in all modes */}
             <div
-              className={`absolute flex items-center gap-1 z-10 w-full ${
+              className={`absolute flex items-center gap-2 z-10 w-full ${
                 homepageMode ? "left-6 bottom-3" : "left-6 bottom-2"
               }`}
             >
@@ -773,7 +773,7 @@ export function ChatInput({
                     : "Attach files"
                 }
               >
-                <Paperclip className="h-6 w-6 text-gray-500" />
+                <Paperclip className="h-4 w-4 text-gray-500" />
               </Button>
 
               {/* Tools Dropdown */}
@@ -785,15 +785,15 @@ export function ChatInput({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 w-fit px-2 rounded-md hover:bg-gray-100"
+                    className="h-8 w-8 sm:w-fit sm:px-2 p-0 rounded-md hover:bg-gray-100"
                     title={
                       homepageMode
                         ? "AI Tools (preview - will be configurable after creating workspace)"
                         : "AI Tools"
                     }
                   >
-                    <SlidersHorizontal className="h-6 w-6 text-gray-500" />{" "}
-                    Tools
+                    <SlidersHorizontal className="h-4 w-4 text-gray-500" />
+                    <span className="hidden sm:inline">Tools</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -986,14 +986,15 @@ export function ChatInput({
               >
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="h-8 w-8 p-0 rounded-md  flex items-center justify-center hover:bg-gray-100"
+                    className="h-8 w-8 sm:w-fit sm:px-2 p-0 rounded-md flex items-center gap-1 justify-center hover:bg-gray-100 border border-input bg-background"
                     title={
                       currentJurisdictions.length > 0
                         ? `${currentJurisdictions.length} jurisdiction${currentJurisdictions.length !== 1 ? 's' : ''} selected`
                         : "Select jurisdiction"
                     }
                   >
-                    <Globe className="h-5 w-5 text-gray-500" />
+                    <Globe className="h-4 w-4 text-gray-500" />
+                    <span className="hidden sm:inline text-sm text-gray-600">Jurisdictions</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -1021,11 +1022,12 @@ export function ChatInput({
                 >
                   <DropdownMenuTrigger asChild>
                     <button
-                      className="h-8 w-8 p-0 rounded-md flex items-center justify-center hover:bg-gray-100"
+                      className="h-8 w-8 sm:w-fit sm:px-2 p-0 rounded-md flex items-center gap-1 justify-center hover:bg-gray-100 border border-input bg-background"
                       title="Select AI Associate"
                       disabled={isLoadingAssociates}
                     >
-                      <Zap className="h-5 w-5 text-gray-500" />
+                      <Zap className="h-4 w-4 text-gray-500" />
+                      <span className="hidden sm:inline text-sm text-gray-600">Workflows</span>
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -1126,11 +1128,11 @@ export function ChatInput({
 
               {/* Vault Documents Button */}
               <button
-                className="h-8 w-8 p-0 rounded-md flex items-center justify-center hover:bg-gray-100"
+                className="h-8 w-8 p-0 rounded-md flex items-center justify-center hover:bg-gray-100 border border-input bg-background"
                 title="Add documents from vault"
                 onClick={() => setShowVaultModal(true)}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4 text-gray-500">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
                 </svg>
               </button>

@@ -15,8 +15,20 @@ import { useAsyncOperation, useFormState } from '@/hooks/useAsyncOperation';
 interface RegisterFormData {
   email: string;
   password: string;
-  fullName: string;
-  organizationName: string;
+}
+
+function getNameFromEmail(email: string): string {
+  const local = email.split('@')[0];
+  return local
+    .split(/[._-]/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function getOrgFromEmail(email: string): string {
+  const domain = email.split('@')[1] || '';
+  const name = domain.split('.')[0] || 'My Organization';
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 function RegisterPageContent() {
@@ -30,14 +42,11 @@ function RegisterPageContent() {
   const { data: formData, updateField } = useFormState<RegisterFormData>({
     email: invitationEmail ? decodeURIComponent(invitationEmail) : '',
     password: '',
-    fullName: '',
-    organizationName: '',
   });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    updateField(name as keyof RegisterFormData, value);
+    updateField(e.target.name as keyof RegisterFormData, e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,15 +58,13 @@ function RegisterPageContent() {
       const registrationData: any = {
         email: formData.email,
         password: formData.password,
-        fullName: formData.fullName,
+        fullName: getNameFromEmail(formData.email),
       };
 
-      // Add invitationToken if present
       if (invitationToken) {
         registrationData.invitationToken = invitationToken;
       } else {
-        // Only add organizationName if not invited
-        registrationData.organizationName = formData.organizationName;
+        registrationData.organizationName = getOrgFromEmail(formData.email);
       }
 
       const response = await fetch('/api/auth/register', {
@@ -195,24 +202,6 @@ function RegisterPageContent() {
 
           <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </Label>
-              <Input
-                id="fullName"
-                name="fullName"
-                type="text"
-                autoComplete="name"
-                required
-                value={formData.fullName}
-                onChange={handleChange}
-                className="mt-1"
-                placeholder="John Doe"
-                disabled={isLoading}
-              />
-            </div>
-
-            <div>
               <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </Label>
@@ -235,25 +224,6 @@ function RegisterPageContent() {
                 </p>
               )}
             </div>
-
-            {!invitationToken && (
-              <div>
-                <Label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
-                  Organization Name
-                </Label>
-                <Input
-                  id="organizationName"
-                  name="organizationName"
-                  type="text"
-                  required={!invitationToken}
-                  value={formData.organizationName}
-                  onChange={handleChange}
-                  className="mt-1"
-                  placeholder="Your Company"
-                  disabled={isLoading}
-                />
-              </div>
-            )}
 
             <div>
               <Label htmlFor="password" className="block text-sm font-medium text-gray-700">

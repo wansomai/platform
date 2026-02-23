@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { createApiResponse, createErrorResponse, createBadRequestResponse } from '@/lib/api/response';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 import { AppError } from '@/types/error';
+import { sendEmail } from '@/lib/email-service';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const LAW360_PLAN_CODE = process.env.LAW360_PLAN_CODE;
@@ -15,6 +16,7 @@ const activateSchema = z.object({
   frequency: z.enum(['daily', 'weekly']),
   topics: z.array(z.string()).min(1, 'Select at least one topic'),
   jurisdictions: z.array(z.string()).min(1, 'Select at least one jurisdiction'),
+  tempPassword: z.string().optional(),
 });
 
 export const POST = withErrorHandler(
@@ -40,7 +42,7 @@ export const POST = withErrorHandler(
       );
     }
 
-    const { frequency, topics, jurisdictions } = parsed.data;
+    const { frequency, topics, jurisdictions, tempPassword } = parsed.data;
 
     // Get user and organization
     const user = await prisma.user.findUnique({
@@ -80,6 +82,37 @@ export const POST = withErrorHandler(
           isActive: true,
         },
       });
+    }
+
+    // Send welcome email for new auto-registered users
+    if (tempPassword) {
+      const resetUrl = `${APP_URL}/forgot-password`;
+      await sendEmail({
+        to: user.email,
+        subject: 'Welcome to Briefly by Wansom — Your Login Details',
+        html: `
+          <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a;">
+            <div style="background:#0a4b5e;padding:24px 32px;">
+              <h1 style="color:#fff;margin:0;font-size:22px;">Briefly by Wansom</h1>
+            </div>
+            <div style="padding:32px;">
+              <p style="font-size:16px;">Hi ${user.fullName || user.email},</p>
+              <p>Your Briefly by Wansom subscription is now active. We created a Wansom account for you so you can manage your digest and access your workspace.</p>
+              <div style="background:#f5f5f5;border-radius:8px;padding:16px 20px;margin:24px 0;">
+                <p style="margin:0 0 6px;font-size:13px;color:#666;">Your login details</p>
+                <p style="margin:0 0 4px;"><strong>Email:</strong> ${user.email}</p>
+                <p style="margin:0;"><strong>Temporary password:</strong> <code style="background:#e8e8e8;padding:2px 6px;border-radius:4px;font-size:14px;">${tempPassword}</code></p>
+              </div>
+              <p style="font-size:14px;color:#555;">For security, please update your password as soon as you log in.</p>
+              <a href="${resetUrl}" style="display:inline-block;margin-top:8px;padding:12px 24px;background:#0a4b5e;color:#fff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
+                Set a New Password
+              </a>
+              <hr style="border:none;border-top:1px solid #eee;margin:32px 0;">
+              <p style="font-size:13px;color:#888;">Your first digest will arrive ${frequency === 'daily' ? 'tomorrow morning' : 'next Monday'}. Questions? Reply to this email.</p>
+            </div>
+          </div>
+        `,
+      }).catch((err) => console.error('Failed to send Briefly welcome email:', err));
     }
 
     // Determine pricing based on jurisdiction
