@@ -388,10 +388,10 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             )}
           </Button>
 
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400">
+          {/* <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400">
             <Lock className="h-3 w-3" />
             <span>Secure payment · Cancel anytime</span>
-          </div>
+          </div> */}
         </div>
       </DialogContent>
     </Dialog>
