@@ -734,7 +734,7 @@ export default function VaultPage() {
             
             {/* Selected Documents Actions */}
             {selectedDocuments.length > 0 && (
-              <div className="flex flex-wrap items-center justify-between bg-blue-50 p-4 rounded-lg gap-2">
+              <div className="flex flex-wrap items-center justify-between bg-green-50 p-4 rounded-lg gap-2">
                 <div className="flex items-center">
                   <span className="font-medium">{selectedDocuments.length} selected</span>
                 </div>

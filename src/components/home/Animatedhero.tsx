@@ -225,7 +225,7 @@ const AnimatedLegalInterface = () => {
               <div
                 className={`hidden md:flex items-center  space-x-3 mt-6 p-3 bg-gray-50 rounded-lg transition-all duration-200 ${
                   highlightedFile === "contract"
-                    ? "ring-2 ring-[#355e66] bg-blue-50 justify-start"
+                    ? "ring-2 ring-[#355e66] bg-green-50 justify-start"
                     : ""
                 }`}
               >
@@ -233,7 +233,7 @@ const AnimatedLegalInterface = () => {
                   className={`w-8 h-8 transition-colors duration-200 ${
                     highlightedFile === "contract"
                       ? "text-[#355e66]"
-                      : "text-blue-600"
+                      : "text-green-600"
                   }`}
                 />
                 <div className="flex-1">
@@ -300,7 +300,7 @@ const AnimatedLegalInterface = () => {
                 <button className="flex-1 text-gray-500 hover:text-gray-700 transition-colors py-3 px-4 text-sm border-r">
                   Context
                 </button>
-                <button className="flex-1 text-[#355e66] border-b-2 border-[#355e66] font-medium py-3 px-4 text-sm bg-blue-50 border-r">
+                <button className="flex-1 text-[#355e66] border-b-2 border-[#355e66] font-medium py-3 px-4 text-sm bg-green-50 border-r">
                   Documents
                 </button>
                 <button className="flex-1 text-gray-500 hover:text-gray-700 transition-colors py-3 px-4 text-sm">

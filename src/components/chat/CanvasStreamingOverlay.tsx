@@ -128,12 +128,12 @@ export const CanvasStreamingOverlay: React.FC<CanvasStreamingOverlayProps> = ({
         };
       default:
         return {
-          bg: 'bg-blue-500/10',
-          border: 'border-blue-200',
-          text: 'text-blue-900',
-          iconBg: 'bg-blue-100',
-          iconText: 'text-blue-600',
-          accent: 'bg-blue-500'
+          bg: 'bg-green-500/10',
+          border: 'border-green-200',
+          text: 'text-green-900',
+          iconBg: 'bg-green-100',
+          iconText: 'text-green-600',
+          accent: 'bg-green-500'
         };
     }
   };

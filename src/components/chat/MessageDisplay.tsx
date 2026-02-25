@@ -237,7 +237,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
           blockquote({ node, children, ...props }) {
             return (
               <blockquote
-                className="border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-50 rounded-r break-words italic text-gray-700"
+                className="border-l-4 border-green-500 pl-4 py-2 my-4 bg-green-50 rounded-r break-words italic text-gray-700"
                 {...props}
               >
                 {children}

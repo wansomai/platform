@@ -631,7 +631,7 @@ export function UploadDocumentModal({
                       : isAttached
                       ? "bg-green-50 hover:bg-green-100"
                       : isNewlySelected
-                      ? "bg-blue-50 hover:bg-blue-100"
+                      ? "bg-green-50 hover:bg-green-100"
                       : "hover:bg-gray-50"
                   }`}
                   onClick={() => !isBeingRemoved && toggleDocumentSelection(doc.id)}

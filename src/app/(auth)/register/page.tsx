@@ -145,12 +145,12 @@ function RegisterPageContent() {
           </div>
 
           {invitationToken && (
-            <div className="mb-6 rounded-md bg-blue-50 border border-blue-200 p-4">
+            <div className="mb-6 rounded-md bg-green-50 border border-green-200 p-4">
               <div className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <Mail className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-700">You've been invited!</p>
-                  <p className="text-blue-600">
+                  <p className="font-medium text-green-700">You've been invited!</p>
+                  <p className="text-green-600">
                     Complete your registration to join the organization.
                   </p>
                 </div>

@@ -53,8 +53,8 @@ export function ConfirmationDialog({
         };
       case 'info':
         return {
-          icon: <Info className="h-5 w-5 text-blue-500" />,
-          iconBgColor: 'bg-blue-50',
+          icon: <Info className="h-5 w-5 text-green-500" />,
+          iconBgColor: 'bg-green-50',
           buttonVariant: 'default' as const,
           defaultConfirmText: 'Confirm'
         };

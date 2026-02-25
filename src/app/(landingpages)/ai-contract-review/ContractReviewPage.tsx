@@ -193,7 +193,7 @@ const ContractReviewPage = () => {
                                  <button className="flex-1 text-gray-500 hover:text-gray-700 transition-colors py-3 px-4 text-sm border-r">
                                    Context
                                  </button>
-                                 <button className="flex-1 text-[#355e66] border-b-2 border-[#355e66] font-medium py-3 px-4 text-sm bg-blue-50 border-r">
+                                 <button className="flex-1 text-[#355e66] border-b-2 border-[#355e66] font-medium py-3 px-4 text-sm bg-green-50 border-r">
                                    Documents
                                  </button>
                                  <button className="flex-1 text-gray-500 hover:text-gray-700 transition-colors py-3 px-4 text-sm">

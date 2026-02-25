@@ -21,10 +21,10 @@ const notificationStyles = {
   },
   info: {
     icon: AlertCircle,
-    bgColor: 'bg-blue-50',
-    textColor: 'text-blue-800',
-    borderColor: 'border-blue-200',
-    iconColor: 'text-blue-400'
+    bgColor: 'bg-green-50',
+    textColor: 'text-green-800',
+    borderColor: 'border-green-200',
+    iconColor: 'text-green-400'
   }
 }
 
