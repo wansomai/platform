@@ -1,146 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
-import { hasOrganizationPermission, isOrganizationOwner } from "@/lib/auth/permissions";
-import { OrganizationPermission } from "@/lib/constants/permissions";
+import { isOrganizationOwner } from "@/lib/auth/permissions";
 import { AccountType } from "@/lib/constants/roles";
-import { sendUpgradeApprovalEmail } from "@/lib/email-service";
-import crypto from "crypto";
 
 /**
  * POST /api/organization/upgrade
- * Upgrade a personal organization to enterprise
- * Only the organization owner can perform this action
+ * Redirects callers to the Paystack self-serve checkout flow.
+ * The admin-approval flow has been replaced by instant Paystack seat billing.
  */
-export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  // Get current user's organization
-  const currentUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!currentUser?.organizationId) {
-    return NextResponse.json(
-      { error: 'User organization not found' },
-      { status: 404 }
-    );
-  }
-
-  const organizationId = currentUser.organizationId;
-
-  // Check if user has permission to upgrade (owner only)
-  const hasPermission = await hasOrganizationPermission(
-    userId,
-    organizationId,
-    OrganizationPermission.UPGRADE_ACCOUNT
+export const POST = withErrorHandler(withAuth(async (_request: NextRequest, _userId: string) => {
+  return NextResponse.json(
+    {
+      error: 'Please use the payment checkout to upgrade to the Teams plan.',
+      redirectTo: '/payment/teams',
+    },
+    { status: 400 }
   );
-
-  if (!hasPermission) {
-    return NextResponse.json(
-      { error: 'Only organization owners can upgrade accounts' },
-      { status: 403 }
-    );
-  }
-
-  // Get organization details
-  const organization = await prisma.organization.findUnique({
-    where: { id: organizationId },
-    select: {
-      id: true,
-      name: true,
-      accountType: true,
-      ownerId: true,
-      upgradeRequestToken: true,
-      upgradeRequestedAt: true
-    }
-  });
-
-  if (!organization) {
-    return NextResponse.json(
-      { error: 'Organization not found' },
-      { status: 404 }
-    );
-  }
-
-  // Check if already enterprise
-  if (organization.accountType === AccountType.ENTERPRISE) {
-    return NextResponse.json(
-      {
-        error: 'Organization is already an enterprise account',
-        organization: {
-          id: organization.id,
-          name: organization.name,
-          accountType: organization.accountType
-        }
-      },
-      { status: 400 }
-    );
-  }
-
-  // Check if there's already a pending upgrade request
-  if (organization.upgradeRequestToken && organization.upgradeRequestedAt) {
-    return NextResponse.json(
-      {
-        error: 'An upgrade request is already pending for this organization',
-        status: 'pending',
-        requestedAt: organization.upgradeRequestedAt,
-        message: 'Your upgrade request is being reviewed by our team. We will contact you soon.'
-      },
-      { status: 409 } // 409 Conflict
-    );
-  }
-
-  // Get requester details
-  const requester = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      email: true,
-      fullName: true
-    }
-  });
-
-  if (!requester) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Generate approval token
-  const approvalToken = crypto.randomBytes(32).toString('hex');
-
-  // Update organization with upgrade request
-  await prisma.organization.update({
-    where: { id: organizationId },
-    data: {
-      upgradeRequestToken: approvalToken,
-      upgradeRequestedAt: new Date()
-    }
-  });
-
-  // Send approval email to admin
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://wansom.ai';
-  const approvalUrl = `${baseUrl}/api/organization/upgrade/approve?token=${approvalToken}`;
-  const adminEmail = process.env.ADMIN_EMAIL || 'law@wansom.ai';
-
-  try {
-    await sendUpgradeApprovalEmail({
-      adminEmail,
-      organizationName: organization.name,
-      requesterName: requester.fullName || requester.email,
-      requesterEmail: requester.email,
-      approvalUrl
-    });
-  } catch (emailError) {
-    console.error('Failed to send upgrade approval email:', emailError);
-    // Don't fail the request if email fails
-  }
-
-  return NextResponse.json({
-    success: true,
-    message: 'Upgrade request submitted successfully. An admin will review your request shortly.',
-    status: 'pending'
-  });
 }));
 
 /**

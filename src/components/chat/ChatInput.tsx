@@ -1301,12 +1301,10 @@ export function ChatInput({
       <ProAccessModal
         isOpen={showProAcess}
         onClose={() => setShowProAccess(false)}
-        onRequestAccess={handleRequestProAccess}
-        isLoading={isUpgrading}
         errorMessage={
           projectRequiresUpgrade
-            ? "You have reached your workspace limit. Request Pro access to create unlimited workspaces."
-            : "You have reached your message limit. Request Pro access to send unlimited messages."
+            ? "You have reached your workspace limit. Upgrade to create unlimited workspaces."
+            : "You have reached your message limit. Upgrade to send unlimited messages."
         }
         userData={{
           name: session?.user?.name || "",

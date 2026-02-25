@@ -183,9 +183,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       <ProAccessModal
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
-        onRequestAccess={handleRequestProAccess}
-        isLoading={isUpgrading}
-        errorMessage="You have reached your project limit (1 project for free plan). Request Pro access to create unlimited projects."
+        errorMessage="You have reached your project limit (1 project for free plan). Upgrade to create unlimited projects."
         userData={{
           name: session?.user?.name || '',
           email: session?.user?.email || '',

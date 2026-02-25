@@ -66,13 +66,10 @@ const Page = () => {
     currentOrgId,
     orgsLoading,
     isSwitching,
-    isUpgrading,
     isDowngrading,
     fetchOrganizations,
     switchOrganization: switchOrg,
-    requestUpgrade,
     downgradeAccount: performDowngrade,
-    setUpgrading
   } = useOrganization();
   const { subscriptionStatus, fetchSubscriptionStatus, cancelSubscription } = useSubscription();
 
@@ -137,7 +134,7 @@ const Page = () => {
       notify.success(`Invitation sent to ${inviteEmail}`);
 
     } else {
-      notify.error("failed to send Inviation");
+      notify.error("Failed to send invitation");
     }
   };
 
@@ -181,20 +178,6 @@ const Page = () => {
       notify.error('Failed to resend invitation');
     }
     setResendingInvitation(null);
-  };
-
-  const handleRequestProAccess = async () => {
-    setUpgrading(true);
-
-    const success = await requestUpgrade();
-
-    if (success) {
-      notify.success('Pro access request submitted successfully');
-    } else {
-      notify.error('Failed to submit Pro access request');
-    }
-
-    setShowProAccess(false);
   };
 
   const handleDowngradeAccount = async () => {
@@ -269,7 +252,7 @@ const Page = () => {
           <p className="text-gray-600">Manage your organization.</p>
         </div>
 
-        {(profile?.role === 'admin' || profile?.role === 'owner') && (profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise' || hasProAccess) ? (
+        {(profile?.role === 'admin' || profile?.role === 'owner') && (subscriptionStatus?.isEnterprise || profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise') ? (
           // Enterprise accounts - show tabs with Members
           <Tabs defaultValue="general" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
@@ -399,10 +382,9 @@ const Page = () => {
                           {!hasProAccess ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
-                              disabled={isUpgrading}
                             >
                               <Crown className="h-4 w-4 mr-2" />
-                              {isUpgrading ? "Loading..." : "Upgrade Plan"}
+                              Upgrade Plan
                             </Button>
                           ) : isNonRenewing ? (
                             <Button
@@ -769,24 +751,13 @@ const Page = () => {
                       {profile?.role === 'owner' && (
                         <>
                           {!hasProAccess ? (
-                            profile.organization?.upgradeRequestedAt ? (
-                              <Button
-                                disabled
-                                variant="outline"
-                              >
-                                <Crown className="h-4 w-4 mr-1" />
-                                Upgrade Pending
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() => setShowProAccess(true)}
-                                disabled={isUpgrading}
-                                className='bg-secondary'
-                              >
-                                <Crown className="h-4 w-4 mr-1" />
-                                {isUpgrading ? "Requesting..." : "Request Pro Access"}
-                              </Button>
-                            )
+                            <Button
+                              onClick={() => setShowProAccess(true)}
+                              className='bg-secondary'
+                            >
+                              <Crown className="h-4 w-4 mr-1" />
+                              Upgrade Plan
+                            </Button>
                           ) : isNonRenewing ? (
                             <Button
                               disabled
@@ -821,9 +792,7 @@ const Page = () => {
             <ProAccessModal
               isOpen={showProAccess}
               onClose={() => setShowProAccess(false)}
-              onRequestAccess={handleRequestProAccess}
-              isLoading={isUpgrading}
-              errorMessage="You have reached your message limit. Request Pro access to send unlimited messages."
+              errorMessage="You have reached your message limit. Upgrade to send unlimited messages."
               userData={{
                 name: session?.user?.name || '',
                 email: session?.user?.email || '',
@@ -855,7 +824,7 @@ const Page = () => {
                   <p>Cancelling your subscription will:</p>
                   <ul className="list-disc pl-6 space-y-1">
                     <li>Revert to the free plan at the end of your billing period</li>
-                    <li>Limit you to {2} projects and {10} messages per month</li>
+                    <li>Limit you to {2} projects and {8} messages per month</li>
                     <li>Disable premium features like AI Associates</li>
                   </ul>
                   {subscriptionStatus?.subscription?.currentPeriodEnd && (

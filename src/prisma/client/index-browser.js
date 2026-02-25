@@ -227,6 +227,9 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
   status: 'status',
   currentPeriodStart: 'currentPeriodStart',
   currentPeriodEnd: 'currentPeriodEnd',
+  seatCount: 'seatCount',
+  paystackAuthCode: 'paystackAuthCode',
+  planType: 'planType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

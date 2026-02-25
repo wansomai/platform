@@ -10,9 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Check, Sparkles, Users, Shield, Zap } from "lucide-react";
+import { Check, Sparkles, Users, Shield, Zap, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { apiService } from '@/lib/api';
 
@@ -30,28 +29,17 @@ export function UpgradePrompt({ trigger, organizationName, onUpgradeSuccess }: U
     try {
       setIsUpgrading(true);
 
-      const response = await apiService.post('/api/organization/upgrade', {}) as {
-        success: boolean;
-        message?: string;
-        organization?: any;
-      };
+      const response = await apiService.post<{
+        data: { authorizationUrl: string; accessCode: string; reference: string };
+      }>('/api/payments/initialize', { planType: 'teams' });
 
-      if (response.success) {
-        toast.success(response.message || 'Successfully upgraded to Enterprise!');
-        setOpen(false);
-
-        // Call success callback if provided
-        if (onUpgradeSuccess) {
-          onUpgradeSuccess();
-        }
-
-        // Reload the page after a short delay to reflect changes
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+      if (response.data?.authorizationUrl) {
+        window.location.href = response.data.authorizationUrl;
+      } else {
+        toast.error('Failed to initialize payment. Please try again.');
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to upgrade organization';
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to start payment';
       toast.error(errorMessage);
       console.error('Error upgrading organization:', error);
     } finally {
@@ -65,7 +53,7 @@ export function UpgradePrompt({ trigger, organizationName, onUpgradeSuccess }: U
         {trigger || (
           <Button variant="default" className="gap-2">
             <Sparkles className="h-4 w-4" />
-            Upgrade to Enterprise
+            Upgrade to Teams
           </Button>
         )}
       </div>
@@ -75,15 +63,15 @@ export function UpgradePrompt({ trigger, organizationName, onUpgradeSuccess }: U
           <DialogHeader>
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-6 w-6 text-primary" />
-              <DialogTitle>Upgrade to Enterprise</DialogTitle>
+              <DialogTitle>Upgrade to Teams</DialogTitle>
             </div>
             <DialogDescription>
-              Unlock team collaboration and advanced features for {organizationName || 'your organization'}
+              Unlock team collaboration and advanced features for {organizationName || 'your organization'} — $15/seat/month, starts with 1 seat
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            {/* Current vs Enterprise Comparison */}
+            {/* Current vs Teams Comparison */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Badge variant="outline" className="mb-2">Personal</Badge>
@@ -104,7 +92,7 @@ export function UpgradePrompt({ trigger, organizationName, onUpgradeSuccess }: U
               </div>
 
               <div className="space-y-2 border-l-2 border-primary pl-4">
-                <Badge variant="default" className="mb-2">Enterprise</Badge>
+                <Badge variant="default" className="mb-2">Teams</Badge>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="h-4 w-4 mt-0.5 text-primary" />
@@ -172,12 +160,6 @@ export function UpgradePrompt({ trigger, organizationName, onUpgradeSuccess }: U
                 </div>
               </div>
             </div>
-
-            <Alert>
-              <AlertDescription className="text-sm">
-                <strong>Note:</strong> This upgrade is free during the beta period. You'll unlock all enterprise features immediately.
-              </AlertDescription>
-            </Alert>
           </div>
 
           <DialogFooter className="gap-2">
@@ -195,13 +177,13 @@ export function UpgradePrompt({ trigger, organizationName, onUpgradeSuccess }: U
             >
               {isUpgrading ? (
                 <>
-                  <span className="animate-spin">⏳</span>
-                  Upgrading...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Redirecting...
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  Upgrade Now
+                  Upgrade — $15/seat
                 </>
               )}
             </Button>
