@@ -178,6 +178,22 @@ export const DELETE = withErrorHandler(
       });
     }
 
+    // Decrement seat count for Teams plan subscriptions (no immediate refund)
+    try {
+      const subscription = await prisma.subscription.findUnique({
+        where: { organizationId },
+        select: { planType: true, seatCount: true },
+      });
+      if (subscription?.planType === 'teams' && (subscription.seatCount ?? 1) > 1) {
+        await prisma.subscription.update({
+          where: { organizationId },
+          data: { seatCount: { decrement: 1 } },
+        });
+      }
+    } catch (seatErr) {
+      console.error('Failed to decrement seat count:', seatErr);
+    }
+
     // Send notification email (non-blocking)
     if (organization && memberUser.email) {
       try {

@@ -90,7 +90,7 @@ export const SplitView: React.FC<SplitViewProps> = ({
           className={cn(
             "relative flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs sm:text-sm font-medium transition-colors",
             mobileActiveTab === 'canvas'
-              ? "text-primary border-b-2 border-primary bg-blue-50"
+              ? "text-primary border-b-2 border-primary bg-green-50"
               : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
           )}
         >
@@ -102,7 +102,7 @@ export const SplitView: React.FC<SplitViewProps> = ({
           className={cn(
             "relative flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-xs sm:text-sm font-medium transition-colors",
             mobileActiveTab === 'chat'
-              ? "text-primary border-b-2 border-primary bg-blue-50"
+              ? "text-primary border-b-2 border-primary bg-green-50"
               : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
           )}
         >

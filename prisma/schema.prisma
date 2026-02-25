@@ -170,6 +170,9 @@ model Subscription {
   status                 String
   currentPeriodStart     DateTime?
   currentPeriodEnd       DateTime?
+  seatCount              Int          @default(1)
+  paystackAuthCode       String?
+  planType               String       @default("personal")
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
   payments               Payment[]

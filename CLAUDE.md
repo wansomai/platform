@@ -188,8 +188,7 @@ import prisma from '@/lib/prisma';
 ```
 
 ### Route Groups
-- `(account)` - Authenticated user pages (dashboard, projects, vault, workflows)
-- `(platform)` - Workspace/app pages (project workspace UI)
+- `(account)` - Authenticated user pages (dashboard, projects, vault, workflows); project workspace UI is at `(account)/projects/[id]`
 - `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
 - `(admin)` - Admin-only pages
@@ -209,7 +208,8 @@ See `.env.example` for the full list. Key variables:
 - `DATABASE_URL` - PostgreSQL connection
 - `NEXTAUTH_SECRET` / `NEXTAUTH_URL` - NextAuth configuration
 - `JWT_SECRET` / `JWT_REFRESH_SECRET` - Custom token handling
-- `GOOGLE_API_KEY` or `GEMINI_API_KEY` - Gemini API (only one required)
+- `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) - Gemini API (only one required)
+- `GEMINI_MODEL` - Gemini model to use (default: `gemini-3-flash-preview`)
 - `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - Google OAuth
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
 - `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` / `PAYSTACK_PLAN_CODE` - Payments
@@ -244,7 +244,7 @@ Optional (for Google Cloud Vision OCR):
 - `Payment` - Payment history
 
 ### Subscription Limits (`src/lib/subscription.ts`)
-- **Free plan**: 2 projects, 10 messages/month
+- **Free plan**: 2 projects, 8 messages/month
 - **Pro/Enterprise plan**: Unlimited projects and messages
 - AI Associates are a premium feature (Pro/Enterprise only)
 - Enterprise accounts (`accountType: 'enterprise'`) automatically get Pro features
@@ -272,7 +272,7 @@ State management uses Zustand stores in `src/store/`:
 ## API Route Structure
 API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/auth/*` - Authentication (NextAuth, login, register, password reset, Google connection)
-- `/api/projects/[id]/*` - Project-scoped operations (conversations, documents, members, associates)
+- `/api/projects/[id]/*` - Project-scoped operations (conversations, documents, members, associates, canvas, settings, instructions)
 - `/api/organization/*` - Organization management (members, invitations, switching)
 - `/api/documents/*` - Vault/organization-level document operations
 - `/api/folders/*` - Folder hierarchy for documents

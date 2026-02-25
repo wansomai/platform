@@ -386,8 +386,6 @@ export default function WorkflowsPage() {
       <ProAccessModal
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
-        onRequestAccess={requestUpgrade}
-        isLoading={isUpgrading}
         userData={{
           name: profile?.fullName ?? undefined,
           email: profile?.email,

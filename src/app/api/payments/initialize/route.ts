@@ -6,7 +6,8 @@ import prisma from '@/lib/prisma';
 import { AppError } from '@/types/error';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
-const PAYSTACK_PLAN_CODE = process.env.PAYSTACK_PLAN_CODE; // Your Paystack subscription plan code
+const PAYSTACK_PLAN_CODE = process.env.PAYSTACK_PLAN_CODE;
+const PAYSTACK_TEAMS_PLAN_CODE = process.env.PAYSTACK_TEAMS_PLAN_CODE;
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
 export const POST = withErrorHandler(
@@ -17,51 +18,60 @@ export const POST = withErrorHandler(
       );
     }
 
-    if (!PAYSTACK_PLAN_CODE) {
+    // Parse planType from body — default to 'personal'
+    const body = await request.json().catch(() => ({}));
+    const planType: 'personal' | 'teams' = body.planType === 'teams' ? 'teams' : 'personal';
+
+    const planCode = planType === 'teams' ? PAYSTACK_TEAMS_PLAN_CODE : PAYSTACK_PLAN_CODE;
+
+    if (!planCode) {
       return createErrorResponse(
-        new AppError('Subscription plan not configured', 'PLAN_NOT_CONFIGURED', 500)
+        new AppError(
+          planType === 'teams' ? 'Teams plan not configured' : 'Subscription plan not configured',
+          'PLAN_NOT_CONFIGURED',
+          500
+        )
       );
     }
 
-    // Get user and organization info
+    // Get user and primary organization
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        organization: true,
-      },
+      include: { organization: true },
     });
 
-    if (!user || !user.organization) {
-      return createErrorResponse(
-        new AppError('User or organization not found', 'NOT_FOUND', 404)
-      );
+    if (!user?.organization) {
+      return createErrorResponse(new AppError('User or organization not found', 'NOT_FOUND', 404));
     }
 
-    // Check if user is the organization owner
+    if (!user.email) {
+      return createErrorResponse(new AppError('User email not found', 'NOT_FOUND', 404));
+    }
+
+    // Only the org owner can upgrade
     if (user.organization.ownerId !== userId) {
-      return createErrorResponse(
-        new AppError('Only organization owners can upgrade', 'FORBIDDEN', 403)
-      );
+      return createErrorResponse(new AppError('Only organization owners can upgrade', 'FORBIDDEN', 403));
     }
 
-    // Check if already on enterprise plan
-    if (user.organization.accountType === 'enterprise') {
-      return createBadRequestResponse('Already on enterprise plan');
-    }
-
-    // Check for existing active subscription
+    // Check for an existing active subscription
     const existingSubscription = await prisma.subscription.findUnique({
       where: { organizationId: user.organization.id },
     });
 
     if (existingSubscription && existingSubscription.status === 'active') {
-      return createBadRequestResponse('Already have an active subscription');
+      // Allow upgrading from personal → teams even when a subscription exists
+      if (existingSubscription.planType === planType) {
+        return createBadRequestResponse(
+          planType === 'teams'
+            ? 'Your organization is already on the Teams plan.'
+            : 'Your organization already has an active subscription.'
+        );
+      }
+      // Different planType — proceed to let them switch (verify will upsert)
     }
 
-    // Generate unique reference
     const reference = `WAN-${user.organization.id.slice(0, 8)}-${Date.now()}`;
 
-    // Initialize Paystack transaction with plan (creates subscription on successful payment)
     const paystackResponse = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
       method: 'POST',
       headers: {
@@ -70,14 +80,17 @@ export const POST = withErrorHandler(
       },
       body: JSON.stringify({
         email: user.email,
-        plan: PAYSTACK_PLAN_CODE, // This creates a subscription on successful payment
-        amount: 2, // Amount is handled by the plan
+        plan: planCode,
+        // Paystack requires a valid amount even with a plan code.
+        // The plan amount overrides this for actual billing — 100 is the safe minimum (1 unit of currency).
+        amount: 100,
         reference,
         callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback`,
         metadata: {
           userId: user.id,
           organizationId: user.organization.id,
           organizationName: user.organization.name,
+          planType,
           custom_fields: [
             {
               display_name: 'Organization',
@@ -88,6 +101,11 @@ export const POST = withErrorHandler(
               display_name: 'User',
               variable_name: 'user_name',
               value: user.fullName || user.email,
+            },
+            {
+              display_name: 'Plan Type',
+              variable_name: 'plan_type',
+              value: planType,
             },
           ],
         },

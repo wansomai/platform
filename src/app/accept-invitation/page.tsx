@@ -218,11 +218,11 @@ function AcceptInvitationContent() {
               <p className="text-center text-sm text-muted-foreground">
                 The invitation you're trying to use has expired. Invitations are valid for 7 days from when they're sent.
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                <p className="text-sm text-blue-800">
+              <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                <p className="text-sm text-green-800">
                   <strong>What to do next:</strong>
                 </p>
-                <p className="text-sm text-blue-700 mt-2">
+                <p className="text-sm text-green-700 mt-2">
                   Contact the person who invited you and ask them to resend the invitation. They can do this from their organization settings page.
                 </p>
               </div>

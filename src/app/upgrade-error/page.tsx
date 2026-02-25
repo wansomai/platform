@@ -114,8 +114,8 @@ function UpgradeErrorContent() {
             </Link>
           </div>
 
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-900">
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-sm text-green-900">
               <span className="font-medium">Need help?</span> Our support team is available to assist you with the upgrade process.
             </p>
           </div>

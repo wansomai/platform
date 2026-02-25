@@ -4,6 +4,7 @@ import { createApiResponse, createErrorResponse, createBadRequestResponse } from
 import { withErrorHandler } from '@/lib/api/middleware';
 import prisma from '@/lib/prisma';
 import { AppError } from '@/types/error';
+import { sendTeamUpgradeConfirmedEmail } from '@/lib/email-service';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
@@ -146,16 +147,22 @@ async function processPayment(transaction: any, organizationId: string, referenc
     );
   }
 
+  // Read planType from metadata
+  const metadata = transaction.metadata || {};
+  const planType: 'personal' | 'teams' = metadata.planType === 'teams' ? 'teams' : 'personal';
+
   // Get plan details from transaction
   const plan = transaction.plan_object || transaction.plan || {};
   const planInterval = plan.interval || 'monthly';
   const planName = plan.name || 'Professional';
 
   // Extract Paystack subscription code if available
-  // When a transaction is initialized with a plan, Paystack creates a subscription
   const paystackSubscriptionId = transaction.subscription_code
     || transaction.plan_object?.subscriptions?.[0]?.subscription_code
     || null;
+
+  // Extract authorization code for future seat charges (teams plan)
+  const paystackAuthCode: string | null = transaction.authorization?.authorization_code || null;
 
   // If no subscription code in transaction, try to fetch it from Paystack using customer code
   let resolvedSubscriptionId = paystackSubscriptionId;
@@ -169,7 +176,6 @@ async function processPayment(transaction: any, organizationId: string, referenc
       );
       const customerData = await customerResponse.json();
       if (customerData.status && customerData.data?.length > 0) {
-        // Find the most recent active subscription
         const activeSub = customerData.data.find(
           (s: any) => s.status === 'active' || s.status === 'non-renewing'
         ) || customerData.data[0];
@@ -186,6 +192,19 @@ async function processPayment(transaction: any, organizationId: string, referenc
 
   // Create or update subscription and payment in a transaction
   const subscription = await prisma.$transaction(async (tx) => {
+    // Build plan-type-specific fields
+    const planTypeFields =
+      planType === 'teams'
+        ? {
+            planType: 'teams',
+            seatCount: 1,
+            ...(paystackAuthCode ? { paystackAuthCode } : {}),
+          }
+        : {
+            planType: 'personal',
+            seatCount: 1,
+          };
+
     // Create or update subscription
     const sub = await tx.subscription.upsert({
       where: { organizationId },
@@ -199,6 +218,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
         paystackSubscriptionId: resolvedSubscriptionId,
         currentPeriodStart: now,
         currentPeriodEnd: periodEnd,
+        ...planTypeFields,
       },
       update: {
         planName: planName,
@@ -209,6 +229,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
         ...(resolvedSubscriptionId ? { paystackSubscriptionId: resolvedSubscriptionId } : {}),
         currentPeriodStart: now,
         currentPeriodEnd: periodEnd,
+        ...planTypeFields,
       },
     });
 
@@ -227,12 +248,51 @@ async function processPayment(transaction: any, organizationId: string, referenc
           channel: transaction.channel,
           ipAddress: transaction.ip_address,
           source: 'verify',
+          planType,
         },
       },
     });
 
+    // Upgrade organization to enterprise if teams plan
+    if (planType === 'teams') {
+      await tx.organization.update({
+        where: { id: organizationId },
+        data: { accountType: 'enterprise' },
+      });
+    }
+
     return sub;
   });
+
+  // Send confirmation email for teams plan
+  if (planType === 'teams') {
+    try {
+      const customerEmail = transaction.customer?.email;
+      if (customerEmail) {
+        const user = await prisma.user.findUnique({
+          where: { email: customerEmail },
+          select: { fullName: true },
+        });
+        const org = await prisma.organization.findUnique({
+          where: { id: organizationId },
+          select: { name: true },
+        });
+        await sendTeamUpgradeConfirmedEmail({
+          email: customerEmail,
+          userName: user?.fullName || customerEmail,
+          organizationName: org?.name || 'your organization',
+          planPrice: '$15/seat/month',
+          nextBillingDate: periodEnd.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }),
+        });
+      }
+    } catch (emailErr) {
+      console.error('Failed to send team upgrade confirmation email:', emailErr);
+    }
+  }
 
   return createApiResponse(
     {
@@ -242,6 +302,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
         planName: subscription.planName,
         billingCycle: subscription.billingCycle,
         currentPeriodEnd: subscription.currentPeriodEnd,
+        planType: subscription.planType,
       },
     },
     'Payment successful'

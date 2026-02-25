@@ -14412,8 +14412,18 @@ export namespace Prisma {
 
   export type AggregateSubscription = {
     _count: SubscriptionCountAggregateOutputType | null
+    _avg: SubscriptionAvgAggregateOutputType | null
+    _sum: SubscriptionSumAggregateOutputType | null
     _min: SubscriptionMinAggregateOutputType | null
     _max: SubscriptionMaxAggregateOutputType | null
+  }
+
+  export type SubscriptionAvgAggregateOutputType = {
+    seatCount: number | null
+  }
+
+  export type SubscriptionSumAggregateOutputType = {
+    seatCount: number | null
   }
 
   export type SubscriptionMinAggregateOutputType = {
@@ -14427,6 +14437,9 @@ export namespace Prisma {
     status: string | null
     currentPeriodStart: Date | null
     currentPeriodEnd: Date | null
+    seatCount: number | null
+    paystackAuthCode: string | null
+    planType: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -14442,6 +14455,9 @@ export namespace Prisma {
     status: string | null
     currentPeriodStart: Date | null
     currentPeriodEnd: Date | null
+    seatCount: number | null
+    paystackAuthCode: string | null
+    planType: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -14457,11 +14473,22 @@ export namespace Prisma {
     status: number
     currentPeriodStart: number
     currentPeriodEnd: number
+    seatCount: number
+    paystackAuthCode: number
+    planType: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type SubscriptionAvgAggregateInputType = {
+    seatCount?: true
+  }
+
+  export type SubscriptionSumAggregateInputType = {
+    seatCount?: true
+  }
 
   export type SubscriptionMinAggregateInputType = {
     id?: true
@@ -14474,6 +14501,9 @@ export namespace Prisma {
     status?: true
     currentPeriodStart?: true
     currentPeriodEnd?: true
+    seatCount?: true
+    paystackAuthCode?: true
+    planType?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -14489,6 +14519,9 @@ export namespace Prisma {
     status?: true
     currentPeriodStart?: true
     currentPeriodEnd?: true
+    seatCount?: true
+    paystackAuthCode?: true
+    planType?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -14504,6 +14537,9 @@ export namespace Prisma {
     status?: true
     currentPeriodStart?: true
     currentPeriodEnd?: true
+    seatCount?: true
+    paystackAuthCode?: true
+    planType?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -14547,6 +14583,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: SubscriptionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SubscriptionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: SubscriptionMinAggregateInputType
@@ -14577,6 +14625,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: SubscriptionCountAggregateInputType | true
+    _avg?: SubscriptionAvgAggregateInputType
+    _sum?: SubscriptionSumAggregateInputType
     _min?: SubscriptionMinAggregateInputType
     _max?: SubscriptionMaxAggregateInputType
   }
@@ -14592,9 +14642,14 @@ export namespace Prisma {
     status: string
     currentPeriodStart: Date | null
     currentPeriodEnd: Date | null
+    seatCount: number
+    paystackAuthCode: string | null
+    planType: string
     createdAt: Date
     updatedAt: Date
     _count: SubscriptionCountAggregateOutputType | null
+    _avg: SubscriptionAvgAggregateOutputType | null
+    _sum: SubscriptionSumAggregateOutputType | null
     _min: SubscriptionMinAggregateOutputType | null
     _max: SubscriptionMaxAggregateOutputType | null
   }
@@ -14624,6 +14679,9 @@ export namespace Prisma {
     status?: boolean
     currentPeriodStart?: boolean
     currentPeriodEnd?: boolean
+    seatCount?: boolean
+    paystackAuthCode?: boolean
+    planType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     payments?: boolean | Subscription$paymentsArgs<ExtArgs>
@@ -14642,6 +14700,9 @@ export namespace Prisma {
     status?: boolean
     currentPeriodStart?: boolean
     currentPeriodEnd?: boolean
+    seatCount?: boolean
+    paystackAuthCode?: boolean
+    planType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -14658,6 +14719,9 @@ export namespace Prisma {
     status?: boolean
     currentPeriodStart?: boolean
     currentPeriodEnd?: boolean
+    seatCount?: boolean
+    paystackAuthCode?: boolean
+    planType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -14674,11 +14738,14 @@ export namespace Prisma {
     status?: boolean
     currentPeriodStart?: boolean
     currentPeriodEnd?: boolean
+    seatCount?: boolean
+    paystackAuthCode?: boolean
+    planType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "paystackSubscriptionId" | "paystackCustomerId" | "planName" | "planPrice" | "billingCycle" | "status" | "currentPeriodStart" | "currentPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
+  export type SubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "paystackSubscriptionId" | "paystackCustomerId" | "planName" | "planPrice" | "billingCycle" | "status" | "currentPeriodStart" | "currentPeriodEnd" | "seatCount" | "paystackAuthCode" | "planType" | "createdAt" | "updatedAt", ExtArgs["result"]["subscription"]>
   export type SubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     payments?: boolean | Subscription$paymentsArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -14708,6 +14775,9 @@ export namespace Prisma {
       status: string
       currentPeriodStart: Date | null
       currentPeriodEnd: Date | null
+      seatCount: number
+      paystackAuthCode: string | null
+      planType: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["subscription"]>
@@ -15145,6 +15215,9 @@ export namespace Prisma {
     readonly status: FieldRef<"Subscription", 'String'>
     readonly currentPeriodStart: FieldRef<"Subscription", 'DateTime'>
     readonly currentPeriodEnd: FieldRef<"Subscription", 'DateTime'>
+    readonly seatCount: FieldRef<"Subscription", 'Int'>
+    readonly paystackAuthCode: FieldRef<"Subscription", 'String'>
+    readonly planType: FieldRef<"Subscription", 'String'>
     readonly createdAt: FieldRef<"Subscription", 'DateTime'>
     readonly updatedAt: FieldRef<"Subscription", 'DateTime'>
   }
@@ -54242,6 +54315,9 @@ export namespace Prisma {
     status: 'status',
     currentPeriodStart: 'currentPeriodStart',
     currentPeriodEnd: 'currentPeriodEnd',
+    seatCount: 'seatCount',
+    paystackAuthCode: 'paystackAuthCode',
+    planType: 'planType',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -55595,6 +55671,9 @@ export namespace Prisma {
     status?: StringFilter<"Subscription"> | string
     currentPeriodStart?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
+    seatCount?: IntFilter<"Subscription"> | number
+    paystackAuthCode?: StringNullableFilter<"Subscription"> | string | null
+    planType?: StringFilter<"Subscription"> | string
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     payments?: PaymentListRelationFilter
@@ -55612,6 +55691,9 @@ export namespace Prisma {
     status?: SortOrder
     currentPeriodStart?: SortOrderInput | SortOrder
     currentPeriodEnd?: SortOrderInput | SortOrder
+    seatCount?: SortOrder
+    paystackAuthCode?: SortOrderInput | SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     payments?: PaymentOrderByRelationAggregateInput
@@ -55632,6 +55714,9 @@ export namespace Prisma {
     status?: StringFilter<"Subscription"> | string
     currentPeriodStart?: DateTimeNullableFilter<"Subscription"> | Date | string | null
     currentPeriodEnd?: DateTimeNullableFilter<"Subscription"> | Date | string | null
+    seatCount?: IntFilter<"Subscription"> | number
+    paystackAuthCode?: StringNullableFilter<"Subscription"> | string | null
+    planType?: StringFilter<"Subscription"> | string
     createdAt?: DateTimeFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeFilter<"Subscription"> | Date | string
     payments?: PaymentListRelationFilter
@@ -55649,11 +55734,16 @@ export namespace Prisma {
     status?: SortOrder
     currentPeriodStart?: SortOrderInput | SortOrder
     currentPeriodEnd?: SortOrderInput | SortOrder
+    seatCount?: SortOrder
+    paystackAuthCode?: SortOrderInput | SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: SubscriptionCountOrderByAggregateInput
+    _avg?: SubscriptionAvgOrderByAggregateInput
     _max?: SubscriptionMaxOrderByAggregateInput
     _min?: SubscriptionMinOrderByAggregateInput
+    _sum?: SubscriptionSumOrderByAggregateInput
   }
 
   export type SubscriptionScalarWhereWithAggregatesInput = {
@@ -55670,6 +55760,9 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"Subscription"> | string
     currentPeriodStart?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
     currentPeriodEnd?: DateTimeNullableWithAggregatesFilter<"Subscription"> | Date | string | null
+    seatCount?: IntWithAggregatesFilter<"Subscription"> | number
+    paystackAuthCode?: StringNullableWithAggregatesFilter<"Subscription"> | string | null
+    planType?: StringWithAggregatesFilter<"Subscription"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Subscription"> | Date | string
   }
@@ -58970,6 +59063,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     payments?: PaymentCreateNestedManyWithoutSubscriptionInput
@@ -58987,6 +59083,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     payments?: PaymentUncheckedCreateNestedManyWithoutSubscriptionInput
@@ -59002,6 +59101,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUpdateManyWithoutSubscriptionNestedInput
@@ -59019,6 +59121,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
@@ -59035,6 +59140,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -59049,6 +59157,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59064,6 +59175,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -62552,8 +62666,15 @@ export namespace Prisma {
     status?: SortOrder
     currentPeriodStart?: SortOrder
     currentPeriodEnd?: SortOrder
+    seatCount?: SortOrder
+    paystackAuthCode?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type SubscriptionAvgOrderByAggregateInput = {
+    seatCount?: SortOrder
   }
 
   export type SubscriptionMaxOrderByAggregateInput = {
@@ -62567,6 +62688,9 @@ export namespace Prisma {
     status?: SortOrder
     currentPeriodStart?: SortOrder
     currentPeriodEnd?: SortOrder
+    seatCount?: SortOrder
+    paystackAuthCode?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -62582,8 +62706,15 @@ export namespace Prisma {
     status?: SortOrder
     currentPeriodStart?: SortOrder
     currentPeriodEnd?: SortOrder
+    seatCount?: SortOrder
+    paystackAuthCode?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type SubscriptionSumOrderByAggregateInput = {
+    seatCount?: SortOrder
   }
 
   export type SubscriptionScalarRelationFilter = {
@@ -70467,6 +70598,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     payments?: PaymentCreateNestedManyWithoutSubscriptionInput
@@ -70482,6 +70616,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     payments?: PaymentUncheckedCreateNestedManyWithoutSubscriptionInput
@@ -70832,6 +70969,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUpdateManyWithoutSubscriptionNestedInput
@@ -70847,6 +70987,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
@@ -71390,6 +71533,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutSubscriptionInput
@@ -71406,6 +71552,9 @@ export namespace Prisma {
     status: string
     currentPeriodStart?: Date | string | null
     currentPeriodEnd?: Date | string | null
+    seatCount?: number
+    paystackAuthCode?: string | null
+    planType?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -71436,6 +71585,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutSubscriptionNestedInput
@@ -71452,6 +71604,9 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     currentPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     currentPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    seatCount?: IntFieldUpdateOperationsInput | number
+    paystackAuthCode?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

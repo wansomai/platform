@@ -817,6 +817,163 @@ export function sendMemberRemovedEmail({
   });
 }
 /**
+ * Sends a confirmation email when a Teams plan payment is verified
+ */
+export function sendTeamUpgradeConfirmedEmail({
+  email,
+  userName,
+  organizationName,
+  planPrice,
+  nextBillingDate,
+}: {
+  email: string;
+  userName: string;
+  organizationName: string;
+  planPrice: string;
+  nextBillingDate: string;
+}) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
+  const subject = 'Your Wansom Teams Plan is Active';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">Teams Plan Activated</h1>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hello ${userName},</p>
+
+          <div style="background-color: #e6f7ee; border-left: 4px solid #00a86b; padding: 16px; margin: 16px 0; border-radius: 0 6px 6px 0;">
+            <p style="margin: 0; font-size: 15px; font-weight: 600; color: #00a86b;">Your Teams plan for <strong>${organizationName}</strong> is now active!</p>
+          </div>
+
+          <h3 style="color: #0a4b5e; font-size: 15px;">What's included</h3>
+          <ul style="padding-left: 20px; color: #4a4a4a; font-size: 14px;">
+            <li>Everything in the Personal plan</li>
+            <li>Invite unlimited team members (${planPrice} per seat)</li>
+            <li>Role-based access control</li>
+            <li>Unlimited AI Associates</li>
+            <li>Up to 50 GB Vault Storage</li>
+            <li>Custom workflows &amp; integrations</li>
+            <li>Priority support</li>
+          </ul>
+
+          <div style="background-color: #f8fafc; padding: 14px; border-radius: 6px; margin: 20px 0; font-size: 14px;">
+            <p style="margin: 0 0 6px 0;"><strong>Billing:</strong> ${planPrice}</p>
+            <p style="margin: 0;"><strong>Next renewal:</strong> ${nextBillingDate}</p>
+          </div>
+
+          <p style="font-size: 14px; color: #4a4a4a;">
+            New seats are billed on a prorated basis when a team member accepts your invitation.
+            Removing a member reduces your seat count at the next renewal.
+          </p>
+
+          <div style="margin-top: 24px; text-align: center;">
+            <a href="${appUrl}/profile" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600;">Invite Team Members</a>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({ to: email, subject, html });
+}
+
+/**
+ * Notifies the organization owner that a new seat was billed when a member accepted an invitation
+ */
+export function sendSeatBilledEmail({
+  ownerEmail,
+  ownerName,
+  newMemberEmail,
+  amount,
+  organizationName,
+  newSeatCount,
+  nextBillingDate,
+}: {
+  ownerEmail: string;
+  ownerName: string;
+  newMemberEmail: string;
+  amount: string;
+  organizationName: string;
+  newSeatCount: number;
+  nextBillingDate: string;
+}) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
+  const subject = 'New team member added — seat charged';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 22px; margin: 12px 0 4px 0;">New Seat Added</h1>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hello ${ownerName},</p>
+
+          <p style="font-size: 14px; color: #4a4a4a;">
+            A new member has joined <strong>${organizationName}</strong> and a prorated seat charge has been applied to your payment method.
+          </p>
+
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 16px; margin: 16px 0; border-radius: 0 6px 6px 0; font-size: 14px;">
+            <p style="margin: 0 0 6px 0;"><strong>New member:</strong> ${newMemberEmail}</p>
+            <p style="margin: 0 0 6px 0;"><strong>Prorated charge:</strong> ${amount}</p>
+            <p style="margin: 0 0 6px 0;"><strong>Total seats:</strong> ${newSeatCount}</p>
+            <p style="margin: 0;"><strong>Next renewal:</strong> ${nextBillingDate} (${newSeatCount} seats × $15/seat)</p>
+          </div>
+
+          <p style="font-size: 13px; color: #666;">
+            Seat charges are prorated for the remaining days in your current billing cycle.
+            Removing a member before the renewal date reduces your seat count at next renewal — no immediate refund.
+          </p>
+
+          <div style="margin-top: 24px; text-align: center;">
+            <a href="${appUrl}/profile" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600;">Manage Team</a>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({ to: ownerEmail, subject, html });
+}
+
+/**
  * Sends an email to admin for upgrade approval
  * @param details Upgrade request details
  * @returns Result of sending the email

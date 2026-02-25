@@ -48,8 +48,10 @@ function PaymentCallbackContent() {
             ? 'Payment was already processed successfully!'
             : 'Payment successful! Your subscription is now active.');
           setSubscriptionDetails(data.data.subscription || null);
-          // Invalidate profile cache so profile page shows updated subscription status
-          useProfileStore.getState().invalidateCache();
+          // Invalidate profile + subscription cache so the UI reflects the new plan immediately
+          const store = useProfileStore.getState();
+          store.invalidateCache();
+          store.fetchSubscriptionStatus();
         } else if (response.ok && data.data?.status) {
           setStatus('failed');
           setMessage(data.data?.message || 'Payment was not successful. Please try again.');
@@ -70,11 +72,6 @@ function PaymentCallbackContent() {
   const handleGoToDashboard = () => {
     router.push('/dashboard');
   };
-
-  const handleGoToProfile = () => {
-    router.push('/profile');
-  };
-
   const handleTryAgain = () => {
     router.push('/dashboard');
   };

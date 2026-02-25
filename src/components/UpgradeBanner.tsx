@@ -117,7 +117,7 @@ export default function UpgradeBanner({
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Zap className="h-4 w-4 mr-2" />
-              Upgrade Now
+              Upgrade to Pro
             </Button>
           )}
           {onDismiss && (

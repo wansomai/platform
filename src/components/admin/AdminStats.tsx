@@ -17,8 +17,8 @@ export function AdminStats({ stats, isLoading }: AdminStatsProps) {
       value: stats.totalOrgs,
       icon: Building2,
       description: "All registered organizations",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
     },
     {
       title: "Pending Upgrades",
