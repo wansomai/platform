@@ -418,6 +418,22 @@ export const getJurisdictionInstructions = (jurisdiction: Jurisdiction): string 
   if (jurisdiction.courtSystem.length > 0) {
     specificInstructions += `The court system includes: ${jurisdiction.courtSystem.join(', ')}. `;
   }
-  
+
+  specificInstructions += `Always verify case citations against official ${jurisdiction.name} legal databases before presenting them as authoritative. `;
+
   return baseInstructions + specificInstructions;
+};
+
+// ISO 3166-1 alpha-2 country code → jurisdiction ID mapping
+const COUNTRY_CODE_TO_JURISDICTION_ID: Record<string, string> = {
+  'US': 'us-federal', 'GB': 'uk-england-wales', 'CA': 'ca-federal',
+  'AU': 'au-federal', 'KE': 'ke', 'UG': 'ug', 'TZ': 'tz',
+  'NG': 'ng', 'ZA': 'za', 'ZM': 'zm', 'MW': 'mw', 'ET': 'et',
+  'CD': 'cd', 'RW': 'rw', 'DE': 'de', 'FR': 'fr',
+  'IN': 'in', 'SG': 'sg', 'HK': 'hk',
+};
+
+export const getJurisdictionByCountryCode = (countryCode: string): Jurisdiction | undefined => {
+  const id = COUNTRY_CODE_TO_JURISDICTION_ID[countryCode.toUpperCase()];
+  return id ? getJurisdictionById(id) : undefined;
 };

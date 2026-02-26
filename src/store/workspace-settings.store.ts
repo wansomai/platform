@@ -6,15 +6,16 @@ import { ProjectSettings } from '@/types';
 
 interface ProjectSettingsState {
   settings: ProjectSettings;
+  suggestedJurisdiction: Jurisdiction | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // Methods
   fetchSettings: (projectId: string) => Promise<ProjectSettings>;
   updateSettings: (projectId: string, settings: Partial<ProjectSettings>) => Promise<boolean>;
   updateSetting: <K extends keyof ProjectSettings>(
-    projectId: string, 
-    key: K, 
+    projectId: string,
+    key: K,
     value: ProjectSettings[K]
   ) => Promise<boolean>;
   setJurisdiction: (projectId: string, jurisdiction: Jurisdiction | null) => Promise<boolean>;
@@ -34,6 +35,7 @@ const DEFAULT_SETTINGS: ProjectSettings = {
 
 export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) => ({
   settings: DEFAULT_SETTINGS,
+  suggestedJurisdiction: null,
   isLoading: false,
   error: null,
   
@@ -42,16 +44,18 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
       set({ isLoading: true, error: null });
       
       // Updated to use project-level endpoint
-      const response = await apiService.get<{data: {settings: ProjectSettings}}>(`/api/projects/${projectId}/settings`);
-      
+      const response = await apiService.get<{data: {settings: ProjectSettings; suggestedJurisdiction?: Jurisdiction | null}}>(`/api/projects/${projectId}/settings`);
+
       const settings = {
         ...DEFAULT_SETTINGS,
         ...response.data.settings
       };
-      
-      set({ 
+      const suggestedJurisdiction = response.data.suggestedJurisdiction ?? null;
+
+      set({
         settings,
-        isLoading: false 
+        suggestedJurisdiction,
+        isLoading: false
       });
       
       return settings;
@@ -107,5 +111,5 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
     return get().updateSettings(projectId, { jurisdiction: jurisdictionData});
   },
   
-  resetSettings: () => set({ settings: DEFAULT_SETTINGS, error: null }),
+  resetSettings: () => set({ settings: DEFAULT_SETTINGS, suggestedJurisdiction: null, error: null }),
 }));
