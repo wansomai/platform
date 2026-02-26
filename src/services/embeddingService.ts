@@ -3,8 +3,10 @@
 
 import { GoogleGenAI } from '@google/genai';
 
+// text-embedding-004 is only available on v1, not v1beta (the SDK default)
 const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || ''
+  apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '',
+  httpOptions: { apiVersion: 'v1' }
 });
 
 const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'text-embedding-004';
