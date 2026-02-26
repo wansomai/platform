@@ -422,9 +422,10 @@ ${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
 - Only cite laws, statutes, and regulations from ${activeJurisdiction.name}.
 - LEGAL CITATION INTEGRITY — strictly follow these rules:
   • NEVER fabricate, invent, or guess case names, docket numbers, court holdings, or statute section numbers.
-  • If you cite a case, you must be highly confident it actually exists with the holding you describe.
-  • When uncertain, say: "There is case law supporting this principle in ${activeJurisdiction.name}, but please verify the specific citation in the official ${activeJurisdiction.name} legal database before relying on it."
-  • It is always better to acknowledge uncertainty than to provide a citation you are not sure of.
+  • Before citing any specific case or statute section, call the **verifyLegalCitation** tool with jurisdictionId="${activeJurisdiction.id ?? activeJurisdiction.name.toLowerCase().replace(/\s+/g, '-')}".
+  • If verifyLegalCitation returns no results, say so clearly — do NOT invent a citation.
+  • Only present citations that were confirmed by verifyLegalCitation or that you are absolutely certain exist.
+  • It is always better to acknowledge uncertainty than to present an unverified citation.
 ` : '- No jurisdiction has been configured. If the query involves jurisdiction-specific law, ask the user which jurisdiction applies.'}
           **TODAY'S DATE**: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} (${new Date().toISOString().split('T')[0]})
 

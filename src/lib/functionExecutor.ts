@@ -7,6 +7,7 @@ import { GoogleCalendarService } from '@/services/googleCalendarService';
 import { GmailService } from '@/services/gmailService';
 import { executeAssociateCall } from './associateExecutor';
 import { RAGService } from '@/services/ragService';
+import { searchJurisdictionDatabase } from '@/services/legalDatabaseService';
 import { Jurisdiction } from '@/types/legalKnowledge';
 
 /**
@@ -334,6 +335,37 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           message: searchResults.length > 0
             ? `Found ${searchResults.length} relevant document(s).`
             : 'No matches found in the attached documents.'
+        };
+      }
+
+      case 'verifyLegalCitation': {
+        const { query, jurisdictionId } = functionCall.args as { query: string; jurisdictionId: string };
+
+        const dbResult = await searchJurisdictionDatabase(query, jurisdictionId);
+
+        if (!dbResult.success || dbResult.results.length === 0) {
+          return {
+            found: false,
+            database: dbResult.databaseName,
+            databaseUrl: dbResult.databaseUrl,
+            message: dbResult.message,
+            instruction: `No verified results found. Do NOT fabricate a citation. Inform the user that the specific citation could not be confirmed and direct them to ${dbResult.databaseUrl || 'the official legal database'} to verify.`,
+          };
+        }
+
+        return {
+          found: true,
+          database: dbResult.databaseName,
+          databaseUrl: dbResult.databaseUrl,
+          results: dbResult.results.map(r => ({
+            title: r.title,
+            citation: r.citation,
+            url: r.url,
+            excerpt: r.excerpt,
+            date: r.date,
+            source: r.source,
+          })),
+          instruction: 'Use only these verified results when citing. Include the URL so the user can verify independently.',
         };
       }
 
