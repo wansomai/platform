@@ -26,8 +26,9 @@ export class LegalKnowledgeService {
     createdById: string
   ): Promise<LegalKnowledge> {
     // Create the legal knowledge entry (auto-published)
-    const legalKnowledge = await prisma.legalKnowledge.create({
+    const legalKnowledge = await prisma.legal_knowledge.create({
       data: {
+        id: this.generateCuid(),
         title: input.title,
         description: input.description,
         type: input.type,
@@ -42,6 +43,7 @@ export class LegalKnowledgeService {
         tags: input.tags || [],
         status: 'active',
         isPublished: true,
+        updatedAt: new Date(),
         createdById
       }
     });
@@ -142,7 +144,7 @@ export class LegalKnowledgeService {
     console.log(`Processing chunks for legal knowledge ${legalKnowledgeId}`);
 
     // Delete existing chunks
-    await prisma.legalKnowledgeChunk.deleteMany({
+    await prisma.legal_knowledge_chunks.deleteMany({
       where: { legalKnowledgeId }
     });
 
@@ -192,10 +194,10 @@ export class LegalKnowledgeService {
    * Get legal knowledge by ID
    */
   static async getById(id: string): Promise<LegalKnowledge | null> {
-    const result = await prisma.legalKnowledge.findUnique({
+    const result = await prisma.legal_knowledge.findUnique({
       where: { id },
       include: {
-        chunks: {
+        legal_knowledge_chunks: {
           select: {
             id: true,
             chunkIndex: true,
@@ -254,13 +256,13 @@ export class LegalKnowledgeService {
     }
 
     const [items, total] = await Promise.all([
-      prisma.legalKnowledge.findMany({
+      prisma.legal_knowledge.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { updatedAt: 'desc' }
       }),
-      prisma.legalKnowledge.count({ where })
+      prisma.legal_knowledge.count({ where })
     ]);
 
     return {
@@ -276,7 +278,7 @@ export class LegalKnowledgeService {
     id: string,
     input: UpdateLegalKnowledgeInput
   ): Promise<LegalKnowledge> {
-    const existing = await prisma.legalKnowledge.findUnique({
+    const existing = await prisma.legal_knowledge.findUnique({
       where: { id }
     });
 
@@ -284,7 +286,7 @@ export class LegalKnowledgeService {
       throw new Error('Legal knowledge not found');
     }
 
-    const updated = await prisma.legalKnowledge.update({
+    const updated = await prisma.legal_knowledge.update({
       where: { id },
       data: {
         ...(input.title && { title: input.title }),
@@ -314,9 +316,9 @@ export class LegalKnowledgeService {
    * Publish legal knowledge for RAG
    */
   static async publish(id: string): Promise<LegalKnowledge> {
-    const legalKnowledge = await prisma.legalKnowledge.findUnique({
+    const legalKnowledge = await prisma.legal_knowledge.findUnique({
       where: { id },
-      include: { chunks: true }
+      include: { legal_knowledge_chunks: true }
     });
 
     if (!legalKnowledge) {
@@ -324,11 +326,11 @@ export class LegalKnowledgeService {
     }
 
     // Check if chunks exist and have embeddings
-    if (legalKnowledge.chunks.length === 0) {
+    if (legalKnowledge.legal_knowledge_chunks.length === 0) {
       throw new Error('Cannot publish: no chunks have been processed');
     }
 
-    const updated = await prisma.legalKnowledge.update({
+    const updated = await prisma.legal_knowledge.update({
       where: { id },
       data: {
         isPublished: true,
@@ -343,7 +345,7 @@ export class LegalKnowledgeService {
    * Unpublish legal knowledge
    */
   static async unpublish(id: string): Promise<LegalKnowledge> {
-    const updated = await prisma.legalKnowledge.update({
+    const updated = await prisma.legal_knowledge.update({
       where: { id },
       data: { isPublished: false }
     });
@@ -355,7 +357,7 @@ export class LegalKnowledgeService {
    * Delete legal knowledge (soft delete by setting status to archived)
    */
   static async delete(id: string): Promise<void> {
-    await prisma.legalKnowledge.update({
+    await prisma.legal_knowledge.update({
       where: { id },
       data: {
         status: 'archived',
@@ -369,7 +371,7 @@ export class LegalKnowledgeService {
    */
   static async hardDelete(id: string): Promise<void> {
     // Chunks are deleted via cascade
-    await prisma.legalKnowledge.delete({
+    await prisma.legal_knowledge.delete({
       where: { id }
     });
   }
@@ -378,7 +380,7 @@ export class LegalKnowledgeService {
    * Reprocess chunks for a legal knowledge entry
    */
   static async reprocess(id: string): Promise<void> {
-    const legalKnowledge = await prisma.legalKnowledge.findUnique({
+    const legalKnowledge = await prisma.legal_knowledge.findUnique({
       where: { id }
     });
 
@@ -400,19 +402,19 @@ export class LegalKnowledgeService {
     totalChunks: number;
   }> {
     const [total, published, byType, byJurisdiction, totalChunks] = await Promise.all([
-      prisma.legalKnowledge.count({ where: { status: 'active' } }),
-      prisma.legalKnowledge.count({ where: { isPublished: true } }),
-      prisma.legalKnowledge.groupBy({
+      prisma.legal_knowledge.count({ where: { status: 'active' } }),
+      prisma.legal_knowledge.count({ where: { isPublished: true } }),
+      prisma.legal_knowledge.groupBy({
         by: ['type'],
         _count: true,
         where: { status: 'active' }
       }),
-      prisma.legalKnowledge.groupBy({
+      prisma.legal_knowledge.groupBy({
         by: ['jurisdiction'],
         _count: true,
         where: { status: 'active' }
       }),
-      prisma.legalKnowledgeChunk.count()
+      prisma.legal_knowledge_chunks.count()
     ]);
 
     return {
