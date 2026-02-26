@@ -6,6 +6,8 @@ import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService'
 import { GoogleCalendarService } from '@/services/googleCalendarService';
 import { GmailService } from '@/services/gmailService';
 import { executeAssociateCall } from './associateExecutor';
+import { RAGService } from '@/services/ragService';
+import { Jurisdiction } from '@/types/legalKnowledge';
 
 /**
  * Execute a function call from Gemini
@@ -28,17 +30,6 @@ export async function executeFunctionCall(
       case 'generateDocumentInline': {
         const { documentType, title, parties, terms, suggestedFormat, formatReason, additionalContext } = functionCall.args as any;
 
-        // Build project context
-        const projectContext: ProjectContext = {
-          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-          instructions: project?.knowledgeBase?.instructions || '',
-          documents: conversationDocuments.map((doc: any) => ({
-            title: doc.document.title,
-            content: doc.document.content?.content || ''
-          })),
-          conversationHistory: recentMessages || []
-        };
-
         // Create a detailed drafting request
         const partiesText = Array.isArray(parties) ? parties.map((p: any) => `- ${p.name} (${p.role})`).join('\n') : 'Not specified';
         const termsText = typeof terms === 'object' ? JSON.stringify(terms, null, 2) : terms;
@@ -53,6 +44,34 @@ ${partiesText}
 Terms: ${termsText}
 
 ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
+
+        // Retrieve relevant legal knowledge using RAG
+        let ragResults;
+        try {
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+          ragResults = await RAGService.autoMatch(
+            {
+              jurisdiction: projectJurisdiction,
+              practiceAreas: project?.knowledgeBase?.settings?.practiceAreas
+            },
+            `${documentType}: ${title}`
+          );
+          console.log(`RAG retrieved ${ragResults.chunks.length} relevant chunks for document generation`);
+        } catch (error) {
+          console.error('RAG retrieval failed, continuing without RAG context:', error);
+        }
+
+        // Build project context with RAG results
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || [],
+          ragContext: ragResults  // Include RAG context
+        };
 
         // Send initial status
         if (streamCallback) {
@@ -90,17 +109,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'draftNewDocument': {
         const { documentType, parties, terms, additionalContext } = functionCall.args as any;
 
-        // Build project context
-        const projectContext: ProjectContext = {
-          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-          instructions: project?.knowledgeBase?.instructions || '',
-          documents: conversationDocuments.map((doc: any) => ({
-            title: doc.document.title,
-            content: doc.document.content?.content || ''
-          })),
-          conversationHistory: recentMessages || []
-        };
-
         // Create a detailed drafting request
         const partiesText = Array.isArray(parties) ? parties.map((p: any) => `- ${p.name} (${p.role})`).join('\n') : 'Not specified';
         const termsText = typeof terms === 'object' ? JSON.stringify(terms, null, 2) : terms;
@@ -113,6 +121,34 @@ ${partiesText}
 Terms: ${termsText}
 
 ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
+
+        // Retrieve relevant legal knowledge using RAG
+        let ragResults;
+        try {
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+          ragResults = await RAGService.autoMatch(
+            {
+              jurisdiction: projectJurisdiction,
+              practiceAreas: project?.knowledgeBase?.settings?.practiceAreas
+            },
+            `${documentType}`
+          );
+          console.log(`RAG retrieved ${ragResults.chunks.length} relevant chunks for canvas document generation`);
+        } catch (error) {
+          console.error('RAG retrieval failed, continuing without RAG context:', error);
+        }
+
+        // Build project context with RAG results
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || [],
+          ragContext: ragResults  // Include RAG context
+        };
 
         // Send initial status
         if (streamCallback) {
@@ -299,6 +335,74 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
             ? `Found ${searchResults.length} relevant document(s).`
             : 'No matches found in the attached documents.'
         };
+      }
+
+      case 'searchLegalKnowledge': {
+        const { query, documentType } = functionCall.args as any;
+
+        try {
+          // Use RAG service to search legal knowledge base
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+
+          const ragResults = await RAGService.retrieve({
+            query,
+            jurisdiction: projectJurisdiction,
+            documentTypes: documentType ? [documentType] : ['TEMPLATE'],
+            topK: 5,
+            minSimilarityScore: 0.6
+          });
+
+          if (ragResults.chunks.length === 0) {
+            return {
+              success: true,
+              found: false,
+              templates: [],
+              message: `No templates found for "${query}". You'll need to create this document from scratch.`,
+              suggestion: 'Ask the user for all necessary details to draft the document.'
+            };
+          }
+
+          // Group by source document and format results
+          const templatesMap = new Map<string, any>();
+          for (const chunk of ragResults.chunks) {
+            const key = chunk.legalKnowledge.id;
+            if (!templatesMap.has(key)) {
+              templatesMap.set(key, {
+                id: chunk.legalKnowledge.id,
+                title: chunk.legalKnowledge.title,
+                type: chunk.legalKnowledge.type,
+                jurisdiction: chunk.legalKnowledge.jurisdiction,
+                relevanceScore: chunk.score,
+                excerpts: []
+              });
+            }
+            templatesMap.get(key).excerpts.push({
+              section: chunk.sectionTitle || 'Content',
+              text: chunk.chunkText.substring(0, 500) + '...'
+            });
+          }
+
+          const templates = Array.from(templatesMap.values());
+
+          return {
+            success: true,
+            found: true,
+            templates,
+            message: `Found ${templates.length} relevant template(s) in the knowledge base.`,
+            suggestion: templates.length > 0
+              ? `Use "${templates[0].title}" as a reference. You only need to ask for: party names and any specific terms they want to customize.`
+              : undefined
+          };
+        } catch (error: any) {
+          console.error('Legal knowledge search failed:', error);
+          return {
+            success: false,
+            found: false,
+            templates: [],
+            message: 'Could not search legal knowledge base. Proceeding without template reference.',
+            error: error.message
+          };
+        }
       }
 
       case 'reviewDocument': {

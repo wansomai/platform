@@ -595,6 +595,21 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.LegalKnowledgeType = exports.$Enums.LegalKnowledgeType = {
+  TEMPLATE: 'TEMPLATE',
+  CASE_LAW: 'CASE_LAW',
+  STATUTE: 'STATUTE',
+  REGULATION: 'REGULATION',
+  LEGAL_OPINION: 'LEGAL_OPINION',
+  PRACTICE_GUIDE: 'PRACTICE_GUIDE'
+};
+
+exports.Jurisdiction = exports.$Enums.Jurisdiction = {
+  KENYA: 'KENYA',
+  INTERNATIONAL: 'INTERNATIONAL',
+  GENERAL: 'GENERAL'
+};
+
 exports.PracticeArea = exports.$Enums.PracticeArea = {
   MERGERS_AND_ACQUISITIONS: 'MERGERS_AND_ACQUISITIONS',
   TAX_LAW: 'TAX_LAW',

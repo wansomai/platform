@@ -201,6 +201,42 @@ export const searchProjectDocumentsTool = {
   }
 };
 
+export const searchLegalKnowledgeTool = {
+  name: "searchLegalKnowledge",
+  description: `Search the legal knowledge base for templates, precedents, and reference documents.
+
+  **WHEN TO USE**:
+  - ONLY when user explicitly asks to draft, create, or generate a legal document
+  - Examples: "Draft an NDA", "Create employment contract", "Generate a lease agreement"
+
+  **DO NOT USE FOR**:
+  - General questions or greetings ("hi", "hello", "how are you")
+  - Questions about law or legal concepts
+  - Anything that is NOT a request to create/draft a document
+
+  **WORKFLOW when drafting documents**:
+  1. User asks to draft a specific document type
+  2. Search for relevant templates
+  3. If found: Use template as reference, ask for minimal details
+  4. If not found: Create from scratch, ask for full details`,
+
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      query: {
+        type: Type.STRING,
+        description: "Search query describing the document type or content needed (e.g., 'NDA template', 'employment contract Kenya', 'service agreement')"
+      },
+      documentType: {
+        type: Type.STRING,
+        description: "Optional: Filter by type - TEMPLATE, CASE_LAW, STATUTE, REGULATION, LEGAL_OPINION, PRACTICE_GUIDE",
+        enum: ['TEMPLATE', 'CASE_LAW', 'STATUTE', 'REGULATION', 'LEGAL_OPINION', 'PRACTICE_GUIDE']
+      }
+    },
+    required: ["query"]
+  }
+};
+
 export const reviewDocumentTool = {
   name: "reviewDocument",
   description: `Conducts a comprehensive legal review of one or more documents in the project.
@@ -436,7 +472,8 @@ export const getCalendarAvailabilityTool = {
  * These are fundamental legal features users expect without configuration
  */
 export const coreDocumentTools = [
-  generateDocumentInlineTool, // PRIMARY: Generate documents inline in chat
+  searchLegalKnowledgeTool,    // FIRST: Search templates before drafting
+  generateDocumentInlineTool,  // PRIMARY: Generate documents inline in chat
   reviewDocumentTool,          // Review and analyze documents
   searchProjectDocumentsTool   // Search uploaded documents
 ];
