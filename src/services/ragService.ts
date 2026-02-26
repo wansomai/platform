@@ -362,7 +362,7 @@ Respond in JSON format:
       where.jurisdiction = filter.jurisdiction;
     }
 
-    const results = await prisma.legalKnowledge.findMany({
+    const results = await prisma.legal_knowledge.findMany({
       where,
       select: {
         id: true,
@@ -405,6 +405,6 @@ Respond in JSON format:
       };
     }
 
-    return prisma.legalKnowledge.count({ where });
+    return prisma.legal_knowledge.count({ where });
   }
 }
