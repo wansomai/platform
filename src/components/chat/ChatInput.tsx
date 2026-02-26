@@ -69,6 +69,7 @@ export function ChatInput({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedVaultDocIds, setSelectedVaultDocIds] = useState<string[]>([]);
   const [selectedAssociateId, setSelectedAssociateId] = useState<string | null>(null);
+  const [homepageJurisdictions, setHomepageJurisdictions] = useState<Jurisdiction[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
@@ -399,12 +400,39 @@ export function ChatInput({
                 });
               }
 
+              // Apply jurisdiction to the new project if one was selected on the dashboard
+              if (homepageJurisdictions.length > 0) {
+                try {
+                  await useProjectSettingsStore.getState().updateSettings(newProject.id, {
+                    jurisdictions: homepageJurisdictions.map(j => ({
+                      id: j.id,
+                      name: j.name,
+                      country: j.country,
+                      state: j.state,
+                      legalSystem: j.legalSystem,
+                      citationStyle: j.citationStyle
+                    })),
+                    jurisdiction: {
+                      id: homepageJurisdictions[0].id,
+                      name: homepageJurisdictions[0].name,
+                      country: homepageJurisdictions[0].country,
+                      state: homepageJurisdictions[0].state,
+                      legalSystem: homepageJurisdictions[0].legalSystem,
+                      citationStyle: homepageJurisdictions[0].citationStyle
+                    }
+                  });
+                } catch {
+                  // Non-fatal — workspace still works, jurisdiction can be set later
+                }
+              }
+
               // Store the message in sessionStorage to preserve it across navigation
               sessionStorage.setItem("pendingMessage", messageToSend);
 
               // Clear selected files and associate
               setSelectedFiles([]);
               setSelectedAssociateId(null);
+              setHomepageJurisdictions([]);
 
               // Call callback if provided
               onWorkspaceCreated?.(newProject.id);
@@ -575,6 +603,18 @@ export function ChatInput({
 
   // Handle multiple jurisdictions change
   const handleJurisdictionsChange = async (jurisdictions: Jurisdiction[]) => {
+    // Homepage mode — store locally; will be applied to project on creation
+    if (homepageMode) {
+      setHomepageJurisdictions(jurisdictions);
+      addToast({
+        message: jurisdictions.length > 0
+          ? `${jurisdictions.length} jurisdiction${jurisdictions.length !== 1 ? 's' : ''} selected`
+          : 'Jurisdictions cleared',
+        type: 'success'
+      });
+      return;
+    }
+
     if (!projectId) return;
 
     try {
@@ -741,6 +781,9 @@ export function ChatInput({
       .map(j => getJurisdictionById(j.id))
       .filter(Boolean) as Jurisdiction[];
   }, [settings?.jurisdictions]);
+
+  // In homepage mode use local state; in project mode use settings from store
+  const activeJurisdictionsForButton = homepageMode ? homepageJurisdictions : currentJurisdictions;
 
   return (
     <>
@@ -988,13 +1031,19 @@ export function ChatInput({
                   <button
                     className="h-8 w-8 sm:w-fit sm:px-2 p-0 rounded-md flex items-center gap-1 justify-center hover:bg-gray-100 border border-input bg-background"
                     title={
-                      currentJurisdictions.length > 0
-                        ? `${currentJurisdictions.length} jurisdiction${currentJurisdictions.length !== 1 ? 's' : ''} selected`
+                      activeJurisdictionsForButton.length > 0
+                        ? `${activeJurisdictionsForButton.length} jurisdiction${activeJurisdictionsForButton.length !== 1 ? 's' : ''} selected`
                         : "Select jurisdiction"
                     }
                   >
-                    <Globe className="h-4 w-4 text-gray-500" />
-                    <span className="hidden sm:inline text-sm text-gray-600">Jurisdictions</span>
+                    <Globe className={`h-4 w-4 ${activeJurisdictionsForButton.length > 0 ? 'text-teal-700' : 'text-gray-500'}`} />
+                    <span className="hidden sm:inline text-sm text-gray-600">
+                      {activeJurisdictionsForButton.length === 1
+                        ? activeJurisdictionsForButton[0].name
+                        : activeJurisdictionsForButton.length > 1
+                        ? `${activeJurisdictionsForButton.length} Jurisdictions`
+                        : 'Jurisdiction'}
+                    </span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -1005,7 +1054,7 @@ export function ChatInput({
                   <JurisdictionSelector
                     inline={true}
                     multiSelect={true}
-                    values={currentJurisdictions}
+                    values={activeJurisdictionsForButton}
                     onChangeMulti={handleJurisdictionsChange}
                     disabled={isLoadingSettings}
                     placeholder="Search jurisdictions..."

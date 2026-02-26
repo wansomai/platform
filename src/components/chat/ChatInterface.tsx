@@ -1,23 +1,26 @@
 // src/components/chat/ChatInterface.tsx
 "use client"
 
-import React, { useRef, useEffect, useCallback } from "react"
+import React, { useRef, useEffect, useCallback, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Copy,
   Search,
-  ExternalLink
+  ExternalLink,
+  Globe
 } from "lucide-react"
 import { useChatStore} from "@/store/chat.store"
 import { useUIStore } from "@/store/ui.store"
 import { useProjectStore } from "@/store/project.store"
+import { useProjectSettingsStore } from "@/store/workspace-settings.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
 import { CanvasProcessingStatus } from "./CanvasProcessingStatus"
 import { ReportDownloadCard } from "./ReportDownloadCard"
 import { DocumentArtifact } from "./DocumentArtifact"
-import { Message } from "@/types"
+import { Message, Jurisdiction } from "@/types"
+import { getJurisdictionById } from "@/lib/jurisdictions"
 
 const STATUS_TEXT: Record<string, string> = {
   started: "Securing your workspace...",
@@ -65,6 +68,7 @@ const PendingMessageState = () => (
 
 export function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [dismissedSuggestion, setDismissedSuggestion] = useState(false)
 
   // Get state from stores
   const { addToast } = useUIStore()
@@ -74,8 +78,25 @@ export function ChatInterface() {
     isLoading
   } = useChatStore()
   const { currentProject } = useProjectStore()
+  const { settings, suggestedJurisdiction, setJurisdiction } = useProjectSettingsStore()
 
   const {data: session} = useSession()
+
+  // Derive active jurisdictions for display
+  const activeJurisdictions = (settings?.jurisdictions ?? [])
+    .map(j => getJurisdictionById(j.id))
+    .filter(Boolean) as Jurisdiction[]
+  const hasJurisdiction = activeJurisdictions.length > 0 || !!settings?.jurisdiction
+
+  const applyJurisdiction = useCallback(async (jurisdiction: Jurisdiction) => {
+    if (!currentProject?.id) return
+    await setJurisdiction(currentProject.id, jurisdiction)
+    setDismissedSuggestion(true)
+  }, [currentProject?.id, setJurisdiction])
+
+  const dismissSuggestion = useCallback(() => {
+    setDismissedSuggestion(true)
+  }, [])
 
   // Check for pending message directly (more reliable than state)
   const hasPendingMessage = typeof window !== "undefined" && !!sessionStorage.getItem("pendingMessage")
@@ -111,6 +132,27 @@ export function ChatInterface() {
   
   return (
     <div className="flex flex-col h-full">
+      {/* Jurisdiction suggestion banner */}
+      {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-100 text-sm text-blue-700 flex-shrink-0">
+          <Globe className="h-4 w-4 flex-shrink-0" />
+          <span>We detected you may be in <strong>{suggestedJurisdiction.name}</strong>.</span>
+          <button
+            onClick={() => applyJurisdiction(suggestedJurisdiction)}
+            className="underline font-medium hover:text-blue-900"
+          >
+            Apply {suggestedJurisdiction.name} law
+          </button>
+          <button
+            onClick={dismissSuggestion}
+            className="ml-auto text-blue-400 hover:text-blue-600"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+
       {/* Messages container - Add bottom padding for the floating ChatInput */}
       <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
         <style jsx>{`

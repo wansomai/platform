@@ -6,6 +6,7 @@ import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorizati
 import { GoogleGenAI } from '@google/genai';
 
 import { canSendMessage } from '@/lib/subscription';
+import { getJurisdictionById, getJurisdictionInstructions, getJurisdictionByCountryCode } from '@/lib/jurisdictions';
 import {  coreDocumentTools, canvasTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
@@ -236,6 +237,30 @@ export async function POST(
             }
           }
 
+          // Resolve jurisdiction: explicit setting → jurisdictions[0] fallback → geo auto-detect
+          const resolvedJurisdiction = settings.jurisdiction ??
+            (Array.isArray(settings.jurisdictions) && settings.jurisdictions.length > 0
+              ? settings.jurisdictions[0]
+              : undefined);
+
+          // Geo auto-detect fallback when no jurisdiction is explicitly set
+          let autoDetectedJurisdiction: typeof resolvedJurisdiction = undefined;
+          if (!resolvedJurisdiction) {
+            const countryCode = req.headers.get('x-vercel-ip-country');
+            if (countryCode) {
+              const detected = getJurisdictionByCountryCode(countryCode);
+              if (detected) autoDetectedJurisdiction = detected;
+            }
+          }
+
+          const activeJurisdiction = resolvedJurisdiction ?? autoDetectedJurisdiction;
+          const isAutoDetected = !resolvedJurisdiction && !!autoDetectedJurisdiction;
+
+          // Get full jurisdiction object for richer instructions
+          const fullJurisdiction = activeJurisdiction?.id
+            ? getJurisdictionById(activeJurisdiction.id) ?? activeJurisdiction
+            : activeJurisdiction;
+
           // Canvas Mode: Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
           // Legacy support: legalDrafting setting maps to canvasMode
           const isCanvasMode = settings.canvasMode === true || settings.legalDrafting === true;
@@ -352,7 +377,7 @@ export async function POST(
           // Base context for agent sub-calls (lightweight — no document content or verbose instructions)
           const baseContext = `Project: "${fullProject?.title || 'Untitled'}"
 ${fullProject?.description ? `Description: ${fullProject.description}` : ''}
-${settings.jurisdiction ? `Jurisdiction: ${typeof settings.jurisdiction === 'object' && settings.jurisdiction !== null && 'name' in settings.jurisdiction ? `${settings.jurisdiction.name}` : settings.jurisdiction}` : ''}
+${activeJurisdiction ? `Jurisdiction: ${activeJurisdiction.name}${isAutoDetected ? ' (auto-detected)' : ''}` : ''}
 Today: ${new Date().toISOString().split('T')[0]}
 ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
 
@@ -376,28 +401,21 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
             fullProject?.title
           }".
           ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
-          ${settings.jurisdiction ? `
-          **JURISDICTION**: ${
-            typeof settings.jurisdiction === 'object' &&
-            settings.jurisdiction !== null &&
-            'name' in settings.jurisdiction &&
-            'country' in settings.jurisdiction
-              ? `${settings.jurisdiction.name} (${settings.jurisdiction.country}${
-                  'state' in settings.jurisdiction && settings.jurisdiction.state
-                    ? ', ' + settings.jurisdiction.state
-                    : ''
-                })`
-              : settings.jurisdiction
-          }
-          - Apply laws and regulations specific to this jurisdiction
-          - Use appropriate legal terminology and citation styles for this jurisdiction
-          - Consider local legal precedents and practices
-          ` : ""}
+          ${activeJurisdiction ? `
+**JURISDICTION**: ${activeJurisdiction.name} (${activeJurisdiction.country}${activeJurisdiction.state ? ', ' + activeJurisdiction.state : ''})${isAutoDetected ? ' [auto-detected from user location]' : ''}
+${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
+- ${resolvedJurisdiction ? 'Jurisdiction is already configured by the user. Do NOT ask them about jurisdiction.' : "Jurisdiction was auto-detected from the user's location."}  Apply all legal analysis to ${activeJurisdiction.name} automatically.
+- Only cite laws, statutes, and regulations from ${activeJurisdiction.name}.
+- LEGAL CITATION INTEGRITY — strictly follow these rules:
+  • NEVER fabricate, invent, or guess case names, docket numbers, court holdings, or statute section numbers.
+  • If you cite a case, you must be highly confident it actually exists with the holding you describe.
+  • When uncertain, say: "There is case law supporting this principle in ${activeJurisdiction.name}, but please verify the specific citation in the official ${activeJurisdiction.name} legal database before relying on it."
+  • It is always better to acknowledge uncertainty than to provide a citation you are not sure of.
+` : '- No jurisdiction has been configured. If the query involves jurisdiction-specific law, ask the user which jurisdiction applies.'}
           **TODAY'S DATE**: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} (${new Date().toISOString().split('T')[0]})
 
           Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
-          Get as many details as possible about the project before providing responses. Once you have all the details, provide a comprehensive response to the question asked and make sure that the response is accurate.
-          If you are unsure about something, ask for clarification and ask if they would want to research it first before you continue with the project.
+          Provide comprehensive and accurate responses. Only ask for clarification if critical information is genuinely missing and cannot be reasonably inferred.
 
           ${useGoogleSearch
             ? `**AVAILABLE AGENTS**: Use legalDocumentAgent for document drafting/review/search, searchAgent for web research.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}

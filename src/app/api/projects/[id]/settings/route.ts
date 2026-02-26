@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { checkProjectAccess } from '@/lib/auth/authorization';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
+import { getJurisdictionByCountryCode } from '@/lib/jurisdictions';
 
 // Default settings with jurisdiction support
 const DEFAULT_SETTINGS = {
@@ -56,10 +57,15 @@ export const GET = withErrorHandler(withAuth(async (
 
   const settings = project.knowledgeBase?.settings || DEFAULT_SETTINGS;
 
+  const detectedCountryCode = request.headers.get('x-vercel-ip-country');
+  const suggestedJurisdiction = detectedCountryCode
+    ? getJurisdictionByCountryCode(detectedCountryCode) ?? null
+    : null;
+
   return NextResponse.json({
     status: 200,
     message: 'Settings retrieved successfully',
-    data: { settings }
+    data: { settings, suggestedJurisdiction }
   });
 }));
 

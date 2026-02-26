@@ -203,6 +203,30 @@ created_by             String   @map("createdBy")      // TypeScript: document.c
 ```
 Similar pattern applies to `ProjectDocument` and `ConversationDocument` join tables.
 
+### Client-Side API Service
+Client components make API calls using `apiService` from `src/lib/api.ts` (axios-based). It automatically attaches the Bearer token, handles 401s by clearing the token cache, and retries transient errors (408, 429, 5xx):
+```typescript
+import { apiService } from '@/lib/api';
+
+// GET/POST/PUT/DELETE
+const response = await apiService.get('/api/projects');
+const result = await apiService.post('/api/projects', { title: 'New Matter' });
+```
+Do **not** use raw `fetch` in client components—always use `apiService`.
+
+### Custom Hooks
+Reusable hooks in `src/hooks/`:
+- `useAuth` - User session and authentication state
+- `useNotifications` - Toast notifications (`notify.success()`, `notify.error()`, `notify.info()`)
+- `useFileUpload` - File upload with progress tracking
+- `useDocuments` / `useProjects` / `useAssociates` / `useProjectAssociates` - Data fetching wrappers
+
+### Project Workspace View Modes
+The project workspace page (`(account)/projects/[id]/page.tsx`) renders one of three views based on state:
+- `DocumentPreviewSplitView` - When a document is selected for preview (`selectedPreviewDocument` in `ui.store`)
+- `CanvasChatSplitView` - When canvas mode is active (`view=canvas` query param, or `canvasMode`/`legalDrafting` setting)
+- `ChatInterface` - Default AI chat view
+
 ### Environment Variables
 See `.env.example` for the full list. Key variables:
 - `DATABASE_URL` - PostgreSQL connection
@@ -214,6 +238,8 @@ See `.env.example` for the full list. Key variables:
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
 - `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` / `PAYSTACK_PLAN_CODE` - Payments
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` - Sanity CMS
+- `EMAIL_USER` / `EMAIL_PASSWORD` - Email sending (nodemailer via `src/lib/email-service.ts`)
+- `EMAIL_HOST` / `EMAIL_PORT` - SMTP server (default: `smtp.gmail.com:587`)
 
 Optional (for Google Cloud Vision OCR):
 - `GOOGLE_APPLICATION_CREDENTIALS` - Path to service account JSON key
