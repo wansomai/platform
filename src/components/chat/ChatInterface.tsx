@@ -121,18 +121,18 @@ export function ChatInterface() {
     <div className="flex flex-col h-full">
       {/* Jurisdiction suggestion banner */}
       {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-100 text-sm text-blue-700 flex-shrink-0">
+        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
           <Globe className="h-4 w-4 flex-shrink-0" />
           <span>We detected you may be in <strong>{suggestedJurisdiction.name}</strong>.</span>
           <button
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
-            className="underline font-medium hover:text-blue-900"
+            className=" font-medium hover:text-green-900"
           >
-            Apply {suggestedJurisdiction.name} law
+           Applying {suggestedJurisdiction.name} law
           </button>
           <button
             onClick={() => setDismissedSuggestion(true)}
-            className="ml-auto text-blue-400 hover:text-blue-600"
+            className="ml-auto text-green-400 hover:text-green-600"
           >
             ✕
           </button>
