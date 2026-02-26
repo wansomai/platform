@@ -108,7 +108,11 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
       legalSystem: jurisdiction.legalSystem,
       citationStyle: jurisdiction.citationStyle
     } : undefined;
-    return get().updateSettings(projectId, { jurisdiction: jurisdictionData});
+    return get().updateSettings(projectId, {
+      jurisdiction: jurisdictionData,
+      // Also set the plural array so the selector shows it checked
+      jurisdictions: jurisdictionData ? [jurisdictionData] : []
+    });
   },
   
   resetSettings: () => set({ settings: DEFAULT_SETTINGS, suggestedJurisdiction: null, error: null }),

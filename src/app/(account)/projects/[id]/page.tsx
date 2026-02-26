@@ -33,25 +33,13 @@ export default function ProjectPage() {
   const project = projects.find(p => p.id === projectId)
 
   // Get settings from dedicated store
-  const { settings, updateSetting, fetchSettings, setJurisdiction } = useProjectSettingsStore()
+  const { settings, updateSetting, fetchSettings } = useProjectSettingsStore()
   const { selectedPreviewDocument } = useUIStore();
   const { fetchConversation, currentConversation, isLoading: chatLoading } = useChatStore();
 
   // Load project settings and conversations
   useEffect(() => {
-    fetchSettings(projectId).then(fetchedSettings => {
-      // Auto-apply geo-detected jurisdiction if none is set on this project
-      const hasJurisdiction =
-        fetchedSettings.jurisdiction ||
-        (Array.isArray(fetchedSettings.jurisdictions) && fetchedSettings.jurisdictions.length > 0);
-
-      if (!hasJurisdiction) {
-        const { suggestedJurisdiction } = useProjectSettingsStore.getState();
-        if (suggestedJurisdiction) {
-          setJurisdiction(projectId, suggestedJurisdiction).catch(() => {});
-        }
-      }
-    }).catch(err => {
+    fetchSettings(projectId).catch(err => {
       console.error('[ProjectPage] Failed to fetch settings:', err);
     });
 
@@ -61,7 +49,7 @@ export default function ProjectPage() {
         console.error('[ProjectPage] Failed to fetch conversations:', err);
       });
     }
-  }, [projectId, fetchSettings, setJurisdiction, fetchConversation, currentConversation?.projectId]);
+  }, [projectId, fetchSettings, fetchConversation, currentConversation?.projectId]);
 
   // Handle Google connection notifications
   useEffect(() => {

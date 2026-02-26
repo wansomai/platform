@@ -432,6 +432,29 @@ ${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
           Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
           Provide comprehensive and accurate responses. Only ask for clarification if critical information is genuinely missing and cannot be reasonably inferred.
 
+          ${settings.citeSources ? `
+**CITATION POLICY — MANDATORY**:
+You MUST cite sources in every response where you draw on legal authority, documents, or external information. There are two distinct source types — format them differently:
+
+**SOURCE TYPE A — Project Documents** (uploaded files, vault documents, conversation attachments):
+- Cite inline immediately after the relevant sentence: *(Doc: [Document Name])*
+- For specific clauses or page references: *(Doc: [Document Name], clause 4.2)* or *(Doc: [Document Name], p. 3)*
+- Do NOT summarise document content without attribution — every claim from a document needs a *(Doc: ...)* tag.
+- At the end of your response, list all referenced documents under a **📄 Documents Referenced** heading.
+
+**SOURCE TYPE B — Legal Database Sources** (results from verifyLegalCitation tool, Kenya Law, UK Legislation, AfricanLII, CourtListener, etc.):
+- Call verifyLegalCitation before citing any case name, statute, or legal principle.
+- When verifyLegalCitation returns a result with a URL, cite as: *[Case/Statute Name](url)* — make it a clickable markdown link.
+- When verifyLegalCitation returns a result without a URL, cite as: *Case Name* [Year] Court with the full legal citation format.
+- When verifyLegalCitation finds no match, write: *"There is authority for this principle in ${activeJurisdiction?.name || 'the applicable jurisdiction'} — please verify the specific citation in the official legal database."*
+- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable links where available.
+
+**GENERAL RULES**:
+- Keep the two source types visually separate in your response — documents in 📄 and legal authorities in ⚖️.
+- Web search results (Google Search): cite inline with title and URL as a markdown link; include under ⚖️ Legal Sources or a separate **🌐 Web Sources** section.
+- If you cite only one or two sources total, inline attribution is sufficient — no separate section needed.
+- It is always better to say "I could not verify this citation" than to present an unverified one.
+` : ''}
           ${useGoogleSearch
             ? `**AVAILABLE AGENTS**: Use legalDocumentAgent for document drafting/review/search, searchAgent for web research.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
           When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
@@ -508,7 +531,7 @@ ${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
               ${relevantContent}
 
               ${settings.citeSources ?
-                "If you find information in the documents, tell the user which document it came from."
+                "DOCUMENT ATTRIBUTION: Every claim or finding drawn from the documents above MUST be attributed. Cite inline as *(Source: [Document Name])* immediately after the relevant sentence or paragraph. Do not summarise document content without attribution."
                 :
                 "Use the document information when relevant to the query."
               }`

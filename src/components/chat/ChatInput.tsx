@@ -774,13 +774,20 @@ export function ChatInput({
 
   // Get current jurisdictions from settings
   const currentJurisdictions = useMemo(() => {
-    if (!settings?.jurisdictions || settings.jurisdictions.length === 0) {
-      return [];
+    // Prefer the plural array (set by the selector)
+    if (settings?.jurisdictions && settings.jurisdictions.length > 0) {
+      return settings.jurisdictions
+        .map(j => getJurisdictionById(j.id))
+        .filter(Boolean) as Jurisdiction[];
     }
-    return settings.jurisdictions
-      .map(j => getJurisdictionById(j.id))
-      .filter(Boolean) as Jurisdiction[];
-  }, [settings?.jurisdictions]);
+    // Fall back to singular jurisdiction (set by banner Apply or legacy saves)
+    const singular = settings?.jurisdiction;
+    if (singular && typeof singular === 'object' && 'id' in singular) {
+      const full = getJurisdictionById((singular as { id: string }).id);
+      return full ? [full] : [];
+    }
+    return [];
+  }, [settings?.jurisdictions, settings?.jurisdiction]);
 
   // In homepage mode use local state; in project mode use settings from store
   const activeJurisdictionsForButton = homepageMode ? homepageJurisdictions : currentJurisdictions;
