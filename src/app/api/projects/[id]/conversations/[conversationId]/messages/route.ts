@@ -18,11 +18,21 @@ export const maxDuration = 60;
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 // Default settings if none exist
-type JurisdictionType = {
+type JurisdictionObject = {
+  id?: string;
   name: string;
   country: string;
   state?: string;
-} | string | undefined;
+  legalSystem?: string;
+  citationStyle?: string;
+};
+type JurisdictionType = JurisdictionObject | string | undefined;
+
+// Narrow JurisdictionType to the object form (filters out legacy string values)
+function asJurisdictionObject(j: JurisdictionType): JurisdictionObject | undefined {
+  if (typeof j === 'object' && j !== null) return j;
+  return undefined;
+}
 
 const DEFAULT_SETTINGS: {
   citeSources: boolean;
@@ -35,6 +45,7 @@ const DEFAULT_SETTINGS: {
   canvasMode: boolean;  // Renamed from legalDrafting - controls canvas-specific tools only
   legalDrafting?: boolean;  // Legacy support - maps to canvasMode
   jurisdiction?: JurisdictionType;
+  jurisdictions?: JurisdictionType[];
   aiAssociates?: boolean;
 } = {
   citeSources: true,
@@ -238,28 +249,31 @@ export async function POST(
           }
 
           // Resolve jurisdiction: explicit setting → jurisdictions[0] fallback → geo auto-detect
-          const resolvedJurisdiction = settings.jurisdiction ??
+          // Narrow to object form to discard any legacy string values
+          const resolvedJurisdiction =
+            asJurisdictionObject(settings.jurisdiction) ??
             (Array.isArray(settings.jurisdictions) && settings.jurisdictions.length > 0
-              ? settings.jurisdictions[0]
+              ? asJurisdictionObject(settings.jurisdictions[0])
               : undefined);
 
           // Geo auto-detect fallback when no jurisdiction is explicitly set
-          let autoDetectedJurisdiction: typeof resolvedJurisdiction = undefined;
+          let autoDetectedJurisdiction: JurisdictionObject | undefined = undefined;
           if (!resolvedJurisdiction) {
-            const countryCode = req.headers.get('x-vercel-ip-country');
+            const countryCode = request.headers.get('x-vercel-ip-country');
             if (countryCode) {
               const detected = getJurisdictionByCountryCode(countryCode);
               if (detected) autoDetectedJurisdiction = detected;
             }
           }
 
-          const activeJurisdiction = resolvedJurisdiction ?? autoDetectedJurisdiction;
+          const activeJurisdiction: JurisdictionObject | undefined = resolvedJurisdiction ?? autoDetectedJurisdiction;
           const isAutoDetected = !resolvedJurisdiction && !!autoDetectedJurisdiction;
 
-          // Get full jurisdiction object for richer instructions
+          // Get full jurisdiction object (with courtSystem, languages etc.) for richer instructions
+          // Only use a full Jurisdiction from the registry — partial objects lack courtSystem/languages
           const fullJurisdiction = activeJurisdiction?.id
-            ? getJurisdictionById(activeJurisdiction.id) ?? activeJurisdiction
-            : activeJurisdiction;
+            ? getJurisdictionById(activeJurisdiction.id)
+            : undefined;
 
           // Canvas Mode: Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
           // Legacy support: legalDrafting setting maps to canvasMode
