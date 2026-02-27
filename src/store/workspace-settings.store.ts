@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS: ProjectSettings = {
   canvasMode: false,  // Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
   aiAssociates: true,
   model: 'gemini-3-flash-preview',
-  temperature: 0.7,
+  temperature: 0.3,
   jurisdiction: undefined
 };
 

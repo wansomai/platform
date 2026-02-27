@@ -7,7 +7,6 @@ import { GoogleCalendarService } from '@/services/googleCalendarService';
 import { GmailService } from '@/services/gmailService';
 import { executeAssociateCall } from './associateExecutor';
 import { RAGService } from '@/services/ragService';
-import { searchJurisdictionDatabase } from '@/services/legalDatabaseService';
 import { Jurisdiction } from '@/types/legalKnowledge';
 
 /**
@@ -335,56 +334,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           message: searchResults.length > 0
             ? `Found ${searchResults.length} relevant document(s).`
             : 'No matches found in the attached documents.'
-        };
-      }
-
-      case 'verifyLegalCitation': {
-        const { query, jurisdictionId } = functionCall.args as { query: string; jurisdictionId: string };
-
-        console.log('[verifyLegalCitation] query:', query, '| jurisdictionId:', jurisdictionId);
-
-        const dbResult = await searchJurisdictionDatabase(query, jurisdictionId);
-
-        console.log('[verifyLegalCitation] result:', JSON.stringify({
-          success: dbResult.success,
-          database: dbResult.databaseName,
-          resultCount: dbResult.results.length,
-          message: dbResult.message,
-          results: dbResult.results.map(r => ({ title: r.title, url: r.url })),
-        }, null, 2));
-
-        if (!dbResult.success || dbResult.results.length === 0) {
-          return {
-            found: false,
-            database: dbResult.databaseName,
-            message: dbResult.message,
-            instruction: [
-              `CRITICAL: Citation verification returned no results from ${dbResult.databaseName || 'the legal database'}.`,
-              `You MUST NOT invent, guess, or construct any URL for this citation.`,
-              `Do NOT link to any legal database URL that was not explicitly returned by this tool.`,
-              `Tell the user: "I was unable to verify this specific citation in ${dbResult.databaseName || 'the official legal database'}. Please verify it independently before relying on it."`,
-            ].join(' '),
-          };
-        }
-
-        return {
-          found: true,
-          database: dbResult.databaseName,
-          databaseUrl: dbResult.databaseUrl,
-          results: dbResult.results.map(r => ({
-            title: r.title,
-            citation: r.citation,
-            url: r.url,
-            excerpt: r.excerpt,
-            date: r.date,
-            source: r.source,
-          })),
-          instruction: [
-            'Use ONLY the URLs listed in these results — they are real links to the legal database.',
-            'Some results may be search-page links rather than direct document links; that is intentional.',
-            'NEVER modify, extend, or construct a different URL from the ones provided here.',
-            'Include the URL as a markdown link so the user can click through to verify.',
-          ].join(' '),
         };
       }
 

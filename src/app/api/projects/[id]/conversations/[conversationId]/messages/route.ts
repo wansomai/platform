@@ -52,7 +52,7 @@ const DEFAULT_SETTINGS: {
   suggestActions: true,
   webSearch: false,
   model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
-  temperature: 0.7,
+  temperature: 0.3,
   canvasMode: false,  // Canvas editing disabled by default (but core document tools are always available)
   googleCalendar: false,
   gmail: false,
@@ -347,9 +347,25 @@ export async function POST(
             relevantContent = contentParts.join("\n");
           }
 
-          // Web search is now handled by Gemini's built-in Google Search grounding
-          // No need for separate API calls - Gemini will search when needed
-          const useGoogleSearch = settings.webSearch;
+          // Web search via Gemini's built-in Google Search grounding.
+          // Default: OFF. Must be explicitly enabled per project, or dynamically
+          // activated when the user responds "yes" to the AI's offer to research.
+          let useGoogleSearch = settings.webSearch === true;
+
+          if (!useGoogleSearch && messageHistory.length > 0) {
+            // messageHistory is ordered desc — [0] is the most recent message
+            const lastAiMessage = messageHistory.find(m => m.role === 'assistant');
+            const aiOfferedResearch = lastAiMessage &&
+              /\b(search|research|look\s*up|find\s*out|look\s*into|would you like me to (search|research|look))\b/i
+                .test(lastAiMessage.content);
+            const userSaidYes =
+              /^(yes|yeah|sure|ok|okay|go ahead|please|do it|search|research|find it|look it up)/i
+                .test(content.trim());
+
+            if (aiOfferedResearch && userSaidYes) {
+              useGoogleSearch = true;
+            }
+          }
 
           // Check if Google Calendar integration is enabled
           const useGoogleCalendar = settings.googleCalendar === true;
@@ -422,44 +438,74 @@ ${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
 - Only cite laws, statutes, and regulations from ${activeJurisdiction.name}.
 - LEGAL CITATION INTEGRITY — strictly follow these rules:
   • NEVER fabricate, invent, or guess case names, docket numbers, court holdings, or statute section numbers.
-  • Before citing any specific case or statute section, call the **verifyLegalCitation** tool with jurisdictionId="${activeJurisdiction.id ?? activeJurisdiction.name.toLowerCase().replace(/\s+/g, '-')}".
-  • If verifyLegalCitation returns no results, say so clearly — do NOT invent a citation.
-  • Only present citations that were confirmed by verifyLegalCitation or that you are absolutely certain exist.
-  • It is always better to acknowledge uncertainty than to present an unverified citation.
+  • **SPECIFIC CASE RULE — MANDATORY FORMAT**: When a user asks about holdings of a specific named case (e.g. "What did X v Y hold?"), you MUST follow this exact format and nothing else:
+
+    STEP 1: Can you confirm ALL THREE of the following with HIGH confidence: (1) exact party names, (2) exact year, (3) exact court? YES only if ALL THREE match. NO if any one is different or uncertain.
+
+    CRITICAL — PARTIAL MATCHES DO NOT COUNT AS YES:
+    - A case with the same party names but a different court → NO
+    - A case with the same party names but a different year → NO
+    - A case with the same party names but a different subject matter → NO
+    - A case that "may be" or "appears to be" the asked case → NO
+    Do NOT use a partial match as justification to elaborate on the case.
+
+    If YES (all three confirmed) → state the holdings concisely and cite the source.
+
+    If NO → use ONLY this template, word for word:
+    "I cannot find a case titled [exact name as given by user] in my knowledge. [One sentence: this case may not exist, or the citation may be incorrect.]
+    [OPTIONAL — only if you found a case with similar but DIFFERENT parties/year/court]: The closest case I found is [name] ([court, year]) — this is a different case.
+    ${useGoogleSearch ? `I will search for this now.` : `Would you like me to search the web for this? Just say yes.`}"
+
+    THAT IS THE ENTIRE RESPONSE. Do not add: background context, related cases, "however" pivots, thematic summaries, what the law "generally" says, or anything else. The user asked about a specific case — if you cannot confirm it with ALL THREE elements, your only job is to say so and offer to search. Adding unverified partial matches is not being helpful, it is misleading a lawyer.
+
+  • ${useGoogleSearch
+    ? `Web search is ON — if a search returns no direct match for the specific case asked, report that in one sentence. Do not fill the gap with training-data cases.`
+    : `Web search is OFF — never construct or infer holdings for unconfirmed cases. Be brief.`}
+  • A short honest answer is always better than a long answer that sounds plausible but cannot be verified.
 ` : '- No jurisdiction has been configured. If the query involves jurisdiction-specific law, ask the user which jurisdiction applies.'}
           **TODAY'S DATE**: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} (${new Date().toISOString().split('T')[0]})
 
           Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
-          Provide comprehensive and accurate responses. Only ask for clarification if critical information is genuinely missing and cannot be reasonably inferred.
+          Provide accurate responses. Be comprehensive when the question is general or exploratory. Be brief and direct when the question asks about a specific named case, statute, or fact — accuracy matters more than length. Only ask for clarification if critical information is genuinely missing and cannot be reasonably inferred.
 
           ${settings.citeSources ? `
 **CITATION POLICY — MANDATORY**:
-You MUST cite sources in every response where you draw on legal authority, documents, or external information. There are two distinct source types — format them differently:
+You MUST cite sources in every response where you draw on legal authority, documents, or external information. There are two source types — format them differently:
 
 **SOURCE TYPE A — Project Documents** (uploaded files, vault documents, conversation attachments):
 - Cite inline immediately after the relevant sentence: *(Doc: [Document Name])*
-- For specific clauses or page references: *(Doc: [Document Name], clause 4.2)* or *(Doc: [Document Name], p. 3)*
-- Do NOT summarise document content without attribution — every claim from a document needs a *(Doc: ...)* tag.
+- For specific clauses: *(Doc: [Document Name], clause 4.2)* or *(Doc: [Document Name], p. 3)*
+- Do NOT summarise document content without attribution.
 - At the end of your response, list all referenced documents under a **📄 Documents Referenced** heading.
 
-**SOURCE TYPE B — Legal Database Sources** (results from verifyLegalCitation tool, Kenya Law, UK Legislation, AfricanLII, CourtListener, etc.):
-- Call verifyLegalCitation before citing any case name, statute, or legal principle.
-- When verifyLegalCitation returns a result with a URL, cite as: *[Case/Statute Name](url)* — make it a clickable markdown link.
-- When verifyLegalCitation returns a result without a URL, cite as: *Case Name* [Year] Court with the full legal citation format.
-- When verifyLegalCitation finds no match, write: *"There is authority for this principle in ${activeJurisdiction?.name || 'the applicable jurisdiction'} — please verify the specific citation in the official legal database."*
-- **CRITICAL**: NEVER construct or modify a legal database URL yourself. Only use URLs that were explicitly returned by the verifyLegalCitation tool. Do not build URLs like "kenyalaw.org/lex/actview.xql?actid=..." or any similar pattern from memory — those links break.
-- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable links where available.
+**SOURCE TYPE B — Legal Sources** (statutes, case law, regulations):
+${useGoogleSearch
+  ? `- Web search is enabled. Use it to find and verify case names, statutes, and recent legislation before presenting them as fact.
+- Cite legal sources as clickable markdown links: *[Case/Statute Name](url)*
+- NEVER construct a URL from memory — only use URLs returned from your search results.
+- For legislation enacted or amended after 2024, always search before citing — your training data may reflect draft bills rather than the final enacted law.
+- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable links.`
+  : `- Web search is OFF. Cite only what you know with confidence from your training data.
+- Use full legal citation format: *Case Name* [Year] Court, or *Statute Name* Cap. X.
+- If uncertain about a specific case name, section number, or recent legislation — say so honestly. Do NOT guess or fabricate. Offer: "I'm not fully certain about this — would you like me to search the web for the latest information? Just say yes."
+- For legislation enacted or amended after 2024, flag the uncertainty explicitly.
+- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading.`}
 
 **GENERAL RULES**:
-- Keep the two source types visually separate in your response — documents in 📄 and legal authorities in ⚖️.
-- Web search results (Google Search): cite inline with title and URL as a markdown link; include under ⚖️ Legal Sources or a separate **🌐 Web Sources** section.
+- Keep the two source types visually separate — documents in 📄 and legal authorities in ⚖️.
 - If you cite only one or two sources total, inline attribution is sufficient — no separate section needed.
-- It is always better to say "I could not verify this citation" than to present an unverified one.
+- It is always better to say "I could not verify this" than to present an unverified citation.
 ` : ''}
+          **RESEARCH RULE — MANDATORY**:
+          - If the user's message mentions a specific named case (e.g. "X v Y [year]"), asks about a specific statute section, or asks you to cite a specific case → call researchAgent IMMEDIATELY before writing any response.
+          - This applies even when the question is compound ("Can I do X? Cite case Y to support it") — verify case Y FIRST via researchAgent before answering anything.
+          - If researchAgent returns UNVERIFIED: immediately call searchAgent with the same query — do NOT ask the user for permission, do NOT say "Enable web search". Just search and present the results as your final answer.
+          - NEVER answer a question that asks you to "cite" a specific case without first calling researchAgent.
+
           ${useGoogleSearch
-            ? `**AVAILABLE AGENTS**: Use legalDocumentAgent for document drafting/review/search, searchAgent for web research.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
+            ? `**AVAILABLE AGENTS**: Use researchAgent for ALL specific legal research (cases, statutes, sections). Use legalDocumentAgent for document drafting/review/search. Use searchAgent for general web queries not covered by researchAgent.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
           When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
-            : `**DOCUMENT TOOLS**: You have generateDocumentInline (drafting documents inline — preferred for most requests), reviewDocument (legal review/analysis), and searchProjectDocuments (search project docs).
+            : `**AVAILABLE TOOLS**: Use researchAgent for ALL specific legal research (cases, statutes, sections). For document work: generateDocumentInline (drafting — preferred), reviewDocument (review/analysis), searchProjectDocuments (search project docs).
           ${isCanvasMode ? `Canvas tools also available: ${canvasDocument ? `editCanvasDocument (apply targeted edits to the open canvas document — use for ALL edit requests), draftNewDocument (create a NEW document in canvas — only use when canvas is empty)` : `draftNewDocument (create a new document in canvas), editCanvasDocument (edit existing canvas document)`}.` : ''}`}
           Format: PDF for final docs, DOCX for drafts (default if unsure), MD for notes/analysis.
           Before generating, ensure you have all required information — ask if not.
@@ -591,6 +637,22 @@ You MUST cite sources in every response where you draw on legal authority, docum
             });
           }
 
+          // Research agent - always available for strict legal lookups (cases, statutes, sections)
+          agentTools.push({
+            name: 'researchAgent',
+            description: 'A STRICT legal fact checker. Use this for ALL questions about specific cases (e.g. "What did X v Y hold?"), specific statute sections (e.g. "What does Section 500 say?"), legal provisions, or any specific legal fact. Returns only confirmed facts — if it cannot verify, it says so and offers to search. NEVER answer these questions directly from training knowledge — ALWAYS delegate to researchAgent first.',
+            parameters: {
+              type: 'object',
+              properties: {
+                query: {
+                  type: 'string',
+                  description: 'The exact case name, statute section, or specific legal fact to look up'
+                }
+              },
+              required: ['query']
+            }
+          });
+
           // Create agent for Legal Document Tools (always available)
           // Core document tools (generate, review, search) are always available
           // Canvas tools (draft to canvas, edit canvas) only when canvas mode is enabled
@@ -687,6 +749,32 @@ You MUST cite sources in every response where you draw on legal authority, docum
               // Collect all function declarations into a single array
               const allFunctionDeclarations: any[] = [];
 
+              // Always include the research agent for strict legal lookups
+              allFunctionDeclarations.push({
+                name: 'researchAgent',
+                description: 'A STRICT legal fact checker. Use this for ALL questions about specific cases (e.g. "What did X v Y hold?"), specific statute sections (e.g. "What does Section 500 say?"), legal provisions, or any specific legal fact. Returns only confirmed facts — if it cannot verify, it says so and offers to search. NEVER answer these questions directly from training knowledge — ALWAYS delegate to researchAgent first.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    query: { type: 'string', description: 'The exact case name, statute section, or specific legal fact to look up' }
+                  },
+                  required: ['query']
+                }
+              });
+
+              // Always include the search agent so it can auto-search when researchAgent returns UNVERIFIED
+              allFunctionDeclarations.push({
+                name: 'searchAgent',
+                description: 'A web search agent. Call this AUTOMATICALLY when researchAgent returns UNVERIFIED for a specific case or statute — do NOT ask the user for permission. Also available for general web research when needed.',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    query: { type: 'string', description: 'The case name, statute section, or topic to search for' }
+                  },
+                  required: ['query']
+                }
+              });
+
               // Always include core document tools
               allFunctionDeclarations.push(...coreDocumentTools.map(tool => ({
                 name: tool.name,
@@ -743,7 +831,7 @@ You MUST cite sources in every response where you draw on legal authority, docum
 
           // Prepare the config for the new API
           const generateConfig: any = {
-            temperature: settings.temperature || 0.7,
+            temperature: settings.temperature || 0.3,
             maxOutputTokens: 8192,
           };
 
@@ -989,7 +1077,6 @@ You MUST cite sources in every response where you draw on legal authority, docum
             searchProjectDocuments:    'Searching your documents...',
             draftNewDocument:          'Creating document in canvas...',
             editCanvasDocument:        'Editing your canvas document...',
-            verifyLegalCitation:       'Searching legal databases...',
             searchLegalKnowledge:      'Searching legal knowledge base...',
             createCalendarEvent:       'Creating calendar event...',
             searchCalendarEvents:      'Checking your calendar...',
@@ -1001,6 +1088,7 @@ You MUST cite sources in every response where you draw on legal authority, docum
             draftEmail:                'Drafting email...',
             sendEmail:                 'Sending email...',
             searchAgent:               'Searching the web...',
+            researchAgent:             'Researching legal sources...',
             legalDocumentAgent:        'Working on your document...',
             legalDraftingAgent:        'Working on your document...',
             calendarAgent:             'Managing your calendar...',
@@ -1008,11 +1096,11 @@ You MUST cite sources in every response where you draw on legal authority, docum
           };
 
           // Pick the most descriptive message when multiple tools are called at once.
-          // Priority: document generation > canvas edit > review > citation > search > other
+          // Priority: document generation > canvas edit > review > search > other
           const TOOL_PRIORITY = [
             'generateDocumentInline', 'draftNewDocument', 'editCanvasDocument',
-            'reviewDocument', 'verifyLegalCitation', 'searchLegalKnowledge',
-            'searchProjectDocuments', 'searchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
+            'reviewDocument', 'searchLegalKnowledge',
+            'searchProjectDocuments', 'searchAgent', 'researchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
             'createCalendarEvent', 'updateCalendarEvent', 'deleteCalendarEvent',
             'searchCalendarEvents', 'checkCalendarAvailability',
             'calendarAgent', 'draftEmail', 'sendEmail', 'readEmail', 'searchEmails', 'gmailAgent',
@@ -1030,50 +1118,32 @@ You MUST cite sources in every response where you draw on legal authority, docum
           }
 
           // ── Agentic function-call loop ───────────────────────────────────────
-          // Gemini may issue multiple rounds of function calls before returning text
-          // (e.g. verifyLegalCitation fails → AI retries with a different query).
+          // Gemini may issue multiple rounds of function calls before returning text.
           // We loop up to MAX_AGENTIC_ITERATIONS, executing tools each round, until
           // the model returns text OR we hit the limit.
           const MAX_AGENTIC_ITERATIONS = 5;
           let agenticIteration = 0;
 
-          // Track every URL that verifyLegalCitation actually returned this request.
-          // After the response is generated we strip any legal-domain URLs the AI
-          // fabricated from training knowledge — only verified URLs are allowed through.
-          const verifiedLegalUrls = new Set<string>();
-
-          // When verifyLegalCitation returns found:false, the next Gemini call is forced
-          // into text-only mode (toolConfig mode=NONE) so it cannot retry the tool and
-          // MUST write a plain-language response explaining what it found (or didn't).
-          let forceTextMode = false;
-
-          // Legal database domains — any URL on these domains that is NOT in
-          // verifiedLegalUrls will be stripped from the final response.
-          const LEGAL_DOMAINS = [
-            'kenyalaw.org', 'new.kenyalaw.org',
-            'africanlii.org', 'legislation.gov.uk',
-            'courtlistener.com', 'canlii.org',
-            'austlii.edu.au', 'indiankanoon.org',
-            'singaporelawwatch.sg', 'gesetze-im-internet.de',
-            'legifrance.gouv.fr', 'hklii.org',
-          ];
-
           // Helper: execute one batch of function calls and return their responses
           const executeFunctionBatch = async (calls: any[], parts: any[]) => {
             const responses = await Promise.all(
               calls.map(async (fc) => {
-                if (hasMultipleToolTypes && (
-                  fc.name === 'searchAgent' ||
-                  fc.name === 'legalDraftingAgent' ||
-                  fc.name === 'calendarAgent' ||
-                  fc.name === 'gmailAgent'
-                )) {
+                if (
+                  fc.name === 'researchAgent' ||  // always route through executeAgentCall
+                  fc.name === 'searchAgent' ||     // always route through executeAgentCall
+                  (hasMultipleToolTypes && (
+                    fc.name === 'legalDocumentAgent' ||
+                    fc.name === 'legalDraftingAgent' ||
+                    fc.name === 'calendarAgent' ||
+                    fc.name === 'gmailAgent'
+                  ))
+                ) {
                   const result = await executeAgentCall(
                     fc, genAI, modelName, baseContext, relevantContent, content,
                     projectId, project, conversationDocuments, canvasDocument,
                     previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content), userId
                   );
-                  if (fc.name === 'searchAgent' && result.searchSources) {
+                  if ((fc.name === 'searchAgent' || fc.name === 'researchAgent') && result.searchSources) {
                     for (const source of result.searchSources) {
                       if (!webSearchSources.some((s: any) => s.uri === source.uri)) {
                         webSearchSources.push(source);
@@ -1098,23 +1168,6 @@ You MUST cite sources in every response where you draw on legal authority, docum
             const doc    = responses.find((fr: any) => fr.functionResponse?.response?.documentGenerated === true)?.functionResponse?.response;
             if (report) reportMetadata = report;
             if (doc)    documentMetadata = doc;
-
-            // Collect every URL that verifyLegalCitation actually found this session.
-            // Only these URLs are allowed in the final response.
-            // Also flag when verification failed so we can force text-only next call.
-            for (const resp of responses) {
-              if (resp.functionResponse?.name === 'verifyLegalCitation') {
-                const r = resp.functionResponse.response;
-                if (Array.isArray(r?.results)) {
-                  for (const result of r.results) {
-                    if (result.url) verifiedLegalUrls.add(result.url);
-                  }
-                }
-                // found:false means the citation could not be verified — force text response
-                // so the AI explains this rather than calling the tool again
-                if (r?.found === false) forceTextMode = true;
-              }
-            }
 
             return responses;
           };
@@ -1171,6 +1224,15 @@ You MUST cite sources in every response where you draw on legal authority, docum
             // Execute this round's function calls
             const functionResponses = await executeFunctionBatch(functionCalls, functionCallParts);
 
+            // Detect a timed-out searchAgent — force a text-only response to prevent
+            // the model from retrying (which causes another timeout)
+            // researchAgent doesn't use web search so it won't timeout
+            const searchAgentFailed = functionResponses.some((fr: any) => {
+              const res = fr.functionResponse?.response;
+              return fr.functionResponse?.name === 'searchAgent' &&
+                     res?.success === false && res?.timedOut === true;
+            });
+
             // Append model turn (with thought signatures) + function results to history
             fullContents.push({ role: 'model', parts: functionCallParts });
             fullContents.push({ role: 'user', parts: functionResponses.map((fr: any) => ({ functionResponse: fr.functionResponse })) });
@@ -1180,10 +1242,9 @@ You MUST cite sources in every response where you draw on legal authority, docum
             functionCallParts = [];
             fullContent = '';
 
-            // Ask model for next response.
-            // If any citation verification failed, force text-only mode so the model
-            // cannot retry the tool — it must write an explanatory response instead.
-            const nextResult = await callGeminiWithRetry(forceTextMode);
+            // If searchAgent failed, force a text-only call (no tools) so the model
+            // cannot retry the search. It will respond with training knowledge only.
+            const nextResult = await callGeminiWithRetry(searchAgentFailed);
 
             // Stream next response — collect any new function calls
             for await (const chunk of nextResult) {
@@ -1224,39 +1285,6 @@ You MUST cite sources in every response where you draw on legal authority, docum
               messageId: tempMessageId,
               content: fullContent,
             }) + '\n'));
-          }
-
-          // ── Strip unverified legal-database URLs ──────────────────────────────
-          // The AI sometimes fabricates URLs from its training knowledge (e.g. old
-          // kenyalaw.org PDF paths) even when told not to.  This post-processing
-          // step is the only reliable fix: remove any URL on a legal domain that
-          // was NOT returned by verifyLegalCitation this session.
-          if (LEGAL_DOMAINS.length > 0) {
-            // Match markdown links: [text](url)
-            fullContent = fullContent.replace(
-              /\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g,
-              (match, text, url) => {
-                const isLegalDomain = LEGAL_DOMAINS.some(d => url.includes(d));
-                if (isLegalDomain && !verifiedLegalUrls.has(url)) {
-                  // Keep the link text, drop the fabricated URL
-                  return text;
-                }
-                return match;
-              }
-            );
-
-            // Match bare URLs not inside markdown syntax
-            fullContent = fullContent.replace(
-              /(?<!\()https?:\/\/([^\s)>\]"]+)/g,
-              (match, rest) => {
-                const fullUrl = `https://${rest}`;
-                const isLegalDomain = LEGAL_DOMAINS.some(d => fullUrl.includes(d));
-                if (isLegalDomain && !verifiedLegalUrls.has(fullUrl)) {
-                  return ''; // Remove bare fabricated URL entirely
-                }
-                return match;
-              }
-            );
           }
 
           // Format the final content
@@ -1482,6 +1510,31 @@ async function executeAgentCall(
         agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${baseContext}`;
         break;
 
+      case 'researchAgent': {
+        // Research agent is ALWAYS training-data-only — no Google Search grounding.
+        // This avoids timeouts. When web search is needed, the main AI routes to searchAgent.
+        // Determine whether to offer web search in the "cannot verify" message.
+        let webSearchEnabled = false;
+        if (project?.knowledgeBase?.settings) {
+          try {
+            const s = typeof project.knowledgeBase.settings === 'string'
+              ? JSON.parse(project.knowledgeBase.settings)
+              : project.knowledgeBase.settings;
+            webSearchEnabled = s.webSearch === true;
+          } catch (_) {}
+        }
+        agentInstruction = `You are a strict legal fact checker. Training knowledge only — no web search.
+
+RULES — follow exactly, no exceptions:
+1. For specific cases: confirm ONLY if ALL THREE match — exact party names + exact year + exact court. If any one is different or uncertain: respond ONLY with: "UNVERIFIED: [exact case name as given]" — nothing else.
+2. For statute sections: if you can state the EXACT verbatim text with HIGH confidence, provide it in 1-3 sentences. If uncertain: respond ONLY with: "UNVERIFIED: [exact section reference as given]" — nothing else.
+3. If confirmed: state the confirmed fact in 2-3 sentences maximum. No analysis beyond the direct finding.
+4. NEVER add context, analysis, related cases, commentary, or elaboration.
+
+${baseContext}`;
+        break;
+      }
+
       case 'legalDocumentAgent':
       case 'legalDraftingAgent':  // Legacy support
         // Determine if canvas mode is enabled
@@ -1545,9 +1598,11 @@ async function executeAgentCall(
     const agentQuery = args.query || args.details || JSON.stringify(args);
 
     // Execute the agent with its specialized tool
+    // researchAgent uses very low temperature to ensure strict template adherence
+    const agentTemperature = agentName === 'researchAgent' ? 0.1 : 0.7;
     const agentConfig: any = {
       systemInstruction: agentInstruction,
-      temperature: 0.7,
+      temperature: agentTemperature,
       maxOutputTokens: 8192,
       tools: agentTools
     };
@@ -1559,16 +1614,19 @@ async function executeAgentCall(
       };
     }
 
-    const agentResult = await genAI.models.generateContent({
-      model: modelName,
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: agentQuery }]
-        }
-      ],
-      config: agentConfig
-    });
+    // Wrap the agent call in a 20-second timeout to prevent indefinite hangs
+    // (Google Search grounding can hang if the Gemini API is slow or unresponsive)
+    const AGENT_TIMEOUT_MS = 20_000;
+    const agentResult = await Promise.race([
+      genAI.models.generateContent({
+        model: modelName,
+        contents: [{ role: 'user', parts: [{ text: agentQuery }] }],
+        config: agentConfig
+      }),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Agent call timed out after ${AGENT_TIMEOUT_MS / 1000}s`)), AGENT_TIMEOUT_MS)
+      )
+    ]);
 
     // Check if the agent made function calls (for legal drafting, calendar, gmail agents)
     const candidate = agentResult.candidates?.[0];
@@ -1633,11 +1691,15 @@ async function executeAgentCall(
       searchSources: searchSources.length > 0 ? searchSources : undefined
     };
   } catch (error: any) {
+    const isTimeout = error.message?.includes('timed out');
     console.error(`Error executing ${functionCall.name}:`, error);
     return {
       success: false,
+      timedOut: isTimeout,
       agent: functionCall.name,
-      error: error.message || 'Agent execution failed'
+      error: isTimeout
+        ? 'Search timed out. Do NOT retry. Respond to the user based on your training knowledge only.'
+        : (error.message || 'Agent execution failed')
     };
   }
 }

@@ -465,42 +465,10 @@ export const getCalendarAvailabilityTool = {
 };
 
 /**
- * All available tools for legal drafting mode
- */
-export const verifyLegalCitationTool = {
-  name: "verifyLegalCitation",
-  description: `Search the official legal database for the active jurisdiction to verify a case name, statute, or legal principle before citing it.
-
-  **WHEN TO USE**:
-  - Before citing a specific case by name (e.g., "Donoghue v Stevenson", "Republic v Karanja")
-  - Before quoting a specific section of a statute (e.g., "Section 14 of the Employment Act")
-  - When the user asks you to find a law, regulation, or precedent
-  - Whenever you are not fully certain a citation is accurate
-
-  **IMPORTANT**: Always use this tool before presenting a specific case citation or statute reference as fact. If the search returns no results, say so rather than inventing a citation.`,
-
-  parameters: {
-    type: Type.OBJECT,
-    properties: {
-      query: {
-        type: Type.STRING,
-        description: "The case name, statute, regulation, or legal principle to search for (e.g., 'employment termination notice period', 'Republic v John Doe 2019')"
-      },
-      jurisdictionId: {
-        type: Type.STRING,
-        description: "The jurisdiction ID to search in (e.g., 'ke' for Kenya, 'uk-england-wales' for UK, 'ng' for Nigeria). Use the active project jurisdiction."
-      }
-    },
-    required: ["query", "jurisdictionId"]
-  }
-};
-
-/**
  * Core document tools - ALWAYS available (no toggle needed)
  * These are fundamental legal features users expect without configuration
  */
 export const coreDocumentTools = [
-  verifyLegalCitationTool,     // FIRST: Verify citations from official databases
   searchLegalKnowledgeTool,    // Search internal templates before drafting
   generateDocumentInlineTool,  // PRIMARY: Generate documents inline in chat
   reviewDocumentTool,          // Review and analyze documents
