@@ -31,7 +31,9 @@ const STATUS_TEXT: Record<string, string> = {
   saving_response: "Saving response...",
 };
 
-function getStatusText(status?: string): string {
+function getStatusText(status?: string, statusMessage?: string): string {
+  // Prefer the server-provided human-readable message over the static map
+  if (statusMessage) return statusMessage;
   if (!status) return "Thinking...";
   return STATUS_TEXT[status] || "Thinking...";
 }
@@ -121,14 +123,14 @@ export function ChatInterface() {
     <div className="flex flex-col h-full">
       {/* Jurisdiction suggestion banner */}
       {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
+        <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
           <Globe className="h-4 w-4 flex-shrink-0" />
           <span>We detected you may be in <strong>{suggestedJurisdiction.name}</strong>.</span>
           <button
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
             className=" font-medium hover:text-green-900"
           >
-           Applying {suggestedJurisdiction.name} law
+           Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
           </button>
           <button
             onClick={() => setDismissedSuggestion(true)}
@@ -220,7 +222,7 @@ const ChatMessageItem = React.memo(({
                       <div className="flex items-center gap-1">
                         <LogoAnimation size="sm" className="text-gray-500" />
                         <span className="text-xs text-gray-500 animate-pulse">
-                          {message.processingStatus || "Thinking..."}
+                          {message.statusMessage || message.processingStatus || "Thinking..."}
                         </span>
                       </div>
                     )}
@@ -236,7 +238,7 @@ const ChatMessageItem = React.memo(({
                       <div className="flex items-center">
                         <LogoAnimation size="sm" className="text-gray-500" />
                         <span className="animate-pulse ml-2">
-                          {getStatusText(message.processingStatus)}
+                          {getStatusText(message.processingStatus, message.statusMessage)}
                         </span>
                       </div>
                     )}

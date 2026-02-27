@@ -341,15 +341,29 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'verifyLegalCitation': {
         const { query, jurisdictionId } = functionCall.args as { query: string; jurisdictionId: string };
 
+        console.log('[verifyLegalCitation] query:', query, '| jurisdictionId:', jurisdictionId);
+
         const dbResult = await searchJurisdictionDatabase(query, jurisdictionId);
+
+        console.log('[verifyLegalCitation] result:', JSON.stringify({
+          success: dbResult.success,
+          database: dbResult.databaseName,
+          resultCount: dbResult.results.length,
+          message: dbResult.message,
+          results: dbResult.results.map(r => ({ title: r.title, url: r.url })),
+        }, null, 2));
 
         if (!dbResult.success || dbResult.results.length === 0) {
           return {
             found: false,
             database: dbResult.databaseName,
-            databaseUrl: dbResult.databaseUrl,
             message: dbResult.message,
-            instruction: `No verified results found. Do NOT fabricate a citation. Inform the user that the specific citation could not be confirmed and direct them to ${dbResult.databaseUrl || 'the official legal database'} to verify.`,
+            instruction: [
+              `CRITICAL: Citation verification returned no results from ${dbResult.databaseName || 'the legal database'}.`,
+              `You MUST NOT invent, guess, or construct any URL for this citation.`,
+              `Do NOT link to any legal database URL that was not explicitly returned by this tool.`,
+              `Tell the user: "I was unable to verify this specific citation in ${dbResult.databaseName || 'the official legal database'}. Please verify it independently before relying on it."`,
+            ].join(' '),
           };
         }
 
@@ -365,7 +379,12 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
             date: r.date,
             source: r.source,
           })),
-          instruction: 'Use only these verified results when citing. Include the URL so the user can verify independently.',
+          instruction: [
+            'Use ONLY the URLs listed in these results — they are real links to the legal database.',
+            'Some results may be search-page links rather than direct document links; that is intentional.',
+            'NEVER modify, extend, or construct a different URL from the ones provided here.',
+            'Include the URL as a markdown link so the user can click through to verify.',
+          ].join(' '),
         };
       }
 
@@ -864,6 +883,17 @@ Please provide a structured review report.`;
             streamCallback,
             userId
           );
+        }
+
+        // googleSearch is a built-in Gemini capability the model sometimes calls
+        // even when Google Search grounding is not configured. Return a clear
+        // message so the model knows to respond from its own knowledge instead.
+        if (functionCall.name === 'googleSearch') {
+          console.log('[functionExecutor] googleSearch called but web search is not enabled — returning fallback');
+          return {
+            error: 'Web search is not enabled for this workspace. Please answer from your training knowledge and any documents provided.',
+            suggestion: 'Respond based on your legal knowledge without web search.'
+          };
         }
 
         console.error('❌ Unknown function:', functionCall.name);

@@ -237,6 +237,7 @@ See `.env.example` for the full list. Key variables:
 - `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - Google OAuth
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
 - `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` / `PAYSTACK_PLAN_CODE` - Payments
+- `GOOGLE_API_KEY` / `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` - Legal citation verification (`verifyLegalCitation` tool). Without these the tool fails gracefully and the AI tells the user to verify manually.
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` - Sanity CMS
 - `EMAIL_USER` / `EMAIL_PASSWORD` - Email sending (nodemailer via `src/lib/email-service.ts`)
 - `EMAIL_HOST` / `EMAIL_PORT` - SMTP server (default: `smtp.gmail.com:587`)

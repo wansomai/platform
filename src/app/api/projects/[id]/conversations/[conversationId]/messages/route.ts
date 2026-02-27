@@ -229,7 +229,7 @@ export async function POST(
               JSON.stringify({
                 type: 'status',
                 status: 'started',
-                statusMessage: 'Processing your request...',
+                statusMessage: 'securing your workspace...',
                 conversationId: conversation.id,
                 content: '',
               }) + '\n'
@@ -447,6 +447,7 @@ You MUST cite sources in every response where you draw on legal authority, docum
 - When verifyLegalCitation returns a result with a URL, cite as: *[Case/Statute Name](url)* — make it a clickable markdown link.
 - When verifyLegalCitation returns a result without a URL, cite as: *Case Name* [Year] Court with the full legal citation format.
 - When verifyLegalCitation finds no match, write: *"There is authority for this principle in ${activeJurisdiction?.name || 'the applicable jurisdiction'} — please verify the specific citation in the official legal database."*
+- **CRITICAL**: NEVER construct or modify a legal database URL yourself. Only use URLs that were explicitly returned by the verifyLegalCitation tool. Do not build URLs like "kenyalaw.org/lex/actview.xql?actid=..." or any similar pattern from memory — those links break.
 - At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable links where available.
 
 **GENERAL RULES**:
@@ -899,8 +900,12 @@ You MUST cite sources in every response where you draw on legal authority, docum
               functionCallParts.push(...chunk.functionCalls.map((fc: any) => ({ functionCall: fc })));
             }
 
-            // Check for text content
-            const textContent = chunk.text || '';
+            // Check for text content — skip .text if this chunk only has functionCall parts
+            // (calling .text on a functionCall chunk triggers a noisy SDK warning)
+            const hasFunctionCallParts = chunk.candidates?.[0]?.content?.parts?.some(
+              (part: any) => part.functionCall
+            );
+            const textContent = hasFunctionCallParts ? '' : (chunk.text || '');
             if (textContent) {
               hasTextContent = true;
               fullContent += textContent;
@@ -977,188 +982,281 @@ You MUST cite sources in every response where you draw on legal authority, docum
           let reportMetadata: any = null;
           let documentMetadata: any = null;
 
-          // Handle function calls if any
-          if (functionCalls.length > 0) {
-            // Send status update to client
-            controller.enqueue(
-              encoder.encode(
-                JSON.stringify({
-                  type: 'status',
-                  status: 'executing_functions',
-                  message: 'Executing requested actions...',
-                }) + '\n'
-              )
-            );
+          // Friendly status messages per tool name
+          const TOOL_STATUS_MESSAGES: Record<string, string> = {
+            generateDocumentInline:    'Drafting your document...',
+            reviewDocument:            'Reviewing your document...',
+            searchProjectDocuments:    'Searching your documents...',
+            draftNewDocument:          'Creating document in canvas...',
+            editCanvasDocument:        'Editing your canvas document...',
+            verifyLegalCitation:       'Searching legal databases...',
+            searchLegalKnowledge:      'Searching legal knowledge base...',
+            createCalendarEvent:       'Creating calendar event...',
+            searchCalendarEvents:      'Checking your calendar...',
+            checkCalendarAvailability: 'Checking availability...',
+            updateCalendarEvent:       'Updating calendar event...',
+            deleteCalendarEvent:       'Removing calendar event...',
+            searchEmails:              'Searching your emails...',
+            readEmail:                 'Reading email...',
+            draftEmail:                'Drafting email...',
+            sendEmail:                 'Sending email...',
+            searchAgent:               'Searching the web...',
+            legalDocumentAgent:        'Working on your document...',
+            legalDraftingAgent:        'Working on your document...',
+            calendarAgent:             'Managing your calendar...',
+            gmailAgent:                'Managing your emails...',
+          };
 
-            // Execute all function calls and collect results
-            const functionResponses = await Promise.all(
-              functionCalls.map(async (fc) => {
-                // Check if this is an agent call (orchestration pattern)
+          // Pick the most descriptive message when multiple tools are called at once.
+          // Priority: document generation > canvas edit > review > citation > search > other
+          const TOOL_PRIORITY = [
+            'generateDocumentInline', 'draftNewDocument', 'editCanvasDocument',
+            'reviewDocument', 'verifyLegalCitation', 'searchLegalKnowledge',
+            'searchProjectDocuments', 'searchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
+            'createCalendarEvent', 'updateCalendarEvent', 'deleteCalendarEvent',
+            'searchCalendarEvents', 'checkCalendarAvailability',
+            'calendarAgent', 'draftEmail', 'sendEmail', 'readEmail', 'searchEmails', 'gmailAgent',
+          ];
+
+          function getToolStatusMessage(calls: any[]): string {
+            const names = calls.map(fc => fc.name);
+            for (const name of TOOL_PRIORITY) {
+              if (names.includes(name)) return TOOL_STATUS_MESSAGES[name] || 'Working on it...';
+            }
+            // Associate tool or unknown — extract a friendly label from the name
+            const first = names[0] || '';
+            if (first.startsWith('associate_')) return 'Consulting your legal associate...';
+            return TOOL_STATUS_MESSAGES[first] || 'Working on it...';
+          }
+
+          // ── Agentic function-call loop ───────────────────────────────────────
+          // Gemini may issue multiple rounds of function calls before returning text
+          // (e.g. verifyLegalCitation fails → AI retries with a different query).
+          // We loop up to MAX_AGENTIC_ITERATIONS, executing tools each round, until
+          // the model returns text OR we hit the limit.
+          const MAX_AGENTIC_ITERATIONS = 5;
+          let agenticIteration = 0;
+
+          // Track every URL that verifyLegalCitation actually returned this request.
+          // After the response is generated we strip any legal-domain URLs the AI
+          // fabricated from training knowledge — only verified URLs are allowed through.
+          const verifiedLegalUrls = new Set<string>();
+
+          // When verifyLegalCitation returns found:false, the next Gemini call is forced
+          // into text-only mode (toolConfig mode=NONE) so it cannot retry the tool and
+          // MUST write a plain-language response explaining what it found (or didn't).
+          let forceTextMode = false;
+
+          // Legal database domains — any URL on these domains that is NOT in
+          // verifiedLegalUrls will be stripped from the final response.
+          const LEGAL_DOMAINS = [
+            'kenyalaw.org', 'new.kenyalaw.org',
+            'africanlii.org', 'legislation.gov.uk',
+            'courtlistener.com', 'canlii.org',
+            'austlii.edu.au', 'indiankanoon.org',
+            'singaporelawwatch.sg', 'gesetze-im-internet.de',
+            'legifrance.gouv.fr', 'hklii.org',
+          ];
+
+          // Helper: execute one batch of function calls and return their responses
+          const executeFunctionBatch = async (calls: any[], parts: any[]) => {
+            const responses = await Promise.all(
+              calls.map(async (fc) => {
                 if (hasMultipleToolTypes && (
                   fc.name === 'searchAgent' ||
                   fc.name === 'legalDraftingAgent' ||
                   fc.name === 'calendarAgent' ||
                   fc.name === 'gmailAgent'
                 )) {
-                  // Execute agent call by making a sub-request with the specific tool
                   const result = await executeAgentCall(
-                    fc,
-                    genAI,
-                    modelName,
-                    baseContext,
-                    relevantContent,
-                    content,
-                    projectId,
-                    project,
-                    conversationDocuments,
-                    canvasDocument,
-                    previewDocument,
-                    messageHistory.slice(-3).map((msg: any) => msg.content),
-                    userId
+                    fc, genAI, modelName, baseContext, relevantContent, content,
+                    projectId, project, conversationDocuments, canvasDocument,
+                    previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content), userId
                   );
-
-                  // Extract search sources from searchAgent results
                   if (fc.name === 'searchAgent' && result.searchSources) {
-                    // Merge search sources into the global webSearchSources array
                     for (const source of result.searchSources) {
-                      if (!webSearchSources.some(s => s.uri === source.uri)) {
+                      if (!webSearchSources.some((s: any) => s.uri === source.uri)) {
                         webSearchSources.push(source);
                       }
                     }
                   }
-
-                  return {
-                    functionResponse: {
-                      name: fc.name,
-                      response: result
-                    }
-                  };
+                  return { functionResponse: { name: fc.name, response: result } };
                 } else {
-                  // Regular function call execution
                   const result = await executeFunctionCall(
-                    fc,
-                    projectId,
-                    project,
-                    conversationDocuments,
-                    canvasDocument,
-                    previewDocument,
-                    messageHistory.slice(-3).map((msg: any) => msg.content),
-                    // Stream canvas updates in real-time
-                    (event) => {
-                      controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
-                    },
+                    fc, projectId, project, conversationDocuments, canvasDocument,
+                    previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content),
+                    (event: any) => { controller.enqueue(encoder.encode(JSON.stringify(event) + '\n')); },
                     userId
                   );
-
-                  return {
-                    functionResponse: {
-                      name: fc.name,
-                      response: result
-                    }
-                  };
+                  return { functionResponse: { name: fc.name, response: result } };
                 }
               })
             );
 
-            // Send function results back to the model for a final response
-            // Add model response with function calls to history
-            // IMPORTANT: Use functionCallParts which includes thought_signature (required by Gemini API)
-            fullContents.push({
-              role: 'model',
-              parts: functionCallParts
-            });
+            // Track report / document metadata across all iterations
+            const report = responses.find((fr: any) => fr.functionResponse?.response?.reportReady === true)?.functionResponse?.response;
+            const doc    = responses.find((fr: any) => fr.functionResponse?.response?.documentGenerated === true)?.functionResponse?.response;
+            if (report) reportMetadata = report;
+            if (doc)    documentMetadata = doc;
 
-            // Add function responses
-            fullContents.push({
-              role: 'user',
-              parts: functionResponses.map(fr => ({ functionResponse: fr.functionResponse }))
-            });
+            // Collect every URL that verifyLegalCitation actually found this session.
+            // Only these URLs are allowed in the final response.
+            // Also flag when verification failed so we can force text-only next call.
+            for (const resp of responses) {
+              if (resp.functionResponse?.name === 'verifyLegalCitation') {
+                const r = resp.functionResponse.response;
+                if (Array.isArray(r?.results)) {
+                  for (const result of r.results) {
+                    if (result.url) verifiedLegalUrls.add(result.url);
+                  }
+                }
+                // found:false means the citation could not be verified — force text response
+                // so the AI explains this rather than calling the tool again
+                if (r?.found === false) forceTextMode = true;
+              }
+            }
 
-            // Get final response from model with function results (with retry logic)
-            let finalResult;
-            let finalRetryCount = 0;
+            return responses;
+          };
 
-            while (finalRetryCount <= MAX_RETRIES) {
+          // Helper: call Gemini with retry and return a stream.
+          // Pass forceText=true to strip all tools from the config — this is the only
+          // reliable way to force a text-only response. toolConfig.mode='NONE' is not
+          // consistently respected by the Gemini API when tools are still listed.
+          const callGeminiWithRetry = async (forceText = false) => {
+            let callConfig: any;
+            if (forceText) {
+              // Remove tools entirely — model has no choice but to respond with text
+              const { tools: _tools, thoughtSignature: _ts, ...textOnlyConfig } = generateConfig;
+              callConfig = textOnlyConfig;
+            } else {
+              callConfig = generateConfig;
+            }
+            let attempt = 0;
+            while (attempt <= MAX_RETRIES) {
               try {
-                finalResult = await genAI.models.generateContentStream({
+                return await genAI.models.generateContentStream({
                   model: modelName,
                   contents: fullContents,
-                  config: generateConfig
+                  config: callConfig
                 });
-                break; // Success
-              } catch (genAIError: any) {
-                finalRetryCount++;
-                const isLastRetry = finalRetryCount > MAX_RETRIES;
-
-                const isRetryable =
-                  genAIError.code === 'ECONNREFUSED' ||
-                  genAIError.code === 'ETIMEDOUT' ||
-                  genAIError.code === 'ENOTFOUND' ||
-                  genAIError.code === 'ERR_NETWORK' ||
-                  genAIError.message?.includes('timeout') ||
-                  genAIError.message?.includes('network') ||
-                  genAIError.message?.includes('503') ||
-                  genAIError.message?.includes('429') ||
-                  genAIError.message?.includes('500') ||
-                  genAIError.message?.includes('502') ||
-                  genAIError.message?.includes('504');
-
-                if (!isRetryable || isLastRetry) {
-                  throw genAIError;
-                }
-
-                controller.enqueue(
-                  encoder.encode(
-                    JSON.stringify({
-                      type: 'status',
-                      status: 'retrying',
-                      message: `Retrying... (${finalRetryCount}/${MAX_RETRIES})`,
-                    }) + '\n'
-                  )
-                );
-
-                const delay = 1000 * Math.pow(2, finalRetryCount - 1);
-                await new Promise(resolve => setTimeout(resolve, delay));
+              } catch (err: any) {
+                attempt++;
+                const retryable =
+                  err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT' ||
+                  err.code === 'ENOTFOUND'    || err.code === 'ERR_NETWORK' ||
+                  err.message?.includes('timeout') || err.message?.includes('network') ||
+                  ['500','502','503','504','429'].some((c: string) => err.message?.includes(c));
+                if (!retryable || attempt > MAX_RETRIES) throw err;
+                controller.enqueue(encoder.encode(JSON.stringify({
+                  type: 'status', status: 'retrying',
+                  message: `Retrying... (${attempt}/${MAX_RETRIES})`,
+                }) + '\n'));
+                await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
               }
             }
+            throw new Error('Failed to get response from AI after retries');
+          };
 
-            // Ensure finalResult was successfully assigned
-            if (!finalResult) {
-              throw new Error('Failed to get final response from AI after retries');
-            }
+          while (functionCalls.length > 0 && agenticIteration < MAX_AGENTIC_ITERATIONS) {
+            agenticIteration++;
 
-            // Reset fullContent to capture the final response
-            fullContent = "";
+            // Send tool-specific status to client
+            controller.enqueue(encoder.encode(JSON.stringify({
+              type: 'status',
+              status: 'executing_functions',
+              message: getToolStatusMessage(functionCalls),
+            }) + '\n'));
 
-            // Stream the final response
-            for await (const chunk of finalResult) {
-              const textContent = chunk.text || '';
+            // Execute this round's function calls
+            const functionResponses = await executeFunctionBatch(functionCalls, functionCallParts);
+
+            // Append model turn (with thought signatures) + function results to history
+            fullContents.push({ role: 'model', parts: functionCallParts });
+            fullContents.push({ role: 'user', parts: functionResponses.map((fr: any) => ({ functionResponse: fr.functionResponse })) });
+
+            // Reset for next round
+            functionCalls = [];
+            functionCallParts = [];
+            fullContent = '';
+
+            // Ask model for next response.
+            // If any citation verification failed, force text-only mode so the model
+            // cannot retry the tool — it must write an explanatory response instead.
+            const nextResult = await callGeminiWithRetry(forceTextMode);
+
+            // Stream next response — collect any new function calls
+            for await (const chunk of nextResult) {
+              if (chunk.candidates?.[0]?.content?.parts) {
+                const fcParts = chunk.candidates[0].content.parts.filter((p: any) => p.functionCall);
+                if (fcParts.length > 0) {
+                  functionCallParts.push(...fcParts);
+                  functionCalls.push(...fcParts.map((p: any) => p.functionCall));
+                }
+              } else if (chunk.functionCalls?.length) {
+                functionCalls.push(...chunk.functionCalls);
+                functionCallParts.push(...chunk.functionCalls.map((fc: any) => ({ functionCall: fc })));
+              }
+
+              const hasFcParts = chunk.candidates?.[0]?.content?.parts?.some((p: any) => p.functionCall);
+              const textContent = hasFcParts ? '' : (chunk.text || '');
               if (textContent) {
                 fullContent += textContent;
-
-                // Send the text delta to the client
-                controller.enqueue(
-                  encoder.encode(
-                    JSON.stringify({
-                      type: 'delta',
-                      conversationId: conversation.id,
-                      messageId: tempMessageId,
-                      content: textContent,
-                    }) + '\n'
-                  )
-                );
+                controller.enqueue(encoder.encode(JSON.stringify({
+                  type: 'delta',
+                  conversationId: conversation.id,
+                  messageId: tempMessageId,
+                  content: textContent,
+                }) + '\n'));
               }
             }
 
-            // Check if any function response contains report metadata
-            reportMetadata = functionResponses.find(
-              (fr: any) => fr.functionResponse?.response?.reportReady === true
-            )?.functionResponse?.response;
+            // If we got text this round we're done — no need to loop further
+            if (fullContent) break;
+          }
 
-            // Check if any function response contains inline document metadata
-            documentMetadata = functionResponses.find(
-              (fr: any) => fr.functionResponse?.response?.documentGenerated === true
-            )?.functionResponse?.response;
+          // Fallback: if all iterations produced no text, tell the user what happened
+          if (!fullContent) {
+            fullContent = "I was unable to complete this request. The tools I needed did not return usable results. Please try rephrasing your question or check that the required integrations are configured.";
+            controller.enqueue(encoder.encode(JSON.stringify({
+              type: 'delta',
+              conversationId: conversation.id,
+              messageId: tempMessageId,
+              content: fullContent,
+            }) + '\n'));
+          }
+
+          // ── Strip unverified legal-database URLs ──────────────────────────────
+          // The AI sometimes fabricates URLs from its training knowledge (e.g. old
+          // kenyalaw.org PDF paths) even when told not to.  This post-processing
+          // step is the only reliable fix: remove any URL on a legal domain that
+          // was NOT returned by verifyLegalCitation this session.
+          if (LEGAL_DOMAINS.length > 0) {
+            // Match markdown links: [text](url)
+            fullContent = fullContent.replace(
+              /\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g,
+              (match, text, url) => {
+                const isLegalDomain = LEGAL_DOMAINS.some(d => url.includes(d));
+                if (isLegalDomain && !verifiedLegalUrls.has(url)) {
+                  // Keep the link text, drop the fabricated URL
+                  return text;
+                }
+                return match;
+              }
+            );
+
+            // Match bare URLs not inside markdown syntax
+            fullContent = fullContent.replace(
+              /(?<!\()https?:\/\/([^\s)>\]"]+)/g,
+              (match, rest) => {
+                const fullUrl = `https://${rest}`;
+                const isLegalDomain = LEGAL_DOMAINS.some(d => fullUrl.includes(d));
+                if (isLegalDomain && !verifiedLegalUrls.has(fullUrl)) {
+                  return ''; // Remove bare fabricated URL entirely
+                }
+                return match;
+              }
+            );
           }
 
           // Format the final content
