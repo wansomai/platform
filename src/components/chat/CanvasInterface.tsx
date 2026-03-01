@@ -723,28 +723,30 @@ const LegalCanvas: React.FC = () => {
       }
 
       const editor = editorRef.current;
+      const { suggestedHtml } = suggestion;
 
+      // Load the accepted HTML into the live Lexical editor (visual update)
       editor.update(() => {
         const root = $getRoot();
         root.clear();
         const parser = new DOMParser();
-        const dom = parser.parseFromString(suggestion.suggestedHtml, 'text/html');
+        const dom = parser.parseFromString(suggestedHtml, 'text/html');
         const nodes = $generateNodesFromDOM(editor, dom);
         if (nodes.length > 0) root.append(...wrapTopLevelNodes(nodes));
-      }, { discrete: true });
-
-      let htmlContent = '';
-      let plainText = '';
-      editor.getEditorState().read(() => {
-        htmlContent = $generateHtmlFromNodes(editor);
-        plainText = $getRoot().getTextContent();
       });
-      const content = editor.getEditorState().toJSON();
 
-      const result = await saveCanvasDocument(projectId, content, htmlContent, plainText);
+      // Use suggestedHtml directly for saving — avoids reading Lexical state immediately
+      // after an update (which can capture the pre-update state before reconciliation).
+      // Passing null for the Lexical JSON content so LoadContentPlugin falls back to
+      // htmlContent on next load (null is stored as {} by the API, which has no .root).
+      const plainText = new DOMParser()
+        .parseFromString(suggestedHtml, 'text/html')
+        .body.textContent || '';
+
+      const result = await saveCanvasDocument(projectId, null, suggestedHtml, plainText);
       if (result) {
         clearPendingSuggestion();
-        setCurrentEditorHtml(htmlContent);
+        setCurrentEditorHtml(suggestedHtml);
         addToast({ message: 'Changes accepted and saved', type: 'success' });
       } else {
         addToast({ message: 'Failed to save accepted changes', type: 'error' });
