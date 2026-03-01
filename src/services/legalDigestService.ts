@@ -108,7 +108,7 @@ Format your response as JSON with this structure:
 Return ONLY valid JSON, no markdown code fences.`;
 
   const response = await genAI.models.generateContent({
-    model: 'gemini-2.0-flash',
+    model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
     contents: prompt,
     config: {
       tools: [{ googleSearch: {} }],

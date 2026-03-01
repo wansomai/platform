@@ -12,27 +12,38 @@ export interface CanvasDocument {
   updatedAt: string;
 }
 
+export interface PendingSuggestion {
+  suggestedHtml: string;
+  originalHtml: string;
+  changeDescription: string;
+}
+
 interface CanvasState {
   canvasDocument: CanvasDocument | null;
   isLoading: boolean;
   error: string | null;
   isSaving: boolean;
-  
+  currentEditorHtml: string;
+  pendingSuggestion: PendingSuggestion | null;
+
   // Canvas management
   setCanvasDocument: (document: CanvasDocument | null) => void;
   refreshCanvasDocument: (projectId: string) => Promise<void>;
   handleRealTimeUpdate: (document: CanvasDocument) => void;
-  
+
   // API interactions
   fetchCanvasDocument: (projectId: string) => Promise<CanvasDocument | null>;
   saveCanvasDocument: (projectId: string, content: any, htmlContent: string, plainText: string) => Promise<CanvasDocument | null>;
   deleteCanvasDocument: (projectId: string) => Promise<boolean>;
-  
+
   // State management
   setLoading: (isLoading: boolean) => void;
   setSaving: (isSaving: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+  setCurrentEditorHtml: (html: string) => void;
+  setPendingSuggestion: (s: PendingSuggestion) => void;
+  clearPendingSuggestion: () => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
@@ -40,6 +51,8 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   isLoading: false,
   error: null,
   isSaving: false,
+  currentEditorHtml: '',
+  pendingSuggestion: null,
   
   // Basic state setters
   setCanvasDocument: (document) => set({ canvasDocument: document }),
@@ -116,6 +129,9 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   setSaving: (isSaving) => set({ isSaving }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+  setCurrentEditorHtml: (html) => set({ currentEditorHtml: html }),
+  setPendingSuggestion: (s) => set({ pendingSuggestion: s }),
+  clearPendingSuggestion: () => set({ pendingSuggestion: null }),
 }));
 
 // Selector hooks for better performance

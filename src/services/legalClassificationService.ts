@@ -101,7 +101,7 @@ Respond ONLY with valid JSON, no other text:`;
 
   try {
     const result = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         temperature: 0.1,

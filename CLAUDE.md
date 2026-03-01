@@ -81,7 +81,10 @@ Organization
   - Excel: `xlsx` library
   - CSV: `csv-parse` library
 - Extracted text stored in `DocumentContent` table (separate from `Document` to avoid loading large text unnecessarily)
-- Scanned PDFs/images: Sent directly to Gemini's vision API during chat (no separate OCR)
+- Scanned PDFs/images that could not be text-extracted are stored with sentinel strings in `DocumentContent.content`:
+  - `"[SCANNED_PDF_REQUIRES_PROCESSING]"` — scanned PDF, sent to Gemini vision API at chat time
+  - `"[SCANNED_IMAGE_REQUIRES_PROCESSING]"` — image file, sent to Gemini vision API at chat time
+- These sentinels are checked at message time; the raw file URL is fetched and passed as a Gemini inline data part
 - Optional: Google Cloud Vision API for advanced OCR (requires `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT_ID`, and `GOOGLE_CLOUD_STORAGE_BUCKET`)
 
 #### 6. Role-Based Access Control
@@ -174,6 +177,38 @@ export const GET = withErrorHandler(
 );
 ```
 
+### Streaming AI Responses
+The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/messages/route.ts`) returns a `ReadableStream` of newline-delimited JSON (NDJSON). Each line is a complete JSON object:
+
+```typescript
+// Stream chunk types emitted by the messages endpoint
+{ type: 'status', status: 'started', statusMessage: string, conversationId: string, content: '' }
+{ type: 'text', content: string }          // incremental text chunk
+{ type: 'function_call', name: string, args: object }
+{ type: 'function_result', name: string, result: object }
+{ type: 'complete', content: string, messageId: string }
+{ type: 'error', error: string }
+```
+
+- Streaming routes must export `export const maxDuration = 60;` (Vercel function timeout)
+- The `withAuth`/`withProjectAccess` middleware wrappers cannot be used for streaming routes — use manual `getUserIdFromRequest()` auth instead
+- User message is created in DB **only after** validation passes (Phase 1 checks access, subscription, conversation existence; Phase 2 creates the message and opens the stream)
+
+### Gemini Conversation History Format
+Gemini requires a specific format for `history` — note the differences from standard AI conventions:
+- Role must be `'model'` (not `'assistant'`) for AI turns
+- History **must start with a `'user'` message** — leading `'model'` messages are stripped
+- Consecutive messages with the same role are deduplicated (keep last)
+- System-role messages are filtered out entirely (Gemini has a separate `systemInstruction` field)
+
+### Jurisdiction System
+Legal jurisdiction is stored in workspace settings (`KnowledgeBase.settings` JSON). Resolution priority:
+1. `settings.jurisdiction` (explicit user selection)
+2. `settings.jurisdictions[0]` (first in list, legacy)
+3. Auto-detected from Vercel's `x-vercel-ip-country` request header
+
+Jurisdiction registry and instructions are in `src/lib/jurisdictions.ts`. Each jurisdiction has `id`, `legalSystem`, `citationStyle`, `courtSystem`, and `languages`. The full jurisdiction object is looked up via `getJurisdictionById()` when an `id` is present, providing richer instructions via `getJurisdictionInstructions()`.
+
 ### No Next.js Edge Middleware
 This project does NOT use Next.js Edge middleware (`middleware.ts`). All authentication and authorization is handled via API route middleware (`withAuth`, `withProjectAccess`, etc.) in `src/lib/api/middleware.ts`.
 
@@ -224,7 +259,7 @@ Reusable hooks in `src/hooks/`:
 ### Project Workspace View Modes
 The project workspace page (`(account)/projects/[id]/page.tsx`) renders one of three views based on state:
 - `DocumentPreviewSplitView` - When a document is selected for preview (`selectedPreviewDocument` in `ui.store`)
-- `CanvasChatSplitView` - When canvas mode is active (`view=canvas` query param, or `canvasMode`/`legalDrafting` setting)
+- `CanvasChatSplitView` - When canvas mode is active (`view=canvas` query param, or `canvasMode` setting). `legalDrafting` is a legacy alias for `canvasMode` in workspace settings; both map to the same behavior
 - `ChatInterface` - Default AI chat view
 
 ### Environment Variables

@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useChatStore } from "@/store/chat.store";
+import { useCanvasStore } from "@/store/canvas.store";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
 import { useOrganization, useProfile } from "@/store/profile.store";
@@ -97,6 +98,7 @@ export function ChatInput({
   } = useChatStore();
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
   const { user: profile, fetchProfile } = useProfile();
+  const currentEditorHtml = useCanvasStore(state => state.currentEditorHtml);
 
   const {
     settings,
@@ -503,7 +505,8 @@ export function ChatInput({
             messageToSend,
             session?.user?.id,
             "",
-            selectedPreviewDocument
+            selectedPreviewDocument,
+            currentEditorHtml || undefined
           );
         } catch (error: any) {
           // Check if this is a subscription limit error

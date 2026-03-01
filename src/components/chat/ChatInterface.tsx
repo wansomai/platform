@@ -7,9 +7,12 @@ import {
   Copy,
   Search,
   ExternalLink,
-  Globe
+  Globe,
+  CheckCircle,
+  X
 } from "lucide-react"
 import { useChatStore} from "@/store/chat.store"
+import { useCanvasStore } from "@/store/canvas.store"
 import { useUIStore } from "@/store/ui.store"
 import { useProjectStore } from "@/store/project.store"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
@@ -182,6 +185,7 @@ const ChatMessageItem = React.memo(({
   onCopy: () => void
 }) => {
   const isUser = message.role === 'user';
+  const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
 
   // Debug: Check if message has report
   if (!isUser && (message.metadata?.report || message.report)) {
@@ -257,6 +261,25 @@ const ChatMessageItem = React.memo(({
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
                 <Copy className="h-4 w-4" />
               </Button>
+            </div>
+          )}
+
+          {/* Suggestion Accept / Reject — shown inline when a canvas diff is awaiting review */}
+          {message.isSuggestion && pendingSuggestion && (
+            <div className="mt-3 flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('canvasAcceptSuggestion'))}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors"
+              >
+                <CheckCircle className="h-3.5 w-3.5" /> Accept Changes
+              </button>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('canvasRejectSuggestion'))}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
+              >
+                <X className="h-3.5 w-3.5" /> Reject Changes
+              </button>
             </div>
           )}
 

@@ -64,6 +64,7 @@ const DEFAULT_SETTINGS: {
 const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
   previewDocument: z.any().optional(), // Document currently in preview mode
+  currentCanvasHtml: z.string().optional(), // Live editor HTML (may differ from saved DB version)
 });
 
 // Encoder for streaming response
@@ -86,7 +87,7 @@ export async function POST(
 
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
-    const { content, previewDocument } = createMessageSchema.parse(body);
+    const { content, previewDocument, currentCanvasHtml } = createMessageSchema.parse(body);
 
     // Phase 1: Validate access and fetch context — do NOT create user message yet
     // Start associate tools fetch immediately (runs in parallel with all other Phase 1 queries)
@@ -277,7 +278,17 @@ export async function POST(
 
           // Canvas Mode: Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
           // Legacy support: legalDrafting setting maps to canvasMode
-          const isCanvasMode = settings.canvasMode === true || settings.legalDrafting === true;
+          // Auto-detect: if the client sends live canvas HTML AND a canvas document exists in DB,
+          // the user has the canvas editor open — enable canvas tools regardless of the saved setting.
+          const isCanvasMode =
+            settings.canvasMode === true ||
+            settings.legalDrafting === true ||
+            (!!canvasDocument && !!currentCanvasHtml);
+
+          console.log('[AI] Canvas mode    :', isCanvasMode, isCanvasMode && !settings.canvasMode && !settings.legalDrafting ? '(AUTO-DETECTED)' : '');
+          if (isCanvasMode && !settings.canvasMode && !settings.legalDrafting) {
+            console.log('[AI] Canvas mode auto-detected (canvas doc exists + live HTML received)');
+          }
 
           // Core document tools are ALWAYS available (no toggle needed)
           const hasCoreDocumentTools = true;
@@ -602,6 +613,14 @@ ${useGoogleSearch
               ""
             }`;
 
+          // ── Debug logging ───────────────────────────────────────────────────
+          console.log('[AI] ── Request context ──────────────────────────────────');
+          console.log('[AI] User query     :', content);
+          console.log('[AI] settings.canvasMode:', settings.canvasMode, '| settings.legalDrafting:', settings.legalDrafting);
+          console.log('[AI] Canvas doc     :', canvasDocument ? `YES (${canvasDocument.htmlContent?.length ?? 0} chars)` : 'NO');
+          console.log('[AI] currentCanvasHtml:', currentCanvasHtml ? `YES (${currentCanvasHtml.length} chars)` : 'NO (will use DB)');
+          // ────────────────────────────────────────────────────────────────
+
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
           let modelName = settings.model || process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
@@ -820,6 +839,19 @@ ${useGoogleSearch
               }
             }
           }
+
+          // ── Log registered tools ─────────────────────────────────────────
+          {
+            const toolNames: string[] = [];
+            for (const t of tools) {
+              if (t.functionDeclarations) toolNames.push(...t.functionDeclarations.map((d: any) => d.name));
+              if (t.googleSearch) toolNames.push('googleSearch (grounding)');
+            }
+            console.log('[AI] Tools registered:', toolNames.length ? toolNames.join(', ') : 'NONE');
+            console.log('[AI] hasMultipleToolTypes:', hasMultipleToolTypes, '| useGoogleSearch:', useGoogleSearch);
+            console.log('[AI] ─────────────────────────────────────────────────────────');
+          }
+          // ────────────────────────────────────────────────────────────────
 
           // Build the full conversation history including system message
           const fullContents: any[] = [];
@@ -1087,7 +1119,7 @@ ${useGoogleSearch
             readEmail:                 'Reading email...',
             draftEmail:                'Drafting email...',
             sendEmail:                 'Sending email...',
-            searchAgent:               'Searching the web...',
+            searchAgent:               'Verify research results...',
             researchAgent:             'Researching legal sources...',
             legalDocumentAgent:        'Working on your document...',
             legalDraftingAgent:        'Working on your document...',
@@ -1128,6 +1160,16 @@ ${useGoogleSearch
           const executeFunctionBatch = async (calls: any[], parts: any[]) => {
             const responses = await Promise.all(
               calls.map(async (fc) => {
+                const isAgentRoute =
+                  fc.name === 'researchAgent' ||
+                  fc.name === 'searchAgent' ||
+                  (hasMultipleToolTypes && (
+                    fc.name === 'legalDocumentAgent' ||
+                    fc.name === 'legalDraftingAgent' ||
+                    fc.name === 'calendarAgent' ||
+                    fc.name === 'gmailAgent'
+                  ));
+                console.log(`[AI] Dispatching tool "${fc.name}" → ${isAgentRoute ? 'executeAgentCall (sub-agent)' : 'executeFunctionCall (direct)'}`);
                 if (
                   fc.name === 'researchAgent' ||  // always route through executeAgentCall
                   fc.name === 'searchAgent' ||     // always route through executeAgentCall
@@ -1156,7 +1198,8 @@ ${useGoogleSearch
                     fc, projectId, project, conversationDocuments, canvasDocument,
                     previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content),
                     (event: any) => { controller.enqueue(encoder.encode(JSON.stringify(event) + '\n')); },
-                    userId
+                    userId,
+                    currentCanvasHtml
                   );
                   return { functionResponse: { name: fc.name, response: result } };
                 }
@@ -1210,6 +1253,16 @@ ${useGoogleSearch
             }
             throw new Error('Failed to get response from AI after retries');
           };
+
+          // ── Log what Gemini decided to call ─────────────────────────────
+          if (functionCalls.length > 0) {
+            console.log(`[AI] Gemini called ${functionCalls.length} tool(s):`, functionCalls.map(fc => `${fc.name}(${JSON.stringify(fc.args ?? {})})`).join(' | '));
+          } else if (!hasTextContent) {
+            console.log('[AI] Gemini returned no function calls and no text — possible issue');
+          } else {
+            console.log('[AI] Gemini returned plain text (no tool calls)');
+          }
+          // ────────────────────────────────────────────────────────────────
 
           while (functionCalls.length > 0 && agenticIteration < MAX_AGENTIC_ITERATIONS) {
             agenticIteration++;

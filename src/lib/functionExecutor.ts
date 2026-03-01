@@ -23,8 +23,10 @@ export async function executeFunctionCall(
   previewDocument: any,
   recentMessages: string[],
   streamCallback?: (event: any) => void,
-  userId?: string
+  userId?: string,
+  currentCanvasHtml?: string
 ): Promise<any> {
+  console.log(`[functionExecutor] ▶ ${functionCall.name}`, JSON.stringify(functionCall.args ?? {}).slice(0, 200));
   try {
     switch (functionCall.name) {
       case 'generateDocumentInline': {
@@ -219,9 +221,18 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'editCanvasDocument': {
         const { changeDescription, targetSection } = functionCall.args as any;
 
-        if (!canvasDocument) {
+        console.log('[functionExecutor] editCanvasDocument: changeDescription =', changeDescription);
+        console.log('[functionExecutor] editCanvasDocument: currentCanvasHtml =', currentCanvasHtml ? `YES (${currentCanvasHtml.length} chars)` : 'NO');
+        console.log('[functionExecutor] editCanvasDocument: canvasDocument =', canvasDocument ? `YES (${canvasDocument.htmlContent?.length ?? 0} chars DB)` : 'NO');
+
+        if (!canvasDocument && !currentCanvasHtml) {
           return { error: 'No canvas document exists to edit. Please create a document first.' };
         }
+
+        // Use live editor HTML if available (preserves unsaved manual edits),
+        // fall back to the last-saved DB version
+        const htmlToEdit = currentCanvasHtml || canvasDocument?.htmlContent || '';
+        console.log('[functionExecutor] editCanvasDocument: using', currentCanvasHtml ? 'live editor HTML' : 'DB htmlContent', `(${htmlToEdit.length} chars)`);
 
         const projectContext: ProjectContext = {
           jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
@@ -247,13 +258,12 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           });
         }
 
-        // Edit document with streaming
+        // Edit document with streaming — route partial updates to the overlay preview
         const result = await AIDocumentService.editDocumentStreaming(
           editRequest,
-          canvasDocument.htmlContent,
+          htmlToEdit,
           projectContext,
           (partialContent, section) => {
-            // Stream updates to canvas in real-time
             if (streamCallback) {
               streamCallback({
                 type: 'canvas_content_update',
@@ -270,31 +280,23 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           return { error: result.error || 'Failed to edit document' };
         }
 
-        // Update canvas
-        await prisma.canvasDocument.update({
-          where: { projectId },
-          data: {
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || '',
-            plainText: result.plainText || '',
-          }
-        });
-
-        // Send final canvas update
+        // Do NOT write to DB — send a suggestion event so the user can review the diff
+        console.log('[functionExecutor] editCanvasDocument: emitting canvas_suggestion event');
         if (streamCallback) {
           streamCallback({
-            type: 'canvas_update',
+            type: 'canvas_suggestion',
             conversationId: projectId,
-            content: `Successfully updated the document`,
-            canvasContent: result.htmlContent || result.plainText || '',
-            canvasUpdated: true,
+            content: `I've suggested the following change: ${changeDescription}. Review the highlighted changes in the canvas and click **Accept** or **Reject**.`,
+            suggestedHtml: result.htmlContent || result.plainText || '',
+            originalHtml: htmlToEdit,
+            changeDescription,
             actionType: 'editing'
           });
         }
 
         return {
           success: true,
-          message: `Successfully updated the document in the canvas editor. Changes: ${changeDescription}`
+          message: `Suggested changes for "${changeDescription}" are ready for review in the canvas editor.`
         };
       }
 
