@@ -285,11 +285,6 @@ export async function POST(
             settings.legalDrafting === true ||
             (!!canvasDocument && !!currentCanvasHtml);
 
-          console.log('[AI] Canvas mode    :', isCanvasMode, isCanvasMode && !settings.canvasMode && !settings.legalDrafting ? '(AUTO-DETECTED)' : '');
-          if (isCanvasMode && !settings.canvasMode && !settings.legalDrafting) {
-            console.log('[AI] Canvas mode auto-detected (canvas doc exists + live HTML received)');
-          }
-
           // Core document tools are ALWAYS available (no toggle needed)
           const hasCoreDocumentTools = true;
 
@@ -613,14 +608,6 @@ ${useGoogleSearch
               ""
             }`;
 
-          // ── Debug logging ───────────────────────────────────────────────────
-          console.log('[AI] ── Request context ──────────────────────────────────');
-          console.log('[AI] User query     :', content);
-          console.log('[AI] settings.canvasMode:', settings.canvasMode, '| settings.legalDrafting:', settings.legalDrafting);
-          console.log('[AI] Canvas doc     :', canvasDocument ? `YES (${canvasDocument.htmlContent?.length ?? 0} chars)` : 'NO');
-          console.log('[AI] currentCanvasHtml:', currentCanvasHtml ? `YES (${currentCanvasHtml.length} chars)` : 'NO (will use DB)');
-          // ────────────────────────────────────────────────────────────────
-
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
           let modelName = settings.model || process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
@@ -847,11 +834,7 @@ ${useGoogleSearch
               if (t.functionDeclarations) toolNames.push(...t.functionDeclarations.map((d: any) => d.name));
               if (t.googleSearch) toolNames.push('googleSearch (grounding)');
             }
-            console.log('[AI] Tools registered:', toolNames.length ? toolNames.join(', ') : 'NONE');
-            console.log('[AI] hasMultipleToolTypes:', hasMultipleToolTypes, '| useGoogleSearch:', useGoogleSearch);
-            console.log('[AI] ─────────────────────────────────────────────────────────');
           }
-          // ────────────────────────────────────────────────────────────────
 
           // Build the full conversation history including system message
           const fullContents: any[] = [];
@@ -1169,7 +1152,6 @@ ${useGoogleSearch
                     fc.name === 'calendarAgent' ||
                     fc.name === 'gmailAgent'
                   ));
-                console.log(`[AI] Dispatching tool "${fc.name}" → ${isAgentRoute ? 'executeAgentCall (sub-agent)' : 'executeFunctionCall (direct)'}`);
                 if (
                   fc.name === 'researchAgent' ||  // always route through executeAgentCall
                   fc.name === 'searchAgent' ||     // always route through executeAgentCall
@@ -1254,15 +1236,6 @@ ${useGoogleSearch
             throw new Error('Failed to get response from AI after retries');
           };
 
-          // ── Log what Gemini decided to call ─────────────────────────────
-          if (functionCalls.length > 0) {
-            console.log(`[AI] Gemini called ${functionCalls.length} tool(s):`, functionCalls.map(fc => `${fc.name}(${JSON.stringify(fc.args ?? {})})`).join(' | '));
-          } else if (!hasTextContent) {
-            console.log('[AI] Gemini returned no function calls and no text — possible issue');
-          } else {
-            console.log('[AI] Gemini returned plain text (no tool calls)');
-          }
-          // ────────────────────────────────────────────────────────────────
 
           while (functionCalls.length > 0 && agenticIteration < MAX_AGENTIC_ITERATIONS) {
             agenticIteration++;

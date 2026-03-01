@@ -26,7 +26,6 @@ export async function executeFunctionCall(
   userId?: string,
   currentCanvasHtml?: string
 ): Promise<any> {
-  console.log(`[functionExecutor] ▶ ${functionCall.name}`, JSON.stringify(functionCall.args ?? {}).slice(0, 200));
   try {
     switch (functionCall.name) {
       case 'generateDocumentInline': {
@@ -221,10 +220,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'editCanvasDocument': {
         const { changeDescription, targetSection } = functionCall.args as any;
 
-        console.log('[functionExecutor] editCanvasDocument: changeDescription =', changeDescription);
-        console.log('[functionExecutor] editCanvasDocument: currentCanvasHtml =', currentCanvasHtml ? `YES (${currentCanvasHtml.length} chars)` : 'NO');
-        console.log('[functionExecutor] editCanvasDocument: canvasDocument =', canvasDocument ? `YES (${canvasDocument.htmlContent?.length ?? 0} chars DB)` : 'NO');
-
         if (!canvasDocument && !currentCanvasHtml) {
           return { error: 'No canvas document exists to edit. Please create a document first.' };
         }
@@ -232,7 +227,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
         // Use live editor HTML if available (preserves unsaved manual edits),
         // fall back to the last-saved DB version
         const htmlToEdit = currentCanvasHtml || canvasDocument?.htmlContent || '';
-        console.log('[functionExecutor] editCanvasDocument: using', currentCanvasHtml ? 'live editor HTML' : 'DB htmlContent', `(${htmlToEdit.length} chars)`);
 
         const projectContext: ProjectContext = {
           jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
@@ -281,7 +275,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
         }
 
         // Do NOT write to DB — send a suggestion event so the user can review the diff
-        console.log('[functionExecutor] editCanvasDocument: emitting canvas_suggestion event');
         if (streamCallback) {
           streamCallback({
             type: 'canvas_suggestion',
