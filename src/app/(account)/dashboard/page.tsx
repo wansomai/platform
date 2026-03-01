@@ -202,7 +202,7 @@ export default function DashboardPage() {
                     title="Draft A Contract"
                     description="Choose from common contract templates"
                     onClick={() => setShowDraftDropdown(true)}
-                    color="text-blue-600"
+                    color="text-green-600"
                     disabled={isCreatingQuickChat}
                   />
                 </div>
@@ -237,7 +237,7 @@ export default function DashboardPage() {
               title="Review Documents"
               description="Add contracts, pleadings, or evidence to your vault"
               href="/vault"
-              color="text-blue-600"
+              color="text-green-600"
               disabled={isCreatingQuickChat}
             />
 

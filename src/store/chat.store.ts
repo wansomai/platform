@@ -29,7 +29,7 @@ interface ChatState {
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string, aiAssociateId?: string) => Promise<Conversation | null>;
-  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any) => Promise<void>;
+  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any, currentCanvasHtml?: string) => Promise<void>;
   removeAssociateFromConversation: (projectId: string, conversationId: string) => Promise<boolean>;
   assignAssociateToConversation: (projectId: string, conversationId: string, associateId: string) => Promise<boolean>;
 
@@ -294,7 +294,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument) => {
+  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument, currentCanvasHtml) => {
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {
       id: tempId,
@@ -326,7 +326,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           content,
           metadata,
           streamingId,
-          previewDocument
+          previewDocument,
+          currentCanvasHtml
         },
         (data) => {
           switch (data.type) {
@@ -394,15 +395,39 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 canvasUpdated: true,
                 actionType: data.actionType
               });
-              
+
               // Trigger canvas refresh event with project context
-              window.dispatchEvent(new CustomEvent('canvasUpdate', { 
-                detail: { 
-                  projectId, 
+              window.dispatchEvent(new CustomEvent('canvasUpdate', {
+                detail: {
+                  projectId,
                   canvasContent: data.canvasContent,
                   messageContent: data.content,
                   actionType: data.actionType
-                } 
+                }
+              }));
+              break;
+
+            case 'canvas_suggestion':
+              // Finalize chat message and dispatch suggestion event for diff overlay
+              get().finalizeStreamingMessage(streamingId, {
+                id: data.messageId || `suggestion-${Date.now()}`,
+                conversationId,
+                content: data.content,
+                role: 'assistant',
+                timestamp: new Date().toISOString(),
+                isStreaming: false,
+                canvasUpdated: false,
+                actionType: data.actionType,
+                isSuggestion: true
+              });
+
+              window.dispatchEvent(new CustomEvent('canvasSuggestion', {
+                detail: {
+                  projectId,
+                  suggestedHtml: data.suggestedHtml,
+                  originalHtml: data.originalHtml,
+                  changeDescription: data.changeDescription
+                }
               }));
               break;
               

@@ -28,8 +28,8 @@ const DEFAULT_SETTINGS: ProjectSettings = {
   webSearch: false,
   canvasMode: false,  // Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
   aiAssociates: true,
-  model: 'gemini-3-flash-preview',
-  temperature: 0.7,
+  model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+  temperature: 0.3,
   jurisdiction: undefined
 };
 
@@ -108,7 +108,11 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
       legalSystem: jurisdiction.legalSystem,
       citationStyle: jurisdiction.citationStyle
     } : undefined;
-    return get().updateSettings(projectId, { jurisdiction: jurisdictionData});
+    return get().updateSettings(projectId, {
+      jurisdiction: jurisdictionData,
+      // Also set the plural array so the selector shows it checked
+      jurisdictions: jurisdictionData ? [jurisdictionData] : []
+    });
   },
   
   resetSettings: () => set({ settings: DEFAULT_SETTINGS, suggestedJurisdiction: null, error: null }),

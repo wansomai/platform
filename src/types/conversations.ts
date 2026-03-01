@@ -56,6 +56,7 @@ export interface Message {
   actionType?: string;
   canvasUpdated?: boolean;
   canvasMessage?: string; // Message for canvas processing status
+  isSuggestion?: boolean; // true when this message carries a canvas_suggestion diff
   user?: {
     id: string;
     name: string;

@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useChatStore } from "@/store/chat.store";
+import { useCanvasStore } from "@/store/canvas.store";
 import { useUIStore } from "@/store/ui.store";
 import { useProjectStore } from "@/store/project.store";
 import { useOrganization, useProfile } from "@/store/profile.store";
@@ -97,6 +98,7 @@ export function ChatInput({
   } = useChatStore();
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
   const { user: profile, fetchProfile } = useProfile();
+  const currentEditorHtml = useCanvasStore(state => state.currentEditorHtml);
 
   const {
     settings,
@@ -503,7 +505,8 @@ export function ChatInput({
             messageToSend,
             session?.user?.id,
             "",
-            selectedPreviewDocument
+            selectedPreviewDocument,
+            currentEditorHtml || undefined
           );
         } catch (error: any) {
           // Check if this is a subscription limit error
@@ -774,13 +777,20 @@ export function ChatInput({
 
   // Get current jurisdictions from settings
   const currentJurisdictions = useMemo(() => {
-    if (!settings?.jurisdictions || settings.jurisdictions.length === 0) {
-      return [];
+    // Prefer the plural array (set by the selector)
+    if (settings?.jurisdictions && settings.jurisdictions.length > 0) {
+      return settings.jurisdictions
+        .map(j => getJurisdictionById(j.id))
+        .filter(Boolean) as Jurisdiction[];
     }
-    return settings.jurisdictions
-      .map(j => getJurisdictionById(j.id))
-      .filter(Boolean) as Jurisdiction[];
-  }, [settings?.jurisdictions]);
+    // Fall back to singular jurisdiction (set by banner Apply or legacy saves)
+    const singular = settings?.jurisdiction;
+    if (singular && typeof singular === 'object' && 'id' in singular) {
+      const full = getJurisdictionById((singular as { id: string }).id);
+      return full ? [full] : [];
+    }
+    return [];
+  }, [settings?.jurisdictions, settings?.jurisdiction]);
 
   // In homepage mode use local state; in project mode use settings from store
   const activeJurisdictionsForButton = homepageMode ? homepageJurisdictions : currentJurisdictions;

@@ -127,8 +127,22 @@ export const POST = withErrorHandler(
       }
     }
 
+    // No Paystack subscription found (manual upgrade, or customer exists but no subscription).
+    // Cancel locally without touching Paystack.
     if (!paystackSubId) {
-      return createBadRequestResponse('Error cancelling subscription. Please contact support.');
+      await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: { status: 'cancelled' },
+      });
+
+      return createApiResponse(
+        {
+          message: 'Subscription cancelled successfully',
+          effectiveUntil: subscription.currentPeriodEnd,
+          status: 'cancelled',
+        },
+        'Your subscription has been cancelled and your account has been downgraded to the free plan.'
+      );
     }
 
     // First, get the subscription details from Paystack to get the email token

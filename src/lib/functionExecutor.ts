@@ -6,6 +6,8 @@ import { AIDocumentService, ProjectContext } from '@/services/aiDocumentService'
 import { GoogleCalendarService } from '@/services/googleCalendarService';
 import { GmailService } from '@/services/gmailService';
 import { executeAssociateCall } from './associateExecutor';
+import { RAGService } from '@/services/ragService';
+import { Jurisdiction } from '@/types/legalKnowledge';
 
 /**
  * Execute a function call from Gemini
@@ -21,23 +23,13 @@ export async function executeFunctionCall(
   previewDocument: any,
   recentMessages: string[],
   streamCallback?: (event: any) => void,
-  userId?: string
+  userId?: string,
+  currentCanvasHtml?: string
 ): Promise<any> {
   try {
     switch (functionCall.name) {
       case 'generateDocumentInline': {
         const { documentType, title, parties, terms, suggestedFormat, formatReason, additionalContext } = functionCall.args as any;
-
-        // Build project context
-        const projectContext: ProjectContext = {
-          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-          instructions: project?.knowledgeBase?.instructions || '',
-          documents: conversationDocuments.map((doc: any) => ({
-            title: doc.document.title,
-            content: doc.document.content?.content || ''
-          })),
-          conversationHistory: recentMessages || []
-        };
 
         // Create a detailed drafting request
         const partiesText = Array.isArray(parties) ? parties.map((p: any) => `- ${p.name} (${p.role})`).join('\n') : 'Not specified';
@@ -53,6 +45,34 @@ ${partiesText}
 Terms: ${termsText}
 
 ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
+
+        // Retrieve relevant legal knowledge using RAG
+        let ragResults;
+        try {
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+          ragResults = await RAGService.autoMatch(
+            {
+              jurisdiction: projectJurisdiction,
+              practiceAreas: project?.knowledgeBase?.settings?.practiceAreas
+            },
+            `${documentType}: ${title}`
+          );
+          console.log(`RAG retrieved ${ragResults.chunks.length} relevant chunks for document generation`);
+        } catch (error) {
+          console.error('RAG retrieval failed, continuing without RAG context:', error);
+        }
+
+        // Build project context with RAG results
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || [],
+          ragContext: ragResults  // Include RAG context
+        };
 
         // Send initial status
         if (streamCallback) {
@@ -90,17 +110,6 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'draftNewDocument': {
         const { documentType, parties, terms, additionalContext } = functionCall.args as any;
 
-        // Build project context
-        const projectContext: ProjectContext = {
-          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
-          instructions: project?.knowledgeBase?.instructions || '',
-          documents: conversationDocuments.map((doc: any) => ({
-            title: doc.document.title,
-            content: doc.document.content?.content || ''
-          })),
-          conversationHistory: recentMessages || []
-        };
-
         // Create a detailed drafting request
         const partiesText = Array.isArray(parties) ? parties.map((p: any) => `- ${p.name} (${p.role})`).join('\n') : 'Not specified';
         const termsText = typeof terms === 'object' ? JSON.stringify(terms, null, 2) : terms;
@@ -113,6 +122,34 @@ ${partiesText}
 Terms: ${termsText}
 
 ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
+
+        // Retrieve relevant legal knowledge using RAG
+        let ragResults;
+        try {
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+          ragResults = await RAGService.autoMatch(
+            {
+              jurisdiction: projectJurisdiction,
+              practiceAreas: project?.knowledgeBase?.settings?.practiceAreas
+            },
+            `${documentType}`
+          );
+          console.log(`RAG retrieved ${ragResults.chunks.length} relevant chunks for canvas document generation`);
+        } catch (error) {
+          console.error('RAG retrieval failed, continuing without RAG context:', error);
+        }
+
+        // Build project context with RAG results
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || [],
+          ragContext: ragResults  // Include RAG context
+        };
 
         // Send initial status
         if (streamCallback) {
@@ -183,9 +220,13 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'editCanvasDocument': {
         const { changeDescription, targetSection } = functionCall.args as any;
 
-        if (!canvasDocument) {
+        if (!canvasDocument && !currentCanvasHtml) {
           return { error: 'No canvas document exists to edit. Please create a document first.' };
         }
+
+        // Use live editor HTML if available (preserves unsaved manual edits),
+        // fall back to the last-saved DB version
+        const htmlToEdit = currentCanvasHtml || canvasDocument?.htmlContent || '';
 
         const projectContext: ProjectContext = {
           jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
@@ -211,13 +252,12 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           });
         }
 
-        // Edit document with streaming
+        // Edit document with streaming — route partial updates to the overlay preview
         const result = await AIDocumentService.editDocumentStreaming(
           editRequest,
-          canvasDocument.htmlContent,
+          htmlToEdit,
           projectContext,
           (partialContent, section) => {
-            // Stream updates to canvas in real-time
             if (streamCallback) {
               streamCallback({
                 type: 'canvas_content_update',
@@ -234,31 +274,22 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           return { error: result.error || 'Failed to edit document' };
         }
 
-        // Update canvas
-        await prisma.canvasDocument.update({
-          where: { projectId },
-          data: {
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || '',
-            plainText: result.plainText || '',
-          }
-        });
-
-        // Send final canvas update
+        // Do NOT write to DB — send a suggestion event so the user can review the diff
         if (streamCallback) {
           streamCallback({
-            type: 'canvas_update',
+            type: 'canvas_suggestion',
             conversationId: projectId,
-            content: `Successfully updated the document`,
-            canvasContent: result.htmlContent || result.plainText || '',
-            canvasUpdated: true,
+            content: `I've suggested the following change: ${changeDescription}. Review the highlighted changes in the canvas and click **Accept** or **Reject**.`,
+            suggestedHtml: result.htmlContent || result.plainText || '',
+            originalHtml: htmlToEdit,
+            changeDescription,
             actionType: 'editing'
           });
         }
 
         return {
           success: true,
-          message: `Successfully updated the document in the canvas editor. Changes: ${changeDescription}`
+          message: `Suggested changes for "${changeDescription}" are ready for review in the canvas editor.`
         };
       }
 
@@ -299,6 +330,74 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
             ? `Found ${searchResults.length} relevant document(s).`
             : 'No matches found in the attached documents.'
         };
+      }
+
+      case 'searchLegalKnowledge': {
+        const { query, documentType } = functionCall.args as any;
+
+        try {
+          // Use RAG service to search legal knowledge base
+          const projectJurisdiction = project?.knowledgeBase?.settings?.jurisdiction as Jurisdiction | undefined;
+
+          const ragResults = await RAGService.retrieve({
+            query,
+            jurisdiction: projectJurisdiction,
+            documentTypes: documentType ? [documentType] : ['TEMPLATE'],
+            topK: 5,
+            minSimilarityScore: 0.6
+          });
+
+          if (ragResults.chunks.length === 0) {
+            return {
+              success: true,
+              found: false,
+              templates: [],
+              message: `No templates found for "${query}". You'll need to create this document from scratch.`,
+              suggestion: 'Ask the user for all necessary details to draft the document.'
+            };
+          }
+
+          // Group by source document and format results
+          const templatesMap = new Map<string, any>();
+          for (const chunk of ragResults.chunks) {
+            const key = chunk.legalKnowledge.id;
+            if (!templatesMap.has(key)) {
+              templatesMap.set(key, {
+                id: chunk.legalKnowledge.id,
+                title: chunk.legalKnowledge.title,
+                type: chunk.legalKnowledge.type,
+                jurisdiction: chunk.legalKnowledge.jurisdiction,
+                relevanceScore: chunk.score,
+                excerpts: []
+              });
+            }
+            templatesMap.get(key).excerpts.push({
+              section: chunk.sectionTitle || 'Content',
+              text: chunk.chunkText.substring(0, 500) + '...'
+            });
+          }
+
+          const templates = Array.from(templatesMap.values());
+
+          return {
+            success: true,
+            found: true,
+            templates,
+            message: `Found ${templates.length} relevant template(s) in the knowledge base.`,
+            suggestion: templates.length > 0
+              ? `Use "${templates[0].title}" as a reference. You only need to ask for: party names and any specific terms they want to customize.`
+              : undefined
+          };
+        } catch (error: any) {
+          console.error('Legal knowledge search failed:', error);
+          return {
+            success: false,
+            found: false,
+            templates: [],
+            message: 'Could not search legal knowledge base. Proceeding without template reference.',
+            error: error.message
+          };
+        }
       }
 
       case 'reviewDocument': {
@@ -728,6 +827,17 @@ Please provide a structured review report.`;
             streamCallback,
             userId
           );
+        }
+
+        // googleSearch is a built-in Gemini capability the model sometimes calls
+        // even when Google Search grounding is not configured. Return a clear
+        // message so the model knows to respond from its own knowledge instead.
+        if (functionCall.name === 'googleSearch') {
+          console.log('[functionExecutor] googleSearch called but web search is not enabled — returning fallback');
+          return {
+            error: 'Web search is not enabled for this workspace. Please answer from your training knowledge and any documents provided.',
+            suggestion: 'Respond based on your legal knowledge without web search.'
+          };
         }
 
         console.error('❌ Unknown function:', functionCall.name);

@@ -1,6 +1,6 @@
 // src/components/chat/CanvasInterface.tsx
 'use client';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import {
   Save,
@@ -29,10 +29,24 @@ import {
   Type,
   ChevronDown
 } from 'lucide-react';
+import DiffMatchPatch from 'diff-match-patch';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
-import { useCanvasDocument, useCanvasSaving } from '@/store/canvas.store';
+import { useCanvasDocument, useCanvasSaving, useCanvasStore } from '@/store/canvas.store';
 import { useChatStore } from '@/store/chat.store';
+
+function buildDiffHtml(originalHtml: string, suggestedHtml: string): string {
+  const dmp = new DiffMatchPatch();
+  const diffs = dmp.diff_main(originalHtml, suggestedHtml);
+  dmp.diff_cleanupSemantic(diffs);
+  let result = '';
+  for (const [op, text] of diffs) {
+    if (op === 0) result += text;
+    else if (op === 1) result += `<ins style="background:#d4edda;color:#155724;text-decoration:none;">${text}</ins>`;
+    else if (op === -1) result += `<del style="background:#f8d7da;color:#721c24;text-decoration:line-through;">${text}</del>`;
+  }
+  return result;
+}
 
 // Lexical imports
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -529,15 +543,25 @@ const LegalCanvas: React.FC = () => {
     message?: string;
     actionType?: string;
   }>({ show: false, status: '' });
+  const [streamingPreviewHtml, setStreamingPreviewHtml] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<LexicalEditor | null>(null);
+
+  // Stable refs so event listeners always call the latest handler versions
+  const acceptHandlerRef = useRef<() => void>(() => {});
+  const rejectHandlerRef = useRef<() => void>(() => {});
 
   // Use store hooks for canvas data management
   const { addToast } = useUIStore();
   const { canvasDocument, isLoading, error, fetchCanvasDocument, refreshCanvasDocument } = useCanvasDocument();
   const { isSaving, saveCanvasDocument, deleteCanvasDocument } = useCanvasSaving();
   const { currentConversation } = useChatStore();
+
+  const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
+  const setPendingSuggestion = useCanvasStore(state => state.setPendingSuggestion);
+  const clearPendingSuggestion = useCanvasStore(state => state.clearPendingSuggestion);
+  const setCurrentEditorHtml = useCanvasStore(state => state.setCurrentEditorHtml);
 
   // Show error toast if there's an error
   useEffect(() => {
@@ -584,15 +608,15 @@ const LegalCanvas: React.FC = () => {
     }
   }, [currentConversation?.messages]);
 
-  // Lexical editor config
-  const initialConfig = {
+  // Lexical editor config — memoized to prevent editor reset on re-renders
+  const initialConfig = useMemo(() => ({
     namespace: 'LegalCanvas',
     theme: editorTheme,
     nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, AutoLinkNode],
     onError: (error: Error) => {
       console.error('Lexical error:', error);
     },
-  };
+  }), []);
 
   // Handle manual save
   const handleSave = async () => {
@@ -622,10 +646,15 @@ const LegalCanvas: React.FC = () => {
     }
   };
 
-  // Handle content changes (no auto-save)
-  const handleEditorChange = (editorState: EditorState) => {
-    // Content changed - could add debounced indicators here if needed
-  };
+  // Handle content changes — sync live HTML to canvas store for AI editing
+  const handleEditorChange = useCallback((editorState: EditorState) => {
+    editorState.read(() => {
+      if (editorRef.current) {
+        const html = $generateHtmlFromNodes(editorRef.current);
+        setCurrentEditorHtml(html);
+      }
+    });
+  }, [setCurrentEditorHtml]);
 
 
   // Handle Word document export
@@ -679,6 +708,68 @@ const LegalCanvas: React.FC = () => {
     }
   };
 
+  // Accept suggestion: load suggested HTML into Lexical and save to DB
+  // Reads pendingSuggestion from store directly to avoid stale closure issues
+  const handleAcceptSuggestion = async () => {
+    try {
+      const suggestion = useCanvasStore.getState().pendingSuggestion;
+      if (!suggestion) {
+        addToast({ message: 'No pending suggestion found', type: 'error' });
+        return;
+      }
+      if (!editorRef.current) {
+        addToast({ message: 'Editor not ready — please try again', type: 'error' });
+        return;
+      }
+
+      const editor = editorRef.current;
+      const { suggestedHtml } = suggestion;
+
+      // Load the accepted HTML into the live Lexical editor (visual update)
+      editor.update(() => {
+        const root = $getRoot();
+        root.clear();
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(suggestedHtml, 'text/html');
+        const nodes = $generateNodesFromDOM(editor, dom);
+        if (nodes.length > 0) root.append(...wrapTopLevelNodes(nodes));
+      });
+
+      // Use suggestedHtml directly for saving — avoids reading Lexical state immediately
+      // after an update (which can capture the pre-update state before reconciliation).
+      // Passing null for the Lexical JSON content so LoadContentPlugin falls back to
+      // htmlContent on next load (null is stored as {} by the API, which has no .root).
+      const plainText = new DOMParser()
+        .parseFromString(suggestedHtml, 'text/html')
+        .body.textContent || '';
+
+      const result = await saveCanvasDocument(projectId, null, suggestedHtml, plainText);
+      if (result) {
+        clearPendingSuggestion();
+        setCurrentEditorHtml(suggestedHtml);
+        addToast({ message: 'Changes accepted and saved', type: 'success' });
+      } else {
+        addToast({ message: 'Failed to save accepted changes', type: 'error' });
+      }
+    } catch (err) {
+      console.error('[CanvasInterface] handleAcceptSuggestion error:', err);
+      addToast({ message: 'Failed to accept changes — see console for details', type: 'error' });
+    }
+  };
+
+  // Reject suggestion: discard diff, restore original Lexical state
+  const handleRejectSuggestion = () => {
+    setStreamingPreviewHtml(null);
+    clearPendingSuggestion();
+    addToast({ message: 'Suggestion rejected — original preserved', type: 'info' });
+  };
+
+  // Keep handler refs pointing to the latest function instances on every render.
+  // This lets the event listeners (registered once in useEffect) always invoke
+  // the current version without stale-closure problems.
+  acceptHandlerRef.current = handleAcceptSuggestion;
+  rejectHandlerRef.current = handleRejectSuggestion;
+
   // Fetch canvas document on mount
   useEffect(() => {
     if (projectId) {
@@ -695,23 +786,34 @@ const LegalCanvas: React.FC = () => {
     };
 
     const handleCanvasContentUpdate = (event: any) => {
-      if (projectId && event.detail?.projectId === projectId && editorRef.current) {
-        const editor = editorRef.current;
-        // Update canvas content in real-time as AI generates it
-        editor.update(() => {
-          const root = $getRoot();
-          root.clear();
-          const parser = new DOMParser();
-          const dom = parser.parseFromString(event.detail.partialContent, 'text/html');
-          const nodes = $generateNodesFromDOM(editor, dom);
-          if (nodes.length > 0) {
-            root.append(...wrapTopLevelNodes(nodes));
-          }
+      if (projectId && event.detail?.projectId === projectId) {
+        if (event.detail.actionType === 'editing') {
+          // Route editing stream to overlay preview — do not touch the live editor
+          setStreamingPreviewHtml(event.detail.partialContent);
+        } else if (editorRef.current) {
+          // 'generating' — draft new document, update Lexical directly
+          const editor = editorRef.current;
+          editor.update(() => {
+            const root = $getRoot();
+            root.clear();
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(event.detail.partialContent, 'text/html');
+            const nodes = $generateNodesFromDOM(editor, dom);
+            if (nodes.length > 0) {
+              root.append(...wrapTopLevelNodes(nodes));
+            }
+          });
+        }
+      }
+    };
 
-          // Add subtle highlighting to current section being worked on
-          if (event.detail.currentSection) {
-            // Section highlighting is handled via CSS animations on the content
-          }
+    const handleCanvasSuggestion = (event: any) => {
+      if (projectId && event.detail?.projectId === projectId) {
+        setStreamingPreviewHtml(null);
+        setPendingSuggestion({
+          suggestedHtml: event.detail.suggestedHtml,
+          originalHtml: event.detail.originalHtml,
+          changeDescription: event.detail.changeDescription
         });
       }
     };
@@ -722,16 +824,27 @@ const LegalCanvas: React.FC = () => {
       }
     };
 
+    // Chat-inline Accept / Reject button events — use refs so we always call the
+    // latest handler even though this useEffect only runs once per projectId.
+    const handleAcceptFromChat = () => { acceptHandlerRef.current(); };
+    const handleRejectFromChat = () => { rejectHandlerRef.current(); };
+
     window.addEventListener('canvasUpdate', handleCanvasUpdate);
     window.addEventListener('canvasContentUpdate', handleCanvasContentUpdate);
+    window.addEventListener('canvasSuggestion', handleCanvasSuggestion);
+    window.addEventListener('canvasAcceptSuggestion', handleAcceptFromChat);
+    window.addEventListener('canvasRejectSuggestion', handleRejectFromChat);
     window.addEventListener('focus', handleFocusUpdate);
 
     return () => {
       window.removeEventListener('canvasUpdate', handleCanvasUpdate);
       window.removeEventListener('canvasContentUpdate', handleCanvasContentUpdate);
+      window.removeEventListener('canvasSuggestion', handleCanvasSuggestion);
+      window.removeEventListener('canvasAcceptSuggestion', handleAcceptFromChat);
+      window.removeEventListener('canvasRejectSuggestion', handleRejectFromChat);
       window.removeEventListener('focus', handleFocusUpdate);
     };
-  }, [projectId, refreshCanvasDocument]);
+  }, [projectId, refreshCanvasDocument, setPendingSuggestion]);
 
   // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
@@ -915,7 +1028,28 @@ const LegalCanvas: React.FC = () => {
       <div className="flex-1 relative flex flex-col overflow-hidden" ref={canvasRef}>
         <LexicalComposer initialConfig={initialConfig}>
           <ToolbarPlugin />
-          <div className="flex-1 overflow-y-auto lexical-container">
+
+          {/* Diff/preview overlay — shown during streaming or suggestion review */}
+          {(pendingSuggestion || streamingPreviewHtml) && (
+            <div className="flex-1 overflow-y-auto lexical-container">
+              <div className="legal-page-wrapper">
+                <div className="legal-page">
+                  <div
+                    className="legal-page-content lexical-editor"
+                    style={{ pointerEvents: 'none', userSelect: 'text' }}
+                    dangerouslySetInnerHTML={{
+                      __html: pendingSuggestion
+                        ? buildDiffHtml(pendingSuggestion.originalHtml, pendingSuggestion.suggestedHtml)
+                        : streamingPreviewHtml!
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Real editor — hidden (not unmounted) while overlay is visible so editorRef stays valid */}
+          <div className={`flex-1 overflow-y-auto lexical-container${(pendingSuggestion || streamingPreviewHtml) ? ' hidden' : ''}`}>
             <div className="legal-page-wrapper">
               <div className="legal-page">
                 <div className="legal-page-content relative">
@@ -928,6 +1062,7 @@ const LegalCanvas: React.FC = () => {
               </div>
             </div>
           </div>
+
           <HistoryPlugin />
           <ListPlugin />
           <LinkPlugin />

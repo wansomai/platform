@@ -7,9 +7,12 @@ import {
   Copy,
   Search,
   ExternalLink,
-  Globe
+  Globe,
+  CheckCircle,
+  X
 } from "lucide-react"
 import { useChatStore} from "@/store/chat.store"
+import { useCanvasStore } from "@/store/canvas.store"
 import { useUIStore } from "@/store/ui.store"
 import { useProjectStore } from "@/store/project.store"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
@@ -31,7 +34,9 @@ const STATUS_TEXT: Record<string, string> = {
   saving_response: "Saving response...",
 };
 
-function getStatusText(status?: string): string {
+function getStatusText(status?: string, statusMessage?: string): string {
+  // Prefer the server-provided human-readable message over the static map
+  if (statusMessage) return statusMessage;
   if (!status) return "Thinking...";
   return STATUS_TEXT[status] || "Thinking...";
 }
@@ -79,10 +84,8 @@ export function ChatInterface() {
   } = useChatStore()
   const { currentProject } = useProjectStore()
   const { settings, suggestedJurisdiction, setJurisdiction } = useProjectSettingsStore()
-
   const {data: session} = useSession()
 
-  // Derive active jurisdictions for display
   const activeJurisdictions = (settings?.jurisdictions ?? [])
     .map(j => getJurisdictionById(j.id))
     .filter(Boolean) as Jurisdiction[]
@@ -93,10 +96,6 @@ export function ChatInterface() {
     await setJurisdiction(currentProject.id, jurisdiction)
     setDismissedSuggestion(true)
   }, [currentProject?.id, setJurisdiction])
-
-  const dismissSuggestion = useCallback(() => {
-    setDismissedSuggestion(true)
-  }, [])
 
   // Check for pending message directly (more reliable than state)
   const hasPendingMessage = typeof window !== "undefined" && !!sessionStorage.getItem("pendingMessage")
@@ -121,59 +120,54 @@ export function ChatInterface() {
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }, [addToast])
 
-  // Show loading state if there's a pending message about to be sent or if loading
-  // Show empty state if no messages and no pending message
-  if (!currentConversation?.messages || currentConversation.messages.length === 0) {
-    if (hasPendingMessage || isLoading) {
-      return <PendingMessageState />
-    }
-    return <EmptyState />
-  }
-  
+  const hasMessages = !!(currentConversation?.messages && currentConversation.messages.length > 0)
+
   return (
     <div className="flex flex-col h-full">
       {/* Jurisdiction suggestion banner */}
       {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-100 text-sm text-blue-700 flex-shrink-0">
+        <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
           <Globe className="h-4 w-4 flex-shrink-0" />
           <span>We detected you may be in <strong>{suggestedJurisdiction.name}</strong>.</span>
           <button
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
-            className="underline font-medium hover:text-blue-900"
+            className=" font-medium hover:text-green-900"
           >
-            Apply {suggestedJurisdiction.name} law
+           Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
           </button>
           <button
-            onClick={dismissSuggestion}
-            className="ml-auto text-blue-400 hover:text-blue-600"
+            onClick={() => setDismissedSuggestion(true)}
+            className="ml-auto text-green-400 hover:text-green-600"
           >
             ✕
           </button>
         </div>
       )}
 
-
-      {/* Messages container - Add bottom padding for the floating ChatInput */}
-      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-        <style jsx>{`
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-        `}</style>
-        
-        <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
-          {currentConversation?.messages.map((message, index) => (
-            <ChatMessageItem
-              key={message.id || message.tempId || `temp-${message.timestamp}-${index}`}
-              message={message}
-              user={session?.user}
-              projectId={currentConversation.projectId}
-              onCopy={() => copyMessageToClipboard(message.content)}
-            />
-          ))}
-          <div ref={messagesEndRef} />
+      {/* Messages area or empty/loading state */}
+      {!hasMessages ? (
+        hasPendingMessage || isLoading ? <PendingMessageState /> : <EmptyState />
+      ) : (
+        <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+          <style jsx>{`
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+          <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
+            {currentConversation.messages.map((message, index) => (
+              <ChatMessageItem
+                key={message.id || message.tempId || `temp-${message.timestamp}-${index}`}
+                message={message}
+                user={session?.user}
+                projectId={currentConversation.projectId}
+                onCopy={() => copyMessageToClipboard(message.content)}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -191,6 +185,7 @@ const ChatMessageItem = React.memo(({
   onCopy: () => void
 }) => {
   const isUser = message.role === 'user';
+  const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
 
   // Debug: Check if message has report
   if (!isUser && (message.metadata?.report || message.report)) {
@@ -231,7 +226,7 @@ const ChatMessageItem = React.memo(({
                       <div className="flex items-center gap-1">
                         <LogoAnimation size="sm" className="text-gray-500" />
                         <span className="text-xs text-gray-500 animate-pulse">
-                          {message.processingStatus || "Thinking..."}
+                          {message.statusMessage || message.processingStatus || "Thinking..."}
                         </span>
                       </div>
                     )}
@@ -247,7 +242,7 @@ const ChatMessageItem = React.memo(({
                       <div className="flex items-center">
                         <LogoAnimation size="sm" className="text-gray-500" />
                         <span className="animate-pulse ml-2">
-                          {getStatusText(message.processingStatus)}
+                          {getStatusText(message.processingStatus, message.statusMessage)}
                         </span>
                       </div>
                     )}
@@ -266,6 +261,25 @@ const ChatMessageItem = React.memo(({
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
                 <Copy className="h-4 w-4" />
               </Button>
+            </div>
+          )}
+
+          {/* Suggestion Accept / Reject — shown inline when a canvas diff is awaiting review */}
+          {message.isSuggestion && pendingSuggestion && (
+            <div className="mt-3 flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('canvasAcceptSuggestion'))}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors"
+              >
+                <CheckCircle className="h-3.5 w-3.5" /> Accept Changes
+              </button>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('canvasRejectSuggestion'))}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
+              >
+                <X className="h-3.5 w-3.5" /> Reject Changes
+              </button>
             </div>
           )}
 

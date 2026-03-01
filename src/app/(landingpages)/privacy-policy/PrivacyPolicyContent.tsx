@@ -67,7 +67,7 @@ const PrivacyPolicyContent = () => {
               <li><strong>Google Account:</strong> We use Google as an authentication provider</li>
                <li><strong>Calendar and Gmail integration:</strong>  If you connect your Google Calendar or Gmail, we collect necessary data to create and organize events in your google calendar as well as summarize your emails</li>
               <li><strong>OAuth Tokens:</strong> We securely store OAuth tokens to maintain these integrations</li>
-              <li><strong>Third-Party Data:</strong> Information from integrated services as necessary to provide the requested functionality</li>
+              <li><strong>Third-Party Data:</strong> Information from integrated services is not stored on our servers</li>
             </ul>
           </section>
 

@@ -11,11 +11,12 @@ const DEFAULT_SETTINGS = {
   suggestActions: true,
   webSearch: false,
   legalDrafting: false,
+  canvasMode: false,
   googleCalendar: false,
   gmail: false,
   aiAssociates: true,
   model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
-  temperature: 0.7,
+  temperature: 0.5,
   jurisdiction: undefined
 };
 
@@ -102,6 +103,7 @@ export const PUT = withErrorHandler(withAuth(async (
     suggestActions: typeof settings.suggestActions === 'boolean' ? settings.suggestActions : DEFAULT_SETTINGS.suggestActions,
     webSearch: typeof settings.webSearch === 'boolean' ? settings.webSearch : DEFAULT_SETTINGS.webSearch,
     legalDrafting: typeof settings.legalDrafting === 'boolean' ? settings.legalDrafting : DEFAULT_SETTINGS.legalDrafting,
+    canvasMode: typeof settings.canvasMode === 'boolean' ? settings.canvasMode : (typeof settings.legalDrafting === 'boolean' ? settings.legalDrafting : false),
     googleCalendar: typeof settings.googleCalendar === 'boolean' ? settings.googleCalendar : DEFAULT_SETTINGS.googleCalendar,
     gmail: typeof settings.gmail === 'boolean' ? settings.gmail : DEFAULT_SETTINGS.gmail,
     aiAssociates: typeof settings.aiAssociates === 'boolean' ? settings.aiAssociates : DEFAULT_SETTINGS.aiAssociates,
