@@ -96,42 +96,47 @@ export const POST = withErrorHandler(
       )
     );
 
-    // Start content extraction process in the background
+    // Run extraction for docs that don't have content yet, so they can be reviewed right after attach
+    const EXTRACTION_TIMEOUT_MS = 50_000; // 50s per doc so attach completes and review works soon
+
+    const withTimeout = <T>(p: Promise<T>, ms: number): Promise<T | null> =>
+      Promise.race([
+        p,
+        new Promise<null>((_, reject) =>
+          setTimeout(() => reject(new Error('Extraction timeout')), ms)
+        ),
+      ]).catch(() => null);
+
     const extractionPromises = documentIds.map(async (docId) => {
       try {
-        // First check if content already exists
         const documentContent = await prisma.documentContent.findUnique({
           where: { documentId: docId },
         });
 
-        if (!documentContent) {
-          // Update the document status to indicate processing
-          await prisma.document.update({
-            where: { id: docId },
-            data: {
-              content_extracted: {
-                Bool: false,
-                Valid: true,
-              },
-            },
-          });
-
-          // Schedule extraction (don't wait for it to complete)
-          extractDocumentContent(docId).catch((err) => {
-            console.error(`Background extraction failed for document ${docId}:`, err);
-          });
-
-          return false; // Content not yet available
+        if (documentContent) {
+          return true; // Content already available
         }
 
-        return true; // Content already available
+        // Update the document status to indicate processing
+        await prisma.document.update({
+          where: { id: docId },
+          data: {
+            content_extracted: {
+              Bool: false,
+              Valid: true,
+            },
+          },
+        });
+
+        // Await extraction so the document is reviewable as soon as attach returns (with timeout)
+        const ok = await withTimeout(extractDocumentContent(docId), EXTRACTION_TIMEOUT_MS);
+        return ok === true;
       } catch (error) {
-        console.error(`Error checking content for document ${docId}:`, error);
+        console.error(`Error checking/extracting content for document ${docId}:`, error);
         return false;
       }
     });
 
-    // Check current content status but don't wait for extraction to complete
     const contentStatus = await Promise.all(extractionPromises);
     const availableCount = contentStatus.filter(Boolean).length;
     const processingCount = documentIds.length - availableCount;

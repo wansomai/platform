@@ -75,14 +75,14 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-fit md:min-w-[600px]">
-        <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="bg-amber-100 p-2 rounded-full">
-              <Crown className="h-6 w-6 text-amber-600" />
+      <DialogContent className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-lg md:min-w-[600px] md:max-w-[95vw] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="space-y-0">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="bg-amber-100 p-1.5 sm:p-2 rounded-full shrink-0">
+              <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-amber-600" />
             </div>
-            <div>
-              <DialogTitle>Keep Using Wansom?</DialogTitle>
+            <div className="min-w-0">
+              <DialogTitle className="text-base sm:text-lg">Keep Using Wansom?</DialogTitle>
             </div>
           </div>
         </DialogHeader>
@@ -90,21 +90,21 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
         {/* Error Message */}
         {(errorMessage || paymentError) && (
           <p
-            className={`text-xs font-light ${paymentError ? "text-red-500" : "text-gray-500"}`}
+            className={`text-xs font-light break-words ${paymentError ? "text-red-500" : "text-gray-500"}`}
           >
             {paymentError || errorMessage}
           </p>
         )}
 
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col gap-3 md:flex-row md:gap-0">
           {/* Personal Plan */}
-          <div className="border border-1 border-gray-300 rounded-tl-lg lg:rounded-bl-lg p-4  basis-1/2">
-            <div>
-              <h2 className="text-md font-semibold"> Personal Plan</h2>
-              <p className="text-xs text-gray-600 mb-8">
+          <div className="border border-gray-300 rounded-t-lg md:rounded-l-lg md:rounded-tr-none md:rounded-br-none p-3 sm:p-4 md:basis-1/2">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-semibold">Personal Plan</h2>
+              <p className="text-xs text-gray-600 mb-4 sm:mb-8 break-words">
                 Best for solo practitioners who want to explore Wansom AI
               </p>
-              <ul className="text-xs text-gray-600 mb-4 space-y-1">
+              <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">
                 <li className="flex items-start gap-1">
                   {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Unlimited
@@ -149,7 +149,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <Button
                 type="button"
                 onClick={() => initializePayment("personal")}
-                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
+                className="w-full min-h-[44px] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
                 disabled={isAnyLoading}
               >
                 {isProcessingPersonal ? (
@@ -165,13 +165,13 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
 
           {/* Team Plan */}
-          <div className="border border-1 border-gray-300 p-4 lg:rounded-tr-lg rounded-br-lg  basis-1/2">
-            <div>
-              <h2 className="text-md font-semibold">Team Plan</h2>
-              <p className="text-xs text-gray-600 mb-8">
+          <div className="border border-gray-300 rounded-b-lg md:rounded-r-lg md:rounded-tl-none md:rounded-bl-none p-3 sm:p-4 md:basis-1/2">
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-semibold">Team Plan</h2>
+              <p className="text-xs text-gray-600 mb-4 sm:mb-8 break-words">
                 Collaborate more on client/matter workspaces with AI
               </p>
-              <ul className="text-xs text-gray-600 mb-4 space-y-1">
+              <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">
                 <li className="flex items-start gap-1">
                   {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Everything in
@@ -217,7 +217,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <Button
                 variant="outline"
                 onClick={() => initializePayment("teams")}
-                className="w-full"
+                className="w-full min-h-[44px]"
                 disabled={isAnyLoading}
               >
                 {isProcessingTeams ? (

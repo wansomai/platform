@@ -88,7 +88,7 @@ export function ChatInput({
   const { notify } = useNotifications();
 
   // Get state from stores
-  const { addToast, selectedPreviewDocument } = useUIStore();
+  const { addToast, selectedPreviewDocument, setSelectedPreviewDocument } = useUIStore();
   const { createProject, requiresUpgrade: projectRequiresUpgrade } =
     useProjectStore();
   const {
@@ -498,6 +498,15 @@ export function ChatInput({
           }
         }
 
+        // Clear input immediately when sending so the chat is cleared before the response streams
+        if (!customMessage) {
+          setInput("");
+          setSelectedFiles([]);
+          if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+          }
+        }
+
         try {
           await sendMessage(
             projectId,
@@ -515,14 +524,6 @@ export function ChatInput({
             return; // Don't clear input if it's a subscription error
           }
           throw error; // Re-throw other errors
-        }
-
-        if (!customMessage) {
-          setInput("");
-          setSelectedFiles([]); // Clear selected files after sending
-          if (textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-          }
         }
       } catch (error) {
       } finally {
@@ -728,9 +729,22 @@ export function ChatInput({
     });
     onDocumentsAdded?.(count);
 
-    // Refresh conversation documents
-    if (currentConversation?.id) {
-      fetchProjectDocuments(currentConversation.id);
+    // Refresh project documents list (use projectId, not conversationId)
+    if (projectId && !homepageMode) {
+      fetchProjectDocuments(projectId);
+    }
+
+    // Set the first newly added document as preview so "review this" targets it
+    if (documents.length > 0 && projectId && !homepageMode) {
+      const doc = documents[0];
+      setSelectedPreviewDocument({
+        id: doc.id,
+        title: doc.title ?? doc.fileName ?? 'Document',
+        fileUrl: doc.fileUrl ?? doc.file_url,
+        fileType: doc.fileType ?? doc.file_type ?? 'unknown',
+        fileSize: doc.fileSize ?? doc.file_size,
+        createdAt: doc.createdAt ?? doc.created_at,
+      });
     }
   };
 

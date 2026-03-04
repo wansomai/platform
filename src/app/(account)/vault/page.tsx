@@ -49,6 +49,7 @@ import {
   Sparkles,
   MoreVertical,
   X,
+  Loader2,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
@@ -172,6 +173,28 @@ export default function VaultPage() {
     
     fetchDocuments(params, true);
   }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
+
+  // Poll document list while any document is still processing (content not yet extracted)
+  useEffect(() => {
+    const hasProcessing = documents.some(
+      (doc: any) => doc.contentExtracted === false
+    );
+    if (!hasProcessing) return;
+
+    const interval = setInterval(() => {
+      const params: any = {
+        search: searchTerm || undefined,
+        type: fileType,
+        sort: sortBy,
+        page: currentPage,
+        limit: 20,
+      };
+      if (activeFolder) params.folder = activeFolder;
+      fetchDocuments(params, true);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [documents, fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
   
   // Error handling
   useEffect(() => {
@@ -483,8 +506,14 @@ export default function VaultPage() {
                 <TableCell>
                   <div className="flex items-center space-x-2">
                     <DocumentTypeIcon fileType={document.fileType || ""} />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-0.5">
                       <span className="font-medium truncate max-w-[200px]">{document.title}</span>
+                      {document.contentExtracted === false && (
+                        <span className="inline-flex items-center gap-1.5 text-xs text-amber-600">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" aria-hidden />
+                          <span>Processing… Review when ready</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </TableCell>
