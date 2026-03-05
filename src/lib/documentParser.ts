@@ -184,3 +184,34 @@ async function extractTextFromImage(fileBuffer: Buffer, onProgress?: (progress: 
   // This provides better accuracy than separate OCR services
   return "[SCANNED_IMAGE_REQUIRES_PROCESSING]";
 }
+
+/** File types that support text extraction (and optionally scanned/image markers). */
+const EXTRACTABLE_FILE_TYPES = new Set([
+  'pdf', 'docx', 'doc', 'xlsx', 'xls', 'csv', 'txt',
+  'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'
+]);
+
+/**
+ * Get MIME type from file extension for use with extractTextFromFile.
+ * Returns null if the type is not supported for extraction.
+ */
+export function getMimeTypeFromFileExtension(fileType: string): string | null {
+  const ext = (fileType || '').toLowerCase().trim();
+  if (!EXTRACTABLE_FILE_TYPES.has(ext)) return null;
+  switch (ext) {
+    case 'pdf': return 'application/pdf';
+    case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    case 'doc': return 'application/msword';
+    case 'xlsx': return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    case 'xls': return 'application/vnd.ms-excel';
+    case 'csv': return 'text/csv';
+    case 'txt': return 'text/plain';
+    case 'jpg':
+    case 'jpeg': return 'image/jpeg';
+    case 'png': return 'image/png';
+    case 'gif': return 'image/gif';
+    case 'bmp': return 'image/bmp';
+    case 'webp': return 'image/webp';
+    default: return null;
+  }
+}

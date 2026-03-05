@@ -103,10 +103,11 @@ export async function GET(request: NextRequest) {
           file_size: true,
           created_at: true,
           created_by: true,
-            description: true,
-            file_url: true,
-            updated_at: true,
-            folderId: true,
+          description: true,
+          file_url: true,
+          updated_at: true,
+          folderId: true,
+          content_extracted: true,
           createdByUser: {
             select: {
               id: true,
@@ -117,23 +118,35 @@ export async function GET(request: NextRequest) {
       })
     ]);
     
+    // Derive contentExtracted boolean for UI (processing state in Vault)
+    const parseContentExtracted = (raw: unknown): boolean => {
+      if (raw == null) return false;
+      if (typeof raw === 'object' && raw !== null && 'Bool' in (raw as object))
+        return Boolean((raw as { Bool?: boolean }).Bool);
+      return false;
+    };
+
     // OPTIMIZATION 5: Lightweight response for simple requests
-    const formattedDocuments = documents.map((doc:any): { description?: any; fileUrl?: any; updatedAt?: any; folderId?: any; id: string; title: string; fileType: string; fileSize: number; createdBy: string; createdById: string; createdAt: string; } => ({
-      id: doc.id,
-      title: doc.title,
-      fileType: doc.file_type,
-      fileSize: doc.file_size,
-      createdBy: doc.createdByUser?.fullName || 'Unknown',
-      createdById: doc.created_by,
-      createdAt: doc.created_at.toISOString(),
-      // Only include these fields for detailed requests
-      ...(!isLimitedRequest && {
-        description: (doc as any).description || '',
-        fileUrl: (doc as any).file_url,
-        updatedAt: (doc as any).updated_at?.toISOString(),
-        folderId: (doc as any).folderId,
-      })
-    }));
+    const formattedDocuments = documents.map((doc: any) => {
+      const base = {
+        id: doc.id,
+        title: doc.title,
+        fileType: doc.file_type,
+        fileSize: doc.file_size,
+        createdBy: doc.createdByUser?.fullName || 'Unknown',
+        createdById: doc.created_by,
+        createdAt: doc.created_at.toISOString(),
+        contentExtracted: parseContentExtracted(doc.content_extracted),
+        // Only include these fields for detailed requests
+        ...(!isLimitedRequest && {
+          description: (doc as any).description || '',
+          fileUrl: (doc as any).file_url,
+          updatedAt: (doc as any).updated_at?.toISOString(),
+          folderId: (doc as any).folderId,
+        }),
+      };
+      return base;
+    });
     
     const pages = hasFilters ? Math.ceil(totalCount / limit) : 1;
     

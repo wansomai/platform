@@ -30,6 +30,7 @@ import { useAssociatesStore } from "@/store/associates.store";
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
@@ -378,6 +379,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="p-0 w-[280px]">
+                  <SheetTitle className="sr-only">Navigation menu</SheetTitle>
                   <div className="flex h-16 items-center justify-between border-b px-4">
                     <Link href="/dashboard" className="flex items-center">
                       <img

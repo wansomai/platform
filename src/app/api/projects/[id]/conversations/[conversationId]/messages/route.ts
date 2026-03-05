@@ -10,6 +10,8 @@ import { getJurisdictionById, getJurisdictionInstructions, getJurisdictionByCoun
 import {  coreDocumentTools, canvasTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
+import { resolveAndValidateSources } from '@/lib/url-resolve';
+import { tryExtractDocumentContentOnDemand } from '@/lib/documentContentFallback';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
@@ -310,9 +312,22 @@ export async function POST(
             const contentParts: string[] = [];
 
             for (const docRef of conversationDocuments) {
-              if (!docRef.document.content?.content) continue;
+              let documentContent = docRef.document.content?.content ?? '';
 
-              const documentContent = docRef.document.content.content;
+              // Fallback: when DB has no content, extract on demand (e.g. DOCX via mammoth) and persist for future
+              if (!documentContent.trim()) {
+                const extracted = await tryExtractDocumentContentOnDemand({
+                  id: docRef.document.id,
+                  file_url: docRef.document.file_url,
+                  file_type: docRef.document.file_type,
+                });
+                if (extracted != null) {
+                  documentContent = extracted;
+                  docRef.document.content = { content: extracted };
+                } else {
+                  continue;
+                }
+              }
 
               // Check if this is a scanned PDF or image that requires Gemini processing
               if (documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" || documentContent === "[SCANNED_IMAGE_REQUIRES_PROCESSING]") {
@@ -1321,6 +1336,73 @@ ${useGoogleSearch
             where: { id: conversationId },
             data: { updatedAt: new Date() },
           }).catch(console.error);
+
+          // Resolve redirects and validate source URLs; re-run search if links are broken
+          if (webSearchSources.length > 0) {
+            controller.enqueue(
+              encoder.encode(
+                JSON.stringify({
+                  type: 'status',
+                  status: 'validating_sources',
+                  message: 'Validating source links...',
+                }) + '\n'
+              )
+            );
+            const { valid: resolvedSources, brokenCount } = await resolveAndValidateSources(webSearchSources);
+            webSearchSources = resolvedSources;
+
+            if (brokenCount > 0 && useGoogleSearch) {
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'status',
+                    status: 'refreshing_sources',
+                    message: 'Some links were invalid. Searching for current, working sources...',
+                  }) + '\n'
+                )
+              );
+              const retryQuery = `Original query: "${content.trim().slice(0, 500)}". Some source links were invalid or broken. Please search again for the same topic and return current, working sources as of ${new Date().toISOString().split('T')[0]}.`;
+              const retryCall = { name: 'searchAgent', args: { query: retryQuery } };
+              try {
+                const retryResult = await executeAgentCall(
+                  retryCall,
+                  genAI,
+                  modelName,
+                  baseContext,
+                  relevantContent,
+                  content,
+                  projectId,
+                  project,
+                  conversationDocuments,
+                  canvasDocument,
+                  previewDocument,
+                  messageHistory.slice(-3).map((msg: any) => msg.content),
+                  userId
+                );
+                if (retryResult?.searchSources?.length > 0) {
+                  const { valid: retryValid } = await resolveAndValidateSources(retryResult.searchSources);
+                  const existingUris = new Set(webSearchSources.map((s: { uri: string }) => s.uri));
+                  for (const s of retryValid) {
+                    if (!existingUris.has(s.uri)) {
+                      existingUris.add(s.uri);
+                      webSearchSources.push(s);
+                    }
+                  }
+                  controller.enqueue(
+                    encoder.encode(
+                      JSON.stringify({
+                        type: 'status',
+                        status: 'sources_refreshed',
+                        message: 'Source links updated for validity.',
+                      }) + '\n'
+                    )
+                  );
+                }
+              } catch (retryErr) {
+                console.error('Source refresh search failed:', retryErr);
+              }
+            }
+          }
 
           // Build metadata object
           const messageMetadata: any = {};

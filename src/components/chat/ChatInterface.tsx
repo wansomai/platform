@@ -5,6 +5,7 @@ import React, { useRef, useEffect, useCallback, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Copy,
+  Check,
   Search,
   ExternalLink,
   Globe,
@@ -186,6 +187,21 @@ const ChatMessageItem = React.memo(({
 }) => {
   const isUser = message.role === 'user';
   const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
+  const [copied, setCopied] = useState(false);
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCopy = useCallback(() => {
+    onCopy();
+    setCopied(true);
+    if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+    copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
+  }, [onCopy]);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+    };
+  }, []);
 
   // Debug: Check if message has report
   if (!isUser && (message.metadata?.report || message.report)) {
@@ -258,8 +274,20 @@ const ChatMessageItem = React.memo(({
           </div>      
           {!isUser && !message.isLoading && !isStreaming && (
             <div className="flex gap-1 mt-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCopy}>
-                <Copy className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`h-8 gap-1.5 ${copied ? 'min-w-[72px] text-green-600' : 'w-8 px-0'}`}
+                onClick={handleCopy}
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    <span className="text-xs font-medium">Copied</span>
+                  </>
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
               </Button>
             </div>
           )}
