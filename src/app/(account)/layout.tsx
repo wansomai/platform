@@ -205,7 +205,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <SidebarLink
               href="/dashboard"
               icon={Home}
-              label="Dashboard"
+              label="Home"
               active={pathname === "/dashboard"}
               onClick={isMobile ? handleMobileNavigation : undefined}
               collapsed={collapsed && !isMobile}
