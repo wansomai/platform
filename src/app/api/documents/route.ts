@@ -8,6 +8,7 @@ import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
+import { Prisma } from '@/prisma/client';
 
 // Set a reasonable timeout for document processing
 export const maxDuration = 60;
@@ -117,12 +118,22 @@ export async function GET(request: NextRequest) {
       })
     ]);
     
-    // Derive contentExtracted boolean for UI (processing state in Vault)
-    const parseContentExtracted = (raw: unknown): boolean => {
-      if (raw == null) return false;
-      if (typeof raw === 'object' && raw !== null && 'Bool' in (raw as object))
-        return Boolean((raw as { Bool?: boolean }).Bool);
-      return false;
+    // Derive contentExtracted boolean for UI (processing state in Vault).
+    // null           → old/unknown document, treat as ready (no spinner)
+    // { Bool: true } → extraction complete (no spinner)
+    // { Bool: false } + age < 2 min → background job in-progress (show spinner)
+    // { Bool: false } + age ≥ 2 min → job timed out / failed, treat as ready (no spinner)
+    const parseContentExtracted = (raw: unknown, createdAt?: Date): boolean => {
+      if (raw == null) return true;
+      if (typeof raw === 'object' && raw !== null && 'Bool' in (raw as object)) {
+        const extracted = Boolean((raw as { Bool?: boolean }).Bool);
+        if (!extracted && createdAt) {
+          const ageMs = Date.now() - createdAt.getTime();
+          if (ageMs > 2 * 60 * 1000) return true; // give up after 2 min
+        }
+        return extracted;
+      }
+      return true;
     };
 
     // OPTIMIZATION 5: Lightweight response for simple requests
@@ -135,7 +146,7 @@ export async function GET(request: NextRequest) {
         createdBy: doc.createdByUser?.fullName || 'Unknown',
         createdById: doc.created_by,
         createdAt: doc.created_at.toISOString(),
-        contentExtracted: parseContentExtracted(doc.content_extracted),
+        contentExtracted: parseContentExtracted(doc.content_extracted, doc.created_at),
         // Only include these fields for detailed requests
         ...(!isLimitedRequest && {
           description: (doc as any).description || '',
@@ -309,6 +320,13 @@ export async function POST(request: NextRequest) {
         }
       } catch (err) {
         console.error('Background text extraction failed for document', document.id, err);
+        // Reset flag to null so the vault doesn't show the spinner forever
+        try {
+          await prisma.document.update({
+            where: { id: document.id },
+            data: { content_extracted: Prisma.JsonNull },
+          });
+        } catch (_) { /* best-effort */ }
       }
     });
     
