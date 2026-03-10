@@ -129,16 +129,16 @@ export function ChatInterface() {
       {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
           <Globe className="h-4 w-4 flex-shrink-0" />
-          <span>We detected you may be in <strong>{suggestedJurisdiction.name}</strong>.</span>
+          <span> <strong>{suggestedJurisdiction.name}</strong>jurisdction detected</span>
           <button
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
             className=" font-medium hover:text-green-900"
           >
-           Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
+           Applying {suggestedJurisdiction.name} law. Switch from chat settings.
           </button>
           <button
             onClick={() => setDismissedSuggestion(true)}
-            className="ml-auto text-green-400 hover:text-green-600"
+            className="ml-auto text-primary hover:text-green-600"
           >
             ✕
           </button>
