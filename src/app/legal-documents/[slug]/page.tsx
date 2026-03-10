@@ -1,6 +1,8 @@
 import { Metadata, ResolvingMetadata } from 'next';
+import { headers } from 'next/headers';
 import { getAllLegalDocuments, getLegalDocumentBySlug } from '@/lib/data/sanity';
 import { adaptSanityLegalDocument } from '@/lib/data/blogAdapter';
+import { getJurisdictionByCountryCode } from '@/lib/jurisdictions';
 import DocDetailPageClient from './DocumentDetails';
 
 type Props = {
@@ -75,25 +77,31 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   }
 }
 
-// Enable ISR with 1 hour revalidation
-export const revalidate = 3600;
+// Dynamic rendering required to read per-request geolocation headers
+export const dynamic = 'force-dynamic';
 
 export default async function Page({ params }: Props) {
   try {
     const { slug } = await params;
 
+    // Detect jurisdiction from Vercel's IP geolocation header, default to US
+    const headersList = await headers();
+    const countryCode = headersList.get('x-vercel-ip-country') ?? '';
+    const detectedJurisdiction = getJurisdictionByCountryCode(countryCode);
+    const initialJurisdictionId = detectedJurisdiction?.id ?? 'us-federal';
+
     // Fetch data from Sanity
     const sanityDoc = await getLegalDocumentBySlug(slug);
 
     if (!sanityDoc) {
-      return <DocDetailPageClient blog={null} />;
+      return <DocDetailPageClient blog={null} initialJurisdictionId={initialJurisdictionId} />;
     }
 
     const adaptedDoc = adaptSanityLegalDocument(sanityDoc);
 
-    return <DocDetailPageClient blog={adaptedDoc} />;
+    return <DocDetailPageClient blog={adaptedDoc} initialJurisdictionId={initialJurisdictionId} />;
   } catch (error) {
     console.error('Error loading document:', error);
-    return <DocDetailPageClient blog={null} />;
+    return <DocDetailPageClient blog={null} initialJurisdictionId="us-federal" />;
   }
 }
