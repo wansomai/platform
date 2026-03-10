@@ -44,10 +44,11 @@ export const CanvasStreamingOverlay: React.FC<CanvasStreamingOverlayProps> = ({
       case 'editing_document':
         return {
           icon: Sparkles,
-          title: 'Updating Document',
+          title: 'Editing Document',
           description: message || 'Applying your changes to the document...',
           color: 'purple'
         };
+        
       case 'saving_document':
         return {
           icon: Save,

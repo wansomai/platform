@@ -60,7 +60,7 @@ export function UploadDocumentModal({
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDocumentsToAdd, setSelectedDocumentsToAdd] = useState<string[]>([]);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -129,7 +129,7 @@ export function UploadDocumentModal({
   useEffect(() => {
     if (!open) {
       setActiveTab(mode === 'select' ? 'select' : 'upload');
-      setUploadFile(null);
+      setUploadFiles([]);
       setUploadError(null);
       setSelectedDocumentsToAdd([]);
       setSearchTerm("");
@@ -147,91 +147,112 @@ export function UploadDocumentModal({
   // File handling functions
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) {
-      setUploadFile(null);
-      setUploadError(null);
-      return;
-    }
-    
-    const file = files[0];
-    validateAndSetFile(file);
+    if (!files || files.length === 0) return;
+    validateAndSetFiles(Array.from(files));
   };
-  
+
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(true);
   };
-  
+
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
   };
-  
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
-    
+
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
-      validateAndSetFile(files[0]);
+      validateAndSetFiles(Array.from(files));
     }
   };
-  
-  const validateAndSetFile = (file: File) => {
-    const validation = validateFile(file, undefined, MAX_FILE_SIZE);
-    
-    if (!validation.isValid) {
-      setUploadError(validation.error || 'Invalid file');
-      setUploadFile(null);
-      return;
+
+  const validateAndSetFiles = (files: File[]) => {
+    const valid: File[] = [];
+    const errors: string[] = [];
+
+    for (const file of files) {
+      const validation = validateFile(file, undefined, MAX_FILE_SIZE);
+      if (!validation.isValid) {
+        errors.push(`${file.name}: ${validation.error || 'Invalid file'}`);
+      } else {
+        valid.push(file);
+      }
     }
-    
+
+    if (errors.length > 0) {
+      setUploadError(errors.join('\n'));
+    } else {
+      setUploadError(null);
+    }
+
+    if (valid.length > 0) {
+      setUploadFiles(prev => {
+        const existingNames = new Set(prev.map(f => f.name));
+        const newFiles = valid.filter(f => !existingNames.has(f.name));
+        return [...prev, ...newFiles];
+      });
+    }
+  };
+
+  const removeUploadFile = (index: number) => {
+    setUploadFiles(prev => prev.filter((_, i) => i !== index));
     setUploadError(null);
-    setUploadFile(file);
   };
 
   // Document operations
   const handleUploadDocument = async () => {
-    if (!uploadFile) return;
-    
+    if (uploadFiles.length === 0) return;
+
     setIsUploading(true);
     setUploadProgress(0);
-    
+
     try {
-      const formData = new FormData();
-      formData.append('file', uploadFile);
-      
-      if (selectedFolder) {
-        formData.append('folderId', selectedFolder);
+      const uploadedDocs: Document[] = [];
+      const total = uploadFiles.length;
+
+      for (let i = 0; i < total; i++) {
+        const file = uploadFiles[i];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        if (selectedFolder) {
+          formData.append('folderId', selectedFolder);
+        }
+
+        const document = await uploadDocument(formData, (progress) => {
+          // Overall progress across all files
+          setUploadProgress(Math.round(((i + progress / 100) / total) * 100));
+        });
+
+        if (document) {
+          uploadedDocs.push(document);
+        }
       }
-      
-      const document = await uploadDocument(formData, (progress) => {
-        setUploadProgress(progress);
-      });
-      
-      if (document) {
-        const documentsToReturn = [document];
-        
-        // If mode includes attachment and we have a conversation ID
-        if ((mode === 'upload-and-attach') && projectId) {
+
+      if (uploadedDocs.length > 0) {
+        if (mode === 'upload-and-attach' && projectId) {
           const success = await attachDocumentsToProject(
-            projectId, 
-            [document.id]
+            projectId,
+            uploadedDocs.map(d => d.id)
           );
-          
           if (success) {
-            notify.success(`${uploadFile.name} uploaded and added to conversation`);
+            notify.success(`${uploadedDocs.length} file${uploadedDocs.length > 1 ? 's' : ''} uploaded and added to conversation`);
           } else {
-            notify.error("Document uploaded but failed to add to conversation");
+            notify.error("Files uploaded but failed to add to conversation");
           }
         } else {
-          notify.success(`${uploadFile.name} uploaded successfully`);
+          notify.success(`${uploadedDocs.length} file${uploadedDocs.length > 1 ? 's' : ''} uploaded successfully`);
         }
-        
-        onDocumentsAdded?.(documentsToReturn);
+
+        onDocumentsAdded?.(uploadedDocs);
         onOpenChange(false);
       }
     } catch (error: any) {
@@ -331,7 +352,7 @@ export function UploadDocumentModal({
         className={`border-2 border-dashed rounded-lg p-8 cursor-pointer transition-all relative ${
           isDragOver
             ? 'border-primary-500 bg-primary-50 scale-[1.02]'
-            : uploadFile
+            : uploadFiles.length > 0
               ? 'border-green-400 bg-green-50'
               : isUploading
                 ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
@@ -357,64 +378,60 @@ export function UploadDocumentModal({
 
         <div className="text-center">
           <UploadCloud className={`mx-auto h-16 w-16 mb-4 transition-all ${
-            isDragOver ? 'text-primary-500 scale-110' : uploadFile ? 'text-green-500' : 'text-gray-400'
+            isDragOver ? 'text-primary-500 scale-110' : uploadFiles.length > 0 ? 'text-green-500' : 'text-gray-400'
           }`} />
 
-          {uploadFile ? (
-            <div className="relative inline-flex items-center gap-3 bg-white px-4 py-3 pr-10 rounded-lg border border-green-300 shadow-sm">
-              <FileText className="h-6 w-6 text-green-600 flex-shrink-0" />
-              <div className="text-left">
-                <p className="text-sm font-semibold text-gray-900 max-w-xs truncate">{uploadFile.name}</p>
-                <p className="text-xs text-gray-600">
-                  {formatFileSize(uploadFile.size)} • {uploadFile.type || 'Unknown type'}
-                </p>
+          <div className="space-y-4">
+            <p className={`text-lg font-semibold mb-2 ${
+              isDragOver ? 'text-primary-700' : 'text-gray-800'
+            }`}>
+              {isDragOver ? 'Drop your files here!' : 'Drag & drop your files here'}
+            </p>
+            <div className="flex items-center gap-3 my-4">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <span className="text-sm text-gray-500 font-medium">OR</span>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+            <Button
+              type="button"
+              size="lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (fileInputRef.current) {
+                  fileInputRef.current.click();
+                }
+              }}
+              className="w-full max-w-xs mx-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              {uploadFiles.length > 0 ? 'Add More Files' : 'Open File Selector'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Selected files list */}
+      {uploadFiles.length > 0 && (
+        <div className="border rounded-lg divide-y max-h-40 overflow-y-auto">
+          {uploadFiles.map((file, index) => (
+            <div key={index} className="flex items-center gap-3 px-3 py-2">
+              <FileText className="h-4 w-4 text-green-600 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{file.name}</p>
+                <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
               </div>
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setUploadFile(null);
-                  setUploadError(null);
-                  if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                  }
-                }}
-                className="absolute top-2 right-2 h-6 w-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors group"
-                aria-label="Remove file"
+                onClick={() => removeUploadFile(index)}
+                className="h-6 w-6 rounded-full hover:bg-gray-100 flex items-center justify-center flex-shrink-0"
+                aria-label={`Remove ${file.name}`}
               >
-                <X className="h-4 w-4 text-gray-600 group-hover:text-gray-900" />
+                <X className="h-3.5 w-3.5 text-gray-500" />
               </button>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <p className={`text-lg font-semibold mb-2 ${
-                isDragOver ? 'text-primary-700' : 'text-gray-800'
-              }`}>
-                {isDragOver ? 'Drop your file here!' : 'Drag & drop your file here'}
-              </p>
-              <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <span className="text-sm text-gray-500 font-medium">OR</span>
-                <div className="flex-1 h-px bg-gray-300"></div>
-              </div>
-              <Button
-                type="button"
-                size="lg"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (fileInputRef.current) {
-                    fileInputRef.current.click();
-                  }
-                }}
-                className="w-full max-w-xs mx-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Open File Selector
-              </Button>
-            </div>
-          )}
+          ))}
         </div>
-      </div>
+      )}
 
       {/* Folder Selection */}
       <div className="space-y-2">
@@ -544,6 +561,7 @@ export function UploadDocumentModal({
       <Input
         ref={fileInputRef}
         type="file"
+        multiple
         onChange={handleFileChange}
         className="hidden"
         disabled={isUploading}
@@ -738,9 +756,9 @@ export function UploadDocumentModal({
             ) : (
               <Button
                 onClick={handleUploadDocument}
-                disabled={!uploadFile || isUploading}
-                className={`transition-all ${!uploadFile && !isUploading ? 'cursor-not-allowed' : ''}`}
-                title={!uploadFile && !isUploading ? 'Please select a file first' : ''}
+                disabled={uploadFiles.length === 0 || isUploading}
+                className={`transition-all ${uploadFiles.length === 0 && !isUploading ? 'cursor-not-allowed' : ''}`}
+                title={uploadFiles.length === 0 && !isUploading ? 'Please select a file first' : ''}
               >
                 {isUploading ? (
                   <>
@@ -774,9 +792,9 @@ export function UploadDocumentModal({
           ) : (
             <Button
               onClick={handleUploadDocument}
-              disabled={!uploadFile || isUploading}
-              className={`transition-all ${!uploadFile && !isUploading ? 'cursor-not-allowed' : ''}`}
-              title={!uploadFile && !isUploading ? 'Please select a file first' : ''}
+              disabled={uploadFiles.length === 0 || isUploading}
+              className={`transition-all ${uploadFiles.length === 0 && !isUploading ? 'cursor-not-allowed' : ''}`}
+              title={uploadFiles.length === 0 && !isUploading ? 'Please select a file first' : ''}
             >
               {isUploading ? (
                 <>

@@ -1,5 +1,6 @@
 // src/app/api/projects/[id]/documents/route.ts
 import { NextRequest } from 'next/server';
+import { after } from 'next/server';
 import prisma from '@/lib/prisma';
 import { blobStorageService } from '@/lib/storage';
 import { extractTextFromFile } from '@/lib/documentParser';
@@ -90,63 +91,31 @@ export const POST = withErrorHandler(
               document_id: data.document_id,
             },
           },
-          update: {}, // No updates if exists
+          update: {},
           create: data,
         })
       )
     );
 
-    // Run extraction for docs that don't have content yet, so they can be reviewed right after attach
-    const EXTRACTION_TIMEOUT_MS = 50_000; // 50s per doc so attach completes and review works soon
+    // Kick off extraction for any docs that don't have content yet — runs after the response
+    // is sent so the request never times out regardless of document size or count.
+    after(async () => {
+      for (const docId of documentIds) {
+        try {
+          const existing = await prisma.documentContent.findUnique({
+            where: { documentId: docId },
+          });
+          if (existing) continue; // Already extracted
 
-    const withTimeout = <T>(p: Promise<T>, ms: number): Promise<T | null> =>
-      Promise.race([
-        p,
-        new Promise<null>((_, reject) =>
-          setTimeout(() => reject(new Error('Extraction timeout')), ms)
-        ),
-      ]).catch(() => null);
-
-    const extractionPromises = documentIds.map(async (docId) => {
-      try {
-        const documentContent = await prisma.documentContent.findUnique({
-          where: { documentId: docId },
-        });
-
-        if (documentContent) {
-          return true; // Content already available
+          await extractDocumentContent(docId);
+        } catch (err) {
+          console.error(`[attach] Background extraction failed for document ${docId}:`, err);
         }
-
-        // Update the document status to indicate processing
-        await prisma.document.update({
-          where: { id: docId },
-          data: {
-            content_extracted: {
-              Bool: false,
-              Valid: true,
-            },
-          },
-        });
-
-        // Await extraction so the document is reviewable as soon as attach returns (with timeout)
-        const ok = await withTimeout(extractDocumentContent(docId), EXTRACTION_TIMEOUT_MS);
-        return ok === true;
-      } catch (error) {
-        console.error(`Error checking/extracting content for document ${docId}:`, error);
-        return false;
       }
     });
 
-    const contentStatus = await Promise.all(extractionPromises);
-    const availableCount = contentStatus.filter(Boolean).length;
-    const processingCount = documentIds.length - availableCount;
-
     return createApiResponse(
-      {
-        attached: documentIds.length,
-        content_available: availableCount,
-        content_processing: processingCount,
-      },
+      { attached: documentIds.length },
       'Documents attached to project successfully'
     );
   })

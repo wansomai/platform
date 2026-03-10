@@ -125,6 +125,7 @@ export default function VaultPage() {
   const [fileType, setFileType] = useState<string | undefined>(undefined);
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
   const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
   
   // Modal states
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -187,7 +188,7 @@ export default function VaultPage() {
         type: fileType,
         sort: sortBy,
         page: currentPage,
-        limit: 20,
+        limit: ITEMS_PER_PAGE,
       };
       if (activeFolder) params.folder = activeFolder;
       fetchDocuments(params, true);
@@ -339,7 +340,7 @@ export default function VaultPage() {
             type: fileType,
             sort: sortBy,
             page: currentPage,
-            limit: 20,
+            limit: ITEMS_PER_PAGE,
             folder: activeFolder || undefined
           })
         ]);
@@ -705,14 +706,14 @@ export default function VaultPage() {
                 <Input
                   placeholder="Search documents..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                   className="pl-10"
                 />
               </div>
               
               <Select 
                 value={fileType || "all"} 
-                onValueChange={(value) => setFileType(value === "all" ? undefined : value)}
+                onValueChange={(value) => { setFileType(value === "all" ? undefined : value); setCurrentPage(1); }}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by type" />
@@ -728,7 +729,7 @@ export default function VaultPage() {
               
               <Select 
                 value={sortBy} 
-                onValueChange={(value) => setSortBy(value as 'recent' | 'oldest' | 'name' | 'size')}
+                onValueChange={(value) => { setSortBy(value as 'recent' | 'oldest' | 'name' | 'size'); setCurrentPage(1); }}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
@@ -826,51 +827,57 @@ export default function VaultPage() {
             )}
             
             {/* Pagination */}
-            {pagination && pagination.pages > 1 && (
-              <div className="flex justify-center mt-6">
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </Button>
-                  
-                  {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
-                    let pageNum;
-                    if (pagination.pages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= pagination.pages - 2) {
-                      pageNum = pagination.pages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    
-                    return (
-                      <Button
-                        key={i}
-                        variant={pageNum === currentPage ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setCurrentPage(pageNum)}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(p => Math.min(p + 1, pagination.pages))}
-                    disabled={currentPage === pagination.pages}
-                  >
-                    Next
-                  </Button>
-                </div>
+            {pagination && pagination.total > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6">
+                <p className="text-sm text-gray-500">
+                  Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, pagination.total)}–{Math.min(currentPage * ITEMS_PER_PAGE, pagination.total)} of {pagination.total} document{pagination.total !== 1 ? 's' : ''}
+                </p>
+
+                {pagination.pages > 1 && (
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+
+                    {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                      let pageNum: number;
+                      if (pagination.pages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= pagination.pages - 2) {
+                        pageNum = pagination.pages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={pageNum === currentPage ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(p + 1, pagination.pages))}
+                      disabled={currentPage === pagination.pages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>

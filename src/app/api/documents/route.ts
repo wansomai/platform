@@ -1,5 +1,6 @@
 // app/api/documents/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getUserIdFromRequest } from '@/lib/auth/authorization';
 import { getActiveOrganizationId } from '@/lib/api/org-helpers';
@@ -33,9 +34,10 @@ export async function GET(request: NextRequest) {
     // ✅ Use helper to get active organization ID (supports org switching)
     const organizationId = await getActiveOrganizationId(userId);
 
-    // Build query filters
+    // Build query filters — users only see documents they uploaded
     const where: any = {
       organization_id: organizationId,
+      created_by: userId,
       status: 'active'
     };
     
@@ -64,10 +66,9 @@ export async function GET(request: NextRequest) {
     } else if (folderId) {
       where.folderId = folderId;
     }
-    // Dashboard needs minimal data, full pages need more
-    const hasFilters = searchTerm || fileType || folderId || page > 1;
-    const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
-    
+    // Dashboard requests use limit ≤ 10; vault/full-page requests use limit > 10
+    const isLimitedRequest = limit <= 10;
+
     // Determine sorting
     let orderBy: any;
     switch (sortBy) {
@@ -86,11 +87,9 @@ export async function GET(request: NextRequest) {
     
     const skip = (page - 1) * limit;
     
-    // OPTIMIZATION 3: Parallel queries for count and documents
     const [totalCount, documents] = await Promise.all([
-      // Only get count if we're paginating (not for simple dashboard requests)
-      hasFilters ? prisma.document.count({ where }) : Promise.resolve(0),
-      
+      isLimitedRequest ? Promise.resolve(0) : prisma.document.count({ where }),
+
       prisma.document.findMany({
         where,
         orderBy,
@@ -148,19 +147,20 @@ export async function GET(request: NextRequest) {
       return base;
     });
     
-    const pages = hasFilters ? Math.ceil(totalCount / limit) : 1;
-    
+    const total = isLimitedRequest ? documents.length : totalCount;
+    const pages = isLimitedRequest ? 1 : Math.ceil(total / limit);
+
     return NextResponse.json({
       status: 200,
       message: 'Documents retrieved successfully',
       data: formattedDocuments,
       pagination: {
-        total: hasFilters ? totalCount : documents.length,
+        total,
         page,
         limit,
         pages,
-        hasNext: hasFilters ? page < pages : false,
-        hasPrev: hasFilters ? page > 1 : false
+        hasNext: page < pages,
+        hasPrev: page > 1
       }
     });
     
@@ -189,25 +189,28 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get user's organization
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true, fullName: true }
-    });
-    
+    // Get user's active organization (supports org switching) and name
+    const [organizationId, user] = await Promise.all([
+      getActiveOrganizationId(userId),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { fullName: true }
+      })
+    ]);
+
     if (!user) {
       return NextResponse.json(
-        { message: 'User not found', error: true }, 
+        { message: 'User not found', error: true },
         { status: 404 }
       );
     }
-    
+
     // For multipart/form-data, need to use FormData
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const description = formData.get('description') as string || '';
     const folderId = formData.get('folderId') as string || null;
-    
+
     // Validate file
     if (!file) {
       return NextResponse.json(
@@ -215,20 +218,20 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
- const validation = validateFile(file, ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG.MAX_SIZE);
+
+    const validation = validateFile(file, ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG.MAX_SIZE);
     if (!validation.isValid) {
       return NextResponse.json(
         { message: validation.error },
         { status: 400 }
       );
     }
-    // If folderId is provided, verify it exists and belongs to the organization
+    // If folderId is provided, verify it exists and belongs to the active organization
     if (folderId) {
       const folder = await prisma.folder.findUnique({
-        where: { 
+        where: {
           id: folderId,
-          organizationId: user.organizationId
+          organizationId
         }
       });
       
@@ -242,7 +245,7 @@ export async function POST(request: NextRequest) {
     
     // Generate unique filename
     const fileExt = file.name.split('.').pop() || '';
-    const fileName = `${user.organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const fileName = `${organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
     
     // Get file buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
@@ -254,19 +257,7 @@ export async function POST(request: NextRequest) {
       file.type
     );
     
-    // Start content extraction in background
-    let contentExtracted = false;
-    let extractedText = '';
-    
-    try {
-      extractedText = await extractTextFromFile(fileBuffer, file.type);
-      contentExtracted = true;
-    } catch (extractError) {
-      console.error('Error extracting text from file:', extractError);
-      // Continue without extracted text - content extraction can be done later
-    }
-    
-    // Create document record in database
+    // Create document record immediately (extraction happens after response)
     const document = await prisma.document.create({
       data: {
         title: file.name,
@@ -279,7 +270,7 @@ export async function POST(request: NextRequest) {
         file_size: file.size,
         status: 'active',
         created_by: userId,
-        organization_id: user.organizationId,
+        organization_id: organizationId,
         folderId: folderId || null,
         metadata: {
           RawMessage: JSON.stringify({
@@ -289,7 +280,7 @@ export async function POST(request: NextRequest) {
           Valid: true
         },
         content_extracted: {
-          Bool: contentExtracted,
+          Bool: false,
           Valid: true
         }
       },
@@ -302,19 +293,24 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-    
-    // If text was extracted, store it
-    if (contentExtracted && extractedText) {
-      await prisma.documentContent.create({
-        data: {
-          documentId: document.id,
-          content: extractedText
+
+    // Extract text after the response is sent (non-blocking)
+    after(async () => {
+      try {
+        const extractedText = await extractTextFromFile(fileBuffer, file.type);
+        if (extractedText) {
+          await prisma.documentContent.create({
+            data: { documentId: document.id, content: extractedText }
+          });
+          await prisma.document.update({
+            where: { id: document.id },
+            data: { content_extracted: { Bool: true, Valid: true } }
+          });
         }
-      }).catch((err: any) => {
-        console.error('Error storing document content:', err);
-        // Don't fail the upload if content storage fails
-      });
-    }
+      } catch (err) {
+        console.error('Background text extraction failed for document', document.id, err);
+      }
+    });
     
     // Format response to match the expected Document interface
     const documentInfo = {
@@ -328,7 +324,7 @@ export async function POST(request: NextRequest) {
       createdById: document.created_by,
       createdAt: document.created_at.toISOString(),
       updatedAt: document.updated_at.toISOString(),
-      contentExtracted: contentExtracted
+      contentExtracted: false  // Extraction runs after response; vault polls for completion
     };
     
     return NextResponse.json({

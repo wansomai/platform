@@ -146,6 +146,7 @@ export async function POST(
             title: true,
             file_url: true,
             file_type: true,
+            content_extracted: true,
             content: {
               select: { content: true }
             }
@@ -314,8 +315,26 @@ export async function POST(
             for (const docRef of conversationDocuments) {
               let documentContent = docRef.document.content?.content ?? '';
 
-              // Fallback: when DB has no content, extract on demand (e.g. DOCX via mammoth) and persist for future
+              // Fallback: when DB has no content, check extraction status first
               if (!documentContent.trim()) {
+                // Check if background extraction is still in progress
+                const ce = docRef.document.content_extracted as any;
+                const extractionInProgress =
+                  ce != null &&
+                  typeof ce === 'object' &&
+                  'Bool' in ce &&
+                  ce.Bool === false;
+
+                if (extractionInProgress) {
+                  // Background job is still extracting — don't block, just notify AI
+                  contentParts.push(
+                    `### Document: ${docRef.document.title} ###\n\n` +
+                    `[Document is still being processed. Please ask the user to try again in a moment.]\n\n`
+                  );
+                  continue;
+                }
+
+                // Not in progress — attempt on-demand extraction (e.g. DOCX via mammoth)
                 const extracted = await tryExtractDocumentContentOnDemand({
                   id: docRef.document.id,
                   file_url: docRef.document.file_url,

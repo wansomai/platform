@@ -27,35 +27,15 @@ function getJwtSecret(): Uint8Array {
  */
 export async function checkProjectAccess(projectId: string, userId: string): Promise<boolean> {
   try {
-    // Check if user is a direct member of the project
+    // Access is granted only through explicit ProjectMember membership.
+    // Belonging to the project's organization does NOT grant access.
     const projectMember = await prisma.projectMember.findUnique({
       where: {
-        userId_projectId: {
-          userId,
-          projectId
-        }
+        userId_projectId: { userId, projectId }
       }
     });
 
-    if (projectMember) return true;
-
-    // If not a direct member, check if user belongs to the project's organization
-    const [user, project] = await Promise.all([
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { organizationId: true }
-      }),
-      prisma.project.findUnique({
-        where: { id: projectId },
-        select: { organizationId: true }
-      })
-    ]);
-
-    if (!user || !project || project.organizationId !== user.organizationId) {
-      return false;
-    }
-
-    return true;
+    return !!projectMember;
   } catch (error) {
     console.error('[checkProjectAccess] Error:', error);
     return false;
