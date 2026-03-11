@@ -399,16 +399,26 @@ export default function VaultPage() {
       if (newProject) {
         await attachDocumentsToProject(newProject.id, documentIds);
 
-        // Build document names for the review message
-        const docNames = documentIds
-          .map(id => documents.find(d => d.id === id)?.title)
-          .filter(Boolean);
-        const docList = docNames.length > 0
-          ? docNames.join(", ")
-          : `${documentIds.length} document${documentIds.length > 1 ? 's' : ''}`;
-
         // Store pending message so it auto-sends when workspace loads
-        sessionStorage.setItem("pendingMessage", `Review the following documents: ${docList}`);
+        sessionStorage.setItem("pendingMessage", `Review the attached document${documentIds.length > 1 ? 's' : ''}`);
+
+        // Store document metadata so attached-document preview cards appear on the message
+        const docsMeta = documentIds
+          .map(id => {
+            const doc = documents.find(d => d.id === id);
+            if (!doc) return null;
+            return {
+              id: doc.id,
+              title: doc.title,
+              fileType: doc.fileType,
+              fileSize: doc.fileSize,
+              fileUrl: doc.fileUrl,
+            };
+          })
+          .filter(Boolean);
+        if (docsMeta.length > 0) {
+          sessionStorage.setItem("pendingMessageDocs", JSON.stringify(docsMeta));
+        }
 
         // Pre-set conversation in chat store to avoid redundant fetch
         if (newProject.conversationId) {

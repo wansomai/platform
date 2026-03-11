@@ -68,19 +68,29 @@ export const GET = withErrorHandler(
     }
 
     // Format messages
-    const formattedMessages = conversation.messages.map((message: any) => ({
-      id: message.id,
-      content: message.content,
-      role: message.role,
-      timestamp: message.createdAt.toISOString(),
-      references: message.references.map((ref: any) => ({
-        id: ref.id,
-        documentId: ref.documentId,
-        documentName: ref.document?.title || 'Unknown Document',
-        text: ref.text,
-        page: ref.page,
-      })),
-    }));
+    const formattedMessages = conversation.messages.map((message: any) => {
+      const metadata = message.metadata
+        ? (typeof message.metadata === 'string' ? JSON.parse(message.metadata) : message.metadata)
+        : null;
+
+      return {
+        id: message.id,
+        content: message.content,
+        role: message.role,
+        timestamp: message.createdAt.toISOString(),
+        ...(metadata?.document && { document: metadata.document }),
+        ...(metadata?.report && { report: metadata.report }),
+        ...(metadata?.webSearchSources && { webSearchSources: metadata.webSearchSources }),
+        ...(metadata?.attachedDocuments && { attachedDocuments: metadata.attachedDocuments }),
+        references: message.references.map((ref: any) => ({
+          id: ref.id,
+          documentId: ref.documentId,
+          documentName: ref.document?.title || 'Unknown Document',
+          text: ref.text,
+          page: ref.page,
+        })),
+      };
+    });
 
     // Format conversation
     const formattedConversation = {
@@ -94,10 +104,10 @@ export const GET = withErrorHandler(
       aiAssociateId: conversation.aiAssociateId,
       aiAssociate: conversation.aiAssociate
         ? {
-            id: conversation.aiAssociate.id,
-            name: conversation.aiAssociate.name,
-            description: conversation.aiAssociate.description,
-          }
+          id: conversation.aiAssociate.id,
+          name: conversation.aiAssociate.name,
+          description: conversation.aiAssociate.description,
+        }
         : undefined,
     };
 
@@ -190,10 +200,10 @@ export const PUT = withErrorHandler(
       aiAssociateId: updatedConversation.aiAssociateId,
       aiAssociate: updatedConversation.aiAssociate
         ? {
-            id: updatedConversation.aiAssociate.id,
-            name: updatedConversation.aiAssociate.name,
-            description: updatedConversation.aiAssociate.description,
-          }
+          id: updatedConversation.aiAssociate.id,
+          name: updatedConversation.aiAssociate.name,
+          description: updatedConversation.aiAssociate.description,
+        }
         : undefined,
       updatedAt: updatedConversation.updatedAt.toISOString(),
     };

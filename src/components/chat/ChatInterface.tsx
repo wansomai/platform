@@ -10,13 +10,22 @@ import {
   ExternalLink,
   Globe,
   CheckCircle,
-  X
+  X,
+  FileText,
+  ChevronDown
 } from "lucide-react"
-import { useChatStore} from "@/store/chat.store"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useChatStore } from "@/store/chat.store"
 import { useCanvasStore } from "@/store/canvas.store"
 import { useUIStore } from "@/store/ui.store"
 import { useProjectStore } from "@/store/project.store"
 import { useProjectSettingsStore } from "@/store/workspace-settings.store"
+import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 import { useSession } from "next-auth/react"
 import MessageDisplay from "./MessageDisplay"
 import LogoAnimation from "../commons/LogoAnimation"
@@ -51,7 +60,7 @@ const EmptyState = () => (
         <div className="space-y-2">
 
           <p className="text-gray-600 text-3xl capitalize">
-          All Your favorite legal tools in a unified AI workspace
+            All Your favorite legal tools in a unified AI workspace
           </p>
         </div>
       </div>
@@ -85,7 +94,7 @@ export function ChatInterface() {
   } = useChatStore()
   const { currentProject } = useProjectStore()
   const { settings, suggestedJurisdiction, setJurisdiction } = useProjectSettingsStore()
-  const {data: session} = useSession()
+  const { data: session } = useSession()
 
   const activeJurisdictions = (settings?.jurisdictions ?? [])
     .map(j => getJurisdictionById(j.id))
@@ -100,21 +109,21 @@ export function ChatInterface() {
 
   // Check for pending message directly (more reliable than state)
   const hasPendingMessage = typeof window !== "undefined" && !!sessionStorage.getItem("pendingMessage")
-  
+
   // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [currentConversation?.messages])
-  
+
   // Show error toast if there's an error
   useEffect(() => {
     if (error) {
       addToast({ message: error, type: 'error' })
     }
   }, [error, addToast])
-  
+
   const copyMessageToClipboard = useCallback((content: string) => {
     navigator.clipboard.writeText(content)
       .then(() => addToast({ message: 'Message Copied to clipboard', type: 'success' }))
@@ -134,7 +143,7 @@ export function ChatInterface() {
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
             className=" font-medium hover:text-green-900"
           >
-           Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
+            Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
           </button>
           <button
             onClick={() => setDismissedSuggestion(true)}
@@ -149,7 +158,7 @@ export function ChatInterface() {
       {!hasMessages ? (
         hasPendingMessage || isLoading ? <PendingMessageState /> : <EmptyState />
       ) : (
-        <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+        <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style jsx>{`
             .scrollbar-hide::-webkit-scrollbar {
               display: none;
@@ -187,6 +196,8 @@ const ChatMessageItem = React.memo(({
 }) => {
   const isUser = message.role === 'user';
   const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
+  const { setSelectedPreviewDocument } = useUIStore();
+  const { documents: projectDocs } = useProjectDocumentsStore();
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -205,18 +216,18 @@ const ChatMessageItem = React.memo(({
 
   // Debug: Check if message has report
   if (!isUser && (message.metadata?.report || message.report)) {
-    }
-  
+  }
+
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
-  
+
   // Check if message is currently streaming
   const isStreaming = message.isStreaming;
-  
+
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-2 sm:gap-3 max-w-[90%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        
+
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
             <span className="font-medium">{isUser ? 'You' : 'Wansom'}</span>
@@ -224,19 +235,89 @@ const ChatMessageItem = React.memo(({
               {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
           </div>
-          
+
+          {/* Attached document cards — shown on user messages */}
+          {isUser && message.attachedDocuments && message.attachedDocuments.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {message.attachedDocuments.slice(0, 3).map((doc: any) => (
+                <button
+                  key={doc.id}
+                  onClick={() => {
+                    const projectDoc = projectDocs.find(d => d.id === doc.id);
+                    setSelectedPreviewDocument({
+                      id: doc.id,
+                      title: doc.title,
+                      fileUrl: doc.fileUrl || projectDoc?.fileUrl || (projectDoc as any)?.file_url || '',
+                      fileType: doc.fileType,
+                      fileSize: doc.fileSize,
+                      createdAt: projectDoc?.createdAt || (projectDoc as any)?.created_at || '',
+                    });
+                  }}
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm text-left"
+                  title={`Open ${doc.title}`}
+                >
+                  <div className="bg-[#74C6B8] rounded-md p-1.5 flex-shrink-0">
+                    <FileText className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-medium text-gray-900 max-w-[160px] truncate">{doc.title}</span>
+                    <span className="text-xs text-gray-500 uppercase">{doc.fileType}</span>
+                  </div>
+                </button>
+              ))}
+
+              {message.attachedDocuments.length > 3 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm text-left">
+                      <div className="bg-gray-100 rounded-md p-1.5 flex-shrink-0">
+                        <FileText className="h-4 w-4 text-gray-500" />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium text-gray-900 truncate">+{message.attachedDocuments.length - 3} more</span>
+                        <span className="text-xs text-gray-500">DOCUMENTS</span>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 max-h-[300px] overflow-y-auto">
+                    {message.attachedDocuments.slice(3).map((doc: any) => (
+                      <DropdownMenuItem
+                        key={doc.id}
+                        onClick={() => {
+                          const projectDoc = projectDocs.find(d => d.id === doc.id);
+                          setSelectedPreviewDocument({
+                            id: doc.id,
+                            title: doc.title,
+                            fileUrl: doc.fileUrl || projectDoc?.fileUrl || (projectDoc as any)?.file_url || '',
+                            fileType: doc.fileType,
+                            fileSize: doc.fileSize,
+                            createdAt: projectDoc?.createdAt || (projectDoc as any)?.created_at || '',
+                          });
+                        }}
+                        className="cursor-pointer gap-2"
+                      >
+                        <FileText className="h-4 w-4 text-gray-500 shrink-0" />
+                        <span className="line-clamp-1 truncate">{doc.title}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+          )}
+
           <div
-            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${
-              isUser ? "bg-gray-100 text-white" : "bg-transparent"
-            }`}
+            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-white" : "bg-transparent"
+              }`}
           >
             {message.isLoading || isStreaming ? (
               <div className="flex items-center">
                 {message.content ? (
                   <div className="space-y-2">
-                    <MessageDisplay 
-                      content={formattedContent} 
-                     
+                    <MessageDisplay
+                      content={formattedContent}
+
                     />
                     {isStreaming && (
                       <div className="flex items-center gap-1">
@@ -266,12 +347,12 @@ const ChatMessageItem = React.memo(({
                 )}
               </div>
             ) : (
-              <MessageDisplay 
-                content={formattedContent} 
-                
+              <MessageDisplay
+                content={formattedContent}
+
               />
             )}
-          </div>      
+          </div>
           {!isUser && !message.isLoading && !isStreaming && (
             <div className="flex gap-1 mt-2">
               <Button
@@ -295,7 +376,7 @@ const ChatMessageItem = React.memo(({
           {/* Suggestion Accept / Reject — shown inline when a canvas diff is awaiting review */}
           {message.isSuggestion && pendingSuggestion && (
             <div className="mt-3 flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-            
+
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('canvasAcceptSuggestion'))}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors"
@@ -319,7 +400,7 @@ const ChatMessageItem = React.memo(({
                 <span className="font-medium text-sm">Research Sources ({message.webSearchSources.length})</span>
               </div>
               <div className="flex flex-wrap items-centerjustify-center gap-2">
-                {message.webSearchSources.map((source: {title: string, uri: string}, index: number) => (
+                {message.webSearchSources.map((source: { title: string, uri: string }, index: number) => (
                   <a
                     key={index}
                     href={source.uri}
@@ -387,7 +468,7 @@ function formatMessageContent(content: string): string {
 function isCanvasProcessingStatus(status: string): boolean {
   const canvasStatuses = [
     'analyzing_request',
-    'processing_context', 
+    'processing_context',
     'generating_document',
     'editing_document',
     'saving_document',

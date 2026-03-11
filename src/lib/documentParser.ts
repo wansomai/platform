@@ -94,85 +94,73 @@ async function extractTextFromPdfTraditional(fileBuffer: Buffer): Promise<string
 }
 
 /**
- * Extract text from DOCX files
+ * Extract text from DOCX/DOC files using mammoth.
+ * If mammoth fails or yields no text, returns the scanned sentinel so Gemini can
+ * process the file natively. No PDF fallback — passing DOCX bytes to PDFLoader
+ * causes hundreds of "Ignoring invalid character in hex string" warnings and never
+ * produces useful output for real DOCX/DOC files.
  */
 async function extractTextFromDocx(fileBuffer: Buffer): Promise<string> {
   try {
-    // Create a blob URL from the buffer for DocxLoader
-    // For DOCX, using mammoth directly is often more reliable
     const result = await mammoth.extractRawText({ buffer: fileBuffer });
-    return result.value;
-  } catch (error) {
-    throw error;
+    if (result.value && result.value.trim().length > 0) {
+      return result.value;
+    }
+  } catch {
+    // mammoth failed — file may be DOC binary, corrupted, or misnamed
   }
+
+  // Cannot extract text — let Gemini process the file natively
+  return '[SCANNED_PDF_REQUIRES_PROCESSING]';
 }
 
 /**
  * Extract text from Excel files
  */
 function extractTextFromExcel(fileBuffer: Buffer): string {
-  try {
-    // Read the workbook
-    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-    
-    // Extract text from all sheets
-    const sheetNames = workbook.SheetNames;
-    let allText = '';
-    
-    for (const sheetName of sheetNames) {
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      
-      // Add sheet name as heading
-      allText += `Sheet: ${sheetName}\n\n`;
-      
-      // Convert sheet data to text
-      for (const row of jsonData) {
-        allText += (row as any[]).join('\t') + '\n';
-      }
-      
-      allText += '\n\n';
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  const sheetNames = workbook.SheetNames;
+  let allText = '';
+
+  for (const sheetName of sheetNames) {
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+    allText += `Sheet: ${sheetName}\n\n`;
+
+    for (const row of jsonData) {
+      allText += (row as any[]).join('\t') + '\n';
     }
-    
-    return allText;
-  } catch (error) {
-    throw error;
+
+    allText += '\n\n';
   }
+
+  return allText;
 }
 
 /**
  * Extract text from CSV files
  */
 function extractTextFromCsv(fileBuffer: Buffer): string {
-  try {
-    // Parse CSV
-    const content = fileBuffer.toString('utf-8');
-    const records = csv.parse(content, {
-      columns: true,
-      skip_empty_lines: true
-    });
-    
-    // Format as readable text
-    let text = '';
-    
-    // Add headers
-    if (records.length > 0) {
-      const headers = Object.keys(records[0]);
-      text += headers.join('\t') + '\n';
-      
-      // Add separator
-      text += headers.map(() => '---').join('\t') + '\n';
-    }
-    
-    // Add data rows
-    for (const record of records) {
-      text += Object.values(record).join('\t') + '\n';
-    }
-    
-    return text;
-  } catch (error) {
-    throw error;
+  const content = fileBuffer.toString('utf-8');
+  const records = csv.parse(content, {
+    columns: true,
+    skip_empty_lines: true
+  });
+
+  let text = '';
+
+  if (records.length > 0) {
+    const headers = Object.keys(records[0]);
+    text += headers.join('\t') + '\n';
+    text += headers.map(() => '---').join('\t') + '\n';
   }
+
+  for (const record of records) {
+    text += Object.values(record).join('\t') + '\n';
+  }
+
+  return text;
 }
 
 /**

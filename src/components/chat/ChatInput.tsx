@@ -69,6 +69,7 @@ export function ChatInput({
   const [showAssociatesDropdown, setShowAssociatesDropdown] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedVaultDocIds, setSelectedVaultDocIds] = useState<string[]>([]);
+  const [pendingVaultDocs, setPendingVaultDocs] = useState<Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }>>([]);
   const [selectedAssociateId, setSelectedAssociateId] = useState<string | null>(null);
   const [homepageJurisdictions, setHomepageJurisdictions] = useState<Jurisdiction[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -261,11 +262,11 @@ export function ChatInput({
         // Safely access nested data
         if (response && response.data) {
           setGoogleConnectionStatus(response.data);
-          if(response.data.hasCalendarAccess) {
+          if (response.data.hasCalendarAccess) {
             updateSetting(projectId, 'googleCalendar', response.data.hasCalendarAccess);
             setIsConnecting(false);
           }
-          if(response.data.hasGmailAccess) {
+          if (response.data.hasGmailAccess) {
             updateSetting(projectId, 'gmail', response.data.hasGmailAccess);
             setIsConnecting(false);
           }
@@ -322,7 +323,7 @@ export function ChatInput({
 
   // Handle send message with streaming
   const handleSend = useCallback(
-    async (customMessage?: string) => {
+    async (customMessage?: string, customDocsMeta?: any[]) => {
       const messageToSend = customMessage || input;
       if (!messageToSend.trim() || isSubmitting) return;
 
@@ -354,6 +355,7 @@ export function ChatInput({
             if (newProject) {
               // Collect all document IDs to attach (uploaded files + vault selections)
               const allDocIds: string[] = [...selectedVaultDocIds];
+              const allDocsMeta: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> = [...pendingVaultDocs];
 
               // Upload new files first
               if (selectedFiles.length > 0) {
@@ -364,6 +366,13 @@ export function ChatInput({
                     const doc = await useDocumentsStore.getState().uploadDocument(formData);
                     if (doc) {
                       allDocIds.push(doc.id);
+                      allDocsMeta.push({
+                        id: doc.id,
+                        title: doc.title,
+                        fileType: doc.fileType,
+                        fileSize: doc.fileSize,
+                        fileUrl: doc.fileUrl
+                      });
                     }
                   }
                 } catch (uploadError: any) {
@@ -428,13 +437,18 @@ export function ChatInput({
                 }
               }
 
-              // Store the message in sessionStorage to preserve it across navigation
+              // Store the message and doc metadata in sessionStorage to preserve it across navigation
               sessionStorage.setItem("pendingMessage", messageToSend);
+              if (allDocsMeta.length > 0) {
+                sessionStorage.setItem("pendingMessageDocs", JSON.stringify(allDocsMeta));
+              }
 
               // Clear selected files and associate
               setSelectedFiles([]);
               setSelectedAssociateId(null);
               setHomepageJurisdictions([]);
+              setSelectedVaultDocIds([]);
+              setPendingVaultDocs([]);
 
               // Call callback if provided
               onWorkspaceCreated?.(newProject.id);
@@ -468,6 +482,8 @@ export function ChatInput({
         setIsSubmitting(true);
 
         // Upload and attach files if any are selected
+        const attachedDocMeta: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> = [];
+
         if (selectedFiles.length > 0) {
           try {
             const uploadedDocIds: string[] = [];
@@ -479,6 +495,7 @@ export function ChatInput({
               const doc = await useDocumentsStore.getState().uploadDocument(formData);
               if (doc) {
                 uploadedDocIds.push(doc.id);
+                attachedDocMeta.push({ id: doc.id, title: doc.title, fileType: doc.fileType, fileSize: doc.fileSize });
               }
             }
 
@@ -498,10 +515,18 @@ export function ChatInput({
           }
         }
 
+        // Include pending vault docs in this message
+        if (customDocsMeta) {
+          attachedDocMeta.push(...customDocsMeta);
+        } else {
+          attachedDocMeta.push(...pendingVaultDocs);
+        }
+
         // Clear input immediately when sending so the chat is cleared before the response streams
         if (!customMessage) {
           setInput("");
           setSelectedFiles([]);
+          setPendingVaultDocs([]);
           if (textareaRef.current) {
             textareaRef.current.style.height = "auto";
           }
@@ -515,7 +540,8 @@ export function ChatInput({
             session?.user?.id,
             "",
             selectedPreviewDocument,
-            currentEditorHtml || undefined
+            currentEditorHtml || undefined,
+            attachedDocMeta.length > 0 ? attachedDocMeta : undefined
           );
         } catch (error: any) {
           // Check if this is a subscription limit error
@@ -545,6 +571,7 @@ export function ChatInput({
       projectId,
       sendMessage,
       selectedFiles,
+      pendingVaultDocs,
       selectedPreviewDocument,
       profile?.activeOrganizationId,
       profile?.organizationId,
@@ -564,8 +591,19 @@ export function ChatInput({
       pendingMessageProcessedRef.current = true;
       sessionStorage.removeItem("pendingMessage");
 
+      const pendingDocsStr = sessionStorage.getItem("pendingMessageDocs");
+      let pendingDocsMeta = undefined;
+      if (pendingDocsStr) {
+        try {
+          pendingDocsMeta = JSON.parse(pendingDocsStr);
+        } catch (e) {
+          console.error("Failed to parse pendingMessageDocs", e);
+        }
+        sessionStorage.removeItem("pendingMessageDocs");
+      }
+
       // Auto-send the pending message
-      handleSend(pendingMessage);
+      handleSend(pendingMessage, pendingDocsMeta);
     }
   }, [homepageMode, currentConversation, isSubmitting, handleSend]);
 
@@ -734,18 +772,8 @@ export function ChatInput({
       fetchProjectDocuments(projectId);
     }
 
-    // Set the first newly added document as preview so "review this" targets it
-    if (documents.length > 0 && projectId && !homepageMode) {
-      const doc = documents[0];
-      setSelectedPreviewDocument({
-        id: doc.id,
-        title: doc.title ?? doc.fileName ?? 'Document',
-        fileUrl: doc.fileUrl ?? doc.file_url,
-        fileType: doc.fileType ?? doc.file_type ?? 'unknown',
-        fileSize: doc.fileSize ?? doc.file_size,
-        createdAt: doc.createdAt ?? doc.created_at,
-      });
-    }
+    // Removed auto-set of preview document as per user request
+    // Documents should be opened manually by clicking on them in the chat
   };
 
   // Handle file selection
@@ -783,7 +811,7 @@ export function ChatInput({
 
     } else {
       notify.error("Failed to submit Pro access request");
-       setIsConnecting(false);
+      setIsConnecting(false);
     }
 
     setShowProAccess(false);
@@ -818,15 +846,13 @@ export function ChatInput({
         <div className={homepageMode ? "w-full" : "w-full max-w-4xl mx-auto"}>
           {/* Input Area with embedded icons */}
           <div
-            className={`bg-white rounded-t-xl border-t-2 border-[#0a4b5e]  focus-within:border-primary-300 transition-colors relative ${
-              homepageMode ? "shadow-sm focus-within:shadow-md" : "shadow-lg"
-            }`}
+            className={`bg-white rounded-t-xl border-t-2 border-[#0a4b5e]  focus-within:border-primary-300 transition-colors relative ${homepageMode ? "shadow-sm focus-within:shadow-md" : "shadow-lg"
+              }`}
           >
             {/* Left side icons - show in all modes */}
             <div
-              className={`absolute flex items-center gap-2 z-10 w-full ${
-                homepageMode ? "left-6 bottom-3" : "left-6 bottom-2"
-              }`}
+              className={`absolute flex items-center gap-2 z-10 w-full ${homepageMode ? "left-6 bottom-3" : "left-6 bottom-2"
+                }`}
             >
               {/* Documents Tool */}
               <Button
@@ -901,8 +927,8 @@ export function ChatInput({
                           homepageMode
                             ? undefined
                             : (checked) => {
-                                handleSettingChange("webSearch", checked);
-                              }
+                              handleSettingChange("webSearch", checked);
+                            }
                         }
                       />
                     </div>
@@ -924,8 +950,8 @@ export function ChatInput({
                           homepageMode
                             ? undefined
                             : (checked) => {
-                                handleSettingChange("canvasMode", checked);
-                              }
+                              handleSettingChange("canvasMode", checked);
+                            }
                         }
                       />
                     </div>
@@ -934,7 +960,7 @@ export function ChatInput({
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="font-medium text-sm flex items-center gap-1">
-                          <img src={'/icons/calendar.svg'} className="w-6 h-6"/> Google Calendar
+                          <img src={'/icons/calendar.svg'} className="w-6 h-6" /> Google Calendar
                         </Label>
                         {googleConnectionStatus?.hasCalendarAccess ? (
                           <Switch
@@ -949,11 +975,11 @@ export function ChatInput({
                               homepageMode
                                 ? undefined
                                 : (checked) => {
-                                    handleSettingChange(
-                                      "googleCalendar",
-                                      checked
-                                    );
-                                  }
+                                  handleSettingChange(
+                                    "googleCalendar",
+                                    checked
+                                  );
+                                }
                             }
                           />
                         ) : (
@@ -970,11 +996,11 @@ export function ChatInput({
                         )}
                       </div>
                     </div>
-                       {/* Gmail */}
+                    {/* Gmail */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="font-medium text-sm flex items-center gap-1">
-                         <img src={'/icons/gmail.svg'} className="w-6 h-6"/> Gmail
+                          <img src={'/icons/gmail.svg'} className="w-6 h-6" /> Gmail
                         </Label>
                         <Button
                           onClick={() => setShowProAccess(true)}
@@ -1008,8 +1034,8 @@ export function ChatInput({
                             homepageMode
                               ? undefined
                               : (checked) => {
-                                  handleSettingChange("citeSources", checked);
-                                }
+                                handleSettingChange("citeSources", checked);
+                              }
                           }
                         />
                       </div>
@@ -1033,11 +1059,11 @@ export function ChatInput({
                             homepageMode
                               ? undefined
                               : (checked) => {
-                                  handleSettingChange(
-                                    "suggestActions",
-                                    checked
-                                  );
-                                }
+                                handleSettingChange(
+                                  "suggestActions",
+                                  checked
+                                );
+                              }
                           }
                         />
                       </div>
@@ -1065,8 +1091,8 @@ export function ChatInput({
                       {activeJurisdictionsForButton.length === 1
                         ? activeJurisdictionsForButton[0].name
                         : activeJurisdictionsForButton.length > 1
-                        ? `${activeJurisdictionsForButton.length} Jurisdictions`
-                        : 'Jurisdiction'}
+                          ? `${activeJurisdictionsForButton.length} Jurisdictions`
+                          : 'Jurisdiction'}
                     </span>
                   </button>
                 </DropdownMenuTrigger>
@@ -1263,7 +1289,7 @@ export function ChatInput({
             />
 
             {/* Selected Files Chips - Show above textarea */}
-            {(selectedFiles.length > 0 || (homepageMode && selectedVaultDocIds.length > 0)) && (
+            {(selectedFiles.length > 0 || pendingVaultDocs.length > 0 || (homepageMode && selectedVaultDocIds.length > 0)) && (
               <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
                 {/* Uploaded files (pending) */}
                 {selectedFiles.map((file, index) => (
@@ -1283,6 +1309,31 @@ export function ChatInput({
                     </div>
                     <button
                       onClick={() => handleRemoveFile(index)}
+                      className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                      type="button"
+                    >
+                      <X className="h-3.5 w-3.5 text-gray-600" />
+                    </button>
+                  </div>
+                ))}
+                {/* Workspace mode: vault docs selected for this message */}
+                {!homepageMode && pendingVaultDocs.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-[#E9F5F3] rounded-lg"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="bg-[#74C6B8] rounded-md p-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-white">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-900 max-w-[150px] truncate">
+                        {doc.title}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setPendingVaultDocs(prev => prev.filter(d => d.id !== doc.id))}
                       className="hover:bg-blue-100 rounded-full p-1 transition-colors"
                       type="button"
                     >
@@ -1321,21 +1372,20 @@ export function ChatInput({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                selectedFiles.length > 0 || selectedVaultDocIds.length > 0
+                selectedFiles.length > 0 || pendingVaultDocs.length > 0 || selectedVaultDocIds.length > 0
                   ? "Ask anything about your document..."
                   : homepageMode
-                  ? "Ask wansom anything... (e.g., 'Help me draft a contract','Review this agreement')"
-                  : "Ask Wansom anything..."
+                    ? "Ask wansom anything... (e.g., 'Help me draft a contract','Review this agreement')"
+                    : "Ask Wansom anything..."
               }
-              className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 overflow-y-auto ${
-                homepageMode
+              className={`border-0 resize-none rounded-xl focus-visible:ring-0 focus-visible:ring-offset-0 w-full placeholder:text-gray-500 overflow-y-auto ${homepageMode
                   ? selectedFiles.length > 0 || selectedVaultDocIds.length > 0
                     ? "min-h-[80px] max-h-[400px] px-6 pt-2 pb-16 pr-16 text-[13px] md:text-base"
                     : "min-h-[120px] max-h-[400px] px-6 pt-4 pb-16 pr-16 text-[13px] md:text-base"
-                  : selectedFiles.length > 0
-                  ? "min-h-[80px] max-h-[300px] pl-6 pr-16 pt-2 pb-16"
-                  : "min-h-[100px] max-h-[300px] pl-6 pr-16 pt-4 pb-16"
-              }`}
+                  : selectedFiles.length > 0 || pendingVaultDocs.length > 0
+                    ? "min-h-[80px] max-h-[300px] pl-6 pr-16 pt-2 pb-16"
+                    : "min-h-[100px] max-h-[300px] pl-6 pr-16 pt-4 pb-16"
+                }`}
               disabled={isSubmitting}
             />
 
@@ -1354,15 +1404,13 @@ export function ChatInput({
               >
                 {isSubmitting ? (
                   <Loader2
-                    className={`animate-spin text-white ${
-                      homepageMode ? "h-5 w-5" : "h-4 w-4"
-                    }`}
+                    className={`animate-spin text-white ${homepageMode ? "h-5 w-5" : "h-4 w-4"
+                      }`}
                   />
                 ) : (
                   <Send
-                    className={`text-white ${
-                      homepageMode ? "h-5 w-5" : "h-4 w-4"
-                    }`}
+                    className={`text-white ${homepageMode ? "h-5 w-5" : "h-4 w-4"
+                      }`}
                   />
                 )}
               </Button>
@@ -1403,12 +1451,29 @@ export function ChatInput({
         onOpenChange={setShowVaultModal}
         projectId={homepageMode ? undefined : projectId}
         onDocumentsAdded={(docs) => {
+          const docObjects = docs.map((d: any) => ({
+            id: d.id,
+            title: d.title || d.fileName || 'Document',
+            fileType: d.fileType || d.file_type || 'unknown',
+            fileSize: d.fileSize ?? d.file_size,
+            fileUrl: d.fileUrl || d.file_url,
+          }));
+
           if (homepageMode) {
             // Store doc IDs to attach after project creation
             const newIds = docs.map((d: any) => d.id);
             setSelectedVaultDocIds(prev => [...prev, ...newIds.filter((id: string) => !prev.includes(id))]);
+            setPendingVaultDocs(prev => {
+              const existing = new Set(prev.map(d => d.id));
+              return [...prev, ...docObjects.filter((d: any) => !existing.has(d.id))];
+            });
             addToast({ message: `${docs.length} document${docs.length > 1 ? 's' : ''} selected`, type: "success" });
           } else {
+            // Store doc objects so they appear as chips and are included in the next message
+            setPendingVaultDocs(prev => {
+              const existing = new Set(prev.map(d => d.id));
+              return [...prev, ...docObjects.filter((d: any) => !existing.has(d.id))];
+            });
             handleDocumentsAdded(docs);
           }
         }}

@@ -202,7 +202,7 @@ export class AIDocumentService {
         config: {
           systemInstruction,
           temperature: 0.4,
-          maxOutputTokens: 8192
+          maxOutputTokens: 65536
         }
       });
 
@@ -235,7 +235,7 @@ export class AIDocumentService {
         config: {
           systemInstruction,
           temperature: 0.4,
-          maxOutputTokens: 8192
+          maxOutputTokens: 65536
         }
       });
 
