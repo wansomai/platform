@@ -195,11 +195,14 @@ export default function GuestCanvasChatSplitView({
       document.body.appendChild(script);
     });
 
+    const channels = jurisdictionId === 'ke' ? ['mobile_money', 'card'] : ['card'];
+
     (window as any).PaystackPop.setup({
       key: 'pk_live_fcef983434b15b8b03d03189ebff007c36adfe48',
       email: exportEmail,
       amount: pricing.amount,
       currency: pricing.currency,
+      channels,
       ref: `WANSOM-DOC-${Date.now()}`,
       metadata: {
         custom_fields: [
