@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { getAllLegalDocuments } from "@/lib/data/sanity";
 import { adaptSanityLegalDocuments } from "@/lib/data/blogAdapter";
 import GuestCanvasChatSplitView from "@/components/guest/GuestCanvasChatSplitView";

@@ -242,6 +242,9 @@ body {
 .text-muted {
   color: var(--color-text-muted);
 }
+.exportmodal-bg{
+  background-image: url(../../public/gradient-bg.png);
+}
 
 /* Component utilities */
 .btn-primary {

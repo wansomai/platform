@@ -113,6 +113,10 @@ export default function GuestCanvasChatSplitView({
     generateDocument(newId);
   };
 
+  const handleCanvasStreamingUpdate = useCallback((html: string | null) => {
+    setStreamingHtml(html);
+  }, []);
+
   const handleDocumentUpdate = useCallback((suggestedHtml: string, originalHtml: string) => {
     setPendingSuggestion({ originalHtml: originalHtml || currentEditorHtml, suggestedHtml });
   }, [currentEditorHtml]);
@@ -140,45 +144,50 @@ export default function GuestCanvasChatSplitView({
     setExportError('');
     setIsExporting(true);
 
-    const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-    if (!publicKey) {
-      // Dev fallback: skip payment and export directly
-      await downloadDocument(null);
-      return;
-    }
-
-    // Load Paystack inline JS dynamically
-    const loadPaystack = () =>
-      new Promise<void>((resolve) => {
-        if ((window as any).PaystackPop) { resolve(); return; }
-        const script = document.createElement('script');
-        script.src = 'https://js.paystack.co/v1/inline.js';
-        script.onload = () => resolve();
-        document.body.appendChild(script);
-      });
-
     try {
-      await loadPaystack();
-
-      const reference = `WANSOM-DRAFT-${Date.now()}`;
-      const handler = (window as any).PaystackPop.setup({
-        key: publicKey,
-        email: exportEmail,
-        amount: pricing.amount,
-        currency: pricing.currency,
-        ref: reference,
-        metadata: { documentType, jurisdictionId },
-        callback: async (response: { reference: string }) => {
-          await downloadDocument(response.reference);
-        },
-        onClose: () => {
-          setIsExporting(false);
-        },
+      // Step 1: Initialize transaction server-side — handles currency per jurisdiction.
+      const initRes = await fetch('/api/public/payment/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: exportEmail, jurisdictionId, documentType, documentTitle }),
       });
 
-      handler.openIframe();
-    } catch {
-      setExportError('Payment could not be initialised. Please try again.');
+      if (!initRes.ok) {
+        const err = await initRes.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to initialize payment');
+      }
+
+      const { authorizationUrl, reference } = await initRes.json();
+
+      // Dev / unconfigured environment — skip payment and export directly.
+      if (!authorizationUrl || !reference) {
+        await downloadDocument(null);
+        return;
+      }
+
+      // Step 2: Open Paystack hosted checkout in a popup window.
+      const popup = window.open(
+        authorizationUrl,
+        'paystack-checkout',
+        'width=520,height=680,scrollbars=yes,resizable=yes'
+      );
+
+      if (!popup) {
+        // Popup was blocked — fall back to same-tab redirect.
+        window.location.href = authorizationUrl;
+        return;
+      }
+
+      // Step 3: Poll until the popup closes, then attempt the download.
+      // The export endpoint verifies the reference with Paystack — so if the user
+      // closed without paying, it returns a 402 which we surface as an error.
+      const poll = setInterval(async () => {
+        if (!popup.closed) return;
+        clearInterval(poll);
+        await downloadDocument(reference);
+      }, 600);
+    } catch (err: any) {
+      setExportError(err.message || 'Payment could not be initialised. Please try again.');
       setIsExporting(false);
     }
   };
@@ -204,7 +213,12 @@ export default function GuestCanvasChatSplitView({
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || 'Export failed');
+        // 402 means payment not completed or verification failed
+        throw new Error(
+          response.status === 402
+            ? 'Payment not completed. Please try again.'
+            : err.error || 'Export failed'
+        );
       }
 
       const blob = await response.blob();
@@ -252,6 +266,7 @@ export default function GuestCanvasChatSplitView({
             onDocumentUpdate={handleDocumentUpdate}
             onAcceptSuggestion={handleAcceptSuggestion}
             onRejectSuggestion={handleRejectSuggestion}
+            onCanvasStreamingUpdate={handleCanvasStreamingUpdate}
           />
         }
         defaultLeftWidth={65}
@@ -269,10 +284,8 @@ export default function GuestCanvasChatSplitView({
              
               <div>
                 <h2 className="text-lg font-semibold text-gray-900">Export Document</h2>
-                <p className="text-sm text-gray-500 mt-0.5">
-                  {jurisdiction?.name || 'Nigeria'} — {documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-                </p>
               </div>
+             
               <button
                 onClick={() => { setShowExportModal(false); setIsExporting(false); setExportError(''); }}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded"
@@ -280,19 +293,18 @@ export default function GuestCanvasChatSplitView({
                 <X className="h-5 w-5" />
               </button>
             </div>
-
-            {/* Body */}
-            <div className="p-6 space-y-4">
-              <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-start gap-3">
-                <Download className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-green-900">One-time download</p>
-                  <p className="text-sm text-green-700 mt-0.5">
+             <div className='px-5 exportmodal-bg pt-20 pb-5 mx-5 rounded-lg bg-cover'>
+               <h2 className='text-lg font-medium text-black'>
+                  {documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                </h2>
+                <p className="text-md text-black mt-1">
                     Get a clean, watermark-free Word document (.docx) formatted for {jurisdiction?.name || 'Nigeria'} law.
                   </p>
-                  <p className="text-xl font-bold text-green-700 mt-2">{pricing.label}</p>
-                </div>
-              </div>
+              
+
+             </div>
+            {/* Body */}
+            <div className="p-6 space-y-4">
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -329,7 +341,7 @@ export default function GuestCanvasChatSplitView({
             </div>
 
             {/* Upsell */}
-            <div className="border-t border-gray-100 px-6 py-4 bg-gray-50 rounded-b-2xl">
+            {/* <div className="border-t border-gray-100 px-6 py-4 bg-gray-50 rounded-b-2xl">
               <p className="text-xs text-gray-600 text-center">
                 Need multiple documents?{' '}
                 <a href="/register" className="text-green-600 font-medium hover:underline">
@@ -337,7 +349,7 @@ export default function GuestCanvasChatSplitView({
                 </a>{' '}
                 and get your first month of unlimited drafts.
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

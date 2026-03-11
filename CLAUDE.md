@@ -239,6 +239,16 @@ import prisma from '@/lib/prisma';
 - `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
 - `(admin)` - Admin-only pages
+- `/legal-documents/[slug]` - Public legal document pages (outside route groups): renders `GuestCanvasChatSplitView` for unauthenticated document drafting, sourced from Sanity CMS
+
+### Guest / Public Drafting Flow
+Unauthenticated users can draft legal documents on the `/legal-documents/[slug]` page without an account. The flow:
+1. Page loads Sanity CMS document data (type, title, description, jurisdiction)
+2. `GuestCanvasChatSplitView` (`src/components/guest/`) auto-calls `/api/public/generate` on mount to stream an AI-drafted document
+3. User can refine via `GuestChatPanel` which calls `/api/public/chat`
+4. **Export is gated behind Paystack payment** — jurisdiction-specific pricing is hardcoded in `GuestCanvasChatSplitView` (NGN 2,500 / KES 350 / ZAR 45 / GHS 75 / USD 5 default); on payment success, `/api/public/export` returns the DOCX file and emails it
+- These `/api/public/*` routes are unauthenticated — do NOT add `getUserIdFromRequest()` or auth middleware
+- Guest components do not use `apiService` (no Bearer token) — they use raw `fetch`
 
 ### Document Field Mapping
 The `Document` model uses `@map` to customize database column names. In TypeScript, use the Prisma field name (left side), NOT the database column name:
@@ -367,6 +377,9 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/digest/*` - Legal digest subscriptions
 - `/api/cron/*` - Cron job endpoints (legal digest generation)
 - `/api/events/*` - Event registrations (law school launch, opt-ins)
+- `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`, `export`)
+- `/api/law360/*` - Law360 activation and email-check endpoints
+- `/api/submissions/*` - Form submissions and demo requests
 
 ### Deployment Note
 `src/vercel.json` lives inside `src/` (not the project root) — this is intentional for this project's Vercel configuration.

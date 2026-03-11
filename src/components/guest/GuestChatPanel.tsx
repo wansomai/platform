@@ -1,16 +1,20 @@
 'use client';
 // Simplified chat panel for the guest drafting flow.
 // Only shows jurisdiction selector + file upload. No auth, no project context.
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Globe, Paperclip, Loader2, CheckCircle, X } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, Globe, Paperclip, Loader2, CheckCircle, X, Copy, Check } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { JURISDICTIONS } from '@/lib/jurisdictions';
 import { cn } from '@/lib/utils';
+import MessageDisplay from '@/components/chat/MessageDisplay';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  timestamp?: number;
+  isStreaming?: boolean;
+  statusText?: string;
 }
 
 interface GuestChatPanelProps {
@@ -24,6 +28,7 @@ interface GuestChatPanelProps {
   onDocumentUpdate: (html: string, originalHtml: string) => void;
   onAcceptSuggestion?: (html: string) => void;
   onRejectSuggestion?: () => void;
+  onCanvasStreamingUpdate?: (html: string | null) => void;
 }
 
 // Jurisdictions we prioritise for the guest (African markets first)
@@ -40,6 +45,7 @@ export default function GuestChatPanel({
   onDocumentUpdate,
   onAcceptSuggestion,
   onRejectSuggestion,
+  onCanvasStreamingUpdate,
 }: GuestChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [descriptionCollapsed, setDescriptionCollapsed] = useState(false);
@@ -49,6 +55,7 @@ export default function GuestChatPanel({
   const [showJurisdictionMenu, setShowJurisdictionMenu] = useState(false);
   const [jurisdictionSearch, setJurisdictionSearch] = useState('');
   const [attachedFileName, setAttachedFileName] = useState<string | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const jurisdictionMenuRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -77,7 +84,6 @@ export default function GuestChatPanel({
     const q = jurisdictionSearch.toLowerCase();
     return j.name.toLowerCase().includes(q) || j.country.toLowerCase().includes(q);
   }).sort((a, b) => {
-    // Priority jurisdictions first
     const ai = PRIORITY_JURISDICTION_IDS.indexOf(a.id);
     const bi = PRIORITY_JURISDICTION_IDS.indexOf(b.id);
     if (ai !== -1 && bi !== -1) return ai - bi;
@@ -86,6 +92,13 @@ export default function GuestChatPanel({
     return a.name.localeCompare(b.name);
   });
 
+  const handleCopy = useCallback((content: string, index: number) => {
+    navigator.clipboard.writeText(content).then(() => {
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    });
+  }, []);
+
   const sendMessage = async () => {
     if (!input.trim() || isStreaming) return;
 
@@ -93,12 +106,21 @@ export default function GuestChatPanel({
     setInput('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
+    setMessages((prev) => [...prev, { role: 'user', content: userMessage, timestamp: Date.now() }]);
     setIsStreaming(true);
     setDescriptionCollapsed(true);
 
-    // Add empty assistant message to stream into
-    setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+    // Placeholder streaming assistant message
+    setMessages((prev) => [...prev, {
+      role: 'assistant',
+      content: '',
+      timestamp: Date.now(),
+      isStreaming: true,
+      statusText: 'Updating document…',
+    }]);
+
+    let latestSuggestedHtml: string | null = null;
+    const originalHtml = documentHtml || '';
 
     try {
       const response = await fetch('/api/public/chat', {
@@ -135,16 +157,28 @@ export default function GuestChatPanel({
 
             if (chunk.type === 'text') {
               streamedText += chunk.content;
-              // Remove the document-update block from display text
+              // Strip embedded document-update blocks from the visible explanation text
               const displayText = streamedText.replace(/```document-update[\s\S]*?```/g, '').trim();
               setMessages((prev) => {
                 const updated = [...prev];
-                updated[updated.length - 1] = { role: 'assistant', content: displayText };
+                updated[updated.length - 1] = {
+                  ...updated[updated.length - 1],
+                  content: displayText,
+                };
                 return updated;
               });
             } else if (chunk.type === 'document_update') {
-              // AI wants to update the document — trigger suggestion flow in parent
-              onDocumentUpdate(chunk.html, documentHtml || '');
+              latestSuggestedHtml = chunk.html;
+              // Stream the updated HTML directly into the canvas overlay
+              onCanvasStreamingUpdate?.(chunk.html);
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                  ...updated[updated.length - 1],
+                  statusText: 'Review changes in the canvas…',
+                };
+                return updated;
+              });
             }
           } catch {
             // Ignore malformed chunks
@@ -155,13 +189,39 @@ export default function GuestChatPanel({
       setMessages((prev) => {
         const updated = [...prev];
         updated[updated.length - 1] = {
-          role: 'assistant',
+          ...updated[updated.length - 1],
+          isStreaming: false,
+          statusText: undefined,
           content: 'Sorry, something went wrong. Please try again.',
         };
         return updated;
       });
+      return;
     } finally {
       setIsStreaming(false);
+
+      // Finalise the assistant message — remove streaming flags
+      setMessages((prev) => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        const finalContent = last.content?.trim()
+          || (latestSuggestedHtml
+            ? 'I\'ve updated your document. Review the changes in the canvas on the left.'
+            : 'I couldn\'t generate changes. Please try rephrasing your request.');
+        updated[updated.length - 1] = {
+          ...last,
+          isStreaming: false,
+          statusText: undefined,
+          content: finalContent,
+        };
+        return updated;
+      });
+
+      // Clear canvas streaming preview, then show the diff for accept/reject
+      if (latestSuggestedHtml) {
+        onCanvasStreamingUpdate?.(null);
+        onDocumentUpdate(latestSuggestedHtml, originalHtml);
+      }
     }
   };
 
@@ -214,32 +274,78 @@ export default function GuestChatPanel({
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
- 
+      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 space-y-4 sm:space-y-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <style>{`.guest-messages::-webkit-scrollbar { display: none; }`}</style>
+
         {messages.map((msg, i) => (
           <div key={i} className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
-            <div
-              className={cn(
-                'max-w-[85%] rounded-xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap',
-                msg.role === 'user'
-                  ? 'bg-green-600 text-white rounded-br-sm'
-                  : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm'
-              )}
-            >
-              {msg.content || (isStreaming && i === messages.length - 1 ? (
-                <span className="flex gap-1 items-center h-4">
-                  {[0, 150, 300].map((d) => (
-                    <span key={d} className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
-                  ))}
-                </span>
-              ) : '')}
+            <div className={cn('flex gap-2 sm:gap-3 max-w-[90%]', msg.role === 'user' ? 'flex-row-reverse' : 'flex-row')}>
+              <div className="flex flex-col min-w-0 flex-1">
+                {/* Name + timestamp */}
+                <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
+                  <span className="font-medium">{msg.role === 'user' ? 'You' : 'Wansom'}</span>
+                  {msg.timestamp && (
+                    <span className="text-muted-foreground text-xs">
+                      {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
+                </div>
+
+                {/* Message bubble */}
+                <div
+                  className={cn(
+                    'rounded-lg px-3 py-2 sm:py-3 overflow-hidden',
+                    msg.role === 'user' ? 'bg-gray-100 text-gray-900' : 'bg-transparent'
+                  )}
+                >
+                  {msg.isStreaming ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="flex gap-1">
+                        {[0, 150, 300].map((d) => (
+                          <span
+                            key={d}
+                            className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: `${d}ms` }}
+                          />
+                        ))}
+                      </span>
+                      {msg.statusText && (
+                        <span className="text-xs text-gray-500 animate-pulse">{msg.statusText}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <MessageDisplay content={msg.content} className="text-sm" />
+                  )}
+                </div>
+
+                {/* Copy button — assistant messages only */}
+                {msg.role === 'assistant' && !msg.isStreaming && msg.content && (
+                  <div className="flex gap-1 mt-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn('h-8 gap-1.5', copiedIndex === i ? 'min-w-[72px] text-green-600' : 'w-8 px-0')}
+                      onClick={() => handleCopy(msg.content, i)}
+                    >
+                      {copiedIndex === i ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          <span className="text-xs font-medium">Copied</span>
+                        </>
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area — matches existing ChatInput design */}
+      {/* Input area */}
       <div className="p-3 bg-gray-50">
         <div className="relative w-full">
           <div className="bg-white rounded-t-xl border-t-2 border-[#0a4b5e] focus-within:border-primary-300 transition-colors relative shadow-lg">
@@ -321,7 +427,7 @@ export default function GuestChatPanel({
                     setAttachedFileName(file.name);
                     setMessages((prev) => [
                       ...prev,
-                      { role: 'assistant', content: `File "${file.name}" attached. I'll use it as reference context for your requests.` },
+                      { role: 'assistant', content: `File "${file.name}" attached. I'll use it as reference context for your requests.`, timestamp: Date.now() },
                     ]);
                   }
                 }}
@@ -377,7 +483,7 @@ export default function GuestChatPanel({
               </div>
             </div>
 
-            {/* Send button — absolute bottom-right, matches existing style */}
+            {/* Send button */}
             <Button
               className="primary text-white z-10 absolute right-3 bottom-3 shadow-md h-10 w-10 rounded-lg"
               disabled={!input.trim() || isStreaming}

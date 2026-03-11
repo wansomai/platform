@@ -296,6 +296,24 @@ export default function GuestCanvasInterface({
   onRejectSuggestion,
 }: GuestCanvasInterfaceProps) {
   const editorRef = useRef<LexicalEditor | null>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+
+  // Block clipboard copy/cut for the entire canvas area (covers keyboard shortcuts,
+  // right-click, and any other copy path) so the watermarked preview can't be scraped.
+  useEffect(() => {
+    const prevent = (e: ClipboardEvent) => {
+      if (canvasContainerRef.current?.contains(e.target as Node)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener('copy', prevent, true);
+    document.addEventListener('cut', prevent, true);
+    return () => {
+      document.removeEventListener('copy', prevent, true);
+      document.removeEventListener('cut', prevent, true);
+    };
+  }, []);
 
   const initialConfig = useMemo(() => ({
     namespace: 'GuestLegalCanvas',
@@ -346,7 +364,7 @@ export default function GuestCanvasInterface({
                   <div key={d} className="w-1 h-1 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
                 ))}
               </div>
-              <span>Generating document…</span>
+              <span>Preparing document…</span>
             </div>
           )}
         </div>
@@ -377,19 +395,24 @@ export default function GuestCanvasInterface({
       </div>
 
       {/* Editor area */}
-      <div className="flex-1 relative flex flex-col overflow-hidden">
+      <div className="flex-1 relative flex flex-col overflow-hidden" ref={canvasContainerRef}>
         <LexicalComposer initialConfig={initialConfig}>
           {/* Toolbar hidden during generation */}
           {!isGenerating && <GuestToolbarPlugin />}
 
           {/* Streaming / diff overlay */}
           {(showOverlay || showDiff) && (
-            <div className="flex-1 overflow-y-auto lexical-container">
+            <div
+              className="flex-1 overflow-y-auto lexical-container"
+              onCopy={(e) => e.preventDefault()}
+              onCut={(e) => e.preventDefault()}
+              onContextMenu={(e) => e.preventDefault()}
+            >
               <div className="legal-page-wrapper">
                 <div className="legal-page">
                   <div
                     className="legal-page-content lexical-editor"
-                    style={{ pointerEvents: 'none', userSelect: 'text' }}
+                    style={{ pointerEvents: 'none', userSelect: 'none' }}
                     dangerouslySetInnerHTML={{
                       __html: showDiff
                         ? buildDiffHtml(pendingSuggestion!.originalHtml, pendingSuggestion!.suggestedHtml)
@@ -406,6 +429,7 @@ export default function GuestCanvasInterface({
             className={`flex-1 overflow-y-auto lexical-container relative${showOverlay || showDiff ? ' hidden' : ''}`}
             onCopy={(e) => { e.preventDefault(); }}
             onCut={(e) => { e.preventDefault(); }}
+            onContextMenu={(e) => { e.preventDefault(); }}
           >
             {/* Watermark */}
             {documentHtml && !isGenerating && (
