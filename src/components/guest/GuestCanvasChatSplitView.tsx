@@ -22,13 +22,34 @@ interface GuestCanvasChatSplitViewProps {
 
 // Pricing per jurisdiction (amount in smallest currency unit for Paystack)
 const EXPORT_PRICING: Record<string, { amount: number; currency: string; label: string }> = {
-  ng: { amount: 250000, currency: 'NGN', label: '₦2,500' },
-  ke: { amount: 55000,  currency: 'KES', label: 'KES 550' },
-  za: { amount: 4500,   currency: 'ZAR', label: 'R45' },
-  gh: { amount: 7500,   currency: 'GHS', label: 'GHS 75' },
+  
+  // 🌍 CORE AFRICAN MARKETS
+  // Target: ~$5-6 USD equivalent (PPP-adjusted, high price sensitivity)
+  
+  ng: { amount: 699900,  currency: 'NGN', label: '₦6,999' },  // $5.01 — up from $1.79
+  ke: { amount: 79900,   currency: 'KES', label: 'KES 799' }, // $6.19 — up from $4.26
+  za: { amount: 9900,    currency: 'ZAR', label: 'R99'     }, // $6.07 — up from $2.76
+  gh: { amount: 6500,    currency: 'GHS', label: 'GHS 65'  }, // $6.03 — slight drop for consistency
+  
+  // 🇬🇧 UK — Diaspora #1 Target (high purchase power)
+  gb: { amount: 799,     currency: 'GBP', label: '£7.99'   }, // ~$10.10
+  
+  // 🇺🇸 USA — Diaspora #2 Target
+  us: { amount: 999,     currency: 'USD', label: '$9.99'   },
+  
+  // 🇨🇦 Canada — Diaspora #3 Target  
+  ca: { amount: 1299,    currency: 'CAD', label: 'CA$12.99' }, // ~$9.10
+  
+  // 🇦🇺 Australia — South African diaspora hub
+  au: { amount: 1499,    currency: 'AUD', label: 'A$14.99'  }, // ~$9.50
+  
+  // 🇦🇪 UAE — High-income African professionals
+  ae: { amount: 3699,    currency: 'AED', label: 'AED 36.99' }, // ~$10.07
+  
 };
-const DEFAULT_PRICING = { amount: 500, currency: 'USD', label: '$5' };
 
+// Default for all other countries (raised from $5 → $7.99)
+const DEFAULT_PRICING = { amount: 799, currency: 'USD', label: '$7.99' };
 export default function GuestCanvasChatSplitView({
   documentType,
   initialJurisdictionId,
