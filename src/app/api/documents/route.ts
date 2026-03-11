@@ -8,8 +8,8 @@ import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 
-// Set a reasonable timeout for document processing
-export const maxDuration = 60;
+// Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
+export const maxDuration = 120;
 
 export async function GET(request: NextRequest) {
   try {
@@ -254,18 +254,36 @@ export async function POST(request: NextRequest) {
       file.type
     );
     
-    // Start content extraction in background
-    let contentExtracted = false;
+    // Extract text content from the file buffer.
+    // We mark contentExtracted=true as long as extraction was ATTEMPTED for a
+    // supported file type — there is no background job running after this response
+    // returns, so leaving it false would cause the Vault to poll forever. If mammoth
+    // fails on a DOCX, on-demand extraction (tryExtractDocumentContentOnDemand) retries
+    // at chat time. For scanned PDFs/images the sentinel strings are stored as-is.
+    const SUPPORTED_MIME_TYPES_FOR_EXTRACTION = new Set([
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'text/csv',
+      'text/plain',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+    ]);
+    let contentExtracted = SUPPORTED_MIME_TYPES_FOR_EXTRACTION.has(file.type);
     let extractedText = '';
-    
+
     try {
       extractedText = await extractTextFromFile(fileBuffer, file.type);
-      contentExtracted = true;
     } catch (extractError) {
       console.error('Error extracting text from file:', extractError);
-      // Continue without extracted text - content extraction can be done later
+      // Continue without extracted text — on-demand extraction will run at chat time
     }
-    
+
     // Create document record in database
     const document = await prisma.document.create({
       data: {
@@ -303,8 +321,8 @@ export async function POST(request: NextRequest) {
       }
     });
     
-    // If text was extracted, store it
-    if (contentExtracted && extractedText) {
+    // If text was extracted, store it (only when non-empty)
+    if (extractedText && extractedText.trim().length > 0) {
       await prisma.documentContent.create({
         data: {
           documentId: document.id,

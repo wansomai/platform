@@ -1,105 +1,139 @@
-// Embedding Service for generating vector embeddings using Gemini
-// Uses text-embedding-004 model (768 dimensions)
+// Embedding Service for generating vector embeddings using the Gemini REST API.
+//
+// The @google/genai SDK defaults to v1beta, where text-embedding-004 and
+// embedding-001 may return 404 depending on the API key type. We call the REST
+// API directly so we can control the API version (v1 is the stable channel
+// where text-embedding-004 is published).
+//
+// Endpoint: https://generativelanguage.googleapis.com/{version}/models/{model}:embedContent?key=KEY
 
-import { GoogleGenAI } from '@google/genai';
+const API_BASE = 'https://generativelanguage.googleapis.com';
 
-// text-embedding-004 is only available on v1, not v1beta (the SDK default)
-const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '',
-  httpOptions: { apiVersion: 'v1' }
-});
+// Prefer GEMINI_API_KEY; GOOGLE_API_KEY is the fallback.
+// The @google/genai SDK warns when both are set because it reads env vars directly;
+// here we control which key we use explicitly.
+function getApiKey(): string {
+  return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
+}
 
-const EMBEDDING_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'text-embedding-004';
+// Default: text-embedding-004 (768 dims, stable v1). Override with GEMINI_EMBEDDING_MODEL.
+const CONFIGURED_MODEL = process.env.GEMINI_EMBEDDING_MODEL || 'text-embedding-004';
 const EMBEDDING_DIMENSIONS = 768;
 
+// API versions to try in order. v1 is the stable channel; v1beta is the preview channel.
+const API_VERSIONS = ['v1', 'v1beta'] as const;
+
+interface EmbedContentRequest {
+  model: string;
+  content: { parts: Array<{ text: string }> };
+  taskType: string;
+}
+
+interface EmbedContentResponse {
+  embedding?: { values?: number[] };
+}
+
+async function callEmbedRest(
+  modelName: string,
+  text: string,
+  taskType: string,
+  apiVersion: string
+): Promise<number[]> {
+  const apiKey = getApiKey();
+  const url = `${API_BASE}/${apiVersion}/models/${modelName}:embedContent?key=${encodeURIComponent(apiKey)}`;
+
+  const body: EmbedContentRequest = {
+    model: `models/${modelName}`,
+    content: { parts: [{ text }] },
+    taskType,
+  };
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '');
+    const err: any = new Error(
+      `Embedding API error ${response.status} (${apiVersion}/${modelName}): ${errorText}`
+    );
+    err.status = response.status;
+    throw err;
+  }
+
+  const data: EmbedContentResponse = await response.json();
+  const values = data.embedding?.values;
+  if (!values || values.length !== EMBEDDING_DIMENSIONS) {
+    throw new Error(
+      `Invalid embedding dimensions from "${modelName}" via ${apiVersion}: ` +
+      `expected ${EMBEDDING_DIMENSIONS}, got ${values?.length ?? 0}`
+    );
+  }
+  return values;
+}
+
+async function embedWithFallback(text: string, taskType: string): Promise<number[]> {
+  const errors: string[] = [];
+
+  // Try every API version in order until one succeeds.
+  for (const version of API_VERSIONS) {
+    try {
+      return await callEmbedRest(CONFIGURED_MODEL, text, taskType, version);
+    } catch (err: any) {
+      const is404 = err?.status === 404 || err?.message?.includes('404');
+      if (is404) {
+        errors.push(`${version}/${CONFIGURED_MODEL}: 404`);
+        continue; // try next version
+      }
+      // Non-404 error — propagate immediately
+      throw err;
+    }
+  }
+
+  // All versions returned 404 — report clearly
+  throw new Error(
+    `[EmbeddingService] Model "${CONFIGURED_MODEL}" returned 404 on all API versions ` +
+    `(${API_VERSIONS.join(', ')}). ` +
+    `Check that your API key has access to embedding models and set ` +
+    `GEMINI_EMBEDDING_MODEL to an available model in your .env file. ` +
+    `Details: ${errors.join('; ')}`
+  );
+}
+
 export class EmbeddingService {
-  /**
-   * Generate embedding for document content (storage/indexing)
-   * Uses RETRIEVAL_DOCUMENT task type for better retrieval performance
-   */
   static async generateEmbedding(text: string): Promise<number[]> {
     try {
-      // Truncate text if it's too long (model has ~2048 token limit for embedding)
-      const truncatedText = this.truncateText(text, 8000);
-
-      const result = await genAI.models.embedContent({
-        model: EMBEDDING_MODEL,
-        contents: [{ parts: [{ text: truncatedText }] }],
-        config: {
-          taskType: 'RETRIEVAL_DOCUMENT'
-        }
-      });
-
-      if (!result.embeddings || result.embeddings.length === 0) {
-        throw new Error('No embedding returned from API');
-      }
-
-      const embedding = result.embeddings[0].values;
-
-      if (!embedding || embedding.length !== EMBEDDING_DIMENSIONS) {
-        throw new Error(`Invalid embedding dimensions: expected ${EMBEDDING_DIMENSIONS}, got ${embedding?.length}`);
-      }
-
-      return embedding;
+      const truncated = this.truncateText(text, 8000);
+      return await embedWithFallback(truncated, 'RETRIEVAL_DOCUMENT');
     } catch (error: any) {
       console.error('Error generating embedding:', error);
       throw new Error(`Failed to generate embedding: ${error.message}`);
     }
   }
 
-  /**
-   * Generate embedding for search query
-   * Uses RETRIEVAL_QUERY task type for better query matching
-   */
   static async generateQueryEmbedding(query: string): Promise<number[]> {
     try {
-      const result = await genAI.models.embedContent({
-        model: EMBEDDING_MODEL,
-        contents: [{ parts: [{ text: query }] }],
-        config: {
-          taskType: 'RETRIEVAL_QUERY'
-        }
-      });
-
-      if (!result.embeddings || result.embeddings.length === 0) {
-        throw new Error('No embedding returned from API');
-      }
-
-      const embedding = result.embeddings[0].values;
-
-      if (!embedding || embedding.length !== EMBEDDING_DIMENSIONS) {
-        throw new Error(`Invalid embedding dimensions: expected ${EMBEDDING_DIMENSIONS}, got ${embedding?.length}`);
-      }
-
-      return embedding;
+      return await embedWithFallback(query, 'RETRIEVAL_QUERY');
     } catch (error: any) {
       console.error('Error generating query embedding:', error);
       throw new Error(`Failed to generate query embedding: ${error.message}`);
     }
   }
 
-  /**
-   * Generate embeddings for multiple texts in batch
-   * More efficient than calling generateEmbedding multiple times
-   */
   static async generateEmbeddingsBatch(texts: string[]): Promise<number[][]> {
     try {
       const embeddings: number[][] = [];
-
-      // Process in batches of 5 to avoid rate limits
       const batchSize = 5;
       for (let i = 0; i < texts.length; i += batchSize) {
         const batch = texts.slice(i, i + batchSize);
-        const batchPromises = batch.map(text => this.generateEmbedding(text));
-        const batchResults = await Promise.all(batchPromises);
-        embeddings.push(...batchResults);
-
-        // Small delay between batches to avoid rate limiting
+        const results = await Promise.all(batch.map(t => this.generateEmbedding(t)));
+        embeddings.push(...results);
         if (i + batchSize < texts.length) {
-          await this.delay(100);
+          await new Promise(r => setTimeout(r, 100));
         }
       }
-
       return embeddings;
     } catch (error: any) {
       console.error('Error generating batch embeddings:', error);
@@ -107,76 +141,32 @@ export class EmbeddingService {
     }
   }
 
-  /**
-   * Format embedding array for PostgreSQL pgvector
-   */
   static formatForPgVector(embedding: number[]): string {
     return `[${embedding.join(',')}]`;
   }
 
-  /**
-   * Parse pgvector string back to number array
-   */
   static parseFromPgVector(pgVectorString: string): number[] {
-    const cleaned = pgVectorString.replace(/[\[\]]/g, '');
-    return cleaned.split(',').map(Number);
+    return pgVectorString.replace(/[\[\]]/g, '').split(',').map(Number);
   }
 
-  /**
-   * Calculate cosine similarity between two embeddings
-   * Returns value between -1 and 1, where 1 is identical
-   */
   static cosineSimilarity(a: number[], b: number[]): number {
-    if (a.length !== b.length) {
-      throw new Error('Embeddings must have same dimensions');
-    }
-
-    let dotProduct = 0;
-    let normA = 0;
-    let normB = 0;
-
+    if (a.length !== b.length) throw new Error('Embeddings must have same dimensions');
+    let dot = 0, normA = 0, normB = 0;
     for (let i = 0; i < a.length; i++) {
-      dotProduct += a[i] * b[i];
+      dot   += a[i] * b[i];
       normA += a[i] * a[i];
       normB += b[i] * b[i];
     }
-
-    if (normA === 0 || normB === 0) return 0;
-
-    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    return normA === 0 || normB === 0 ? 0 : dot / (Math.sqrt(normA) * Math.sqrt(normB));
   }
 
-  /**
-   * Truncate text to approximate character limit while preserving words
-   */
   private static truncateText(text: string, maxChars: number): string {
     if (text.length <= maxChars) return text;
-
-    // Find the last space before the limit
-    const truncated = text.substring(0, maxChars);
-    const lastSpace = truncated.lastIndexOf(' ');
-
-    return lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated;
+    const cut = text.substring(0, maxChars);
+    const lastSpace = cut.lastIndexOf(' ');
+    return lastSpace > 0 ? cut.substring(0, lastSpace) : cut;
   }
 
-  /**
-   * Helper for delay between API calls
-   */
-  private static delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Get the embedding model dimensions
-   */
-  static get dimensions(): number {
-    return EMBEDDING_DIMENSIONS;
-  }
-
-  /**
-   * Get the embedding model name
-   */
-  static get modelName(): string {
-    return EMBEDDING_MODEL;
-  }
+  static get dimensions(): number { return EMBEDDING_DIMENSIONS; }
+  static get modelName(): string  { return CONFIGURED_MODEL; }
 }

@@ -61,6 +61,7 @@ import { useProjectDocumentsStore } from "@/store/workspace-documents.store"
 import { useProfile } from "@/store/profile.store"
 import { useChatStore } from "@/store/chat.store"
 import { formatDistanceToNow } from "date-fns"
+import { apiService } from "@/lib/api"
 import { FolderTree } from "@/components/documents/FolderTree"
 import { FolderModal } from "@/components/documents/FolderModal"
 import { ComponentLoading, EmptyDocuments } from "@/components/commons/LoadingState"
@@ -174,27 +175,41 @@ export default function VaultPage() {
     fetchDocuments(params, true);
   }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
 
-  // Poll document list while any document is still processing (content not yet extracted)
+  // Auto-reprocess documents that are stuck in "processing" state.
+  // content_extracted=false means extraction failed at upload time (no background job is running).
+  // We call the reprocess endpoint once per stuck document, then refresh the list.
   useEffect(() => {
-    const hasProcessing = documents.some(
-      (doc: any) => doc.contentExtracted === false
-    );
-    if (!hasProcessing) return;
+    const stuckDocs = documents.filter((doc: any) => doc.contentExtracted === false);
+    if (stuckDocs.length === 0) return;
 
-    const interval = setInterval(() => {
-      const params: any = {
-        search: searchTerm || undefined,
-        type: fileType,
-        sort: sortBy,
-        page: currentPage,
-        limit: 20,
-      };
-      if (activeFolder) params.folder = activeFolder;
-      fetchDocuments(params, true);
-    }, 4000);
+    let cancelled = false;
 
-    return () => clearInterval(interval);
-  }, [documents, fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
+    const reprocessAll = async () => {
+      await Promise.allSettled(
+        stuckDocs.map((doc: any) =>
+          apiService.post(`/api/documents/${doc.id}/reprocess`, {})
+        )
+      );
+      if (!cancelled) {
+        // Refresh the list after reprocessing so badges update
+        const params: any = {
+          search: searchTerm || undefined,
+          type: fileType,
+          sort: sortBy,
+          page: currentPage,
+          limit: 20,
+        };
+        if (activeFolder) params.folder = activeFolder;
+        fetchDocuments(params, true);
+      }
+    };
+
+    reprocessAll();
+
+    return () => { cancelled = true; };
+  // We intentionally only run this when the list of stuck doc IDs changes, not on every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [documents.map((d: any) => `${d.id}:${d.contentExtracted}`).join(',')]);
   
   // Error handling
   useEffect(() => {

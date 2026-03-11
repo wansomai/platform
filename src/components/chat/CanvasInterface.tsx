@@ -138,7 +138,13 @@ function EditorRefPlugin({ editorRef }: { editorRef: React.MutableRefObject<Lexi
 }
 
 // Plugin to load initial content
-function LoadContentPlugin({ canvasDocument }: { canvasDocument: any }) {
+function LoadContentPlugin({
+  canvasDocument,
+  bypassLoadRef,
+}: {
+  canvasDocument: any;
+  bypassLoadRef?: React.MutableRefObject<string | null>;
+}) {
   const [editor] = useLexicalComposerContext();
   const loadedRef = useRef<string | null>(null);
 
@@ -147,6 +153,13 @@ function LoadContentPlugin({ canvasDocument }: { canvasDocument: any }) {
 
     const docId = canvasDocument.id + '_' + canvasDocument.updatedAt;
     if (loadedRef.current === docId) return;
+
+    // If this canvasDocument update was caused by our own save, skip the reload.
+    // Re-parsing and applying the just-saved state would reset cursor/selection.
+    if (bypassLoadRef?.current === docId) {
+      loadedRef.current = docId; // mark as loaded so future checks still work
+      return;
+    }
 
     const content = canvasDocument.content;
 
@@ -537,6 +550,7 @@ const LegalCanvas: React.FC = () => {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [isLoadingTemplate, setIsLoadingTemplate] = useState(false);
   const [showUpdateNotification, setShowUpdateNotification] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'pending' | 'saving' | 'saved'>('idle');
   const [canvasStreamingStatus, setCanvasStreamingStatus] = useState<{
     show: boolean;
     status: string;
@@ -551,6 +565,19 @@ const LegalCanvas: React.FC = () => {
   // Stable refs so event listeners always call the latest handler versions
   const acceptHandlerRef = useRef<() => void>(() => {});
   const rejectHandlerRef = useRef<() => void>(() => {});
+
+  // Tracks whether there are changes not yet flushed to the DB.
+  // Using a ref (not state) so the unmount cleanup can read the latest value
+  // without a stale closure, and without adding it to effect dependency arrays.
+  const hasPendingChangesRef = useRef(false);
+
+  // Always-current reference to autoSave so interval/unmount callbacks stay fresh.
+  const autoSaveRef = useRef<() => Promise<void>>(async () => {});
+
+  // bypassLoadRef: after a local save we store the resulting docId here so that
+  // LoadContentPlugin can skip the redundant reload triggered by the store update.
+  const bypassLoadRef = useRef<string | null>(null);
+
 
   // Use store hooks for canvas data management
   const { addToast } = useUIStore();
@@ -569,6 +596,43 @@ const LegalCanvas: React.FC = () => {
       addToast({ message: error, type: 'error' });
     }
   }, [error, addToast]);
+
+  // Warn the user before closing the tab/window when there are unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (autoSaveStatus === 'pending' || autoSaveStatus === 'saving') {
+        e.preventDefault();
+        // Modern browsers ignore the custom message but still show a generic dialog
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [autoSaveStatus]);
+
+  // Safety-net: save every 30 s if there are pending changes.
+  // Covers cases where the user never moves focus out of the editor (e.g. writes
+  // continuously for minutes without clicking the chat input).
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (hasPendingChangesRef.current) {
+        autoSaveRef.current();
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, []); // stable — reads from refs only
+
+  // Save on component unmount (SPA navigation away from canvas view).
+  // fire-and-forget: we can't await in a cleanup, but the request will still
+  // complete in the background as long as the browser tab stays open.
+  useEffect(() => {
+    return () => {
+      if (hasPendingChangesRef.current) {
+        autoSaveRef.current();
+      }
+    };
+  }, []); // stable — reads from refs only
+
 
   // Monitor chat messages for canvas streaming status
   useEffect(() => {
@@ -618,6 +682,39 @@ const LegalCanvas: React.FC = () => {
     },
   }), []);
 
+  // Silently persist the current editor state (used by auto-save, blur, and unmount)
+  const autoSave = useCallback(async () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    setAutoSaveStatus('saving');
+    try {
+      let htmlContent = '';
+      let plainText = '';
+      editor.getEditorState().read(() => {
+        htmlContent = $generateHtmlFromNodes(editor);
+        plainText = $getRoot().getTextContent();
+      });
+      const content = editor.getEditorState().toJSON();
+
+      const savedDoc = await saveCanvasDocument(projectId, content, htmlContent, plainText);
+      if (savedDoc) {
+        // Tell LoadContentPlugin to skip the reload triggered by this store update
+        bypassLoadRef.current = savedDoc.id + '_' + savedDoc.updatedAt;
+        hasPendingChangesRef.current = false;
+      }
+      setAutoSaveStatus('saved');
+      setTimeout(() => setAutoSaveStatus('idle'), 2000);
+    } catch {
+      // Auto-save failed — revert to 'pending' so the user sees unsaved-changes
+      // indicator and can trigger a manual save if needed
+      setAutoSaveStatus('pending');
+    }
+  }, [saveCanvasDocument, projectId]);
+
+  // Keep autoSaveRef current so interval/unmount callbacks never use a stale closure
+  useEffect(() => { autoSaveRef.current = autoSave; }, [autoSave]);
+
   // Handle manual save
   const handleSave = async () => {
     const editor = editorRef.current;
@@ -637,6 +734,10 @@ const LegalCanvas: React.FC = () => {
       const result = await saveCanvasDocument(projectId, content, htmlContent, plainText);
 
       if (result) {
+        bypassLoadRef.current = result.id + '_' + result.updatedAt;
+        hasPendingChangesRef.current = false;
+        setAutoSaveStatus('saved');
+        setTimeout(() => setAutoSaveStatus('idle'), 2000);
         addToast({ message: 'Document saved successfully', type: 'success' });
       } else {
         addToast({ message: 'Failed to save document', type: 'error' });
@@ -647,6 +748,9 @@ const LegalCanvas: React.FC = () => {
   };
 
   // Handle content changes — sync live HTML to canvas store for AI editing
+  // and mark the document as having unsaved changes.
+  // Auto-save fires on blur (when the user moves focus out of the editor area),
+  // on a 30-second safety interval, and on component unmount.
   const handleEditorChange = useCallback((editorState: EditorState) => {
     editorState.read(() => {
       if (editorRef.current) {
@@ -654,6 +758,8 @@ const LegalCanvas: React.FC = () => {
         setCurrentEditorHtml(html);
       }
     });
+    hasPendingChangesRef.current = true;
+    setAutoSaveStatus('pending');
   }, [setCurrentEditorHtml]);
 
 
@@ -965,6 +1071,26 @@ const LegalCanvas: React.FC = () => {
               <span className="inline">Document updated</span>
             </div>
           )}
+
+          {/* Auto-save status indicator */}
+          {autoSaveStatus === 'pending' && (
+            <div className="flex items-center space-x-1 text-amber-600 px-1.5 py-0.5 rounded text-[10px] md:text-xs">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <span className="hidden sm:inline">Unsaved changes</span>
+            </div>
+          )}
+          {autoSaveStatus === 'saving' && (
+            <div className="flex items-center space-x-1 text-blue-600 px-1.5 py-0.5 rounded text-[10px] md:text-xs">
+              <RefreshCw className="h-2.5 w-2.5 animate-spin" />
+              <span className="hidden sm:inline">Auto-saving...</span>
+            </div>
+          )}
+          {autoSaveStatus === 'saved' && (
+            <div className="flex items-center space-x-1 text-green-600 px-1.5 py-0.5 rounded text-[10px] md:text-xs">
+              <CheckCircle className="h-2.5 w-2.5" />
+              <span className="hidden sm:inline">Saved</span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center space-x-1 md:space-x-2 flex-wrap">
@@ -1025,7 +1151,18 @@ const LegalCanvas: React.FC = () => {
       </div>
 
       {/* Main Editor */}
-      <div className="flex-1 relative flex flex-col overflow-hidden" ref={canvasRef}>
+      {/* onBlur fires when focus leaves this container entirely (e.g. user clicks into
+          the chat input). It does NOT fire for clicks on toolbar buttons because those
+          stay inside the container. This gives us zero-timer auto-save. */}
+      <div
+        className="flex-1 relative flex flex-col overflow-hidden"
+        ref={canvasRef}
+        onBlur={(e) => {
+          if (autoSaveStatus === 'pending' && !e.currentTarget.contains(e.relatedTarget as Node)) {
+            autoSave();
+          }
+        }}
+      >
         <LexicalComposer initialConfig={initialConfig}>
           <ToolbarPlugin />
 
@@ -1068,7 +1205,7 @@ const LegalCanvas: React.FC = () => {
           <LinkPlugin />
           <OnChangePlugin onChange={handleEditorChange} />
           <EditorRefPlugin editorRef={editorRef} />
-          <LoadContentPlugin canvasDocument={canvasDocument} />
+          <LoadContentPlugin canvasDocument={canvasDocument} bypassLoadRef={bypassLoadRef} />
         </LexicalComposer>
       </div>
 

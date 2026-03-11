@@ -13,8 +13,9 @@ import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/l
 import { resolveAndValidateSources } from '@/lib/url-resolve';
 import { extractMissingDocumentContents } from '@/lib/documentContentFallback';
 
-// Set a reasonable timeout
-export const maxDuration = 60;
+// Allow up to 300 s (Vercel Pro limit) so large document batches can be
+// extracted + streamed without hitting the function timeout.
+export const maxDuration = 300;
 
 // Initialize Gemini with the new API
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
@@ -1790,9 +1791,10 @@ ${baseContext}`;
       };
     }
 
-    // Wrap the agent call in a 20-second timeout to prevent indefinite hangs
-    // (Google Search grounding can hang if the Gemini API is slow or unresponsive)
-    const AGENT_TIMEOUT_MS = 20_000;
+    // Wrap the agent call in a timeout to prevent indefinite hangs.
+    // searchAgent uses Google Search grounding which can take 30-50 s under load;
+    // researchAgent is pure generation and rarely exceeds 15 s.
+    const AGENT_TIMEOUT_MS = 60_000;
     const agentResult = await Promise.race([
       genAI.models.generateContent({
         model: modelName,

@@ -72,6 +72,7 @@ export function ChatInput({
   const [pendingVaultDocs, setPendingVaultDocs] = useState<Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }>>([]);
   const [selectedAssociateId, setSelectedAssociateId] = useState<string | null>(null);
   const [homepageJurisdictions, setHomepageJurisdictions] = useState<Jurisdiction[]>([]);
+  const [homepageWebSearch, setHomepageWebSearch] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
@@ -411,29 +412,32 @@ export function ChatInput({
                 });
               }
 
-              // Apply jurisdiction to the new project if one was selected on the dashboard
-              if (homepageJurisdictions.length > 0) {
+              // Apply dashboard-selected settings (jurisdiction, Deep Research) to the new project
+              if (homepageJurisdictions.length > 0 || homepageWebSearch) {
                 try {
                   await useProjectSettingsStore.getState().updateSettings(newProject.id, {
-                    jurisdictions: homepageJurisdictions.map(j => ({
-                      id: j.id,
-                      name: j.name,
-                      country: j.country,
-                      state: j.state,
-                      legalSystem: j.legalSystem,
-                      citationStyle: j.citationStyle
-                    })),
-                    jurisdiction: {
-                      id: homepageJurisdictions[0].id,
-                      name: homepageJurisdictions[0].name,
-                      country: homepageJurisdictions[0].country,
-                      state: homepageJurisdictions[0].state,
-                      legalSystem: homepageJurisdictions[0].legalSystem,
-                      citationStyle: homepageJurisdictions[0].citationStyle
-                    }
+                    ...(homepageWebSearch && { webSearch: true }),
+                    ...(homepageJurisdictions.length > 0 && {
+                      jurisdictions: homepageJurisdictions.map(j => ({
+                        id: j.id,
+                        name: j.name,
+                        country: j.country,
+                        state: j.state,
+                        legalSystem: j.legalSystem,
+                        citationStyle: j.citationStyle
+                      })),
+                      jurisdiction: {
+                        id: homepageJurisdictions[0].id,
+                        name: homepageJurisdictions[0].name,
+                        country: homepageJurisdictions[0].country,
+                        state: homepageJurisdictions[0].state,
+                        legalSystem: homepageJurisdictions[0].legalSystem,
+                        citationStyle: homepageJurisdictions[0].citationStyle
+                      }
+                    }),
                   });
                 } catch {
-                  // Non-fatal — workspace still works, jurisdiction can be set later
+                  // Non-fatal — workspace still works, settings can be adjusted later
                 }
               }
 
@@ -879,11 +883,7 @@ export function ChatInput({
                     variant="outline"
                     size="sm"
                     className="h-8 w-8 sm:w-fit sm:px-2 p-0 rounded-md hover:bg-gray-100"
-                    title={
-                      homepageMode
-                        ? "AI Tools (preview - will be configurable after creating workspace)"
-                        : "AI Tools"
-                    }
+                    title="AI Tools"
                   >
                     <SlidersHorizontal className="h-4 w-4 text-gray-500" />
                     <span className="hidden sm:inline">Tools</span>
@@ -921,15 +921,15 @@ export function ChatInput({
                       </div>
                       <Switch
                         id="web-search"
-                        checked={homepageMode ? false : settings.webSearch}
-                        disabled={homepageMode || isLoadingSettings}
-                        onCheckedChange={
-                          homepageMode
-                            ? undefined
-                            : (checked) => {
-                              handleSettingChange("webSearch", checked);
-                            }
-                        }
+                        checked={homepageMode ? homepageWebSearch : settings.webSearch}
+                        disabled={isLoadingSettings}
+                        onCheckedChange={(checked) => {
+                          if (homepageMode) {
+                            setHomepageWebSearch(checked);
+                          } else {
+                            handleSettingChange("webSearch", checked);
+                          }
+                        }}
                       />
                     </div>
 

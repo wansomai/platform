@@ -95,23 +95,30 @@ async function extractTextFromPdfTraditional(fileBuffer: Buffer): Promise<string
 
 /**
  * Extract text from DOCX/DOC files using mammoth.
- * If mammoth fails or yields no text, returns the scanned sentinel so Gemini can
- * process the file natively. No PDF fallback — passing DOCX bytes to PDFLoader
- * causes hundreds of "Ignoring invalid character in hex string" warnings and never
- * produces useful output for real DOCX/DOC files.
+ * If mammoth fails, times out, or yields no text, returns an empty string so the
+ * caller can decide what to do (store nothing, retry later). We intentionally do NOT
+ * return the scanned-PDF sentinel here — DOCX files cannot be sent to Gemini as
+ * inline data, so storing that sentinel would permanently block re-extraction.
  */
 async function extractTextFromDocx(fileBuffer: Buffer): Promise<string> {
   try {
-    const result = await mammoth.extractRawText({ buffer: fileBuffer });
+    // Race mammoth against a 30-second timeout. Large or complex DOCX files can
+    // stall the event loop; we need to fail fast and let the caller retry later.
+    const extractionPromise = mammoth.extractRawText({ buffer: fileBuffer });
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('mammoth extraction timed out')), 30_000)
+    );
+    const result = await Promise.race([extractionPromise, timeoutPromise]);
     if (result.value && result.value.trim().length > 0) {
       return result.value;
     }
   } catch {
-    // mammoth failed — file may be DOC binary, corrupted, or misnamed
+    // mammoth failed or timed out — file may be a binary DOC, corrupted, or too complex
   }
 
-  // Cannot extract text — let Gemini process the file natively
-  return '[SCANNED_PDF_REQUIRES_PROCESSING]';
+  // Return empty string (not the PDF sentinel) so callers know extraction failed
+  // without poisoning the DocumentContent cache with an incorrect sentinel value.
+  return '';
 }
 
 /**
