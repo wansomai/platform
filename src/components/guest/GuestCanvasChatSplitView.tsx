@@ -1,12 +1,13 @@
 'use client';
 // Orchestrates the full guest drafting experience:
 // auto-generates the document on mount, manages state, handles the Paystack export gate.
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { SplitView } from '@/components/layout/SplitView';
 import GuestCanvasInterface from './GuestCanvasInterface';
 import GuestChatPanel from './GuestChatPanel';
 import { JURISDICTIONS } from '@/lib/jurisdictions';
-import { X, Download, Loader2 } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
+import { PaystackButton } from 'react-paystack';
 
 interface PendingSuggestion {
   originalHtml: string;
@@ -16,14 +17,14 @@ interface PendingSuggestion {
 interface GuestCanvasChatSplitViewProps {
   documentType: string;
   initialJurisdictionId: string;
-  documentTitle?: string;       // freeform title from Sanity (overrides documentType enum)
-  documentDescription?: string; // HTML description from Sanity CMS
+  documentTitle?: string;
+  documentDescription?: string;
 }
 
 // Pricing per jurisdiction (amount in smallest currency unit for Paystack)
 const EXPORT_PRICING: Record<string, { amount: number; currency: string; label: string }> = {
   ng: { amount: 250000, currency: 'NGN', label: '₦2,500' },
-  ke: { amount: 35000,  currency: 'KES', label: 'KES 350' },
+  ke: { amount: 5000,  currency: 'KES', label: 'KES 350' },
   za: { amount: 4500,   currency: 'ZAR', label: 'R45' },
   gh: { amount: 7500,   currency: 'GHS', label: 'GHS 75' },
 };
@@ -135,93 +136,68 @@ export default function GuestCanvasChatSplitView({
   const pricing = EXPORT_PRICING[jurisdictionId] || DEFAULT_PRICING;
   const jurisdiction = JURISDICTIONS.find((j) => j.id === jurisdictionId);
 
-  const handlePaystackPayment = async () => {
-    if (!exportEmail.trim()) {
-      setExportError('Please enter your email address.');
-      return;
-    }
+  // Stable reference per modal open — regenerated only when modal opens
+  const paystackReference = useMemo(
+    () => `WANSOM-DOC-${Date.now()}`,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showExportModal]
+  );
 
-    setExportError('');
-    setIsExporting(true);
-
-    try {
-      // Step 1: Initialize transaction server-side — handles currency per jurisdiction.
-      const initRes = await fetch('/api/public/payment/initialize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: exportEmail, jurisdictionId, documentType, documentTitle }),
-      });
-
-      if (!initRes.ok) {
-        const err = await initRes.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to initialize payment');
-      }
-
-      const { authorizationUrl, reference } = await initRes.json();
-
-      // Dev / unconfigured environment — skip payment and export directly.
-      if (!authorizationUrl || !reference) {
-        await downloadDocument(null);
-        return;
-      }
-
-      // Step 2: Open Paystack hosted checkout in a popup window.
-      const popup = window.open(
-        authorizationUrl,
-        'paystack-checkout',
-        'width=520,height=680,scrollbars=yes,resizable=yes'
-      );
-
-      if (!popup) {
-        // Popup was blocked — fall back to same-tab redirect.
-        window.location.href = authorizationUrl;
-        return;
-      }
-
-      // Step 3: Poll until the popup closes, then attempt the download.
-      // The export endpoint verifies the reference with Paystack — so if the user
-      // closed without paying, it returns a 402 which we surface as an error.
-      const poll = setInterval(async () => {
-        if (!popup.closed) return;
-        clearInterval(poll);
-        await downloadDocument(reference);
-      }, 600);
-    } catch (err: any) {
-      setExportError(err.message || 'Payment could not be initialised. Please try again.');
-      setIsExporting(false);
-    }
+  const paystackConfig = {
+    reference: paystackReference,
+    email: exportEmail,
+    amount: pricing.amount,
+    currency: pricing.currency,
+    publicKey: process.env.PAYSTACK_PUBLIC_KEY || 'pk_live_fcef983434b15b8b03d03189ebff007c36adfe48',
+    metadata: {
+      custom_fields: [
+        { display_name: 'Document', variable_name: 'document_type', value: documentTitle || documentType },
+        { display_name: 'Jurisdiction', variable_name: 'jurisdiction', value: jurisdictionId },
+      ],
+    },
   };
 
-  const downloadDocument = async (paystackReference: string | null) => {
-    const htmlToExport = currentEditorHtml || documentHtml || '';
-    if (!htmlToExport) {
-      setExportError('No document content to export.');
-      setIsExporting(false);
-      return;
-    }
+  // Called by PaystackButton onSuccess — payment is confirmed, generate DOCX in browser
+  const handlePaystackSuccess = async (response: { reference: string }) => {
+    setIsExporting(true);
+    setExportError('');
 
     try {
-      const response = await fetch('/api/public/export', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          paystackReference,
-          documentHtml: htmlToExport,
-          documentTitle: documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-        }),
-      });
+      const htmlToExport = currentEditorHtml || documentHtml || '';
+      if (!htmlToExport) throw new Error('No document content to export.');
 
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        // 402 means payment not completed or verification failed
-        throw new Error(
-          response.status === 402
-            ? 'Payment not completed. Please try again.'
-            : err.error || 'Export failed'
-        );
-      }
+      const title = documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-      const blob = await response.blob();
+      // Strip Lexical CSS classes so the exported DOCX is clean
+      const cleanBody = htmlToExport
+        .replace(/class="lexical-[^"]*"/g, '')
+        .replace(/class="[^"]*lexical[^"]*"/g, '');
+
+      const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <style>
+    @page { size: A4; margin: 1in 1in 1in 1.5in; }
+    body { font-family: "Times New Roman", Times, serif; font-size: 12pt; line-height: 1.5; color: #000; margin: 0; }
+    h1 { font-size: 16pt; font-weight: bold; text-align: center; text-transform: uppercase; margin: 24pt 0 12pt; }
+    h2 { font-size: 14pt; font-weight: bold; margin: 18pt 0 6pt; }
+    h3 { font-size: 12pt; font-weight: bold; text-decoration: underline; margin: 12pt 0 6pt; }
+    p { margin: 0; padding: 2px 0; }
+    ol { padding-left: 36pt; }
+    ul { padding-left: 36pt; }
+    blockquote { border-left: 3px solid #000; padding-left: 24pt; margin: 12pt 0 12pt 36pt; font-style: italic; }
+  </style>
+</head>
+<body>${cleanBody}</body>
+</html>`;
+
+      // html-docx-js runs in the browser — no Node.js compatibility issues
+      const htmlDocxModule = await import('html-docx-js/dist/html-docx');
+      const htmlDocx = (htmlDocxModule as any).default || htmlDocxModule;
+      const blob = htmlDocx.asBlob(fullHtml);
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -232,11 +208,26 @@ export default function GuestCanvasChatSplitView({
       URL.revokeObjectURL(url);
 
       setShowExportModal(false);
-      setIsExporting(false);
     } catch (err: any) {
-      setExportError(err.message || 'Export failed. Please try again.');
+      setExportError(err.message || 'Failed to generate document. Please try again.');
+    } finally {
       setIsExporting(false);
     }
+  };
+
+  const handlePaystackClose = () => {
+    setIsExporting(false);
+  };
+
+  const componentProps = {
+    ...paystackConfig,
+    text: `Pay ${pricing.label} & Download`,
+    onSuccess: handlePaystackSuccess,
+    onClose: handlePaystackClose,
+    disabled: !exportEmail.trim(),
+    className: `w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors${
+      !exportEmail.trim() ? ' opacity-50 cursor-not-allowed' : ''
+    }`,
   };
 
   return (
@@ -281,11 +272,9 @@ export default function GuestCanvasChatSplitView({
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
-             
               <div>
                 <h2 className="text-lg font-semibold text-gray-900">Export Document</h2>
               </div>
-             
               <button
                 onClick={() => { setShowExportModal(false); setIsExporting(false); setExportError(''); }}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded"
@@ -293,19 +282,18 @@ export default function GuestCanvasChatSplitView({
                 <X className="h-5 w-5" />
               </button>
             </div>
-             <div className='px-5 exportmodal-bg pt-20 pb-5 mx-5 rounded-lg bg-cover'>
-               <h2 className='text-lg font-medium text-black'>
-                  {documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-                </h2>
-                <p className="text-md text-black mt-1">
-                    Get a clean, watermark-free Word document (.docx) formatted for {jurisdiction?.name || 'Nigeria'} law.
-                  </p>
-              
 
-             </div>
+            <div className='px-5 exportmodal-bg pt-20 pb-5 mx-5 rounded-lg bg-cover'>
+              <h2 className='text-lg font-medium text-black'>
+                {documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+              </h2>
+              <p className="text-md text-black mt-1">
+                Get a clean, watermark-free Word document (.docx) formatted for {jurisdiction?.name || 'Nigeria'} law.
+              </p>
+            </div>
+
             {/* Body */}
             <div className="p-6 space-y-4">
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Email address <span className="text-gray-400 font-normal">(receipt sent here)</span>
@@ -323,33 +311,21 @@ export default function GuestCanvasChatSplitView({
                 <p className="text-sm text-red-600">{exportError}</p>
               )}
 
-              <button
-                onClick={handlePaystackPayment}
-                disabled={isExporting || !exportEmail.trim()}
-                className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
-              >
-                {isExporting ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Processing…</>
-                ) : (
-                  <><Download className="h-4 w-4" /> Pay {pricing.label} &amp; Download</>
-                )}
-              </button>
+              {isExporting ? (
+                <button
+                  disabled
+                  className="w-full bg-green-600 opacity-50 cursor-not-allowed text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" /> Generating document…
+                </button>
+              ) : (
+                <PaystackButton {...componentProps} />
+              )}
 
               <p className="text-xs text-gray-400 text-center">
                 Secured by Paystack · No subscription required
               </p>
             </div>
-
-            {/* Upsell */}
-            {/* <div className="border-t border-gray-100 px-6 py-4 bg-gray-50 rounded-b-2xl">
-              <p className="text-xs text-gray-600 text-center">
-                Need multiple documents?{' '}
-                <a href="/register" className="text-green-600 font-medium hover:underline">
-                  Create a free account
-                </a>{' '}
-                and get your first month of unlimited drafts.
-              </p>
-            </div> */}
           </div>
         </div>
       )}
