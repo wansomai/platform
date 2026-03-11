@@ -198,10 +198,12 @@ export default function GuestCanvasChatSplitView({
       const htmlDocx = (htmlDocxModule as any).default || htmlDocxModule;
       const blob = htmlDocx.asBlob(fullHtml);
 
+      const filename = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-wansom.docx';
+
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${documentType}-wansom.docx`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
