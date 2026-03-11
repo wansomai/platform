@@ -1,13 +1,12 @@
 'use client';
 // Orchestrates the full guest drafting experience:
 // auto-generates the document on mount, manages state, handles the Paystack export gate.
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SplitView } from '@/components/layout/SplitView';
 import GuestCanvasInterface from './GuestCanvasInterface';
 import GuestChatPanel from './GuestChatPanel';
 import { JURISDICTIONS } from '@/lib/jurisdictions';
 import { X, Loader2 } from 'lucide-react';
-import { PaystackButton } from 'react-paystack';
 
 interface PendingSuggestion {
   originalHtml: string;
@@ -136,44 +135,16 @@ export default function GuestCanvasChatSplitView({
   const pricing = EXPORT_PRICING[jurisdictionId] || DEFAULT_PRICING;
   const jurisdiction = JURISDICTIONS.find((j) => j.id === jurisdictionId);
 
-  // Stable reference per modal open — regenerated only when modal opens
-  const paystackReference = useMemo(
-    () => `WANSOM-DOC-${Date.now()}`,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [showExportModal]
-  );
+  const generateAndDownload = async () => {
+    const htmlToExport = currentEditorHtml || documentHtml || '';
+    if (!htmlToExport) throw new Error('No document content to export.');
 
-  const paystackConfig = {
-    reference: paystackReference,
-    email: exportEmail,
-    amount: pricing.amount,
-    currency: pricing.currency,
-    publicKey: process.env.PAYSTACK_PUBLIC_KEY || 'pk_live_fcef983434b15b8b03d03189ebff007c36adfe48',
-    metadata: {
-      custom_fields: [
-        { display_name: 'Document', variable_name: 'document_type', value: documentTitle || documentType },
-        { display_name: 'Jurisdiction', variable_name: 'jurisdiction', value: jurisdictionId },
-      ],
-    },
-  };
+    const title = documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const cleanBody = htmlToExport
+      .replace(/class="lexical-[^"]*"/g, '')
+      .replace(/class="[^"]*lexical[^"]*"/g, '');
 
-  // Called by PaystackButton onSuccess — payment is confirmed, generate DOCX in browser
-  const handlePaystackSuccess = async (response: { reference: string }) => {
-    setIsExporting(true);
-    setExportError('');
-
-    try {
-      const htmlToExport = currentEditorHtml || documentHtml || '';
-      if (!htmlToExport) throw new Error('No document content to export.');
-
-      const title = documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-
-      // Strip Lexical CSS classes so the exported DOCX is clean
-      const cleanBody = htmlToExport
-        .replace(/class="lexical-[^"]*"/g, '')
-        .replace(/class="[^"]*lexical[^"]*"/g, '');
-
-      const fullHtml = `<!DOCTYPE html>
+    const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -193,43 +164,58 @@ export default function GuestCanvasChatSplitView({
 <body>${cleanBody}</body>
 </html>`;
 
-      // html-docx-js runs in the browser — no Node.js compatibility issues
-      const htmlDocxModule = await import('html-docx-js/dist/html-docx');
-      const htmlDocx = (htmlDocxModule as any).default || htmlDocxModule;
-      const blob = htmlDocx.asBlob(fullHtml);
+    const htmlDocxModule = await import('html-docx-js/dist/html-docx');
+    const htmlDocx = (htmlDocxModule as any).default || htmlDocxModule;
+    const blob = htmlDocx.asBlob(fullHtml);
 
-      const filename = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-wansom.docx';
+    const filename = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-wansom.docx';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      setShowExportModal(false);
-    } catch (err: any) {
-      setExportError(err.message || 'Failed to generate document. Please try again.');
-    } finally {
-      setIsExporting(false);
+  const handlePayClick = async () => {
+    if (!exportEmail.trim()) {
+      setExportError('Please enter your email address.');
+      return;
     }
-  };
+    setExportError('');
 
-  const handlePaystackClose = () => {
-    setIsExporting(false);
-  };
+    // Load Paystack inline script once
+    await new Promise<void>((resolve) => {
+      if ((window as any).PaystackPop) { resolve(); return; }
+      const script = document.createElement('script');
+      script.src = 'https://js.paystack.co/v1/inline.js';
+      script.onload = () => resolve();
+      document.body.appendChild(script);
+    });
 
-  const componentProps = {
-    ...paystackConfig,
-    text: `Pay ${pricing.label} & Download`,
-    onSuccess: handlePaystackSuccess,
-    onClose: handlePaystackClose,
-    disabled: !exportEmail.trim(),
-    className: `w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors${
-      !exportEmail.trim() ? ' opacity-50 cursor-not-allowed' : ''
-    }`,
+    (window as any).PaystackPop.setup({
+      key: 'pk_live_fcef983434b15b8b03d03189ebff007c36adfe48',
+      email: exportEmail,
+      amount: pricing.amount,
+      currency: pricing.currency,
+      ref: `WANSOM-DOC-${Date.now()}`,
+      metadata: {
+        custom_fields: [
+          { display_name: 'Document', variable_name: 'document_type', value: documentTitle || documentType },
+          { display_name: 'Jurisdiction', variable_name: 'jurisdiction', value: jurisdictionId },
+        ],
+      },
+      callback: function() {
+        setIsExporting(true);
+        generateAndDownload()
+          .then(() => setShowExportModal(false))
+          .catch((err: any) => setExportError(err.message || 'Failed to generate document. Please try again.'))
+          .finally(() => setIsExporting(false));
+      },
+      onClose: () => {},
+    }).openIframe();
   };
 
   return (
@@ -313,16 +299,17 @@ export default function GuestCanvasChatSplitView({
                 <p className="text-sm text-red-600">{exportError}</p>
               )}
 
-              {isExporting ? (
-                <button
-                  disabled
-                  className="w-full bg-green-600 opacity-50 cursor-not-allowed text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2"
-                >
-                  <Loader2 className="h-4 w-4 animate-spin" /> Generating document…
-                </button>
-              ) : (
-                <PaystackButton {...componentProps} />
-              )}
+              <button
+                onClick={handlePayClick}
+                disabled={isExporting}
+                className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+              >
+                {isExporting ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Generating document…</>
+                ) : (
+                  `Pay ${pricing.label} & Download`
+                )}
+              </button>
 
               <p className="text-xs text-gray-400 text-center">
                 Secured by Paystack · No subscription required
