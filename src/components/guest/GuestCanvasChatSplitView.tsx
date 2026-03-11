@@ -23,7 +23,7 @@ interface GuestCanvasChatSplitViewProps {
 // Pricing per jurisdiction (amount in smallest currency unit for Paystack)
 const EXPORT_PRICING: Record<string, { amount: number; currency: string; label: string }> = {
   ng: { amount: 250000, currency: 'NGN', label: '₦2,500' },
-  ke: { amount: 35000,  currency: 'KES', label: 'KES 350' },
+  ke: { amount: 55000,  currency: 'KES', label: 'KES 550' },
   za: { amount: 4500,   currency: 'ZAR', label: 'R45' },
   gh: { amount: 7500,   currency: 'GHS', label: 'GHS 75' },
 };
