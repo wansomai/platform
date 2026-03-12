@@ -1226,6 +1226,7 @@ export function ChatInput({
               )}
 
               {/* Vault Documents Button */}
+              {/* Vault Documents Button */}
               <button
                 className="h-8 px-2 rounded-md flex items-center gap-1.5 hover:bg-gray-100 border border-input bg-background"
                 title="Add documents from vault"

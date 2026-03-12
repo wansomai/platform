@@ -12,35 +12,45 @@ export const GET = withErrorHandler(withAuth(async (
   const folderId = (await params).id;
   const organizationId = await getActiveOrganizationId(userId);
 
-  // User must own the folder
   const folder = await prisma.folder.findUnique({
-    where: {
-      id: folderId,
-      organizationId,
-      createdBy: userId
-    },
+    where: { id: folderId, organizationId },
     include: {
       documents: {
-        where: { created_by: userId },
         include: {
-          createdByUser: {
-            select: { id: true, fullName: true }
-          }
+          createdByUser: { select: { id: true, fullName: true } }
         },
         orderBy: { created_at: 'desc' }
       },
       children: {
-        where: { createdBy: userId },
         include: {
-          _count: { select: { documents: true } }
+          _count: { select: { documents: true } },
+          permissions: { select: { userId: true } }
         }
-      }
+      },
+      permissions: { select: { userId: true } }
     }
   });
 
   if (!folder) {
     return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
+
+  // Check user can access this folder.
+  // Org role does NOT bypass restricted access — only creator or explicitly-granted users.
+  const canAccess =
+    folder.visibility === 'organization' ||
+    folder.createdBy === userId ||
+    folder.permissions.some((p: any) => p.userId === userId);
+
+  if (!canAccess) {
+    return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
+  }
+
+  // Helper to check child folder visibility (same rules)
+  const canSeeChild = (child: any) =>
+    child.visibility === 'organization' ||
+    child.createdBy === userId ||
+    child.permissions.some((p: any) => p.userId === userId);
 
   const formattedDocuments = folder.documents.map((doc: any) => ({
     id: doc.id,
@@ -66,11 +76,13 @@ export const GET = withErrorHandler(withAuth(async (
       name: folder.name,
       parentId: folder.parentId,
       documents: formattedDocuments,
-      subfolders: folder.children.map((child: any) => ({
-        id: child.id,
-        name: child.name,
-        documentCount: child._count.documents
-      })),
+      subfolders: folder.children
+        .filter(canSeeChild)
+        .map((child: any) => ({
+          id: child.id,
+          name: child.name,
+          documentCount: child._count.documents
+        })),
       createdBy: folder.createdBy,
       createdAt: folder.createdAt.toISOString()
     }
@@ -85,9 +97,11 @@ export const PUT = withErrorHandler(withAuth(async (
   const folderId = (await params).id;
   const organizationId = await getActiveOrganizationId(userId);
 
-  // User must own the folder
   const folder = await prisma.folder.findUnique({
-    where: { id: folderId, organizationId, createdBy: userId }
+    where: {
+      id: folderId,
+      organizationId,
+    }
   });
 
   if (!folder) {
@@ -95,6 +109,8 @@ export const PUT = withErrorHandler(withAuth(async (
   }
 
   const { name, parentId } = await request.json();
+
+
   const updateData: any = {};
 
   if (name && name.trim() !== '') {
@@ -105,7 +121,10 @@ export const PUT = withErrorHandler(withAuth(async (
     if (parentId) {
       // Parent must also be owned by the user
       const parentFolder = await prisma.folder.findUnique({
-        where: { id: parentId, organizationId, createdBy: userId }
+        where: {
+          id: parentId,
+          organizationId,
+        }
       });
 
       if (!parentFolder) {
@@ -140,9 +159,11 @@ export const DELETE = withErrorHandler(withAuth(async (
   const folderId = (await params).id;
   const organizationId = await getActiveOrganizationId(userId);
 
-  // User must own the folder
   const folder = await prisma.folder.findUnique({
-    where: { id: folderId, organizationId, createdBy: userId },
+    where: {
+      id: folderId,
+      organizationId,
+    },
     include: {
       children: true,
       documents: { select: { id: true } }
@@ -153,23 +174,26 @@ export const DELETE = withErrorHandler(withAuth(async (
     return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
 
-  // Unlink documents from this folder (only the user's own documents)
   if (folder.documents.length > 0) {
     await prisma.document.updateMany({
-      where: { folderId, created_by: userId },
+      where: { folderId },
       data: { folderId: null }
     });
   }
 
-  // Move subfolders to parent (only the user's own subfolders)
   if (folder.children.length > 0) {
     await prisma.folder.updateMany({
-      where: { parentId: folderId, createdBy: userId },
+      where: { parentId: folderId },
       data: { parentId: folder.parentId }
     });
   }
 
-  await prisma.folder.delete({ where: { id: folderId } });
+  await prisma.folder.delete({
+    where: { id: folderId }
+  });
 
-  return NextResponse.json({ status: 200, message: 'Folder deleted successfully' });
+  return NextResponse.json({
+    status: 200,
+    message: 'Folder deleted successfully'
+  });
 }));

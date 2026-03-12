@@ -63,6 +63,7 @@ model User {
   conversationDocuments   ConversationDocument[]
   documents               Document[]
   Folder                  Folder[]
+  folderPermissions       FolderPermission[]
   sentInvitations         Invitation[]            @relation("InvitedBy")
   messages                Message[]
   ownedOrganizations      Organization[]          @relation("OrganizationOwner")
@@ -298,20 +299,35 @@ model Document {
 }
 
 model Folder {
-  id             String       @id @default(cuid())
+  id             String             @id @default(cuid())
   name           String
   organizationId String
   parentId       String?
   createdBy      String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  visibility     String             @default("restricted")
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
   documents      Document[]
-  user           User         @relation(fields: [createdBy], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  parent         Folder?      @relation("FolderHierarchy", fields: [parentId], references: [id])
-  children       Folder[]     @relation("FolderHierarchy")
+  user           User               @relation(fields: [createdBy], references: [id])
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+  parent         Folder?            @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children       Folder[]           @relation("FolderHierarchy")
+  permissions    FolderPermission[]
 
   @@index([organizationId, parentId], map: "idx_folder_org_parent")
+}
+
+model FolderPermission {
+  id        String   @id @default(cuid())
+  folderId  String
+  userId    String
+  createdAt DateTime @default(now())
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([folderId, userId])
+  @@index([folderId], map: "idx_folder_permission_folder")
+  @@index([userId], map: "idx_folder_permission_user")
 }
 
 model ProjectDocument {

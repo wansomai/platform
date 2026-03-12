@@ -42,5 +42,7 @@ export interface Folder {
   documentCount: number;
   children?: Folder[];
   createdAt: string;
+  createdBy?: string;
+  visibility?: 'organization' | 'restricted';
 }
 

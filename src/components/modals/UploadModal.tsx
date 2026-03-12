@@ -128,8 +128,15 @@ export function UploadDocumentModal({
   // Effects
   useEffect(() => {
     if (open) {
-      fetchDocuments();
-      fetchFolders(); // always needed for folder sidebar in select tab
+      // Clear any stale selection from a previous session
+      setSelectedDocumentsToAdd([]);
+      setSelectedFilterFolder(null);
+      // Force-refresh so we never show a folder-filtered list from the vault page cache.
+      // No folder filter here — we show all documents; folder browsing is handled below.
+      fetchDocuments({ limit: 100 }, true);
+      if (mode !== 'upload') {
+        fetchFolders();
+      }
     }
   }, [open, fetchDocuments, fetchFolders, mode]);
   
@@ -659,21 +666,9 @@ export function UploadDocumentModal({
     </div>
   );
 
-  // Select all documents in a specific folder
+  // Filter documents by folder — never auto-selects
   const handleFolderClick = (folderId: string | null) => {
     setSelectedFilterFolder(folderId);
-    if (folderId === null) return; // "All files" — just filter, don't bulk-select
-
-    const folderDocs = documents.filter(doc => {
-      if (folderId === 'root') return !doc.folderId;
-      return doc.folderId === folderId;
-    });
-    const ids = folderDocs
-      .filter(doc => !attachedDocIds.has(doc.id))
-      .map(doc => doc.id);
-    if (ids.length > 0) {
-      setSelectedDocumentsToAdd(prev => Array.from(new Set([...prev, ...ids])));
-    }
   };
 
   const renderSelectTab = () => (

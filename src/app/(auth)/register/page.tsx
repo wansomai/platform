@@ -86,7 +86,13 @@ function RegisterPageContent() {
       // If there's an invitation token, the invitation was already accepted during registration
       // Redirect to dashboard instead of back to accept-invitation page
       if (invitationToken) {
-        // Auto-sign in after registration
+        // Existing user — invitation was accepted server-side, just sign in
+        if (result.data?.existingUser) {
+          router.push('/login?invited=true');
+          return;
+        }
+
+        // New user — auto-sign in after registration
         const signInResult = await signIn('credentials', {
           redirect: false,
           email: formData.email,
@@ -98,7 +104,7 @@ function RegisterPageContent() {
           router.push('/dashboard?invited=true');
         } else {
           // If auto-signin fails, redirect to login
-          router.push('/login');
+          router.push('/login?invited=true');
         }
       } else if (callbackUrl) {
         // Other callback URL scenarios (not invitation)

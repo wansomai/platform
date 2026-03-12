@@ -13,6 +13,16 @@ import { Prisma } from '@/prisma/client';
 // Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
 export const maxDuration = 120;
 
+/** Returns true if userId can see a restricted folder.
+ *  Only the creator or explicitly-granted users have access — org role is irrelevant. */
+function userCanAccessFolder(
+  folder: { createdBy: string; permissions: { userId: string }[] },
+  userId: string,
+): boolean {
+  if (folder.createdBy === userId) return true;
+  return folder.permissions.some((p) => p.userId === userId);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromRequest(request);
@@ -35,10 +45,9 @@ export async function GET(request: NextRequest) {
     // ✅ Use helper to get active organization ID (supports org switching)
     const organizationId = await getActiveOrganizationId(userId);
 
-    // Build query filters — users only see documents they uploaded
+    // Build query filters — all org members see all org documents (folder visibility enforced below)
     const where: any = {
       organization_id: organizationId,
-      created_by: userId,
       status: 'active'
     };
     
@@ -67,8 +76,64 @@ export async function GET(request: NextRequest) {
     } else if (folderId) {
       where.folderId = folderId;
     }
-    // Dashboard requests use limit ≤ 10; vault/full-page requests use limit > 10
-    const isLimitedRequest = limit <= 10;
+
+    // --- Folder visibility enforcement ---
+    // Documents with no folder (root) are always visible.
+    // Documents in a "restricted" folder are only visible to:
+    //   • the folder creator
+    //   • users explicitly listed in FolderPermission
+    //   • org admins / org owner
+    // If the user is browsing a specific restricted folder they can't access, return 0 results.
+    if (folderId && folderId !== 'root') {
+      // Browsing a specific folder — check access
+      const targetFolder = await prisma.folder.findUnique({
+        where: { id: folderId, organizationId },
+        include: { permissions: { select: { userId: true } } }
+      });
+      if (targetFolder && targetFolder.visibility === 'restricted') {
+        const canAccess = userCanAccessFolder(targetFolder, userId);
+        if (!canAccess) {
+          // Return empty — user has no access to this folder
+          return NextResponse.json({
+            status: 200,
+            message: 'Documents retrieved successfully',
+            data: [],
+            pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
+          });
+        }
+      }
+    } else if (!folderId) {
+      // "All Documents" view — exclude documents in restricted folders the user can't access.
+      // Org role is irrelevant: even admins/owners are blocked unless creator or explicitly granted.
+      const restrictedFolders = await prisma.folder.findMany({
+        where: { organizationId, visibility: 'restricted' },
+        include: { permissions: { select: { userId: true } } }
+      });
+
+      if (restrictedFolders.length > 0) {
+        const inaccessibleIds = restrictedFolders
+          .filter((f: any) => !userCanAccessFolder(f, userId))
+          .map((f: any) => f.id);
+
+        if (inaccessibleIds.length > 0) {
+          // Exclude documents in inaccessible restricted folders.
+          // Root documents (folderId = null) remain visible.
+          // Wrap any existing OR (search) inside AND so both conditions apply.
+          const folderFilter = { OR: [{ folderId: null }, { folderId: { notIn: inaccessibleIds } }] };
+          if (where.OR) {
+            where.AND = [{ OR: where.OR }, folderFilter];
+            delete where.OR;
+          } else {
+            where.AND = [folderFilter];
+          }
+        }
+      }
+    }
+
+    // Dashboard needs minimal data, full pages need more
+    const hasFilters = searchTerm || fileType || folderId || page > 1;
+    const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
+
 
     // Determine sorting
     let orderBy: any;
@@ -242,10 +307,10 @@ export async function POST(request: NextRequest) {
       const folder = await prisma.folder.findUnique({
         where: {
           id: folderId,
-          organizationId
+          organizationId,
         }
       });
-      
+
       if (!folder) {
         return NextResponse.json(
           { message: 'Folder not found', error: true },
@@ -253,7 +318,7 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-    
+
     // Generate unique filename
     const fileExt = file.name.split('.').pop() || '';
     const fileName = `${organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
@@ -337,11 +402,13 @@ export async function POST(request: NextRequest) {
     
     // If text was extracted, store it (only when non-empty)
     if (extractedText && extractedText.trim().length > 0) {
-      await prisma.documentContent.create({
-        data: {
-          documentId: document.id,
-          content: extractedText
-        }
+      try {
+        await prisma.documentContent.create({
+          data: {
+            documentId: document.id,
+            content: extractedText
+          }
+        });
       } catch (err) {
         console.error('Background text extraction failed for document', document.id, err);
         // Reset flag to null so the vault doesn't show the spinner forever
@@ -352,7 +419,7 @@ export async function POST(request: NextRequest) {
           });
         } catch (_) { /* best-effort */ }
       }
-    });
+    }
     
     // Format response to match the expected Document interface
     const documentInfo = {

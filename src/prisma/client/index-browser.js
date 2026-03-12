@@ -310,8 +310,16 @@ exports.Prisma.FolderScalarFieldEnum = {
   organizationId: 'organizationId',
   parentId: 'parentId',
   createdBy: 'createdBy',
+  visibility: 'visibility',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.FolderPermissionScalarFieldEnum = {
+  id: 'id',
+  folderId: 'folderId',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ProjectDocumentScalarFieldEnum = {
@@ -676,6 +684,7 @@ exports.Prisma.ModelName = {
   ProjectMember: 'ProjectMember',
   Document: 'Document',
   Folder: 'Folder',
+  FolderPermission: 'FolderPermission',
   ProjectDocument: 'ProjectDocument',
   ConversationDocument: 'ConversationDocument',
   DocumentContent: 'DocumentContent',

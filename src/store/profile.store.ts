@@ -290,9 +290,11 @@ export const useProfileStore = create<ProfileState>()(
 
           try {
             membersData = await apiService.get('/api/organization/members');
-          } catch (membersError) {
-            console.error('Error fetching members:', membersError);
-            // Use mock data for members if API fails
+          } catch (membersError: any) {
+            // 403 = user lacks VIEW_MEMBERS permission (expected for member-role users)
+            if (membersError?.status !== 403) {
+              console.error('Error fetching members:', membersError);
+            }
             const mockMembers: TeamMember[] = state.user ? [{
               id: '1',
               name: state.user.fullName || 'You',
@@ -305,8 +307,10 @@ export const useProfileStore = create<ProfileState>()(
 
           try {
             invitationsData = await apiService.get('/api/organization/invitations');
-          } catch (invitationsError) {
-            console.error('Error fetching invitations:', invitationsError);
+          } catch (invitationsError: any) {
+            if (invitationsError?.status !== 403) {
+              console.error('Error fetching invitations:', invitationsError);
+            }
             invitationsData = { invitations: [] };
           }
 
