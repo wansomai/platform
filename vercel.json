@@ -1,4 +1,12 @@
 {
+  "functions": {
+    "src/app/api/documents/route.ts": {
+      "memory": 1024
+    },
+    "src/app/api/projects/[id]/conversations/[conversationId]/messages/route.ts": {
+      "memory": 1024
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/legal-digest",

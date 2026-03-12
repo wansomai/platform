@@ -156,7 +156,11 @@ export function UploadDocumentModal({
   // File handling functions
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      setUploadFiles([]);
+      setUploadError(null);
+      return;
+    }
     validateAndSetFiles(Array.from(files));
   };
 
@@ -184,7 +188,7 @@ export function UploadDocumentModal({
   };
 
   const validateAndSetFiles = (files: File[]) => {
-    const valid: File[] = [];
+    const validFiles: File[] = [];
     const errors: string[] = [];
 
     for (const file of files) {
@@ -192,7 +196,7 @@ export function UploadDocumentModal({
       if (!validation.isValid) {
         errors.push(`${file.name}: ${validation.error || 'Invalid file'}`);
       } else {
-        valid.push(file);
+        validFiles.push(file);
       }
     }
 
@@ -202,18 +206,12 @@ export function UploadDocumentModal({
       setUploadError(null);
     }
 
-    if (valid.length > 0) {
+    if (validFiles.length > 0) {
       setUploadFiles(prev => {
-        const existingNames = new Set(prev.map(f => f.name));
-        const newFiles = valid.filter(f => !existingNames.has(f.name));
-        return [...prev, ...newFiles];
+        const existing = new Set(prev.map(f => f.name + f.size));
+        return [...prev, ...validFiles.filter(f => !existing.has(f.name + f.size))];
       });
     }
-  };
-
-  const removeUploadFile = (index: number) => {
-    setUploadFiles(prev => prev.filter((_, i) => i !== index));
-    setUploadError(null);
   };
 
   // Document operations
@@ -224,10 +222,8 @@ export function UploadDocumentModal({
     setUploadProgress(0);
 
     try {
-      const uploadedDocs: Document[] = [];
-      const total = uploadFiles.length;
-
-      for (let i = 0; i < total; i++) {
+      const uploadedDocs = [];
+      for (let i = 0; i < uploadFiles.length; i++) {
         const file = uploadFiles[i];
         const formData = new FormData();
         formData.append('file', file);
@@ -237,8 +233,9 @@ export function UploadDocumentModal({
         }
 
         const document = await uploadDocument(formData, (progress) => {
-          // Overall progress across all files
-          setUploadProgress(Math.round(((i + progress / 100) / total) * 100));
+          // Show per-file progress scaled across the total
+          const overall = Math.round(((i / uploadFiles.length) * 100) + (progress / uploadFiles.length));
+          setUploadProgress(overall);
         });
 
         if (document) {
@@ -246,19 +243,22 @@ export function UploadDocumentModal({
         }
       }
 
+      setUploadProgress(100);
+
       if (uploadedDocs.length > 0) {
-        if (mode === 'upload-and-attach' && projectId) {
+        if ((mode === 'upload-and-attach') && projectId) {
           const success = await attachDocumentsToProject(
             projectId,
             uploadedDocs.map(d => d.id)
           );
+
           if (success) {
-            notify.success(`${uploadedDocs.length} file${uploadedDocs.length > 1 ? 's' : ''} uploaded and added to conversation`);
+            notify.success(`${uploadedDocs.length} file${uploadedDocs.length !== 1 ? 's' : ''} uploaded and added to conversation`);
           } else {
             notify.error("Files uploaded but failed to add to conversation");
           }
         } else {
-          notify.success(`${uploadedDocs.length} file${uploadedDocs.length > 1 ? 's' : ''} uploaded successfully`);
+          notify.success(`${uploadedDocs.length} file${uploadedDocs.length !== 1 ? 's' : ''} uploaded successfully`);
         }
 
         onDocumentsAdded?.(uploadedDocs);
@@ -356,16 +356,17 @@ export function UploadDocumentModal({
 
   // Render functions
   const renderUploadTab = () => (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      {/* Drop zone — compact when files are selected, full when empty */}
       <div
-        className={`border-2 border-dashed rounded-lg p-8 cursor-pointer transition-all relative ${
+        className={`border-2 border-dashed rounded-lg cursor-pointer transition-all relative ${
           isDragOver
-            ? 'border-primary-500 bg-primary-50 scale-[1.02]'
+            ? 'border-primary-500 bg-primary-50 scale-[1.02] p-6'
             : uploadFiles.length > 0
-              ? 'border-green-400 bg-green-50'
+              ? 'border-green-400 bg-green-50 p-4'
               : isUploading
-                ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 hover:shadow-md'
+                ? 'border-gray-300 bg-gray-50 cursor-not-allowed p-8'
+                : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 hover:shadow-md p-8'
         } ${isUploading ? 'pointer-events-none' : ''}`}
         onClick={() => {
           if (!isUploading && fileInputRef.current) {
@@ -385,60 +386,94 @@ export function UploadDocumentModal({
           </div>
         )}
 
-        <div className="text-center">
-          <UploadCloud className={`mx-auto h-16 w-16 mb-4 transition-all ${
-            isDragOver ? 'text-primary-500 scale-110' : uploadFiles.length > 0 ? 'text-green-500' : 'text-gray-400'
-          }`} />
-
-          <div className="space-y-4">
-            <p className={`text-lg font-semibold mb-2 ${
-              isDragOver ? 'text-primary-700' : 'text-gray-800'
-            }`}>
-              {isDragOver ? 'Drop your files here!' : 'Drag & drop your files here'}
-            </p>
-            <div className="flex items-center gap-3 my-4">
-              <div className="flex-1 h-px bg-gray-300"></div>
-              <span className="text-sm text-gray-500 font-medium">OR</span>
-              <div className="flex-1 h-px bg-gray-300"></div>
+        {uploadFiles.length > 0 ? (
+          /* Compact summary row when files are already selected */
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <UploadCloud className="h-5 w-5 text-green-600 flex-shrink-0" />
+              <span className="text-sm font-semibold text-green-700">
+                {uploadFiles.length} file{uploadFiles.length !== 1 ? 's' : ''} selected
+              </span>
             </div>
-            <Button
+            <button
               type="button"
-              size="lg"
               onClick={(e) => {
                 e.stopPropagation();
-                if (fileInputRef.current) {
-                  fileInputRef.current.click();
-                }
+                if (fileInputRef.current) fileInputRef.current.click();
               }}
-              className="w-full max-w-xs mx-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+              className="text-sm text-primary hover:underline flex-shrink-0"
             >
-              <Plus className="h-5 w-5 mr-2" />
-              {uploadFiles.length > 0 ? 'Add More Files' : 'Open File Selector'}
-            </Button>
+              + Add more
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="text-center">
+            <UploadCloud className={`mx-auto h-16 w-16 mb-4 transition-all ${
+              isDragOver ? 'text-primary-500 scale-110' : 'text-gray-400'
+            }`} />
+            <div className="space-y-4">
+              <p className={`text-lg font-semibold mb-2 ${
+                isDragOver ? 'text-primary-700' : 'text-gray-800'
+              }`}>
+                {isDragOver ? 'Drop your files here!' : 'Drag & drop files here'}
+              </p>
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <span className="text-sm text-gray-500 font-medium">OR</span>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
+              <Button
+                type="button"
+                size="lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (fileInputRef.current) {
+                    fileInputRef.current.click();
+                  }
+                }}
+                className="w-full max-w-xs mx-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Select Files
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Selected files list */}
+      {/* Scrollable file cards — visible once files are selected */}
       {uploadFiles.length > 0 && (
-        <div className="border rounded-lg divide-y max-h-40 overflow-y-auto">
-          {uploadFiles.map((file, index) => (
-            <div key={index} className="flex items-center gap-3 px-3 py-2">
-              <FileText className="h-4 w-4 text-green-600 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => removeUploadFile(index)}
-                className="h-6 w-6 rounded-full hover:bg-gray-100 flex items-center justify-center flex-shrink-0"
-                aria-label={`Remove ${file.name}`}
+        <div className="overflow-y-auto max-h-44 border rounded-lg p-2 bg-white">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {uploadFiles.map((file, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-3 py-2.5 rounded-lg border border-gray-200 transition-colors"
               >
-                <X className="h-3.5 w-3.5 text-gray-500" />
-              </button>
-            </div>
-          ))}
+                <FileText className="h-4 w-4 text-green-600 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-gray-900 truncate" title={file.name}>
+                    {file.name}
+                  </p>
+                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                </div>
+                {!isUploading && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setUploadFiles(prev => prev.filter((_, i) => i !== idx));
+                      setUploadError(null);
+                    }}
+                    className="flex-shrink-0 h-5 w-5 rounded-full bg-gray-200 hover:bg-red-100 flex items-center justify-center transition-colors group"
+                    aria-label="Remove file"
+                  >
+                    <X className="h-3 w-3 text-gray-500 group-hover:text-red-600" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -771,13 +806,13 @@ export function UploadDocumentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[92vh] sm:max-h-[85vh] flex flex-col w-full p-4 sm:p-6">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{modalTitle}</DialogTitle>
           <DialogDescription>{modalDescription}</DialogDescription>
         </DialogHeader>
-        
-        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+
+        <div className="flex-1 overflow-y-auto min-h-0">
           {mode === 'upload-and-attach' ? (
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'select' | 'upload')}>
               <TabsList className="grid w-full grid-cols-2">
@@ -829,7 +864,7 @@ export function UploadDocumentModal({
                 onClick={handleUploadDocument}
                 disabled={uploadFiles.length === 0 || isUploading}
                 className={`transition-all ${uploadFiles.length === 0 && !isUploading ? 'cursor-not-allowed' : ''}`}
-                title={uploadFiles.length === 0 && !isUploading ? 'Please select a file first' : ''}
+                title={uploadFiles.length === 0 && !isUploading ? 'Please select files first' : ''}
               >
                 {isUploading ? (
                   <>
@@ -865,7 +900,7 @@ export function UploadDocumentModal({
               onClick={handleUploadDocument}
               disabled={uploadFiles.length === 0 || isUploading}
               className={`transition-all ${uploadFiles.length === 0 && !isUploading ? 'cursor-not-allowed' : ''}`}
-              title={uploadFiles.length === 0 && !isUploading ? 'Please select a file first' : ''}
+              title={uploadFiles.length === 0 && !isUploading ? 'Please select files first' : ''}
             >
               {isUploading ? (
                 <>
@@ -875,7 +910,7 @@ export function UploadDocumentModal({
               ) : (
                 <>
                   <UploadCloud className="h-4 w-4 mr-2" />
-                  Upload File
+                  {uploadFiles.length > 1 ? `Upload ${uploadFiles.length} Files` : 'Upload File'}
                 </>
               )}
             </Button>

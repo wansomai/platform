@@ -94,85 +94,80 @@ async function extractTextFromPdfTraditional(fileBuffer: Buffer): Promise<string
 }
 
 /**
- * Extract text from DOCX files
+ * Extract text from DOCX/DOC files using mammoth.
+ * If mammoth fails, times out, or yields no text, returns an empty string so the
+ * caller can decide what to do (store nothing, retry later). We intentionally do NOT
+ * return the scanned-PDF sentinel here — DOCX files cannot be sent to Gemini as
+ * inline data, so storing that sentinel would permanently block re-extraction.
  */
 async function extractTextFromDocx(fileBuffer: Buffer): Promise<string> {
   try {
-    // Create a blob URL from the buffer for DocxLoader
-    // For DOCX, using mammoth directly is often more reliable
-    const result = await mammoth.extractRawText({ buffer: fileBuffer });
-    return result.value;
-  } catch (error) {
-    throw error;
+    // Race mammoth against a 30-second timeout. Large or complex DOCX files can
+    // stall the event loop; we need to fail fast and let the caller retry later.
+    const extractionPromise = mammoth.extractRawText({ buffer: fileBuffer });
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('mammoth extraction timed out')), 30_000)
+    );
+    const result = await Promise.race([extractionPromise, timeoutPromise]);
+    if (result.value && result.value.trim().length > 0) {
+      return result.value;
+    }
+  } catch {
+    // mammoth failed or timed out — file may be a binary DOC, corrupted, or too complex
   }
+
+  // Return empty string (not the PDF sentinel) so callers know extraction failed
+  // without poisoning the DocumentContent cache with an incorrect sentinel value.
+  return '';
 }
 
 /**
  * Extract text from Excel files
  */
 function extractTextFromExcel(fileBuffer: Buffer): string {
-  try {
-    // Read the workbook
-    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-    
-    // Extract text from all sheets
-    const sheetNames = workbook.SheetNames;
-    let allText = '';
-    
-    for (const sheetName of sheetNames) {
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      
-      // Add sheet name as heading
-      allText += `Sheet: ${sheetName}\n\n`;
-      
-      // Convert sheet data to text
-      for (const row of jsonData) {
-        allText += (row as any[]).join('\t') + '\n';
-      }
-      
-      allText += '\n\n';
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+  const sheetNames = workbook.SheetNames;
+  let allText = '';
+
+  for (const sheetName of sheetNames) {
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+    allText += `Sheet: ${sheetName}\n\n`;
+
+    for (const row of jsonData) {
+      allText += (row as any[]).join('\t') + '\n';
     }
-    
-    return allText;
-  } catch (error) {
-    throw error;
+
+    allText += '\n\n';
   }
+
+  return allText;
 }
 
 /**
  * Extract text from CSV files
  */
 function extractTextFromCsv(fileBuffer: Buffer): string {
-  try {
-    // Parse CSV
-    const content = fileBuffer.toString('utf-8');
-    const records = csv.parse(content, {
-      columns: true,
-      skip_empty_lines: true
-    });
-    
-    // Format as readable text
-    let text = '';
-    
-    // Add headers
-    if (records.length > 0) {
-      const headers = Object.keys(records[0]);
-      text += headers.join('\t') + '\n';
-      
-      // Add separator
-      text += headers.map(() => '---').join('\t') + '\n';
-    }
-    
-    // Add data rows
-    for (const record of records) {
-      text += Object.values(record).join('\t') + '\n';
-    }
-    
-    return text;
-  } catch (error) {
-    throw error;
+  const content = fileBuffer.toString('utf-8');
+  const records = csv.parse(content, {
+    columns: true,
+    skip_empty_lines: true
+  });
+
+  let text = '';
+
+  if (records.length > 0) {
+    const headers = Object.keys(records[0]);
+    text += headers.join('\t') + '\n';
+    text += headers.map(() => '---').join('\t') + '\n';
   }
+
+  for (const record of records) {
+    text += Object.values(record).join('\t') + '\n';
+  }
+
+  return text;
 }
 
 /**

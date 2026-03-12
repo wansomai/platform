@@ -9,6 +9,7 @@ import {
   Loader2,
   File,
   Image as ImageIcon,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -37,6 +38,18 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [viewerError, setViewerError] = useState(false);
+
+  const handleDownload = () => {
+    if (!contract.fileUrl) return;
+    const a = document.createElement("a");
+    a.href = contract.fileUrl;
+    a.download = contract.fileName;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   // Reset viewer error when contract changes
   useEffect(() => {
@@ -76,9 +89,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               }}
             />
           </div>
-          <div className="p-4 bg-gray-50 border-t">
+          <div className="p-3 sm:p-4 bg-gray-50 border-t">
             <div className="flex items-center justify-center">
-              <span className="text-sm text-gray-600">PDF Document</span>
+              <span className="text-sm text-gray-600 truncate">PDF Document</span>
             </div>
           </div>
         </div>
@@ -135,11 +148,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 Document preview is not available. This may be due to access restrictions or file format compatibility.
               </p>
               <Button
-                onClick={() => window.open(contract.fileUrl, '_blank')}
+                onClick={handleDownload}
                 className="inline-flex items-center"
               >
-                <FileText className="w-4 h-4 mr-2" />
-                Open Document
+                <Download className="w-4 h-4 mr-2" />
+                Download Original
               </Button>
             </div>
           </div>
@@ -148,7 +161,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
       // Try Microsoft Office Online viewer first
       const msViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(contract.fileUrl)}`;
-      
+
       return (
         <div className="h-full flex flex-col">
           <div className="flex-1">
@@ -163,16 +176,17 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               }}
             />
           </div>
-          <div className="p-4 bg-gray-50 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Word Document</span>
+          <div className="p-3 sm:p-4 bg-gray-50 border-t">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-sm text-gray-600 truncate">Word Document</span>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => window.open(contract.fileUrl, '_blank')}
+                onClick={handleDownload}
+                className="flex-shrink-0 flex items-center gap-1"
               >
-                <FileText className="w-4 h-4 mr-1" />
-                Open Original
+                <Download className="w-4 h-4" />
+                <span>Download Original</span>
               </Button>
             </div>
           </div>
@@ -198,11 +212,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 Document preview is not available. This may be due to access restrictions or file format compatibility.
               </p>
               <Button
-                onClick={() => window.open(contract.fileUrl, '_blank')}
+                onClick={handleDownload}
                 className="inline-flex items-center"
               >
-                <FileText className="w-4 h-4 mr-2" />
-                Open Document
+                <Download className="w-4 h-4 mr-2" />
+                Download Original
               </Button>
             </div>
           </div>
@@ -211,7 +225,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
       // Try Microsoft Office Online viewer
       const msViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(contract.fileUrl)}`;
-      
+
       return (
         <div className="h-full flex flex-col">
           <div className="flex-1">
@@ -226,16 +240,17 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               }}
             />
           </div>
-          <div className="p-4 bg-gray-50 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Excel Spreadsheet</span>
+          <div className="p-3 sm:p-4 bg-gray-50 border-t">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-sm text-gray-600 truncate">Excel Spreadsheet</span>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => window.open(contract.fileUrl, '_blank')}
+                onClick={handleDownload}
+                className="flex-shrink-0 flex items-center gap-1"
               >
-                <FileText className="w-4 h-4 mr-1" />
-                Open Original
+                <Download className="w-4 h-4" />
+                <span>Download Original</span>
               </Button>
             </div>
           </div>
@@ -261,20 +276,19 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="border-b p-4 flex items-center justify-between">
-        
-            <div className="flex-1">
-              <p className="text-sm text-gray-600">{contract.fileName}</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRemoveDocument}
-              className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-            >
-              <X className="w-4 h-4 mr-1" />
-              Close Preview
-            </Button>
+      <div className="border-b p-3 sm:p-4 flex items-center justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-gray-600 truncate" title={contract.fileName}>{contract.fileName}</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRemoveDocument}
+          className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 flex-shrink-0 flex items-center gap-1"
+        >
+          <X className="w-4 h-4" />
+          <span>Close Preview</span>
+        </Button>
       </div>
 
       <div className="flex-1 relative">

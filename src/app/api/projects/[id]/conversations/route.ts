@@ -73,10 +73,10 @@ export const GET = withErrorHandler(
       aiAssociateId: conversation.aiAssociateId,
       aiAssociate: conversation.aiAssociate
         ? {
-            id: conversation.aiAssociate.id,
-            name: conversation.aiAssociate.name,
-            description: conversation.aiAssociate.description,
-          }
+          id: conversation.aiAssociate.id,
+          name: conversation.aiAssociate.name,
+          description: conversation.aiAssociate.description,
+        }
         : undefined,
       messages: conversation.messages.map((message: any) => {
         const metadata = message.metadata
@@ -92,6 +92,7 @@ export const GET = withErrorHandler(
           ...(metadata?.document && { document: metadata.document }),
           ...(metadata?.report && { report: metadata.report }),
           ...(metadata?.webSearchSources && { webSearchSources: metadata.webSearchSources }),
+          ...(metadata?.attachedDocuments && { attachedDocuments: metadata.attachedDocuments }),
           references: message.references?.map((ref: any) => ({
             id: ref.id,
             documentId: ref.documentId,
@@ -171,10 +172,10 @@ export const POST = withErrorHandler(
       aiAssociateId: conversation.aiAssociateId,
       aiAssociate: conversation.aiAssociate
         ? {
-            id: conversation.aiAssociate.id,
-            name: conversation.aiAssociate.name,
-            description: conversation.aiAssociate.description,
-          }
+          id: conversation.aiAssociate.id,
+          name: conversation.aiAssociate.name,
+          description: conversation.aiAssociate.description,
+        }
         : undefined,
       messages: [],
     };

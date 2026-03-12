@@ -26,6 +26,8 @@ export function DocumentArtifact({
 }: DocumentArtifactProps) {
   const router = useRouter()
   const saveCanvasDocument = useCanvasStore(state => state.saveCanvasDocument)
+  const fetchCanvasDocument = useCanvasStore(state => state.fetchCanvasDocument)
+  const canvasDocument = useCanvasStore(state => state.canvasDocument)
   const updateSetting = useProjectSettingsStore(state => state.updateSetting)
 
   const handleCardClick = async () => {
@@ -40,13 +42,20 @@ export function DocumentArtifact({
           return;
         }
 
-        // Save document to canvas before navigating using store method
-        const plainText = htmlContent.replace(/<[^>]*>/g, '') // Simple HTML strip for plain text
-        const result = await saveCanvasDocument(projectId, null, htmlContent, plainText)
+        // Check whether a canvas document already exists for this project.
+        // If so, DO NOT overwrite it — the user may have already edited it.
+        // We only write the AI-generated HTML when there is no existing canvas.
+        const existing = canvasDocument ?? await fetchCanvasDocument(projectId)
 
-        if (!result) {
-          throw new Error('Failed to save to canvas')
+        if (!existing) {
+          // No canvas document yet — seed it with the AI-generated content
+          const plainText = htmlContent.replace(/<[^>]*>/g, '')
+          const result = await saveCanvasDocument(projectId, null, htmlContent, plainText)
+          if (!result) {
+            throw new Error('Failed to save to canvas')
+          }
         }
+        // If a canvas document already exists, just navigate — preserving user edits.
 
         // Enable canvas mode so Draft & Review is toggled on
         await updateSetting(projectId, 'canvasMode', true)
