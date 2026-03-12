@@ -29,12 +29,13 @@ export async function GET(
     const url = new URL(request.url);
     const searchParams = url.searchParams;
 
-    // Get document
+    // Get document — user must be the uploader
     const includeContent = searchParams.get('includeContent') === 'true';
     const document = await prisma.document.findUnique({
       where: {
         id: documentId,
-        organization_id: organizationId // Ensure user has access
+        organization_id: organizationId,
+        created_by: userId
       },
       include: {
         createdByUser: {
@@ -105,24 +106,14 @@ export async function DELETE(
       );
     }
 
-    // Check user's organization access
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { organizationId: true }
-    });
-    
-    if (!user) {
-      return NextResponse.json(
-        { message: 'User not found', error: true }, 
-        { status: 404 }
-      );
-    }
-    
-    // Get document
+    // Get active org and verify user owns this document
+    const organizationId = await getActiveOrganizationId(userId);
+
     const document = await prisma.document.findUnique({
       where: {
         id: documentId,
-        organization_id: user.organizationId // Ensure user has access
+        organization_id: organizationId,
+        created_by: userId
       }
     });
     

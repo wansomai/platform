@@ -8,6 +8,7 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   // ✅ Get user's active organization (supports org switching)
   const organizationId = await getActiveOrganizationId(userId);
 
+<<<<<<< HEAD
   // Determine if user is org admin/owner (they see all folders regardless of visibility)
   const [orgMembership, org] = await Promise.all([
     prisma.userOrganization.findUnique({
@@ -25,8 +26,11 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     orgMembership?.role === 'owner';
 
   // Get all folders for the org, including permissions
+=======
+  // Get folders owned by this user in their active organization
+>>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
   const folders = await prisma.folder.findMany({
-    where: { organizationId },
+    where: { organizationId, createdBy: userId },
     include: {
       _count: { select: { documents: true } },
       children: {
@@ -81,9 +85,16 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
 }));
 
 export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
+<<<<<<< HEAD
   // Use the active organization so invited members work correctly
   const organizationId = await getActiveOrganizationId(userId);
 
+=======
+  // Use active organization (supports org switching)
+  const organizationId = await getActiveOrganizationId(userId);
+
+  // Parse request body
+>>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
   const { name, parentId } = await request.json();
 
   if (!name || name.trim() === '') {
@@ -98,7 +109,11 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     const parentFolder = await prisma.folder.findUnique({
       where: {
         id: parentId,
+<<<<<<< HEAD
         organizationId,
+=======
+        organizationId
+>>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
       }
     });
 

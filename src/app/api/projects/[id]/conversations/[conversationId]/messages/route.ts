@@ -150,6 +150,7 @@ export async function POST(
             title: true,
             file_url: true,
             file_type: true,
+            content_extracted: true,
             content: {
               select: { content: true }
             }

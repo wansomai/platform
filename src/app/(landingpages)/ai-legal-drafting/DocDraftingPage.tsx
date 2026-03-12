@@ -235,7 +235,7 @@ const LegalDraftingPage = () => {
 
               <button
                 className="bg-[#d47b0f] hover:bg-[#b8690c] text-white px-5 py-2 rounded font-semibold transition-colors"
-                onClick={() => (window.location.href = "/login")}
+                onClick={() => (window.location.href = "/legal-documents")}
               >
                 Explore Legal templates{" "}
                 <ArrowUpRight className="w-6 h-6 inline-block ml-2" />
