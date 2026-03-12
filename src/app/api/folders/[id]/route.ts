@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 
 export const GET = withErrorHandler(withAuth(async (
   request: NextRequest,
@@ -9,56 +10,38 @@ export const GET = withErrorHandler(withAuth(async (
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const folderId = (await params).id;
+  const organizationId = await getActiveOrganizationId(userId);
 
-  // Get user's organization
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Get folder with documents
+  // User must own the folder
   const folder = await prisma.folder.findUnique({
     where: {
       id: folderId,
-      organizationId: user.organizationId
+      organizationId,
+      createdBy: userId
     },
     include: {
       documents: {
+        where: { created_by: userId },
         include: {
           createdByUser: {
-            select: {
-              id: true,
-              fullName: true
-            }
+            select: { id: true, fullName: true }
           }
         },
         orderBy: { created_at: 'desc' }
       },
       children: {
+        where: { createdBy: userId },
         include: {
-          _count: {
-            select: { documents: true }
-          }
+          _count: { select: { documents: true } }
         }
       }
     }
   });
 
   if (!folder) {
-    return NextResponse.json(
-      { error: 'Folder not found' },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
 
-  // Format documents
   const formattedDocuments = folder.documents.map((doc: any) => ({
     id: doc.id,
     title: doc.title,
@@ -72,30 +55,25 @@ export const GET = withErrorHandler(withAuth(async (
     updatedAt: doc.updated_at.toISOString(),
     contentExtracted: doc.content_extracted ?
       (typeof doc.content_extracted === 'object' && 'Bool' in doc.content_extracted ?
-        (doc.content_extracted as any).Bool :
-        false) :
-      false
+        (doc.content_extracted as any).Bool : false) : false
   }));
-
-  // Format response
-  const formattedFolder = {
-    id: folder.id,
-    name: folder.name,
-    parentId: folder.parentId,
-    documents: formattedDocuments,
-    subfolders: folder.children.map((child:any) => ({
-      id: child.id,
-      name: child.name,
-      documentCount: child._count.documents
-    })),
-    createdBy: folder.createdBy,
-    createdAt: folder.createdAt.toISOString()
-  };
 
   return NextResponse.json({
     status: 200,
     message: 'Folder retrieved successfully',
-    data: formattedFolder
+    data: {
+      id: folder.id,
+      name: folder.name,
+      parentId: folder.parentId,
+      documents: formattedDocuments,
+      subfolders: folder.children.map((child: any) => ({
+        id: child.id,
+        name: child.name,
+        documentCount: child._count.documents
+      })),
+      createdBy: folder.createdBy,
+      createdAt: folder.createdAt.toISOString()
+    }
   });
 }));
 
@@ -105,39 +83,18 @@ export const PUT = withErrorHandler(withAuth(async (
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const folderId = (await params).id;
+  const organizationId = await getActiveOrganizationId(userId);
 
-  // Get user's organization
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Verify folder exists and belongs to organization
+  // User must own the folder
   const folder = await prisma.folder.findUnique({
-    where: {
-      id: folderId,
-      organizationId: user.organizationId
-    }
+    where: { id: folderId, organizationId, createdBy: userId }
   });
 
   if (!folder) {
-    return NextResponse.json(
-      { error: 'Folder not found' },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
 
-  // Parse request body
   const { name, parentId } = await request.json();
-
-  // Update data
   const updateData: any = {};
 
   if (name && name.trim() !== '') {
@@ -145,35 +102,24 @@ export const PUT = withErrorHandler(withAuth(async (
   }
 
   if (parentId !== undefined) {
-    // If setting parent, verify parent folder exists and belongs to organization
     if (parentId) {
+      // Parent must also be owned by the user
       const parentFolder = await prisma.folder.findUnique({
-        where: {
-          id: parentId,
-          organizationId: user.organizationId
-        }
+        where: { id: parentId, organizationId, createdBy: userId }
       });
 
       if (!parentFolder) {
-        return NextResponse.json(
-          { error: 'Parent folder not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: 'Parent folder not found' }, { status: 404 });
       }
 
-      // Prevent circular reference
       if (parentId === folderId) {
-        return NextResponse.json(
-          { error: 'A folder cannot be its own parent' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'A folder cannot be its own parent' }, { status: 400 });
       }
     }
 
     updateData.parentId = parentId || null;
   }
 
-  // Update folder
   const updatedFolder = await prisma.folder.update({
     where: { id: folderId },
     data: updateData
@@ -192,66 +138,38 @@ export const DELETE = withErrorHandler(withAuth(async (
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const folderId = (await params).id;
+  const organizationId = await getActiveOrganizationId(userId);
 
-  // Get user's organization
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Verify folder exists and belongs to organization
+  // User must own the folder
   const folder = await prisma.folder.findUnique({
-    where: {
-      id: folderId,
-      organizationId: user.organizationId
-    },
+    where: { id: folderId, organizationId, createdBy: userId },
     include: {
       children: true,
-      documents: {
-        select: { id: true }
-      }
+      documents: { select: { id: true } }
     }
   });
 
   if (!folder) {
-    return NextResponse.json(
-      { error: 'Folder not found' },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
 
-  // Check if folder has documents
+  // Unlink documents from this folder (only the user's own documents)
   if (folder.documents.length > 0) {
-    // Update documents to remove folder association
     await prisma.document.updateMany({
-      where: { folderId: folderId },
+      where: { folderId, created_by: userId },
       data: { folderId: null }
     });
   }
 
-  // Check if folder has subfolders
+  // Move subfolders to parent (only the user's own subfolders)
   if (folder.children.length > 0) {
-    // Update subfolders to remove parent association
     await prisma.folder.updateMany({
-      where: { parentId: folderId },
-      data: { parentId: folder.parentId } // Move to parent folder or to root
+      where: { parentId: folderId, createdBy: userId },
+      data: { parentId: folder.parentId }
     });
   }
 
-  // Delete folder
-  await prisma.folder.delete({
-    where: { id: folderId }
-  });
+  await prisma.folder.delete({ where: { id: folderId } });
 
-  return NextResponse.json({
-    status: 200,
-    message: 'Folder deleted successfully'
-  });
+  return NextResponse.json({ status: 200, message: 'Folder deleted successfully' });
 }));

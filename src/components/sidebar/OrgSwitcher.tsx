@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { Building2, ChevronsUpDown, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOrganization } from "@/store/profile.store";
+import { useDocumentsStore } from "@/store/documents.store";
+import { useFolderStore } from "@/store/folder.store";
 import {
   Popover,
   PopoverContent,
@@ -34,6 +36,8 @@ export default function OrgSwitcher({
     fetchOrganizations,
     switchOrganization,
   } = useOrganization();
+  const invalidateDocuments = useDocumentsStore(state => state.invalidateCache);
+  const invalidateFolders = useFolderStore(state => state.invalidateCache);
 
   useEffect(() => {
     fetchOrganizations();
@@ -49,6 +53,9 @@ export default function OrgSwitcher({
 
     const success = await switchOrganization(orgId);
     if (success) {
+      // Clear cached data from the previous org before navigating
+      invalidateDocuments();
+      invalidateFolders();
       await updateSession();
       router.refresh();
       onSwitch?.();

@@ -8,9 +8,9 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   // ✅ Get user's active organization (supports org switching)
   const organizationId = await getActiveOrganizationId(userId);
 
-  // Get folders for the organization, with document counts
+  // Get folders owned by this user in their active organization
   const folders = await prisma.folder.findMany({
-    where: { organizationId },
+    where: { organizationId, createdBy: userId },
     include: {
       _count: {
         select: { documents: true }
@@ -48,18 +48,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
 }));
 
 export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  // Get user's organization
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
-
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
+  // Use active organization (supports org switching)
+  const organizationId = await getActiveOrganizationId(userId);
 
   // Parse request body
   const { name, parentId } = await request.json();
@@ -71,12 +61,12 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     );
   }
 
-  // If parentId is provided, verify it exists and belongs to the organization
+  // If parentId is provided, verify it exists and belongs to the active organization
   if (parentId) {
     const parentFolder = await prisma.folder.findUnique({
       where: {
         id: parentId,
-        organizationId: user.organizationId
+        organizationId
       }
     });
 
@@ -92,7 +82,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
   const folder = await prisma.folder.create({
     data: {
       name: name.trim(),
-      organizationId: user.organizationId,
+      organizationId,
       parentId: parentId || null,
       createdBy: userId
     }

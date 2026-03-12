@@ -21,6 +21,7 @@ const Footer = () => {
 
     const resources = [
         { name: 'Articles', href: '/blogs' },
+         { name: 'Legal Templates', href: '/legal-documents' },
         { name: 'Newsletters', href: 'https://www.linkedin.com/newsletters/beyond-chatbots-legal-ai-7336011285697904642/' },
     ]
 

@@ -63,7 +63,7 @@ Organization
 ```
 
 #### 4. AI Function Calling System
-- Tool definitions in `src/lib/geminiTools.ts`
+- Tool definitions in `src/lib/geminiTools.ts` (standard chat tools) and `src/lib/associateTools.ts` (AI Associate-specific tools)
 - Core document tools (always available): `generateDocumentInline`, `reviewDocument`, `searchProjectDocuments`
 - Canvas tools (when canvas mode enabled): `draftNewDocument`, `editCanvasDocument`
 - Integration tools: Google Calendar (`createCalendarEvent`, `searchCalendarEvents`, etc.), Gmail (`searchEmails`, `readEmail`, `draftEmail`)
@@ -90,8 +90,20 @@ Organization
 #### 6. Role-Based Access Control
 - **Organization roles**: `owner` > `admin` > `member`
 - **Project roles**: `owner` > `editor` > `member`
-- Permission checks via `src/lib/auth/permissions.ts`
+- Permission checks via `src/lib/auth/permissions.ts` (org/project) and `src/lib/auth/workspace-permissions.ts` (shared workspace)
+- Admin-only routes (`/api/admin/*`) are gated by `src/lib/auth/admin.ts` and `src/lib/auth/admin-middleware.ts`, separate from the standard middleware
 - Enterprise-only features: member invitations, team management
+
+#### 7. RAG / Legal Knowledge System
+- Admin-managed legal knowledge documents are stored in the `legal_knowledge` DB table and managed via `/api/admin/legal-knowledge/*`
+- On upload, documents are chunked (`src/services/chunkingService.ts`), classified (`src/services/legalClassificationService.ts`), and embedded (`src/services/embeddingService.ts`) into the `Embedding` table for vector similarity search
+- At query time, `src/services/ragService.ts` performs similarity search and builds context for AI responses via `src/services/legalKnowledgeService.ts`
+- `src/services/legalDatabaseService.ts` provides jurisdiction-aware legal database lookups
+- RAG tuning env vars: `RAG_DEFAULT_TOP_K` (default `5`), `RAG_MIN_SIMILARITY_SCORE` (default `0.7`)
+
+#### 8. Legal Digest System
+- `src/services/legalDigestService.ts` generates periodic legal digest emails for subscribed users
+- Cron trigger at `/api/cron/legal-digest`; user subscriptions managed at `/api/digest/subscription`
 
 ## Important Implementation Details
 
@@ -223,10 +235,20 @@ import prisma from '@/lib/prisma';
 ```
 
 ### Route Groups
-- `(account)` - Authenticated user pages (dashboard, projects, vault, workflows); project workspace UI is at `(account)/projects/[id]`
+- `(account)` - Authenticated user pages: dashboard, projects, vault, workflows (`/workflows`, `/workflows/[id]`, `/workflows/new`, `/workflows/template/[slug]`); project workspace UI is at `(account)/projects/[id]`
 - `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
 - `(admin)` - Admin-only pages
+- `/legal-documents/[slug]` - Public legal document pages (outside route groups): renders `GuestCanvasChatSplitView` for unauthenticated document drafting, sourced from Sanity CMS
+
+### Guest / Public Drafting Flow
+Unauthenticated users can draft legal documents on the `/legal-documents/[slug]` page without an account. The flow:
+1. Page loads Sanity CMS document data (type, title, description, jurisdiction)
+2. `GuestCanvasChatSplitView` (`src/components/guest/`) auto-calls `/api/public/generate` on mount to stream an AI-drafted document
+3. User can refine via `GuestChatPanel` which calls `/api/public/chat`
+4. **Export is gated behind Paystack payment** — jurisdiction-specific pricing is hardcoded in `GuestCanvasChatSplitView` (NGN 2,500 / KES 350 / ZAR 45 / GHS 75 / USD 5 default); on payment success, `/api/public/export` returns the DOCX file and emails it
+- These `/api/public/*` routes are unauthenticated — do NOT add `getUserIdFromRequest()` or auth middleware
+- Guest components do not use `apiService` (no Bearer token) — they use raw `fetch`
 
 ### Document Field Mapping
 The `Document` model uses `@map` to customize database column names. In TypeScript, use the Prisma field name (left side), NOT the database column name:
@@ -282,6 +304,10 @@ Optional (for Google Cloud Vision OCR):
 - `GOOGLE_CLOUD_PROJECT_ID` - Google Cloud project ID
 - `GOOGLE_CLOUD_STORAGE_BUCKET` - GCS bucket for temporary PDF processing
 
+Optional (for RAG tuning):
+- `RAG_DEFAULT_TOP_K` - Number of chunks to retrieve per query (default: `5`)
+- `RAG_MIN_SIMILARITY_SCORE` - Minimum cosine similarity threshold (default: `0.7`)
+
 ## Key Database Models
 
 ### Core Entities
@@ -300,6 +326,10 @@ Optional (for Google Cloud Vision OCR):
 - `SharedWorkspace` - External sharing of conversations
 - `SharedWorkspaceAccess` - Access tracking
 - `SharedMessage` / `SharedMessageReference` - Messages in shared context
+
+### Legal Knowledge & RAG
+- `legal_knowledge` - Admin-uploaded legal documents (statutes, precedents, etc.) with classification metadata
+- `Embedding` - Vector embeddings (chunks) of documents and legal knowledge for similarity search
 
 ### Billing
 - `Subscription` - Paystack integration
@@ -343,4 +373,13 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/payments/*` - Payment processing
 - `/api/subscription/*` - Subscription management
 - `/api/profile/*` - User profile operations
-- `/api/admin/*` - Admin-only organization management
+- `/api/admin/*` - Admin-only: organization management + legal knowledge CRUD (`/api/admin/legal-knowledge/*`)
+- `/api/digest/*` - Legal digest subscriptions
+- `/api/cron/*` - Cron job endpoints (legal digest generation)
+- `/api/events/*` - Event registrations (law school launch, opt-ins)
+- `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`, `export`)
+- `/api/law360/*` - Law360 activation and email-check endpoints
+- `/api/submissions/*` - Form submissions and demo requests
+
+### Deployment Note
+`src/vercel.json` lives inside `src/` (not the project root) — this is intentional for this project's Vercel configuration.

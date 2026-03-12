@@ -71,6 +71,8 @@ export function UploadDocumentModal({
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [folderSearchTerm, setFolderSearchTerm] = useState("");
+  // Folder filter for the select tab (null = show all, 'root' = unfiled)
+  const [selectedFilterFolder, setSelectedFilterFolder] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Hooks
@@ -108,7 +110,15 @@ export function UploadDocumentModal({
 
   // Filter and sort documents: attached first, then by title
   const filteredDocuments = documents
-    .filter(doc => doc.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(doc => {
+      const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesFolder = selectedFilterFolder === null
+        ? true
+        : selectedFilterFolder === 'root'
+          ? !doc.folderId
+          : doc.folderId === selectedFilterFolder;
+      return matchesSearch && matchesFolder;
+    })
     .sort((a, b) => {
       const aAttached = attachedDocIds.has(a.id) ? 0 : 1;
       const bAttached = attachedDocIds.has(b.id) ? 0 : 1;
@@ -119,9 +129,7 @@ export function UploadDocumentModal({
   useEffect(() => {
     if (open) {
       fetchDocuments();
-      if (mode !== 'upload') {
-        fetchFolders();
-      }
+      fetchFolders(); // always needed for folder sidebar in select tab
     }
   }, [open, fetchDocuments, fetchFolders, mode]);
   
@@ -134,6 +142,7 @@ export function UploadDocumentModal({
       setSelectedDocumentsToAdd([]);
       setSearchTerm("");
       setIsDragOver(false);
+      setSelectedFilterFolder(null);
       setSelectedFolder(null);
       setShowNewFolderInput(false);
       setNewFolderName("");
@@ -650,85 +659,147 @@ export function UploadDocumentModal({
     </div>
   );
 
-  const renderSelectTab = () => (
-    <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
-          placeholder="Search documents..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
-      
-      <div className="border rounded-lg max-h-64 overflow-y-auto">
-        {isLoadingDocuments ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="h-6 w-6 animate-spin" />
-          </div>
-        ) : filteredDocuments.length > 0 ? (
-          <div className="divide-y">
-            {filteredDocuments.map((doc) => {
-              const isAttached = attachedDocIds.has(doc.id);
-              const isNewlySelected = selectedDocumentsToAdd.includes(doc.id);
-              const isBeingRemoved = isRemoving === doc.id;
-              const isChecked = isAttached || isNewlySelected;
+  // Select all documents in a specific folder
+  const handleFolderClick = (folderId: string | null) => {
+    setSelectedFilterFolder(folderId);
+    if (folderId === null) return; // "All files" — just filter, don't bulk-select
 
-              return (
-                <div
-                  key={doc.id}
-                  className={`flex items-center p-3 cursor-pointer transition-colors ${
-                    isBeingRemoved
-                      ? "bg-red-50 opacity-60 pointer-events-none"
-                      : isAttached
-                      ? "bg-green-50 hover:bg-green-100"
-                      : isNewlySelected
-                      ? "bg-green-50 hover:bg-green-100"
-                      : "hover:bg-gray-50"
-                  }`}
-                  onClick={() => !isBeingRemoved && toggleDocumentSelection(doc.id)}
-                >
-                  {isBeingRemoved ? (
-                    <Loader2 className="h-4 w-4 mr-3 animate-spin text-red-400" />
-                  ) : (
-                    <Checkbox
-                      checked={isChecked}
-                      className="mr-3"
-                      onChange={() => toggleDocumentSelection(doc.id)}
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">{doc.title}</p>
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
-                      <span>{formatFileSize(doc.fileSize)}</span>
+    const folderDocs = documents.filter(doc => {
+      if (folderId === 'root') return !doc.folderId;
+      return doc.folderId === folderId;
+    });
+    const ids = folderDocs
+      .filter(doc => !attachedDocIds.has(doc.id))
+      .map(doc => doc.id);
+    if (ids.length > 0) {
+      setSelectedDocumentsToAdd(prev => Array.from(new Set([...prev, ...ids])));
+    }
+  };
+
+  const renderSelectTab = () => (
+    <div className="flex flex-col sm:flex-row gap-3 flex-1 min-h-0">
+      {/* Folder list — horizontal scroll strip on mobile, vertical sidebar on sm+ */}
+      {folders.length > 0 && (
+        <div className="relative sm:contents">
+          {/* Fade-right hint on mobile only */}
+          <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+          <div className="flex sm:flex-col sm:w-36 sm:shrink-0 sm:border sm:rounded-lg sm:overflow-y-auto gap-1 sm:gap-0 overflow-x-auto pb-1 sm:pb-0 pr-6 sm:pr-0">
+          <button
+            className={`shrink-0 sm:w-full text-left px-3 py-1.5 sm:py-2 text-sm font-medium flex items-center gap-2 rounded-md sm:rounded-none transition-colors ${
+              selectedFilterFolder === null ? "bg-primary/10 text-primary" : "hover:bg-gray-100 text-muted-foreground"
+            }`}
+            onClick={() => handleFolderClick(null)}
+          >
+            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate whitespace-nowrap">All files</span>
+          </button>
+          <button
+            className={`shrink-0 sm:w-full text-left px-3 py-1.5 sm:py-2 text-sm flex items-center gap-2 rounded-md sm:rounded-none transition-colors ${
+              selectedFilterFolder === 'root' ? "bg-primary/10 text-primary" : "hover:bg-gray-100 text-muted-foreground"
+            }`}
+            onClick={() => handleFolderClick('root')}
+            title="Click to filter and select all unfiled documents"
+          >
+            <Folder className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate whitespace-nowrap">Unfiled</span>
+          </button>
+          {folders.map((folder: any) => (
+            <button
+              key={folder.id}
+              className={`shrink-0 sm:w-full text-left px-3 py-1.5 sm:py-2 text-sm flex items-center gap-2 rounded-md sm:rounded-none transition-colors ${
+                selectedFilterFolder === folder.id ? "bg-primary/10 text-primary" : "hover:bg-gray-100 text-muted-foreground"
+              }`}
+              onClick={() => handleFolderClick(folder.id)}
+              title={`Click to select all documents in "${folder.name}"`}
+            >
+              <Folder className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate whitespace-nowrap">{folder.name}</span>
+            </button>
+          ))}
+        </div>
+        </div>
+      )}
+
+      {/* Document list */}
+      <div className="flex-1 flex flex-col gap-2 min-w-0 min-h-0">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search documents..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-8 text-sm"
+          />
+        </div>
+
+        <div className="border rounded-lg flex-1 overflow-y-auto min-h-[180px]">
+          {isLoadingDocuments ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : filteredDocuments.length > 0 ? (
+            <div className="divide-y">
+              {filteredDocuments.map((doc) => {
+                const isAttached = attachedDocIds.has(doc.id);
+                const isNewlySelected = selectedDocumentsToAdd.includes(doc.id);
+                const isBeingRemoved = isRemoving === doc.id;
+                const isChecked = isAttached || isNewlySelected;
+
+                return (
+                  <div
+                    key={doc.id}
+                    className={`flex items-center p-3 cursor-pointer transition-colors ${
+                      isBeingRemoved
+                        ? "bg-red-50 opacity-60 pointer-events-none"
+                        : isAttached
+                        ? "bg-green-50 hover:bg-green-100"
+                        : isNewlySelected
+                        ? "bg-green-50 hover:bg-green-100"
+                        : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => !isBeingRemoved && toggleDocumentSelection(doc.id)}
+                  >
+                    {isBeingRemoved ? (
+                      <Loader2 className="h-4 w-4 mr-3 animate-spin text-red-400" />
+                    ) : (
+                      <Checkbox
+                        checked={isChecked}
+                        className="mr-3"
+                        onChange={() => toggleDocumentSelection(doc.id)}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{doc.title}</p>
+                      <div className="flex items-center text-xs text-muted-foreground">
+                        <Badge variant="outline" className="mr-2">{doc.fileType.toUpperCase()}</Badge>
+                        <span>{formatFileSize(doc.fileSize)}</span>
+                      </div>
                     </div>
+                    {isAttached && !isBeingRemoved && (
+                      <button
+                        className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
+                        title="Remove from workspace"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleDocumentSelection(doc.id);
+                        }}
+                      >
+                        <X className="h-3.5 w-3.5 text-gray-400 hover:text-red-500" />
+                      </button>
+                    )}
                   </div>
-                  {isAttached && !isBeingRemoved && (
-                    <button
-                      className="ml-2 p-1 rounded-full hover:bg-red-100 transition-colors"
-                      title="Remove from workspace"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleDocumentSelection(doc.id);
-                      }}
-                    >
-                      <X className="h-3.5 w-3.5 text-gray-400 hover:text-red-500" />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center p-8">
-            <FileText className="h-8 w-8 text-gray-300 mb-2" />
-            <p className="text-sm text-center text-muted-foreground">
-              {searchTerm ? "No documents match your search" : "No documents available"}
-            </p>
-          </div>
-        )}
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-8">
+              <FileText className="h-8 w-8 text-gray-300 mb-2" />
+              <p className="text-sm text-center text-muted-foreground">
+                {searchTerm ? "No documents match your search" : "No documents in this folder"}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -748,7 +819,7 @@ export function UploadDocumentModal({
                 <TabsTrigger value="select">Select Existing</TabsTrigger>
                 <TabsTrigger value="upload">Upload New</TabsTrigger>
               </TabsList>
-              <TabsContent value="select" className="mt-4">
+              <TabsContent value="select" className="mt-4 flex flex-col flex-1 min-h-0">
                 {renderSelectTab()}
               </TabsContent>
               <TabsContent value="upload" className="mt-4">

@@ -26,7 +26,7 @@ const LegalDocCard = ({ post, type }: { post: any; type: string }) => {
             href={post.link} 
             className="flex items-center text-amber-500 font-jost group"
           >
-            Read More 
+            Open in Editor 
             <ArrowRight className="w-4 h-4 ml-2 group-hover:ml-3 transition-all" />
           </Link>
         </div>
