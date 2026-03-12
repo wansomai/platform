@@ -304,7 +304,7 @@ model Folder {
   organizationId String
   parentId       String?
   createdBy      String
-  visibility     String             @default("organization")
+  visibility     String             @default("restricted")
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
   documents      Document[]

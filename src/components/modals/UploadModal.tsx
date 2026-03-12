@@ -71,13 +71,8 @@ export function UploadDocumentModal({
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [folderSearchTerm, setFolderSearchTerm] = useState("");
-<<<<<<< HEAD
-  // Folder browsing state for the "Select Existing" tab
-  const [selectBrowseFolder, setSelectBrowseFolder] = useState<string | null>(null);
-=======
   // Folder filter for the select tab (null = show all, 'root' = unfiled)
   const [selectedFilterFolder, setSelectedFilterFolder] = useState<string | null>(null);
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Hooks
@@ -133,17 +128,12 @@ export function UploadDocumentModal({
   // Effects
   useEffect(() => {
     if (open) {
-<<<<<<< HEAD
       // Force-refresh so we never show a folder-filtered list from the vault page cache.
       // No folder filter here — we show all documents; folder browsing is handled below.
       fetchDocuments({ limit: 100 }, true);
       if (mode !== 'upload') {
         fetchFolders();
       }
-=======
-      fetchDocuments();
-      fetchFolders(); // always needed for folder sidebar in select tab
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
     }
   }, [open, fetchDocuments, fetchFolders, mode]);
   
@@ -161,22 +151,11 @@ export function UploadDocumentModal({
       setShowNewFolderInput(false);
       setNewFolderName("");
       setFolderSearchTerm("");
-      setSelectBrowseFolder(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
   }, [open, mode]);
-
-  // Re-fetch documents when the user browses to a different folder in the select tab
-  useEffect(() => {
-    if (!open) return;
-    fetchDocuments({
-      limit: 100,
-      folder: selectBrowseFolder === null ? undefined : selectBrowseFolder,
-    }, true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectBrowseFolder]);
 
   // File handling functions
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -684,74 +663,10 @@ export function UploadDocumentModal({
     </div>
   );
 
-<<<<<<< HEAD
-  const renderSelectTab = () => {
-    // Flatten folder tree (root folders + their children) for the folder filter row
-    const allFolders = folders.flatMap(f => [f, ...(f.children ?? [])]);
-
-    return (
-    <div className="space-y-3">
-      {/* Folder filter — horizontal scrollable pill row */}
-      {allFolders.length > 0 && (
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-          <button
-            type="button"
-            onClick={() => setSelectBrowseFolder(null)}
-            className={`flex-shrink-0 inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-              selectBrowseFolder === null
-                ? 'bg-primary text-white border-primary'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
-            }`}
-          >
-            <Folder className="h-3 w-3" />
-            All
-          </button>
-          {allFolders.map(folder => (
-            <button
-              key={folder.id}
-              type="button"
-              onClick={() => setSelectBrowseFolder(folder.id)}
-              className={`flex-shrink-0 inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
-                selectBrowseFolder === folder.id
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
-              }`}
-            >
-              <Folder className="h-3 w-3" />
-              {folder.name}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
-          placeholder="Search documents..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-      </div>
-
-      <div className="border rounded-lg max-h-64 overflow-y-auto">
-        {isLoadingDocuments ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="h-6 w-6 animate-spin" />
-          </div>
-        ) : filteredDocuments.length > 0 ? (
-          <div className="divide-y">
-            {filteredDocuments.map((doc) => {
-              const isAttached = attachedDocIds.has(doc.id);
-              const isNewlySelected = selectedDocumentsToAdd.includes(doc.id);
-              const isBeingRemoved = isRemoving === doc.id;
-              const isChecked = isAttached || isNewlySelected;
-=======
   // Select all documents in a specific folder
   const handleFolderClick = (folderId: string | null) => {
     setSelectedFilterFolder(folderId);
     if (folderId === null) return; // "All files" — just filter, don't bulk-select
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
 
     const folderDocs = documents.filter(doc => {
       if (folderId === 'root') return !doc.folderId;
@@ -892,7 +807,6 @@ export function UploadDocumentModal({
       </div>
     </div>
   );
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

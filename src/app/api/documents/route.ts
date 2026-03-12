@@ -61,10 +61,9 @@ export async function GET(request: NextRequest) {
     // ✅ Use helper to get active organization ID (supports org switching)
     const organizationId = await getActiveOrganizationId(userId);
 
-    // Build query filters — users only see documents they uploaded
+    // Build query filters — all org members see all org documents (folder visibility enforced below)
     const where: any = {
       organization_id: organizationId,
-      created_by: userId,
       status: 'active'
     };
     
@@ -93,7 +92,6 @@ export async function GET(request: NextRequest) {
     } else if (folderId) {
       where.folderId = folderId;
     }
-<<<<<<< HEAD
 
     // --- Folder visibility enforcement ---
     // Documents with no folder (root) are always visible.
@@ -165,12 +163,8 @@ export async function GET(request: NextRequest) {
     // Dashboard needs minimal data, full pages need more
     const hasFilters = searchTerm || fileType || folderId || page > 1;
     const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
-    
-=======
-    // Dashboard requests use limit ≤ 10; vault/full-page requests use limit > 10
-    const isLimitedRequest = limit <= 10;
 
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
+
     // Determine sorting
     let orderBy: any;
     switch (sortBy) {
@@ -301,13 +295,6 @@ export async function POST(request: NextRequest) {
       );
     }
     
-<<<<<<< HEAD
-    // Get user's active organization (supports invited/member users)
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { fullName: true }
-    });
-=======
     // Get user's active organization (supports org switching) and name
     const [organizationId, user] = await Promise.all([
       getActiveOrganizationId(userId),
@@ -316,7 +303,6 @@ export async function POST(request: NextRequest) {
         select: { fullName: true }
       })
     ]);
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
 
     if (!user) {
       return NextResponse.json(
@@ -325,11 +311,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-<<<<<<< HEAD
-    const organizationId = await getActiveOrganizationId(userId);
-    
-=======
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
     // For multipart/form-data, need to use FormData
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -356,11 +337,7 @@ export async function POST(request: NextRequest) {
       const folder = await prisma.folder.findUnique({
         where: {
           id: folderId,
-<<<<<<< HEAD
           organizationId,
-=======
-          organizationId
->>>>>>> 61516a69d78cceaedd2df1249c6350be293a3c16
         }
       });
 
@@ -455,11 +432,13 @@ export async function POST(request: NextRequest) {
     
     // If text was extracted, store it (only when non-empty)
     if (extractedText && extractedText.trim().length > 0) {
-      await prisma.documentContent.create({
-        data: {
-          documentId: document.id,
-          content: extractedText
-        }
+      try {
+        await prisma.documentContent.create({
+          data: {
+            documentId: document.id,
+            content: extractedText
+          }
+        });
       } catch (err) {
         console.error('Background text extraction failed for document', document.id, err);
         // Reset flag to null so the vault doesn't show the spinner forever
@@ -470,7 +449,7 @@ export async function POST(request: NextRequest) {
           });
         } catch (_) { /* best-effort */ }
       }
-    });
+    }
     
     // Format response to match the expected Document interface
     const documentInfo = {
