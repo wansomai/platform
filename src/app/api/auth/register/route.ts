@@ -27,64 +27,91 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password, fullName, organizationName, invitationToken } = await parseRequestBody(request);
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        {
-          status: 400,
-          message: 'User with this email already exists'
-        },
-        { status: 400 }
-      );
-    }
-
-    // If there's an invitation token, verify it and get the organization
+    // If there's an invitation token, verify it first before checking existing user
     let invitationOrganizationId: string | null = null;
+    let invitationRole: string | null = null;
     if (invitationToken) {
       const invitation = await prisma.invitation.findUnique({
         where: { token: invitationToken },
         select: {
           organizationId: true,
           email: true,
-          expiresAt: true
+          expiresAt: true,
+          role: true
         }
       });
 
       if (!invitation) {
         return NextResponse.json(
-          {
-            status: 400,
-            message: 'Invalid invitation token'
-          },
+          { status: 400, message: 'Invalid invitation token' },
           { status: 400 }
         );
       }
 
       if (new Date() > invitation.expiresAt) {
         return NextResponse.json(
-          {
-            status: 400,
-            message: 'This invitation has expired'
-          },
+          { status: 400, message: 'This invitation has expired' },
           { status: 400 }
         );
       }
 
       if (invitation.email !== email) {
         return NextResponse.json(
-          {
-            status: 400,
-            message: 'Email does not match the invitation'
-          },
+          { status: 400, message: 'Email does not match the invitation' },
           { status: 400 }
         );
       }
 
       invitationOrganizationId = invitation.organizationId;
+      invitationRole = invitation.role || OrganizationRole.MEMBER;
+
+      // If the user already has an account, accept the invitation for them and
+      // redirect them to login — no need to create a new account.
+      const existingUser = await prisma.user.findUnique({ where: { email } });
+      if (existingUser) {
+        // Add to the invited org if not already a member
+        await prisma.userOrganization.upsert({
+          where: {
+            userId_organizationId: {
+              userId: existingUser.id,
+              organizationId: invitationOrganizationId
+            }
+          },
+          create: {
+            userId: existingUser.id,
+            organizationId: invitationOrganizationId,
+            role: invitation.role || OrganizationRole.MEMBER
+          },
+          update: {}
+        });
+
+        // Set the invited org as active
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { activeOrganizationId: invitationOrganizationId }
+        });
+
+        // Mark the invitation as accepted
+        await prisma.invitation.update({
+          where: { token: invitationToken },
+          data: { status: 'accepted' }
+        });
+
+        return NextResponse.json({
+          status: 200,
+          message: 'Invitation accepted. Please sign in to continue.',
+          data: { existingUser: true }
+        });
+      }
+    }
+
+    // Check if user already exists (no invitation token path)
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return NextResponse.json(
+        { status: 400, message: 'User with this email already exists' },
+        { status: 400 }
+      );
     }
 
     // Hash password
@@ -142,18 +169,12 @@ export async function POST(request: NextRequest) {
 
     // If there's an invitation, also add them to that organization
     if (invitationToken && invitationOrganizationId) {
-      // Get the invitation to determine the role
-      const invitation = await prisma.invitation.findUnique({
-        where: { token: invitationToken },
-        select: { role: true }
-      });
-
       // Create UserOrganization for the invited organization with the specified role
       await prisma.userOrganization.create({
         data: {
           userId: user.id,
           organizationId: invitationOrganizationId,
-          role: invitation?.role || OrganizationRole.MEMBER
+          role: invitationRole || OrganizationRole.MEMBER
         }
       });
 

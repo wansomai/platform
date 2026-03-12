@@ -50,6 +50,7 @@ import {
   MoreVertical,
   X,
   Loader2,
+  Lock,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
@@ -64,6 +65,7 @@ import { formatDistanceToNow } from "date-fns"
 import { apiService } from "@/lib/api"
 import { FolderTree } from "@/components/documents/FolderTree"
 import { FolderModal } from "@/components/documents/FolderModal"
+import { FolderPermissionModal } from "@/components/documents/FolderPermissionModal"
 import { ComponentLoading, EmptyDocuments } from "@/components/commons/LoadingState"
 import { UploadDocumentModal } from "@/components/modals/UploadModal"
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog"
@@ -143,6 +145,8 @@ export default function VaultPage() {
   const [editFolder, setEditFolder] = useState<{ id: string; name: string; parentId: string | null } | null>(null);
   const [showMoveFolderDialog, setShowMoveFolderDialog] = useState(false);
   const [targetFolder, setTargetFolder] = useState<string | null>(null);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [permissionFolder, setPermissionFolder] = useState<{ id: string; name: string } | null>(null);
 
   // Add to Workspace state
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
@@ -150,13 +154,14 @@ export default function VaultPage() {
   // Project store & profile for workspace integration
   const { createProject } = useProjectStore();
   const { attachDocumentsToProject } = useProjectDocumentsStore();
-  const { user } = useProfile();
+  const { user, fetchProfile } = useProfile();
   const router = useRouter();
 
-  // Fetch documents and folders on mount
+  // Fetch documents and folders on mount — always force-refresh so createdBy/visibility are current
   useEffect(() => {
-    fetchFolders();
-  }, [fetchFolders]);
+    fetchFolders(true);
+    fetchProfile(); // ensure user.id is available for creator checks
+  }, [fetchFolders, fetchProfile]);
   
   // Fetch documents when filters change
   useEffect(() => {
@@ -348,7 +353,7 @@ export default function VaultPage() {
         setShowMoveFolderDialog(false);
         
         await Promise.all([
-          fetchFolders(),
+          fetchFolders(true),
           fetchDocuments({
             search: searchTerm || undefined,
             type: fileType,
@@ -678,47 +683,69 @@ export default function VaultPage() {
             {foldersLoading ? (
               <ComponentLoading text="Loading folders..." />
             ) : (
-              <FolderTree 
-                folders={folders} 
-                activeFolder={activeFolder} 
-                onFolderSelect={handleFolderSelect} 
+              <FolderTree
+                folders={folders}
+                activeFolder={activeFolder}
+                onFolderSelect={handleFolderSelect}
+                totalDocumentCount={pagination.total}
               />
             )}
             
             {/* Folder actions */}
-            {activeFolder && activeFolder !== 'root' && (
-              <div className="mt-4 pt-4 border-t flex flex-col space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    const folder = folders.find(f => f.id === activeFolder);
-                    if (folder) {
-                      setEditFolder({
-                        id: folder.id,
-                        name: folder.name,
-                        parentId: folder.parentId
-                      });
-                      setShowFolderModal(true);
-                    }
-                  }}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Folder
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start text-red-600"
-                  onClick={() => handleDeleteFolder(activeFolder)}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Folder
-                </Button>
-              </div>
-            )}
+            {activeFolder && activeFolder !== 'root' && (() => {
+              const allFolders = [...folders, ...folders.flatMap((f: any) => f.children ?? [])];
+              const activeF = allFolders.find((f: any) => f.id === activeFolder);
+              return (
+                <div className="mt-4 pt-4 border-t flex flex-col space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      const folder = folders.find(f => f.id === activeFolder);
+                      if (folder) {
+                        setEditFolder({
+                          id: folder.id,
+                          name: folder.name,
+                          parentId: folder.parentId
+                        });
+                        setShowFolderModal(true);
+                      }
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Folder
+                  </Button>
+
+                  {activeF?.createdBy === user?.id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full justify-start"
+                      onClick={() => {
+                        if (activeF) {
+                          setPermissionFolder({ id: activeF.id, name: activeF.name });
+                          setShowPermissionModal(true);
+                        }
+                      }}
+                    >
+                      <Lock className="h-4 w-4 mr-2" />
+                      Change Permission
+                    </Button>
+                  )}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start text-red-600"
+                    onClick={() => handleDeleteFolder(activeFolder)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Folder
+                  </Button>
+                </div>
+              );
+            })()}
           </div>
           
           {/* Main document area */}
@@ -941,7 +968,21 @@ export default function VaultPage() {
         editFolder={editFolder}
         title={editFolder ? 'Edit Folder' : 'Create New Folder'}
       />
-      
+
+      {/* Folder Permission Modal */}
+      {permissionFolder && (
+        <FolderPermissionModal
+          open={showPermissionModal}
+          onClose={() => {
+            setShowPermissionModal(false);
+            setPermissionFolder(null);
+            fetchFolders(true);
+          }}
+          folderId={permissionFolder.id}
+          folderName={permissionFolder.name}
+        />
+      )}
+
       {/* Document Preview Drawer */}
       <Sheet open={!!previewDocument} onOpenChange={(open) => !open && setPreviewDocument(null)}>
         <SheetContent side="right" className="w-[90vw] sm:max-w-2xl flex flex-col p-0">
@@ -1010,6 +1051,8 @@ export default function VaultPage() {
               {folders.map((folder) => (
                 <SelectItem key={folder.id} value={folder.id}>
                   {folder.name}
+                  {' '}
+                  <span className="text-muted-foreground text-xs">({folder.documentCount ?? 0})</span>
                 </SelectItem>
               ))}
             </SelectContent>

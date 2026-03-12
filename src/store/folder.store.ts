@@ -172,7 +172,9 @@ export const useFolderStore = create<FolderState>()(
         folders: state.folders,
         lastFetched: state.lastFetched,
       }),
-      version: 1,
+      version: 2,
+      // v2: folders now include createdBy and visibility — clear old cache
+      migrate: () => ({ folders: [], lastFetched: null }),
     }
   )
 );

@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 
 export const POST = withErrorHandler(withAuth(async (
   request: NextRequest,
@@ -10,26 +11,16 @@ export const POST = withErrorHandler(withAuth(async (
 ) => {
   const folderId = (await params).id;
 
-  // Get user's organization
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { organizationId: true }
-  });
+  // Use the active organization so invited members work correctly
+  const organizationId = await getActiveOrganizationId(userId);
 
-  if (!user) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Verify folder exists and belongs to organization
+  // Verify folder exists and belongs to the active organization
   let folder = null;
   if (folderId !== 'root') {
     folder = await prisma.folder.findUnique({
       where: {
         id: folderId,
-        organizationId: user.organizationId
+        organizationId,
       }
     });
 
@@ -51,11 +42,11 @@ export const POST = withErrorHandler(withAuth(async (
     );
   }
 
-  // Verify documents exist and belong to organization
+  // Verify documents exist and belong to the active organization
   const documents = await prisma.document.findMany({
     where: {
       id: { in: documentIds },
-      organization_id: user.organizationId
+      organization_id: organizationId,
     }
   });
 
@@ -66,11 +57,11 @@ export const POST = withErrorHandler(withAuth(async (
     );
   }
 
-  // Update documents to move to folder
+  // Move documents to the target folder
   await prisma.document.updateMany({
     where: {
       id: { in: documentIds },
-      organization_id: user.organizationId
+      organization_id: organizationId,
     },
     data: {
       folderId: folderId === 'root' ? null : folderId

@@ -11,6 +11,32 @@ import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 // Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
 export const maxDuration = 120;
 
+/** Returns true if userId can see a restricted folder. */
+async function userCanAccessFolder(
+  folder: { createdBy: string; permissions: { userId: string }[] },
+  userId: string,
+  organizationId: string
+): Promise<boolean> {
+  if (folder.createdBy === userId) return true;
+  if (folder.permissions.some((p) => p.userId === userId)) return true;
+  // Org admins / owner bypass restrictions
+  const [membership, org] = await Promise.all([
+    prisma.userOrganization.findUnique({
+      where: { userId_organizationId: { userId, organizationId } },
+      select: { role: true }
+    }),
+    prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { ownerId: true }
+    })
+  ]);
+  return (
+    org?.ownerId === userId ||
+    membership?.role === 'admin' ||
+    membership?.role === 'owner'
+  );
+}
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromRequest(request);
@@ -64,6 +90,74 @@ export async function GET(request: NextRequest) {
     } else if (folderId) {
       where.folderId = folderId;
     }
+
+    // --- Folder visibility enforcement ---
+    // Documents with no folder (root) are always visible.
+    // Documents in a "restricted" folder are only visible to:
+    //   • the folder creator
+    //   • users explicitly listed in FolderPermission
+    //   • org admins / org owner
+    // If the user is browsing a specific restricted folder they can't access, return 0 results.
+    if (folderId && folderId !== 'root') {
+      // Browsing a specific folder — check access
+      const targetFolder = await prisma.folder.findUnique({
+        where: { id: folderId, organizationId },
+        include: { permissions: { select: { userId: true } } }
+      });
+      if (targetFolder && targetFolder.visibility === 'restricted') {
+        const canAccess = await userCanAccessFolder(targetFolder, userId, organizationId);
+        if (!canAccess) {
+          // Return empty — user has no access to this folder
+          return NextResponse.json({
+            status: 200,
+            message: 'Documents retrieved successfully',
+            data: [],
+            pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
+          });
+        }
+      }
+    } else if (!folderId) {
+      // "All Documents" view — exclude documents in restricted folders the user can't access
+      const [orgMembership, org, restrictedFolders] = await Promise.all([
+        prisma.userOrganization.findUnique({
+          where: { userId_organizationId: { userId, organizationId } },
+          select: { role: true }
+        }),
+        prisma.organization.findUnique({
+          where: { id: organizationId },
+          select: { ownerId: true }
+        }),
+        prisma.folder.findMany({
+          where: { organizationId, visibility: 'restricted' },
+          include: { permissions: { select: { userId: true } } }
+        })
+      ]);
+
+      const isAdminOrOwner =
+        org?.ownerId === userId ||
+        orgMembership?.role === 'admin' ||
+        orgMembership?.role === 'owner';
+
+      if (!isAdminOrOwner && restrictedFolders.length > 0) {
+        const inaccessibleIds = restrictedFolders
+          .filter((f: any) => f.createdBy !== userId && !f.permissions.some((p: any) => p.userId === userId))
+          .map((f: any) => f.id);
+
+        if (inaccessibleIds.length > 0) {
+          // Exclude documents in inaccessible restricted folders.
+          // Root documents (folderId = null) remain visible.
+          // Wrap any existing OR (search) inside AND so both conditions apply.
+          const folderFilter = { OR: [{ folderId: null }, { folderId: { notIn: inaccessibleIds } }] };
+          if (where.OR) {
+            where.AND = [{ OR: where.OR }, folderFilter];
+            delete where.OR;
+          } else {
+            where.AND = [folderFilter];
+          }
+        }
+      }
+    }
+
     // Dashboard needs minimal data, full pages need more
     const hasFilters = searchTerm || fileType || folderId || page > 1;
     const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
@@ -189,18 +283,20 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get user's organization
+    // Get user's active organization (supports invited/member users)
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { organizationId: true, fullName: true }
+      select: { fullName: true }
     });
-    
+
     if (!user) {
       return NextResponse.json(
-        { message: 'User not found', error: true }, 
+        { message: 'User not found', error: true },
         { status: 404 }
       );
     }
+
+    const organizationId = await getActiveOrganizationId(userId);
     
     // For multipart/form-data, need to use FormData
     const formData = await request.formData();
@@ -223,15 +319,15 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    // If folderId is provided, verify it exists and belongs to the organization
+    // If folderId is provided, verify it exists and belongs to the active organization
     if (folderId) {
       const folder = await prisma.folder.findUnique({
-        where: { 
+        where: {
           id: folderId,
-          organizationId: user.organizationId
+          organizationId,
         }
       });
-      
+
       if (!folder) {
         return NextResponse.json(
           { message: 'Folder not found', error: true },
@@ -239,10 +335,10 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-    
+
     // Generate unique filename
     const fileExt = file.name.split('.').pop() || '';
-    const fileName = `${user.organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    const fileName = `${organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
     
     // Get file buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
@@ -297,7 +393,7 @@ export async function POST(request: NextRequest) {
         file_size: file.size,
         status: 'active',
         created_by: userId,
-        organization_id: user.organizationId,
+        organization_id: organizationId,
         folderId: folderId || null,
         metadata: {
           RawMessage: JSON.stringify({

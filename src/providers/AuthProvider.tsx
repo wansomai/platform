@@ -6,7 +6,11 @@ import { AuthProviderProps } from '@/types';
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   return (
-    <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
+    <SessionProvider
+      basePath="/api/auth"
+      refetchOnWindowFocus={false}
+      refetchInterval={0}
+    >
       {children}
     </SessionProvider>
   );

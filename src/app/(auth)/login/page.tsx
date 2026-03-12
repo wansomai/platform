@@ -29,6 +29,7 @@ function LoginPageContent() {
   const callbackUrl = searchParams?.get('callbackUrl') || '/dashboard';
   const invitationEmail = searchParams?.get('email');
   const isInvitation = searchParams?.get('invitation') === 'true';
+  const invitationAccepted = searchParams?.get('invited') === 'true';
 
   // Pre-fill email from invitation link
   useEffect(() => {
@@ -88,6 +89,20 @@ function LoginPageContent() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 text-center">Sign in to your account</h1>
           </div>
+
+          {invitationAccepted && (
+            <div className="mb-4 rounded-md bg-blue-50 border border-blue-200 p-4">
+              <div className="flex items-start gap-3">
+                <Mail className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-blue-700">Invitation accepted!</p>
+                  <p className="text-blue-600">
+                    Your account already exists. Sign in to access your new organization.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {isInvitation && (
             <div className="mb-4 rounded-md bg-green-50 border border-green-200 p-4">

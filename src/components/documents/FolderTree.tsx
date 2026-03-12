@@ -18,9 +18,10 @@ interface FolderTreeProps {
   folders: FolderItem[];
   activeFolder: string | null;
   onFolderSelect: (folderId: string | null) => void;
+  totalDocumentCount?: number;
 }
 
-export function FolderTree({ folders, activeFolder, onFolderSelect }: FolderTreeProps) {
+export function FolderTree({ folders, activeFolder, onFolderSelect, totalDocumentCount }: FolderTreeProps) {
   // Track expanded state of folders
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   
@@ -74,9 +75,9 @@ export function FolderTree({ folders, activeFolder, onFolderSelect }: FolderTree
               <Folder className="h-4 w-4 mr-2 text-amber-500 min-h-4 min-w-4" />
             )}
             <span className="truncate">{folder.name}</span>
-            {folder.documentCount > 0 && (
-              <Badge variant="outline" className="ml-2">{folder.documentCount}</Badge>
-            )}
+            <Badge variant="outline" className="ml-2 flex-shrink-0">
+              {folder.documentCount ?? 0}
+            </Badge>
           </div>
         </div>
         
@@ -98,8 +99,11 @@ export function FolderTree({ folders, activeFolder, onFolderSelect }: FolderTree
         )}
         onClick={() => onFolderSelect(null)}
       >
-        <File className="h-4 w-4 mr-2 text-blue-500" />
-        <span>All Documents</span>
+        <File className="h-4 w-4 mr-2 text-blue-500 flex-shrink-0" />
+        <span className="flex-1">All Documents</span>
+        {totalDocumentCount !== undefined && (
+          <Badge variant="outline" className="ml-2 flex-shrink-0">{totalDocumentCount}</Badge>
+        )}
       </div>
      
       {/* Only map over root-level folders (those with null parentId) */}
