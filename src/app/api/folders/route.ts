@@ -8,22 +8,6 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   // ✅ Get user's active organization (supports org switching)
   const organizationId = await getActiveOrganizationId(userId);
 
-  // Determine if user is org admin/owner (they see all folders regardless of visibility)
-  const [orgMembership, org] = await Promise.all([
-    prisma.userOrganization.findUnique({
-      where: { userId_organizationId: { userId, organizationId } },
-      select: { role: true }
-    }),
-    prisma.organization.findUnique({
-      where: { id: organizationId },
-      select: { ownerId: true }
-    })
-  ]);
-  const isAdminOrOwner =
-    org?.ownerId === userId ||
-    orgMembership?.role === 'admin' ||
-    orgMembership?.role === 'owner';
-
   // Get all folders for the org, including permissions
   const folders = await prisma.folder.findMany({
     where: { organizationId },
@@ -42,10 +26,10 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
 
   // Filter helper: a folder is visible if:
   //   1. visibility === 'organization'  (everyone sees it)
-  //   2. visibility === 'restricted' AND (user created it OR user is admin/owner OR user is in permissions list)
+  //   2. visibility === 'restricted' AND (user created it OR user is explicitly in permissions list)
+  //   Org role (admin/owner) does NOT bypass restricted access.
   const canSeeFolder = (folder: any) => {
     if (folder.visibility === 'organization') return true;
-    if (isAdminOrOwner) return true;
     if (folder.createdBy === userId) return true;
     return folder.permissions.some((p: any) => p.userId === userId);
   };

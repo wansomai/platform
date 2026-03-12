@@ -140,6 +140,9 @@ export default function VaultPage() {
   const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   
+  // Stable total document count for the "All Documents" label — never changes when navigating folders
+  const [totalAllDocs, setTotalAllDocs] = useState<number | undefined>(undefined);
+
   // Folder-related state
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [showFolderModal, setShowFolderModal] = useState(false);
@@ -180,6 +183,13 @@ export default function VaultPage() {
     
     fetchDocuments(params, true);
   }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
+
+  // Keep the "All Documents" total stable — only update it when we're at the root with no filters
+  useEffect(() => {
+    if (!activeFolder && !searchTerm && !fileType && pagination) {
+      setTotalAllDocs(pagination.total);
+    }
+  }, [pagination, activeFolder, searchTerm, fileType]);
 
   // Auto-reprocess documents that are stuck in "processing" state.
   // content_extracted=false means extraction failed at upload time (no background job is running).
@@ -688,7 +698,7 @@ export default function VaultPage() {
                 folders={folders}
                 activeFolder={activeFolder}
                 onFolderSelect={handleFolderSelect}
-                totalDocumentCount={pagination.total}
+                totalDocumentCount={totalAllDocs}
               />
             )}
             

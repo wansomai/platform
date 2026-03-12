@@ -13,30 +13,14 @@ import { Prisma } from '@/prisma/client';
 // Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
 export const maxDuration = 120;
 
-/** Returns true if userId can see a restricted folder. */
-async function userCanAccessFolder(
+/** Returns true if userId can see a restricted folder.
+ *  Only the creator or explicitly-granted users have access — org role is irrelevant. */
+function userCanAccessFolder(
   folder: { createdBy: string; permissions: { userId: string }[] },
   userId: string,
-  organizationId: string
-): Promise<boolean> {
+): boolean {
   if (folder.createdBy === userId) return true;
-  if (folder.permissions.some((p) => p.userId === userId)) return true;
-  // Org admins / owner bypass restrictions
-  const [membership, org] = await Promise.all([
-    prisma.userOrganization.findUnique({
-      where: { userId_organizationId: { userId, organizationId } },
-      select: { role: true }
-    }),
-    prisma.organization.findUnique({
-      where: { id: organizationId },
-      select: { ownerId: true }
-    })
-  ]);
-  return (
-    org?.ownerId === userId ||
-    membership?.role === 'admin' ||
-    membership?.role === 'owner'
-  );
+  return folder.permissions.some((p) => p.userId === userId);
 }
 
 export async function GET(request: NextRequest) {
@@ -107,7 +91,7 @@ export async function GET(request: NextRequest) {
         include: { permissions: { select: { userId: true } } }
       });
       if (targetFolder && targetFolder.visibility === 'restricted') {
-        const canAccess = await userCanAccessFolder(targetFolder, userId, organizationId);
+        const canAccess = userCanAccessFolder(targetFolder, userId);
         if (!canAccess) {
           // Return empty — user has no access to this folder
           return NextResponse.json({
@@ -119,30 +103,16 @@ export async function GET(request: NextRequest) {
         }
       }
     } else if (!folderId) {
-      // "All Documents" view — exclude documents in restricted folders the user can't access
-      const [orgMembership, org, restrictedFolders] = await Promise.all([
-        prisma.userOrganization.findUnique({
-          where: { userId_organizationId: { userId, organizationId } },
-          select: { role: true }
-        }),
-        prisma.organization.findUnique({
-          where: { id: organizationId },
-          select: { ownerId: true }
-        }),
-        prisma.folder.findMany({
-          where: { organizationId, visibility: 'restricted' },
-          include: { permissions: { select: { userId: true } } }
-        })
-      ]);
+      // "All Documents" view — exclude documents in restricted folders the user can't access.
+      // Org role is irrelevant: even admins/owners are blocked unless creator or explicitly granted.
+      const restrictedFolders = await prisma.folder.findMany({
+        where: { organizationId, visibility: 'restricted' },
+        include: { permissions: { select: { userId: true } } }
+      });
 
-      const isAdminOrOwner =
-        org?.ownerId === userId ||
-        orgMembership?.role === 'admin' ||
-        orgMembership?.role === 'owner';
-
-      if (!isAdminOrOwner && restrictedFolders.length > 0) {
+      if (restrictedFolders.length > 0) {
         const inaccessibleIds = restrictedFolders
-          .filter((f: any) => f.createdBy !== userId && !f.permissions.some((p: any) => p.userId === userId))
+          .filter((f: any) => !userCanAccessFolder(f, userId))
           .map((f: any) => f.id);
 
         if (inaccessibleIds.length > 0) {

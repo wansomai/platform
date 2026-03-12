@@ -12,48 +12,33 @@ export const GET = withErrorHandler(withAuth(async (
   const folderId = (await params).id;
   const organizationId = await getActiveOrganizationId(userId);
 
-  const [folder, orgMembership, org] = await Promise.all([
-    prisma.folder.findUnique({
-      where: { id: folderId, organizationId },
-      include: {
-        documents: {
-          include: {
-            createdByUser: { select: { id: true, fullName: true } }
-          },
-          orderBy: { created_at: 'desc' }
+  const folder = await prisma.folder.findUnique({
+    where: { id: folderId, organizationId },
+    include: {
+      documents: {
+        include: {
+          createdByUser: { select: { id: true, fullName: true } }
         },
-        children: {
-          include: {
-            _count: { select: { documents: true } },
-            permissions: { select: { userId: true } }
-          }
-        },
-        permissions: { select: { userId: true } }
-      }
-    }),
-    prisma.userOrganization.findUnique({
-      where: { userId_organizationId: { userId, organizationId } },
-      select: { role: true }
-    }),
-    prisma.organization.findUnique({
-      where: { id: organizationId },
-      select: { ownerId: true }
-    })
-  ]);
+        orderBy: { created_at: 'desc' }
+      },
+      children: {
+        include: {
+          _count: { select: { documents: true } },
+          permissions: { select: { userId: true } }
+        }
+      },
+      permissions: { select: { userId: true } }
+    }
+  });
 
   if (!folder) {
     return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
 
-  const isAdminOrOwner =
-    org?.ownerId === userId ||
-    orgMembership?.role === 'admin' ||
-    orgMembership?.role === 'owner';
-
-  // Check user can access this folder
+  // Check user can access this folder.
+  // Org role does NOT bypass restricted access — only creator or explicitly-granted users.
   const canAccess =
     folder.visibility === 'organization' ||
-    isAdminOrOwner ||
     folder.createdBy === userId ||
     folder.permissions.some((p: any) => p.userId === userId);
 
@@ -61,10 +46,9 @@ export const GET = withErrorHandler(withAuth(async (
     return NextResponse.json({ error: 'Folder not found' }, { status: 404 });
   }
 
-  // Helper to check child folder visibility
+  // Helper to check child folder visibility (same rules)
   const canSeeChild = (child: any) =>
     child.visibility === 'organization' ||
-    isAdminOrOwner ||
     child.createdBy === userId ||
     child.permissions.some((p: any) => p.userId === userId);
 
