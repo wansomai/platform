@@ -78,56 +78,65 @@ export async function GET(request: NextRequest) {
     }
 
     // --- Folder visibility enforcement ---
-    // Documents with no folder (root) are always visible.
-    // Documents in a "restricted" folder are only visible to:
-    //   • the folder creator
-    //   • users explicitly listed in FolderPermission
-    //   • org admins / org owner
-    // If the user is browsing a specific restricted folder they can't access, return 0 results.
-    if (folderId && folderId !== 'root') {
-      // Browsing a specific folder — check access
-      const targetFolder = await prisma.folder.findUnique({
-        where: { id: folderId, organizationId },
-        include: { permissions: { select: { userId: true } } }
-      });
-      if (targetFolder && targetFolder.visibility === 'restricted') {
-        const canAccess = userCanAccessFolder(targetFolder, userId);
-        if (!canAccess) {
-          // Return empty — user has no access to this folder
-          return NextResponse.json({
-            status: 200,
-            message: 'Documents retrieved successfully',
-            data: [],
-            pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
-          });
-        }
-      }
-    } else if (!folderId) {
-      // "All Documents" view — exclude documents in restricted folders the user can't access.
-      // Org role is irrelevant: even admins/owners are blocked unless creator or explicitly granted.
-      const restrictedFolders = await prisma.folder.findMany({
-        where: { organizationId, visibility: 'restricted' },
-        include: { permissions: { select: { userId: true } } }
-      });
+    // A "restricted" folder is only visible to its creator or users with an explicit
+    // FolderPermission entry. Org role (admin/owner) does NOT bypass this.
+    //
+    // We always compute inaccessible folder IDs so the filter applies universally:
+    //   • "All Documents" view  → exclude docs in folders the user can't access
+    //   • Specific folder view  → early-return empty if the requested folder is inaccessible,
+    //                              AND still exclude docs in any inaccessible sub-folder
+    //                              (belt-and-suspenders: exact folderId already scopes the query,
+    //                               but this prevents any future edge-case from leaking data)
+    const restrictedFolders = await prisma.folder.findMany({
+      where: { organizationId, visibility: 'restricted' },
+      select: { id: true, createdBy: true, permissions: { select: { userId: true } } }
+    });
 
-      if (restrictedFolders.length > 0) {
-        const inaccessibleIds = restrictedFolders
-          .filter((f: any) => !userCanAccessFolder(f, userId))
-          .map((f: any) => f.id);
+    const inaccessibleFolderIds: string[] = restrictedFolders
+      .filter((f: any) => !userCanAccessFolder(f, userId))
+      .map((f: any) => f.id as string);
 
-        if (inaccessibleIds.length > 0) {
-          // Exclude documents in inaccessible restricted folders.
-          // Root documents (folderId = null) remain visible.
-          // Wrap any existing OR (search) inside AND so both conditions apply.
-          const folderFilter = { OR: [{ folderId: null }, { folderId: { notIn: inaccessibleIds } }] };
-          if (where.OR) {
-            where.AND = [{ OR: where.OR }, folderFilter];
-            delete where.OR;
-          } else {
-            where.AND = [folderFilter];
-          }
-        }
+    // If the user is requesting a specific restricted folder they can't access, return empty.
+    if (folderId && folderId !== 'root' && inaccessibleFolderIds.includes(folderId)) {
+      return NextResponse.json({
+        status: 200,
+        message: 'Documents retrieved successfully',
+        data: [],
+        pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
+      });
+    }
+
+    // Exclude documents in ANY inaccessible restricted folder from the result set.
+    // This covers "All Documents", specific-folder, and root views alike.
+    if (inaccessibleFolderIds.length > 0) {
+      const folderFilter = {
+        OR: [
+          { folderId: null },
+          { folderId: { notIn: inaccessibleFolderIds } }
+        ]
+      };
+      if (where.OR) {
+        // Wrap existing OR (search) in AND together with the folder filter
+        where.AND = [{ OR: where.OR }, folderFilter];
+        delete where.OR;
+      } else if (where.AND) {
+        where.AND.push(folderFilter);
+      } else {
+        where.AND = [folderFilter];
       }
+    }
+
+    // Fast path: caller only needs titles for conflict detection (e.g., upload modal).
+    // Skip joins, pagination count, and all non-essential fields.
+    const titlesOnly = searchParams.get('titlesOnly') === 'true';
+    if (titlesOnly) {
+      const titles = await prisma.document.findMany({
+        where,
+        select: { id: true, title: true },
+        orderBy: { title: 'asc' },
+        take: 1000,
+      });
+      return NextResponse.json({ status: 200, message: 'Documents retrieved successfully', data: titles });
     }
 
     // Dashboard needs minimal data, full pages need more
@@ -286,6 +295,8 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File;
     const description = formData.get('description') as string || '';
     const folderId = formData.get('folderId') as string || null;
+    // Optional custom title supplied by the client (e.g. after rename-on-conflict)
+    const customTitle = (formData.get('title') as string | null)?.trim() || null;
 
     // Validate file
     if (!file) {
@@ -302,13 +313,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    // If folderId is provided, verify it exists and belongs to the active organization
+    // If folderId is provided, verify it exists and that the user can upload to it.
+    // For restricted folders: only the creator or explicitly-permitted users may upload.
     if (folderId) {
       const folder = await prisma.folder.findUnique({
-        where: {
-          id: folderId,
-          organizationId,
-        }
+        where: { id: folderId, organizationId },
+        include: { permissions: { select: { userId: true } } }
       });
 
       if (!folder) {
@@ -317,6 +327,34 @@ export async function POST(request: NextRequest) {
           { status: 404 }
         );
       }
+
+      if (folder.visibility === 'restricted' && !userCanAccessFolder(folder, userId)) {
+        return NextResponse.json(
+          { message: 'You do not have permission to upload to this folder', error: true },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Determine the document title and check for duplicates
+    const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+    const documentTitle = customTitle || fileBaseName;
+
+    // Check for title conflict scoped to the target folder (or root when no folder)
+    const titleConflict = await prisma.document.findFirst({
+      where: {
+        organization_id: organizationId,
+        title: { equals: documentTitle, mode: 'insensitive' },
+        folderId: folderId || null
+      },
+      select: { id: true }
+    });
+    if (titleConflict) {
+      const location = folderId ? 'this folder' : 'the root folder';
+      return NextResponse.json(
+        { message: `A document named "${documentTitle}" already exists in ${location}. Please rename it before uploading.`, error: true },
+        { status: 409 }
+      );
     }
 
     // Generate unique filename
@@ -366,7 +404,7 @@ export async function POST(request: NextRequest) {
     // Create document record in database
     const document = await prisma.document.create({
       data: {
-        title: file.name,
+        title: documentTitle,
         description: {
           String: description,
           Valid: description.length > 0

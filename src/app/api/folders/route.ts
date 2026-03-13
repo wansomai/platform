@@ -95,6 +95,22 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     }
   }
 
+  // Check no sibling folder has the same name at this parent level
+  const siblingConflict = await prisma.folder.findFirst({
+    where: {
+      organizationId,
+      parentId: parentId || null,
+      name: { equals: name.trim(), mode: 'insensitive' }
+    },
+    select: { id: true }
+  });
+  if (siblingConflict) {
+    return NextResponse.json(
+      { error: `A folder named "${name.trim()}" already exists here. Please choose a different name.` },
+      { status: 409 }
+    );
+  }
+
   const folder = await prisma.folder.create({
     data: {
       name: name.trim(),

@@ -1,7 +1,7 @@
 // app/dashboard/vault/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -92,7 +92,7 @@ export default function VaultPage() {
   
   // Get state from stores
   const {
-    documents,
+    documents: rawDocuments,
     isLoading,
     error,
     pagination,
@@ -100,8 +100,16 @@ export default function VaultPage() {
     selectedDocuments,
     toggleDocumentSelection,
     clearSelectedDocuments,
-    deleteDocument: storeDeleteDocument
+    deleteDocument: storeDeleteDocument,
+    renameDocument
   } = useDocumentsStore();
+
+  // Deduplicate by id — guards against race conditions where uploadDocument prepends a doc
+  // that was already fetched, which would produce duplicate React keys in the table.
+  const documents = useMemo(
+    () => Array.from(new Map(rawDocuments.map((d: any) => [d.id, d])).values()),
+    [rawDocuments]
+  );
   
   const {
     folders,
@@ -149,8 +157,20 @@ export default function VaultPage() {
   const [editFolder, setEditFolder] = useState<{ id: string; name: string; parentId: string | null } | null>(null);
   const [showMoveFolderDialog, setShowMoveFolderDialog] = useState(false);
   const [targetFolder, setTargetFolder] = useState<string | null>(null);
+  // Move conflict detection state
+  // moveConflictIds: doc IDs that conflict with existing names in the target folder
+  // moveTargetTitlesLower: lowercase titles already in the target folder (for real-time validation)
+  const [moveConflictIds, setMoveConflictIds] = useState<string[]>([]);
+  const [moveRenameMap, setMoveRenameMap] = useState<Record<string, string>>({});
+  const [moveTargetTitlesLower, setMoveTargetTitlesLower] = useState<string[]>([]);
+  const [isFetchingMoveConflicts, setIsFetchingMoveConflicts] = useState(false);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [permissionFolder, setPermissionFolder] = useState<{ id: string; name: string } | null>(null);
+
+  // Rename document state
+  const [renamingDocId, setRenamingDocId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [isRenaming, setIsRenaming] = useState(false);
 
   // Add to Workspace state
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
@@ -289,6 +309,21 @@ export default function VaultPage() {
     }
   };
   
+  // Handle document rename
+  const handleRenameSubmit = async (docId: string) => {
+    const trimmed = renameValue.trim();
+    if (!trimmed) return;
+    setIsRenaming(true);
+    const success = await renameDocument(docId, trimmed);
+    setIsRenaming(false);
+    if (success) {
+      addToast({ type: 'success', message: 'Document renamed successfully' });
+      setRenamingDocId(null);
+    } else {
+      addToast({ type: 'error', message: 'A document with that name already exists' });
+    }
+  };
+
   // Handle folder selection
   const handleFolderSelect = (folderId: string | null) => {
     setActiveFolder(folderId);
@@ -346,14 +381,82 @@ export default function VaultPage() {
     }
   };
   
+  // Detect title conflicts whenever the target folder or docs-to-move change.
+  // Resets rename inputs to original titles on each folder change so the user
+  // always types a fresh name in the new destination context.
+  useEffect(() => {
+    if (!showMoveFolderDialog) return;
+    const docsToMove = documentToMove ? [documentToMove] : selectedDocuments;
+    if (docsToMove.length === 0) return;
+
+    let cancelled = false;
+    const detect = async () => {
+      setIsFetchingMoveConflicts(true);
+      try {
+        const folderParam = targetFolder ? `folder=${targetFolder}` : 'folder=root';
+        const res = await apiService.get<{ data: any[] }>(`/api/documents?limit=100&${folderParam}`);
+        if (cancelled) return;
+
+        // Titles already in the target folder (excluding the docs being moved)
+        const existingDocs = (res.data || []).filter((d: any) => !docsToMove.includes(d.id));
+        const titlesLower = existingDocs.map((d: any) => (d.title as string).toLowerCase());
+        const titlesSet = new Set(titlesLower);
+
+        const conflictIds: string[] = [];
+        const newRenameMap: Record<string, string> = {};
+        for (const docId of docsToMove) {
+          const doc = documents.find((d: any) => d.id === docId);
+          if (!doc) continue;
+          // Reset to original title so user types a fresh name for the new folder
+          newRenameMap[docId] = doc.title;
+          if (titlesSet.has(doc.title.toLowerCase())) {
+            conflictIds.push(docId);
+          }
+        }
+        setMoveConflictIds(conflictIds);
+        setMoveRenameMap(newRenameMap);
+        setMoveTargetTitlesLower(titlesLower);
+      } catch {
+        // ignore — server performs the authoritative conflict check
+      } finally {
+        if (!cancelled) setIsFetchingMoveConflicts(false);
+      }
+    };
+    detect();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetFolder, showMoveFolderDialog, documentToMove, selectedDocuments.join(',')]);
+
+  // Update the rename value for a conflicted doc — does NOT clear the conflict
+  // section so the input stays mounted while the user finishes typing.
+  const handleMoveRenameChange = (docId: string, newTitle: string) => {
+    setMoveRenameMap(prev => ({ ...prev, [docId]: newTitle }));
+  };
+
   // Handle moving documents to folder
   const handleMoveToFolder = async () => {
     const docsToMove = documentToMove ? [documentToMove] : selectedDocuments;
     if (docsToMove.length === 0) return;
-    
+
+    const targetSet = new Set(moveTargetTitlesLower);
+
+    // All conflicted docs must have a non-empty rename that differs from the
+    // original title AND doesn't itself collide with an existing title in the folder.
+    const hasUnresolved = moveConflictIds.some((id) => {
+      const val = moveRenameMap[id]?.trim() ?? '';
+      const doc = documents.find((d: any) => d.id === id);
+      return !val || val === doc?.title || targetSet.has(val.toLowerCase());
+    });
+    if (hasUnresolved) return;
+
+    // Build renames — only conflicted docs that have a changed title
+    const renames = moveConflictIds
+      .map((docId) => ({ id: docId, newTitle: moveRenameMap[docId]?.trim() ?? '' }))
+      .filter((r) => r.newTitle);
+
     setIsMoving(true);
     try {
-      const success = await moveDocumentsToFolder(targetFolder, docsToMove);
+      const success = await moveDocumentsToFolder(targetFolder, docsToMove, renames.length > 0 ? renames : undefined);
       if (success) {
         addToast({
           message: `${docsToMove.length} document(s) moved successfully`,
@@ -362,7 +465,10 @@ export default function VaultPage() {
         clearSelectedDocuments();
         setDocumentToMove(null);
         setShowMoveFolderDialog(false);
-        
+        setMoveConflictIds([]);
+        setMoveRenameMap({});
+        setMoveTargetTitlesLower([]);
+
         await Promise.all([
           fetchFolders(true),
           fetchDocuments({
@@ -374,6 +480,8 @@ export default function VaultPage() {
             folder: activeFolder || undefined
           })
         ]);
+      } else {
+        addToast({ message: "Failed to move documents. Please check name conflicts.", type: "error" });
       }
     } catch (error) {
       addToast({
@@ -544,11 +652,32 @@ export default function VaultPage() {
                 className={`cursor-pointer ${selectedDocuments.includes(document.id) ? "bg-primary/10" : ""}`}
                 onClick={() => toggleDocumentSelection(document.id)}
               >
-                <TableCell>
+                <TableCell onClick={(e) => renamingDocId === document.id && e.stopPropagation()}>
                   <div className="flex items-center space-x-2">
                     <DocumentTypeIcon fileType={document.fileType || ""} />
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-medium truncate max-w-[200px]">{document.title}</span>
+                      {renamingDocId === document.id ? (
+                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                          <Input
+                            autoFocus
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleRenameSubmit(document.id);
+                              if (e.key === 'Escape') setRenamingDocId(null);
+                            }}
+                            className="h-7 text-sm max-w-[180px]"
+                          />
+                          <Button size="sm" className="h-7 px-2" disabled={isRenaming} onClick={() => handleRenameSubmit(document.id)}>
+                            {isRenaming ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Save'}
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setRenamingDocId(null)}>
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="font-medium truncate max-w-[200px]">{document.title}</span>
+                      )}
                       {document.contentExtracted === false && (
                         <span className="inline-flex items-center gap-1.5 text-xs text-amber-600">
                           <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" aria-hidden />
@@ -608,6 +737,9 @@ export default function VaultPage() {
                         onClick={(e) => {
                           e.stopPropagation();
                           setDocumentToMove(document.id);
+                          setMoveConflictIds([]);
+                          setMoveRenameMap({});
+                          setMoveTargetTitlesLower([]);
                           setShowMoveFolderDialog(true);
                         }}
                       >
@@ -615,6 +747,16 @@ export default function VaultPage() {
                         Move to Folder
                       </DropdownMenuItem>
                   
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRenamingDocId(document.id);
+                          setRenameValue(document.title);
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Rename
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
@@ -845,7 +987,7 @@ export default function VaultPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowMoveFolderDialog(true)}
+                    onClick={() => { setMoveConflictIds([]); setMoveRenameMap({}); setMoveTargetTitlesLower([]); setShowMoveFolderDialog(true); }}
                     title="Move to Folder"
                   >
                     <FolderSymlinkIcon className="h-4 w-4 sm:mr-2" />
@@ -1048,13 +1190,16 @@ export default function VaultPage() {
       </Sheet>
 
       {/* Move to Folder Dialog */}
-      <Dialog open={showMoveFolderDialog} onOpenChange={setShowMoveFolderDialog}>
+      <Dialog open={showMoveFolderDialog} onOpenChange={(open) => {
+        setShowMoveFolderDialog(open);
+        if (!open) { setMoveConflictIds([]); setMoveRenameMap({}); setMoveTargetTitlesLower([]); }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Move to Folder</DialogTitle>
           </DialogHeader>
           <p>Select destination folder for {documentToMove ? '1' : selectedDocuments.length} document(s):</p>
-          
+
           <Select
             value={targetFolder || "root"}
             onValueChange={(value) => setTargetFolder(value === "root" ? null : value)}
@@ -1074,18 +1219,69 @@ export default function VaultPage() {
               ))}
             </SelectContent>
           </Select>
-          
+
+          {/* Conflict rename inputs */}
+          {isFetchingMoveConflicts && (
+            <p className="text-sm text-muted-foreground flex items-center gap-1">
+              <Loader2 className="h-3 w-3 animate-spin" /> Checking for name conflicts…
+            </p>
+          )}
+          {!isFetchingMoveConflicts && moveConflictIds.length > 0 && (() => {
+            const targetSet = new Set(moveTargetTitlesLower);
+            return (
+              <div className="space-y-2">
+                <p className="text-sm text-destructive font-medium">
+                  Name conflicts detected — rename before moving:
+                </p>
+                {moveConflictIds.map((docId) => {
+                  const doc = documents.find((d: any) => d.id === docId);
+                  const val = moveRenameMap[docId] ?? doc?.title ?? '';
+                  const isStillOriginal = val === doc?.title;
+                  const isTargetConflict = !!val.trim() && !isStillOriginal && targetSet.has(val.trim().toLowerCase());
+                  const showError = isStillOriginal || isTargetConflict;
+                  return (
+                    <div key={docId} className="space-y-1">
+                      <p className="text-xs text-muted-foreground truncate">
+                        &ldquo;{doc?.title}&rdquo; already exists in the target folder — enter a new name:
+                      </p>
+                      <Input
+                        value={val}
+                        onChange={(e) => handleMoveRenameChange(docId, e.target.value)}
+                        placeholder="New name"
+                        className={showError ? 'border-destructive h-8 text-sm' : 'h-8 text-sm'}
+                        disabled={isMoving}
+                        autoFocus={moveConflictIds.indexOf(docId) === 0}
+                      />
+                      {isTargetConflict && (
+                        <p className="text-xs text-destructive">
+                          That name also exists in this folder — choose a different one.
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowMoveFolderDialog(false)}
               disabled={isMoving}
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleMoveToFolder}
-              disabled={isMoving}
+              disabled={isMoving || isFetchingMoveConflicts || (() => {
+                const targetSet = new Set(moveTargetTitlesLower);
+                return moveConflictIds.some((id) => {
+                  const val = moveRenameMap[id]?.trim() ?? '';
+                  const doc = documents.find((d: any) => d.id === id);
+                  return !val || val === doc?.title || targetSet.has(val.toLowerCase());
+                });
+              })()}
             >
               {isMoving ? (
                 <>

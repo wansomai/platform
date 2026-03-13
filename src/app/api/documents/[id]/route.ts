@@ -89,6 +89,83 @@ export async function GET(
   }
 }
 
+// Rename document
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const documentId = (await params).id;
+
+    const userId = await getUserIdFromRequest(request);
+    if (!userId) {
+      return NextResponse.json(
+        { message: 'Authentication required', error: true },
+        { status: 401 }
+      );
+    }
+
+    const organizationId = await getActiveOrganizationId(userId);
+    const { title } = await request.json();
+
+    if (!title || !title.trim()) {
+      return NextResponse.json(
+        { message: 'Title is required', error: true },
+        { status: 400 }
+      );
+    }
+
+    const newTitle = title.trim();
+
+    // Verify document exists in this org (any org member can rename)
+    const document = await prisma.document.findUnique({
+      where: { id: documentId, organization_id: organizationId }
+    });
+
+    if (!document) {
+      return NextResponse.json(
+        { message: 'Document not found', error: true },
+        { status: 404 }
+      );
+    }
+
+    // Check no other document in the same folder has the same title (case-insensitive)
+    const conflict = await prisma.document.findFirst({
+      where: {
+        organization_id: organizationId,
+        title: { equals: newTitle, mode: 'insensitive' },
+        folderId: document.folderId,
+        id: { not: documentId }
+      },
+      select: { id: true }
+    });
+
+    if (conflict) {
+      return NextResponse.json(
+        { message: 'A document with that name already exists', error: true },
+        { status: 409 }
+      );
+    }
+
+    const updated = await prisma.document.update({
+      where: { id: documentId },
+      data: { title: newTitle }
+    });
+
+    return NextResponse.json({
+      status: 200,
+      message: 'Document renamed successfully',
+      data: { id: updated.id, title: updated.title }
+    });
+  } catch (error) {
+    console.error('Error renaming document:', error);
+    return NextResponse.json(
+      { message: 'Failed to rename document', error: true },
+      { status: 500 }
+    );
+  }
+}
+
 // Delete document
 export async function DELETE(
   request: NextRequest,
