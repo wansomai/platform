@@ -46,6 +46,7 @@ interface ExtendedDocumentsState extends DocumentsState {
   removeDocument: (id: string) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
+  renameDocument: (id: string, title: string) => Promise<boolean>;
   refreshDocuments: () => Promise<void>; // Force refresh current documents
   invalidateCache: () => void; // Clear cache to force next fetch
   downloadGeneratedDocument: (htmlContent: string, format: 'PDF' | 'DOCX' | 'MD', title: string) => Promise<void>;
@@ -175,9 +176,9 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
           
           const newDocument = response.data.data; // Extract the document from the data wrapper
           
-          // Add the new document to the store immediately
+          // Add the new document to the store immediately (filter first to avoid duplicate keys)
           set((state) => {
-            const newDocuments = [newDocument, ...state.documents];
+            const newDocuments = [newDocument, ...state.documents.filter(d => d.id !== newDocument.id)];
             return {
               documents: newDocuments,
               documentsMap: createDocumentsMap(newDocuments),
@@ -229,6 +230,25 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
         }
       },
       
+      renameDocument: async (id, title) => {
+        try {
+          await apiService.patch(`/api/documents/${id}`, { title });
+          set((state) => {
+            const newDocuments = state.documents.map(d =>
+              d.id === id ? { ...d, title } : d
+            );
+            return {
+              documents: newDocuments,
+              documentsMap: createDocumentsMap(newDocuments),
+            };
+          });
+          return true;
+        } catch (error: any) {
+          set({ error: error.message || 'Failed to rename document' });
+          return false;
+        }
+      },
+
       // Document selection methods for UI
       selectDocument: (id) => {
         set((state) => {
@@ -279,8 +299,8 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
       }),
       
       addDocument: (document) => set((state) => {
-        const newDocuments = [document, ...state.documents];
-        return { 
+        const newDocuments = [document, ...state.documents.filter(d => d.id !== document.id)];
+        return {
           documents: newDocuments,
           documentsMap: createDocumentsMap(newDocuments),
           pagination: {

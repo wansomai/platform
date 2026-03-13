@@ -114,17 +114,31 @@ export const PUT = withErrorHandler(withAuth(async (
   const updateData: any = {};
 
   if (name && name.trim() !== '') {
-    updateData.name = name.trim();
+    const newName = name.trim();
+    // Determine the parent level this folder lives at (may change if parentId is also being updated)
+    const effectiveParentId = parentId !== undefined ? (parentId || null) : folder.parentId;
+    const siblingConflict = await prisma.folder.findFirst({
+      where: {
+        organizationId,
+        parentId: effectiveParentId,
+        name: { equals: newName, mode: 'insensitive' },
+        id: { not: folderId }
+      },
+      select: { id: true }
+    });
+    if (siblingConflict) {
+      return NextResponse.json(
+        { error: `A folder named "${newName}" already exists here. Please choose a different name.` },
+        { status: 409 }
+      );
+    }
+    updateData.name = newName;
   }
 
   if (parentId !== undefined) {
     if (parentId) {
-      // Parent must also be owned by the user
       const parentFolder = await prisma.folder.findUnique({
-        where: {
-          id: parentId,
-          organizationId,
-        }
+        where: { id: parentId, organizationId }
       });
 
       if (!parentFolder) {

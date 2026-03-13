@@ -33,7 +33,7 @@ export const POST = withErrorHandler(withAuth(async (
   }
 
   // Parse request body
-  const { documentIds } = await request.json();
+  const { documentIds, renames } = await request.json();
 
   if (!documentIds || !Array.isArray(documentIds) || documentIds.length === 0) {
     return NextResponse.json(
@@ -42,12 +42,23 @@ export const POST = withErrorHandler(withAuth(async (
     );
   }
 
+  // Build rename map: docId → newTitle (trimmed)
+  const renameMap: Record<string, string> = {};
+  if (Array.isArray(renames)) {
+    for (const r of renames) {
+      if (r.id && r.newTitle && r.newTitle.trim()) {
+        renameMap[r.id] = r.newTitle.trim();
+      }
+    }
+  }
+
   // Verify documents exist and belong to the active organization
   const documents = await prisma.document.findMany({
     where: {
       id: { in: documentIds },
       organization_id: organizationId,
-    }
+    },
+    select: { id: true, title: true }
   });
 
   if (documents.length !== documentIds.length) {
@@ -57,6 +68,44 @@ export const POST = withErrorHandler(withAuth(async (
     );
   }
 
+  // Check for title conflicts in the target folder
+  const targetFolderId = folderId === 'root' ? null : folderId;
+  const existingInTarget = await prisma.document.findMany({
+    where: {
+      organization_id: organizationId,
+      folderId: targetFolderId,
+      id: { notIn: documentIds }, // exclude the docs being moved themselves
+    },
+    select: { title: true }
+  });
+  const existingTitlesLower = new Set(existingInTarget.map((d: { title: string }) => d.title.toLowerCase()));
+
+  const conflicts: { id: string; title: string }[] = [];
+  for (const doc of documents) {
+    const effectiveTitle = renameMap[doc.id] ?? doc.title;
+    if (existingTitlesLower.has(effectiveTitle.toLowerCase())) {
+      conflicts.push({ id: doc.id, title: effectiveTitle });
+    }
+  }
+
+  if (conflicts.length > 0) {
+    return NextResponse.json(
+      {
+        error: 'Some documents conflict with existing names in the target folder. Please rename them before moving.',
+        conflicts
+      },
+      { status: 409 }
+    );
+  }
+
+  // Apply renames first (individual updates required for title changes)
+  for (const [docId, newTitle] of Object.entries(renameMap)) {
+    await prisma.document.update({
+      where: { id: docId },
+      data: { title: newTitle }
+    });
+  }
+
   // Move documents to the target folder
   await prisma.document.updateMany({
     where: {
@@ -64,7 +113,7 @@ export const POST = withErrorHandler(withAuth(async (
       organization_id: organizationId,
     },
     data: {
-      folderId: folderId === 'root' ? null : folderId
+      folderId: targetFolderId
     }
   });
 

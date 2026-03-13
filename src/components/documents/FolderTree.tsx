@@ -65,9 +65,15 @@ export function FolderTree({ folders, activeFolder, onFolderSelect, totalDocumen
             <div className="w-6 mr-1" />
           )}
           
-          <div 
+          <div
             className="flex-1 flex items-center overflow-x-auto"
-            onClick={() => onFolderSelect(folder.id)}
+            onClick={() => {
+              onFolderSelect(folder.id);
+              // Auto-expand when clicking a folder that has children and isn't yet open
+              if (hasChildren && !isExpanded) {
+                toggleExpand(folder.id);
+              }
+            }}
           >
             {isExpanded ? (
               <FolderOpen className="h-4 w-4 min-h-4 min-w-4 mr-2 text-amber-500" />

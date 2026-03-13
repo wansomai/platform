@@ -56,16 +56,34 @@ export function FolderModal({
     }
   }, [open, editFolder, setError]);
 
+  // Real-time duplicate detection: check if a sibling at the same parent level has this name
+  const isDuplicateName =
+    folderName.trim().length > 0 &&
+    folders.some(
+      (f) =>
+        f.name.toLowerCase() === folderName.trim().toLowerCase() &&
+        (f.parentId ?? null) === (parentId ?? null) &&
+        f.id !== editFolder?.id
+    );
+
   const handleSave = async () => {
     if (!folderName.trim()) {
       setError('Folder name is required');
       return;
     }
 
+    if (isDuplicateName) {
+      setError(`A folder named "${folderName.trim()}" already exists here. Please choose a different name.`);
+      return;
+    }
+
+    // execute() returns null on error (the store rethrows with the server message)
+    // and the error is shown via ErrorAlert; the modal stays open.
     const result = await execute(async () => {
       return onSave(folderName, parentId);
     });
 
+    // result is undefined on success (onSave returns void), null on error
     if (result !== null) {
       onOpenChange(false);
     }
@@ -85,13 +103,20 @@ export function FolderModal({
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input
-              id="name"
-              value={folderName}
-              onChange={(e) => setFolderName(e.target.value)}
-              className="col-span-3"
-              placeholder="Enter folder name"
-            />
+            <div className="col-span-3 space-y-1">
+              <Input
+                id="name"
+                value={folderName}
+                onChange={(e) => { setFolderName(e.target.value); setError(null); }}
+                className={isDuplicateName ? 'border-red-400 focus-visible:ring-red-400' : ''}
+                placeholder="Enter folder name"
+              />
+              {isDuplicateName && (
+                <p className="text-xs text-red-600">
+                  A folder with this name already exists here.
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
@@ -130,7 +155,7 @@ export function FolderModal({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isLoading}
+            disabled={isLoading || isDuplicateName}
           >
             {isLoading ? 'Saving...' : editFolder ? 'Update Folder' : 'Create Folder'}
           </Button>

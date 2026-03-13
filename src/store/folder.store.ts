@@ -15,7 +15,7 @@ interface FolderState {
   createFolder: (name: string, parentId: string | null) => Promise<Folder | null>;
   updateFolder: (id: string, name: string, parentId: string | null) => Promise<Folder | null>;
   deleteFolder: (id: string) => Promise<boolean>;
-  moveDocumentsToFolder: (folderId: string | null, documentIds: string[]) => Promise<boolean>;
+  moveDocumentsToFolder: (folderId: string | null, documentIds: string[], renames?: { id: string; newTitle: string }[]) => Promise<boolean>;
   setFolders: (folders: Folder[]) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
@@ -68,46 +68,43 @@ export const useFolderStore = create<FolderState>()(
       createFolder: async (name, parentId) => {
         try {
           set({ isLoading: true, error: null });
-          
+
           const response = await apiService.post<{ data: Folder }>('/api/folders', {
             name,
             parentId
           });
-          
+
           // Refresh folders to get the updated list with correct hierarchy
           await get().fetchFolders(true); // Force refresh
-          
+
           set({ isLoading: false });
           return response.data;
         } catch (error: any) {
-          set({ 
-            error: error.message || 'Failed to create folder', 
-            isLoading: false 
-          });
-          return null;
+          // Extract the server's error message (e.g. "A folder named X already exists here")
+          const message = error.response?.data?.error || error.response?.data?.message || error.message || 'Failed to create folder';
+          set({ error: message, isLoading: false });
+          throw new Error(message); // rethrow so callers can surface the specific message
         }
       },
-      
+
       updateFolder: async (id, name, parentId) => {
         try {
           set({ isLoading: true, error: null });
-          
+
           const response = await apiService.put<{ data: Folder }>(`/api/folders/${id}`, {
             name,
             parentId
           });
-          
+
           // Refresh folders to get the updated list with correct hierarchy
           await get().fetchFolders(true); // Force refresh
-          
+
           set({ isLoading: false });
           return response.data;
         } catch (error: any) {
-          set({ 
-            error: error.message || 'Failed to update folder', 
-            isLoading: false 
-          });
-          return null;
+          const message = error.response?.data?.error || error.response?.data?.message || error.message || 'Failed to update folder';
+          set({ error: message, isLoading: false });
+          throw new Error(message);
         }
       },
       
@@ -131,14 +128,15 @@ export const useFolderStore = create<FolderState>()(
         }
       },
       
-      moveDocumentsToFolder: async (folderId, documentIds) => {
+      moveDocumentsToFolder: async (folderId, documentIds, renames) => {
         try {
           set({ isLoading: true, error: null });
-          
+
           const endpoint = folderId ? `/api/folders/${folderId}/documents` : '/api/folders/root/documents';
-          
+
           await apiService.post(endpoint, {
-            documentIds
+            documentIds,
+            ...(renames && renames.length > 0 ? { renames } : {})
           });
           
           set({ isLoading: false });
