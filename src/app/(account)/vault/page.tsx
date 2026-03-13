@@ -1,7 +1,7 @@
 // app/dashboard/vault/page.tsx
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -175,6 +175,11 @@ export default function VaultPage() {
   // Add to Workspace state
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
 
+  // Ref that always holds the latest fetch params — used by the reprocessing effect to avoid stale closures
+  const currentParamsRef = useRef<any>({});
+  // Incrementing counter that forces a fetch even when activeFolder hasn't changed (same-folder re-click)
+  const [fetchTrigger, setFetchTrigger] = useState(0);
+
   // Project store & profile for workspace integration
   const { createProject } = useProjectStore();
   const { attachDocumentsToProject } = useProjectDocumentsStore();
@@ -187,22 +192,24 @@ export default function VaultPage() {
     fetchProfile(); // ensure user.id is available for creator checks
   }, [fetchFolders, fetchProfile]);
   
-  // Fetch documents when filters change
+  // Keep a ref of the current params so the reprocessing effect always reads the latest values
   useEffect(() => {
     const params: any = {
       search: searchTerm || undefined,
       type: fileType,
       sort: sortBy,
       page: currentPage,
-      limit: 20
+      limit: 20,
+      ...(activeFolder ? { folder: activeFolder } : {}),
     };
-    
-    if (activeFolder) {
-      params.folder = activeFolder;
-    }
-    
-    fetchDocuments(params, true);
-  }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder]);
+    currentParamsRef.current = params;
+  }, [searchTerm, fileType, sortBy, currentPage, activeFolder]);
+
+  // Fetch documents when filters change (fetchTrigger allows re-fetching the same folder)
+  useEffect(() => {
+    fetchDocuments({ ...currentParamsRef.current }, true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchDocuments, searchTerm, fileType, sortBy, currentPage, activeFolder, fetchTrigger]);
 
   // Keep the "All Documents" total stable — only update it when we're at the root with no filters
   useEffect(() => {
@@ -227,16 +234,8 @@ export default function VaultPage() {
         )
       );
       if (!cancelled) {
-        // Refresh the list after reprocessing so badges update
-        const params: any = {
-          search: searchTerm || undefined,
-          type: fileType,
-          sort: sortBy,
-          page: currentPage,
-          limit: 20,
-        };
-        if (activeFolder) params.folder = activeFolder;
-        fetchDocuments(params, true);
+        // Use the ref to always get the latest params — avoids stale closure overwriting subfolder view
+        fetchDocuments({ ...currentParamsRef.current }, true);
       }
     };
 
@@ -324,38 +323,29 @@ export default function VaultPage() {
     }
   };
 
-  // Handle folder selection
-  const handleFolderSelect = (folderId: string | null) => {
+  // Handle folder selection — always increments fetchTrigger so clicking the same
+  // folder a second time still reloads its content.
+  const handleFolderSelect = useCallback((folderId: string | null) => {
     setActiveFolder(folderId);
     setCurrentPage(1);
     clearSelectedDocuments();
-  };
+    setFetchTrigger(t => t + 1);
+  }, [clearSelectedDocuments]);
   
-  // Handle folder creation/update
+  // Handle folder creation/update.
+  // Errors are intentionally NOT caught here — they propagate up to FolderModal's execute()
+  // so the inline ErrorAlert shows the exact server message and the modal stays open.
   const handleSaveFolder = async (name: string, parentId: string | null) => {
-    try {
-      if (editFolder) {
-        const updated = await updateFolder(editFolder.id, name, parentId);
-        if (updated) {
-          addToast({
-            message: "Folder updated successfully",
-            type: "success"
-          });
-        }
-      } else {
-        const folder = await createFolder(name, parentId);
-        if (folder) {
-          addToast({
-            message: "Folder created successfully",
-            type: "success"
-          });
-        }
+    if (editFolder) {
+      const updated = await updateFolder(editFolder.id, name, parentId);
+      if (updated) {
+        addToast({ message: "Folder updated successfully", type: "success" });
       }
-    } catch (error) {
-      addToast({
-        message: "Failed to save folder",
-        type: "error"
-      });
+    } else {
+      const folder = await createFolder(name, parentId);
+      if (folder) {
+        addToast({ message: "Folder created successfully", type: "success" });
+      }
     }
   };
   
@@ -855,7 +845,7 @@ export default function VaultPage() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      const folder = folders.find(f => f.id === activeFolder);
+                      const folder = allFolders.find((f: any) => f.id === activeFolder);
                       if (folder) {
                         setEditFolder({
                           id: folder.id,

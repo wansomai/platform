@@ -168,19 +168,43 @@ export function UploadDocumentModal({
     }
   }, [open, mode]);
 
-  // Fetch document titles in the target folder so we can detect name conflicts client-side.
+  // Populate folderDocTitlesRef for conflict detection.
+  // 1. Immediately seeds from the Zustand store (zero-latency, may be partial).
+  // 2. Then fetches the authoritative list from the API (complete, async).
   // Runs on open and whenever the user changes the target folder.
   useEffect(() => {
     if (!open) {
       folderDocTitlesRef.current = new Set();
       return;
     }
+
+    // --- Instant seed from already-loaded store documents ---
+    const storeTitles = new Set<string>(
+      documents
+        .filter((d: any) => (d.folderId ?? null) === (selectedFolder ?? null))
+        .map((d: any) => d.title.toLowerCase())
+    );
+    folderDocTitlesRef.current = storeTitles;
+    // Re-evaluate conflicts immediately with store data
+    setFileConflicts(prev => {
+      const updated = { ...prev };
+      let changed = false;
+      for (const file of uploadFiles) {
+        const k = fileKey(file);
+        const name = (fileNames[k] ?? file.name.replace(/\.[^/.]+$/, '')).trim().toLowerCase();
+        const nowConflict = storeTitles.has(name);
+        if (updated[k] !== nowConflict) { updated[k] = nowConflict; changed = true; }
+      }
+      return changed ? updated : prev;
+    });
+
+    // --- Background API fetch for the complete/authoritative list ---
     const folderParam = selectedFolder ?? 'root';
     apiService.get<{ data: { title: string }[] }>(`/api/documents?folder=${folderParam}&titlesOnly=true`)
       .then((res) => {
         const titles = new Set<string>((res.data || []).map((d) => d.title.toLowerCase()));
         folderDocTitlesRef.current = titles;
-        // Re-evaluate conflicts for any files already queued
+        // Re-evaluate conflicts again with the complete list
         setFileConflicts(prev => {
           const updated = { ...prev };
           let changed = false;
@@ -188,16 +212,13 @@ export function UploadDocumentModal({
             const k = fileKey(file);
             const name = (fileNames[k] ?? file.name.replace(/\.[^/.]+$/, '')).trim().toLowerCase();
             const nowConflict = titles.has(name);
-            if (updated[k] !== nowConflict) {
-              updated[k] = nowConflict;
-              changed = true;
-            }
+            if (updated[k] !== nowConflict) { updated[k] = nowConflict; changed = true; }
           }
           return changed ? updated : prev;
         });
       })
       .catch(() => {
-        folderDocTitlesRef.current = new Set();
+        // If API fails, keep the store-seeded data rather than clearing
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFolder, open]);
