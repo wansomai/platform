@@ -46,6 +46,12 @@ const nextConfig: NextConfig = {
     '@google/generative-ai',
     '@google-cloud/local-auth',
     'googleapis',
+    // Native modules — keep outside Turbopack bundler to avoid source-map errors
+    'better-sqlite3',
+    'puppeteer-extra',
+    'puppeteer-extra-plugin-stealth',
+    'puppeteer-core',
+    '@sparticuz/chromium-min',
   ],
   // Experimental features
   experimental: {},

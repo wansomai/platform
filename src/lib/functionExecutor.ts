@@ -815,6 +815,157 @@ Please provide a structured review report.`;
         }
       }
 
+      case 'fetchLegalDocument': {
+        const { url } = functionCall.args as any;
+
+        try {
+          const { fetchLegalDocument } = await import('@/lib/legalScraper');
+
+          console.log(`[functionExecutor] fetchLegalDocument: ${url}`);
+
+          const result = await fetchLegalDocument(url);
+
+          if (result.error && !result.text) {
+            return {
+              success: false,
+              error: result.error,
+              INSTRUCTION: [
+                `⚠️ Could not fetch the document: ${result.error}`,
+                `Tell the user you could not retrieve the full text and suggest they open the document directly at: ${url}`,
+              ].join(' '),
+            };
+          }
+
+          return {
+            success: true,
+            url,
+            title: result.title || 'Legal Document',
+            text: result.text,
+            wordCount: result.wordCount,
+            truncated: result.truncated || false,
+            INSTRUCTION: [
+              `Full document text retrieved from: ${url}`,
+              `Title: ${result.title}`,
+              `Length: ${result.wordCount} words${result.truncated ? ' (truncated at 12 000 words)' : ''}.`,
+              'Use the text above to write a clear, structured summary covering: parties, facts, legal issues, holdings/ratio, and outcome.',
+              'Present the case name and the URL as a clickable markdown link: [Case Name](url).',
+              '⛔ Do NOT add any URLs other than the one above.',
+            ].join(' '),
+          };
+        } catch (error: any) {
+          console.error('❌ Error fetching legal document:', error);
+          return {
+            success: false,
+            INSTRUCTION: [
+              '⚠️ The document fetch tool failed with a technical error.',
+              `Tell the user you could not retrieve the document text and suggest they open it directly at: ${url}`,
+            ].join(' '),
+            error: error.message || 'Failed to fetch document',
+          };
+        }
+      }
+
+      case 'searchAfricanLegalSources': {
+        const { query, jurisdiction, maxResults } = functionCall.args as any;
+
+        try {
+          const { searchAfricanLegalSources } = await import('@/lib/legalScraper');
+
+          console.log(`[functionExecutor] searchAfricanLegalSources: "${query}" in ${jurisdiction}`);
+
+          const response = await searchAfricanLegalSources(query, {
+            jurisdictionHint: jurisdiction,
+            maxResults: typeof maxResults === 'number' ? Math.min(maxResults, 10) : 8,
+          });
+
+          const hasLegal    = response.legalSources.length > 0;
+          const hasResearch = response.researchSources.length > 0;
+
+          // ── Format Legal Sources (from scraper — specific case pages) ───
+          const legalFormatted = response.legalSources.map((r, i) => ({
+            rank:     i + 1,
+            title:    r.title,
+            url:      r.url,               // exact scraped URL — copy verbatim
+            court:    r.court  || null,
+            date:     r.date   || null,
+            snippet:  r.snippet || null,
+            fullText: r.docContent ? r.docContent.slice(0, 4000) : null,
+            platform: r.platformName,
+          }));
+
+          // ── Format Research Sources (legislation / acts from same LII platform) ──
+          const researchFormatted = response.researchSources.map((r, i) => ({
+            rank:    i + 1,
+            title:   r.title,
+            url:     r.url,
+            source:  r.platformName,
+            snippet: r.snippet || null,
+          }));
+
+          if (!hasLegal && !hasResearch) {
+            return {
+              success: false,
+              legalSourcesFound: 0,
+              platform: response.platformName,
+              platformSearchUrl: response.platformSearchUrl,
+              INSTRUCTION: [
+                `⛔ NO RESULTS from ${response.platformName}.`,
+                'You MUST NOT generate, invent, or hallucinate any case names, URLs, or citations.',
+                'Tell the user: no live legal sources were found on the official LII platform for this jurisdiction.',
+                `Direct them to search manually at: ${response.platformSearchUrl}`,
+                '⛔ Do NOT cite any URL, case, or statute from your training data as a substitute.',
+                'You may explain the legal concept in general terms but must state explicitly that no live sources were retrieved.',
+              ].join(' '),
+            };
+          }
+
+          return {
+            success: true,
+            jurisdiction,
+            platform: response.platformName,
+            platformSearchUrl: response.platformSearchUrl,
+            fromCache: response.fromCache,
+
+            // ── LEGAL SOURCES — scraped from official LII platform ──────
+            legalSources: legalFormatted,
+            legalSourcesCount: legalFormatted.length,
+
+            // ── RESEARCH SOURCES — Google CSE broader context ───────────
+            researchSources: researchFormatted,
+            researchSourcesCount: researchFormatted.length,
+
+            INSTRUCTION: [
+              `ALL sources retrieved live from: ${response.platformName} — ${response.platformSearchUrl}`,
+              'This is the ONLY authoritative source for this jurisdiction. Do NOT cite any other website.',
+              '',
+              `CASE LAW: ${legalFormatted.length} judgment(s) from ${response.platformName}.`,
+              'For each: write the case title as a heading, paste the URL as a clickable link (verbatim from legalSources[].url), state court + date, summarise the snippet.',
+              '',
+              `LEGISLATION: ${researchFormatted.length} act(s)/statute(s) from ${response.platformName}.`,
+              'Cite these as primary law when relevant. URLs verbatim from researchSources[].url.',
+              '',
+              '⛔ URL RULES — NEVER BREAK:',
+              '• Every URL shown to the user MUST be copied character-for-character from legalSources[].url or researchSources[].url.',
+              '• NEVER use a URL from your training data or knowledge.',
+              '• NEVER modify, shorten, reconstruct, or infer any URL.',
+              '• If a URL is not in the arrays above, do not mention it.',
+            ].join(' '),
+          };
+        } catch (error: any) {
+          console.error('❌ Error searching African legal sources:', error);
+          return {
+            success: false,
+            legalSourcesFound: 0,
+            INSTRUCTION: [
+              '⚠️ The legal search tool failed with a technical error.',
+              'You MUST NOT generate, guess, or hallucinate any URLs or case citations.',
+              'Tell the user the search failed and direct them to https://africanlii.org to search manually.',
+            ].join(' '),
+            error: error.message || 'Failed to search legal sources',
+          };
+        }
+      }
+
       default: {
         // Check if this is an associate tool call (starts with "use")
         if (functionCall.name.startsWith('use')) {

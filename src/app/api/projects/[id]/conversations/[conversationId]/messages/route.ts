@@ -7,7 +7,7 @@ import { GoogleGenAI } from '@google/genai';
 
 import { canSendMessage } from '@/lib/subscription';
 import { getJurisdictionById, getJurisdictionInstructions, getJurisdictionByCountryCode } from '@/lib/jurisdictions';
-import { coreDocumentTools, canvasTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
+import { coreDocumentTools, canvasTools, googleCalendarTools, gmailTools, africanLegalSearchTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
 import { resolveAndValidateSources } from '@/lib/url-resolve';
@@ -552,11 +552,11 @@ You MUST cite sources in every response where you draw on legal authority, docum
 
 **SOURCE TYPE B — Legal Sources** (statutes, case law, regulations):
 ${useGoogleSearch
-                ? `- Web search is enabled. Use it to find and verify case names, statutes, and recent legislation before presenting them as fact.
+                ? `- ⚠️ MANDATORY: For ALL legal sources (cases, judgments, statutes, legislation, regulations) — call searchAfricanLegalSources FIRST. This returns live, verified results from the official LII platform for the jurisdiction. NEVER use searchAgent for legal sources.
 - Cite legal sources as clickable markdown links: *[Case/Statute Name](url)*
-- NEVER construct a URL from memory — only use URLs returned from your search results.
-- For legislation enacted or amended after 2024, always search before citing — your training data may reflect draft bills rather than the final enacted law.
-- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable links.`
+- ⛔ URLS: ONLY use URLs verbatim from legalSources[].url and researchSources[].url returned by searchAfricanLegalSources. NEVER construct, guess, or recall a URL from memory.
+- Use searchAgent ONLY for non-legal background information (company profiles, news, general context).
+- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable markdown links to the LII platform.`
                 : `- Web search is OFF. Cite only what you know with confidence from your training data.
 - Use full legal citation format: *Case Name* [Year] Court, or *Statute Name* Cap. X.
 - If uncertain about a specific case name, section number, or recent legislation — say so honestly. Do NOT guess or fabricate. Offer: "I'm not fully certain about this — would you like me to search the web for the latest information? Just say yes."
@@ -571,13 +571,19 @@ ${useGoogleSearch
           **RESEARCH RULE — MANDATORY**:
           - If the user's message mentions a specific named case (e.g. "X v Y [year]"), asks about a specific statute section, or asks you to cite a specific case → call researchAgent IMMEDIATELY before writing any response.
           - This applies even when the question is compound ("Can I do X? Cite case Y to support it") — verify case Y FIRST via researchAgent before answering anything.
-          - If researchAgent returns UNVERIFIED: immediately call searchAgent with the same query — do NOT ask the user for permission, do NOT say "Enable web search". Just search and present the results as your final answer.
+          - If researchAgent returns UNVERIFIED: immediately call searchAfricanLegalSources with the same query — do NOT ask the user for permission. Use the URLs from legalSources[].url verbatim.
           - NEVER answer a question that asks you to "cite" a specific case without first calling researchAgent.
+          - ⚠️ For ALL legal sources (cases, legislation, statutes) — the URL MUST come from searchAfricanLegalSources. NEVER use searchAgent for legal sources.
 
           ${useGoogleSearch
-              ? `**AVAILABLE AGENTS**: Use researchAgent for ALL specific legal research (cases, statutes, sections). Use legalDocumentAgent for document drafting/review/search. Use searchAgent for general web queries not covered by researchAgent.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
-          When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
-              : `**AVAILABLE TOOLS**: Use researchAgent for ALL specific legal research (cases, statutes, sections). For document work: generateDocumentInline (drafting — preferred), reviewDocument (review/analysis), searchProjectDocuments (search project docs).
+              ? `**AVAILABLE AGENTS**:
+- searchAfricanLegalSources: ⚠️ ALWAYS call first for ANY legal query — finds case law, judgments, statutes, legislation. Returns titles + URLs + snippets.
+- fetchLegalDocument: Call this AFTER searchAfricanLegalSources to read the FULL text of a specific case or statute. Use when the user asks for a summary, analysis, holdings, or details of a document.
+- researchAgent: Use for verifying specific known case names or statute text from training knowledge (fast check — no web search).
+- searchAgent: Use ONLY for non-legal web queries — news, company info, general background. NEVER for legal cases or statutes.
+- legalDocumentAgent: Use for document drafting, editing, review, and project document search.${useGoogleCalendar ? '\n- calendarAgent: Use for calendar operations.' : ''}${useGmail ? '\n- gmailAgent: Use for email operations.' : ''}
+When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
+              : `**AVAILABLE TOOLS**: searchAfricanLegalSources (find cases/statutes from official LII), fetchLegalDocument (fetch full case text after finding the URL — use when user asks for summary/analysis/holdings of a specific case). researchAgent (verify specific known cases from training knowledge). For document work: generateDocumentInline (drafting — preferred), reviewDocument (review/analysis), searchProjectDocuments (search project docs).
           ${isCanvasMode ? `Canvas tools also available: ${canvasDocument ? `editCanvasDocument (apply targeted edits to the open canvas document — use for ALL edit requests), draftNewDocument (create a NEW document in canvas — only use when canvas is empty)` : `draftNewDocument (create a new document in canvas), editCanvasDocument (edit existing canvas document)`}.` : ''}`}
           Format: PDF for final docs, DOCX for drafts (default if unsure), MD for notes/analysis.
           Before generating, ensure you have all required information — ask if not.
@@ -711,13 +717,13 @@ ${useGoogleSearch
           if (useGoogleSearch) {
             agentTools.push({
               name: 'searchAgent',
-              description: 'A specialist agent for conducting web searches using Google Search. Use this when you need current information, legal precedents, case law, recent regulations, or any external sources from the web.',
+              description: 'A specialist agent for conducting general web searches using Google Search. Use this ONLY for non-legal queries: news, company information, general background research, current events, etc. ⚠️ NEVER use this for legal cases, judgments, statutes, legislation, or any legal sources — use searchAfricanLegalSources for those instead.',
               parameters: {
                 type: 'object',
                 properties: {
                   query: {
                     type: 'string',
-                    description: 'The search query or research question to investigate'
+                    description: 'The search query or research question to investigate (non-legal only)'
                   }
                 },
                 required: ['query']
@@ -814,6 +820,15 @@ ${useGoogleSearch
             });
           }
 
+          // Always include African LII search directly in agentTools so it is available
+          // in both normal mode and Deep Search (agent orchestration) mode.
+          // It must be a first-class tool on the root agent — not buried inside legalDocumentAgent.
+          agentTools.push(...africanLegalSearchTools.map(tool => ({
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters
+          })));
+
           // If we have multiple tool types, use the agent orchestration pattern
           // Otherwise, use direct tool access for better performance
           // Note: Core document tools are always available, so we always have at least one tool type
@@ -865,6 +880,13 @@ ${useGoogleSearch
 
               // Always include core document tools
               allFunctionDeclarations.push(...coreDocumentTools.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters
+              })));
+
+              // Always include African legal search (jurisdiction-specific, on-demand)
+              allFunctionDeclarations.push(...africanLegalSearchTools.map(tool => ({
                 name: tool.name,
                 description: tool.description,
                 parameters: tool.parameters
@@ -1187,6 +1209,8 @@ ${useGoogleSearch
             readEmail: 'Reading email...',
             draftEmail: 'Drafting email...',
             sendEmail: 'Sending email...',
+            searchAfricanLegalSources: 'Searching legal databases...',
+            fetchLegalDocument: 'Reading case document...',
             searchAgent: 'Verify research results...',
             researchAgent: 'Researching legal sources...',
             legalDocumentAgent: 'Working on your document...',
@@ -1200,7 +1224,7 @@ ${useGoogleSearch
           const TOOL_PRIORITY = [
             'generateDocumentInline', 'draftNewDocument', 'editCanvasDocument',
             'reviewDocument', 'searchLegalKnowledge',
-            'searchProjectDocuments', 'searchAgent', 'researchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
+            'searchProjectDocuments', 'searchAfricanLegalSources', 'fetchLegalDocument', 'searchAgent', 'researchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
             'createCalendarEvent', 'updateCalendarEvent', 'deleteCalendarEvent',
             'searchCalendarEvents', 'checkCalendarAvailability',
             'calendarAgent', 'draftEmail', 'sendEmail', 'readEmail', 'searchEmails', 'gmailAgent',
@@ -1685,7 +1709,11 @@ async function executeAgentCall(
     switch (agentName) {
       case 'searchAgent':
         agentTools.push({ googleSearch: {} });
-        agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${baseContext}`;
+        agentInstruction = `You are a general web search specialist. Search for non-legal background information: news, company profiles, current events, general context.
+
+⚠️ STRICT RULE: If the search query is about legal cases, court judgments, statutes, legislation, or any legal authority — do NOT search for them. Instead return: "Legal sources must be retrieved via searchAfricanLegalSources — this agent handles general web queries only."
+
+${baseContext}`;
         break;
 
       case 'researchAgent': {
@@ -1728,8 +1756,8 @@ ${baseContext}`;
           }
         }
 
-        // Always include core document tools
-        const agentDocTools: any[] = [...coreDocumentTools];
+        // Always include core document tools + African legal search
+        const agentDocTools: any[] = [...coreDocumentTools, ...africanLegalSearchTools];
 
         // Add canvas tools if canvas mode is enabled
         if (agentCanvasMode) {
@@ -1795,7 +1823,7 @@ ${baseContext}`;
     // Wrap the agent call in a timeout to prevent indefinite hangs.
     // searchAgent uses Google Search grounding which can take 30-50 s under load;
     // researchAgent is pure generation and rarely exceeds 15 s.
-    const AGENT_TIMEOUT_MS = 60_000;
+    const AGENT_TIMEOUT_MS = 120_000; // 2 minutes — Google Search grounding can be slow
     const agentResult = await Promise.race([
       genAI.models.generateContent({
         model: modelName,
