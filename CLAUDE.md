@@ -235,7 +235,7 @@ import prisma from '@/lib/prisma';
 ```
 
 ### Route Groups
-- `(account)` - Authenticated user pages: dashboard, projects, vault, workflows (`/workflows`, `/workflows/[id]`, `/workflows/new`, `/workflows/template/[slug]`); project workspace UI is at `(account)/projects/[id]`
+- `(account)` - Authenticated user pages: dashboard, projects, vault; **`/workflows/*` is the UI for managing AI Associates** (create, edit, delete `AIAssociate` entities — the name "workflows" is legacy); project workspace UI is at `(account)/projects/[id]`
 - `(auth)` - Login, register, password reset
 - `(landingpages)` - Public marketing pages
 - `(admin)` - Admin-only pages
@@ -246,7 +246,7 @@ Unauthenticated users can draft legal documents on the `/legal-documents/[slug]`
 1. Page loads Sanity CMS document data (type, title, description, jurisdiction)
 2. `GuestCanvasChatSplitView` (`src/components/guest/`) auto-calls `/api/public/generate` on mount to stream an AI-drafted document
 3. User can refine via `GuestChatPanel` which calls `/api/public/chat`
-4. **Export is gated behind Paystack payment** — jurisdiction-specific pricing is hardcoded in `GuestCanvasChatSplitView` (NGN 2,500 / KES 350 / ZAR 45 / GHS 75 / USD 5 default); on payment success, `/api/public/export` returns the DOCX file and emails it
+4. **Export is gated behind Paystack payment** — jurisdiction-specific pricing is hardcoded in `GuestCanvasChatSplitView` (NGN 2,500 / KES 350 / ZAR 45 / GHS 75 / USD 5 default); on payment success a DOCX export/email is triggered (note: `/api/public/export` route is not currently implemented as a file — check `GuestCanvasChatSplitView` for the current export mechanism)
 - These `/api/public/*` routes are unauthenticated — do NOT add `getUserIdFromRequest()` or auth middleware
 - Guest components do not use `apiService` (no Bearer token) — they use raw `fetch`
 
@@ -369,7 +369,7 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/documents/*` - Vault/organization-level document operations
 - `/api/folders/*` - Folder hierarchy for documents
 - `/api/associates/*` - AI associate CRUD
-- `/api/workspace/[id]/*` - Project workspace settings
+- `/api/workspace/[id]/*` - Shared workspace settings, member management, and visibility controls
 - `/api/payments/*` - Payment processing
 - `/api/subscription/*` - Subscription management
 - `/api/profile/*` - User profile operations
@@ -377,9 +377,12 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/digest/*` - Legal digest subscriptions
 - `/api/cron/*` - Cron job endpoints (legal digest generation)
 - `/api/events/*` - Event registrations (law school launch, opt-ins)
-- `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`, `export`)
+- `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`)
+- `/api/search` - Pan-African legal search (authenticated; calls `searchAfricanLegalSources` from `src/lib/legalScraper.ts`)
+- `/api/projects/[id]/reports/[reportId]/download` - Download project reports in HTML or PDF format
+- `/api/prorequests` - Pro plan upgrade requests
 - `/api/law360/*` - Law360 activation and email-check endpoints
 - `/api/submissions/*` - Form submissions and demo requests
 
 ### Deployment Note
-`src/vercel.json` lives inside `src/` (not the project root) — this is intentional for this project's Vercel configuration.
+`src/vercel.json` lives inside `src/` (not the project root) — this is intentional for this project's Vercel configuration. It also contains permanent redirects from the legacy domain `wakili.chat` → `wansom.ai`.
