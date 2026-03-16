@@ -410,15 +410,39 @@ export default function GuestCanvasInterface({
             >
               <div className="legal-page-wrapper">
                 <div className="legal-page">
-                  <div
-                    className="legal-page-content lexical-editor"
-                    style={{ pointerEvents: 'none', userSelect: 'none' }}
-                    dangerouslySetInnerHTML={{
-                      __html: showDiff
-                        ? buildDiffHtml(pendingSuggestion!.originalHtml, pendingSuggestion!.suggestedHtml)
-                        : streamingHtml || '',
-                    }}
-                  />
+                  {isGenerating && !streamingHtml && !showDiff ? (
+                    <div className="legal-page-content lexical-editor">
+                      <div className="skeleton-title" />
+                      <div className="skeleton-subtitle" />
+                      <div className="skeleton-body-block">
+                        {[100, 90, 95, 85, 100, 88, 92, 80, 97, 84, 100, 75, 91, 86, 94].map((w, i) => (
+                          <div key={i} className="skeleton-line" style={{ width: `${w}%` }} />
+                        ))}
+                      </div>
+                      <div className="skeleton-body-block">
+                        <div className="skeleton-heading" style={{ width: '45%' }} />
+                        {[98, 87, 93, 79, 100, 83, 96, 88].map((w, i) => (
+                          <div key={i} className="skeleton-line" style={{ width: `${w}%` }} />
+                        ))}
+                      </div>
+                      <div className="skeleton-body-block">
+                        <div className="skeleton-heading" style={{ width: '38%' }} />
+                        {[95, 82, 100, 77, 91, 86].map((w, i) => (
+                          <div key={i} className="skeleton-line" style={{ width: `${w}%` }} />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="legal-page-content lexical-editor"
+                      style={{ pointerEvents: 'none', userSelect: 'none' }}
+                      dangerouslySetInnerHTML={{
+                        __html: showDiff
+                          ? buildDiffHtml(pendingSuggestion!.originalHtml, pendingSuggestion!.suggestedHtml)
+                          : streamingHtml || '',
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -590,6 +614,25 @@ export default function GuestCanvasInterface({
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           font-size: 10px; user-select: none;
         }
+
+        @keyframes shimmer {
+          0% { background-position: -600px 0; }
+          100% { background-position: 600px 0; }
+        }
+        .skeleton-title,
+        .skeleton-subtitle,
+        .skeleton-heading,
+        .skeleton-line {
+          border-radius: 4px;
+          background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+          background-size: 600px 100%;
+          animation: shimmer 1.4s ease-in-out infinite;
+        }
+        .skeleton-title { width: 55%; height: 22px; margin: 0 auto 14px; display: block; }
+        .skeleton-subtitle { width: 38%; height: 16px; margin: 0 auto 8px; display: block; }
+        .skeleton-body-block { margin-top: 28px; }
+        .skeleton-heading { height: 18px; margin-bottom: 14px; }
+        .skeleton-line { height: 13px; margin-bottom: 9px; }
 
         @media print {
           body * { visibility: hidden; }
