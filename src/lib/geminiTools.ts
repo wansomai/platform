@@ -605,3 +605,106 @@ export const gmailTools = [
   readEmailTool,
   draftEmailTool
 ];
+
+// ── Pan-African Legal Search Tool ──────────────────────────────────────────
+
+export const searchAfricanLegalSourcesTool = {
+  name: "searchAfricanLegalSources",
+  description: `Search official African LII (Legal Information Institute) databases for cases,
+  judgments, statutes, and acts. Results come EXCLUSIVELY from the official LII platform
+  for the requested jurisdiction — no other websites.
+
+  LII PLATFORM MAP (each jurisdiction has exactly one official LII):
+  • Kenya          → Kenya Law          (new.kenyalaw.org)
+  • Ghana          → GhaLII             (ghalii.org)
+  • Nigeria        → NigeriaLII         (nigerialii.org)
+  • South Africa   → SAFLII / AfricanLII (saflii.org / africanlii.org/za)
+  • Uganda         → ULII               (ulii.org)
+  • Tanzania       → TanzLII            (tanzlii.org)
+  • Zimbabwe       → ZimLII             (zimlii.org)
+  • Malawi         → MalawiLII          (malawilii.org)
+  • Namibia        → NamibiaLII         (namibialii.org)
+  • Lesotho        → LesothoLII         (lesotholii.org)
+  • Eswatini       → SwaziLII           (swazilii.org)
+  • Seychelles     → SeyLII             (seylii.org)
+  • Mauritius      → MauritiusLII       (mauritiuslii.org)
+  • Ethiopia       → EthiopiaLII        (ethiopialii.org)
+  • OHADA / Francophone West Africa → OHADA/CCJA (ohadalex.org)
+  • Pan-African / multiple countries  → AfricanLII (africanlii.org)
+
+  RETURNS:
+  legalSources[]   — cases and judgments from the jurisdiction's LII
+  researchSources[] — legislation and acts from the same jurisdiction's LII
+
+  WHEN TO CALL: Any time the user asks about a case, judgment, statute, act, or law
+  from any African country. This is THE ONLY tool for legal sources — call it BEFORE
+  citing anything. This applies in ALL modes including Deep Search / web search mode.
+  NEVER use searchAgent or web search for legal cases or legislation.
+
+  ⚠️ ABSOLUTE RULES — NEVER BREAK THESE:
+  1. EVERY URL you show the user MUST come verbatim from legalSources[].url or researchSources[].url.
+  2. NEVER generate, guess, reconstruct, or use any URL from your training data or Google Search.
+  3. NEVER cite a source that is not in the tool's returned arrays.
+  4. If legalSources[] is empty: tell the user no live results were found and direct them
+     to the platform URL in platformSearchUrl. Do NOT invent case names or links.
+  5. Copy each URL character-for-character — do not shorten, modify, or paraphrase it.
+  6. In Deep Search mode: searchAgent is for non-legal queries only. ALL legal URLs must come from this tool.`,
+
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      query: {
+        type: Type.STRING,
+        description: "Specific legal search query — case name, legal topic, statute, or legal question. Be precise (e.g., 'breach of contract damages' or 'land acquisition compensation Kenya')."
+      },
+      jurisdiction: {
+        type: Type.STRING,
+        description: "The African country or jurisdiction. Use the country name exactly (e.g., 'Kenya', 'South Africa', 'Nigeria', 'Ghana', 'Uganda', 'Tanzania', 'Zimbabwe', 'Malawi', 'Namibia', 'Lesotho', 'Eswatini', 'Seychelles', 'Mauritius', 'Ethiopia', 'OHADA'). Extract from user message or workspace jurisdiction."
+      },
+      maxResults: {
+        type: Type.NUMBER,
+        description: "Maximum number of results to return (default 8, max 20)."
+      }
+    },
+    required: ["query", "jurisdiction"]
+  }
+};
+
+// ── Fetch Legal Document Tool ─────────────────────────────────────────────────
+
+export const fetchLegalDocumentTool = {
+  name: "fetchLegalDocument",
+  description: `Fetch the full text of a legal document (case judgment or statute) from an official LII platform URL.
+
+  WHEN TO USE:
+  - After searchAfricanLegalSources returns a URL, call this to read the full document.
+  - When a user asks to summarise, analyse, explain holdings, or discuss the details of a specific case or statute.
+  - When the snippet from search results is not enough to answer the question.
+
+  HOW TO USE:
+  1. First call searchAfricanLegalSources to get the official URL.
+  2. Then call fetchLegalDocument with that URL to get the full text.
+  3. Use the returned text to write your summary or analysis.
+
+  ⚠️ RULES:
+  - Only provide URLs that came from searchAfricanLegalSources results (legalSources[].url or researchSources[].url).
+  - NEVER pass a URL you constructed or recalled from memory.
+  - If the document returns an error, tell the user and suggest they open the URL directly.`,
+
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      url: {
+        type: Type.STRING,
+        description: "The exact URL of the legal document from an official LII platform. Must come verbatim from a previous searchAfricanLegalSources result."
+      }
+    },
+    required: ["url"]
+  }
+};
+
+/** Legal research tools — always available for African jurisdiction queries */
+export const africanLegalSearchTools = [
+  searchAfricanLegalSourcesTool,
+  fetchLegalDocumentTool,
+];

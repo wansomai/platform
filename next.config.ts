@@ -37,6 +37,22 @@ const nextConfig: NextConfig = {
       'tesseract.js/dist/worker.min.js': 'tesseract.js/dist/worker.min.js',
     },
   },
+  // Keep Google AI SDKs as native Node.js requires rather than bundling them
+  // through Turbopack. This prevents the "Invalid source map" dev-mode warnings
+  // that appear when Turbopack tries to parse malformed source maps inside those
+  // packages' dist files.
+  serverExternalPackages: [
+    '@google/genai',
+    '@google/generative-ai',
+    '@google-cloud/local-auth',
+    'googleapis',
+    // Native modules — keep outside Turbopack bundler to avoid source-map errors
+    'better-sqlite3',
+    'puppeteer-extra',
+    'puppeteer-extra-plugin-stealth',
+    'puppeteer-core',
+    '@sparticuz/chromium-min',
+  ],
   // Experimental features
   experimental: {},
   // Redirects

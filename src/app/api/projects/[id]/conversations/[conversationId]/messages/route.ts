@@ -7,17 +7,14 @@ import { GoogleGenAI } from '@google/genai';
 
 import { canSendMessage } from '@/lib/subscription';
 import { getJurisdictionById, getJurisdictionInstructions, getJurisdictionByCountryCode } from '@/lib/jurisdictions';
-import {  coreDocumentTools, canvasTools, googleCalendarTools, gmailTools } from '@/lib/geminiTools';
+import { coreDocumentTools, canvasTools, googleCalendarTools, gmailTools, africanLegalSearchTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
 import { resolveAndValidateSources } from '@/lib/url-resolve';
-import { tryExtractDocumentContentOnDemand } from '@/lib/documentContentFallback';
+import { extractMissingDocumentContents } from '@/lib/documentContentFallback';
 
 // Set a reasonable timeout
 export const maxDuration = 60;
-
-// Domains that must never appear as web search sources
-const BLOCKED_SEARCH_DOMAINS = ['jibudocs.com'];
 
 // Initialize Gemini with the new API
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
@@ -70,6 +67,9 @@ const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
   previewDocument: z.any().optional(), // Document currently in preview mode
   currentCanvasHtml: z.string().optional(), // Live editor HTML (may differ from saved DB version)
+  metadata: z.any().optional(),
+  streamingId: z.string().optional(),
+  attachedDocuments: z.any().optional(),
 });
 
 // Encoder for streaming response
@@ -92,7 +92,7 @@ export async function POST(
 
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
-    const { content, previewDocument, currentCanvasHtml } = createMessageSchema.parse(body);
+    const { content, previewDocument, currentCanvasHtml, attachedDocuments, metadata } = createMessageSchema.parse(body);
 
     // Phase 1: Validate access and fetch context — do NOT create user message yet
     // Start associate tools fetch immediately (runs in parallel with all other Phase 1 queries)
@@ -208,12 +208,18 @@ export async function POST(
     }
 
     // Phase 2: Validation passed — now create user message
+    let userMessageMetadata = metadata || {};
+    if (attachedDocuments && attachedDocuments.length > 0) {
+      userMessageMetadata.attachedDocuments = attachedDocuments;
+    }
+
     const userMessage = await prisma.message.create({
       data: {
         content,
         role: "user",
         conversationId,
         userId,
+        metadata: Object.keys(userMessageMetadata).length > 0 ? JSON.stringify(userMessageMetadata) : undefined
       }
     });
 
@@ -221,14 +227,14 @@ export async function POST(
     const stream = new ReadableStream({
       async start(controller) {
         let controllerClosed = false;
-        
+
         const safeClose = () => {
           if (!controllerClosed) {
             controllerClosed = true;
             controller.close();
           }
         };
-        
+
         try {
           // Send initial status to client immediately
           controller.enqueue(
@@ -247,8 +253,8 @@ export async function POST(
           let settings = DEFAULT_SETTINGS;
           if (project?.knowledgeBase?.settings) {
             try {
-              settings = typeof project.knowledgeBase.settings === 'string' 
-                ? JSON.parse(project.knowledgeBase.settings) 
+              settings = typeof project.knowledgeBase.settings === 'string'
+                ? JSON.parse(project.knowledgeBase.settings)
                 : project.knowledgeBase.settings as any;
             } catch (error) {
               console.error('Error parsing settings:', error);
@@ -301,78 +307,101 @@ export async function POST(
 
           // Create the custom instructions
           const customInstructions = project?.knowledgeBase?.instructions || "";
-          
+
           // Prepare document content for Gemini (full documents, no chunking)
-                    let relevantContent = "";
-                    const scannedDocuments: Array<{ title: string; fileUrl: string; mimeType: string }> = [];
+          let relevantContent = "";
+          const scannedDocuments: Array<{ title: string; fileUrl: string; mimeType: string }> = [];
 
-                    // Always include canvas document content when in canvas mode so the AI can reference it
-                    if (isCanvasMode && canvasDocument) {
-                      relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
-                    }
+          // Always include canvas document content when in canvas mode so the AI can reference it
+          if (isCanvasMode && canvasDocument) {
+            relevantContent = `### Current Canvas Document ###\n\n${canvasDocument.plainText || canvasDocument.htmlContent || ''}\n\n`;
+          }
 
-          if (conversationDocuments.length > 0) {
+          // When the user explicitly attached specific documents to this message, only send those
+          // documents to Gemini. If no specific docs were attached, send all project documents.
+          type DocRef = typeof conversationDocuments[number];
+          let docsToProcess: DocRef[] = conversationDocuments;
+
+          if (attachedDocuments && attachedDocuments.length > 0) {
+            const attachedIds = new Set<string>(attachedDocuments.map((d: any) => String(d.id)));
+
+            // Filter project docs to only the attached ones
+            const foundInProject = conversationDocuments.filter(d => attachedIds.has(d.document.id));
+            const foundIds = new Set<string>(foundInProject.map(d => d.document.id));
+
+            // Some attached docs may not be in ProjectDocument yet (race condition after upload/vault attach)
+            // Fetch them directly from the Document table as a safety net
+            const missingIds: string[] = Array.from(attachedIds).filter(id => !foundIds.has(id));
+            let directlyFetched: DocRef[] = [];
+            if (missingIds.length > 0) {
+              const rawDocs = await prisma.document.findMany({
+                where: { id: { in: missingIds } },
+                select: {
+                  id: true,
+                  title: true,
+                  file_url: true,
+                  file_type: true,
+                  content: { select: { content: true } }
+                }
+              });
+              directlyFetched = rawDocs.map(doc => ({ document: doc })) as unknown as DocRef[];
+            }
+
+            const combined = [...foundInProject, ...directlyFetched];
+            // Only restrict to attached docs if we actually found some; otherwise fall back to all
+            docsToProcess = combined.length > 0 ? combined : conversationDocuments;
+          }
+
+          if (docsToProcess.length > 0) {
+            // Extract content for any documents that don't have it yet — all in parallel so we
+            // don't spend N × extraction_time waiting serially before building the prompt.
+            await extractMissingDocumentContents(docsToProcess as any);
+
             // Gemini can handle FULL documents (2M token context) - no truncation needed!
             const contentParts: string[] = [];
 
-            for (const docRef of conversationDocuments) {
-              let documentContent = docRef.document.content?.content ?? '';
+            for (const docRef of docsToProcess) {
+              const documentContent = docRef.document.content?.content ?? '';
 
-              // Fallback: when DB has no content, check extraction status first
+              // Skip docs where extraction genuinely produced nothing (unsupported type, corrupt file)
               if (!documentContent.trim()) {
-                // Check if background extraction is still in progress
-                const ce = docRef.document.content_extracted as any;
-                const extractionInProgress =
-                  ce != null &&
-                  typeof ce === 'object' &&
-                  'Bool' in ce &&
-                  ce.Bool === false;
-
-                if (extractionInProgress) {
-                  // Background job is still extracting — don't block, just notify AI
-                  contentParts.push(
-                    `### Document: ${docRef.document.title} ###\n\n` +
-                    `[Document is still being processed. Please ask the user to try again in a moment.]\n\n`
-                  );
-                  continue;
-                }
-
-                // Not in progress — attempt on-demand extraction (e.g. DOCX via mammoth)
-                const extracted = await tryExtractDocumentContentOnDemand({
-                  id: docRef.document.id,
-                  file_url: docRef.document.file_url,
-                  file_type: docRef.document.file_type,
-                });
-                if (extracted != null) {
-                  documentContent = extracted;
-                  docRef.document.content = { content: extracted };
-                } else {
-                  continue;
-                }
+                continue;
               }
 
               // Check if this is a scanned PDF or image that requires Gemini processing
               if (documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" || documentContent === "[SCANNED_IMAGE_REQUIRES_PROCESSING]") {
-                if (docRef.document.file_url) {
-                  // Determine MIME type based on file extension
-                  const fileType = docRef.document.file_type;
-                  const mimeType = fileType === 'pdf' ? 'application/pdf' :
-                                  fileType === 'png' ? 'image/png' :
-                                  fileType === 'jpg' || fileType === 'jpeg' ? 'image/jpeg' :
-                                  fileType === 'gif' ? 'image/gif' :
-                                  fileType === 'bmp' ? 'image/bmp' :
-                                  fileType === 'webp' ? 'image/webp' :
-                                  'application/pdf';
+                const fileType = (docRef.document.file_type || '').toLowerCase();
 
+                // Gemini inline data only supports PDF and images — Office formats (docx, doc, xlsx, xls)
+                // are NOT supported and will cause a 400 "Unsupported MIME type" error.
+                const GEMINI_INLINE_SUPPORTED: Record<string, string> = {
+                  pdf: 'application/pdf',
+                  png: 'image/png',
+                  jpg: 'image/jpeg',
+                  jpeg: 'image/jpeg',
+                  gif: 'image/gif',
+                  bmp: 'image/bmp',
+                  webp: 'image/webp',
+                };
+
+                const mimeType = GEMINI_INLINE_SUPPORTED[fileType];
+
+                if (mimeType && docRef.document.file_url) {
                   scannedDocuments.push({
                     title: docRef.document.title,
                     fileUrl: docRef.document.file_url,
                     mimeType
                   });
-
-                  // Add placeholder in text content
                   const docType = documentContent === "[SCANNED_PDF_REQUIRES_PROCESSING]" ? "Scanned PDF" : "Image";
                   contentParts.push(`### Document: ${docRef.document.title} (${docType} - processed natively by Gemini) ###\n\n`);
+                } else {
+                  // Office document (DOCX/DOC/XLSX/XLS) that could not be text-extracted.
+                  // Gemini cannot accept these as inline data, so note it in the context instead.
+                  contentParts.push(
+                    `### Document: ${docRef.document.title} (${fileType.toUpperCase()}) ###\n\n` +
+                    `Note: This document could not be read automatically (it may be a binary-format or password-protected file). ` +
+                    `Please ask the user to copy and paste the relevant text if they need specific content reviewed.\n\n`
+                  );
                 }
                 continue;
               }
@@ -380,7 +409,7 @@ export async function POST(
               const docLength = documentContent.length;
 
               // Send ENTIRE document - Gemini can handle up to 2M tokens (~4000 pages)
-              const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength/1000)}k characters, ${Math.round(docLength/2000)} pages) ###\n\n` +
+              const docSection = `### Document: ${docRef.document.title} (${Math.round(docLength / 1000)}k characters, ${Math.round(docLength / 2000)} pages) ###\n\n` +
                 `**FULL DOCUMENT CONTENT:**\n` +
                 documentContent + '\n\n';
 
@@ -421,7 +450,7 @@ export async function POST(
           let conversationHistory = messageHistory
             .filter((msg) => msg.role !== 'system')
             .reverse()
-            .map((msg:any) => ({
+            .map((msg: any) => ({
               role: msg.role === 'assistant' ? 'model' : 'user',
               parts: [{ text: msg.content }],
             }));
@@ -443,7 +472,7 @@ export async function POST(
           if (conversationHistory.length > 0 && conversationHistory[0].role !== 'user') {
             conversationHistory = [];
           }
-          
+
           // Create unified system message for all queries
           const fullProject = project;
 
@@ -470,9 +499,8 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
             `;
           }
 
-          const systemMessage = `You are wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), collaborating with other lawyer teammates working on a project titled "${
-            fullProject?.title
-          }".
+          const systemMessage = `You are wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), collaborating with other lawyer teammates working on a project titled "${fullProject?.title
+            }".
           ${fullProject?.description ? `Project description: ${fullProject.description}` : ""}
           ${activeJurisdiction ? `
 **JURISDICTION**: ${activeJurisdiction.name} (${activeJurisdiction.country}${activeJurisdiction.state ? ', ' + activeJurisdiction.state : ''})${isAutoDetected ? ' [auto-detected from user location]' : ''}
@@ -502,8 +530,8 @@ ${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
     THAT IS THE ENTIRE RESPONSE. Do not add: background context, related cases, "however" pivots, thematic summaries, what the law "generally" says, or anything else. The user asked about a specific case — if you cannot confirm it with ALL THREE elements, your only job is to say so and offer to search. Adding unverified partial matches is not being helpful, it is misleading a lawyer.
 
   • ${useGoogleSearch
-    ? `Web search is ON — if a search returns no direct match for the specific case asked, report that in one sentence. Do not fill the gap with training-data cases.`
-    : `Web search is OFF — never construct or infer holdings for unconfirmed cases. Be brief.`}
+                ? `Web search is ON — if a search returns no direct match for the specific case asked, report that in one sentence. Do not fill the gap with training-data cases.`
+                : `Web search is OFF — never construct or infer holdings for unconfirmed cases. Be brief.`}
   • A short honest answer is always better than a long answer that sounds plausible but cannot be verified.
 ` : '- No jurisdiction has been configured. If the query involves jurisdiction-specific law, ask the user which jurisdiction applies.'}
           **TODAY'S DATE**: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} (${new Date().toISOString().split('T')[0]})
@@ -525,12 +553,12 @@ You MUST cite sources in every response where you draw on legal authority, docum
 
 **SOURCE TYPE B — Legal Sources** (statutes, case law, regulations):
 ${useGoogleSearch
-  ? `- Web search is enabled. Use it to find and verify case names, statutes, and recent legislation before presenting them as fact.
+                ? `- ⚠️ MANDATORY: For ALL legal sources (cases, judgments, statutes, legislation, regulations) — call searchAfricanLegalSources FIRST. This returns live, verified results from the official LII platform for the jurisdiction. NEVER use searchAgent for legal sources.
 - Cite legal sources as clickable markdown links: *[Case/Statute Name](url)*
-- NEVER construct a URL from memory — only use URLs returned from your search results.
-- For legislation enacted or amended after 2024, always search before citing — your training data may reflect draft bills rather than the final enacted law.
-- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable links.`
-  : `- Web search is OFF. Cite only what you know with confidence from your training data.
+- ⛔ URLS: ONLY use URLs verbatim from legalSources[].url and researchSources[].url returned by searchAfricanLegalSources. NEVER construct, guess, or recall a URL from memory.
+- Use searchAgent ONLY for non-legal background information (company profiles, news, general context).
+- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable markdown links to the LII platform.`
+                : `- Web search is OFF. Cite only what you know with confidence from your training data.
 - Use full legal citation format: *Case Name* [Year] Court, or *Statute Name* Cap. X.
 - If uncertain about a specific case name, section number, or recent legislation — say so honestly. Do NOT guess or fabricate. Offer: "I'm not fully certain about this — would you like me to search the web for the latest information? Just say yes."
 - For legislation enacted or amended after 2024, flag the uncertainty explicitly.
@@ -544,13 +572,19 @@ ${useGoogleSearch
           **RESEARCH RULE — MANDATORY**:
           - If the user's message mentions a specific named case (e.g. "X v Y [year]"), asks about a specific statute section, or asks you to cite a specific case → call researchAgent IMMEDIATELY before writing any response.
           - This applies even when the question is compound ("Can I do X? Cite case Y to support it") — verify case Y FIRST via researchAgent before answering anything.
-          - If researchAgent returns UNVERIFIED: immediately call searchAgent with the same query — do NOT ask the user for permission, do NOT say "Enable web search". Just search and present the results as your final answer.
+          - If researchAgent returns UNVERIFIED: immediately call searchAfricanLegalSources with the same query — do NOT ask the user for permission. Use the URLs from legalSources[].url verbatim.
           - NEVER answer a question that asks you to "cite" a specific case without first calling researchAgent.
+          - ⚠️ For ALL legal sources (cases, legislation, statutes) — the URL MUST come from searchAfricanLegalSources. NEVER use searchAgent for legal sources.
 
           ${useGoogleSearch
-            ? `**AVAILABLE AGENTS**: Use researchAgent for ALL specific legal research (cases, statutes, sections). Use legalDocumentAgent for document drafting/review/search. Use searchAgent for general web queries not covered by researchAgent.${useGoogleCalendar ? ' Use calendarAgent for calendar operations.' : ''}${useGmail ? ' Use gmailAgent for email operations.' : ''}
-          When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
-            : `**AVAILABLE TOOLS**: Use researchAgent for ALL specific legal research (cases, statutes, sections). For document work: generateDocumentInline (drafting — preferred), reviewDocument (review/analysis), searchProjectDocuments (search project docs).
+              ? `**AVAILABLE AGENTS**:
+- searchAfricanLegalSources: ⚠️ ALWAYS call first for ANY legal query — finds case law, judgments, statutes, legislation. Returns titles + URLs + snippets.
+- fetchLegalDocument: Call this AFTER searchAfricanLegalSources to read the FULL text of a specific case or statute. Use when the user asks for a summary, analysis, holdings, or details of a document.
+- researchAgent: Use for verifying specific known case names or statute text from training knowledge (fast check — no web search).
+- searchAgent: Use ONLY for non-legal web queries — news, company info, general background. NEVER for legal cases or statutes.
+- legalDocumentAgent: Use for document drafting, editing, review, and project document search.${useGoogleCalendar ? '\n- calendarAgent: Use for calendar operations.' : ''}${useGmail ? '\n- gmailAgent: Use for email operations.' : ''}
+When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
+              : `**AVAILABLE TOOLS**: searchAfricanLegalSources (find cases/statutes from official LII), fetchLegalDocument (fetch full case text after finding the URL — use when user asks for summary/analysis/holdings of a specific case). researchAgent (verify specific known cases from training knowledge). For document work: generateDocumentInline (drafting — preferred), reviewDocument (review/analysis), searchProjectDocuments (search project docs).
           ${isCanvasMode ? `Canvas tools also available: ${canvasDocument ? `editCanvasDocument (apply targeted edits to the open canvas document — use for ALL edit requests), draftNewDocument (create a NEW document in canvas — only use when canvas is empty)` : `draftNewDocument (create a new document in canvas), editCanvasDocument (edit existing canvas document)`}.` : ''}`}
           Format: PDF for final docs, DOCX for drafts (default if unsure), MD for notes/analysis.
           Before generating, ensure you have all required information — ask if not.
@@ -577,6 +611,16 @@ ${useGoogleSearch
           - Use documentIds: ['primary'] when calling reviewDocument for the canvas document
 
           Other project documents provide reference context only.
+          ` : attachedDocuments && attachedDocuments.length > 0 ? `
+          **📎 ATTACHED DOCUMENT REVIEW**:
+          The user has explicitly attached the following document${attachedDocuments.length > 1 ? 's' : ''} to THIS message for review:
+          ${docsToProcess.map((d: any) => `• ${d.document.title}`).join('\n          ')}
+
+          CRITICAL INSTRUCTIONS — YOU MUST FOLLOW THESE EXACTLY:
+          1. Provide a COMPLETE, FRESH, THOROUGH analysis of the attached document${attachedDocuments.length > 1 ? 's' : ''} above. Do NOT give abbreviated or summary-only responses.
+          2. Even if these documents have been discussed before in this conversation, treat this as a NEW review request. DO NOT say "as I mentioned earlier" or reference previous responses. Deliver a full independent analysis now.
+          3. If multiple documents are attached, review EACH one individually with full detail, then provide a combined analysis if applicable.
+          4. The full content of each attached document is provided below — use ALL of it, not just the first few pages.
           ` : `
           **💬 CHAT MODE CONTEXT**:
           No specific document is currently in primary focus.
@@ -587,15 +631,15 @@ ${useGoogleSearch
           `}
 
           ${await (async () => {
-            const associateTools = await associateToolsPromise;
-            if (associateTools && associateTools.length > 0) {
-              return `
+              const associateTools = await associateToolsPromise;
+              if (associateTools && associateTools.length > 0) {
+                return `
           **🤝 SPECIALIZED AI ASSOCIATES AVAILABLE**:
           You have access to specialized AI legal associates who are experts in specific practice areas:
 
           ${associateTools.map(tool =>
-            `- **${tool.metadata.associateName}**: ${tool.metadata.practiceAreas.map(pa => pa.replace(/_/g, ' ')).join(', ')}`
-          ).join('\n          ')}
+                  `- **${tool.metadata.associateName}**: ${tool.metadata.practiceAreas.map(pa => pa.replace(/_/g, ' ')).join(', ')}`
+                ).join('\n          ')}
 
           **When to delegate to associates**:
           - When a user's question falls clearly within an associate's specialization, call the associate's function
@@ -608,16 +652,20 @@ ${useGoogleSearch
           - The associate will provide specialized analysis based on their expertise and knowledge base
           - Present the associate's response to the user, crediting them appropriately
           `;
-            }
-            return '';
-          })()}
+              }
+              return '';
+            })()}
 
           ${customInstructions ? `Always use these instructions: ${customInstructions}` : ""}
           ${canvasContext}
             
             ${relevantContent ?
               `IMPORTANT: FULL document content is provided below for comprehensive analysis.
-              All pages and sections are available - analyze thoroughly.
+              All pages and sections are available — analyze thoroughly and completely.
+              ${attachedDocuments && attachedDocuments.length > 0
+                ? `These documents have been explicitly attached for review in this message. MANDATORY: Provide a COMPLETE, INDEPENDENT analysis. Do NOT abbreviate, summarize only, or reference prior conversation responses. Every review request must be answered in full — enterprise teams review the same documents multiple times across different contexts and require fresh, complete output each time.`
+                : `Use the full document content provided to answer the user's query comprehensively.`
+              }
 
               Here are the complete documents for context:
               ${relevantContent}
@@ -630,9 +678,11 @@ ${useGoogleSearch
               :
               isCanvasMode && canvasDocument
                 ? `You are analyzing the current canvas document. The document content is available for your review and analysis.`
-                : conversationDocuments.length > 0
-                  ? `Note: There are ${conversationDocuments.length} documents attached to this conversation, but no content was found relevant to this specific query.`
-                  : "No documents are currently attached to this conversation."
+                : docsToProcess.length > 0
+                  ? `Note: ${docsToProcess.length} document${docsToProcess.length > 1 ? 's are' : ' is'} attached to this message, but their content could not be extracted at this time. This is usually a temporary issue — the user should try resending the message or re-uploading the document. Do NOT say the document was not shared or is unavailable; inform the user that content extraction failed and suggest retrying.`
+                  : conversationDocuments.length > 0
+                    ? `There are ${conversationDocuments.length} documents in this project. You can use the searchProjectDocuments tool to find and retrieve relevant content.`
+                    : "No documents are currently attached to this conversation."
             }
 
             ${useGoogleSearch ?
@@ -668,13 +718,13 @@ ${useGoogleSearch
           if (useGoogleSearch) {
             agentTools.push({
               name: 'searchAgent',
-              description: 'A specialist agent for conducting web searches using Google Search. Use this when you need current information, legal precedents, case law, recent regulations, or any external sources from the web.',
+              description: 'A specialist agent for conducting general web searches using Google Search. Use this ONLY for non-legal queries: news, company information, general background research, current events, etc. ⚠️ NEVER use this for legal cases, judgments, statutes, legislation, or any legal sources — use searchAfricanLegalSources for those instead.',
               parameters: {
                 type: 'object',
                 properties: {
                   query: {
                     type: 'string',
-                    description: 'The search query or research question to investigate'
+                    description: 'The search query or research question to investigate (non-legal only)'
                   }
                 },
                 required: ['query']
@@ -771,6 +821,15 @@ ${useGoogleSearch
             });
           }
 
+          // Always include African LII search directly in agentTools so it is available
+          // in both normal mode and Deep Search (agent orchestration) mode.
+          // It must be a first-class tool on the root agent — not buried inside legalDocumentAgent.
+          agentTools.push(...africanLegalSearchTools.map(tool => ({
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters
+          })));
+
           // If we have multiple tool types, use the agent orchestration pattern
           // Otherwise, use direct tool access for better performance
           // Note: Core document tools are always available, so we always have at least one tool type
@@ -822,6 +881,13 @@ ${useGoogleSearch
 
               // Always include core document tools
               allFunctionDeclarations.push(...coreDocumentTools.map(tool => ({
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters
+              })));
+
+              // Always include African legal search (jurisdiction-specific, on-demand)
+              allFunctionDeclarations.push(...africanLegalSearchTools.map(tool => ({
                 name: tool.name,
                 description: tool.description,
                 parameters: tool.parameters
@@ -886,7 +952,7 @@ ${useGoogleSearch
           // Prepare the config for the new API
           const generateConfig: any = {
             temperature: settings.temperature || 0.3,
-            maxOutputTokens: 8192,
+            maxOutputTokens: 65536,
           };
 
           if (tools.length > 0) {
@@ -904,7 +970,7 @@ ${useGoogleSearch
           const tempMessageId = `temp-${Date.now()}`;
           let fullContent = "";
           let documentReferences = new Set<string>();
-          let webSearchSources: Array<{title: string, uri: string}> = [];
+          let webSearchSources: Array<{ title: string, uri: string }> = [];
           let isSearching = false;
 
           // Send initial status if web search is enabled
@@ -925,32 +991,35 @@ ${useGoogleSearch
           // Add scanned documents as inline data if any
           if (scannedDocuments.length > 0) {
             for (const scannedDoc of scannedDocuments) {
-              try {
-                // Fetch the file from blob storage
-                const response = await fetch(scannedDoc.fileUrl);
-                const arrayBuffer = await response.arrayBuffer();
-                const base64Data = Buffer.from(arrayBuffer).toString('base64');
+              let loaded = false;
+              for (let attempt = 1; attempt <= 3 && !loaded; attempt++) {
+                try {
+                  const response = await fetch(scannedDoc.fileUrl);
+                  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                  const arrayBuffer = await response.arrayBuffer();
+                  const base64Data = Buffer.from(arrayBuffer).toString('base64');
 
-                // Add file as inline data part for Gemini to process
-                userMessageParts.push({
-                  inlineData: {
-                    mimeType: scannedDoc.mimeType,
-                    data: base64Data
-                  }
-                });
+                  userMessageParts.push({
+                    inlineData: {
+                      mimeType: scannedDoc.mimeType,
+                      data: base64Data
+                    }
+                  });
 
-                controller.enqueue(
-                  encoder.encode(
-                    JSON.stringify({
-                      type: 'status',
-                      status: 'processing_document',
-                      message: `Processing scanned document: ${scannedDoc.title}`,
-                    }) + '\n'
-                  )
-                );
-              } catch (error) {
-                console.error(`Error loading scanned document ${scannedDoc.title}:`, error);
-                // Continue without this document if it fails to load
+                  controller.enqueue(
+                    encoder.encode(
+                      JSON.stringify({
+                        type: 'status',
+                        status: 'processing_document',
+                        message: `Processing scanned document: ${scannedDoc.title}`,
+                      }) + '\n'
+                    )
+                  );
+                  loaded = true;
+                } catch (error) {
+                  console.error(`Error loading scanned document ${scannedDoc.title} (attempt ${attempt}/3):`, error);
+                  if (attempt < 3) await new Promise(r => setTimeout(r, 500 * attempt));
+                }
               }
             }
           }
@@ -1084,9 +1153,8 @@ ${useGoogleSearch
                                             title: groundingChunk.web.title || 'Source',
                                             uri: groundingChunk.web.uri || ''
                                           };
-                                          // Avoid duplicates and blocked domains
-                                          const isBlocked = BLOCKED_SEARCH_DOMAINS.some(domain => source.uri.includes(domain));
-                                          if (!isBlocked && !webSearchSources.some(s => s.uri === source.uri)) {
+                                          // Avoid duplicates
+                                          if (!webSearchSources.some(s => s.uri === source.uri)) {
                                             webSearchSources.push(source);
                                           }
                                         }
@@ -1127,27 +1195,29 @@ ${useGoogleSearch
 
           // Friendly status messages per tool name
           const TOOL_STATUS_MESSAGES: Record<string, string> = {
-            generateDocumentInline:    'Drafting your document...',
-            reviewDocument:            'Reviewing your document...',
-            searchProjectDocuments:    'Searching your documents...',
-            draftNewDocument:          'Creating document in canvas...',
-            editCanvasDocument:        'Editing your canvas document...',
-            searchLegalKnowledge:      'Searching legal knowledge base...',
-            createCalendarEvent:       'Creating calendar event...',
-            searchCalendarEvents:      'Checking your calendar...',
+            generateDocumentInline: 'Drafting your document...',
+            reviewDocument: 'Reviewing your document...',
+            searchProjectDocuments: 'Searching your documents...',
+            draftNewDocument: 'Creating document in canvas...',
+            editCanvasDocument: 'Editing your canvas document...',
+            searchLegalKnowledge: 'Searching legal knowledge base...',
+            createCalendarEvent: 'Creating calendar event...',
+            searchCalendarEvents: 'Checking your calendar...',
             checkCalendarAvailability: 'Checking availability...',
-            updateCalendarEvent:       'Updating calendar event...',
-            deleteCalendarEvent:       'Removing calendar event...',
-            searchEmails:              'Searching your emails...',
-            readEmail:                 'Reading email...',
-            draftEmail:                'Drafting email...',
-            sendEmail:                 'Sending email...',
-            searchAgent:               'Verify research results...',
-            researchAgent:             'Researching legal sources...',
-            legalDocumentAgent:        'Working on your document...',
-            legalDraftingAgent:        'Working on your document...',
-            calendarAgent:             'Managing your calendar...',
-            gmailAgent:                'Managing your emails...',
+            updateCalendarEvent: 'Updating calendar event...',
+            deleteCalendarEvent: 'Removing calendar event...',
+            searchEmails: 'Searching your emails...',
+            readEmail: 'Reading email...',
+            draftEmail: 'Drafting email...',
+            sendEmail: 'Sending email...',
+            searchAfricanLegalSources: 'Searching legal databases...',
+            fetchLegalDocument: 'Reading case document...',
+            searchAgent: 'Verify research results...',
+            researchAgent: 'Researching legal sources...',
+            legalDocumentAgent: 'Working on your document...',
+            legalDraftingAgent: 'Working on your document...',
+            calendarAgent: 'Managing your calendar...',
+            gmailAgent: 'Managing your emails...',
           };
 
           // Pick the most descriptive message when multiple tools are called at once.
@@ -1155,7 +1225,7 @@ ${useGoogleSearch
           const TOOL_PRIORITY = [
             'generateDocumentInline', 'draftNewDocument', 'editCanvasDocument',
             'reviewDocument', 'searchLegalKnowledge',
-            'searchProjectDocuments', 'searchAgent', 'researchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
+            'searchProjectDocuments', 'searchAfricanLegalSources', 'fetchLegalDocument', 'searchAgent', 'researchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
             'createCalendarEvent', 'updateCalendarEvent', 'deleteCalendarEvent',
             'searchCalendarEvents', 'checkCalendarAvailability',
             'calendarAgent', 'draftEmail', 'sendEmail', 'readEmail', 'searchEmails', 'gmailAgent',
@@ -1230,9 +1300,9 @@ ${useGoogleSearch
 
             // Track report / document metadata across all iterations
             const report = responses.find((fr: any) => fr.functionResponse?.response?.reportReady === true)?.functionResponse?.response;
-            const doc    = responses.find((fr: any) => fr.functionResponse?.response?.documentGenerated === true)?.functionResponse?.response;
+            const doc = responses.find((fr: any) => fr.functionResponse?.response?.documentGenerated === true)?.functionResponse?.response;
             if (report) reportMetadata = report;
-            if (doc)    documentMetadata = doc;
+            if (doc) documentMetadata = doc;
 
             return responses;
           };
@@ -1262,9 +1332,9 @@ ${useGoogleSearch
                 attempt++;
                 const retryable =
                   err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT' ||
-                  err.code === 'ENOTFOUND'    || err.code === 'ERR_NETWORK' ||
+                  err.code === 'ENOTFOUND' || err.code === 'ERR_NETWORK' ||
                   err.message?.includes('timeout') || err.message?.includes('network') ||
-                  ['500','502','503','504','429'].some((c: string) => err.message?.includes(c));
+                  ['500', '502', '503', '504', '429'].some((c: string) => err.message?.includes(c));
                 if (!retryable || attempt > MAX_RETRIES) throw err;
                 controller.enqueue(encoder.encode(JSON.stringify({
                   type: 'status', status: 'retrying',
@@ -1296,7 +1366,7 @@ ${useGoogleSearch
             const searchAgentFailed = functionResponses.some((fr: any) => {
               const res = fr.functionResponse?.response;
               return fr.functionResponse?.name === 'searchAgent' &&
-                     res?.success === false && res?.timedOut === true;
+                res?.success === false && res?.timedOut === true;
             });
 
             // Append model turn (with thought signatures) + function results to history
@@ -1503,7 +1573,7 @@ ${useGoogleSearch
               };
             });
           }
-          
+
           // Send the final message with references, report metadata, and document metadata
           controller.enqueue(
             encoder.encode(
@@ -1521,7 +1591,7 @@ ${useGoogleSearch
               }) + '\n'
             )
           );
-          
+
           // Signal completion
           controller.enqueue(
             encoder.encode(
@@ -1640,7 +1710,11 @@ async function executeAgentCall(
     switch (agentName) {
       case 'searchAgent':
         agentTools.push({ googleSearch: {} });
-        agentInstruction = `You are a search specialist. Conduct thorough web searches and provide comprehensive, well-sourced answers.\n\n${baseContext}`;
+        agentInstruction = `You are a general web search specialist. Search for non-legal background information: news, company profiles, current events, general context.
+
+⚠️ STRICT RULE: If the search query is about legal cases, court judgments, statutes, legislation, or any legal authority — do NOT search for them. Instead return: "Legal sources must be retrieved via searchAfricanLegalSources — this agent handles general web queries only."
+
+${baseContext}`;
         break;
 
       case 'researchAgent': {
@@ -1654,7 +1728,7 @@ async function executeAgentCall(
               ? JSON.parse(project.knowledgeBase.settings)
               : project.knowledgeBase.settings;
             webSearchEnabled = s.webSearch === true;
-          } catch (_) {}
+          } catch (_) { }
         }
         agentInstruction = `You are a strict legal fact checker. Training knowledge only — no web search.
 
@@ -1683,8 +1757,8 @@ ${baseContext}`;
           }
         }
 
-        // Always include core document tools
-        const agentDocTools: any[] = [...coreDocumentTools];
+        // Always include core document tools + African legal search
+        const agentDocTools: any[] = [...coreDocumentTools, ...africanLegalSearchTools];
 
         // Add canvas tools if canvas mode is enabled
         if (agentCanvasMode) {
@@ -1736,7 +1810,7 @@ ${baseContext}`;
     const agentConfig: any = {
       systemInstruction: agentInstruction,
       temperature: agentTemperature,
-      maxOutputTokens: 8192,
+      maxOutputTokens: 65536,
       tools: agentTools
     };
 
@@ -1747,9 +1821,10 @@ ${baseContext}`;
       };
     }
 
-    // Wrap the agent call in a 20-second timeout to prevent indefinite hangs
-    // (Google Search grounding can hang if the Gemini API is slow or unresponsive)
-    const AGENT_TIMEOUT_MS = 20_000;
+    // Wrap the agent call in a timeout to prevent indefinite hangs.
+    // searchAgent uses Google Search grounding which can take 30-50 s under load;
+    // researchAgent is pure generation and rarely exceeds 15 s.
+    const AGENT_TIMEOUT_MS = 120_000; // 2 minutes — Google Search grounding can be slow
     const agentResult = await Promise.race([
       genAI.models.generateContent({
         model: modelName,
@@ -1767,7 +1842,7 @@ ${baseContext}`;
     let responseText = agentResult.text || '';
 
     // Extract grounding metadata for searchAgent (web search sources)
-    let searchSources: Array<{title: string, uri: string}> = [];
+    let searchSources: Array<{ title: string, uri: string }> = [];
     if (agentName === 'searchAgent' && candidate?.groundingMetadata) {
       const metadata = candidate.groundingMetadata;
 
@@ -1808,7 +1883,7 @@ ${baseContext}`;
           canvasDocument,
           previewDocument,
           recentMessages || [],
-          () => {}, // No event streaming for sub-agents
+          () => { }, // No event streaming for sub-agents
           userId
         );
 
@@ -1844,13 +1919,13 @@ ${baseContext}`;
 function formatAIMessage(content: string): string {
   // Remove "System:" prefix if it exists at the beginning
   let formattedContent = content.replace(/^System:\s*/i, '');
-  
+
   // Ensure there's a language specified for code blocks
   formattedContent = formattedContent.replace(/```\s*\n/g, '```text\n');
-  
+
   // Add proper spacing for readability
   formattedContent = formattedContent.replace(/\n{3,}/g, '\n\n');
-  
+
   return formattedContent;
 }
 

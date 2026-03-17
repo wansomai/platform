@@ -10,8 +10,9 @@ import { validateFile } from '@/lib/utils';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 import { Prisma } from '@/prisma/client';
 
-// Set a reasonable timeout for document processing
-export const maxDuration = 60;
+// Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
+export const maxDuration = 120;
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,20 +36,19 @@ export async function GET(request: NextRequest) {
     // ✅ Use helper to get active organization ID (supports org switching)
     const organizationId = await getActiveOrganizationId(userId);
 
-    // Build query filters — users only see documents they uploaded
+    // Build base query filters
     const where: any = {
       organization_id: organizationId,
-      created_by: userId,
       status: 'active'
     };
-    
+
     if (searchTerm) {
       where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } }
       ];
     }
-    
+
     if (fileType && fileType !== 'all') {
       // Handle special filter cases
       if (fileType === 'image') {
@@ -61,14 +61,80 @@ export async function GET(request: NextRequest) {
         where.file_type = fileType;
       }
     }
-    
+
     if (folderId === 'root') {
       where.folderId = null;
     } else if (folderId) {
       where.folderId = folderId;
     }
-    // Dashboard requests use limit ≤ 10; vault/full-page requests use limit > 10
-    const isLimitedRequest = limit <= 10;
+
+    // --- Ownership / access enforcement ---
+    // A user can only see a document if:
+    //   1. They uploaded it (created_by === userId), OR
+    //   2. It lives in a folder they own or have been explicitly granted access to.
+    // Root-level documents from other users are never visible.
+    // Org role (admin/owner) does NOT grant broader access.
+
+    // Get IDs of every folder this user can access (owns or has explicit permission for).
+    const accessibleFolders = await prisma.folder.findMany({
+      where: {
+        organizationId,
+        OR: [
+          { createdBy: userId },
+          { permissions: { some: { userId } } }
+        ]
+      },
+      select: { id: true }
+    });
+    const accessibleFolderIds = accessibleFolders.map((f: any) => f.id as string);
+
+    // If the user is requesting a specific folder, verify they can access it.
+    if (folderId && folderId !== 'root' && !accessibleFolderIds.includes(folderId)) {
+      return NextResponse.json({
+        status: 200,
+        message: 'Documents retrieved successfully',
+        data: [],
+        pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
+      });
+    }
+
+    // Ownership filter: user sees their own docs OR docs in folders they can access.
+    const ownershipFilter = {
+      OR: [
+        { created_by: userId },
+        ...(accessibleFolderIds.length > 0
+          ? [{ folderId: { in: accessibleFolderIds } }]
+          : [])
+      ]
+    };
+
+    if (where.OR) {
+      // Wrap existing OR (search) in AND together with the ownership filter
+      where.AND = [{ OR: where.OR }, ownershipFilter];
+      delete where.OR;
+    } else if (where.AND) {
+      where.AND.push(ownershipFilter);
+    } else {
+      where.AND = [ownershipFilter];
+    }
+
+    // Fast path: caller only needs titles for conflict detection (e.g., upload modal).
+    // Skip joins, pagination count, and all non-essential fields.
+    const titlesOnly = searchParams.get('titlesOnly') === 'true';
+    if (titlesOnly) {
+      const titles = await prisma.document.findMany({
+        where,
+        select: { id: true, title: true },
+        orderBy: { title: 'asc' },
+        take: 1000,
+      });
+      return NextResponse.json({ status: 200, message: 'Documents retrieved successfully', data: titles });
+    }
+
+    // Dashboard needs minimal data, full pages need more
+    const hasFilters = searchTerm || fileType || folderId || page > 1;
+    const isLimitedRequest = limit <= 10 && !hasFilters; // Likely dashboard request
+
 
     // Determine sorting
     let orderBy: any;
@@ -221,6 +287,8 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File;
     const description = formData.get('description') as string || '';
     const folderId = formData.get('folderId') as string || null;
+    // Optional custom title supplied by the client (e.g. after rename-on-conflict)
+    const customTitle = (formData.get('title') as string | null)?.trim() || null;
 
     // Validate file
     if (!file) {
@@ -237,23 +305,54 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    // If folderId is provided, verify it exists and belongs to the active organization
+    // If folderId is provided, verify it exists and that the user can upload to it.
+    // For restricted folders: only the creator or explicitly-permitted users may upload.
     if (folderId) {
       const folder = await prisma.folder.findUnique({
-        where: {
-          id: folderId,
-          organizationId
-        }
+        where: { id: folderId, organizationId },
+        include: { permissions: { select: { userId: true } } }
       });
-      
+
       if (!folder) {
         return NextResponse.json(
           { message: 'Folder not found', error: true },
           { status: 404 }
         );
       }
+
+      const canUpload =
+        folder.createdBy === userId ||
+        folder.permissions.some((p: any) => p.userId === userId);
+
+      if (!canUpload) {
+        return NextResponse.json(
+          { message: 'You do not have permission to upload to this folder', error: true },
+          { status: 403 }
+        );
+      }
     }
-    
+
+    // Determine the document title and check for duplicates
+    const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+    const documentTitle = customTitle || fileBaseName;
+
+    // Check for title conflict scoped to the target folder (or root when no folder)
+    const titleConflict = await prisma.document.findFirst({
+      where: {
+        organization_id: organizationId,
+        title: { equals: documentTitle, mode: 'insensitive' },
+        folderId: folderId || null
+      },
+      select: { id: true }
+    });
+    if (titleConflict) {
+      const location = folderId ? 'this folder' : 'the root folder';
+      return NextResponse.json(
+        { message: `A document named "${documentTitle}" already exists in ${location}. Please rename it before uploading.`, error: true },
+        { status: 409 }
+      );
+    }
+
     // Generate unique filename
     const fileExt = file.name.split('.').pop() || '';
     const fileName = `${organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
@@ -268,10 +367,40 @@ export async function POST(request: NextRequest) {
       file.type
     );
     
-    // Create document record immediately (extraction happens after response)
+    // Extract text content from the file buffer.
+    // We mark contentExtracted=true as long as extraction was ATTEMPTED for a
+    // supported file type — there is no background job running after this response
+    // returns, so leaving it false would cause the Vault to poll forever. If mammoth
+    // fails on a DOCX, on-demand extraction (tryExtractDocumentContentOnDemand) retries
+    // at chat time. For scanned PDFs/images the sentinel strings are stored as-is.
+    const SUPPORTED_MIME_TYPES_FOR_EXTRACTION = new Set([
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'text/csv',
+      'text/plain',
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/bmp',
+      'image/webp',
+    ]);
+    let contentExtracted = SUPPORTED_MIME_TYPES_FOR_EXTRACTION.has(file.type);
+    let extractedText = '';
+
+    try {
+      extractedText = await extractTextFromFile(fileBuffer, file.type);
+    } catch (extractError) {
+      console.error('Error extracting text from file:', extractError);
+      // Continue without extracted text — on-demand extraction will run at chat time
+    }
+
+    // Create document record in database
     const document = await prisma.document.create({
       data: {
-        title: file.name,
+        title: documentTitle,
         description: {
           String: description,
           Valid: description.length > 0
@@ -304,20 +433,16 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-
-    // Extract text after the response is sent (non-blocking)
-    after(async () => {
+    
+    // If text was extracted, store it (only when non-empty)
+    if (extractedText && extractedText.trim().length > 0) {
       try {
-        const extractedText = await extractTextFromFile(fileBuffer, file.type);
-        if (extractedText) {
-          await prisma.documentContent.create({
-            data: { documentId: document.id, content: extractedText }
-          });
-          await prisma.document.update({
-            where: { id: document.id },
-            data: { content_extracted: { Bool: true, Valid: true } }
-          });
-        }
+        await prisma.documentContent.create({
+          data: {
+            documentId: document.id,
+            content: extractedText
+          }
+        });
       } catch (err) {
         console.error('Background text extraction failed for document', document.id, err);
         // Reset flag to null so the vault doesn't show the spinner forever
@@ -328,7 +453,7 @@ export async function POST(request: NextRequest) {
           });
         } catch (_) { /* best-effort */ }
       }
-    });
+    }
     
     // Format response to match the expected Document interface
     const documentInfo = {

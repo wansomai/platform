@@ -29,7 +29,7 @@ export interface Message {
   userId?: string;
   // Optional data
   references?: MessageReference[];
-  webSearchSources?: Array<{title: string, uri: string}>;
+  webSearchSources?: Array<{ title: string, uri: string }>;
   report?: {
     reportId: string;
     reportTitle: string;
@@ -57,6 +57,13 @@ export interface Message {
   canvasUpdated?: boolean;
   canvasMessage?: string; // Message for canvas processing status
   isSuggestion?: boolean; // true when this message carries a canvas_suggestion diff
+  attachedDocuments?: Array<{
+    id: string;
+    title: string;
+    fileType: string;
+    fileSize?: number;
+    fileUrl?: string;
+  }>;
   user?: {
     id: string;
     name: string;

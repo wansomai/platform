@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Bash(sleep 50 && cat \"C:/Users/danie/AppData/Local/Temp/claude/C--Users-danie-Documents-Projects-Wansom-staging/e6b7afc9-877b-479e-9f46-eacb97107fdb/tasks/bvyz08zrr.output\" | grep -v \"^$\" | head -20)",
+      "Bash(curl:*)"
     ]
   }
 }

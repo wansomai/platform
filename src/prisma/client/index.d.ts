@@ -89,6 +89,11 @@ export type Document = $Result.DefaultSelection<Prisma.$DocumentPayload>
  */
 export type Folder = $Result.DefaultSelection<Prisma.$FolderPayload>
 /**
+ * Model FolderPermission
+ * 
+ */
+export type FolderPermission = $Result.DefaultSelection<Prisma.$FolderPermissionPayload>
+/**
  * Model ProjectDocument
  * 
  */
@@ -554,6 +559,16 @@ export class PrismaClient<
     * ```
     */
   get folder(): Prisma.FolderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.folderPermission`: Exposes CRUD operations for the **FolderPermission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more FolderPermissions
+    * const folderPermissions = await prisma.folderPermission.findMany()
+    * ```
+    */
+  get folderPermission(): Prisma.FolderPermissionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.projectDocument`: Exposes CRUD operations for the **ProjectDocument** model.
@@ -1273,6 +1288,7 @@ export namespace Prisma {
     ProjectMember: 'ProjectMember',
     Document: 'Document',
     Folder: 'Folder',
+    FolderPermission: 'FolderPermission',
     ProjectDocument: 'ProjectDocument',
     ConversationDocument: 'ConversationDocument',
     DocumentContent: 'DocumentContent',
@@ -1315,7 +1331,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "legal_knowledge" | "legal_knowledge_chunks"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "legal_knowledge" | "legal_knowledge_chunks"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2426,6 +2442,80 @@ export namespace Prisma {
           count: {
             args: Prisma.FolderCountArgs<ExtArgs>
             result: $Utils.Optional<FolderCountAggregateOutputType> | number
+          }
+        }
+      }
+      FolderPermission: {
+        payload: Prisma.$FolderPermissionPayload<ExtArgs>
+        fields: Prisma.FolderPermissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.FolderPermissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.FolderPermissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>
+          }
+          findFirst: {
+            args: Prisma.FolderPermissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.FolderPermissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>
+          }
+          findMany: {
+            args: Prisma.FolderPermissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>[]
+          }
+          create: {
+            args: Prisma.FolderPermissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>
+          }
+          createMany: {
+            args: Prisma.FolderPermissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.FolderPermissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>[]
+          }
+          delete: {
+            args: Prisma.FolderPermissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>
+          }
+          update: {
+            args: Prisma.FolderPermissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.FolderPermissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.FolderPermissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FolderPermissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.FolderPermissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FolderPermissionPayload>
+          }
+          aggregate: {
+            args: Prisma.FolderPermissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateFolderPermission>
+          }
+          groupBy: {
+            args: Prisma.FolderPermissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<FolderPermissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.FolderPermissionCountArgs<ExtArgs>
+            result: $Utils.Optional<FolderPermissionCountAggregateOutputType> | number
           }
         }
       }
@@ -4550,6 +4640,7 @@ export namespace Prisma {
     projectMember?: ProjectMemberOmit
     document?: DocumentOmit
     folder?: FolderOmit
+    folderPermission?: FolderPermissionOmit
     projectDocument?: ProjectDocumentOmit
     conversationDocument?: ConversationDocumentOmit
     documentContent?: DocumentContentOmit
@@ -4663,6 +4754,7 @@ export namespace Prisma {
     conversationDocuments: number
     documents: number
     Folder: number
+    folderPermissions: number
     sentInvitations: number
     messages: number
     ownedOrganizations: number
@@ -4684,6 +4776,7 @@ export namespace Prisma {
     conversationDocuments?: boolean | UserCountOutputTypeCountConversationDocumentsArgs
     documents?: boolean | UserCountOutputTypeCountDocumentsArgs
     Folder?: boolean | UserCountOutputTypeCountFolderArgs
+    folderPermissions?: boolean | UserCountOutputTypeCountFolderPermissionsArgs
     sentInvitations?: boolean | UserCountOutputTypeCountSentInvitationsArgs
     messages?: boolean | UserCountOutputTypeCountMessagesArgs
     ownedOrganizations?: boolean | UserCountOutputTypeCountOwnedOrganizationsArgs
@@ -4749,6 +4842,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFolderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FolderWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountFolderPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FolderPermissionWhereInput
   }
 
   /**
@@ -5187,11 +5287,13 @@ export namespace Prisma {
   export type FolderCountOutputType = {
     documents: number
     children: number
+    permissions: number
   }
 
   export type FolderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     documents?: boolean | FolderCountOutputTypeCountDocumentsArgs
     children?: boolean | FolderCountOutputTypeCountChildrenArgs
+    permissions?: boolean | FolderCountOutputTypeCountPermissionsArgs
   }
 
   // Custom InputTypes
@@ -5217,6 +5319,13 @@ export namespace Prisma {
    */
   export type FolderCountOutputTypeCountChildrenArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FolderWhereInput
+  }
+
+  /**
+   * FolderCountOutputType without action
+   */
+  export type FolderCountOutputTypeCountPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FolderPermissionWhereInput
   }
 
 
@@ -8919,6 +9028,7 @@ export namespace Prisma {
     conversationDocuments?: boolean | User$conversationDocumentsArgs<ExtArgs>
     documents?: boolean | User$documentsArgs<ExtArgs>
     Folder?: boolean | User$FolderArgs<ExtArgs>
+    folderPermissions?: boolean | User$folderPermissionsArgs<ExtArgs>
     sentInvitations?: boolean | User$sentInvitationsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
     ownedOrganizations?: boolean | User$ownedOrganizationsArgs<ExtArgs>
@@ -8990,6 +9100,7 @@ export namespace Prisma {
     conversationDocuments?: boolean | User$conversationDocumentsArgs<ExtArgs>
     documents?: boolean | User$documentsArgs<ExtArgs>
     Folder?: boolean | User$FolderArgs<ExtArgs>
+    folderPermissions?: boolean | User$folderPermissionsArgs<ExtArgs>
     sentInvitations?: boolean | User$sentInvitationsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
     ownedOrganizations?: boolean | User$ownedOrganizationsArgs<ExtArgs>
@@ -9024,6 +9135,7 @@ export namespace Prisma {
       conversationDocuments: Prisma.$ConversationDocumentPayload<ExtArgs>[]
       documents: Prisma.$DocumentPayload<ExtArgs>[]
       Folder: Prisma.$FolderPayload<ExtArgs>[]
+      folderPermissions: Prisma.$FolderPermissionPayload<ExtArgs>[]
       sentInvitations: Prisma.$InvitationPayload<ExtArgs>[]
       messages: Prisma.$MessagePayload<ExtArgs>[]
       ownedOrganizations: Prisma.$OrganizationPayload<ExtArgs>[]
@@ -9451,6 +9563,7 @@ export namespace Prisma {
     conversationDocuments<T extends User$conversationDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documents<T extends User$documentsArgs<ExtArgs> = {}>(args?: Subset<T, User$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Folder<T extends User$FolderArgs<ExtArgs> = {}>(args?: Subset<T, User$FolderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    folderPermissions<T extends User$folderPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$folderPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentInvitations<T extends User$sentInvitationsArgs<ExtArgs> = {}>(args?: Subset<T, User$sentInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedOrganizations<T extends User$ownedOrganizationsArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedOrganizationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10042,6 +10155,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FolderScalarFieldEnum | FolderScalarFieldEnum[]
+  }
+
+  /**
+   * User.folderPermissions
+   */
+  export type User$folderPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    where?: FolderPermissionWhereInput
+    orderBy?: FolderPermissionOrderByWithRelationInput | FolderPermissionOrderByWithRelationInput[]
+    cursor?: FolderPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FolderPermissionScalarFieldEnum | FolderPermissionScalarFieldEnum[]
   }
 
   /**
@@ -22909,6 +23046,7 @@ export namespace Prisma {
     organizationId: string | null
     parentId: string | null
     createdBy: string | null
+    visibility: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -22919,6 +23057,7 @@ export namespace Prisma {
     organizationId: string | null
     parentId: string | null
     createdBy: string | null
+    visibility: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -22929,6 +23068,7 @@ export namespace Prisma {
     organizationId: number
     parentId: number
     createdBy: number
+    visibility: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -22941,6 +23081,7 @@ export namespace Prisma {
     organizationId?: true
     parentId?: true
     createdBy?: true
+    visibility?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -22951,6 +23092,7 @@ export namespace Prisma {
     organizationId?: true
     parentId?: true
     createdBy?: true
+    visibility?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -22961,6 +23103,7 @@ export namespace Prisma {
     organizationId?: true
     parentId?: true
     createdBy?: true
+    visibility?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -23044,6 +23187,7 @@ export namespace Prisma {
     organizationId: string
     parentId: string | null
     createdBy: string
+    visibility: string
     createdAt: Date
     updatedAt: Date
     _count: FolderCountAggregateOutputType | null
@@ -23071,6 +23215,7 @@ export namespace Prisma {
     organizationId?: boolean
     parentId?: boolean
     createdBy?: boolean
+    visibility?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     documents?: boolean | Folder$documentsArgs<ExtArgs>
@@ -23078,6 +23223,7 @@ export namespace Prisma {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     parent?: boolean | Folder$parentArgs<ExtArgs>
     children?: boolean | Folder$childrenArgs<ExtArgs>
+    permissions?: boolean | Folder$permissionsArgs<ExtArgs>
     _count?: boolean | FolderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["folder"]>
 
@@ -23087,6 +23233,7 @@ export namespace Prisma {
     organizationId?: boolean
     parentId?: boolean
     createdBy?: boolean
+    visibility?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -23100,6 +23247,7 @@ export namespace Prisma {
     organizationId?: boolean
     parentId?: boolean
     createdBy?: boolean
+    visibility?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -23113,17 +23261,19 @@ export namespace Prisma {
     organizationId?: boolean
     parentId?: boolean
     createdBy?: boolean
+    visibility?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type FolderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "organizationId" | "parentId" | "createdBy" | "createdAt" | "updatedAt", ExtArgs["result"]["folder"]>
+  export type FolderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "organizationId" | "parentId" | "createdBy" | "visibility" | "createdAt" | "updatedAt", ExtArgs["result"]["folder"]>
   export type FolderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     documents?: boolean | Folder$documentsArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     parent?: boolean | Folder$parentArgs<ExtArgs>
     children?: boolean | Folder$childrenArgs<ExtArgs>
+    permissions?: boolean | Folder$permissionsArgs<ExtArgs>
     _count?: boolean | FolderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FolderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23145,6 +23295,7 @@ export namespace Prisma {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       parent: Prisma.$FolderPayload<ExtArgs> | null
       children: Prisma.$FolderPayload<ExtArgs>[]
+      permissions: Prisma.$FolderPermissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23152,6 +23303,7 @@ export namespace Prisma {
       organizationId: string
       parentId: string | null
       createdBy: string
+      visibility: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["folder"]>
@@ -23553,6 +23705,7 @@ export namespace Prisma {
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     parent<T extends Folder$parentArgs<ExtArgs> = {}>(args?: Subset<T, Folder$parentArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     children<T extends Folder$childrenArgs<ExtArgs> = {}>(args?: Subset<T, Folder$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    permissions<T extends Folder$permissionsArgs<ExtArgs> = {}>(args?: Subset<T, Folder$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23587,6 +23740,7 @@ export namespace Prisma {
     readonly organizationId: FieldRef<"Folder", 'String'>
     readonly parentId: FieldRef<"Folder", 'String'>
     readonly createdBy: FieldRef<"Folder", 'String'>
+    readonly visibility: FieldRef<"Folder", 'String'>
     readonly createdAt: FieldRef<"Folder", 'DateTime'>
     readonly updatedAt: FieldRef<"Folder", 'DateTime'>
   }
@@ -24052,6 +24206,30 @@ export namespace Prisma {
   }
 
   /**
+   * Folder.permissions
+   */
+  export type Folder$permissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    where?: FolderPermissionWhereInput
+    orderBy?: FolderPermissionOrderByWithRelationInput | FolderPermissionOrderByWithRelationInput[]
+    cursor?: FolderPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FolderPermissionScalarFieldEnum | FolderPermissionScalarFieldEnum[]
+  }
+
+  /**
    * Folder without action
    */
   export type FolderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24067,6 +24245,1059 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: FolderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model FolderPermission
+   */
+
+  export type AggregateFolderPermission = {
+    _count: FolderPermissionCountAggregateOutputType | null
+    _min: FolderPermissionMinAggregateOutputType | null
+    _max: FolderPermissionMaxAggregateOutputType | null
+  }
+
+  export type FolderPermissionMinAggregateOutputType = {
+    id: string | null
+    folderId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type FolderPermissionMaxAggregateOutputType = {
+    id: string | null
+    folderId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type FolderPermissionCountAggregateOutputType = {
+    id: number
+    folderId: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type FolderPermissionMinAggregateInputType = {
+    id?: true
+    folderId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type FolderPermissionMaxAggregateInputType = {
+    id?: true
+    folderId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type FolderPermissionCountAggregateInputType = {
+    id?: true
+    folderId?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type FolderPermissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FolderPermission to aggregate.
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FolderPermissions to fetch.
+     */
+    orderBy?: FolderPermissionOrderByWithRelationInput | FolderPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: FolderPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FolderPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FolderPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned FolderPermissions
+    **/
+    _count?: true | FolderPermissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: FolderPermissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: FolderPermissionMaxAggregateInputType
+  }
+
+  export type GetFolderPermissionAggregateType<T extends FolderPermissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateFolderPermission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateFolderPermission[P]>
+      : GetScalarType<T[P], AggregateFolderPermission[P]>
+  }
+
+
+
+
+  export type FolderPermissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FolderPermissionWhereInput
+    orderBy?: FolderPermissionOrderByWithAggregationInput | FolderPermissionOrderByWithAggregationInput[]
+    by: FolderPermissionScalarFieldEnum[] | FolderPermissionScalarFieldEnum
+    having?: FolderPermissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: FolderPermissionCountAggregateInputType | true
+    _min?: FolderPermissionMinAggregateInputType
+    _max?: FolderPermissionMaxAggregateInputType
+  }
+
+  export type FolderPermissionGroupByOutputType = {
+    id: string
+    folderId: string
+    userId: string
+    createdAt: Date
+    _count: FolderPermissionCountAggregateOutputType | null
+    _min: FolderPermissionMinAggregateOutputType | null
+    _max: FolderPermissionMaxAggregateOutputType | null
+  }
+
+  type GetFolderPermissionGroupByPayload<T extends FolderPermissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<FolderPermissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof FolderPermissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], FolderPermissionGroupByOutputType[P]>
+            : GetScalarType<T[P], FolderPermissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type FolderPermissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    folderId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    folder?: boolean | FolderDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["folderPermission"]>
+
+  export type FolderPermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    folderId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    folder?: boolean | FolderDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["folderPermission"]>
+
+  export type FolderPermissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    folderId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    folder?: boolean | FolderDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["folderPermission"]>
+
+  export type FolderPermissionSelectScalar = {
+    id?: boolean
+    folderId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type FolderPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "folderId" | "userId" | "createdAt", ExtArgs["result"]["folderPermission"]>
+  export type FolderPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    folder?: boolean | FolderDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FolderPermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    folder?: boolean | FolderDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type FolderPermissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    folder?: boolean | FolderDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $FolderPermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "FolderPermission"
+    objects: {
+      folder: Prisma.$FolderPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      folderId: string
+      userId: string
+      createdAt: Date
+    }, ExtArgs["result"]["folderPermission"]>
+    composites: {}
+  }
+
+  type FolderPermissionGetPayload<S extends boolean | null | undefined | FolderPermissionDefaultArgs> = $Result.GetResult<Prisma.$FolderPermissionPayload, S>
+
+  type FolderPermissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<FolderPermissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: FolderPermissionCountAggregateInputType | true
+    }
+
+  export interface FolderPermissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['FolderPermission'], meta: { name: 'FolderPermission' } }
+    /**
+     * Find zero or one FolderPermission that matches the filter.
+     * @param {FolderPermissionFindUniqueArgs} args - Arguments to find a FolderPermission
+     * @example
+     * // Get one FolderPermission
+     * const folderPermission = await prisma.folderPermission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends FolderPermissionFindUniqueArgs>(args: SelectSubset<T, FolderPermissionFindUniqueArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one FolderPermission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {FolderPermissionFindUniqueOrThrowArgs} args - Arguments to find a FolderPermission
+     * @example
+     * // Get one FolderPermission
+     * const folderPermission = await prisma.folderPermission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends FolderPermissionFindUniqueOrThrowArgs>(args: SelectSubset<T, FolderPermissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FolderPermission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionFindFirstArgs} args - Arguments to find a FolderPermission
+     * @example
+     * // Get one FolderPermission
+     * const folderPermission = await prisma.folderPermission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends FolderPermissionFindFirstArgs>(args?: SelectSubset<T, FolderPermissionFindFirstArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first FolderPermission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionFindFirstOrThrowArgs} args - Arguments to find a FolderPermission
+     * @example
+     * // Get one FolderPermission
+     * const folderPermission = await prisma.folderPermission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends FolderPermissionFindFirstOrThrowArgs>(args?: SelectSubset<T, FolderPermissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more FolderPermissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all FolderPermissions
+     * const folderPermissions = await prisma.folderPermission.findMany()
+     * 
+     * // Get first 10 FolderPermissions
+     * const folderPermissions = await prisma.folderPermission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const folderPermissionWithIdOnly = await prisma.folderPermission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends FolderPermissionFindManyArgs>(args?: SelectSubset<T, FolderPermissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a FolderPermission.
+     * @param {FolderPermissionCreateArgs} args - Arguments to create a FolderPermission.
+     * @example
+     * // Create one FolderPermission
+     * const FolderPermission = await prisma.folderPermission.create({
+     *   data: {
+     *     // ... data to create a FolderPermission
+     *   }
+     * })
+     * 
+     */
+    create<T extends FolderPermissionCreateArgs>(args: SelectSubset<T, FolderPermissionCreateArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many FolderPermissions.
+     * @param {FolderPermissionCreateManyArgs} args - Arguments to create many FolderPermissions.
+     * @example
+     * // Create many FolderPermissions
+     * const folderPermission = await prisma.folderPermission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends FolderPermissionCreateManyArgs>(args?: SelectSubset<T, FolderPermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many FolderPermissions and returns the data saved in the database.
+     * @param {FolderPermissionCreateManyAndReturnArgs} args - Arguments to create many FolderPermissions.
+     * @example
+     * // Create many FolderPermissions
+     * const folderPermission = await prisma.folderPermission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FolderPermissions and only return the `id`
+     * const folderPermissionWithIdOnly = await prisma.folderPermission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FolderPermissionCreateManyAndReturnArgs>(args?: SelectSubset<T, FolderPermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a FolderPermission.
+     * @param {FolderPermissionDeleteArgs} args - Arguments to delete one FolderPermission.
+     * @example
+     * // Delete one FolderPermission
+     * const FolderPermission = await prisma.folderPermission.delete({
+     *   where: {
+     *     // ... filter to delete one FolderPermission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends FolderPermissionDeleteArgs>(args: SelectSubset<T, FolderPermissionDeleteArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one FolderPermission.
+     * @param {FolderPermissionUpdateArgs} args - Arguments to update one FolderPermission.
+     * @example
+     * // Update one FolderPermission
+     * const folderPermission = await prisma.folderPermission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends FolderPermissionUpdateArgs>(args: SelectSubset<T, FolderPermissionUpdateArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more FolderPermissions.
+     * @param {FolderPermissionDeleteManyArgs} args - Arguments to filter FolderPermissions to delete.
+     * @example
+     * // Delete a few FolderPermissions
+     * const { count } = await prisma.folderPermission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends FolderPermissionDeleteManyArgs>(args?: SelectSubset<T, FolderPermissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FolderPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many FolderPermissions
+     * const folderPermission = await prisma.folderPermission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends FolderPermissionUpdateManyArgs>(args: SelectSubset<T, FolderPermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FolderPermissions and returns the data updated in the database.
+     * @param {FolderPermissionUpdateManyAndReturnArgs} args - Arguments to update many FolderPermissions.
+     * @example
+     * // Update many FolderPermissions
+     * const folderPermission = await prisma.folderPermission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FolderPermissions and only return the `id`
+     * const folderPermissionWithIdOnly = await prisma.folderPermission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FolderPermissionUpdateManyAndReturnArgs>(args: SelectSubset<T, FolderPermissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one FolderPermission.
+     * @param {FolderPermissionUpsertArgs} args - Arguments to update or create a FolderPermission.
+     * @example
+     * // Update or create a FolderPermission
+     * const folderPermission = await prisma.folderPermission.upsert({
+     *   create: {
+     *     // ... data to create a FolderPermission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the FolderPermission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends FolderPermissionUpsertArgs>(args: SelectSubset<T, FolderPermissionUpsertArgs<ExtArgs>>): Prisma__FolderPermissionClient<$Result.GetResult<Prisma.$FolderPermissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of FolderPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionCountArgs} args - Arguments to filter FolderPermissions to count.
+     * @example
+     * // Count the number of FolderPermissions
+     * const count = await prisma.folderPermission.count({
+     *   where: {
+     *     // ... the filter for the FolderPermissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends FolderPermissionCountArgs>(
+      args?: Subset<T, FolderPermissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], FolderPermissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a FolderPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends FolderPermissionAggregateArgs>(args: Subset<T, FolderPermissionAggregateArgs>): Prisma.PrismaPromise<GetFolderPermissionAggregateType<T>>
+
+    /**
+     * Group by FolderPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FolderPermissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends FolderPermissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: FolderPermissionGroupByArgs['orderBy'] }
+        : { orderBy?: FolderPermissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, FolderPermissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFolderPermissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the FolderPermission model
+   */
+  readonly fields: FolderPermissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for FolderPermission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__FolderPermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    folder<T extends FolderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FolderDefaultArgs<ExtArgs>>): Prisma__FolderClient<$Result.GetResult<Prisma.$FolderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the FolderPermission model
+   */
+  interface FolderPermissionFieldRefs {
+    readonly id: FieldRef<"FolderPermission", 'String'>
+    readonly folderId: FieldRef<"FolderPermission", 'String'>
+    readonly userId: FieldRef<"FolderPermission", 'String'>
+    readonly createdAt: FieldRef<"FolderPermission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * FolderPermission findUnique
+   */
+  export type FolderPermissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FolderPermission to fetch.
+     */
+    where: FolderPermissionWhereUniqueInput
+  }
+
+  /**
+   * FolderPermission findUniqueOrThrow
+   */
+  export type FolderPermissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FolderPermission to fetch.
+     */
+    where: FolderPermissionWhereUniqueInput
+  }
+
+  /**
+   * FolderPermission findFirst
+   */
+  export type FolderPermissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FolderPermission to fetch.
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FolderPermissions to fetch.
+     */
+    orderBy?: FolderPermissionOrderByWithRelationInput | FolderPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FolderPermissions.
+     */
+    cursor?: FolderPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FolderPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FolderPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FolderPermissions.
+     */
+    distinct?: FolderPermissionScalarFieldEnum | FolderPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * FolderPermission findFirstOrThrow
+   */
+  export type FolderPermissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FolderPermission to fetch.
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FolderPermissions to fetch.
+     */
+    orderBy?: FolderPermissionOrderByWithRelationInput | FolderPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for FolderPermissions.
+     */
+    cursor?: FolderPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FolderPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FolderPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FolderPermissions.
+     */
+    distinct?: FolderPermissionScalarFieldEnum | FolderPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * FolderPermission findMany
+   */
+  export type FolderPermissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which FolderPermissions to fetch.
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of FolderPermissions to fetch.
+     */
+    orderBy?: FolderPermissionOrderByWithRelationInput | FolderPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing FolderPermissions.
+     */
+    cursor?: FolderPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` FolderPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` FolderPermissions.
+     */
+    skip?: number
+    distinct?: FolderPermissionScalarFieldEnum | FolderPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * FolderPermission create
+   */
+  export type FolderPermissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a FolderPermission.
+     */
+    data: XOR<FolderPermissionCreateInput, FolderPermissionUncheckedCreateInput>
+  }
+
+  /**
+   * FolderPermission createMany
+   */
+  export type FolderPermissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many FolderPermissions.
+     */
+    data: FolderPermissionCreateManyInput | FolderPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * FolderPermission createManyAndReturn
+   */
+  export type FolderPermissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many FolderPermissions.
+     */
+    data: FolderPermissionCreateManyInput | FolderPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FolderPermission update
+   */
+  export type FolderPermissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a FolderPermission.
+     */
+    data: XOR<FolderPermissionUpdateInput, FolderPermissionUncheckedUpdateInput>
+    /**
+     * Choose, which FolderPermission to update.
+     */
+    where: FolderPermissionWhereUniqueInput
+  }
+
+  /**
+   * FolderPermission updateMany
+   */
+  export type FolderPermissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update FolderPermissions.
+     */
+    data: XOR<FolderPermissionUpdateManyMutationInput, FolderPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which FolderPermissions to update
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * Limit how many FolderPermissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * FolderPermission updateManyAndReturn
+   */
+  export type FolderPermissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * The data used to update FolderPermissions.
+     */
+    data: XOR<FolderPermissionUpdateManyMutationInput, FolderPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which FolderPermissions to update
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * Limit how many FolderPermissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * FolderPermission upsert
+   */
+  export type FolderPermissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the FolderPermission to update in case it exists.
+     */
+    where: FolderPermissionWhereUniqueInput
+    /**
+     * In case the FolderPermission found by the `where` argument doesn't exist, create a new FolderPermission with this data.
+     */
+    create: XOR<FolderPermissionCreateInput, FolderPermissionUncheckedCreateInput>
+    /**
+     * In case the FolderPermission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<FolderPermissionUpdateInput, FolderPermissionUncheckedUpdateInput>
+  }
+
+  /**
+   * FolderPermission delete
+   */
+  export type FolderPermissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
+    /**
+     * Filter which FolderPermission to delete.
+     */
+    where: FolderPermissionWhereUniqueInput
+  }
+
+  /**
+   * FolderPermission deleteMany
+   */
+  export type FolderPermissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which FolderPermissions to delete
+     */
+    where?: FolderPermissionWhereInput
+    /**
+     * Limit how many FolderPermissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * FolderPermission without action
+   */
+  export type FolderPermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FolderPermission
+     */
+    select?: FolderPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FolderPermission
+     */
+    omit?: FolderPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FolderPermissionInclude<ExtArgs> | null
   }
 
 
@@ -54419,11 +55650,22 @@ export namespace Prisma {
     organizationId: 'organizationId',
     parentId: 'parentId',
     createdBy: 'createdBy',
+    visibility: 'visibility',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type FolderScalarFieldEnum = (typeof FolderScalarFieldEnum)[keyof typeof FolderScalarFieldEnum]
+
+
+  export const FolderPermissionScalarFieldEnum: {
+    id: 'id',
+    folderId: 'folderId',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type FolderPermissionScalarFieldEnum = (typeof FolderPermissionScalarFieldEnum)[keyof typeof FolderPermissionScalarFieldEnum]
 
 
   export const ProjectDocumentScalarFieldEnum: {
@@ -55175,6 +56417,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
+    folderPermissions?: FolderPermissionListRelationFilter
     sentInvitations?: InvitationListRelationFilter
     messages?: MessageListRelationFilter
     ownedOrganizations?: OrganizationListRelationFilter
@@ -55209,6 +56452,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
     Folder?: FolderOrderByRelationAggregateInput
+    folderPermissions?: FolderPermissionOrderByRelationAggregateInput
     sentInvitations?: InvitationOrderByRelationAggregateInput
     messages?: MessageOrderByRelationAggregateInput
     ownedOrganizations?: OrganizationOrderByRelationAggregateInput
@@ -55246,6 +56490,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
+    folderPermissions?: FolderPermissionListRelationFilter
     sentInvitations?: InvitationListRelationFilter
     messages?: MessageListRelationFilter
     ownedOrganizations?: OrganizationListRelationFilter
@@ -56287,6 +57532,7 @@ export namespace Prisma {
     organizationId?: StringFilter<"Folder"> | string
     parentId?: StringNullableFilter<"Folder"> | string | null
     createdBy?: StringFilter<"Folder"> | string
+    visibility?: StringFilter<"Folder"> | string
     createdAt?: DateTimeFilter<"Folder"> | Date | string
     updatedAt?: DateTimeFilter<"Folder"> | Date | string
     documents?: DocumentListRelationFilter
@@ -56294,6 +57540,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     parent?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
     children?: FolderListRelationFilter
+    permissions?: FolderPermissionListRelationFilter
   }
 
   export type FolderOrderByWithRelationInput = {
@@ -56302,6 +57549,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     parentId?: SortOrderInput | SortOrder
     createdBy?: SortOrder
+    visibility?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     documents?: DocumentOrderByRelationAggregateInput
@@ -56309,6 +57557,7 @@ export namespace Prisma {
     organization?: OrganizationOrderByWithRelationInput
     parent?: FolderOrderByWithRelationInput
     children?: FolderOrderByRelationAggregateInput
+    permissions?: FolderPermissionOrderByRelationAggregateInput
   }
 
   export type FolderWhereUniqueInput = Prisma.AtLeast<{
@@ -56320,6 +57569,7 @@ export namespace Prisma {
     organizationId?: StringFilter<"Folder"> | string
     parentId?: StringNullableFilter<"Folder"> | string | null
     createdBy?: StringFilter<"Folder"> | string
+    visibility?: StringFilter<"Folder"> | string
     createdAt?: DateTimeFilter<"Folder"> | Date | string
     updatedAt?: DateTimeFilter<"Folder"> | Date | string
     documents?: DocumentListRelationFilter
@@ -56327,6 +57577,7 @@ export namespace Prisma {
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     parent?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
     children?: FolderListRelationFilter
+    permissions?: FolderPermissionListRelationFilter
   }, "id">
 
   export type FolderOrderByWithAggregationInput = {
@@ -56335,6 +57586,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     parentId?: SortOrderInput | SortOrder
     createdBy?: SortOrder
+    visibility?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: FolderCountOrderByAggregateInput
@@ -56351,8 +57603,63 @@ export namespace Prisma {
     organizationId?: StringWithAggregatesFilter<"Folder"> | string
     parentId?: StringNullableWithAggregatesFilter<"Folder"> | string | null
     createdBy?: StringWithAggregatesFilter<"Folder"> | string
+    visibility?: StringWithAggregatesFilter<"Folder"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Folder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Folder"> | Date | string
+  }
+
+  export type FolderPermissionWhereInput = {
+    AND?: FolderPermissionWhereInput | FolderPermissionWhereInput[]
+    OR?: FolderPermissionWhereInput[]
+    NOT?: FolderPermissionWhereInput | FolderPermissionWhereInput[]
+    id?: StringFilter<"FolderPermission"> | string
+    folderId?: StringFilter<"FolderPermission"> | string
+    userId?: StringFilter<"FolderPermission"> | string
+    createdAt?: DateTimeFilter<"FolderPermission"> | Date | string
+    folder?: XOR<FolderScalarRelationFilter, FolderWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type FolderPermissionOrderByWithRelationInput = {
+    id?: SortOrder
+    folderId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    folder?: FolderOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type FolderPermissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    folderId_userId?: FolderPermissionFolderIdUserIdCompoundUniqueInput
+    AND?: FolderPermissionWhereInput | FolderPermissionWhereInput[]
+    OR?: FolderPermissionWhereInput[]
+    NOT?: FolderPermissionWhereInput | FolderPermissionWhereInput[]
+    folderId?: StringFilter<"FolderPermission"> | string
+    userId?: StringFilter<"FolderPermission"> | string
+    createdAt?: DateTimeFilter<"FolderPermission"> | Date | string
+    folder?: XOR<FolderScalarRelationFilter, FolderWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "folderId_userId">
+
+  export type FolderPermissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    folderId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    _count?: FolderPermissionCountOrderByAggregateInput
+    _max?: FolderPermissionMaxOrderByAggregateInput
+    _min?: FolderPermissionMinOrderByAggregateInput
+  }
+
+  export type FolderPermissionScalarWhereWithAggregatesInput = {
+    AND?: FolderPermissionScalarWhereWithAggregatesInput | FolderPermissionScalarWhereWithAggregatesInput[]
+    OR?: FolderPermissionScalarWhereWithAggregatesInput[]
+    NOT?: FolderPermissionScalarWhereWithAggregatesInput | FolderPermissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"FolderPermission"> | string
+    folderId?: StringWithAggregatesFilter<"FolderPermission"> | string
+    userId?: StringWithAggregatesFilter<"FolderPermission"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"FolderPermission"> | Date | string
   }
 
   export type ProjectDocumentWhereInput = {
@@ -58474,6 +59781,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -58508,6 +59816,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -58538,6 +59847,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -58572,6 +59882,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -59728,6 +61039,7 @@ export namespace Prisma {
   export type FolderCreateInput = {
     id?: string
     name: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentCreateNestedManyWithoutFolderInput
@@ -59735,6 +61047,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutFolderInput
     parent?: FolderCreateNestedOneWithoutChildrenInput
     children?: FolderCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUncheckedCreateInput = {
@@ -59743,15 +61056,18 @@ export namespace Prisma {
     organizationId: string
     parentId?: string | null
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentUncheckedCreateNestedManyWithoutFolderInput
     children?: FolderUncheckedCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionUncheckedCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUpdateManyWithoutFolderNestedInput
@@ -59759,6 +61075,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutFolderNestedInput
     parent?: FolderUpdateOneWithoutChildrenNestedInput
     children?: FolderUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateInput = {
@@ -59767,10 +61084,12 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUncheckedUpdateManyWithoutFolderNestedInput
     children?: FolderUncheckedUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderCreateManyInput = {
@@ -59779,6 +61098,7 @@ export namespace Prisma {
     organizationId: string
     parentId?: string | null
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -59786,6 +61106,7 @@ export namespace Prisma {
   export type FolderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59796,8 +61117,56 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    folder: FolderCreateNestedOneWithoutPermissionsInput
+    user: UserCreateNestedOneWithoutFolderPermissionsInput
+  }
+
+  export type FolderPermissionUncheckedCreateInput = {
+    id?: string
+    folderId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type FolderPermissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folder?: FolderUpdateOneRequiredWithoutPermissionsNestedInput
+    user?: UserUpdateOneRequiredWithoutFolderPermissionsNestedInput
+  }
+
+  export type FolderPermissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    folderId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionCreateManyInput = {
+    id?: string
+    folderId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type FolderPermissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    folderId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectDocumentCreateInput = {
@@ -62047,6 +63416,12 @@ export namespace Prisma {
     none?: FolderWhereInput
   }
 
+  export type FolderPermissionListRelationFilter = {
+    every?: FolderPermissionWhereInput
+    some?: FolderPermissionWhereInput
+    none?: FolderPermissionWhereInput
+  }
+
   export type InvitationListRelationFilter = {
     every?: InvitationWhereInput
     some?: InvitationWhereInput
@@ -62150,6 +63525,10 @@ export namespace Prisma {
   }
 
   export type FolderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type FolderPermissionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -63054,6 +64433,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     parentId?: SortOrder
     createdBy?: SortOrder
+    visibility?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -63064,6 +64444,7 @@ export namespace Prisma {
     organizationId?: SortOrder
     parentId?: SortOrder
     createdBy?: SortOrder
+    visibility?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -63074,8 +64455,40 @@ export namespace Prisma {
     organizationId?: SortOrder
     parentId?: SortOrder
     createdBy?: SortOrder
+    visibility?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type FolderScalarRelationFilter = {
+    is?: FolderWhereInput
+    isNot?: FolderWhereInput
+  }
+
+  export type FolderPermissionFolderIdUserIdCompoundUniqueInput = {
+    folderId: string
+    userId: string
+  }
+
+  export type FolderPermissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    folderId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FolderPermissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    folderId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type FolderPermissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    folderId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type DocumentScalarRelationFilter = {
@@ -64240,6 +65653,13 @@ export namespace Prisma {
     connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
   }
 
+  export type FolderPermissionCreateNestedManyWithoutUserInput = {
+    create?: XOR<FolderPermissionCreateWithoutUserInput, FolderPermissionUncheckedCreateWithoutUserInput> | FolderPermissionCreateWithoutUserInput[] | FolderPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutUserInput | FolderPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: FolderPermissionCreateManyUserInputEnvelope
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+  }
+
   export type InvitationCreateNestedManyWithoutInvitedByInput = {
     create?: XOR<InvitationCreateWithoutInvitedByInput, InvitationUncheckedCreateWithoutInvitedByInput> | InvitationCreateWithoutInvitedByInput[] | InvitationUncheckedCreateWithoutInvitedByInput[]
     connectOrCreate?: InvitationCreateOrConnectWithoutInvitedByInput | InvitationCreateOrConnectWithoutInvitedByInput[]
@@ -64376,6 +65796,13 @@ export namespace Prisma {
     connectOrCreate?: FolderCreateOrConnectWithoutUserInput | FolderCreateOrConnectWithoutUserInput[]
     createMany?: FolderCreateManyUserInputEnvelope
     connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+  }
+
+  export type FolderPermissionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<FolderPermissionCreateWithoutUserInput, FolderPermissionUncheckedCreateWithoutUserInput> | FolderPermissionCreateWithoutUserInput[] | FolderPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutUserInput | FolderPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: FolderPermissionCreateManyUserInputEnvelope
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
   }
 
   export type InvitationUncheckedCreateNestedManyWithoutInvitedByInput = {
@@ -64548,6 +65975,20 @@ export namespace Prisma {
     update?: FolderUpdateWithWhereUniqueWithoutUserInput | FolderUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: FolderUpdateManyWithWhereWithoutUserInput | FolderUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
+  }
+
+  export type FolderPermissionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FolderPermissionCreateWithoutUserInput, FolderPermissionUncheckedCreateWithoutUserInput> | FolderPermissionCreateWithoutUserInput[] | FolderPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutUserInput | FolderPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: FolderPermissionUpsertWithWhereUniqueWithoutUserInput | FolderPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FolderPermissionCreateManyUserInputEnvelope
+    set?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    disconnect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    delete?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    update?: FolderPermissionUpdateWithWhereUniqueWithoutUserInput | FolderPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FolderPermissionUpdateManyWithWhereWithoutUserInput | FolderPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FolderPermissionScalarWhereInput | FolderPermissionScalarWhereInput[]
   }
 
   export type InvitationUpdateManyWithoutInvitedByNestedInput = {
@@ -64818,6 +66259,20 @@ export namespace Prisma {
     update?: FolderUpdateWithWhereUniqueWithoutUserInput | FolderUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: FolderUpdateManyWithWhereWithoutUserInput | FolderUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
+  }
+
+  export type FolderPermissionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<FolderPermissionCreateWithoutUserInput, FolderPermissionUncheckedCreateWithoutUserInput> | FolderPermissionCreateWithoutUserInput[] | FolderPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutUserInput | FolderPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: FolderPermissionUpsertWithWhereUniqueWithoutUserInput | FolderPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: FolderPermissionCreateManyUserInputEnvelope
+    set?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    disconnect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    delete?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    update?: FolderPermissionUpdateWithWhereUniqueWithoutUserInput | FolderPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: FolderPermissionUpdateManyWithWhereWithoutUserInput | FolderPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: FolderPermissionScalarWhereInput | FolderPermissionScalarWhereInput[]
   }
 
   export type InvitationUncheckedUpdateManyWithoutInvitedByNestedInput = {
@@ -66512,6 +67967,13 @@ export namespace Prisma {
     connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
   }
 
+  export type FolderPermissionCreateNestedManyWithoutFolderInput = {
+    create?: XOR<FolderPermissionCreateWithoutFolderInput, FolderPermissionUncheckedCreateWithoutFolderInput> | FolderPermissionCreateWithoutFolderInput[] | FolderPermissionUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutFolderInput | FolderPermissionCreateOrConnectWithoutFolderInput[]
+    createMany?: FolderPermissionCreateManyFolderInputEnvelope
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+  }
+
   export type DocumentUncheckedCreateNestedManyWithoutFolderInput = {
     create?: XOR<DocumentCreateWithoutFolderInput, DocumentUncheckedCreateWithoutFolderInput> | DocumentCreateWithoutFolderInput[] | DocumentUncheckedCreateWithoutFolderInput[]
     connectOrCreate?: DocumentCreateOrConnectWithoutFolderInput | DocumentCreateOrConnectWithoutFolderInput[]
@@ -66524,6 +67986,13 @@ export namespace Prisma {
     connectOrCreate?: FolderCreateOrConnectWithoutParentInput | FolderCreateOrConnectWithoutParentInput[]
     createMany?: FolderCreateManyParentInputEnvelope
     connect?: FolderWhereUniqueInput | FolderWhereUniqueInput[]
+  }
+
+  export type FolderPermissionUncheckedCreateNestedManyWithoutFolderInput = {
+    create?: XOR<FolderPermissionCreateWithoutFolderInput, FolderPermissionUncheckedCreateWithoutFolderInput> | FolderPermissionCreateWithoutFolderInput[] | FolderPermissionUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutFolderInput | FolderPermissionCreateOrConnectWithoutFolderInput[]
+    createMany?: FolderPermissionCreateManyFolderInputEnvelope
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
   }
 
   export type DocumentUpdateManyWithoutFolderNestedInput = {
@@ -66580,6 +68049,20 @@ export namespace Prisma {
     deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
   }
 
+  export type FolderPermissionUpdateManyWithoutFolderNestedInput = {
+    create?: XOR<FolderPermissionCreateWithoutFolderInput, FolderPermissionUncheckedCreateWithoutFolderInput> | FolderPermissionCreateWithoutFolderInput[] | FolderPermissionUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutFolderInput | FolderPermissionCreateOrConnectWithoutFolderInput[]
+    upsert?: FolderPermissionUpsertWithWhereUniqueWithoutFolderInput | FolderPermissionUpsertWithWhereUniqueWithoutFolderInput[]
+    createMany?: FolderPermissionCreateManyFolderInputEnvelope
+    set?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    disconnect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    delete?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    update?: FolderPermissionUpdateWithWhereUniqueWithoutFolderInput | FolderPermissionUpdateWithWhereUniqueWithoutFolderInput[]
+    updateMany?: FolderPermissionUpdateManyWithWhereWithoutFolderInput | FolderPermissionUpdateManyWithWhereWithoutFolderInput[]
+    deleteMany?: FolderPermissionScalarWhereInput | FolderPermissionScalarWhereInput[]
+  }
+
   export type DocumentUncheckedUpdateManyWithoutFolderNestedInput = {
     create?: XOR<DocumentCreateWithoutFolderInput, DocumentUncheckedCreateWithoutFolderInput> | DocumentCreateWithoutFolderInput[] | DocumentUncheckedCreateWithoutFolderInput[]
     connectOrCreate?: DocumentCreateOrConnectWithoutFolderInput | DocumentCreateOrConnectWithoutFolderInput[]
@@ -66606,6 +68089,48 @@ export namespace Prisma {
     update?: FolderUpdateWithWhereUniqueWithoutParentInput | FolderUpdateWithWhereUniqueWithoutParentInput[]
     updateMany?: FolderUpdateManyWithWhereWithoutParentInput | FolderUpdateManyWithWhereWithoutParentInput[]
     deleteMany?: FolderScalarWhereInput | FolderScalarWhereInput[]
+  }
+
+  export type FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput = {
+    create?: XOR<FolderPermissionCreateWithoutFolderInput, FolderPermissionUncheckedCreateWithoutFolderInput> | FolderPermissionCreateWithoutFolderInput[] | FolderPermissionUncheckedCreateWithoutFolderInput[]
+    connectOrCreate?: FolderPermissionCreateOrConnectWithoutFolderInput | FolderPermissionCreateOrConnectWithoutFolderInput[]
+    upsert?: FolderPermissionUpsertWithWhereUniqueWithoutFolderInput | FolderPermissionUpsertWithWhereUniqueWithoutFolderInput[]
+    createMany?: FolderPermissionCreateManyFolderInputEnvelope
+    set?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    disconnect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    delete?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    connect?: FolderPermissionWhereUniqueInput | FolderPermissionWhereUniqueInput[]
+    update?: FolderPermissionUpdateWithWhereUniqueWithoutFolderInput | FolderPermissionUpdateWithWhereUniqueWithoutFolderInput[]
+    updateMany?: FolderPermissionUpdateManyWithWhereWithoutFolderInput | FolderPermissionUpdateManyWithWhereWithoutFolderInput[]
+    deleteMany?: FolderPermissionScalarWhereInput | FolderPermissionScalarWhereInput[]
+  }
+
+  export type FolderCreateNestedOneWithoutPermissionsInput = {
+    create?: XOR<FolderCreateWithoutPermissionsInput, FolderUncheckedCreateWithoutPermissionsInput>
+    connectOrCreate?: FolderCreateOrConnectWithoutPermissionsInput
+    connect?: FolderWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutFolderPermissionsInput = {
+    create?: XOR<UserCreateWithoutFolderPermissionsInput, UserUncheckedCreateWithoutFolderPermissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFolderPermissionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type FolderUpdateOneRequiredWithoutPermissionsNestedInput = {
+    create?: XOR<FolderCreateWithoutPermissionsInput, FolderUncheckedCreateWithoutPermissionsInput>
+    connectOrCreate?: FolderCreateOrConnectWithoutPermissionsInput
+    upsert?: FolderUpsertWithoutPermissionsInput
+    connect?: FolderWhereUniqueInput
+    update?: XOR<XOR<FolderUpdateToOneWithWhereWithoutPermissionsInput, FolderUpdateWithoutPermissionsInput>, FolderUncheckedUpdateWithoutPermissionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutFolderPermissionsNestedInput = {
+    create?: XOR<UserCreateWithoutFolderPermissionsInput, UserUncheckedCreateWithoutFolderPermissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutFolderPermissionsInput
+    upsert?: UserUpsertWithoutFolderPermissionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFolderPermissionsInput, UserUpdateWithoutFolderPermissionsInput>, UserUncheckedUpdateWithoutFolderPermissionsInput>
   }
 
   export type UserCreateNestedOneWithoutProjectDocumentsInput = {
@@ -68223,6 +69748,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -68256,6 +69782,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -68301,6 +69828,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -68334,6 +69862,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -68364,6 +69893,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -68397,6 +69927,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -68442,6 +69973,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -68475,6 +70007,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -68689,12 +70222,14 @@ export namespace Prisma {
   export type FolderCreateWithoutUserInput = {
     id?: string
     name: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentCreateNestedManyWithoutFolderInput
     organization: OrganizationCreateNestedOneWithoutFolderInput
     parent?: FolderCreateNestedOneWithoutChildrenInput
     children?: FolderCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUncheckedCreateWithoutUserInput = {
@@ -68702,10 +70237,12 @@ export namespace Prisma {
     name: string
     organizationId: string
     parentId?: string | null
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentUncheckedCreateNestedManyWithoutFolderInput
     children?: FolderUncheckedCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionUncheckedCreateNestedManyWithoutFolderInput
   }
 
   export type FolderCreateOrConnectWithoutUserInput = {
@@ -68715,6 +70252,28 @@ export namespace Prisma {
 
   export type FolderCreateManyUserInputEnvelope = {
     data: FolderCreateManyUserInput | FolderCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FolderPermissionCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    folder: FolderCreateNestedOneWithoutPermissionsInput
+  }
+
+  export type FolderPermissionUncheckedCreateWithoutUserInput = {
+    id?: string
+    folderId: string
+    createdAt?: Date | string
+  }
+
+  export type FolderPermissionCreateOrConnectWithoutUserInput = {
+    where: FolderPermissionWhereUniqueInput
+    create: XOR<FolderPermissionCreateWithoutUserInput, FolderPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type FolderPermissionCreateManyUserInputEnvelope = {
+    data: FolderPermissionCreateManyUserInput | FolderPermissionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -69477,8 +71036,35 @@ export namespace Prisma {
     organizationId?: StringFilter<"Folder"> | string
     parentId?: StringNullableFilter<"Folder"> | string | null
     createdBy?: StringFilter<"Folder"> | string
+    visibility?: StringFilter<"Folder"> | string
     createdAt?: DateTimeFilter<"Folder"> | Date | string
     updatedAt?: DateTimeFilter<"Folder"> | Date | string
+  }
+
+  export type FolderPermissionUpsertWithWhereUniqueWithoutUserInput = {
+    where: FolderPermissionWhereUniqueInput
+    update: XOR<FolderPermissionUpdateWithoutUserInput, FolderPermissionUncheckedUpdateWithoutUserInput>
+    create: XOR<FolderPermissionCreateWithoutUserInput, FolderPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type FolderPermissionUpdateWithWhereUniqueWithoutUserInput = {
+    where: FolderPermissionWhereUniqueInput
+    data: XOR<FolderPermissionUpdateWithoutUserInput, FolderPermissionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type FolderPermissionUpdateManyWithWhereWithoutUserInput = {
+    where: FolderPermissionScalarWhereInput
+    data: XOR<FolderPermissionUpdateManyMutationInput, FolderPermissionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type FolderPermissionScalarWhereInput = {
+    AND?: FolderPermissionScalarWhereInput | FolderPermissionScalarWhereInput[]
+    OR?: FolderPermissionScalarWhereInput[]
+    NOT?: FolderPermissionScalarWhereInput | FolderPermissionScalarWhereInput[]
+    id?: StringFilter<"FolderPermission"> | string
+    folderId?: StringFilter<"FolderPermission"> | string
+    userId?: StringFilter<"FolderPermission"> | string
+    createdAt?: DateTimeFilter<"FolderPermission"> | Date | string
   }
 
   export type InvitationUpsertWithWhereUniqueWithoutInvitedByInput = {
@@ -70118,12 +71704,14 @@ export namespace Prisma {
   export type FolderCreateWithoutOrganizationInput = {
     id?: string
     name: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentCreateNestedManyWithoutFolderInput
     user: UserCreateNestedOneWithoutFolderInput
     parent?: FolderCreateNestedOneWithoutChildrenInput
     children?: FolderCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUncheckedCreateWithoutOrganizationInput = {
@@ -70131,10 +71719,12 @@ export namespace Prisma {
     name: string
     parentId?: string | null
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentUncheckedCreateNestedManyWithoutFolderInput
     children?: FolderUncheckedCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionUncheckedCreateNestedManyWithoutFolderInput
   }
 
   export type FolderCreateOrConnectWithoutOrganizationInput = {
@@ -70199,6 +71789,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
@@ -70232,6 +71823,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -70316,6 +71908,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -70348,6 +71941,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -70388,6 +71982,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -70420,6 +72015,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -70720,6 +72316,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
@@ -70753,6 +72350,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -71852,6 +73450,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -71885,6 +73484,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -72009,6 +73609,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -72042,6 +73643,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -72805,6 +74407,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -72838,6 +74441,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -72934,6 +74538,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -72967,6 +74572,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -73017,6 +74623,7 @@ export namespace Prisma {
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -73050,6 +74657,7 @@ export namespace Prisma {
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -73072,12 +74680,14 @@ export namespace Prisma {
   export type FolderCreateWithoutDocumentsInput = {
     id?: string
     name: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutFolderInput
     organization: OrganizationCreateNestedOneWithoutFolderInput
     parent?: FolderCreateNestedOneWithoutChildrenInput
     children?: FolderCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUncheckedCreateWithoutDocumentsInput = {
@@ -73086,9 +74696,11 @@ export namespace Prisma {
     organizationId: string
     parentId?: string | null
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: FolderUncheckedCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionUncheckedCreateNestedManyWithoutFolderInput
   }
 
   export type FolderCreateOrConnectWithoutDocumentsInput = {
@@ -73377,6 +74989,7 @@ export namespace Prisma {
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -73410,6 +75023,7 @@ export namespace Prisma {
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -73438,12 +75052,14 @@ export namespace Prisma {
   export type FolderUpdateWithoutDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutFolderNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFolderNestedInput
     parent?: FolderUpdateOneWithoutChildrenNestedInput
     children?: FolderUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateWithoutDocumentsInput = {
@@ -73452,9 +75068,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: FolderUncheckedUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput
   }
 
   export type OrganizationUpsertWithoutDocumentsInput = {
@@ -73785,6 +75403,7 @@ export namespace Prisma {
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -73818,6 +75437,7 @@ export namespace Prisma {
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -73913,12 +75533,14 @@ export namespace Prisma {
   export type FolderCreateWithoutChildrenInput = {
     id?: string
     name: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentCreateNestedManyWithoutFolderInput
     user: UserCreateNestedOneWithoutFolderInput
     organization: OrganizationCreateNestedOneWithoutFolderInput
     parent?: FolderCreateNestedOneWithoutChildrenInput
+    permissions?: FolderPermissionCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUncheckedCreateWithoutChildrenInput = {
@@ -73927,9 +75549,11 @@ export namespace Prisma {
     organizationId: string
     parentId?: string | null
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentUncheckedCreateNestedManyWithoutFolderInput
+    permissions?: FolderPermissionUncheckedCreateNestedManyWithoutFolderInput
   }
 
   export type FolderCreateOrConnectWithoutChildrenInput = {
@@ -73940,12 +75564,14 @@ export namespace Prisma {
   export type FolderCreateWithoutParentInput = {
     id?: string
     name: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentCreateNestedManyWithoutFolderInput
     user: UserCreateNestedOneWithoutFolderInput
     organization: OrganizationCreateNestedOneWithoutFolderInput
     children?: FolderCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionCreateNestedManyWithoutFolderInput
   }
 
   export type FolderUncheckedCreateWithoutParentInput = {
@@ -73953,10 +75579,12 @@ export namespace Prisma {
     name: string
     organizationId: string
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: DocumentUncheckedCreateNestedManyWithoutFolderInput
     children?: FolderUncheckedCreateNestedManyWithoutParentInput
+    permissions?: FolderPermissionUncheckedCreateNestedManyWithoutFolderInput
   }
 
   export type FolderCreateOrConnectWithoutParentInput = {
@@ -73966,6 +75594,28 @@ export namespace Prisma {
 
   export type FolderCreateManyParentInputEnvelope = {
     data: FolderCreateManyParentInput | FolderCreateManyParentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type FolderPermissionCreateWithoutFolderInput = {
+    id?: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutFolderPermissionsInput
+  }
+
+  export type FolderPermissionUncheckedCreateWithoutFolderInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type FolderPermissionCreateOrConnectWithoutFolderInput = {
+    where: FolderPermissionWhereUniqueInput
+    create: XOR<FolderPermissionCreateWithoutFolderInput, FolderPermissionUncheckedCreateWithoutFolderInput>
+  }
+
+  export type FolderPermissionCreateManyFolderInputEnvelope = {
+    data: FolderPermissionCreateManyFolderInput | FolderPermissionCreateManyFolderInput[]
     skipDuplicates?: boolean
   }
 
@@ -74011,6 +75661,7 @@ export namespace Prisma {
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -74044,6 +75695,7 @@ export namespace Prisma {
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -74151,12 +75803,14 @@ export namespace Prisma {
   export type FolderUpdateWithoutChildrenInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUpdateManyWithoutFolderNestedInput
     user?: UserUpdateOneRequiredWithoutFolderNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFolderNestedInput
     parent?: FolderUpdateOneWithoutChildrenNestedInput
+    permissions?: FolderPermissionUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateWithoutChildrenInput = {
@@ -74165,9 +75819,11 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUncheckedUpdateManyWithoutFolderNestedInput
+    permissions?: FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUpsertWithWhereUniqueWithoutParentInput = {
@@ -74186,6 +75842,234 @@ export namespace Prisma {
     data: XOR<FolderUpdateManyMutationInput, FolderUncheckedUpdateManyWithoutParentInput>
   }
 
+  export type FolderPermissionUpsertWithWhereUniqueWithoutFolderInput = {
+    where: FolderPermissionWhereUniqueInput
+    update: XOR<FolderPermissionUpdateWithoutFolderInput, FolderPermissionUncheckedUpdateWithoutFolderInput>
+    create: XOR<FolderPermissionCreateWithoutFolderInput, FolderPermissionUncheckedCreateWithoutFolderInput>
+  }
+
+  export type FolderPermissionUpdateWithWhereUniqueWithoutFolderInput = {
+    where: FolderPermissionWhereUniqueInput
+    data: XOR<FolderPermissionUpdateWithoutFolderInput, FolderPermissionUncheckedUpdateWithoutFolderInput>
+  }
+
+  export type FolderPermissionUpdateManyWithWhereWithoutFolderInput = {
+    where: FolderPermissionScalarWhereInput
+    data: XOR<FolderPermissionUpdateManyMutationInput, FolderPermissionUncheckedUpdateManyWithoutFolderInput>
+  }
+
+  export type FolderCreateWithoutPermissionsInput = {
+    id?: string
+    name: string
+    visibility?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    documents?: DocumentCreateNestedManyWithoutFolderInput
+    user: UserCreateNestedOneWithoutFolderInput
+    organization: OrganizationCreateNestedOneWithoutFolderInput
+    parent?: FolderCreateNestedOneWithoutChildrenInput
+    children?: FolderCreateNestedManyWithoutParentInput
+  }
+
+  export type FolderUncheckedCreateWithoutPermissionsInput = {
+    id?: string
+    name: string
+    organizationId: string
+    parentId?: string | null
+    createdBy: string
+    visibility?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    documents?: DocumentUncheckedCreateNestedManyWithoutFolderInput
+    children?: FolderUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type FolderCreateOrConnectWithoutPermissionsInput = {
+    where: FolderWhereUniqueInput
+    create: XOR<FolderCreateWithoutPermissionsInput, FolderUncheckedCreateWithoutPermissionsInput>
+  }
+
+  export type UserCreateWithoutFolderPermissionsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutFolderPermissionsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutFolderPermissionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutFolderPermissionsInput, UserUncheckedCreateWithoutFolderPermissionsInput>
+  }
+
+  export type FolderUpsertWithoutPermissionsInput = {
+    update: XOR<FolderUpdateWithoutPermissionsInput, FolderUncheckedUpdateWithoutPermissionsInput>
+    create: XOR<FolderCreateWithoutPermissionsInput, FolderUncheckedCreateWithoutPermissionsInput>
+    where?: FolderWhereInput
+  }
+
+  export type FolderUpdateToOneWithWhereWithoutPermissionsInput = {
+    where?: FolderWhereInput
+    data: XOR<FolderUpdateWithoutPermissionsInput, FolderUncheckedUpdateWithoutPermissionsInput>
+  }
+
+  export type FolderUpdateWithoutPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documents?: DocumentUpdateManyWithoutFolderNestedInput
+    user?: UserUpdateOneRequiredWithoutFolderNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutFolderNestedInput
+    parent?: FolderUpdateOneWithoutChildrenNestedInput
+    children?: FolderUpdateManyWithoutParentNestedInput
+  }
+
+  export type FolderUncheckedUpdateWithoutPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documents?: DocumentUncheckedUpdateManyWithoutFolderNestedInput
+    children?: FolderUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type UserUpsertWithoutFolderPermissionsInput = {
+    update: XOR<UserUpdateWithoutFolderPermissionsInput, UserUncheckedUpdateWithoutFolderPermissionsInput>
+    create: XOR<UserCreateWithoutFolderPermissionsInput, UserUncheckedCreateWithoutFolderPermissionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutFolderPermissionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutFolderPermissionsInput, UserUncheckedUpdateWithoutFolderPermissionsInput>
+  }
+
+  export type UserUpdateWithoutFolderPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutFolderPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutProjectDocumentsInput = {
     id?: string
     email: string
@@ -74202,6 +76086,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -74235,6 +76120,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -74378,6 +76264,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -74411,6 +76298,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -74549,6 +76437,7 @@ export namespace Prisma {
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -74582,6 +76471,7 @@ export namespace Prisma {
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -74715,6 +76605,7 @@ export namespace Prisma {
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -74748,6 +76639,7 @@ export namespace Prisma {
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -75555,6 +77447,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
@@ -75588,6 +77481,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -75700,6 +77594,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
@@ -75733,6 +77628,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -76138,6 +78034,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
@@ -76171,6 +78068,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
     projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -76334,6 +78232,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
@@ -76367,6 +78266,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
     projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -76636,6 +78536,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -76669,6 +78570,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -76755,6 +78657,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -76788,6 +78691,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -76855,6 +78759,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -76888,6 +78793,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -77002,6 +78908,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -77035,6 +78942,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -77319,6 +79227,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -77352,6 +79261,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -77525,6 +79435,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -77558,6 +79469,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -77691,6 +79603,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -77724,6 +79637,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -77812,6 +79726,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -77845,6 +79760,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -77873,6 +79789,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -77906,6 +79823,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -78126,6 +80044,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -78159,6 +80078,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -78894,6 +80814,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -78927,6 +80848,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -79079,6 +81001,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -79112,6 +81035,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -79209,6 +81133,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
     messages?: MessageCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
@@ -79242,6 +81167,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
     Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
     sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
     messages?: MessageUncheckedCreateNestedManyWithoutUserInput
     ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -79317,6 +81243,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -79350,6 +81277,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -79562,8 +81490,15 @@ export namespace Prisma {
     name: string
     organizationId: string
     parentId?: string | null
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type FolderPermissionCreateManyUserInput = {
+    id?: string
+    folderId: string
+    createdAt?: Date | string
   }
 
   export type InvitationCreateManyInvitedByInput = {
@@ -79915,12 +81850,14 @@ export namespace Prisma {
   export type FolderUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUpdateManyWithoutFolderNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFolderNestedInput
     parent?: FolderUpdateOneWithoutChildrenNestedInput
     children?: FolderUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateWithoutUserInput = {
@@ -79928,10 +81865,12 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUncheckedUpdateManyWithoutFolderNestedInput
     children?: FolderUncheckedUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateManyWithoutUserInput = {
@@ -79939,8 +81878,27 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    folder?: FolderUpdateOneRequiredWithoutPermissionsNestedInput
+  }
+
+  export type FolderPermissionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    folderId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    folderId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InvitationUpdateWithoutInvitedByInput = {
@@ -80417,6 +82375,7 @@ export namespace Prisma {
     name: string
     parentId?: string | null
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -80636,12 +82595,14 @@ export namespace Prisma {
   export type FolderUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUpdateManyWithoutFolderNestedInput
     user?: UserUpdateOneRequiredWithoutFolderNestedInput
     parent?: FolderUpdateOneWithoutChildrenNestedInput
     children?: FolderUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateWithoutOrganizationInput = {
@@ -80649,10 +82610,12 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUncheckedUpdateManyWithoutFolderNestedInput
     children?: FolderUncheckedUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateManyWithoutOrganizationInput = {
@@ -80660,6 +82623,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -80769,6 +82733,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -80801,6 +82766,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -80844,6 +82810,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
@@ -80876,6 +82843,7 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -81670,8 +83638,15 @@ export namespace Prisma {
     name: string
     organizationId: string
     createdBy: string
+    visibility?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type FolderPermissionCreateManyFolderInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
   }
 
   export type DocumentUpdateWithoutFolderInput = {
@@ -81743,12 +83718,14 @@ export namespace Prisma {
   export type FolderUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUpdateManyWithoutFolderNestedInput
     user?: UserUpdateOneRequiredWithoutFolderNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutFolderNestedInput
     children?: FolderUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateWithoutParentInput = {
@@ -81756,10 +83733,12 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: DocumentUncheckedUpdateManyWithoutFolderNestedInput
     children?: FolderUncheckedUpdateManyWithoutParentNestedInput
+    permissions?: FolderPermissionUncheckedUpdateManyWithoutFolderNestedInput
   }
 
   export type FolderUncheckedUpdateManyWithoutParentInput = {
@@ -81767,8 +83746,27 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     organizationId?: StringFieldUpdateOperationsInput | string
     createdBy?: StringFieldUpdateOperationsInput | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionUpdateWithoutFolderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutFolderPermissionsNestedInput
+  }
+
+  export type FolderPermissionUncheckedUpdateWithoutFolderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FolderPermissionUncheckedUpdateManyWithoutFolderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ConversationActionCreateManyConversationInput = {

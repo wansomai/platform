@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { apiService } from "@/lib/api";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { useFolderStore } from "@/store/folder.store";
@@ -73,7 +74,12 @@ export function UploadDocumentModal({
   const [folderSearchTerm, setFolderSearchTerm] = useState("");
   // Folder filter for the select tab (null = show all, 'root' = unfiled)
   const [selectedFilterFolder, setSelectedFilterFolder] = useState<string | null>(null);
+  // Per-file custom names (key = file.name+file.size) and conflict flags
+  const [fileNames, setFileNames] = useState<Record<string, string>>({});
+  const [fileConflicts, setFileConflicts] = useState<Record<string, boolean>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Holds lowercase titles of docs already in the selected target folder — used for conflict detection
+  const folderDocTitlesRef = useRef<Set<string>>(new Set());
   
   // Hooks
   const { 
@@ -128,8 +134,17 @@ export function UploadDocumentModal({
   // Effects
   useEffect(() => {
     if (open) {
-      fetchDocuments();
-      fetchFolders(); // always needed for folder sidebar in select tab
+      // Clear any stale selection from a previous session
+      setSelectedDocumentsToAdd([]);
+      setSelectedFilterFolder(null);
+      setFileNames({});
+      setFileConflicts({});
+      // Force-refresh so we never show a folder-filtered list from the vault page cache.
+      // No folder filter here — we show all documents; folder browsing is handled below.
+      fetchDocuments({ limit: 100 }, true);
+      if (mode !== 'upload') {
+        fetchFolders();
+      }
     }
   }, [open, fetchDocuments, fetchFolders, mode]);
   
@@ -153,10 +168,69 @@ export function UploadDocumentModal({
     }
   }, [open, mode]);
 
+  // Populate folderDocTitlesRef for conflict detection.
+  // 1. Immediately seeds from the Zustand store (zero-latency, may be partial).
+  // 2. Then fetches the authoritative list from the API (complete, async).
+  // Runs on open and whenever the user changes the target folder.
+  useEffect(() => {
+    if (!open) {
+      folderDocTitlesRef.current = new Set();
+      return;
+    }
+
+    // --- Instant seed from already-loaded store documents ---
+    const storeTitles = new Set<string>(
+      documents
+        .filter((d: any) => (d.folderId ?? null) === (selectedFolder ?? null))
+        .map((d: any) => d.title.toLowerCase())
+    );
+    folderDocTitlesRef.current = storeTitles;
+    // Re-evaluate conflicts immediately with store data
+    setFileConflicts(prev => {
+      const updated = { ...prev };
+      let changed = false;
+      for (const file of uploadFiles) {
+        const k = fileKey(file);
+        const name = (fileNames[k] ?? file.name.replace(/\.[^/.]+$/, '')).trim().toLowerCase();
+        const nowConflict = storeTitles.has(name);
+        if (updated[k] !== nowConflict) { updated[k] = nowConflict; changed = true; }
+      }
+      return changed ? updated : prev;
+    });
+
+    // --- Background API fetch for the complete/authoritative list ---
+    const folderParam = selectedFolder ?? 'root';
+    apiService.get<{ data: { title: string }[] }>(`/api/documents?folder=${folderParam}&titlesOnly=true`)
+      .then((res) => {
+        const titles = new Set<string>((res.data || []).map((d) => d.title.toLowerCase()));
+        folderDocTitlesRef.current = titles;
+        // Re-evaluate conflicts again with the complete list
+        setFileConflicts(prev => {
+          const updated = { ...prev };
+          let changed = false;
+          for (const file of uploadFiles) {
+            const k = fileKey(file);
+            const name = (fileNames[k] ?? file.name.replace(/\.[^/.]+$/, '')).trim().toLowerCase();
+            const nowConflict = titles.has(name);
+            if (updated[k] !== nowConflict) { updated[k] = nowConflict; changed = true; }
+          }
+          return changed ? updated : prev;
+        });
+      })
+      .catch(() => {
+        // If API fails, keep the store-seeded data rather than clearing
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFolder, open]);
+
   // File handling functions
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      setUploadFiles([]);
+      setUploadError(null);
+      return;
+    }
     validateAndSetFiles(Array.from(files));
   };
 
@@ -183,8 +257,10 @@ export function UploadDocumentModal({
     }
   };
 
+  const fileKey = (f: File) => f.name + f.size;
+
   const validateAndSetFiles = (files: File[]) => {
-    const valid: File[] = [];
+    const validFiles: File[] = [];
     const errors: string[] = [];
 
     for (const file of files) {
@@ -192,7 +268,7 @@ export function UploadDocumentModal({
       if (!validation.isValid) {
         errors.push(`${file.name}: ${validation.error || 'Invalid file'}`);
       } else {
-        valid.push(file);
+        validFiles.push(file);
       }
     }
 
@@ -202,70 +278,115 @@ export function UploadDocumentModal({
       setUploadError(null);
     }
 
-    if (valid.length > 0) {
+    if (validFiles.length > 0) {
       setUploadFiles(prev => {
-        const existingNames = new Set(prev.map(f => f.name));
-        const newFiles = valid.filter(f => !existingNames.has(f.name));
-        return [...prev, ...newFiles];
+        const existing = new Set(prev.map(fileKey));
+        return [...prev, ...validFiles.filter(f => !existing.has(fileKey(f)))];
       });
-    }
-  };
 
-  const removeUploadFile = (index: number) => {
-    setUploadFiles(prev => prev.filter((_, i) => i !== index));
-    setUploadError(null);
+      // Detect name conflicts against docs already in the target folder
+      const newNames: Record<string, string> = {};
+      const newConflicts: Record<string, boolean> = {};
+      for (const file of validFiles) {
+        const key = fileKey(file);
+        const baseName = file.name.replace(/\.[^/.]+$/, ''); // strip extension
+        newNames[key] = baseName;
+        newConflicts[key] = folderDocTitlesRef.current.has(baseName.toLowerCase());
+      }
+      setFileNames(prev => ({ ...prev, ...newNames }));
+      setFileConflicts(prev => ({ ...prev, ...newConflicts }));
+    }
   };
 
   // Document operations
   const handleUploadDocument = async () => {
     if (uploadFiles.length === 0) return;
 
+    // Split files into those ready to upload and those with unresolved name conflicts
+    const filesToUpload = uploadFiles.filter(f => !fileConflicts[fileKey(f)]);
+    const conflictCount = uploadFiles.length - filesToUpload.length;
+
+    if (filesToUpload.length === 0) {
+      setUploadError('Please rename the highlighted files before uploading.');
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
 
     try {
-      const uploadedDocs: Document[] = [];
-      const total = uploadFiles.length;
+      const uploadedDocs: any[] = [];
+      const uploadedKeys = new Set<string>();
+      const serverConflictKeys = new Set<string>();
 
-      for (let i = 0; i < total; i++) {
-        const file = uploadFiles[i];
+      for (let i = 0; i < filesToUpload.length; i++) {
+        const file = filesToUpload[i];
+        const key = fileKey(file);
+        const customName = fileNames[key];
         const formData = new FormData();
         formData.append('file', file);
-
+        if (customName && customName.trim() !== file.name.replace(/\.[^/.]+$/, '')) {
+          formData.append('title', customName.trim());
+        }
         if (selectedFolder) {
           formData.append('folderId', selectedFolder);
         }
 
-        const document = await uploadDocument(formData, (progress) => {
-          // Overall progress across all files
-          setUploadProgress(Math.round(((i + progress / 100) / total) * 100));
-        });
-
-        if (document) {
-          uploadedDocs.push(document);
+        try {
+          const document = await uploadDocument(formData, (progress) => {
+            const overall = Math.round(((i / filesToUpload.length) * 100) + (progress / filesToUpload.length));
+            setUploadProgress(overall);
+          });
+          if (document) {
+            uploadedDocs.push(document);
+            uploadedKeys.add(key);
+          }
+        } catch (err: any) {
+          if (err.response?.status === 409) {
+            // Server detected a name conflict — mark file for rename and keep in queue
+            serverConflictKeys.add(key);
+            setFileConflicts(prev => ({ ...prev, [key]: true }));
+          } else {
+            const msg = err.response?.data?.message || err.message || 'Upload failed';
+            notify.error(`${file.name}: ${msg}`);
+          }
         }
       }
+
+      setUploadProgress(100);
+
+      // Remove successfully uploaded files from the queue
+      if (uploadedKeys.size > 0) {
+        setUploadFiles(prev => prev.filter(f => !uploadedKeys.has(fileKey(f))));
+        setFileNames(prev => { const n = { ...prev }; for (const k of uploadedKeys) delete n[k]; return n; });
+        setFileConflicts(prev => { const n = { ...prev }; for (const k of uploadedKeys) delete n[k]; return n; });
+      }
+
+      const skippedCount = conflictCount + serverConflictKeys.size;
 
       if (uploadedDocs.length > 0) {
         if (mode === 'upload-and-attach' && projectId) {
-          const success = await attachDocumentsToProject(
-            projectId,
-            uploadedDocs.map(d => d.id)
-          );
+          const success = await attachDocumentsToProject(projectId, uploadedDocs.map(d => d.id));
           if (success) {
-            notify.success(`${uploadedDocs.length} file${uploadedDocs.length > 1 ? 's' : ''} uploaded and added to conversation`);
+            notify.success(`${uploadedDocs.length} file${uploadedDocs.length !== 1 ? 's' : ''} uploaded and added to conversation`);
           } else {
-            notify.error("Files uploaded but failed to add to conversation");
+            notify.error('Files uploaded but failed to add to conversation');
           }
         } else {
-          notify.success(`${uploadedDocs.length} file${uploadedDocs.length > 1 ? 's' : ''} uploaded successfully`);
+          notify.success(`${uploadedDocs.length} file${uploadedDocs.length !== 1 ? 's' : ''} uploaded successfully`);
         }
-
         onDocumentsAdded?.(uploadedDocs);
+      }
+
+      if (skippedCount > 0) {
+        setUploadError(
+          `${skippedCount} file${skippedCount !== 1 ? 's' : ''} not uploaded — a document with the same name already exists in this folder. Rename ${skippedCount !== 1 ? 'them' : 'it'} below to upload.`
+        );
+      } else {
         onOpenChange(false);
       }
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || error.message || "Upload failed";
+      const errorMsg = error.response?.data?.message || error.message || 'Upload failed';
       setUploadError(errorMsg);
       notify.error(errorMsg);
     } finally {
@@ -356,16 +477,17 @@ export function UploadDocumentModal({
 
   // Render functions
   const renderUploadTab = () => (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      {/* Drop zone — compact when files are selected, full when empty */}
       <div
-        className={`border-2 border-dashed rounded-lg p-8 cursor-pointer transition-all relative ${
+        className={`border-2 border-dashed rounded-lg cursor-pointer transition-all relative ${
           isDragOver
-            ? 'border-primary-500 bg-primary-50 scale-[1.02]'
+            ? 'border-primary-500 bg-primary-50 scale-[1.02] p-6'
             : uploadFiles.length > 0
-              ? 'border-green-400 bg-green-50'
+              ? 'border-green-400 bg-green-50 p-4'
               : isUploading
-                ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 hover:shadow-md'
+                ? 'border-gray-300 bg-gray-50 cursor-not-allowed p-8'
+                : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50 hover:shadow-md p-8'
         } ${isUploading ? 'pointer-events-none' : ''}`}
         onClick={() => {
           if (!isUploading && fileInputRef.current) {
@@ -385,60 +507,123 @@ export function UploadDocumentModal({
           </div>
         )}
 
-        <div className="text-center">
-          <UploadCloud className={`mx-auto h-16 w-16 mb-4 transition-all ${
-            isDragOver ? 'text-primary-500 scale-110' : uploadFiles.length > 0 ? 'text-green-500' : 'text-gray-400'
-          }`} />
-
-          <div className="space-y-4">
-            <p className={`text-lg font-semibold mb-2 ${
-              isDragOver ? 'text-primary-700' : 'text-gray-800'
-            }`}>
-              {isDragOver ? 'Drop your files here!' : 'Drag & drop your files here'}
-            </p>
-            <div className="flex items-center gap-3 my-4">
-              <div className="flex-1 h-px bg-gray-300"></div>
-              <span className="text-sm text-gray-500 font-medium">OR</span>
-              <div className="flex-1 h-px bg-gray-300"></div>
+        {uploadFiles.length > 0 ? (
+          /* Compact summary row when files are already selected */
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <UploadCloud className="h-5 w-5 text-green-600 flex-shrink-0" />
+              <span className="text-sm font-semibold text-green-700">
+                {uploadFiles.length} file{uploadFiles.length !== 1 ? 's' : ''} selected
+              </span>
             </div>
-            <Button
+            <button
               type="button"
-              size="lg"
               onClick={(e) => {
                 e.stopPropagation();
-                if (fileInputRef.current) {
-                  fileInputRef.current.click();
-                }
+                if (fileInputRef.current) fileInputRef.current.click();
               }}
-              className="w-full max-w-xs mx-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+              className="text-sm text-primary hover:underline flex-shrink-0"
             >
-              <Plus className="h-5 w-5 mr-2" />
-              {uploadFiles.length > 0 ? 'Add More Files' : 'Open File Selector'}
-            </Button>
+              + Add more
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="text-center">
+            <UploadCloud className={`mx-auto h-16 w-16 mb-4 transition-all ${
+              isDragOver ? 'text-primary-500 scale-110' : 'text-gray-400'
+            }`} />
+            <div className="space-y-4">
+              <p className={`text-lg font-semibold mb-2 ${
+                isDragOver ? 'text-primary-700' : 'text-gray-800'
+              }`}>
+                {isDragOver ? 'Drop your files here!' : 'Drag & drop files here'}
+              </p>
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <span className="text-sm text-gray-500 font-medium">OR</span>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
+              <Button
+                type="button"
+                size="lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (fileInputRef.current) {
+                    fileInputRef.current.click();
+                  }
+                }}
+                className="w-full max-w-xs mx-auto bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Select Files
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Selected files list */}
+      {/* Scrollable file cards — visible once files are selected */}
       {uploadFiles.length > 0 && (
-        <div className="border rounded-lg divide-y max-h-40 overflow-y-auto">
-          {uploadFiles.map((file, index) => (
-            <div key={index} className="flex items-center gap-3 px-3 py-2">
-              <FileText className="h-4 w-4 text-green-600 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{file.name}</p>
-                <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => removeUploadFile(index)}
-                className="h-6 w-6 rounded-full hover:bg-gray-100 flex items-center justify-center flex-shrink-0"
-                aria-label={`Remove ${file.name}`}
-              >
-                <X className="h-3.5 w-3.5 text-gray-500" />
-              </button>
-            </div>
-          ))}
+        <div className="overflow-y-auto max-h-44 border rounded-lg p-2 bg-white">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {uploadFiles.map((file, idx) => {
+              const key = fileKey(file);
+              const hasConflict = fileConflicts[key];
+              const currentName = fileNames[key] ?? file.name.replace(/\.[^/.]+$/, '');
+              return (
+                <div
+                  key={idx}
+                  className={`flex flex-col gap-1.5 px-3 py-2.5 rounded-lg border transition-colors ${
+                    hasConflict ? 'border-red-400 bg-red-50' : 'border-gray-200 bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <FileText className={`h-4 w-4 flex-shrink-0 ${hasConflict ? 'text-red-500' : 'text-green-600'}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-gray-900 truncate" title={file.name}>{file.name}</p>
+                      <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                    </div>
+                    {!isUploading && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const k = fileKey(file);
+                          setUploadFiles(prev => prev.filter((_, i) => i !== idx));
+                          setFileNames(prev => { const n = { ...prev }; delete n[k]; return n; });
+                          setFileConflicts(prev => { const n = { ...prev }; delete n[k]; return n; });
+                          setUploadError(null);
+                        }}
+                        className="flex-shrink-0 h-5 w-5 rounded-full bg-gray-200 hover:bg-red-100 flex items-center justify-center transition-colors group"
+                        aria-label="Remove file"
+                      >
+                        <X className="h-3 w-3 text-gray-500 group-hover:text-red-600" />
+                      </button>
+                    )}
+                  </div>
+                  {hasConflict && (
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xs text-red-600 font-medium">
+                        A document with this name already exists. Enter a new name:
+                      </p>
+                      <div className="flex gap-1">
+                        <Input
+                          value={currentName}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setFileNames(prev => ({ ...prev, [key]: val }));
+                            setFileConflicts(prev => ({ ...prev, [key]: folderDocTitlesRef.current.has(val.trim().toLowerCase()) }));
+                          }}
+                          className="h-6 text-xs"
+                          placeholder="New document name"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -624,21 +809,9 @@ export function UploadDocumentModal({
     </div>
   );
 
-  // Select all documents in a specific folder
+  // Filter documents by folder — never auto-selects
   const handleFolderClick = (folderId: string | null) => {
     setSelectedFilterFolder(folderId);
-    if (folderId === null) return; // "All files" — just filter, don't bulk-select
-
-    const folderDocs = documents.filter(doc => {
-      if (folderId === 'root') return !doc.folderId;
-      return doc.folderId === folderId;
-    });
-    const ids = folderDocs
-      .filter(doc => !attachedDocIds.has(doc.id))
-      .map(doc => doc.id);
-    if (ids.length > 0) {
-      setSelectedDocumentsToAdd(prev => Array.from(new Set([...prev, ...ids])));
-    }
   };
 
   const renderSelectTab = () => (
@@ -771,13 +944,13 @@ export function UploadDocumentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[92vh] sm:max-h-[85vh] flex flex-col w-full p-4 sm:p-6">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{modalTitle}</DialogTitle>
           <DialogDescription>{modalDescription}</DialogDescription>
         </DialogHeader>
-        
-        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+
+        <div className="flex-1 overflow-y-auto min-h-0">
           {mode === 'upload-and-attach' ? (
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'select' | 'upload')}>
               <TabsList className="grid w-full grid-cols-2">
@@ -829,7 +1002,7 @@ export function UploadDocumentModal({
                 onClick={handleUploadDocument}
                 disabled={uploadFiles.length === 0 || isUploading}
                 className={`transition-all ${uploadFiles.length === 0 && !isUploading ? 'cursor-not-allowed' : ''}`}
-                title={uploadFiles.length === 0 && !isUploading ? 'Please select a file first' : ''}
+                title={uploadFiles.length === 0 && !isUploading ? 'Please select files first' : ''}
               >
                 {isUploading ? (
                   <>
@@ -865,19 +1038,30 @@ export function UploadDocumentModal({
               onClick={handleUploadDocument}
               disabled={uploadFiles.length === 0 || isUploading}
               className={`transition-all ${uploadFiles.length === 0 && !isUploading ? 'cursor-not-allowed' : ''}`}
-              title={uploadFiles.length === 0 && !isUploading ? 'Please select a file first' : ''}
+              title={uploadFiles.length === 0 && !isUploading ? 'Please select files first' : ''}
             >
               {isUploading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Uploading...
                 </>
-              ) : (
-                <>
-                  <UploadCloud className="h-4 w-4 mr-2" />
-                  Upload File
-                </>
-              )}
+              ) : (() => {
+                const readyCount = uploadFiles.filter(f => !fileConflicts[fileKey(f)]).length;
+                const totalCount = uploadFiles.length;
+                if (readyCount === 0) return 'Rename to Upload';
+                if (readyCount < totalCount) return (
+                  <>
+                    <UploadCloud className="h-4 w-4 mr-2" />
+                    {`Upload ${readyCount} of ${totalCount} Files`}
+                  </>
+                );
+                return (
+                  <>
+                    <UploadCloud className="h-4 w-4 mr-2" />
+                    {totalCount > 1 ? `Upload ${totalCount} Files` : 'Upload File'}
+                  </>
+                );
+              })()}
             </Button>
           )}
         </DialogFooter>

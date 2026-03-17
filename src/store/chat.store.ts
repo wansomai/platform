@@ -9,7 +9,7 @@ interface ChatState {
   isLoading: boolean;
   error: string | null;
   requiresUpgrade?: boolean;
-  
+
   // Conversation management
   setConversations: (conversations: Conversation[]) => void;
   setCurrentConversation: (conversation: Conversation | null) => void;
@@ -24,12 +24,12 @@ interface ChatState {
   updateStreamingMessage: (tempId: string, updates: Partial<Message>) => void;
   finalizeStreamingMessage: (tempId: string, finalMessage: Message) => void;
   deleteMessage: (messageId: string) => void;
-  
+
   // API interactions
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string, aiAssociateId?: string) => Promise<Conversation | null>;
-  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any, currentCanvasHtml?: string) => Promise<void>;
+  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any, currentCanvasHtml?: string, attachedDocuments?: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }>) => Promise<void>;
   removeAssociateFromConversation: (projectId: string, conversationId: string) => Promise<boolean>;
   assignAssociateToConversation: (projectId: string, conversationId: string, associateId: string) => Promise<boolean>;
 
@@ -43,25 +43,25 @@ export const useChatStore = create<ChatState>((set, get) => ({
   currentConversation: null,
   isLoading: false,
   error: null,
-  
+
   // Basic state setters
   setConversations: (conversations) => set({ conversations }),
   setCurrentConversation: (conversation) => set({ currentConversation: conversation }),
-  addConversation: (conversation) => set((state) => ({ 
-    conversations: [conversation, ...state.conversations] 
+  addConversation: (conversation) => set((state) => ({
+    conversations: [conversation, ...state.conversations]
   })),
   updateConversation: (conversationId, data) => set((state) => ({
-    conversations: state.conversations.map((conv) => 
+    conversations: state.conversations.map((conv) =>
       conv.id === conversationId ? { ...conv, ...data } : conv
     ),
-    currentConversation: state.currentConversation?.id === conversationId 
+    currentConversation: state.currentConversation?.id === conversationId
       ? { ...state.currentConversation, ...data }
       : state.currentConversation
   })),
   deleteConversation: (conversationId) => set((state) => ({
     conversations: state.conversations.filter((conv) => conv.id !== conversationId),
-    currentConversation: state.currentConversation?.id === conversationId 
-      ? null 
+    currentConversation: state.currentConversation?.id === conversationId
+      ? null
       : state.currentConversation
   })),
   clearConversations: () => set({ conversations: [], currentConversation: null }),
@@ -72,7 +72,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       error: null
     });
   },
-  
+
   // Message management
   addMessage: (message) => set((state) => {
     if (!state.currentConversation) return state;
@@ -88,7 +88,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   }),
   updateMessage: (messageId, content) => set((state) => {
     if (!state.currentConversation) return state;
-    
+
     return {
       currentConversation: {
         ...state.currentConversation,
@@ -100,7 +100,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   }),
   updateStreamingMessage: (tempId, updates) => set((state) => {
     if (!state.currentConversation) return state;
-    
+
     const updatedMessages = state.currentConversation.messages.map((msg) => {
       if (msg.tempId === tempId || msg.id === tempId) {
         const updatedMessage = { ...msg, ...updates };
@@ -108,7 +108,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
       return msg;
     });
-    
+
     return {
       currentConversation: {
         ...state.currentConversation,
@@ -116,17 +116,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     };
   }),
-  
+
   finalizeStreamingMessage: (tempId, finalMessage) => set((state) => {
     if (!state.currentConversation) return state;
-    
+
     const updatedMessages = state.currentConversation.messages.map((msg) => {
       if (msg.tempId === tempId || msg.id === tempId) {
         return { ...finalMessage, isStreaming: false, tempId: undefined };
       }
       return msg;
     });
-    
+
     return {
       currentConversation: {
         ...state.currentConversation,
@@ -136,7 +136,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   }),
   deleteMessage: (messageId) => set((state) => {
     if (!state.currentConversation) return state;
-    
+
     return {
       currentConversation: {
         ...state.currentConversation,
@@ -144,22 +144,22 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     };
   }),
-    // API interactions
-    fetchConversations: async (projectId) => {
-      try {
-        set({ isLoading: true, error: null });
-        const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
-        set({conversations: response.data, isLoading: false });
-        return response.data;
-      } catch (error: any) {
-        set({ 
-          error: error.message || 'Failed to fetch conversations', 
-          isLoading: false 
-        });
-        return [];
-      }
-    },
-    
+  // API interactions
+  fetchConversations: async (projectId) => {
+    try {
+      set({ isLoading: true, error: null });
+      const response = await apiService.get<{ data: Conversation[] }>(`/api/projects/${projectId}/conversations`);
+      set({ conversations: response.data, isLoading: false });
+      return response.data;
+    } catch (error: any) {
+      set({
+        error: error.message || 'Failed to fetch conversations',
+        isLoading: false
+      });
+      return [];
+    }
+  },
+
   fetchConversation: async (projectId) => {
     try {
       set({ isLoading: true, error: null });
@@ -198,7 +198,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       return null;
     }
   },
-  
+
   createConversation: async (projectId, title, aiAssociateId) => {
     try {
       set({ isLoading: true, error: null });
@@ -294,13 +294,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument, currentCanvasHtml) => {
+  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument, currentCanvasHtml, attachedDocuments: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> | undefined = undefined) => {
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {
       id: tempId,
       content,
       role: 'user',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      ...(attachedDocuments && attachedDocuments.length > 0 && { attachedDocuments })
     };
 
     get().addMessage(userMessage);
@@ -327,7 +328,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           metadata,
           streamingId,
           previewDocument,
-          currentCanvasHtml
+          currentCanvasHtml,
+          attachedDocuments
         },
         (data) => {
           switch (data.type) {
@@ -336,12 +338,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
               const currentMessage = get().currentConversation?.messages.find(
                 m => m.tempId === targetId || m.id === targetId || m.tempId === streamingId || m.id === streamingId
               );
-              
+
               get().updateStreamingMessage(streamingId, {
                 content: (currentMessage?.content || '') + data.content
               });
               break;
-              
+
             case 'final':
               get().finalizeStreamingMessage(streamingId, {
                 id: data.messageId,
@@ -355,14 +357,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 document: data.document, // Include inline document metadata if present
                 metadata: data.report || data.document
                   ? {
-                      ...(data.report && { report: data.report }),
-                      ...(data.document && { document: data.document })
-                    }
+                    ...(data.report && { report: data.report }),
+                    ...(data.document && { document: data.document })
+                  }
                   : undefined,
                 isStreaming: false
               });
               break;
-              
+
             case 'canvas_status':
               // Handle canvas processing status updates
               get().updateStreamingMessage(streamingId, {
@@ -430,14 +432,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 }
               }));
               break;
-              
+
             case 'status':
               get().updateStreamingMessage(streamingId, {
                 processingStatus: data.status,
                 statusMessage: data.statusMessage || data.message
               });
               break;
-              
+
             case 'error':
               // Update the streaming message to show the error
               get().updateStreamingMessage(streamingId, {
@@ -469,7 +471,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           }
         }
       );
-      
+
     } catch (error: any) {
       // Error message already displayed in the streaming message
       // Just set the error state for the UI error display

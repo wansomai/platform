@@ -8,37 +8,51 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   // ✅ Get user's active organization (supports org switching)
   const organizationId = await getActiveOrganizationId(userId);
 
-  // Get folders owned by this user in their active organization
+  // Get all folders for the org, including permissions
   const folders = await prisma.folder.findMany({
-    where: { organizationId, createdBy: userId },
+    where: { organizationId },
     include: {
-      _count: {
-        select: { documents: true }
-      },
+      _count: { select: { documents: true } },
       children: {
         include: {
-          _count: {
-            select: { documents: true }
-          }
+          _count: { select: { documents: true } },
+          permissions: { select: { userId: true } }
         }
-      }
+      },
+      permissions: { select: { userId: true } }
     },
     orderBy: { name: 'asc' }
   });
 
-  // Format response
-  const formattedFolders = folders.map((folder:any) => ({
-    id: folder.id,
-    name: folder.name,
-    parentId: folder.parentId,
-    documentCount: folder._count.documents,
-    children: folder.children.map((child:any) => ({
-      id: child.id,
-      name: child.name,
-      documentCount: child._count.documents
-    })),
-    createdAt: folder.createdAt.toISOString()
-  }));
+  // Filter helper: a folder is visible only if the user created it or was explicitly granted access.
+  // Org-wide visibility and org role (admin/owner) do NOT grant access — matching project/workspace behaviour.
+  const canSeeFolder = (folder: any) => {
+    if (folder.createdBy === userId) return true;
+    return folder.permissions.some((p: any) => p.userId === userId);
+  };
+
+  const formattedFolders = folders
+    .filter(canSeeFolder)
+    .map((folder: any) => ({
+      id: folder.id,
+      name: folder.name,
+      parentId: folder.parentId,
+      createdBy: folder.createdBy,
+      visibility: folder.visibility,
+      documentCount: folder._count.documents,
+      children: folder.children
+        .filter(canSeeFolder)
+        .map((child: any) => ({
+          id: child.id,
+          name: child.name,
+          parentId: child.parentId,
+          createdBy: child.createdBy,
+          visibility: child.visibility,
+          documentCount: child._count.documents,
+          createdAt: child.createdAt.toISOString()
+        })),
+      createdAt: folder.createdAt.toISOString()
+    }));
 
   return NextResponse.json({
     status: 200,
@@ -48,10 +62,10 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
 }));
 
 export const POST = withErrorHandler(withAuth(async (request: NextRequest, userId: string) => {
-  // Use active organization (supports org switching)
+  // Use the active organization so invited members work correctly
   const organizationId = await getActiveOrganizationId(userId);
 
-  // Parse request body
+
   const { name, parentId } = await request.json();
 
   if (!name || name.trim() === '') {
@@ -66,7 +80,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     const parentFolder = await prisma.folder.findUnique({
       where: {
         id: parentId,
-        organizationId
+        organizationId,
       }
     });
 
@@ -78,13 +92,29 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     }
   }
 
-  // Create folder
+  // Check no sibling folder has the same name at this parent level
+  const siblingConflict = await prisma.folder.findFirst({
+    where: {
+      organizationId,
+      parentId: parentId || null,
+      name: { equals: name.trim(), mode: 'insensitive' }
+    },
+    select: { id: true }
+  });
+  if (siblingConflict) {
+    return NextResponse.json(
+      { error: `A folder named "${name.trim()}" already exists here. Please choose a different name.` },
+      { status: 409 }
+    );
+  }
+
   const folder = await prisma.folder.create({
     data: {
       name: name.trim(),
       organizationId,
       parentId: parentId || null,
-      createdBy: userId
+      createdBy: userId,
+      visibility: 'restricted'
     }
   });
 
