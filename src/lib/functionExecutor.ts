@@ -869,25 +869,91 @@ Please provide a structured review report.`;
         const { query, jurisdiction, maxResults } = functionCall.args as any;
 
         try {
-          const { searchAfricanLegalSources } = await import('@/lib/legalScraper');
+          const { streamAfricanLegalSources } = await import('@/lib/legalScraper');
 
-          console.log(`[functionExecutor] searchAfricanLegalSources: "${query}" in ${jurisdiction}`);
+          console.log(`[functionExecutor] searchAfricanLegalSources (stream): "${query}" in ${jurisdiction}`);
 
-          const response = await searchAfricanLegalSources(query, {
+          // Assemble the full response by consuming the NDJSON stream.
+          // Each event is forwarded to the client via streamCallback for live status updates.
+          const assembled = {
+            platform:          '',
+            platformName:      '',
+            jurisdiction:      jurisdiction as string,
+            platformSearchUrl: '',
+            legalSources:      [] as import('@/lib/legalScraper').SearchResult[],
+            researchSources:   [] as import('@/lib/legalScraper').SearchResult[],
+            fromCache:         false,
+          };
+
+          const sendStatus = (msg: string) =>
+            streamCallback?.({ type: 'status', status: 'executing_functions', message: msg });
+
+          for await (const event of streamAfricanLegalSources(query, {
             jurisdictionHint: jurisdiction,
             maxResults: typeof maxResults === 'number' ? Math.min(maxResults, 10) : 8,
-          });
+          })) {
+            console.log(`[searchAfricanLegalSources:stream] event=${event.event}`, JSON.stringify(event));
+
+            if (event.event === 'platform') {
+              assembled.platform          = event.platform;
+              assembled.platformName      = event.platformName;
+              assembled.platformSearchUrl = event.platformSearchUrl;
+              sendStatus(`Searching ${event.platformName}...`);
+            } else if (event.event === 'legal') {
+              assembled.legalSources = event.results;
+              // If results come from a different platform than announced (scraper fallback), update platform info
+              if (event.results.length > 0 && event.results[0].platform !== assembled.platform) {
+                assembled.platform     = event.results[0].platform;
+                assembled.platformName = event.results[0].platformName;
+              }
+              const count = event.results.length;
+              console.log(`[searchAfricanLegalSources:stream] legal results (${count}):`, event.results.map(r => r.title));
+              if (count > 0) {
+                // Push a live preview of result titles to the chat UI
+                streamCallback?.({
+                  type: 'search_preview',
+                  results: event.results.map(r => ({
+                    title:    r.title,
+                    url:      r.url,
+                    date:     r.date || null,
+                    platform: r.platformName,
+                  })),
+                });
+              }
+              sendStatus(
+                count > 0
+                  ? `Found ${count} case${count !== 1 ? 's' : ''} from ${assembled.platformName || 'legal database'}...`
+                  : `No cases found on ${assembled.platformName || 'legal database'}`,
+              );
+            } else if (event.event === 'research') {
+              assembled.researchSources = event.results;
+              const count = event.results.length;
+              console.log(`[searchAfricanLegalSources:stream] research results (${count}):`, event.results.map(r => r.title));
+              if (count > 0) {
+                sendStatus(`Found ${count} legislation result${count !== 1 ? 's' : ''}...`);
+              }
+            } else if (event.event === 'done') {
+              assembled.fromCache = event.fromCache;
+              console.log(`[searchAfricanLegalSources:stream] done. fromCache=${event.fromCache}, legal=${assembled.legalSources.length}, research=${assembled.researchSources.length}`);
+              sendStatus('Compiling legal sources...');
+            }
+          }
+
+          const response = assembled;
 
           const hasLegal    = response.legalSources.length > 0;
           const hasResearch = response.researchSources.length > 0;
 
           // ── Format Legal Sources (from scraper — specific case pages) ───
+          // Workaround: scraper sometimes puts the date string in the court field.
+          // Detect ISO-date-shaped court values and null them out until backend is fixed.
+          const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
           const legalFormatted = response.legalSources.map((r, i) => ({
             rank:     i + 1,
             title:    r.title,
             url:      r.url,               // exact scraped URL — copy verbatim
-            court:    r.court  || null,
-            date:     r.date   || null,
+            court:    r.court && !ISO_DATE.test(r.court) ? r.court : null,
+            date:     r.date  && !ISO_DATE.test(r.date)  ? null    : (r.date || null),
             snippet:  r.snippet || null,
             fullText: r.docContent ? r.docContent.slice(0, 4000) : null,
             platform: r.platformName,

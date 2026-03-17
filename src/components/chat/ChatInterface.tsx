@@ -336,11 +336,25 @@ const ChatMessageItem = React.memo(({
                         message={message.canvasMessage}
                       />
                     ) : (
-                      <div className="flex items-center">
-                        <LogoAnimation size="sm" className="text-gray-500" />
-                        <span className="animate-pulse ml-2">
-                          {getStatusText(message.processingStatus, message.statusMessage)}
-                        </span>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center">
+                          <LogoAnimation size="sm" className="text-gray-500" />
+                          <span className="animate-pulse ml-2">
+                            {getStatusText(message.processingStatus, message.statusMessage)}
+                          </span>
+                        </div>
+                        {message.searchPreview && message.searchPreview.length > 0 && (
+                          <div className="mt-1 flex flex-col gap-1 border-l-2 border-blue-200 pl-3">
+                            {message.searchPreview.map((result, i) => (
+                              <div key={i} className="text-xs text-gray-600 leading-snug">
+                                <span className="font-medium text-blue-700 line-clamp-1">{result.title}</span>
+                                {result.date && (
+                                  <span className="ml-1 text-gray-400">{result.date}</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
