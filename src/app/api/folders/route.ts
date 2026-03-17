@@ -24,12 +24,9 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
     orderBy: { name: 'asc' }
   });
 
-  // Filter helper: a folder is visible if:
-  //   1. visibility === 'organization'  (everyone sees it)
-  //   2. visibility === 'restricted' AND (user created it OR user is explicitly in permissions list)
-  //   Org role (admin/owner) does NOT bypass restricted access.
+  // Filter helper: a folder is visible only if the user created it or was explicitly granted access.
+  // Org-wide visibility and org role (admin/owner) do NOT grant access — matching project/workspace behaviour.
   const canSeeFolder = (folder: any) => {
-    if (folder.visibility === 'organization') return true;
     if (folder.createdBy === userId) return true;
     return folder.permissions.some((p: any) => p.userId === userId);
   };

@@ -13,15 +13,6 @@ import { Prisma } from '@/prisma/client';
 // Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
 export const maxDuration = 120;
 
-/** Returns true if userId can see a restricted folder.
- *  Only the creator or explicitly-granted users have access — org role is irrelevant. */
-function userCanAccessFolder(
-  folder: { createdBy: string; permissions: { userId: string }[] },
-  userId: string,
-): boolean {
-  if (folder.createdBy === userId) return true;
-  return folder.permissions.some((p) => p.userId === userId);
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,19 +36,19 @@ export async function GET(request: NextRequest) {
     // ✅ Use helper to get active organization ID (supports org switching)
     const organizationId = await getActiveOrganizationId(userId);
 
-    // Build query filters — all org members see all org documents (folder visibility enforced below)
+    // Build base query filters
     const where: any = {
       organization_id: organizationId,
       status: 'active'
     };
-    
+
     if (searchTerm) {
       where.OR = [
         { title: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } }
       ];
     }
-    
+
     if (fileType && fileType !== 'all') {
       // Handle special filter cases
       if (fileType === 'image') {
@@ -70,34 +61,35 @@ export async function GET(request: NextRequest) {
         where.file_type = fileType;
       }
     }
-    
+
     if (folderId === 'root') {
       where.folderId = null;
     } else if (folderId) {
       where.folderId = folderId;
     }
 
-    // --- Folder visibility enforcement ---
-    // A "restricted" folder is only visible to its creator or users with an explicit
-    // FolderPermission entry. Org role (admin/owner) does NOT bypass this.
-    //
-    // We always compute inaccessible folder IDs so the filter applies universally:
-    //   • "All Documents" view  → exclude docs in folders the user can't access
-    //   • Specific folder view  → early-return empty if the requested folder is inaccessible,
-    //                              AND still exclude docs in any inaccessible sub-folder
-    //                              (belt-and-suspenders: exact folderId already scopes the query,
-    //                               but this prevents any future edge-case from leaking data)
-    const restrictedFolders = await prisma.folder.findMany({
-      where: { organizationId, visibility: 'restricted' },
-      select: { id: true, createdBy: true, permissions: { select: { userId: true } } }
+    // --- Ownership / access enforcement ---
+    // A user can only see a document if:
+    //   1. They uploaded it (created_by === userId), OR
+    //   2. It lives in a folder they own or have been explicitly granted access to.
+    // Root-level documents from other users are never visible.
+    // Org role (admin/owner) does NOT grant broader access.
+
+    // Get IDs of every folder this user can access (owns or has explicit permission for).
+    const accessibleFolders = await prisma.folder.findMany({
+      where: {
+        organizationId,
+        OR: [
+          { createdBy: userId },
+          { permissions: { some: { userId } } }
+        ]
+      },
+      select: { id: true }
     });
+    const accessibleFolderIds = accessibleFolders.map((f: any) => f.id as string);
 
-    const inaccessibleFolderIds: string[] = restrictedFolders
-      .filter((f: any) => !userCanAccessFolder(f, userId))
-      .map((f: any) => f.id as string);
-
-    // If the user is requesting a specific restricted folder they can't access, return empty.
-    if (folderId && folderId !== 'root' && inaccessibleFolderIds.includes(folderId)) {
+    // If the user is requesting a specific folder, verify they can access it.
+    if (folderId && folderId !== 'root' && !accessibleFolderIds.includes(folderId)) {
       return NextResponse.json({
         status: 200,
         message: 'Documents retrieved successfully',
@@ -106,24 +98,24 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Exclude documents in ANY inaccessible restricted folder from the result set.
-    // This covers "All Documents", specific-folder, and root views alike.
-    if (inaccessibleFolderIds.length > 0) {
-      const folderFilter = {
-        OR: [
-          { folderId: null },
-          { folderId: { notIn: inaccessibleFolderIds } }
-        ]
-      };
-      if (where.OR) {
-        // Wrap existing OR (search) in AND together with the folder filter
-        where.AND = [{ OR: where.OR }, folderFilter];
-        delete where.OR;
-      } else if (where.AND) {
-        where.AND.push(folderFilter);
-      } else {
-        where.AND = [folderFilter];
-      }
+    // Ownership filter: user sees their own docs OR docs in folders they can access.
+    const ownershipFilter = {
+      OR: [
+        { created_by: userId },
+        ...(accessibleFolderIds.length > 0
+          ? [{ folderId: { in: accessibleFolderIds } }]
+          : [])
+      ]
+    };
+
+    if (where.OR) {
+      // Wrap existing OR (search) in AND together with the ownership filter
+      where.AND = [{ OR: where.OR }, ownershipFilter];
+      delete where.OR;
+    } else if (where.AND) {
+      where.AND.push(ownershipFilter);
+    } else {
+      where.AND = [ownershipFilter];
     }
 
     // Fast path: caller only needs titles for conflict detection (e.g., upload modal).
@@ -328,7 +320,11 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (folder.visibility === 'restricted' && !userCanAccessFolder(folder, userId)) {
+      const canUpload =
+        folder.createdBy === userId ||
+        folder.permissions.some((p: any) => p.userId === userId);
+
+      if (!canUpload) {
         return NextResponse.json(
           { message: 'You do not have permission to upload to this folder', error: true },
           { status: 403 }
