@@ -117,9 +117,9 @@ export async function PATCH(
 
     const newTitle = title.trim();
 
-    // Verify document exists in this org (any org member can rename)
+    // Only the uploader can rename their document
     const document = await prisma.document.findUnique({
-      where: { id: documentId, organization_id: organizationId }
+      where: { id: documentId, organization_id: organizationId, created_by: userId }
     });
 
     if (!document) {

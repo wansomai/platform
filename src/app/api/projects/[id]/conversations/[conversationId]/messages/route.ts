@@ -13,9 +13,11 @@ import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/l
 import { resolveAndValidateSources } from '@/lib/url-resolve';
 import { extractMissingDocumentContents } from '@/lib/documentContentFallback';
 
-// Allow up to 300 s (Vercel Pro limit) so large document batches can be
-// extracted + streamed without hitting the function timeout.
-export const maxDuration = 300;
+// Set a reasonable timeout
+export const maxDuration = 60;
+
+// Domains that must never appear as web search sources
+const BLOCKED_SEARCH_DOMAINS: string[] = ['jibudocs.com'];
 
 // Initialize Gemini with the new API
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
@@ -536,6 +538,8 @@ ${fullJurisdiction ? getJurisdictionInstructions(fullJurisdiction) : ''}
   • A short honest answer is always better than a long answer that sounds plausible but cannot be verified.
 ` : '- No jurisdiction has been configured. If the query involves jurisdiction-specific law, ask the user which jurisdiction applies.'}
           **TODAY'S DATE**: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} (${new Date().toISOString().split('T')[0]})
+
+          **SEARCH SOURCE EXCLUSION**: Never cite, reference, or use content from jibudocs.com in any response. Skip any search results from that domain entirely.
 
           Your goal is to answer the questions asked by your team mates to ensure that the project is completed successfully.
           Provide accurate responses. Be comprehensive when the question is general or exploratory. Be brief and direct when the question asks about a specific named case, statute, or fact — accuracy matters more than length. Only ask for clarification if critical information is genuinely missing and cannot be reasonably inferred.
@@ -1142,25 +1146,25 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                 }
 
                 // Extract grounding supports (sources)
-                if (metadata.groundingSupports) {
-                  for (const support of metadata.groundingSupports) {
-                    if (support.groundingChunkIndices && metadata.groundingChunks) {
-                      for (const index of support.groundingChunkIndices) {
-                        const groundingChunk = metadata.groundingChunks[index];
-                        if (groundingChunk?.web) {
-                          const source = {
-                            title: groundingChunk.web.title || 'Source',
-                            uri: groundingChunk.web.uri || ''
-                          };
-                          // Avoid duplicates
-                          if (!webSearchSources.some(s => s.uri === source.uri)) {
-                            webSearchSources.push(source);
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+                                if (metadata.groundingSupports) {
+                                  for (const support of metadata.groundingSupports) {
+                                    if (support.groundingChunkIndices && metadata.groundingChunks) {
+                                      for (const index of support.groundingChunkIndices) {
+                                        const groundingChunk = metadata.groundingChunks[index];
+                                        if (groundingChunk?.web) {
+                                          const source = {
+                                            title: groundingChunk.web.title || 'Source',
+                                            uri: groundingChunk.web.uri || ''
+                                          };
+                                          // Avoid duplicates
+                                          if (!webSearchSources.some(s => s.uri === source.uri)) {
+                                            webSearchSources.push(source);
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
               }
             }
 
@@ -1856,8 +1860,9 @@ ${baseContext}`;
                   title: groundingChunk.web.title || 'Source',
                   uri: groundingChunk.web.uri || ''
                 };
-                // Avoid duplicates
-                if (!searchSources.some(s => s.uri === source.uri)) {
+                // Avoid duplicates and blocked domains
+                const isBlocked = BLOCKED_SEARCH_DOMAINS.some(domain => source.uri.includes(domain));
+                if (!isBlocked && !searchSources.some(s => s.uri === source.uri)) {
                   searchSources.push(source);
                 }
               }

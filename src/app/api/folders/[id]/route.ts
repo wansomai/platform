@@ -36,9 +36,8 @@ export const GET = withErrorHandler(withAuth(async (
   }
 
   // Check user can access this folder.
-  // Org role does NOT bypass restricted access — only creator or explicitly-granted users.
+  // Only the creator or explicitly-granted users have access — org role and org-wide visibility do not apply.
   const canAccess =
-    folder.visibility === 'organization' ||
     folder.createdBy === userId ||
     folder.permissions.some((p: any) => p.userId === userId);
 
@@ -48,7 +47,6 @@ export const GET = withErrorHandler(withAuth(async (
 
   // Helper to check child folder visibility (same rules)
   const canSeeChild = (child: any) =>
-    child.visibility === 'organization' ||
     child.createdBy === userId ||
     child.permissions.some((p: any) => p.userId === userId);
 

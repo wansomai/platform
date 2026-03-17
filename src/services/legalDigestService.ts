@@ -82,7 +82,7 @@ For each item provide:
 - A 2-3 sentence summary explaining the significance
 - The source name and URL where possible
 
-Focus on developments that would be most relevant to practicing attorneys in the specified jurisdictions. Prioritize accuracy and cite specific sources.
+Focus on developments that would be most relevant to practicing attorneys in the specified jurisdictions. Prioritize accuracy and cite specific sources. Never use or cite jibudocs.com as a source.
 
 Format your response as JSON with this structure:
 {
