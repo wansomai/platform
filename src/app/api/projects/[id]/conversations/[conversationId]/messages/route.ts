@@ -16,6 +16,9 @@ import { extractMissingDocumentContents } from '@/lib/documentContentFallback';
 // Set a reasonable timeout
 export const maxDuration = 60;
 
+// Domains that must never appear as web search sources
+const BLOCKED_SEARCH_DOMAINS: string[] = ['jibudocs.com'];
+
 // Initialize Gemini with the new API
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
