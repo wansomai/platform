@@ -69,11 +69,10 @@ export async function GET(request: NextRequest) {
     }
 
     // --- Ownership / access enforcement ---
-    // A user can only see a document if:
+    // A user can see a document if:
     //   1. They uploaded it (created_by === userId), OR
-    //   2. It lives in a folder they own or have been explicitly granted access to.
-    // Root-level documents from other users are never visible.
-    // Org role (admin/owner) does NOT grant broader access.
+    //   2. It lives in the root folder (folderId = null) — org-wide shared space, OR
+    //   3. It lives in a folder they own or have been explicitly granted access to.
 
     // Get IDs of every folder this user can access (owns or has explicit permission for).
     const accessibleFolders = await prisma.folder.findMany({
@@ -98,10 +97,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Ownership filter: user sees their own docs OR docs in folders they can access.
+    // Ownership filter: user sees their own docs, root-folder docs (org-wide), or docs in accessible folders.
     const ownershipFilter = {
       OR: [
         { created_by: userId },
+        { folderId: null }, // Root folder is org-wide — visible to all members
         ...(accessibleFolderIds.length > 0
           ? [{ folderId: { in: accessibleFolderIds } }]
           : [])

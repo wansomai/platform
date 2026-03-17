@@ -171,6 +171,7 @@ export const useFolderStore = create<FolderState>()(
         lastFetched: state.lastFetched,
       }),
       version: 1,
+      migrate: (persistedState: unknown) => persistedState,
     }
   )
 );
