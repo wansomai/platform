@@ -557,10 +557,15 @@ You MUST cite sources in every response where you draw on legal authority, docum
 **SOURCE TYPE B — Legal Sources** (statutes, case law, regulations):
 ${useGoogleSearch
                 ? `- ⚠️ MANDATORY: For ALL legal sources (cases, judgments, statutes, legislation, regulations) — call searchAfricanLegalSources FIRST. This returns live, verified results from the official LII platform for the jurisdiction. NEVER use searchAgent for legal sources.
-- Cite legal sources as clickable markdown links: *[Case/Statute Name](url)*
+- **INLINE CITATIONS (required)**: Every time you mention a case or statute in your analysis, embed a clickable markdown link directly in the sentence at that point. Examples:
+  - Legislation: "Under the [Land Act, 2012](url), a landowner must..."
+  - Case law: "As held in [Republic v Okello \[2021\] KEELC 605](url), the court found..."
+  - Do NOT write the source name as plain text and defer the link to the end — link it on first mention, right in the prose.
 - ⛔ URLS: ONLY use URLs verbatim from legalSources[].url and researchSources[].url returned by searchAfricanLegalSources. NEVER construct, guess, or recall a URL from memory.
 - Use searchAgent ONLY for non-legal background information (company profiles, news, general context).
-- At the end of your response, list all legal sources under a **⚖️ Legal Sources** heading with clickable markdown links to the LII platform.`
+- **⚖️ Legal Sources section (required at end)**: After your analysis, add a **⚖️ Legal Sources** heading and list every cited source as a numbered markdown link with court/date. Example:
+  1. [Land Act, 2012](url) — Legislation, Kenya Law
+  2. [Republic v Okello \[2021\] KEELC 605](url) — KEELC, 25 Nov 2021`
                 : `- Web search is OFF. Cite only what you know with confidence from your training data.
 - Use full legal citation format: *Case Name* [Year] Court, or *Statute Name* Cap. X.
 - If uncertain about a specific case name, section number, or recent legislation — say so honestly. Do NOT guess or fabricate. Offer: "I'm not fully certain about this — would you like me to search the web for the latest information? Just say yes."
@@ -578,6 +583,7 @@ ${useGoogleSearch
           - If researchAgent returns UNVERIFIED: immediately call searchAfricanLegalSources with the same query — do NOT ask the user for permission. Use the URLs from legalSources[].url verbatim.
           - NEVER answer a question that asks you to "cite" a specific case without first calling researchAgent.
           - ⚠️ For ALL legal sources (cases, legislation, statutes) — the URL MUST come from searchAfricanLegalSources. NEVER use searchAgent for legal sources.
+          - **MISSING LINK RULE**: If after searching you intend to present a specific case or statute that is NOT present in legalSources[].url or researchSources[].url, you MUST call searchAfricanLegalSources again using the exact formal case citation or statute name as the query BEFORE including it in your response. NEVER present a case or statute without a live URL from the tool — if a second search still returns no URL for it, explicitly tell the user "I could not retrieve a live link for [case name]" rather than listing it without a link.
 
           ${useGoogleSearch
               ? `**AVAILABLE AGENTS**:

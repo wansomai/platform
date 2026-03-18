@@ -347,7 +347,14 @@ const ChatMessageItem = React.memo(({
                           <div className="mt-1 flex flex-col gap-1 border-l-2 border-blue-200 pl-3">
                             {message.searchPreview.map((result, i) => (
                               <div key={i} className="text-xs text-gray-600 leading-snug">
-                                <span className="font-medium text-blue-700 line-clamp-1">{result.title}</span>
+                                <a
+                                  href={result.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-medium text-blue-700 hover:underline line-clamp-1"
+                                >
+                                  {result.title}
+                                </a>
                                 {result.date && (
                                   <span className="ml-1 text-gray-400">{result.date}</span>
                                 )}
