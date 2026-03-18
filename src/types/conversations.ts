@@ -57,6 +57,7 @@ export interface Message {
   canvasUpdated?: boolean;
   canvasMessage?: string; // Message for canvas processing status
   isSuggestion?: boolean; // true when this message carries a canvas_suggestion diff
+  searchPreview?: Array<{ title: string; url: string; date: string | null; platform: string }>;
   attachedDocuments?: Array<{
     id: string;
     title: string;

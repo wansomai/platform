@@ -440,6 +440,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
               });
               break;
 
+            case 'search_preview':
+              get().updateStreamingMessage(streamingId, {
+                searchPreview: data.results
+              });
+              break;
+
             case 'error':
               // Update the streaming message to show the error
               get().updateStreamingMessage(streamingId, {

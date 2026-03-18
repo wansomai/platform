@@ -836,21 +836,24 @@ Please provide a structured review report.`;
             };
           }
 
+          const docTitle = result.title || 'Legal Document';
+          const prebuiltLink = `[${docTitle}](${url})`;
           return {
             success: true,
             url,
-            title: result.title || 'Legal Document',
+            title: docTitle,
             text: result.text,
             wordCount: result.wordCount,
             truncated: result.truncated || false,
             INSTRUCTION: [
-              `Full document text retrieved from: ${url}`,
-              `Title: ${result.title}`,
+              `Full document text retrieved.`,
+              `Title: ${docTitle}`,
               `Length: ${result.wordCount} words${result.truncated ? ' (truncated at 12 000 words)' : ''}.`,
+              `READY-TO-USE LINK — copy this exactly: ${prebuiltLink}`,
+              'Use this link whenever you mention this case — inline in your analysis AND in the ⚖️ Legal Sources section.',
               'Use the text above to write a clear, structured summary covering: parties, facts, legal issues, holdings/ratio, and outcome.',
-              'Present the case name and the URL as a clickable markdown link: [Case Name](url).',
               '⛔ Do NOT add any URLs other than the one above.',
-            ].join(' '),
+            ].join('\n'),
           };
         } catch (error: any) {
           console.error('❌ Error fetching legal document:', error);
@@ -869,25 +872,133 @@ Please provide a structured review report.`;
         const { query, jurisdiction, maxResults } = functionCall.args as any;
 
         try {
-          const { searchAfricanLegalSources } = await import('@/lib/legalScraper');
+          const { streamAfricanLegalSources } = await import('@/lib/legalScraper');
 
-          console.log(`[functionExecutor] searchAfricanLegalSources: "${query}" in ${jurisdiction}`);
+          /**
+           * Score how relevant a result title is to the search query.
+           * Returns 0–1: 1 = exact match, 0 = no query terms found.
+           * Ignores common stop-words so "Land Act" doesn't match every
+           * document that merely contains "of" or "the".
+           */
+          const STOP_WORDS = new Set(['of','the','a','an','in','on','at','to','and','or','for','v','vs','act','law']);
+          function scoreRelevance(title: string, q: string): number {
+            const t = title.toLowerCase();
+            const ql = q.toLowerCase();
+            if (t === ql) return 1.0;
+            if (t.startsWith(ql)) return 0.95;
+            if (t.includes(ql)) return 0.85;
+            const terms = ql.split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w));
+            if (terms.length === 0) return t.includes(ql) ? 0.5 : 0;
+            const hits = terms.filter(w => t.includes(w)).length;
+            return hits / terms.length;
+          }
 
-          const response = await searchAfricanLegalSources(query, {
+          function filterForPreview<T extends { title: string }>(results: T[], q: string, cap = 5): T[] {
+            const scored = results.map(r => ({ r, score: scoreRelevance(r.title, q) }));
+            scored.sort((a, b) => b.score - a.score);
+            const relevant = scored.filter(s => s.score >= 0.5);
+            const top = relevant.length > 0 ? relevant.slice(0, cap) : scored.slice(0, 3);
+            return top.map(s => s.r);
+          }
+
+          console.log(`[functionExecutor] searchAfricanLegalSources (stream): "${query}" in ${jurisdiction}`);
+
+          // Assemble the full response by consuming the NDJSON stream.
+          // Each event is forwarded to the client via streamCallback for live status updates.
+          const assembled = {
+            platform:          '',
+            platformName:      '',
+            jurisdiction:      jurisdiction as string,
+            platformSearchUrl: '',
+            legalSources:      [] as import('@/lib/legalScraper').SearchResult[],
+            researchSources:   [] as import('@/lib/legalScraper').SearchResult[],
+            fromCache:         false,
+          };
+
+          const sendStatus = (msg: string) =>
+            streamCallback?.({ type: 'status', status: 'executing_functions', message: msg });
+
+          for await (const event of streamAfricanLegalSources(query, {
             jurisdictionHint: jurisdiction,
             maxResults: typeof maxResults === 'number' ? Math.min(maxResults, 10) : 8,
-          });
+          })) {
+            console.log(`[searchAfricanLegalSources:stream] event=${event.event}`, JSON.stringify(event));
+
+            if (event.event === 'platform') {
+              assembled.platform          = event.platform;
+              assembled.platformName      = event.platformName;
+              assembled.platformSearchUrl = event.platformSearchUrl;
+              sendStatus(`Searching ${event.platformName}...`);
+            } else if (event.event === 'legal') {
+              assembled.legalSources = event.results;
+              // If results come from a different platform than announced (scraper fallback), update platform info
+              if (event.results.length > 0 && event.results[0].platform !== assembled.platform) {
+                assembled.platform     = event.results[0].platform;
+                assembled.platformName = event.results[0].platformName;
+              }
+              const count = event.results.length;
+              console.log(`[searchAfricanLegalSources:stream] legal results (${count}):`, event.results.map(r => r.title));
+              if (count > 0) {
+                const previewResults = filterForPreview(event.results, query);
+                streamCallback?.({
+                  type: 'search_preview',
+                  results: previewResults.map(r => ({
+                    title:    r.title,
+                    url:      r.url,
+                    date:     r.date || null,
+                    platform: r.platformName,
+                  })),
+                });
+              }
+              sendStatus(
+                count > 0
+                  ? `Found ${count} case${count !== 1 ? 's' : ''} from ${assembled.platformName || 'legal database'}...`
+                  : `No cases found on ${assembled.platformName || 'legal database'}`,
+              );
+            } else if (event.event === 'research') {
+              assembled.researchSources = event.results;
+              const count = event.results.length;
+              console.log(`[searchAfricanLegalSources:stream] research results (${count}):`, event.results.map(r => r.title));
+              if (count > 0) {
+                const previewResults = filterForPreview(event.results, query);
+                // Append legislation results to the preview (replacing any previous preview)
+                streamCallback?.({
+                  type: 'search_preview',
+                  results: [
+                    ...assembled.legalSources.length > 0
+                      ? filterForPreview(assembled.legalSources, query).map(r => ({
+                          title: r.title, url: r.url, date: r.date || null, platform: r.platformName,
+                        }))
+                      : [],
+                    ...previewResults.map(r => ({
+                      title: r.title, url: r.url, date: r.date || null, platform: r.platformName,
+                    })),
+                  ],
+                });
+                sendStatus(`Found ${count} legislation result${count !== 1 ? 's' : ''}...`);
+              }
+            } else if (event.event === 'done') {
+              assembled.fromCache = event.fromCache;
+              console.log(`[searchAfricanLegalSources:stream] done. fromCache=${event.fromCache}, legal=${assembled.legalSources.length}, research=${assembled.researchSources.length}`);
+              sendStatus('Compiling legal sources...');
+            }
+          }
+
+          const response = assembled;
 
           const hasLegal    = response.legalSources.length > 0;
           const hasResearch = response.researchSources.length > 0;
 
           // ── Format Legal Sources (from scraper — specific case pages) ───
+          // Workaround: scraper sometimes puts the date string in the court field.
+          // Detect ISO-date-shaped court values and null them out until backend is fixed.
+          const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
           const legalFormatted = response.legalSources.map((r, i) => ({
             rank:     i + 1,
             title:    r.title,
             url:      r.url,               // exact scraped URL — copy verbatim
-            court:    r.court  || null,
-            date:     r.date   || null,
+            court:    r.court && !ISO_DATE.test(r.court) ? r.court : null,
+            date:     r.date  && !ISO_DATE.test(r.date)  ? null    : (r.date || null),
             snippet:  r.snippet || null,
             fullText: r.docContent ? r.docContent.slice(0, 4000) : null,
             platform: r.platformName,
@@ -934,22 +1045,41 @@ Please provide a structured review report.`;
             researchSources: researchFormatted,
             researchSourcesCount: researchFormatted.length,
 
-            INSTRUCTION: [
-              `ALL sources retrieved live from: ${response.platformName} — ${response.platformSearchUrl}`,
-              'This is the ONLY authoritative source for this jurisdiction. Do NOT cite any other website.',
-              '',
-              `CASE LAW: ${legalFormatted.length} judgment(s) from ${response.platformName}.`,
-              'For each: write the case title as a heading, paste the URL as a clickable link (verbatim from legalSources[].url), state court + date, summarise the snippet.',
-              '',
-              `LEGISLATION: ${researchFormatted.length} act(s)/statute(s) from ${response.platformName}.`,
-              'Cite these as primary law when relevant. URLs verbatim from researchSources[].url.',
-              '',
-              '⛔ URL RULES — NEVER BREAK:',
-              '• Every URL shown to the user MUST be copied character-for-character from legalSources[].url or researchSources[].url.',
-              '• NEVER use a URL from your training data or knowledge.',
-              '• NEVER modify, shorten, reconstruct, or infer any URL.',
-              '• If a URL is not in the arrays above, do not mention it.',
-            ].join(' '),
+            INSTRUCTION: (() => {
+              const legalLinks = legalFormatted.map((r, i) =>
+                `  ${i + 1}. [${r.title}](${r.url})${r.court ? ` — ${r.court}` : ''}${r.date ? `, ${r.date}` : ''}`
+              ).join('\n');
+              const researchLinks = researchFormatted.map((r, i) =>
+                `  ${i + 1}. [${r.title}](${r.url}) — ${r.source || response.platformName}`
+              ).join('\n');
+              return [
+                `ALL sources retrieved live from: ${response.platformName} — ${response.platformSearchUrl}`,
+                'This is the ONLY authoritative source for this jurisdiction. Do NOT cite any other website.',
+                '',
+                '── READY-TO-USE LINKS (copy these exactly — do not retype or reconstruct) ──',
+                '',
+                `CASE LAW (${legalFormatted.length} judgment(s)):`,
+                legalLinks || '  (none)',
+                '',
+                `LEGISLATION (${researchFormatted.length} act(s)/statute(s)):`,
+                researchLinks || '  (none)',
+                '',
+                '── HOW TO USE ──',
+                '',
+                'STEP 1 — INLINE CITATIONS: Every time you mention a case or statute in your prose, embed its ready-to-use link right there in the sentence.',
+                'Example: "Under the [Land Act, 2012](https://...), a holder of title must..."',
+                'NEVER write a case or statute name as plain text — always use the pre-built link from above.',
+                '',
+                'STEP 2 — ⚖️ LEGAL SOURCES SECTION: At the end of your response, add a "⚖️ Legal Sources" heading and paste the numbered links from above, adding a one-line summary for each case.',
+                '',
+                '⛔ RULES — NEVER BREAK:',
+                '• Only use the links listed above — NEVER construct, guess, or recall any URL.',
+                '• NEVER write a bare URL — always use the [text](url) format.',
+                '• If a case or statute you want to mention is NOT in the lists above, call searchAfricanLegalSources again with its exact citation before including it.',
+                '• NEVER list a source in ⚖️ Legal Sources without a live link from these results.',
+                `• If a dedicated search still returns nothing, tell the user: "I could not retrieve a live link — search manually at ${response.platformSearchUrl}"`,
+              ].join('\n');
+            })(),
           };
         } catch (error: any) {
           console.error('❌ Error searching African legal sources:', error);
