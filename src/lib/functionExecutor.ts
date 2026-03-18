@@ -830,8 +830,14 @@ Please provide a structured review report.`;
               success: false,
               error: result.error,
               INSTRUCTION: [
-                `⚠️ Could not fetch the document: ${result.error}`,
-                `Tell the user you could not retrieve the full text and suggest they open the document directly at: ${url}`,
+                `⛔ DO NOT mention errors, timeouts, or any technical failure to the user.`,
+                `The precise document could not be opened. Instead, construct a response using ONLY the search results already returned by the previous searchAfricanLegalSources call.`,
+                `Format your response as follows:`,
+                `1. State: "I found the following sources related to your query. Here are the closest matches available from the official platform:"`,
+                `2. List every case and legislation result from the prior search as a numbered, linked list — use the exact [title](url) links already retrieved. Include the court and date where available.`,
+                `3. Add a "⚖️ Legal Sources" section at the end with the same numbered links and a one-line description of each.`,
+                `4. At the bottom, add: "For the exact document, you can search directly at [platform search URL from prior results]."`,
+                `⛔ NEVER invent, reconstruct, or guess any URL. Only use links from the prior searchAfricanLegalSources result.`,
               ].join(' '),
             };
           }
@@ -860,8 +866,14 @@ Please provide a structured review report.`;
           return {
             success: false,
             INSTRUCTION: [
-              '⚠️ The document fetch tool failed with a technical error.',
-              `Tell the user you could not retrieve the document text and suggest they open it directly at: ${url}`,
+              `⛔ DO NOT mention errors, timeouts, or any technical failure to the user.`,
+              `The precise document could not be opened. Instead, construct a response using ONLY the search results already returned by the previous searchAfricanLegalSources call.`,
+              `Format your response as follows:`,
+              `1. State: "I found the following sources related to your query. Here are the closest matches available from the official platform:"`,
+              `2. List every case and legislation result from the prior search as a numbered, linked list — use the exact [title](url) links already retrieved. Include the court and date where available.`,
+              `3. Add a "⚖️ Legal Sources" section at the end with the same numbered links and a one-line description of each.`,
+              `4. At the bottom, add: "For the exact document, you can search directly at [platform search URL from prior results]."`,
+              `⛔ NEVER invent, reconstruct, or guess any URL. Only use links from the prior searchAfricanLegalSources result.`,
             ].join(' '),
             error: error.message || 'Failed to fetch document',
           };
@@ -871,49 +883,49 @@ Please provide a structured review report.`;
       case 'searchAfricanLegalSources': {
         const { query, jurisdiction, maxResults } = functionCall.args as any;
 
+        /**
+         * Score how relevant a result title is to the search query.
+         * Returns 0–1: 1 = exact match, 0 = no query terms found.
+         * Ignores common stop-words so "Land Act" doesn't match every
+         * document that merely contains "of" or "the".
+         */
+        const STOP_WORDS = new Set(['of','the','a','an','in','on','at','to','and','or','for','v','vs','act','law']);
+        function scoreRelevance(title: string, q: string): number {
+          const t = title.toLowerCase();
+          const ql = q.toLowerCase();
+          if (t === ql) return 1.0;
+          if (t.startsWith(ql)) return 0.95;
+          if (t.includes(ql)) return 0.85;
+          const terms = ql.split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w));
+          if (terms.length === 0) return t.includes(ql) ? 0.5 : 0;
+          const hits = terms.filter(w => t.includes(w)).length;
+          return hits / terms.length;
+        }
+
+        function filterForPreview<T extends { title: string }>(results: T[], q: string, cap = 5): T[] {
+          const scored = results.map(r => ({ r, score: scoreRelevance(r.title, q) }));
+          scored.sort((a, b) => b.score - a.score);
+          const relevant = scored.filter(s => s.score >= 0.5);
+          const top = relevant.length > 0 ? relevant.slice(0, cap) : scored.slice(0, 3);
+          return top.map(s => s.r);
+        }
+
+        // Assembled is declared OUTSIDE try-catch so partial streamed results
+        // are accessible in the catch block when the source times out mid-stream.
+        const assembled = {
+          platform:          '',
+          platformName:      '',
+          jurisdiction:      jurisdiction as string,
+          platformSearchUrl: '',
+          legalSources:      [] as import('@/lib/legalScraper').SearchResult[],
+          researchSources:   [] as import('@/lib/legalScraper').SearchResult[],
+          fromCache:         false,
+        };
+
         try {
           const { streamAfricanLegalSources } = await import('@/lib/legalScraper');
 
-          /**
-           * Score how relevant a result title is to the search query.
-           * Returns 0–1: 1 = exact match, 0 = no query terms found.
-           * Ignores common stop-words so "Land Act" doesn't match every
-           * document that merely contains "of" or "the".
-           */
-          const STOP_WORDS = new Set(['of','the','a','an','in','on','at','to','and','or','for','v','vs','act','law']);
-          function scoreRelevance(title: string, q: string): number {
-            const t = title.toLowerCase();
-            const ql = q.toLowerCase();
-            if (t === ql) return 1.0;
-            if (t.startsWith(ql)) return 0.95;
-            if (t.includes(ql)) return 0.85;
-            const terms = ql.split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w));
-            if (terms.length === 0) return t.includes(ql) ? 0.5 : 0;
-            const hits = terms.filter(w => t.includes(w)).length;
-            return hits / terms.length;
-          }
-
-          function filterForPreview<T extends { title: string }>(results: T[], q: string, cap = 5): T[] {
-            const scored = results.map(r => ({ r, score: scoreRelevance(r.title, q) }));
-            scored.sort((a, b) => b.score - a.score);
-            const relevant = scored.filter(s => s.score >= 0.5);
-            const top = relevant.length > 0 ? relevant.slice(0, cap) : scored.slice(0, 3);
-            return top.map(s => s.r);
-          }
-
           console.log(`[functionExecutor] searchAfricanLegalSources (stream): "${query}" in ${jurisdiction}`);
-
-          // Assemble the full response by consuming the NDJSON stream.
-          // Each event is forwarded to the client via streamCallback for live status updates.
-          const assembled = {
-            platform:          '',
-            platformName:      '',
-            jurisdiction:      jurisdiction as string,
-            platformSearchUrl: '',
-            legalSources:      [] as import('@/lib/legalScraper').SearchResult[],
-            researchSources:   [] as import('@/lib/legalScraper').SearchResult[],
-            fromCache:         false,
-          };
 
           const sendStatus = (msg: string) =>
             streamCallback?.({ type: 'status', status: 'executing_functions', message: msg });
@@ -1020,12 +1032,13 @@ Please provide a structured review report.`;
               platform: response.platformName,
               platformSearchUrl: response.platformSearchUrl,
               INSTRUCTION: [
-                `⛔ NO RESULTS from ${response.platformName}.`,
-                'You MUST NOT generate, invent, or hallucinate any case names, URLs, or citations.',
-                'Tell the user: no live legal sources were found on the official LII platform for this jurisdiction.',
-                `Direct them to search manually at: ${response.platformSearchUrl}`,
-                '⛔ Do NOT cite any URL, case, or statute from your training data as a substitute.',
-                'You may explain the legal concept in general terms but must state explicitly that no live sources were retrieved.',
+                `⛔ DO NOT mention errors, technical failures, or that "no results were found" in those words.`,
+                `The search on ${response.platformName} did not return any results for this query.`,
+                `Tell the user: "The search did not return any matching sources on ${response.platformName} for this query."`,
+                `Then provide a direct search link: [Search ${response.platformName} manually](${response.platformSearchUrl})`,
+                `⛔ You MUST NOT generate, invent, or hallucinate any case names, URLs, or citations.`,
+                `⛔ Do NOT cite any URL, case, or statute from your training data as a substitute.`,
+                `You may briefly explain the legal concept in general terms, but make clear that no live sources were retrieved for this specific query.`,
               ].join(' '),
             };
           }
@@ -1083,13 +1096,88 @@ Please provide a structured review report.`;
           };
         } catch (error: any) {
           console.error('❌ Error searching African legal sources:', error);
+
+          // If partial results were streamed before the timeout/error, use them
+          // rather than returning a hard failure. Format them as a "closest match"
+          // response so the AI can still present useful sources to the user.
+          const hasPartialLegal    = assembled.legalSources.length > 0;
+          const hasPartialResearch = assembled.researchSources.length > 0;
+
+          if (hasPartialLegal || hasPartialResearch) {
+            const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+            const legalFormatted = assembled.legalSources.map((r, i) => ({
+              rank:     i + 1,
+              title:    r.title,
+              url:      r.url,
+              court:    r.court && !ISO_DATE.test(r.court) ? r.court : null,
+              date:     r.date  && !ISO_DATE.test(r.date)  ? null    : (r.date || null),
+              snippet:  r.snippet || null,
+              fullText: r.docContent ? r.docContent.slice(0, 4000) : null,
+              platform: r.platformName,
+            }));
+            const researchFormatted = assembled.researchSources.map((r, i) => ({
+              rank:    i + 1,
+              title:   r.title,
+              url:     r.url,
+              source:  r.platformName,
+              snippet: r.snippet || null,
+            }));
+
+            const legalLinks = legalFormatted.map((r, i) =>
+              `  ${i + 1}. [${r.title}](${r.url})${r.court ? ` — ${r.court}` : ''}${r.date ? `, ${r.date}` : ''}`
+            ).join('\n');
+            const researchLinks = researchFormatted.map((r, i) =>
+              `  ${i + 1}. [${r.title}](${r.url}) — ${r.source || assembled.platformName}`
+            ).join('\n');
+
+            return {
+              success: true,
+              partial: true,
+              jurisdiction,
+              platform: assembled.platformName || 'legal database',
+              platformSearchUrl: assembled.platformSearchUrl,
+              legalSources: legalFormatted,
+              legalSourcesCount: legalFormatted.length,
+              researchSources: researchFormatted,
+              researchSourcesCount: researchFormatted.length,
+              INSTRUCTION: [
+                `The search for "${query}" on ${assembled.platformName || 'the legal database'} did not return an exact match, but the following related sources were retrieved.`,
+                'Use ONLY the sources listed below — do NOT invent, guess, or hallucinate any additional URLs or citations.',
+                '',
+                'Tell the user: "I did not find an exact match for your query, but here are the closest results retrieved from the official source:"',
+                '',
+                '⛔ DO NOT mention timeouts, technical errors, or any system failure to the user. Never say phrases like "I was unable to retrieve" or "due to a technical issue". Just present what was found.',
+                '',
+                '── PARTIAL RESULTS — use these verbatim ──',
+                '',
+                `CASE LAW (${legalFormatted.length} judgment(s)):`,
+                legalLinks || '  (none)',
+                '',
+                `LEGISLATION (${researchFormatted.length} act(s)/statute(s)):`,
+                researchLinks || '  (none)',
+                '',
+                '── HOW TO PRESENT ──',
+                'STEP 1 — Present the results as the closest matches found for the query. Do not explain why an exact result is missing.',
+                'STEP 2 — Link each result using its ready-to-use link. NEVER rewrite or reconstruct URLs.',
+                `STEP 3 — Direct the user to search manually at: ${assembled.platformSearchUrl || 'https://africanlii.org'} if they need a more specific result.`,
+                '⛔ NEVER list a source without a live link from the results above.',
+              ].join('\n'),
+            };
+          }
+
           return {
             success: false,
             legalSourcesFound: 0,
+            platform: assembled.platformName || '',
+            platformSearchUrl: assembled.platformSearchUrl || '',
             INSTRUCTION: [
-              '⚠️ The legal search tool failed with a technical error.',
-              'You MUST NOT generate, guess, or hallucinate any URLs or case citations.',
-              'Tell the user the search failed and direct them to https://africanlii.org to search manually.',
+              '⛔ DO NOT mention errors, timeouts, or any technical failure to the user.',
+              `The search on ${assembled.platformName || 'the legal database'} did not return results for this query.`,
+              `Tell the user: "The search did not return any matching sources for your query on ${assembled.platformName || 'the official legal database'}."`,
+              assembled.platformSearchUrl
+                ? `Then provide: [Search ${assembled.platformName || 'the official platform'} manually](${assembled.platformSearchUrl})`
+                : 'Direct the user to https://africanlii.org to search manually.',
+              '⛔ NEVER invent, reconstruct, or hallucinate any case names, URLs, or citations.',
             ].join(' '),
             error: error.message || 'Failed to search legal sources',
           };
