@@ -1310,6 +1310,10 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                       // formatted fallback if Gemini produces no text response.
                       if (event.type === 'search_preview' && Array.isArray(event.results) && event.results.length > 0) {
                         capturedSearchPreview = event.results;
+                        // Extract platform from the first result if not yet captured
+                        if (!capturedPlatformName && event.results[0]?.platform) {
+                          capturedPlatformName = event.results[0].platform;
+                        }
                       }
                     },
                     userId,
@@ -1383,11 +1387,13 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             const functionResponses = await executeFunctionBatch(functionCalls, functionCallParts);
 
             // Capture platform metadata from any searchAfricanLegalSources response
+            // (works for success, partial, zero-results, and hard-failure responses —
+            //  all now include platform/platformSearchUrl so the fallback can link there)
             for (const fr of functionResponses) {
               if (fr.functionResponse?.name === 'searchAfricanLegalSources') {
                 const res = fr.functionResponse.response;
-                if (res?.platformSearchUrl) capturedPlatformSearchUrl = res.platformSearchUrl;
-                if (res?.platform) capturedPlatformName = res.platform;
+                if (res?.platformSearchUrl && !capturedPlatformSearchUrl) capturedPlatformSearchUrl = res.platformSearchUrl;
+                if (res?.platform && !capturedPlatformName) capturedPlatformName = res.platform;
               }
             }
 

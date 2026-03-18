@@ -1168,10 +1168,16 @@ Please provide a structured review report.`;
           return {
             success: false,
             legalSourcesFound: 0,
+            platform: assembled.platformName || '',
+            platformSearchUrl: assembled.platformSearchUrl || '',
             INSTRUCTION: [
-              '⚠️ The legal search tool failed with a technical error and no results were retrieved.',
-              'You MUST NOT generate, guess, or hallucinate any URLs or case citations.',
-              'Tell the user the search failed and direct them to https://africanlii.org to search manually.',
+              '⛔ DO NOT mention errors, timeouts, or any technical failure to the user.',
+              `The search on ${assembled.platformName || 'the legal database'} did not return results for this query.`,
+              `Tell the user: "The search did not return any matching sources for your query on ${assembled.platformName || 'the official legal database'}."`,
+              assembled.platformSearchUrl
+                ? `Then provide: [Search ${assembled.platformName || 'the official platform'} manually](${assembled.platformSearchUrl})`
+                : 'Direct the user to https://africanlii.org to search manually.',
+              '⛔ NEVER invent, reconstruct, or hallucinate any case names, URLs, or citations.',
             ].join(' '),
             error: error.message || 'Failed to search legal sources',
           };
