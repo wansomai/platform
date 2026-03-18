@@ -1258,6 +1258,12 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
           const MAX_AGENTIC_ITERATIONS = 5;
           let agenticIteration = 0;
 
+          // Capture legal search results streamed during tool execution so we can
+          // build a formatted fallback response if Gemini produces no text.
+          let capturedSearchPreview: Array<{ title: string; url: string; date: string | null; platform: string }> = [];
+          let capturedPlatformName = '';
+          let capturedPlatformSearchUrl = '';
+
           // Helper: execute one batch of function calls and return their responses
           const executeFunctionBatch = async (calls: any[], parts: any[]) => {
             const responses = await Promise.all(
@@ -1298,7 +1304,14 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                   const result = await executeFunctionCall(
                     fc, projectId, project, conversationDocuments, canvasDocument,
                     previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content),
-                    (event: any) => { controller.enqueue(encoder.encode(JSON.stringify(event) + '\n')); },
+                    (event: any) => {
+                      controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
+                      // Capture streamed legal search results so we can build a
+                      // formatted fallback if Gemini produces no text response.
+                      if (event.type === 'search_preview' && Array.isArray(event.results) && event.results.length > 0) {
+                        capturedSearchPreview = event.results;
+                      }
+                    },
                     userId,
                     currentCanvasHtml
                   );
@@ -1369,13 +1382,27 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             // Execute this round's function calls
             const functionResponses = await executeFunctionBatch(functionCalls, functionCallParts);
 
-            // Detect a timed-out searchAgent — force a text-only response to prevent
-            // the model from retrying (which causes another timeout)
-            // researchAgent doesn't use web search so it won't timeout
+            // Capture platform metadata from any searchAfricanLegalSources response
+            for (const fr of functionResponses) {
+              if (fr.functionResponse?.name === 'searchAfricanLegalSources') {
+                const res = fr.functionResponse.response;
+                if (res?.platformSearchUrl) capturedPlatformSearchUrl = res.platformSearchUrl;
+                if (res?.platform) capturedPlatformName = res.platform;
+              }
+            }
+
+            // Detect a failed search/fetch tool — force a text-only response to prevent
+            // the model from retrying (which causes another timeout or infinite loop).
+            // Covers: searchAgent timeout, searchAfricanLegalSources failure (including
+            // partial results), and fetchLegalDocument failure.
             const searchAgentFailed = functionResponses.some((fr: any) => {
               const res = fr.functionResponse?.response;
-              return fr.functionResponse?.name === 'searchAgent' &&
-                res?.success === false && res?.timedOut === true;
+              const name = fr.functionResponse?.name;
+              return (
+                (name === 'searchAgent' && res?.success === false && res?.timedOut === true) ||
+                (name === 'searchAfricanLegalSources' && res?.success === false) ||
+                (name === 'fetchLegalDocument' && res?.success === false)
+              );
             });
 
             // Append model turn (with thought signatures) + function results to history
@@ -1421,9 +1448,32 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             if (fullContent) break;
           }
 
-          // Fallback: if all iterations produced no text, tell the user what happened
+          // Fallback: if all iterations produced no text, build a formatted response
+          // from any legal search results that were streamed during tool execution.
+          // Never surface internal tool errors to the user.
           if (!fullContent) {
-            fullContent = "I was unable to complete this request. The tools I needed did not return usable results. Please try rephrasing your question or check that the required integrations are configured.";
+            if (capturedSearchPreview.length > 0) {
+              const platformLabel = capturedPlatformName || 'the official legal database';
+              const lines: string[] = [
+                `I did not find an exact match for your query, but here are the closest sources retrieved from ${platformLabel}:\n`,
+              ];
+              capturedSearchPreview.forEach((r, i) => {
+                const meta = [r.date, r.platform].filter(Boolean).join(' · ');
+                lines.push(`${i + 1}. [${r.title}](${r.url})${meta ? `  —  ${meta}` : ''}`);
+              });
+              if (capturedPlatformSearchUrl) {
+                lines.push(`\nFor a more specific search, you can look directly at [${platformLabel}](${capturedPlatformSearchUrl}).`);
+              }
+              lines.push('\n---\n**⚖️ Legal Sources**\n');
+              capturedSearchPreview.forEach((r, i) => {
+                lines.push(`${i + 1}. [${r.title}](${r.url})${r.date ? `  —  ${r.date}` : ''}`);
+              });
+              fullContent = lines.join('\n');
+            } else if (capturedPlatformSearchUrl) {
+              fullContent = `The search did not return any matching sources for your query on ${capturedPlatformName || 'the official legal database'}.\n\nYou can search directly at [${capturedPlatformName || capturedPlatformSearchUrl}](${capturedPlatformSearchUrl}).`;
+            } else {
+              fullContent = "The search did not return any results for your query. Please try rephrasing or search directly on the official legal platform for your jurisdiction.";
+            }
             controller.enqueue(encoder.encode(JSON.stringify({
               type: 'delta',
               conversationId: conversation.id,
