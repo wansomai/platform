@@ -24,11 +24,21 @@ export async function executeFunctionCall(
   recentMessages: string[],
   streamCallback?: (event: any) => void,
   userId?: string,
-  currentCanvasHtml?: string
+  currentCanvasHtml?: string,
+  conversationId?: string
 ): Promise<any> {
   try {
     switch (functionCall.name) {
       case 'generateDocumentInline': {
+        // HARD GUARD: if a canvas document is already open, never generate a new inline document.
+        // Gemini can hallucinate calls to generateDocumentInline when only edit tools were
+        // declared. Direct it to editCanvasDocument instead.
+        if (canvasDocument) {
+          return {
+            error: 'CANVAS_DOCUMENT_EXISTS',
+            instruction: 'A canvas document is already open. Use editCanvasDocument to apply the requested change to the existing document instead of generating a new inline document.'
+          };
+        }
         const { documentType, title, parties, terms, suggestedFormat, formatReason, additionalContext } = functionCall.args as any;
 
         // Create a detailed drafting request
@@ -102,7 +112,7 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
             format: suggestedFormat,
             htmlContent: result.htmlContent || '',
           },
-          message: `I've created your ${documentType} ${formatReason ? formatReason : ''}.`,
+          message: `I've created your ${documentType} ${formatReason ? formatReason : ''}. IMPORTANT: (1) Your reply must be ONE short plain-markdown sentence — no HTML, no document cards, no <div> or <button> tags. (2) If the user asks to change, edit, update, or modify this document in any way, use editCanvasDocument — do NOT call generateDocumentInline or draftNewDocument again.`,
           formatReason
         };
       }
@@ -151,55 +161,66 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           ragContext: ragResults  // Include RAG context
         };
 
-        // Send initial status
+        // Pre-create the document in DB BEFORE streaming so every event carries its real ID.
+        // This lets the client mount the correct editor immediately at the first chunk,
+        // eliminating the "wrong document" contamination that occurs when the ID is only
+        // known after generation finishes.
+        const newDoc = await prisma.canvasDocument.create({
+          data: {
+            projectId,
+            title: documentType,
+            content: {},
+            htmlContent: '',
+            plainText: '',
+          }
+        });
+
+        // Send initial status — include document ID so client can switch immediately
         if (streamCallback) {
           streamCallback({
             type: 'canvas_status',
             status: 'generating_document',
             message: `Drafting ${documentType}...`,
-            conversationId: projectId
+            conversationId: projectId,
+            canvasDocumentId: newDoc.id
           });
         }
 
-        // Generate the document with streaming
+        // Generate the document with streaming — every chunk carries the document ID
         const result = await AIDocumentService.generateDocumentStreaming(
           draftingRequest,
           projectContext,
           (partialContent, section) => {
-            // Stream updates to canvas in real-time
             if (streamCallback) {
               streamCallback({
                 type: 'canvas_content_update',
                 conversationId: projectId,
                 partialContent: partialContent,
                 currentSection: section,
-                actionType: 'generating'
+                actionType: 'generating',
+                canvasDocumentId: newDoc.id
               });
             }
           }
         );
 
         if (!result.success) {
+          // Clean up the pre-created placeholder on failure
+          await prisma.canvasDocument.delete({ where: { id: newDoc.id } }).catch(() => {});
           return { error: result.error || 'Failed to generate document' };
         }
 
-        // Save to canvas
-        await prisma.canvasDocument.upsert({
-          where: { projectId },
-          create: {
-            projectId,
-            content: result.htmlContent || result.plainText || '',
-            htmlContent: result.htmlContent || '',
-            plainText: result.plainText || '',
-          },
-          update: {
-            content: result.htmlContent || result.plainText || '',
+        // Update the pre-created doc with the final generated content
+        await prisma.canvasDocument.update({
+          where: { id: newDoc.id },
+          data: {
+            content: {},
             htmlContent: result.htmlContent || '',
             plainText: result.plainText || '',
           }
         });
 
-        // Send final canvas update
+        // Send final canvas update with the same document ID
         if (streamCallback) {
           streamCallback({
             type: 'canvas_update',
@@ -207,7 +228,8 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
             content: `Successfully created ${documentType}`,
             canvasContent: result.htmlContent || result.plainText || '',
             canvasUpdated: true,
-            actionType: 'generating'
+            actionType: 'generating',
+            canvasDocumentId: newDoc.id
           });
         }
 
@@ -220,13 +242,179 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       case 'editCanvasDocument': {
         const { changeDescription, targetSection } = functionCall.args as any;
 
-        if (!canvasDocument && !currentCanvasHtml) {
-          return { error: 'No canvas document exists to edit. Please create a document first.' };
+        // If the route didn't pass a canvas document (race condition: activeCanvasId was
+        // null/stale while fetchCanvasDocuments was still resolving), do a fresh DB lookup
+        // for the most recent canvas document in this project before falling back.
+        let resolvedCanvasDocument = canvasDocument;
+        if (!resolvedCanvasDocument && !currentCanvasHtml) {
+          resolvedCanvasDocument = await prisma.canvasDocument.findFirst({
+            where: { projectId },
+            orderBy: { updatedAt: 'desc' }
+          });
         }
 
-        // Use live editor HTML if available (preserves unsaved manual edits),
-        // fall back to the last-saved DB version
-        const htmlToEdit = currentCanvasHtml || canvasDocument?.htmlContent || '';
+        // If still no canvas document, look for a chat-generated inline document to promote.
+        // This handles the case where the user generated a doc inline (not via canvas) and
+        // wants to edit it — we open it in the canvas and show the suggested edit as a diff.
+        if (!resolvedCanvasDocument && !currentCanvasHtml) {
+          let promotedHtml: string | null = null;
+          let promotedTitle: string | null = null;
+
+          if (conversationId) {
+            const msgWithDoc = await prisma.message.findFirst({
+              where: { conversationId, role: 'assistant', metadata: { not: undefined } },
+              orderBy: { createdAt: 'desc' },
+              select: { metadata: true }
+            });
+            if (msgWithDoc?.metadata) {
+              try {
+                const meta = typeof msgWithDoc.metadata === 'string'
+                  ? JSON.parse(msgWithDoc.metadata)
+                  : msgWithDoc.metadata as any;
+                if (meta?.document?.htmlContent) {
+                  promotedHtml = meta.document.htmlContent;
+                  promotedTitle = meta.document.title || 'Untitled Document';
+                }
+              } catch { /* ignore */ }
+            }
+          }
+
+          if (!promotedHtml) {
+            return {
+              error: 'NO_CANVAS_DOCUMENT',
+              instruction: 'No document is currently open in the canvas editor. Tell the user: "There is no document open to edit. Please open a document in the canvas first."'
+            };
+          }
+
+          // Create the canvas document once (open it in the editor), then immediately
+          // show the suggested edit as a diff — no further doc creation on subsequent edits.
+          streamCallback?.({
+            type: 'canvas_status',
+            status: 'editing_document',
+            message: 'Opening document in editor...',
+            conversationId: projectId
+          });
+
+          const promoteCtx: ProjectContext = {
+            jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+            instructions: project?.knowledgeBase?.instructions || '',
+            documents: conversationDocuments.map((doc: any) => ({
+              title: doc.document.title,
+              content: doc.document.content?.content || ''
+            })),
+            conversationHistory: recentMessages || []
+          };
+
+          const editRequest = targetSection
+            ? `In the ${targetSection} section: ${changeDescription}`
+            : changeDescription;
+
+          let editedHtml: string | null = null;
+          const fastResult = await AIDocumentService.fastEditDocument(editRequest, promotedHtml, promoteCtx);
+          if (fastResult.success && fastResult.patches) {
+            editedHtml = AIDocumentService.applyPatches(promotedHtml, fastResult.patches);
+          }
+          // One retry if patches failed to apply
+          if (!editedHtml) {
+            const retryResult = await AIDocumentService.fastEditDocument(editRequest, promotedHtml, promoteCtx);
+            if (retryResult.success && retryResult.patches) {
+              editedHtml = AIDocumentService.applyPatches(promotedHtml, retryResult.patches);
+            }
+          }
+          // Fallback: patch-based edit failed — use full-document rewrite for promoted inline doc
+          if (!editedHtml) {
+            streamCallback?.({
+              type: 'canvas_status',
+              status: 'editing_document',
+              message: 'Applying full edit...',
+              conversationId: projectId
+            });
+            const fullResult = await AIDocumentService.editDocument(editRequest, promotedHtml, promoteCtx);
+            if (fullResult.success && fullResult.htmlContent) {
+              editedHtml = fullResult.htmlContent;
+            }
+          }
+          if (!editedHtml) {
+            return {
+              error: 'PATCH_APPLY_FAILED',
+              message: "I couldn't apply the targeted edit. Please rephrase your request more specifically — for example, quote the exact text you want changed and what it should become."
+            };
+          }
+
+          const newCanvasDoc = await prisma.canvasDocument.create({
+            data: {
+              projectId,
+              title: promotedTitle || 'Document',
+              htmlContent: promotedHtml,
+              plainText: AIDocumentService.stripHtml(promotedHtml),
+              content: {}
+            }
+          });
+
+          streamCallback?.({
+            type: 'canvas_document_created',
+            conversationId: projectId,
+            document: {
+              id: newCanvasDoc.id,
+              title: newCanvasDoc.title,
+              htmlContent: newCanvasDoc.htmlContent,
+              content: newCanvasDoc.content,
+              createdAt: newCanvasDoc.createdAt.toISOString(),
+              updatedAt: newCanvasDoc.updatedAt.toISOString()
+            }
+          });
+
+          streamCallback?.({
+            type: 'canvas_suggestion',
+            messageId: `suggestion-${Date.now()}`,
+            content: `I've opened the document in the editor with the suggested changes highlighted. Click **Accept** to apply or **Reject** to keep the original.`,
+            actionType: 'suggestion',
+            suggestedHtml: editedHtml,
+            originalHtml: promotedHtml,
+            changeDescription,
+            canvasDocumentId: newCanvasDoc.id
+          });
+
+          return {
+            success: true,
+            message: `CANVAS_EDIT_DONE: The suggested change ("${changeDescription}") is now visible as a highlighted diff in the canvas editor. Your chat reply MUST be a single short sentence only — e.g. "Done! Review the highlighted changes and click Accept or Reject." Do NOT output the document text.`
+          };
+        }
+
+        // Document loading: prefer the client's live editor HTML when provided — it
+        // reflects unsaved edits, accepted suggestions, and pending suggestion content
+        // (set by CanvasInterface when a suggestion arrives, before the user accepts).
+        // Fall back to the DB version (including the fallback-resolved document).
+        let htmlToEdit = currentCanvasHtml || resolvedCanvasDocument?.htmlContent || '';
+
+        // If the resolved document has empty/stub content, do a fresh DB fetch.
+        // This handles the race condition where draftNewDocument pre-creates the record
+        // with htmlContent='' and the route fetched it before the streaming update committed.
+        if (htmlToEdit.trim().length < 50 && resolvedCanvasDocument?.id) {
+          const freshDoc = await prisma.canvasDocument.findUnique({
+            where: { id: resolvedCanvasDocument.id }
+          });
+          if (freshDoc?.htmlContent && freshDoc.htmlContent.trim().length >= 50) {
+            htmlToEdit = freshDoc.htmlContent;
+          }
+        }
+
+        // Last resort: search all documents in the project for one with content
+        if (htmlToEdit.trim().length < 50) {
+          const anyDoc = await prisma.canvasDocument.findFirst({
+            where: { projectId, htmlContent: { not: '' } },
+            orderBy: { updatedAt: 'desc' }
+          });
+          if (anyDoc?.htmlContent && anyDoc.htmlContent.trim().length >= 50) {
+            htmlToEdit = anyDoc.htmlContent;
+            // Update resolvedCanvasDocument for later use
+            resolvedCanvasDocument = anyDoc;
+          }
+        }
+
+        if (!htmlToEdit || htmlToEdit.trim().length < 50) {
+          return { error: 'NO_CANVAS_DOCUMENT', instruction: 'The document does not have any content yet. Please wait for the document to finish loading, then try again.' };
+        }
 
         const projectContext: ProjectContext = {
           jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
@@ -242,55 +430,394 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
           ? `In the ${targetSection} section: ${changeDescription}`
           : changeDescription;
 
-        // Send initial status
-        if (streamCallback) {
-          streamCallback({
+        const EDIT_TIMEOUT_MS = 120_000;
+        const timeoutResult = { timeout: true, message: 'All the edits have not been applied, please send again the same edit message for them to be fully applied.' };
+
+        const editWork = async (): Promise<any> => {
+          // ── Validation: check that the edit is logically sound before applying ──
+          streamCallback?.({
             type: 'canvas_status',
             status: 'editing_document',
-            message: 'Updating document...',
+            message: 'Reviewing edit request...',
             conversationId: projectId
           });
-        }
 
-        // Edit document with streaming — route partial updates to the overlay preview
-        const result = await AIDocumentService.editDocumentStreaming(
-          editRequest,
-          htmlToEdit,
-          projectContext,
-          (partialContent, section) => {
-            if (streamCallback) {
-              streamCallback({
-                type: 'canvas_content_update',
-                conversationId: projectId,
-                partialContent: partialContent,
-                currentSection: section,
-                actionType: 'editing'
-              });
+          const documentPlainText = AIDocumentService.stripHtml(htmlToEdit);
+          const validation = await AIDocumentService.validateEditRequest(
+            editRequest,
+            documentPlainText,
+            projectContext
+          );
+
+          if (!validation.isValid && validation.blockingIssues.length > 0) {
+            // Do NOT apply the edit — return explanation to the user
+            const issueList = validation.blockingIssues.map(i => `- ${i}`).join('\n');
+            return {
+              blocked: true,
+              message: `I couldn't apply this edit because of the following issue(s):\n\n${issueList}\n\nPlease review your request and try again.`
+            };
+          }
+
+          // Compose any non-blocking warnings into the final suggestion message
+          const warningNote = validation.warnings.length > 0
+            ? `\n\n**⚠️ Note:** ${validation.warnings.join(' ')}`
+            : '';
+
+          // ── Apply the edit ──
+          streamCallback?.({
+            type: 'canvas_status',
+            status: 'editing_document',
+            message: 'Applying edit...',
+            conversationId: projectId
+          });
+
+          // Fast path: patch-based edit (~50× faster — returns only the changed spans)
+          let editedHtml: string | null = null;
+          const fastResult = await AIDocumentService.fastEditDocument(editRequest, htmlToEdit, projectContext);
+          if (fastResult.success && fastResult.patches) {
+            editedHtml = AIDocumentService.applyPatches(htmlToEdit, fastResult.patches);
+          }
+
+          // One retry if the first fast attempt didn't produce applicable patches
+          if (!editedHtml) {
+            streamCallback?.({
+              type: 'canvas_status',
+              status: 'editing_document',
+              message: 'Retrying edit...',
+              conversationId: projectId
+            });
+            const retryResult = await AIDocumentService.fastEditDocument(editRequest, htmlToEdit, projectContext);
+            if (retryResult.success && retryResult.patches) {
+              editedHtml = AIDocumentService.applyPatches(htmlToEdit, retryResult.patches);
             }
           }
-        );
 
-        if (!result.success) {
-          return { error: result.error || 'Failed to edit document' };
-        }
+          // Fallback: patch-based edit failed — use full-document rewrite
+          if (!editedHtml) {
+            streamCallback?.({
+              type: 'canvas_status',
+              status: 'editing_document',
+              message: 'Applying full edit...',
+              conversationId: projectId
+            });
+            const fullResult = await AIDocumentService.editDocument(editRequest, htmlToEdit, projectContext);
+            if (fullResult.success && fullResult.htmlContent) {
+              editedHtml = fullResult.htmlContent;
+            }
+          }
+          if (!editedHtml) {
+            return {
+              error: 'PATCH_APPLY_FAILED',
+              message: "I couldn't apply the targeted edit. Please rephrase your request more specifically — for example, quote the exact text you want changed and what it should become."
+            };
+          }
 
-        // Do NOT write to DB — send a suggestion event so the user can review the diff
-        if (streamCallback) {
-          streamCallback({
+          // Do NOT write to DB — send a suggestion event so the user can review the diff.
+          // Include canvasDocumentId so the Accept handler knows which document to patch.
+          streamCallback?.({
             type: 'canvas_suggestion',
             conversationId: projectId,
-            content: `I've suggested the following change: ${changeDescription}. Review the highlighted changes in the canvas and click **Accept** or **Reject**.`,
-            suggestedHtml: result.htmlContent || result.plainText || '',
+            content: `I've suggested the following change: ${changeDescription}. Review the highlighted changes in the canvas and click **Accept** or **Reject**.${warningNote}`,
+            suggestedHtml: editedHtml,
             originalHtml: htmlToEdit,
             changeDescription,
-            actionType: 'editing'
+            actionType: 'editing',
+            canvasDocumentId: resolvedCanvasDocument?.id
+          });
+
+          return {
+            success: true,
+            // IMPORTANT: The diff overlay is already showing in the canvas. Do NOT output
+            // the document text in your chat response. Just write a single short sentence
+            // telling the user to review and accept/reject the highlighted changes.
+            message: `CANVAS_EDIT_DONE: The suggested change ("${changeDescription}") is now visible as a highlighted diff in the canvas editor. Your chat reply MUST be a single short sentence only — e.g. "Done! Review the highlighted changes and click Accept or Reject." Do NOT output the document text.`
+          };
+        };
+
+        const timeoutPromise = new Promise<typeof timeoutResult>((resolve) =>
+          setTimeout(() => resolve(timeoutResult), EDIT_TIMEOUT_MS)
+        );
+        return Promise.race([editWork(), timeoutPromise]);
+      }
+
+      case 'batchEditCanvasDocument': {
+        const { edits } = functionCall.args as any;
+
+        if (!Array.isArray(edits) || edits.length === 0) {
+          return { error: 'No edits provided to batchEditCanvasDocument.' };
+        }
+
+        // Same DB-first fallback as editCanvasDocument: try the most recent canvas doc
+        // before looking for an inline-generated doc to promote.
+        let batchResolvedCanvasDoc = canvasDocument;
+        if (!batchResolvedCanvasDoc && !currentCanvasHtml) {
+          batchResolvedCanvasDoc = await prisma.canvasDocument.findFirst({
+            where: { projectId },
+            orderBy: { updatedAt: 'desc' }
           });
         }
 
-        return {
-          success: true,
-          message: `Suggested changes for "${changeDescription}" are ready for review in the canvas editor.`
+        // If still nothing, try to auto-promote a chat-generated inline doc.
+        if (!batchResolvedCanvasDoc && !currentCanvasHtml) {
+          let promotedHtml: string | null = null;
+          let promotedTitle: string | null = null;
+
+          if (conversationId) {
+            const msgWithDoc = await prisma.message.findFirst({
+              where: { conversationId, role: 'assistant', metadata: { not: undefined } },
+              orderBy: { createdAt: 'desc' },
+              select: { metadata: true }
+            });
+            if (msgWithDoc?.metadata) {
+              try {
+                const meta = typeof msgWithDoc.metadata === 'string'
+                  ? JSON.parse(msgWithDoc.metadata)
+                  : msgWithDoc.metadata as any;
+                if (meta?.document?.htmlContent) {
+                  promotedHtml = meta.document.htmlContent;
+                  promotedTitle = meta.document.title || 'Untitled Document';
+                }
+              } catch { /* ignore */ }
+            }
+          }
+
+          if (!promotedHtml) {
+            return {
+              error: 'NO_CANVAS_DOCUMENT',
+              instruction: 'No document is currently open in the canvas editor. Tell the user: "There is no document open to edit. Please open a document in the canvas first."'
+            };
+          }
+
+          const batchAutoCtx: ProjectContext = {
+            jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+            instructions: project?.knowledgeBase?.instructions || '',
+            documents: conversationDocuments.map((doc: any) => ({
+              title: doc.document.title,
+              content: doc.document.content?.content || ''
+            })),
+            conversationHistory: recentMessages || []
+          };
+
+          const batchAutoInstruction = edits.length === 1
+            ? (edits[0].targetSection
+                ? `In the ${edits[0].targetSection} section: ${edits[0].changeDescription}`
+                : edits[0].changeDescription)
+            : `Apply ALL of the following changes to the document:\n\n` +
+              edits.map((e: any, i: number) =>
+                `${i + 1}. ${e.targetSection ? `[${e.targetSection}] ` : ''}${e.changeDescription}`
+              ).join('\n') +
+              `\n\nApply every item in the list. Do not skip any.`;
+
+          let batchAutoEditedHtml: string | null = null;
+          const batchAutoFast = await AIDocumentService.fastEditDocument(batchAutoInstruction, promotedHtml, batchAutoCtx);
+          if (batchAutoFast.success && batchAutoFast.patches) {
+            batchAutoEditedHtml = AIDocumentService.applyPatches(promotedHtml, batchAutoFast.patches);
+          }
+          // One retry if patches failed to apply
+          if (!batchAutoEditedHtml) {
+            const batchAutoRetry = await AIDocumentService.fastEditDocument(batchAutoInstruction, promotedHtml, batchAutoCtx);
+            if (batchAutoRetry.success && batchAutoRetry.patches) {
+              batchAutoEditedHtml = AIDocumentService.applyPatches(promotedHtml, batchAutoRetry.patches);
+            }
+          }
+          // Fallback: patch-based edit failed — use full-document rewrite for promoted inline doc
+          if (!batchAutoEditedHtml) {
+            const batchAutoFullResult = await AIDocumentService.editDocument(batchAutoInstruction, promotedHtml, batchAutoCtx);
+            if (batchAutoFullResult.success && batchAutoFullResult.htmlContent) {
+              batchAutoEditedHtml = batchAutoFullResult.htmlContent;
+            }
+          }
+          if (!batchAutoEditedHtml) {
+            return {
+              error: 'PATCH_APPLY_FAILED',
+              message: "I couldn't apply the targeted edits. Please rephrase your requests more specifically — for example, quote the exact text you want changed and what it should become."
+            };
+          }
+
+          const newCanvasDoc = await prisma.canvasDocument.create({
+            data: {
+              projectId,
+              title: promotedTitle || 'Document',
+              htmlContent: promotedHtml,
+              plainText: AIDocumentService.stripHtml(promotedHtml),
+              content: {}
+            }
+          });
+
+          streamCallback?.({ type: 'canvas_document_created', conversationId: projectId, document: { id: newCanvasDoc.id, title: newCanvasDoc.title, htmlContent: newCanvasDoc.htmlContent, content: newCanvasDoc.content, createdAt: newCanvasDoc.createdAt.toISOString(), updatedAt: newCanvasDoc.updatedAt.toISOString() } });
+          streamCallback?.({
+            type: 'canvas_suggestion',
+            messageId: `suggestion-${Date.now()}`,
+            content: `I've opened the document in the editor with the suggested changes highlighted. Click **Accept** to apply or **Reject** to keep the original.`,
+            actionType: 'suggestion',
+            suggestedHtml: batchAutoEditedHtml,
+            originalHtml: promotedHtml,
+            changeDescription: edits.length === 1 ? edits[0].changeDescription : `${edits.length} changes`,
+            canvasDocumentId: newCanvasDoc.id
+          });
+
+          return {
+            success: true,
+            editsApplied: edits.length,
+            message: `CANVAS_EDIT_DONE: ${edits.length} suggested change${edits.length > 1 ? 's are' : ' is'} now visible as a highlighted diff in the canvas editor. Your chat reply MUST be a single short sentence only — e.g. "Done! Review the highlighted changes and click Accept or Reject." Do NOT output the document text.`
+          };
+        }
+
+        let originalHtml = currentCanvasHtml || batchResolvedCanvasDoc?.htmlContent || '';
+
+        // Fresh DB fetch if content is empty — same race-condition fix as editCanvasDocument.
+        if (originalHtml.trim().length < 50 && batchResolvedCanvasDoc?.id) {
+          const freshDoc = await prisma.canvasDocument.findUnique({
+            where: { id: batchResolvedCanvasDoc.id }
+          });
+          if (freshDoc?.htmlContent && freshDoc.htmlContent.trim().length >= 50) {
+            originalHtml = freshDoc.htmlContent;
+          }
+        }
+        if (originalHtml.trim().length < 50) {
+          const anyDoc = await prisma.canvasDocument.findFirst({
+            where: { projectId, htmlContent: { not: '' } },
+            orderBy: { updatedAt: 'desc' }
+          });
+          if (anyDoc?.htmlContent && anyDoc.htmlContent.trim().length >= 50) {
+            originalHtml = anyDoc.htmlContent;
+            batchResolvedCanvasDoc = anyDoc;
+          }
+        }
+
+        if (!originalHtml || originalHtml.trim().length < 50) {
+          return { error: 'NO_CANVAS_DOCUMENT', instruction: 'The document does not have any content yet. Please wait for the document to finish loading, then try again.' };
+        }
+
+        const projectContext: ProjectContext = {
+          jurisdiction: project?.knowledgeBase?.settings?.jurisdiction,
+          instructions: project?.knowledgeBase?.instructions || '',
+          documents: conversationDocuments.map((doc: any) => ({
+            title: doc.document.title,
+            content: doc.document.content?.content || ''
+          })),
+          conversationHistory: recentMessages || []
         };
+
+        // Build ONE structured instruction that lists all changes — single Gemini call,
+        // much faster than N sequential calls each carrying the full document.
+        const structuredInstruction = edits.length === 1
+          ? (edits[0].targetSection
+              ? `In the ${edits[0].targetSection} section: ${edits[0].changeDescription}`
+              : edits[0].changeDescription)
+          : `Apply ALL of the following changes to the document:\n\n` +
+            edits.map((e: any, i: number) =>
+              `${i + 1}. ${e.targetSection ? `[${e.targetSection}] ` : ''}${e.changeDescription}`
+            ).join('\n') +
+            `\n\nApply every item in the list. Do not skip any.`;
+
+        const BATCH_TIMEOUT_MS = 120_000;
+        const batchTimeoutResult = { timeout: true, message: 'All the edits have not been applied, please send again the same edit message for them to be fully applied.' };
+
+        const batchEditWork = async (): Promise<any> => {
+          // ── Validation ──
+          streamCallback?.({
+            type: 'canvas_status',
+            status: 'editing_document',
+            message: 'Reviewing edit requests...',
+            conversationId: projectId
+          });
+
+          const batchDocText = AIDocumentService.stripHtml(originalHtml);
+          const batchValidation = await AIDocumentService.validateEditRequest(
+            structuredInstruction,
+            batchDocText,
+            projectContext
+          );
+
+          if (!batchValidation.isValid && batchValidation.blockingIssues.length > 0) {
+            const issueList = batchValidation.blockingIssues.map((i: string) => `- ${i}`).join('\n');
+            return {
+              blocked: true,
+              message: `I couldn't apply these edits because of the following issue(s):\n\n${issueList}\n\nPlease review your request and try again.`
+            };
+          }
+
+          const batchWarningNote = batchValidation.warnings.length > 0
+            ? `\n\n**⚠️ Note:** ${batchValidation.warnings.join(' ')}`
+            : '';
+
+          streamCallback?.({
+            type: 'canvas_status',
+            status: 'editing_document',
+            message: `Applying ${edits.length} edit${edits.length > 1 ? 's' : ''}...`,
+            conversationId: projectId
+          });
+
+          // ── Fast path: patch-based edit ──
+          let batchEditedHtml: string | null = null;
+          const batchFast = await AIDocumentService.fastEditDocument(structuredInstruction, originalHtml, projectContext);
+          if (batchFast.success && batchFast.patches) {
+            batchEditedHtml = AIDocumentService.applyPatches(originalHtml, batchFast.patches);
+          }
+
+          // One retry if patches failed to apply
+          if (!batchEditedHtml) {
+            streamCallback?.({
+              type: 'canvas_status',
+              status: 'editing_document',
+              message: 'Retrying edits...',
+              conversationId: projectId
+            });
+            const batchRetry = await AIDocumentService.fastEditDocument(structuredInstruction, originalHtml, projectContext);
+            if (batchRetry.success && batchRetry.patches) {
+              batchEditedHtml = AIDocumentService.applyPatches(originalHtml, batchRetry.patches);
+            }
+          }
+
+          // Fallback: patch-based edit failed — use full-document rewrite
+          if (!batchEditedHtml) {
+            streamCallback?.({
+              type: 'canvas_status',
+              status: 'editing_document',
+              message: 'Applying full edit...',
+              conversationId: projectId
+            });
+            const batchFullResult = await AIDocumentService.editDocument(structuredInstruction, originalHtml, projectContext);
+            if (batchFullResult.success && batchFullResult.htmlContent) {
+              batchEditedHtml = batchFullResult.htmlContent;
+            }
+          }
+          if (!batchEditedHtml) {
+            return {
+              error: 'PATCH_APPLY_FAILED',
+              message: "I couldn't apply the targeted edits. Please rephrase your requests more specifically — for example, quote the exact text you want changed and what it should become."
+            };
+          }
+
+          const allChanges = edits.map((e: any) => e.changeDescription).join('; ');
+
+          // Include canvasDocumentId so the Accept handler patches the correct document.
+          streamCallback?.({
+            type: 'canvas_suggestion',
+            conversationId: projectId,
+            content: `Applied ${edits.length} edit${edits.length > 1 ? 's' : ''}. Review the highlighted changes and click **Accept** or **Reject**.${batchWarningNote}`,
+            suggestedHtml: batchEditedHtml,
+            originalHtml,
+            changeDescription: allChanges,
+            actionType: 'editing',
+            canvasDocumentId: batchResolvedCanvasDoc?.id
+          });
+
+          return {
+            success: true,
+            editsApplied: edits.length,
+            // IMPORTANT: The diff overlay is already showing in the canvas. Do NOT output
+            // the document text in your chat response. Just write a single short sentence
+            // telling the user to review and accept/reject the highlighted changes.
+            message: `CANVAS_EDIT_DONE: ${edits.length} suggested change${edits.length > 1 ? 's are' : ' is'} now visible as a highlighted diff in the canvas editor. Your chat reply MUST be a single short sentence only — e.g. "Done! Review the ${edits.length} highlighted change${edits.length > 1 ? 's' : ''} and click Accept or Reject." Do NOT output the document text.`
+          };
+        };
+
+        const batchTimeoutPromise = new Promise<typeof batchTimeoutResult>((resolve) =>
+          setTimeout(() => resolve(batchTimeoutResult), BATCH_TIMEOUT_MS)
+        );
+        return Promise.race([batchEditWork(), batchTimeoutPromise]);
       }
 
       case 'searchProjectDocuments': {
@@ -1028,6 +1555,8 @@ Please provide a structured review report.`;
           if (!hasLegal && !hasResearch) {
             return {
               success: false,
+              needsGoogleFallback: true,
+              googleFallbackQuery: query,
               legalSourcesFound: 0,
               platform: response.platformName,
               platformSearchUrl: response.platformSearchUrl,
@@ -1043,8 +1572,17 @@ Please provide a structured review report.`;
             };
           }
 
+          // Quality check: if no legal result title shares meaningful keywords with the query,
+          // the results are a partial/loose match — trigger Google fallback to supplement.
+          const maxLegalScore = response.legalSources.length > 0
+            ? Math.max(...response.legalSources.map(r => scoreRelevance(r.title, query)))
+            : 0;
+          const needsGoogleFallback = maxLegalScore < 0.35;
+
           return {
             success: true,
+            needsGoogleFallback,
+            googleFallbackQuery: query,
             jurisdiction,
             platform: response.platformName,
             platformSearchUrl: response.platformSearchUrl,

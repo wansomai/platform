@@ -1,10 +1,11 @@
-// GET /api/projects/[id]/canvas
+// GET /api/projects/[id]/canvas  — list all canvas documents for the project
+// POST /api/projects/[id]/canvas — create a new canvas document
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { checkProjectAccess } from '@/lib/auth/authorization';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 
-// Get canvas document for project
+// Get all canvas documents for project (sorted newest first)
 export const GET = withErrorHandler(withAuth(async (
   request: NextRequest,
   userId: string,
@@ -12,87 +13,46 @@ export const GET = withErrorHandler(withAuth(async (
 ) => {
   const projectId = (await params).id;
 
-  // Verify user has access to project
   const hasAccess = await checkProjectAccess(projectId, userId);
   if (!hasAccess) {
-    return NextResponse.json(
-      { error: 'Access denied to this project' },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: 'Access denied to this project' }, { status: 403 });
   }
 
-  // Get canvas document
-  const canvasDocument = await prisma.canvasDocument.findUnique({
-    where: { projectId }
+  const canvasDocuments = await prisma.canvasDocument.findMany({
+    where: { projectId },
+    orderBy: { updatedAt: 'desc' },
+    select: { id: true, projectId: true, title: true, htmlContent: true, plainText: true, content: true, createdAt: true, updatedAt: true }
   });
 
-  return NextResponse.json(canvasDocument);
+  return NextResponse.json(canvasDocuments);
 }));
 
-// POST /api/projects/[id]/canvas
+// Create a new canvas document
 export const POST = withErrorHandler(withAuth(async (
   request: NextRequest,
   userId: string,
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const projectId = (await params).id;
-  const { content, htmlContent, plainText } = await request.json();
+  const { content, htmlContent, plainText, title } = await request.json();
 
-  // Verify user has access to project
   const hasAccess = await checkProjectAccess(projectId, userId);
   if (!hasAccess) {
-    return NextResponse.json(
-      { error: 'Access denied to this project' },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: 'Access denied to this project' }, { status: 403 });
   }
 
-  // Helper function to strip HTML tags
-  const stripHtml = (html: string): string => {
-    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-  };
+  const stripHtml = (html: string): string =>
+    html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 
-  // Create or update canvas document
-  const canvasDocument = await prisma.canvasDocument.upsert({
-    where: { projectId },
-    create: {
+  const canvasDocument = await prisma.canvasDocument.create({
+    data: {
       projectId,
+      title: title || 'Untitled Document',
       content: content || {},
       htmlContent: htmlContent || '',
       plainText: plainText || stripHtml(htmlContent || '')
-    },
-    update: {
-      content: content || {},
-      htmlContent: htmlContent || '',
-      plainText: plainText || stripHtml(htmlContent || ''),
-      updatedAt: new Date()
     }
   });
 
-  return NextResponse.json(canvasDocument);
-}));
-
-// DELETE - Clear canvas document
-export const DELETE = withErrorHandler(withAuth(async (
-  request: NextRequest,
-  userId: string,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  const projectId = (await params).id;
-
-  // Verify user has access to project
-  const hasAccess = await checkProjectAccess(projectId, userId);
-  if (!hasAccess) {
-    return NextResponse.json(
-      { error: 'Access denied to this project' },
-      { status: 403 }
-    );
-  }
-
-  // Delete canvas document
-  await prisma.canvasDocument.delete({
-    where: { projectId }
-  });
-
-  return NextResponse.json({ success: true });
+  return NextResponse.json(canvasDocument, { status: 201 });
 }));

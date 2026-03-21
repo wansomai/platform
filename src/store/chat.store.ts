@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import { apiService } from '@/lib/api'
 import { Message, Conversation } from '@/types/conversations';
+import { useCanvasStore } from '@/store/canvas.store';
 
 interface ChatState {
   conversations: Conversation[];
@@ -321,6 +322,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       set({ error: null });
 
+      const activeCanvasId = useCanvasStore.getState().activeCanvasId;
+
       await apiService.postStream(
         `/api/projects/${projectId}/conversations/${conversationId}/messages`,
         {
@@ -329,6 +332,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           streamingId,
           previewDocument,
           currentCanvasHtml,
+          activeCanvasId: activeCanvasId || undefined,
           attachedDocuments
         },
         (data) => {
@@ -371,6 +375,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 processingStatus: data.status,
                 canvasMessage: data.message
               });
+              // Pre-create and activate the new document tab immediately so the user
+              // sees it as a separate tab during streaming (not content merged into existing canvas)
+              if (data.status === 'generating_document' && data.canvasDocumentId) {
+                useCanvasStore.getState().switchToStreamingDocument(
+                  data.canvasDocumentId, projectId, 'Generating…'
+                );
+              }
               break;
 
             case 'canvas_content_update':
@@ -380,7 +391,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                   projectId,
                   partialContent: data.partialContent,
                   currentSection: data.currentSection,
-                  actionType: data.actionType
+                  actionType: data.actionType,
+                  canvasDocumentId: data.canvasDocumentId  // carry doc ID so client mounts correct editor
                 }
               }));
               break;
@@ -395,7 +407,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 timestamp: new Date().toISOString(),
                 isStreaming: false,
                 canvasUpdated: true,
-                actionType: data.actionType
+                actionType: data.actionType,
+                // Carry document ID so the chat can show a "View document" button
+                canvasDocumentId: data.actionType === 'generating' ? data.canvasDocumentId : undefined
               });
 
               // Trigger canvas refresh event with project context
@@ -404,9 +418,28 @@ export const useChatStore = create<ChatState>((set, get) => ({
                   projectId,
                   canvasContent: data.canvasContent,
                   messageContent: data.content,
-                  actionType: data.actionType
+                  actionType: data.actionType,
+                  canvasDocumentId: data.canvasDocumentId
                 }
               }));
+              break;
+
+            case 'canvas_document_created':
+              // A new canvas document was auto-created (e.g. inline document promoted to canvas for editing).
+              // Activate it immediately so the suggestion diff overlay can be shown on top of it.
+              if (data.document?.id) {
+                useCanvasStore.getState().switchToStreamingDocument(
+                  data.document.id, projectId, data.document.title || 'Document'
+                );
+                // Also trigger a canvas update event so CanvasInterface re-fetches documents
+                window.dispatchEvent(new CustomEvent('canvasUpdate', {
+                  detail: {
+                    projectId,
+                    actionType: 'generating',
+                    canvasDocumentId: data.document.id
+                  }
+                }));
+              }
               break;
 
             case 'canvas_suggestion':
@@ -428,7 +461,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                   projectId,
                   suggestedHtml: data.suggestedHtml,
                   originalHtml: data.originalHtml,
-                  changeDescription: data.changeDescription
+                  changeDescription: data.changeDescription,
+                  canvasDocumentId: data.canvasDocumentId
                 }
               }));
               break;

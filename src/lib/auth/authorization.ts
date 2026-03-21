@@ -26,20 +26,17 @@ function getJwtSecret(): Uint8Array {
  * @returns boolean - True if the user has access, false otherwise
  */
 export async function checkProjectAccess(projectId: string, userId: string): Promise<boolean> {
-  try {
-    // Access is granted only through explicit ProjectMember membership.
-    // Belonging to the project's organization does NOT grant access.
-    const projectMember = await prisma.projectMember.findUnique({
-      where: {
-        userId_projectId: { userId, projectId }
-      }
-    });
+  // Access is granted only through explicit ProjectMember membership.
+  // Belonging to the project's organization does NOT grant access.
+  // DB errors are NOT caught here — they propagate to the caller so the route
+  // returns HTTP 500 rather than a misleading 403 "Permission denied".
+  const projectMember = await prisma.projectMember.findUnique({
+    where: {
+      userId_projectId: { userId, projectId }
+    }
+  });
 
-    return !!projectMember;
-  } catch (error) {
-    console.error('[checkProjectAccess] Error:', error);
-    return false;
-  }
+  return !!projectMember;
 }
 
 /**

@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation"
 import { useChatStore } from "@/store/chat.store"
 import { useCanvasStore } from "@/store/canvas.store"
 import { useUIStore } from "@/store/ui.store"
@@ -474,11 +475,69 @@ const ChatMessageItem = React.memo(({
               conversationId={message.conversationId || ''}
             />
           )}
+
+          {/* View canvas document button — shown when AI generated a new canvas doc */}
+          {!isUser && message.canvasUpdated && message.actionType === 'generating' && message.canvasDocumentId && (
+            <CanvasDocumentButton canvasDocumentId={message.canvasDocumentId} projectId={projectId} />
+          )}
         </div>
       </div>
     </div>
   );
 });
+
+// Card shown in chat when AI generates a new canvas document —
+// matches the same card style as DocumentArtifact and ReportDownloadCard
+function CanvasDocumentButton({ canvasDocumentId, projectId }: { canvasDocumentId: string; projectId: string }) {
+  const canvasDocuments = useCanvasStore(state => state.canvasDocuments);
+  const setActiveCanvasId = useCanvasStore(state => state.setActiveCanvasId);
+  const updateSetting = useProjectSettingsStore(state => state.updateSetting);
+  const router = useRouter();
+  const doc = canvasDocuments.find(d => d.id === canvasDocumentId);
+  const title = doc?.title || 'Generated document';
+
+  const handleOpen = async () => {
+    setActiveCanvasId(canvasDocumentId);
+    // Enable canvas mode and navigate so the canvas panel is visible even if
+    // the user is currently in plain chat mode.
+    await updateSetting(projectId, 'canvasMode', true);
+    router.push(`/projects/${projectId}?view=canvas`);
+  };
+
+  return (
+    <div
+      className="mt-4 border rounded-lg bg-gray-100 hover:bg-gray-50 cursor-pointer transition-all duration-200 hover:shadow-md group"
+      onClick={handleOpen}
+    >
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <div className="mt-0.5 flex-shrink-0">
+              <FileText className="h-5 w-5 text-gray-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-medium text-gray-900 line-clamp-2 group-hover:text-[#4a7279] transition-colors">
+                {title}
+              </h4>
+              <p className="text-sm text-[#4a7279] mt-0.5">
+                Canvas document · Open in editor
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => { e.stopPropagation(); handleOpen(); }}
+            className="flex-shrink-0"
+          >
+            <span className="hidden sm:inline">Open in Editor</span>
+            <ExternalLink className="h-3.5 w-3.5 sm:hidden" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Simple function to remove system prefix
 function formatMessageContent(content: string): string {

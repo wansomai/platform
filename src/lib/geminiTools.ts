@@ -84,17 +84,24 @@ export const generateDocumentInlineTool = {
 
 export const draftNewDocumentTool = {
   name: "draftNewDocument",
-  description: `Creates a BRAND NEW legal document in the canvas editor when no document currently exists there.
+  description: `Creates a BRAND NEW legal document as a separate canvas document tab.
 
-  **WHEN TO USE**: Only for creating a NEW document from scratch:
-  - Canvas editor is empty (no existing document)
-  - User explicitly asks to create a new document in canvas
-  - Complex documents (10+ pages) that need canvas editing
+  Each call creates an ADDITIONAL document alongside any existing ones — it does NOT replace or modify the currently open document.
+  The user can have multiple document tabs open simultaneously.
 
-  **⚠️ CRITICAL — DO NOT USE when a canvas document is already open.**
-  If the user is asking to modify, edit, update, or change any part of an existing canvas document, use editCanvasDocument instead. This tool replaces the entire canvas content.
+  **✅ ALWAYS use this tool when**:
+  - User asks to CREATE, DRAFT, or WRITE any document (e.g. "draft an NDA", "create an employment contract", "I need a service agreement", "write a letter of demand")
+  - User wants a document DIFFERENT from the currently open one — even if a canvas document is already open
+  - User says "draft a new X", "create another Y", "I need a Z", "write a document for…"
+  - Canvas is empty and user asks to create any document
+  - **A canvas document is already open and user asks to draft a DIFFERENT document** → still use this tool, creating a NEW tab
 
-  **DEFAULT BEHAVIOR**: For most document requests, use generateDocumentInline instead — it's faster and better UX.
+  **❌ DO NOT USE when**:
+  - The user explicitly wants to modify, edit, update, or change ANY document that already exists in this conversation (whether open in canvas OR previously generated inline as a document card) → use editCanvasDocument
+  - The user says "update this", "edit this clause", "change the date", "fix the name", "modify the petition" — ANY change to an existing document → use editCanvasDocument
+  - A document was just generated inline in this conversation (as a document card) and the user is asking to change or refine it → use editCanvasDocument (NOT this tool)
+
+  **DEFAULT BEHAVIOR**: For most document requests outside canvas, use generateDocumentInline instead — it's faster and better UX.
 
   CRITICAL: Only call this function when you have ALL required information to create a complete, professional legal document.
 
@@ -146,19 +153,27 @@ export const draftNewDocumentTool = {
 
 export const editCanvasDocumentTool = {
   name: "editCanvasDocument",
-  description: `Applies targeted edits to the existing legal document open in the canvas editor.
+  description: `Applies a single targeted change to an existing legal document — whether it is open in the canvas editor OR was previously generated inline in this conversation as a document card.
 
-  **ALWAYS use this tool when a canvas document is open and the user asks for ANY modification**, including:
-  - Changing a date, name, number, or any specific value ("change the effective date to…")
-  - Adding a new clause or section
-  - Removing or replacing content
-  - Updating party names, addresses, or details
-  - Modifying existing terms or conditions
-  - Any other change, no matter how small
+  **✅ USE THIS TOOL when the user wants to CHANGE, MODIFY, UPDATE, or EDIT any document that already exists**, such as:
+  - Changing a date, name, number, or any specific value ("change the effective date to…", "change the date to today's date")
+  - Adding a new clause or section to the SAME document
+  - Removing or replacing content in the SAME document
+  - Updating party names, addresses, or details in the SAME document
+  - Modifying existing terms or conditions in the SAME document
+  - Any refinement to a document JUST generated inline in this conversation (document card in chat)
 
-  **NEVER use draftNewDocument for edits** — that tool replaces the entire canvas content with a new document.
+  **CRITICAL: If a document was generated inline earlier in this conversation and the user asks to change ANYTHING about it — use this tool even if the canvas is not yet open.**
 
-  In changeDescription, describe the specific change precisely (e.g. "Change the effective date from [current] to 10 March 2025").
+  **❌ NEVER use this tool when**:
+  - The user wants to CREATE a brand-new document that is DIFFERENT in type, parties, or purpose from anything already generated
+  - The user says "draft a new X", "create a Y", "I need a Z" (clearly a new separate document) → use draftNewDocument
+
+  **CRITICAL distinction**:
+  - "Change the date", "Update the party name", "Fix the address", "Edit clause 3" → editCanvasDocument (modifying existing)
+  - "Draft a new NDA for different parties", "I need an employment contract" → draftNewDocument (entirely new document)
+
+  In changeDescription, describe the specific change precisely (e.g. "Change the petition date to 21 March 2026").
   In targetSection, name the section/clause where the change is located if known (e.g. "Effective Date", "Payment Terms").`,
 
   parameters: {
@@ -473,15 +488,70 @@ export const coreDocumentTools = [
   generateDocumentInlineTool,  // PRIMARY: Generate documents inline in chat
   reviewDocumentTool,          // Review and analyze documents
   searchProjectDocumentsTool   // Search uploaded documents
+  // NOTE: editCanvasDocumentTool and batchEditCanvasDocumentTool are added separately
+  // via documentEditTools — they are always available so users can edit inline docs
+];
+
+export const batchEditCanvasDocumentTool = {
+  name: "batchEditCanvasDocument",
+  description: `Applies multiple targeted edits to an existing document (open in canvas OR previously generated inline in chat) one by one, in sequence.
+
+  **USE THIS instead of editCanvasDocument whenever the user requests 2 or more changes at once** to a document that already exists.
+  Each edit in the array is applied to the result of the previous edit, so all changes build correctly on each other.
+
+  This works on BOTH documents currently open in the canvas editor AND documents generated inline earlier in this conversation.
+
+  Examples of when to use this:
+  - "Change the effective date to March 1, update the notice period to 30 days, and add a force majeure clause"
+  - "Fix the party names, correct the payment terms, and update the governing law"
+  - Any message that contains multiple distinct document changes
+
+  For a SINGLE change, use editCanvasDocument instead.`,
+
+  parameters: {
+    type: Type.OBJECT,
+    properties: {
+      edits: {
+        type: Type.ARRAY,
+        description: "Ordered list of individual edits to apply in sequence. Each edit is one specific, atomic change.",
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            changeDescription: {
+              type: Type.STRING,
+              description: "Clear description of this single specific change (e.g. 'Change the effective date to 1 March 2025')"
+            },
+            targetSection: {
+              type: Type.STRING,
+              description: "Optional: the section or clause where this change should be applied (e.g. 'Payment Terms', 'Effective Date')"
+            }
+          },
+          required: ["changeDescription"]
+        }
+      }
+    },
+    required: ["edits"]
+  }
+};
+
+/**
+ * Document editing tools - ALWAYS available.
+ * These handle edits to documents whether they are open in the canvas editor
+ * or were generated inline as document cards in the chat.
+ * Must be always-on because users can ask to edit an inline doc before opening canvas.
+ */
+export const documentEditTools = [
+  editCanvasDocumentTool,         // Edit any existing document (single change)
+  batchEditCanvasDocumentTool,    // Edit any existing document (multiple changes)
 ];
 
 /**
- * Canvas-specific tools - Only available when Canvas Mode is enabled
- * These are power-user features for complex document editing
+ * Canvas creation tools - Only available when Canvas Mode is enabled.
+ * draftNewDocument creates a brand-new canvas document tab — only useful
+ * once the user is in canvas mode.
  */
 export const canvasTools = [
-  draftNewDocumentTool,    // Write complex documents to canvas
-  editCanvasDocumentTool   // Edit canvas documents
+  draftNewDocumentTool,           // Create new canvas document tab (canvas mode only)
 ];
 
 /**
