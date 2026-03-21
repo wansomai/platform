@@ -36,7 +36,7 @@ export class AIDocumentService {
         }
       });
 
-      const htmlContent = result.text || '';
+      const htmlContent = this.stripMarkdownFences(result.text || '');
       const plainText = this.stripHtml(htmlContent);
 
       return { success: true, htmlContent, plainText };
@@ -90,13 +90,208 @@ export class AIDocumentService {
         }
       }
 
-      const plainText = this.stripHtml(fullContent);
+      const htmlContent = this.stripMarkdownFences(fullContent);
+      const plainText = this.stripHtml(htmlContent);
 
-      return { success: true, htmlContent: fullContent, plainText };
+      return { success: true, htmlContent, plainText };
     } catch (error: any) {
       console.error('Error generating document:', error);
       return { success: false, error: error.message || 'Failed to generate document' };
     }
+  }
+
+  /**
+   * Validate an edit request against the document before applying it.
+   * Catches obviously wrong edits (non-existent dates, parties that aren't in the
+   * document, logically impossible values, etc.) and returns blocking issues or
+   * warnings so the caller can reject the edit or surface guidance to the user.
+   */
+  static async validateEditRequest(
+    instruction: string,
+    documentPlainText: string,
+    context: ProjectContext
+  ): Promise<{ isValid: boolean; blockingIssues: string[]; warnings: string[] }> {
+    try {
+      const prompt = `You are reviewing an edit request for a legal document. Your job is to validate whether the edit is logically sound and can be applied to this document.
+
+EDIT REQUEST: ${instruction}
+
+DOCUMENT (plain text):
+${documentPlainText.slice(0, 6000)}${documentPlainText.length > 6000 ? '\n[... document continues ...]' : ''}
+
+Jurisdiction: ${context.jurisdiction || 'General'}
+
+Check the following and return a JSON object:
+1. Does the document contain the element being changed (party name, clause, date field, section, etc.)? If the target doesn't exist in the document, that is a blocking issue.
+2. Is the new value logically valid?
+   - Dates must be real calendar dates (e.g. 12/12/20262 is NOT a valid date — year 20262 doesn't exist).
+   - Party names being inserted should be plausible names.
+   - Monetary values should be reasonable numbers.
+   - Any value that is clearly a typo or impossible should be flagged.
+3. Are there any legal implications or inconsistencies the user should be aware of?
+
+Return ONLY a JSON object (no markdown) with this structure:
+{
+  "isValid": true | false,
+  "blockingIssues": ["..."],
+  "warnings": ["..."]
+}
+
+- "isValid": false only when the edit CANNOT be applied meaningfully (target not found, or value is clearly impossible/nonsensical like a year that doesn't exist).
+- "blockingIssues": list of reasons the edit must be stopped. Empty array if isValid is true.
+- "warnings": non-blocking notes (legal implications, suggestions). Can be non-empty even when isValid is true.`;
+
+      const result = await genAI.models.generateContent({
+        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          temperature: 0.1,
+          maxOutputTokens: 1024,
+          responseMimeType: 'application/json'
+        }
+      });
+
+      const raw = result.text || '';
+      let parsed: any;
+      try {
+        const cleaned = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+        parsed = JSON.parse(cleaned);
+      } catch {
+        // If validation itself fails, let the edit proceed (don't block on validator errors)
+        return { isValid: true, blockingIssues: [], warnings: [] };
+      }
+
+      return {
+        isValid: parsed?.isValid !== false,
+        blockingIssues: Array.isArray(parsed?.blockingIssues) ? parsed.blockingIssues : [],
+        warnings: Array.isArray(parsed?.warnings) ? parsed.warnings : []
+      };
+    } catch {
+      // On any error, don't block the edit
+      return { isValid: true, blockingIssues: [], warnings: [] };
+    }
+  }
+
+  /**
+   * Fast patch-based edit — returns only the text spans that change instead of
+   * regenerating the full document. Typically 50× faster than editDocumentStreaming
+   * because output is ~200 tokens instead of 10,000+.
+   *
+   * Returns structured patches [{original, replacement}] to be applied with
+   * applyPatches(). Falls back to the full-document approach if patch generation
+   * fails or patches cannot be matched in the document.
+   */
+  static async fastEditDocument(
+    instruction: string,
+    currentContent: string,
+    context: ProjectContext
+  ): Promise<{ success: boolean; patches?: Array<{ original: string; replacement: string }>; error?: string }> {
+    try {
+      const wordCount = this.stripHtml(currentContent).split(/\s+/).filter(Boolean).length;
+      const prompt = `You are editing a legal document. Apply the following edit by identifying the EXACT text spans to change.
+
+EDIT INSTRUCTION: ${instruction}
+
+DOCUMENT (${wordCount} words):
+${currentContent}
+
+Return a JSON object with a "patches" array. Each patch has:
+- "original": the exact substring from the document to replace (must be character-for-character identical, include enough surrounding text — at least 80 characters — to uniquely identify the location; preserve all HTML tags exactly)
+- "replacement": the new HTML text that replaces it
+
+Rules:
+- Copy "original" exactly from the document — no paraphrasing, no reformatting
+- For insertions: set "original" to the full paragraph element immediately before or after the insertion point, and include that same element plus the new content in "replacement"
+- For deletions: set "replacement" to an empty string
+- If the edit changes multiple disconnected parts, include one patch per location
+- Jurisdiction: ${context.jurisdiction || 'General'}
+${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
+
+      const result = await genAI.models.generateContent({
+        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        config: {
+          temperature: 0.05,
+          maxOutputTokens: 4096,
+          responseMimeType: 'application/json'
+        }
+      });
+
+      const raw = result.text || '';
+      let parsed: any;
+      try {
+        const cleaned = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+        parsed = JSON.parse(cleaned);
+      } catch {
+        return { success: false, error: 'AI returned invalid JSON' };
+      }
+
+      const patches = parsed?.patches;
+      if (!Array.isArray(patches) || patches.length === 0) {
+        return { success: false, error: 'No patches returned' };
+      }
+
+      return { success: true, patches };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Fast edit failed' };
+    }
+  }
+
+  /**
+   * Apply structured patches to an HTML document.
+   * Uses normalized whitespace matching to tolerate minor whitespace differences.
+   * Returns null if any patch cannot be applied.
+   */
+  static applyPatches(html: string, patches: Array<{ original: string; replacement: string }>): string | null {
+    let result = html;
+    for (const patch of patches) {
+      if (!patch.original) continue;
+
+      if (result.includes(patch.original)) {
+        result = result.replace(patch.original, patch.replacement ?? '');
+        continue;
+      }
+
+      // Normalize whitespace and try again (handles minor whitespace differences)
+      const normalize = (s: string) => s.replace(/\s+/g, ' ').trim();
+      const normalizedDoc = normalize(result);
+      const normalizedOriginal = normalize(patch.original);
+
+      const idx = normalizedDoc.indexOf(normalizedOriginal);
+      if (idx === -1) {
+        console.warn('[applyPatches] Could not find patch target:', patch.original.substring(0, 80));
+        return null; // Signal fallback needed
+      }
+
+      // Map the match back to the original (non-normalized) string via character scanning
+      let rawIdx = 0;
+      let normIdx = 0;
+      while (normIdx < idx && rawIdx < result.length) {
+        if (/\s/.test(result[rawIdx])) {
+          // Skip all whitespace in both
+          while (rawIdx < result.length && /\s/.test(result[rawIdx])) rawIdx++;
+          while (normIdx < normalizedDoc.length && normalizedDoc[normIdx] === ' ') normIdx++;
+        } else {
+          rawIdx++;
+          normIdx++;
+        }
+      }
+      // Find end of the match
+      let rawEnd = rawIdx;
+      let normEnd = idx;
+      while (normEnd < idx + normalizedOriginal.length && rawEnd < result.length) {
+        if (/\s/.test(result[rawEnd])) {
+          while (rawEnd < result.length && /\s/.test(result[rawEnd])) rawEnd++;
+          while (normEnd < normalizedDoc.length && normalizedDoc[normEnd] === ' ') normEnd++;
+        } else {
+          rawEnd++;
+          normEnd++;
+        }
+      }
+
+      result = result.slice(0, rawIdx) + (patch.replacement ?? '') + result.slice(rawEnd);
+    }
+    return result;
   }
 
   static async editDocument(
@@ -120,7 +315,7 @@ export class AIDocumentService {
         }
       });
 
-      const htmlContent = result.text || '';
+      const htmlContent = this.extractHtmlFromResponse(this.stripMarkdownFences(result.text || ''));
       const plainText = this.stripHtml(htmlContent);
 
       return { success: true, htmlContent, plainText };
@@ -175,9 +370,10 @@ export class AIDocumentService {
         }
       }
 
-      const plainText = this.stripHtml(fullContent);
+      const htmlContent = this.extractHtmlFromResponse(this.stripMarkdownFences(fullContent));
+      const plainText = this.stripHtml(htmlContent);
 
-      return { success: true, htmlContent: fullContent, plainText };
+      return { success: true, htmlContent, plainText };
     } catch (error: any) {
       console.error('Error editing document:', error);
       return { success: false, error: error.message || 'Failed to edit document' };
@@ -206,7 +402,7 @@ export class AIDocumentService {
         }
       });
 
-      const htmlContent = result.text || '';
+      const htmlContent = this.stripMarkdownFences(result.text || '');
       const plainText = this.stripHtml(htmlContent);
 
       return { success: true, htmlContent, plainText };
@@ -262,9 +458,10 @@ export class AIDocumentService {
         }
       }
 
-      const plainText = this.stripHtml(fullContent);
+      const htmlContent = this.stripMarkdownFences(fullContent);
+      const plainText = this.stripHtml(htmlContent);
 
-      return { success: true, htmlContent: fullContent, plainText };
+      return { success: true, htmlContent, plainText };
     } catch (error: any) {
       console.error('Error generating document review:', error);
       return { success: false, error: error.message || 'Failed to generate review' };
@@ -419,6 +616,23 @@ Requirements:
 - Focus on the substantive legal analysis
 ${documentsToReview.length > 1 ? '\n- When reviewing multiple documents, analyze consistency and coherence across all documents' : ''}
 `;
+  }
+
+  static stripMarkdownFences(text: string): string {
+    return text.replace(/^```html?\s*/i, '').replace(/```\s*$/i, '').trim();
+  }
+
+  /**
+   * Extract the HTML content from a Gemini response that may include prose
+   * before/after the HTML (e.g. "Here is the updated document:\n<h1>...").
+   * Finds the first '<' and last '>' to isolate the markup.
+   * Falls back to the original text if no HTML tags are found.
+   */
+  static extractHtmlFromResponse(text: string): string {
+    const first = text.indexOf('<');
+    const last = text.lastIndexOf('>');
+    if (first === -1 || last === -1 || last < first) return text;
+    return text.slice(first, last + 1);
   }
 
   static stripHtml(html: string): string {

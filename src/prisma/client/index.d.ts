@@ -5124,6 +5124,7 @@ export namespace Prisma {
    */
 
   export type ProjectCountOutputType = {
+    canvasDocuments: number
     conversations: number
     documents: number
     events: number
@@ -5135,6 +5136,7 @@ export namespace Prisma {
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    canvasDocuments?: boolean | ProjectCountOutputTypeCountCanvasDocumentsArgs
     conversations?: boolean | ProjectCountOutputTypeCountConversationsArgs
     documents?: boolean | ProjectCountOutputTypeCountDocumentsArgs
     events?: boolean | ProjectCountOutputTypeCountEventsArgs
@@ -5154,6 +5156,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the ProjectCountOutputType
      */
     select?: ProjectCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountCanvasDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CanvasDocumentWhereInput
   }
 
   /**
@@ -19333,7 +19342,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     visibility?: boolean
-    canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
+    canvasDocuments?: boolean | Project$canvasDocumentsArgs<ExtArgs>
     conversations?: boolean | Project$conversationsArgs<ExtArgs>
     documents?: boolean | Project$documentsArgs<ExtArgs>
     events?: boolean | Project$eventsArgs<ExtArgs>
@@ -19384,7 +19393,7 @@ export namespace Prisma {
 
   export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "status" | "organizationId" | "createdAt" | "updatedAt" | "visibility", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    canvasDocument?: boolean | Project$canvasDocumentArgs<ExtArgs>
+    canvasDocuments?: boolean | Project$canvasDocumentsArgs<ExtArgs>
     conversations?: boolean | Project$conversationsArgs<ExtArgs>
     documents?: boolean | Project$documentsArgs<ExtArgs>
     events?: boolean | Project$eventsArgs<ExtArgs>
@@ -19407,7 +19416,7 @@ export namespace Prisma {
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
-      canvasDocument: Prisma.$CanvasDocumentPayload<ExtArgs> | null
+      canvasDocuments: Prisma.$CanvasDocumentPayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
       documents: Prisma.$DocumentPayload<ExtArgs>[]
       events: Prisma.$EventPayload<ExtArgs>[]
@@ -19822,7 +19831,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    canvasDocument<T extends Project$canvasDocumentArgs<ExtArgs> = {}>(args?: Subset<T, Project$canvasDocumentArgs<ExtArgs>>): Prisma__CanvasDocumentClient<$Result.GetResult<Prisma.$CanvasDocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    canvasDocuments<T extends Project$canvasDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$canvasDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CanvasDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends Project$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, Project$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documents<T extends Project$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Project$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     events<T extends Project$eventsArgs<ExtArgs> = {}>(args?: Subset<T, Project$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -20266,9 +20275,9 @@ export namespace Prisma {
   }
 
   /**
-   * Project.canvasDocument
+   * Project.canvasDocuments
    */
-  export type Project$canvasDocumentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$canvasDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the CanvasDocument
      */
@@ -20282,6 +20291,11 @@ export namespace Prisma {
      */
     include?: CanvasDocumentInclude<ExtArgs> | null
     where?: CanvasDocumentWhereInput
+    orderBy?: CanvasDocumentOrderByWithRelationInput | CanvasDocumentOrderByWithRelationInput[]
+    cursor?: CanvasDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CanvasDocumentScalarFieldEnum | CanvasDocumentScalarFieldEnum[]
   }
 
   /**
@@ -47653,6 +47667,7 @@ export namespace Prisma {
   export type CanvasDocumentMinAggregateOutputType = {
     id: string | null
     projectId: string | null
+    title: string | null
     htmlContent: string | null
     plainText: string | null
     createdAt: Date | null
@@ -47662,6 +47677,7 @@ export namespace Prisma {
   export type CanvasDocumentMaxAggregateOutputType = {
     id: string | null
     projectId: string | null
+    title: string | null
     htmlContent: string | null
     plainText: string | null
     createdAt: Date | null
@@ -47671,6 +47687,7 @@ export namespace Prisma {
   export type CanvasDocumentCountAggregateOutputType = {
     id: number
     projectId: number
+    title: number
     content: number
     htmlContent: number
     plainText: number
@@ -47683,6 +47700,7 @@ export namespace Prisma {
   export type CanvasDocumentMinAggregateInputType = {
     id?: true
     projectId?: true
+    title?: true
     htmlContent?: true
     plainText?: true
     createdAt?: true
@@ -47692,6 +47710,7 @@ export namespace Prisma {
   export type CanvasDocumentMaxAggregateInputType = {
     id?: true
     projectId?: true
+    title?: true
     htmlContent?: true
     plainText?: true
     createdAt?: true
@@ -47701,6 +47720,7 @@ export namespace Prisma {
   export type CanvasDocumentCountAggregateInputType = {
     id?: true
     projectId?: true
+    title?: true
     content?: true
     htmlContent?: true
     plainText?: true
@@ -47784,6 +47804,7 @@ export namespace Prisma {
   export type CanvasDocumentGroupByOutputType = {
     id: string
     projectId: string
+    title: string
     content: JsonValue
     htmlContent: string
     plainText: string
@@ -47811,6 +47832,7 @@ export namespace Prisma {
   export type CanvasDocumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    title?: boolean
     content?: boolean
     htmlContent?: boolean
     plainText?: boolean
@@ -47822,6 +47844,7 @@ export namespace Prisma {
   export type CanvasDocumentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    title?: boolean
     content?: boolean
     htmlContent?: boolean
     plainText?: boolean
@@ -47833,6 +47856,7 @@ export namespace Prisma {
   export type CanvasDocumentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     projectId?: boolean
+    title?: boolean
     content?: boolean
     htmlContent?: boolean
     plainText?: boolean
@@ -47844,6 +47868,7 @@ export namespace Prisma {
   export type CanvasDocumentSelectScalar = {
     id?: boolean
     projectId?: boolean
+    title?: boolean
     content?: boolean
     htmlContent?: boolean
     plainText?: boolean
@@ -47851,7 +47876,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CanvasDocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "content" | "htmlContent" | "plainText" | "createdAt" | "updatedAt", ExtArgs["result"]["canvasDocument"]>
+  export type CanvasDocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "projectId" | "title" | "content" | "htmlContent" | "plainText" | "createdAt" | "updatedAt", ExtArgs["result"]["canvasDocument"]>
   export type CanvasDocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
   }
@@ -47870,6 +47895,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       projectId: string
+      title: string
       content: Prisma.JsonValue
       htmlContent: string
       plainText: string
@@ -48301,6 +48327,7 @@ export namespace Prisma {
   interface CanvasDocumentFieldRefs {
     readonly id: FieldRef<"CanvasDocument", 'String'>
     readonly projectId: FieldRef<"CanvasDocument", 'String'>
+    readonly title: FieldRef<"CanvasDocument", 'String'>
     readonly content: FieldRef<"CanvasDocument", 'Json'>
     readonly htmlContent: FieldRef<"CanvasDocument", 'String'>
     readonly plainText: FieldRef<"CanvasDocument", 'String'>
@@ -55926,6 +55953,7 @@ export namespace Prisma {
   export const CanvasDocumentScalarFieldEnum: {
     id: 'id',
     projectId: 'projectId',
+    title: 'title',
     content: 'content',
     htmlContent: 'htmlContent',
     plainText: 'plainText',
@@ -57237,7 +57265,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     visibility?: StringFilter<"Project"> | string
-    canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
+    canvasDocuments?: CanvasDocumentListRelationFilter
     conversations?: ConversationListRelationFilter
     documents?: DocumentListRelationFilter
     events?: EventListRelationFilter
@@ -57259,7 +57287,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     visibility?: SortOrder
-    canvasDocument?: CanvasDocumentOrderByWithRelationInput
+    canvasDocuments?: CanvasDocumentOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
     events?: EventOrderByRelationAggregateInput
@@ -57284,7 +57312,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Project"> | Date | string
     updatedAt?: DateTimeFilter<"Project"> | Date | string
     visibility?: StringFilter<"Project"> | string
-    canvasDocument?: XOR<CanvasDocumentNullableScalarRelationFilter, CanvasDocumentWhereInput> | null
+    canvasDocuments?: CanvasDocumentListRelationFilter
     conversations?: ConversationListRelationFilter
     documents?: DocumentListRelationFilter
     events?: EventListRelationFilter
@@ -59044,6 +59072,7 @@ export namespace Prisma {
     NOT?: CanvasDocumentWhereInput | CanvasDocumentWhereInput[]
     id?: StringFilter<"CanvasDocument"> | string
     projectId?: StringFilter<"CanvasDocument"> | string
+    title?: StringFilter<"CanvasDocument"> | string
     content?: JsonFilter<"CanvasDocument">
     htmlContent?: StringFilter<"CanvasDocument"> | string
     plainText?: StringFilter<"CanvasDocument"> | string
@@ -59055,6 +59084,7 @@ export namespace Prisma {
   export type CanvasDocumentOrderByWithRelationInput = {
     id?: SortOrder
     projectId?: SortOrder
+    title?: SortOrder
     content?: SortOrder
     htmlContent?: SortOrder
     plainText?: SortOrder
@@ -59065,21 +59095,23 @@ export namespace Prisma {
 
   export type CanvasDocumentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    projectId?: string
     AND?: CanvasDocumentWhereInput | CanvasDocumentWhereInput[]
     OR?: CanvasDocumentWhereInput[]
     NOT?: CanvasDocumentWhereInput | CanvasDocumentWhereInput[]
+    projectId?: StringFilter<"CanvasDocument"> | string
+    title?: StringFilter<"CanvasDocument"> | string
     content?: JsonFilter<"CanvasDocument">
     htmlContent?: StringFilter<"CanvasDocument"> | string
     plainText?: StringFilter<"CanvasDocument"> | string
     createdAt?: DateTimeFilter<"CanvasDocument"> | Date | string
     updatedAt?: DateTimeFilter<"CanvasDocument"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
-  }, "id" | "projectId">
+  }, "id">
 
   export type CanvasDocumentOrderByWithAggregationInput = {
     id?: SortOrder
     projectId?: SortOrder
+    title?: SortOrder
     content?: SortOrder
     htmlContent?: SortOrder
     plainText?: SortOrder
@@ -59096,6 +59128,7 @@ export namespace Prisma {
     NOT?: CanvasDocumentScalarWhereWithAggregatesInput | CanvasDocumentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"CanvasDocument"> | string
     projectId?: StringWithAggregatesFilter<"CanvasDocument"> | string
+    title?: StringWithAggregatesFilter<"CanvasDocument"> | string
     content?: JsonWithAggregatesFilter<"CanvasDocument">
     htmlContent?: StringWithAggregatesFilter<"CanvasDocument"> | string
     plainText?: StringWithAggregatesFilter<"CanvasDocument"> | string
@@ -60721,7 +60754,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -60743,7 +60776,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -60763,7 +60796,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -60785,7 +60818,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -62551,17 +62584,19 @@ export namespace Prisma {
 
   export type CanvasDocumentCreateInput = {
     id?: string
+    title?: string
     content: JsonNullValueInput | InputJsonValue
     htmlContent: string
     plainText: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    project: ProjectCreateNestedOneWithoutCanvasDocumentInput
+    project: ProjectCreateNestedOneWithoutCanvasDocumentsInput
   }
 
   export type CanvasDocumentUncheckedCreateInput = {
     id?: string
     projectId: string
+    title?: string
     content: JsonNullValueInput | InputJsonValue
     htmlContent: string
     plainText: string
@@ -62571,17 +62606,19 @@ export namespace Prisma {
 
   export type CanvasDocumentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
     content?: JsonNullValueInput | InputJsonValue
     htmlContent?: StringFieldUpdateOperationsInput | string
     plainText?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    project?: ProjectUpdateOneRequiredWithoutCanvasDocumentNestedInput
+    project?: ProjectUpdateOneRequiredWithoutCanvasDocumentsNestedInput
   }
 
   export type CanvasDocumentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
     content?: JsonNullValueInput | InputJsonValue
     htmlContent?: StringFieldUpdateOperationsInput | string
     plainText?: StringFieldUpdateOperationsInput | string
@@ -62592,6 +62629,7 @@ export namespace Prisma {
   export type CanvasDocumentCreateManyInput = {
     id?: string
     projectId: string
+    title?: string
     content: JsonNullValueInput | InputJsonValue
     htmlContent: string
     plainText: string
@@ -62601,6 +62639,7 @@ export namespace Prisma {
 
   export type CanvasDocumentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
     content?: JsonNullValueInput | InputJsonValue
     htmlContent?: StringFieldUpdateOperationsInput | string
     plainText?: StringFieldUpdateOperationsInput | string
@@ -62611,6 +62650,7 @@ export namespace Prisma {
   export type CanvasDocumentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
     content?: JsonNullValueInput | InputJsonValue
     htmlContent?: StringFieldUpdateOperationsInput | string
     plainText?: StringFieldUpdateOperationsInput | string
@@ -64216,9 +64256,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type CanvasDocumentNullableScalarRelationFilter = {
-    is?: CanvasDocumentWhereInput | null
-    isNot?: CanvasDocumentWhereInput | null
+  export type CanvasDocumentListRelationFilter = {
+    every?: CanvasDocumentWhereInput
+    some?: CanvasDocumentWhereInput
+    none?: CanvasDocumentWhereInput
   }
 
   export type ConversationListRelationFilter = {
@@ -64242,6 +64283,10 @@ export namespace Prisma {
     every?: ProjectAssociateWhereInput
     some?: ProjectAssociateWhereInput
     none?: ProjectAssociateWhereInput
+  }
+
+  export type CanvasDocumentOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type ConversationOrderByRelationAggregateInput = {
@@ -65211,6 +65256,7 @@ export namespace Prisma {
   export type CanvasDocumentCountOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    title?: SortOrder
     content?: SortOrder
     htmlContent?: SortOrder
     plainText?: SortOrder
@@ -65221,6 +65267,7 @@ export namespace Prisma {
   export type CanvasDocumentMaxOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    title?: SortOrder
     htmlContent?: SortOrder
     plainText?: SortOrder
     createdAt?: SortOrder
@@ -65230,6 +65277,7 @@ export namespace Prisma {
   export type CanvasDocumentMinOrderByAggregateInput = {
     id?: SortOrder
     projectId?: SortOrder
+    title?: SortOrder
     htmlContent?: SortOrder
     plainText?: SortOrder
     createdAt?: SortOrder
@@ -67191,10 +67239,11 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrganizationMembershipsInput, UserUpdateWithoutOrganizationMembershipsInput>, UserUncheckedUpdateWithoutOrganizationMembershipsInput>
   }
 
-  export type CanvasDocumentCreateNestedOneWithoutProjectInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    connect?: CanvasDocumentWhereUniqueInput
+  export type CanvasDocumentCreateNestedManyWithoutProjectInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput> | CanvasDocumentCreateWithoutProjectInput[] | CanvasDocumentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput | CanvasDocumentCreateOrConnectWithoutProjectInput[]
+    createMany?: CanvasDocumentCreateManyProjectInputEnvelope
+    connect?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
   }
 
   export type ConversationCreateNestedManyWithoutProjectInput = {
@@ -67265,10 +67314,11 @@ export namespace Prisma {
     connect?: SharedWorkspaceWhereUniqueInput | SharedWorkspaceWhereUniqueInput[]
   }
 
-  export type CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    connect?: CanvasDocumentWhereUniqueInput
+  export type CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput> | CanvasDocumentCreateWithoutProjectInput[] | CanvasDocumentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput | CanvasDocumentCreateOrConnectWithoutProjectInput[]
+    createMany?: CanvasDocumentCreateManyProjectInputEnvelope
+    connect?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
   }
 
   export type ConversationUncheckedCreateNestedManyWithoutProjectInput = {
@@ -67333,14 +67383,18 @@ export namespace Prisma {
     connect?: SharedWorkspaceWhereUniqueInput | SharedWorkspaceWhereUniqueInput[]
   }
 
-  export type CanvasDocumentUpdateOneWithoutProjectNestedInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    upsert?: CanvasDocumentUpsertWithoutProjectInput
-    disconnect?: CanvasDocumentWhereInput | boolean
-    delete?: CanvasDocumentWhereInput | boolean
-    connect?: CanvasDocumentWhereUniqueInput
-    update?: XOR<XOR<CanvasDocumentUpdateToOneWithWhereWithoutProjectInput, CanvasDocumentUpdateWithoutProjectInput>, CanvasDocumentUncheckedUpdateWithoutProjectInput>
+  export type CanvasDocumentUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput> | CanvasDocumentCreateWithoutProjectInput[] | CanvasDocumentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput | CanvasDocumentCreateOrConnectWithoutProjectInput[]
+    upsert?: CanvasDocumentUpsertWithWhereUniqueWithoutProjectInput | CanvasDocumentUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: CanvasDocumentCreateManyProjectInputEnvelope
+    set?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    disconnect?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    delete?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    connect?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    update?: CanvasDocumentUpdateWithWhereUniqueWithoutProjectInput | CanvasDocumentUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: CanvasDocumentUpdateManyWithWhereWithoutProjectInput | CanvasDocumentUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: CanvasDocumentScalarWhereInput | CanvasDocumentScalarWhereInput[]
   }
 
   export type ConversationUpdateManyWithoutProjectNestedInput = {
@@ -67473,14 +67527,18 @@ export namespace Prisma {
     deleteMany?: SharedWorkspaceScalarWhereInput | SharedWorkspaceScalarWhereInput[]
   }
 
-  export type CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput = {
-    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput
-    upsert?: CanvasDocumentUpsertWithoutProjectInput
-    disconnect?: CanvasDocumentWhereInput | boolean
-    delete?: CanvasDocumentWhereInput | boolean
-    connect?: CanvasDocumentWhereUniqueInput
-    update?: XOR<XOR<CanvasDocumentUpdateToOneWithWhereWithoutProjectInput, CanvasDocumentUpdateWithoutProjectInput>, CanvasDocumentUncheckedUpdateWithoutProjectInput>
+  export type CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput> | CanvasDocumentCreateWithoutProjectInput[] | CanvasDocumentUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: CanvasDocumentCreateOrConnectWithoutProjectInput | CanvasDocumentCreateOrConnectWithoutProjectInput[]
+    upsert?: CanvasDocumentUpsertWithWhereUniqueWithoutProjectInput | CanvasDocumentUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: CanvasDocumentCreateManyProjectInputEnvelope
+    set?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    disconnect?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    delete?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    connect?: CanvasDocumentWhereUniqueInput | CanvasDocumentWhereUniqueInput[]
+    update?: CanvasDocumentUpdateWithWhereUniqueWithoutProjectInput | CanvasDocumentUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: CanvasDocumentUpdateManyWithWhereWithoutProjectInput | CanvasDocumentUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: CanvasDocumentScalarWhereInput | CanvasDocumentScalarWhereInput[]
   }
 
   export type ConversationUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -69215,18 +69273,18 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutAssociatesInput, ProjectUpdateWithoutAssociatesInput>, ProjectUncheckedUpdateWithoutAssociatesInput>
   }
 
-  export type ProjectCreateNestedOneWithoutCanvasDocumentInput = {
-    create?: XOR<ProjectCreateWithoutCanvasDocumentInput, ProjectUncheckedCreateWithoutCanvasDocumentInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutCanvasDocumentInput
+  export type ProjectCreateNestedOneWithoutCanvasDocumentsInput = {
+    create?: XOR<ProjectCreateWithoutCanvasDocumentsInput, ProjectUncheckedCreateWithoutCanvasDocumentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCanvasDocumentsInput
     connect?: ProjectWhereUniqueInput
   }
 
-  export type ProjectUpdateOneRequiredWithoutCanvasDocumentNestedInput = {
-    create?: XOR<ProjectCreateWithoutCanvasDocumentInput, ProjectUncheckedCreateWithoutCanvasDocumentInput>
-    connectOrCreate?: ProjectCreateOrConnectWithoutCanvasDocumentInput
-    upsert?: ProjectUpsertWithoutCanvasDocumentInput
+  export type ProjectUpdateOneRequiredWithoutCanvasDocumentsNestedInput = {
+    create?: XOR<ProjectCreateWithoutCanvasDocumentsInput, ProjectUncheckedCreateWithoutCanvasDocumentsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCanvasDocumentsInput
+    upsert?: ProjectUpsertWithoutCanvasDocumentsInput
     connect?: ProjectWhereUniqueInput
-    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCanvasDocumentInput, ProjectUpdateWithoutCanvasDocumentInput>, ProjectUncheckedUpdateWithoutCanvasDocumentInput>
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCanvasDocumentsInput, ProjectUpdateWithoutCanvasDocumentsInput>, ProjectUncheckedUpdateWithoutCanvasDocumentsInput>
   }
 
   export type EventRegistrationCreatecompetitionsInput = {
@@ -71850,7 +71908,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -71870,7 +71928,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -73659,6 +73717,7 @@ export namespace Prisma {
 
   export type CanvasDocumentCreateWithoutProjectInput = {
     id?: string
+    title?: string
     content: JsonNullValueInput | InputJsonValue
     htmlContent: string
     plainText: string
@@ -73668,6 +73727,7 @@ export namespace Prisma {
 
   export type CanvasDocumentUncheckedCreateWithoutProjectInput = {
     id?: string
+    title?: string
     content: JsonNullValueInput | InputJsonValue
     htmlContent: string
     plainText: string
@@ -73678,6 +73738,11 @@ export namespace Prisma {
   export type CanvasDocumentCreateOrConnectWithoutProjectInput = {
     where: CanvasDocumentWhereUniqueInput
     create: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
+  }
+
+  export type CanvasDocumentCreateManyProjectInputEnvelope = {
+    data: CanvasDocumentCreateManyProjectInput | CanvasDocumentCreateManyProjectInput[]
+    skipDuplicates?: boolean
   }
 
   export type ConversationCreateWithoutProjectInput = {
@@ -74046,33 +74111,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type CanvasDocumentUpsertWithoutProjectInput = {
+  export type CanvasDocumentUpsertWithWhereUniqueWithoutProjectInput = {
+    where: CanvasDocumentWhereUniqueInput
     update: XOR<CanvasDocumentUpdateWithoutProjectInput, CanvasDocumentUncheckedUpdateWithoutProjectInput>
     create: XOR<CanvasDocumentCreateWithoutProjectInput, CanvasDocumentUncheckedCreateWithoutProjectInput>
-    where?: CanvasDocumentWhereInput
   }
 
-  export type CanvasDocumentUpdateToOneWithWhereWithoutProjectInput = {
-    where?: CanvasDocumentWhereInput
+  export type CanvasDocumentUpdateWithWhereUniqueWithoutProjectInput = {
+    where: CanvasDocumentWhereUniqueInput
     data: XOR<CanvasDocumentUpdateWithoutProjectInput, CanvasDocumentUncheckedUpdateWithoutProjectInput>
   }
 
-  export type CanvasDocumentUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: JsonNullValueInput | InputJsonValue
-    htmlContent?: StringFieldUpdateOperationsInput | string
-    plainText?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type CanvasDocumentUpdateManyWithWhereWithoutProjectInput = {
+    where: CanvasDocumentScalarWhereInput
+    data: XOR<CanvasDocumentUpdateManyMutationInput, CanvasDocumentUncheckedUpdateManyWithoutProjectInput>
   }
 
-  export type CanvasDocumentUncheckedUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    content?: JsonNullValueInput | InputJsonValue
-    htmlContent?: StringFieldUpdateOperationsInput | string
-    plainText?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type CanvasDocumentScalarWhereInput = {
+    AND?: CanvasDocumentScalarWhereInput | CanvasDocumentScalarWhereInput[]
+    OR?: CanvasDocumentScalarWhereInput[]
+    NOT?: CanvasDocumentScalarWhereInput | CanvasDocumentScalarWhereInput[]
+    id?: StringFilter<"CanvasDocument"> | string
+    projectId?: StringFilter<"CanvasDocument"> | string
+    title?: StringFilter<"CanvasDocument"> | string
+    content?: JsonFilter<"CanvasDocument">
+    htmlContent?: StringFilter<"CanvasDocument"> | string
+    plainText?: StringFilter<"CanvasDocument"> | string
+    createdAt?: DateTimeFilter<"CanvasDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"CanvasDocument"> | Date | string
   }
 
   export type ConversationUpsertWithWhereUniqueWithoutProjectInput = {
@@ -74354,7 +74420,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -74375,7 +74441,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -74479,7 +74545,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -74500,7 +74566,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -74789,7 +74855,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
@@ -74810,7 +74876,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
@@ -75173,7 +75239,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
@@ -75194,7 +75260,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
@@ -76200,7 +76266,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -76221,7 +76287,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -76390,7 +76456,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -76411,7 +76477,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -77025,7 +77091,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
@@ -77046,7 +77112,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
@@ -77275,7 +77341,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
@@ -77296,7 +77362,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
@@ -77834,7 +77900,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     invitations?: InvitationCreateNestedManyWithoutProjectInput
@@ -77855,7 +77921,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutProjectInput
@@ -77890,7 +77956,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUpdateManyWithoutProjectNestedInput
@@ -77911,7 +77977,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutProjectNestedInput
@@ -77930,7 +77996,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -77951,7 +78017,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -77986,7 +78052,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -78007,7 +78073,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -78168,7 +78234,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -78189,7 +78255,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -78378,7 +78444,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -78399,7 +78465,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -79288,7 +79354,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -79309,7 +79375,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -79502,7 +79568,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -79523,7 +79589,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -80470,7 +80536,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentCreateNestedManyWithoutProjectInput
     conversations?: ConversationCreateNestedManyWithoutProjectInput
     documents?: DocumentCreateNestedManyWithoutProjectInput
     events?: EventCreateNestedManyWithoutProjectInput
@@ -80491,7 +80557,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     visibility?: string
-    canvasDocument?: CanvasDocumentUncheckedCreateNestedOneWithoutProjectInput
+    canvasDocuments?: CanvasDocumentUncheckedCreateNestedManyWithoutProjectInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutProjectInput
     documents?: DocumentUncheckedCreateNestedManyWithoutProjectInput
     events?: EventUncheckedCreateNestedManyWithoutProjectInput
@@ -80571,7 +80637,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -80592,7 +80658,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -80603,7 +80669,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutProjectNestedInput
   }
 
-  export type ProjectCreateWithoutCanvasDocumentInput = {
+  export type ProjectCreateWithoutCanvasDocumentsInput = {
     id?: string
     title: string
     description?: string | null
@@ -80623,7 +80689,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutProjectInput
   }
 
-  export type ProjectUncheckedCreateWithoutCanvasDocumentInput = {
+  export type ProjectUncheckedCreateWithoutCanvasDocumentsInput = {
     id?: string
     title: string
     description?: string | null
@@ -80643,23 +80709,23 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutProjectInput
   }
 
-  export type ProjectCreateOrConnectWithoutCanvasDocumentInput = {
+  export type ProjectCreateOrConnectWithoutCanvasDocumentsInput = {
     where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutCanvasDocumentInput, ProjectUncheckedCreateWithoutCanvasDocumentInput>
+    create: XOR<ProjectCreateWithoutCanvasDocumentsInput, ProjectUncheckedCreateWithoutCanvasDocumentsInput>
   }
 
-  export type ProjectUpsertWithoutCanvasDocumentInput = {
-    update: XOR<ProjectUpdateWithoutCanvasDocumentInput, ProjectUncheckedUpdateWithoutCanvasDocumentInput>
-    create: XOR<ProjectCreateWithoutCanvasDocumentInput, ProjectUncheckedCreateWithoutCanvasDocumentInput>
+  export type ProjectUpsertWithoutCanvasDocumentsInput = {
+    update: XOR<ProjectUpdateWithoutCanvasDocumentsInput, ProjectUncheckedUpdateWithoutCanvasDocumentsInput>
+    create: XOR<ProjectCreateWithoutCanvasDocumentsInput, ProjectUncheckedCreateWithoutCanvasDocumentsInput>
     where?: ProjectWhereInput
   }
 
-  export type ProjectUpdateToOneWithWhereWithoutCanvasDocumentInput = {
+  export type ProjectUpdateToOneWithWhereWithoutCanvasDocumentsInput = {
     where?: ProjectWhereInput
-    data: XOR<ProjectUpdateWithoutCanvasDocumentInput, ProjectUncheckedUpdateWithoutCanvasDocumentInput>
+    data: XOR<ProjectUpdateWithoutCanvasDocumentsInput, ProjectUncheckedUpdateWithoutCanvasDocumentsInput>
   }
 
-  export type ProjectUpdateWithoutCanvasDocumentInput = {
+  export type ProjectUpdateWithoutCanvasDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80679,7 +80745,7 @@ export namespace Prisma {
     SharedWorkspace?: SharedWorkspaceUpdateManyWithoutProjectNestedInput
   }
 
-  export type ProjectUncheckedUpdateWithoutCanvasDocumentInput = {
+  export type ProjectUncheckedUpdateWithoutCanvasDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -82675,7 +82741,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUpdateManyWithoutProjectNestedInput
     documents?: DocumentUpdateManyWithoutProjectNestedInput
     events?: EventUpdateManyWithoutProjectNestedInput
@@ -82695,7 +82761,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     visibility?: StringFieldUpdateOperationsInput | string
-    canvasDocument?: CanvasDocumentUncheckedUpdateOneWithoutProjectNestedInput
+    canvasDocuments?: CanvasDocumentUncheckedUpdateManyWithoutProjectNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutProjectNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutProjectNestedInput
     events?: EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -83105,6 +83171,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CanvasDocumentCreateManyProjectInput = {
+    id?: string
+    title?: string
+    content: JsonNullValueInput | InputJsonValue
+    htmlContent: string
+    plainText: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ConversationCreateManyProjectInput = {
     id?: string
     title: string
@@ -83186,6 +83262,36 @@ export namespace Prisma {
     passcode?: string | null
     createdAt?: Date | string
     updatedAt: Date | string
+  }
+
+  export type CanvasDocumentUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    htmlContent?: StringFieldUpdateOperationsInput | string
+    plainText?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CanvasDocumentUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    htmlContent?: StringFieldUpdateOperationsInput | string
+    plainText?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CanvasDocumentUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    content?: JsonNullValueInput | InputJsonValue
+    htmlContent?: StringFieldUpdateOperationsInput | string
+    plainText?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ConversationUpdateWithoutProjectInput = {

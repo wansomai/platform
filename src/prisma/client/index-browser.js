@@ -520,6 +520,7 @@ exports.Prisma.ProjectAssociateScalarFieldEnum = {
 exports.Prisma.CanvasDocumentScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
+  title: 'title',
   content: 'content',
   htmlContent: 'htmlContent',
   plainText: 'plainText',

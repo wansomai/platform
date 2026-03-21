@@ -236,7 +236,7 @@ model Project {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   visibility       String             @default("organization")
-  canvasDocument   CanvasDocument?
+  canvasDocuments  CanvasDocument[]
   conversations    Conversation[]
   documents        Document[]
   events           Event[]
@@ -605,7 +605,8 @@ model ProjectAssociate {
 
 model CanvasDocument {
   id          String   @id @default(cuid())
-  projectId   String   @unique
+  projectId   String
+  title       String   @default("Untitled Document")
   content     Json
   htmlContent String
   plainText   String

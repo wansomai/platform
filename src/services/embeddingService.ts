@@ -23,10 +23,15 @@ const EMBEDDING_DIMENSIONS = 768;
 // API versions to try in order. v1 is the stable channel; v1beta is the preview channel.
 const API_VERSIONS = ['v1', 'v1beta'] as const;
 
+// Fallback model list tried in order when the primary model returns 404 on all API versions.
+// All produce 768-dimensional embeddings (gemini-embedding-exp-03-07 via outputDimensionality).
+const FALLBACK_MODELS = ['embedding-001', 'gemini-embedding-exp-03-07'] as const;
+
 interface EmbedContentRequest {
   model: string;
   content: { parts: Array<{ text: string }> };
   taskType: string;
+  outputDimensionality?: number;
 }
 
 interface EmbedContentResponse {
@@ -47,6 +52,11 @@ async function callEmbedRest(
     content: { parts: [{ text }] },
     taskType,
   };
+
+  // gemini-embedding-exp-03-07 defaults to 3072 dims; pin to 768 to match stored embeddings.
+  if (modelName === 'gemini-embedding-exp-03-07') {
+    body.outputDimensionality = EMBEDDING_DIMENSIONS;
+  }
 
   const response = await fetch(url, {
     method: 'POST',
@@ -74,28 +84,41 @@ async function callEmbedRest(
   return values;
 }
 
-async function embedWithFallback(text: string, taskType: string): Promise<number[]> {
-  const errors: string[] = [];
-
-  // Try every API version in order until one succeeds.
+/** Try one model across all API versions. Returns the embedding or throws the last error. */
+async function tryModelAllVersions(
+  modelName: string,
+  text: string,
+  taskType: string,
+  errors: string[]
+): Promise<number[] | null> {
   for (const version of API_VERSIONS) {
     try {
-      return await callEmbedRest(CONFIGURED_MODEL, text, taskType, version);
+      return await callEmbedRest(modelName, text, taskType, version);
     } catch (err: any) {
       const is404 = err?.status === 404 || err?.message?.includes('404');
       if (is404) {
-        errors.push(`${version}/${CONFIGURED_MODEL}: 404`);
-        continue; // try next version
+        errors.push(`${version}/${modelName}: 404`);
+        continue;
       }
-      // Non-404 error — propagate immediately
+      // Non-404 error — propagate immediately (don't swallow auth/rate-limit errors)
       throw err;
     }
   }
+  return null; // all versions returned 404
+}
 
-  // All versions returned 404 — report clearly
+async function embedWithFallback(text: string, taskType: string): Promise<number[]> {
+  const errors: string[] = [];
+  const modelsToTry = [CONFIGURED_MODEL, ...FALLBACK_MODELS.filter(m => m !== CONFIGURED_MODEL)];
+
+  for (const model of modelsToTry) {
+    const result = await tryModelAllVersions(model, text, taskType, errors);
+    if (result !== null) return result;
+  }
+
   throw new Error(
-    `[EmbeddingService] Model "${CONFIGURED_MODEL}" returned 404 on all API versions ` +
-    `(${API_VERSIONS.join(', ')}). ` +
+    `[EmbeddingService] All embedding models returned 404 on all API versions. ` +
+    `Tried: ${modelsToTry.join(', ')} × (${API_VERSIONS.join(', ')}). ` +
     `Check that your API key has access to embedding models and set ` +
     `GEMINI_EMBEDDING_MODEL to an available model in your .env file. ` +
     `Details: ${errors.join('; ')}`

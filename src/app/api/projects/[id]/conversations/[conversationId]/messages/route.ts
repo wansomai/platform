@@ -7,20 +7,97 @@ import { GoogleGenAI } from '@google/genai';
 
 import { canSendMessage } from '@/lib/subscription';
 import { getJurisdictionById, getJurisdictionInstructions, getJurisdictionByCountryCode } from '@/lib/jurisdictions';
-import { coreDocumentTools, canvasTools, googleCalendarTools, gmailTools, africanLegalSearchTools } from '@/lib/geminiTools';
+import { coreDocumentTools, canvasTools, documentEditTools, editCanvasDocumentTool, googleCalendarTools, gmailTools, africanLegalSearchTools } from '@/lib/geminiTools';
 import { executeFunctionCall } from '@/lib/functionExecutor';
 import { generateProjectAssociateTools, getAssociateToolDeclarations } from '@/lib/associateTools';
 import { resolveAndValidateSources } from '@/lib/url-resolve';
 import { extractMissingDocumentContents } from '@/lib/documentContentFallback';
 
 // Set a reasonable timeout
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 // Domains that must never appear as web search sources
 const BLOCKED_SEARCH_DOMAINS: string[] = ['jibudocs.com'];
 
+// ── Intent classification via Gemini ──────────────────────────────────────────
+// Asks Gemini directly to classify every message. No keyword regexes.
+// Returns:
+//   'edit'      → user wants to modify the existing canvas document
+//   'draft_new' → user wants a brand-new document generated from scratch
+//   'research'  → question, legal lookup, or information request
+async function classifyMessageIntent(
+  content: string,
+  canvasDocumentExists: boolean,
+  recentMessages: Array<{ role: string; content: string }>
+): Promise<'edit' | 'draft_new' | 'research'> {
+  const recentCtx = recentMessages
+    .slice(-4)
+    .map(m => `${m.role === 'assistant' ? 'AI' : 'User'}: ${m.content.slice(0, 200)}`)
+    .join('\n');
+
+  const prompt = `You are a routing classifier for a legal AI workspace.
+A document editor (canvas) may be open. Classify the user's message into exactly one of three intents.
+
+Canvas document open: ${canvasDocumentExists ? 'YES' : 'NO'}
+${recentCtx ? `Recent conversation:\n${recentCtx}\n` : ''}
+User message:
+"""
+${content.slice(0, 800)}
+"""
+
+THE THREE INTENTS:
+
+1. edit
+   The user wants to CHANGE or UPDATE the document that is already open.
+   Signs: action verbs targeting the document — "change the date", "update the name",
+   "fix clause 3", "sign the affidavit", "add a signature block", "remove section 5",
+   "make it more formal", "bold the headings", "date the petition", "set effective date to X".
+
+2. draft_new
+   The user wants to GENERATE a completely NEW document from scratch.
+   Signs: "draft a new NDA", "create an employment contract", "write a lease agreement",
+   "generate a petition for X", "prepare a will for Y".
+   ALSO: if the message consists of structured document content (markdown headings like
+   ## Parties, bullet points with Petitioner/Respondent/Plaintiff/Defendant fields,
+   or a form-style layout) and there is NO explicit edit instruction → this is draft_new,
+   the user is providing the data/parties for a new document to be generated.
+
+3. research
+   The user is asking a question or requesting information. No document will be changed.
+   Signs: questions ("what does this mean?", "is this enforceable?"), requests for
+   information ("tell me about the Marriage Act", "I would like to know more about X",
+   "explain consideration", "find cases about Y", "summarize the law on Z"),
+   or legal research tasks. A message is research if it ends with "?" or starts with
+   "what", "how", "why", "when", "who", "explain", "tell me", "I want to know", etc.
+
+DECISION RULES:
+- If the message is a question or asks for information → research (even if canvas is open)
+- If the message gives an instruction to change the open document → edit
+- If the message provides document data/parties/content for generation → draft_new
+- If truly ambiguous between edit and research → research (safer: no document will be mutated)
+
+Respond with ONLY one word: edit, draft_new, or research`;
+
+  try {
+    const classificationResult = await genAI.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: { temperature: 0, maxOutputTokens: 10 }
+    });
+    const text = (classificationResult.text ?? '').trim().toLowerCase();
+    console.log('[intent-classifier] gemini →', text);
+    if (text.startsWith('edit')) return 'edit';
+    if (text.startsWith('draft')) return 'draft_new';
+    return 'research';
+  } catch (err) {
+    console.error('[intent-classifier] Error, defaulting to research:', err);
+    return 'research';
+  }
+}
+
+
 // Initialize Gemini with the new API
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
 
 // Default settings if none exist
 type JurisdictionObject = {
@@ -70,6 +147,7 @@ const createMessageSchema = z.object({
   content: z.string().min(1, "Message content is required"),
   previewDocument: z.any().optional(), // Document currently in preview mode
   currentCanvasHtml: z.string().optional(), // Live editor HTML (may differ from saved DB version)
+  activeCanvasId: z.string().optional(),    // ID of the canvas document currently open in editor
   metadata: z.any().optional(),
   streamingId: z.string().optional(),
   attachedDocuments: z.any().optional(),
@@ -95,7 +173,7 @@ export async function POST(
 
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
-    const { content, previewDocument, currentCanvasHtml, attachedDocuments, metadata } = createMessageSchema.parse(body);
+    const { content, previewDocument, currentCanvasHtml, activeCanvasId, attachedDocuments, metadata } = createMessageSchema.parse(body);
 
     // Phase 1: Validate access and fetch context — do NOT create user message yet
     // Start associate tools fetch immediately (runs in parallel with all other Phase 1 queries)
@@ -121,6 +199,7 @@ export async function POST(
       select: {
         role: true,
         content: true,
+        metadata: true,
       }
     });
 
@@ -137,10 +216,17 @@ export async function POST(
       }
     });
 
-    // Check if project is in drafting mode - get canvas document if needed
-    const canvasDocumentPromise = prisma.canvasDocument.findUnique({
-      where: { projectId }
-    });
+    // Check if project is in drafting mode — fetch the active canvas document.
+    // Always fall back to the most-recently updated document so canvasDocument is
+    // never null just because the client sent a stale/missing activeCanvasId
+    // (e.g. during the brief window while fetchCanvasDocuments is still resolving).
+    const canvasDocumentPromise = (async () => {
+      if (activeCanvasId) {
+        const byId = await prisma.canvasDocument.findFirst({ where: { id: activeCanvasId, projectId } });
+        if (byId) return byId;
+      }
+      return prisma.canvasDocument.findFirst({ where: { projectId }, orderBy: { updatedAt: 'desc' } });
+    })();
 
     // Load all documents for context — include file_url and file_type to avoid N+1 for scanned docs
     const documentsPromise = prisma.projectDocument.findMany({
@@ -226,6 +312,17 @@ export async function POST(
       }
     });
 
+    // Pre-compute whether a recent inline document exists — used by both the tool-building
+    // block (line ~950) and executeFunctionBatch. Must be declared before the stream so it
+    // is never in a temporal dead zone when referenced inside the streaming closure.
+    const hasRecentInlineDoc = messageHistory.some((msg: any) => {
+      if (msg.role !== 'assistant' || !msg.metadata) return false;
+      try {
+        const meta = typeof msg.metadata === 'string' ? JSON.parse(msg.metadata) : msg.metadata;
+        return !!(meta?.document?.htmlContent);
+      } catch { return false; }
+    });
+
     // Create a stream for the response
     const stream = new ReadableStream({
       async start(controller) {
@@ -293,12 +390,26 @@ export async function POST(
 
           // Canvas Mode: Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
           // Legacy support: legalDrafting setting maps to canvasMode
-          // Auto-detect: if the client sends live canvas HTML AND a canvas document exists in DB,
+          // Auto-detect: if the client sends live canvas HTML OR a canvas document exists in DB,
           // the user has the canvas editor open — enable canvas tools regardless of the saved setting.
           const isCanvasMode =
             settings.canvasMode === true ||
             settings.legalDrafting === true ||
-            (!!canvasDocument && !!currentCanvasHtml);
+            !!(canvasDocument || currentCanvasHtml);
+
+          // ── AI intent classification (hoisted before system prompt) ──────────
+          // Classify intent early so the system prompt can conditionally describe
+          // available tools based on whether the user wants edit, draft, or research.
+          let messageIntent: 'edit' | 'draft_new' | 'research' = 'research';
+          let userWantsEditHoisted = false;
+          {
+            const _canvasDocumentExists = !!(canvasDocument || currentCanvasHtml) || hasRecentInlineDoc;
+            messageIntent = await classifyMessageIntent(
+              content,
+              _canvasDocumentExists,
+              messageHistory
+            );
+          }
 
           // Core document tools are ALWAYS available (no toggle needed)
           const hasCoreDocumentTools = true;
@@ -493,10 +604,28 @@ ${customInstructions ? `Instructions: ${customInstructions}` : ''}`;
 
             CANVAS DOCUMENT CONTEXT: A legal document is currently open in the canvas editor.
 
-            TOOL SELECTION RULES (strictly follow these):
-            - If the user requests ANY change to the document — no matter how small (a date, a name, a clause, a number) — call editCanvasDocument. Examples: "change the date", "update the party name", "add a termination clause", "remove section 4".
-            - Do NOT call draftNewDocument when a canvas document is already open. That tool replaces the entire document. Use it only when the canvas is empty.
-            - For analysis or questions ("what's missing?", "review this", "any issues?") — answer in your response text, do not call any canvas tool.
+            ── INTENT CLASSIFICATION — determine which case applies BEFORE choosing a tool ──
+
+            CASE 1 — EDITING THE OPEN DOCUMENT:
+            The user wants to modify, update, or improve the document that is already open.
+            Signals: "change the date", "update the party name", "add a termination clause", "remove section 4", "fix the payment terms", "make it shorter", "add a confidentiality clause", "correct the spelling", any reference to parts of the current document.
+
+            → Single change (one thing to modify): call editCanvasDocument IMMEDIATELY with a precise changeDescription. Do NOT call searchProjectDocuments or any other tool first — the document is already in context.
+            → Multiple changes (two or more distinct things to modify): use batchEditCanvasDocument with an array of individual edits — one entry per change. This is MORE RELIABLE than a single combined instruction and MUST be used for multi-change requests.
+            → ⚠️ NEVER call searchProjectDocuments before editing — it searches uploaded files, not the canvas document. Call editCanvasDocument directly.
+
+            CASE 2 — GENERATING A COMPLETELY NEW DOCUMENT:
+            The user wants a brand-new document that is clearly different from what is currently open — different document type, different parties, different purpose.
+            Signals: "draft a new [document type]", "I need a [document type]", "create an employment contract" (when canvas has an NDA), "write a service agreement for [different parties]", "generate a lease agreement", any request where the requested document type OR parties are clearly different from the open document.
+            → Use draftNewDocument. This REPLACES the canvas content with the new document.
+            → Do NOT use editCanvasDocument to "convert" one document type into another — that produces broken output.
+
+            CASE 3 — RESEARCH / ANALYSIS (no document changes needed):
+            The user is asking a legal question, requesting a review, or asking about the document without requesting any change.
+            Signals: "review this", "what's missing?", "any risks?", "is this enforceable?", "explain clause X", "what does section 3 mean?", questions about law or strategy.
+            → Respond in text only. Do NOT call any canvas tool.
+
+            ⚠️ AMBIGUOUS REQUESTS: If the intent is unclear — e.g. "update the NDA" when an employment contract is open — ask the user one focused clarifying question before acting.
 
             The current canvas document content is included in the context below for your reference.
             `;
@@ -577,7 +706,29 @@ ${useGoogleSearch
 - If you cite only one or two sources total, inline attribution is sufficient — no separate section needed.
 - It is always better to say "I could not verify this" than to present an unverified citation.
 ` : ''}
-          **RESEARCH RULE — MANDATORY**:
+          ${isCanvasMode ? (messageIntent === 'research' ? `
+🔍 RESEARCH MODE — ACTIVE (canvas document is open but the user wants research/information).
+
+**AVAILABLE TOOLS IN THIS MODE**: searchAfricanLegalSources, researchAgent, searchAgent, fetchLegalDocument, searchProjectDocuments, reviewDocument, editCanvasDocument, batchEditCanvasDocument.
+- Answer the research question using the search tools above exactly as you would in normal chat mode.
+- Do NOT attempt to edit the canvas document unless the user also explicitly asks for an edit.
+- After answering, you may offer: "Would you like me to incorporate these findings into the document?"` : `
+⚠️ EDIT MODE — ACTIVE. A document is open in the canvas editor.
+
+**AVAILABLE TOOLS IN THIS MODE**: editCanvasDocument, batchEditCanvasDocument, reviewDocument.
+- searchAfricanLegalSources, researchAgent, searchAgent, searchProjectDocuments are NOT available. Do NOT reference them or simulate calling them.
+- ANY request to change, update, fix, correct, modify, add to, or remove from the document → call editCanvasDocument (single change) or batchEditCanvasDocument (multiple changes) IMMEDIATELY. No searching required — the document is already in your context.
+- "Change the date", "update the name", "fix the address", "correct clause 3", "set effective date to X", "date the petition", "date the affidavit", "sign the document", "number the pages", "initial page 3" → editCanvasDocument directly.
+
+**WHEN UNSURE**: If the message could be either an edit OR a question, ALWAYS attempt the edit first. After the edit succeeds, you may add a one-sentence note such as "Done — let me know if you'd also like me to research X." NEVER respond with an error or search for something when a document is open and the instruction could plausibly apply to it.
+
+**IF YOU TRULY CANNOT DETERMINE THE EDIT**: Reply: "I wasn't sure what to change — could you point to the specific section or field you'd like me to update?" Do NOT call any search tool.
+
+⚠️ AFTER CANVAS EDIT: When editCanvasDocument or batchEditCanvasDocument returns CANVAS_EDIT_DONE, your ENTIRE chat reply must be ONE short sentence. NEVER output the document text in chat.
+
+Canvas creation tool also available:
+- draftNewDocument → ONLY when user wants to CREATE a completely NEW document different in type/parties/purpose from any document already in this conversation`)
+          : `**RESEARCH RULE — MANDATORY**:
           - If the user's message mentions a specific named case (e.g. "X v Y [year]"), asks about a specific statute section, or asks you to cite a specific case → call researchAgent IMMEDIATELY before writing any response.
           - This applies even when the question is compound ("Can I do X? Cite case Y to support it") — verify case Y FIRST via researchAgent before answering anything.
           - If researchAgent returns UNVERIFIED: immediately call searchAfricanLegalSources with the same query — do NOT ask the user for permission. Use the URLs from legalSources[].url verbatim.
@@ -594,9 +745,18 @@ ${useGoogleSearch
 - legalDocumentAgent: Use for document drafting, editing, review, and project document search.${useGoogleCalendar ? '\n- calendarAgent: Use for calendar operations.' : ''}${useGmail ? '\n- gmailAgent: Use for email operations.' : ''}
 When a user requests a document, delegate to legalDocumentAgent with detailed instructions.`
               : `**AVAILABLE TOOLS**: searchAfricanLegalSources (find cases/statutes from official LII), fetchLegalDocument (fetch full case text after finding the URL — use when user asks for summary/analysis/holdings of a specific case). researchAgent (verify specific known cases from training knowledge). For document work: generateDocumentInline (drafting — preferred), reviewDocument (review/analysis), searchProjectDocuments (search project docs).
-          ${isCanvasMode ? `Canvas tools also available: ${canvasDocument ? `editCanvasDocument (apply targeted edits to the open canvas document — use for ALL edit requests), draftNewDocument (create a NEW document in canvas — only use when canvas is empty)` : `draftNewDocument (create a new document in canvas), editCanvasDocument (edit existing canvas document)`}.` : ''}`}
+
+**DOCUMENT EDITING TOOLS** (always available — editCanvasDocument, batchEditCanvasDocument):
+- If a document was generated inline in this conversation (shown as a document card) and the user asks to change/edit/update/fix ANYTHING about it → use editCanvasDocument (single change) or batchEditCanvasDocument (2+ changes)
+- NEVER re-generate a new document with generateDocumentInline just to make a small edit — always use editCanvasDocument
+- "Change the date", "update the name", "fix the address", "edit clause 3", "change to today's date" → editCanvasDocument
+- Only use generateDocumentInline to create a BRAND NEW document from scratch (not to modify an existing one)
+
+⚠️ AFTER CANVAS EDIT: When editCanvasDocument or batchEditCanvasDocument returns CANVAS_EDIT_DONE, your ENTIRE chat reply must be ONE short sentence (e.g. "Done! I've applied your changes. Click **Open in Editor** to review the document."). NEVER output the document text in chat.`}`}
           Format: PDF for final docs, DOCX for drafts (default if unsure), MD for notes/analysis.
           Before generating, ensure you have all required information — ask if not.
+
+          ⛔ NEVER output raw HTML in your chat replies — no <div>, <button>, <svg>, <style>, or any HTML tags. NEVER generate document preview cards, download buttons, or styled HTML blocks in your text response. The UI renders document cards automatically from the tool result — your reply must be plain markdown text only.
 
           ${previewDocument ? `
           **🔍 PREVIEW MODE CONTEXT**:
@@ -611,13 +771,21 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
           Other project documents provide reference context only.
           ` : canvasDocument && canvasDocument.htmlContent ? `
           **📝 CANVAS MODE CONTEXT**:
-          The user is working on a document in the canvas editor.
-          This canvas document is the PRIMARY document they are editing and focused on.
+          The canvas editor supports MULTIPLE documents as tabs. The CURRENTLY OPEN document is shown below.
+
+          ⚠️ TOOL SELECTION RULE — READ CAREFULLY:
+          - User wants to CREATE / DRAFT / WRITE any document (new or different) → ✅ draftNewDocument (creates a NEW tab alongside the existing one)
+          - User wants to EDIT / CHANGE / MODIFY the currently open document → ✅ editCanvasDocument
+          - "Draft a new NDA", "I need a contract", "Create a lease" → draftNewDocument (even though a document is already open)
+          - "Edit clause 5", "Change the date", "Add a termination clause" → editCanvasDocument
 
           When the user says:
-          - "Review this" or "What's missing?" → They mean the canvas document
-          - "Add a clause" or "Edit this" → They mean the canvas document
-          - Use documentIds: ['primary'] when calling reviewDocument for the canvas document
+          - "Review this" or "What's missing?" → They mean the currently open canvas document
+          - "Add a clause" or "Edit this" → editCanvasDocument (or batchEditCanvasDocument for multiple changes)
+          - "Draft a new X", "Create a Y", "I need a Z", "Write a…" → draftNewDocument (NEW document tab, does NOT touch the current one)
+
+          ⚠️ AFTER CANVAS EDIT RULE: When editCanvasDocument or batchEditCanvasDocument returns CANVAS_EDIT_DONE, respond with ONE short sentence only (e.g. "Done! Review the highlighted changes and click Accept or Reject."). NEVER paste the document text into chat — the diff overlay is already shown in the canvas.
+          ⛔ NEVER output raw HTML in your replies — no <div>, <button>, <svg>, or any HTML tags. No document preview cards or download buttons. Plain markdown only.
 
           Other project documents provide reference context only.
           ` : attachedDocuments && attachedDocuments.length > 0 ? `
@@ -862,53 +1030,145 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
               // Collect all function declarations into a single array
               const allFunctionDeclarations: any[] = [];
 
-              // Always include the research agent for strict legal lookups
-              allFunctionDeclarations.push({
-                name: 'researchAgent',
-                description: 'A STRICT legal fact checker. Use this for ALL questions about specific cases (e.g. "What did X v Y hold?"), specific statute sections (e.g. "What does Section 500 say?"), legal provisions, or any specific legal fact. Returns only confirmed facts — if it cannot verify, it says so and offers to search. NEVER answer these questions directly from training knowledge — ALWAYS delegate to researchAgent first.',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    query: { type: 'string', description: 'The exact case name, statute section, or specific legal fact to look up' }
-                  },
-                  required: ['query']
-                }
+              // ── Server-side intent detection ──────────────────────────────────────
+              // Automatically determine whether this message is:
+              //   EDIT    → user wants to modify an existing document
+              //   DRAFT   → user wants to generate a brand-new document
+              //   GENERAL → research, questions, analysis (no document mutation)
+              //
+              // This drives MUTUALLY EXCLUSIVE tool sets so the AI can never
+              // accidentally call both a generation tool and an edit tool at once.
+
+              // hasRecentInlineDoc is pre-computed above (outer scope) and available here.
+              // A canvas is "open" when the server found a canvas document OR the client
+              // sent live editor HTML — either means there is something to edit, not draft.
+              const canvasIsOpen = !!(canvasDocument || currentCanvasHtml);
+              // canvasDocumentExists uses the DB record as the authoritative source —
+              // independent of whether the client sent currentCanvasHtml (which can be
+              // empty while the editor is still loading).
+              const canvasDocumentExists = !!canvasDocument;
+              // Treat any open canvas as a "recent doc" for edit-intent routing.
+              const hasRecentDoc = canvasIsOpen || hasRecentInlineDoc;
+
+              // messageIntent is pre-computed above (hoisted) so it's available in both
+              // the direct path and the agent path (executeAgentCall).
+              // An "edit" intent only makes sense if there is actually a document to edit.
+              const userWantsEdit = messageIntent === 'edit' && hasRecentDoc;
+              if (userWantsEdit) userWantsEditHoisted = true;
+
+              console.log('[tool-routing]', {
+                intent: messageIntent,
+                canvasIsOpen,
+                canvasDocumentExists,
+                hasRecentInlineDoc,
+                hasRecentDoc,
+                userWantsEdit,
+                contentSnippet: content.slice(0, 80),
+                activeCanvasId,
+                canvasDocumentId: canvasDocument?.id ?? null,
               });
 
-              // Always include the search agent so it can auto-search when researchAgent returns UNVERIFIED
-              allFunctionDeclarations.push({
-                name: 'searchAgent',
-                description: 'A web search agent. Call this AUTOMATICALLY when researchAgent returns UNVERIFIED for a specific case or statute — do NOT ask the user for permission. Also available for general web research when needed.',
-                parameters: {
-                  type: 'object',
-                  properties: {
-                    query: { type: 'string', description: 'The case name, statute section, or topic to search for' }
-                  },
-                  required: ['query']
-                }
-              });
-
-              // Always include core document tools
-              allFunctionDeclarations.push(...coreDocumentTools.map(tool => ({
-                name: tool.name,
-                description: tool.description,
-                parameters: tool.parameters
-              })));
-
-              // Always include African legal search (jurisdiction-specific, on-demand)
-              allFunctionDeclarations.push(...africanLegalSearchTools.map(tool => ({
-                name: tool.name,
-                description: tool.description,
-                parameters: tool.parameters
-              })));
-
-              // Add canvas tools only if canvas mode is enabled
-              if (isCanvasMode) {
-                allFunctionDeclarations.push(...canvasTools.map(tool => ({
+              if (userWantsEdit) {
+                // EDIT PATH: only expose edit tools — no generation tools in this set.
+                // The AI cannot accidentally generate a new document.
+                //
+                // When no canvas is open (inline doc auto-promotion), expose ONLY
+                // editCanvasDocument. Exposing both edit tools causes Gemini to call
+                // them in parallel, which independently creates two identical canvas
+                // documents. With the canvas already open, both tools are safe.
+                const editToolsForPath = canvasIsOpen
+                  ? documentEditTools
+                  : [editCanvasDocumentTool];
+                allFunctionDeclarations.push(...editToolsForPath.map(tool => ({
                   name: tool.name,
                   description: tool.description,
                   parameters: tool.parameters
                 })));
+                // In edit mode: only expose reviewDocument as a support tool.
+                // searchProjectDocuments and searchLegalKnowledge are excluded — Gemini
+                // calls them instead of editCanvasDocument when they are present, causing
+                // "no results found" responses instead of applying the edit.
+                const editSupportTools = coreDocumentTools.filter(
+                  t => t.name === 'reviewDocument'
+                );
+                allFunctionDeclarations.push(...editSupportTools.map(tool => ({
+                  name: tool.name,
+                  description: tool.description,
+                  parameters: tool.parameters
+                })));
+              } else {
+                // DRAFT / GENERAL PATH: research/question mode or explicit new-document request.
+                // Search tools are gated by intent:
+                //   • intent === 'research' → always allow search tools (user explicitly wants research)
+                //   • canvas open + intent !== 'research' → suppress search tools to prevent
+                //     Gemini from calling them instead of editCanvasDocument on a mis-routed edit.
+                const allowSearchTools = !canvasIsOpen || messageIntent === 'research';
+
+                if (allowSearchTools) {
+                  allFunctionDeclarations.push({
+                    name: 'researchAgent',
+                    description: 'A STRICT legal fact checker. Use this for ALL questions about specific cases (e.g. "What did X v Y hold?"), specific statute sections (e.g. "What does Section 500 say?"), legal provisions, or any specific legal fact. Returns only confirmed facts — if it cannot verify, it says so and offers to search. NEVER answer these questions directly from training knowledge — ALWAYS delegate to researchAgent first.',
+                    parameters: {
+                      type: 'object',
+                      properties: {
+                        query: { type: 'string', description: 'The exact case name, statute section, or specific legal fact to look up' }
+                      },
+                      required: ['query']
+                    }
+                  });
+                  allFunctionDeclarations.push({
+                    name: 'searchAgent',
+                    description: 'A web search agent. Call this AUTOMATICALLY when researchAgent returns UNVERIFIED for a specific case or statute — do NOT ask the user for permission. Also available for general web research when needed.',
+                    parameters: {
+                      type: 'object',
+                      properties: {
+                        query: { type: 'string', description: 'The case name, statute section, or topic to search for' }
+                      },
+                      required: ['query']
+                    }
+                  });
+                }
+
+                // When canvas is open without explicit research intent, exclude
+                // searchProjectDocuments — Gemini calls it instead of editCanvasDocument.
+                // When research intent is explicit, include all core tools.
+                const coreToolsToUse = (canvasIsOpen && messageIntent !== 'research')
+                  ? coreDocumentTools.filter(t => t.name === 'reviewDocument')
+                  : isCanvasMode
+                    ? coreDocumentTools.filter(t => t.name !== 'generateDocumentInline')
+                    : coreDocumentTools;
+                allFunctionDeclarations.push(...coreToolsToUse.map(tool => ({
+                  name: tool.name,
+                  description: tool.description,
+                  parameters: tool.parameters
+                })));
+                // draftNewDocument: only available when canvas mode is on AND
+                // either (a) no canvas document exists in the DB, or (b) the classifier
+                // explicitly detected a "draft_new" intent.
+                const allowDraftNew = isCanvasMode && (!canvasDocumentExists || messageIntent === 'draft_new');
+                if (allowDraftNew) {
+                  allFunctionDeclarations.push(...canvasTools.map(tool => ({
+                    name: tool.name,
+                    description: tool.description,
+                    parameters: tool.parameters
+                  })));
+                }
+                // Edit tools when there IS a live canvas document open
+                if (canvasDocument || currentCanvasHtml) {
+                  allFunctionDeclarations.push(...documentEditTools.map(tool => ({
+                    name: tool.name,
+                    description: tool.description,
+                    parameters: tool.parameters
+                  })));
+                }
+                // African legal search — allowed for explicit research intent or when no canvas is open
+                if (allowSearchTools) {
+                  allFunctionDeclarations.push(...africanLegalSearchTools.map(tool => ({
+                    name: tool.name,
+                    description: tool.description,
+                    parameters: tool.parameters
+                  })));
+                }
               }
 
               if (useGoogleCalendar) {
@@ -948,6 +1208,7 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
               if (t.functionDeclarations) toolNames.push(...t.functionDeclarations.map((d: any) => d.name));
               if (t.googleSearch) toolNames.push('googleSearch (grounding)');
             }
+            console.log('[registered-tools]', toolNames);
           }
 
           // Build the full conversation history including system message
@@ -970,6 +1231,17 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             generateConfig.thoughtSignature = {
               enabled: true
             };
+            // When the user intends to edit, force Gemini to call one of the edit tools.
+            // mode=ANY + allowedFunctionNames ensures Gemini cannot respond with text
+            // and cannot call reviewDocument instead of an edit tool.
+            if (userWantsEditHoisted) {
+              generateConfig.toolConfig = {
+                functionCallingConfig: {
+                  mode: 'ANY',
+                  allowedFunctionNames: ['editCanvasDocument', 'batchEditCanvasDocument']
+                }
+              };
+            }
           }
 
           // Add system instruction
@@ -1198,6 +1470,14 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             }
           }
 
+          // Diagnostic: log what the initial Gemini stream produced
+          console.log('[initial-stream]', {
+            functionCallCount: functionCalls.length,
+            functionCallNames: functionCalls.map((fc: any) => fc.name),
+            hasTextContent,
+            contentPreview: fullContent.slice(0, 80),
+          });
+
           // Variable to store report metadata from function responses
           let reportMetadata: any = null;
           let documentMetadata: any = null;
@@ -1209,6 +1489,7 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             searchProjectDocuments: 'Searching your documents...',
             draftNewDocument: 'Creating document in canvas...',
             editCanvasDocument: 'Editing your canvas document...',
+            batchEditCanvasDocument: 'Applying edits to your canvas document...',
             searchLegalKnowledge: 'Searching legal knowledge base...',
             createCalendarEvent: 'Creating calendar event...',
             searchCalendarEvents: 'Checking your calendar...',
@@ -1232,7 +1513,7 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
           // Pick the most descriptive message when multiple tools are called at once.
           // Priority: document generation > canvas edit > review > search > other
           const TOOL_PRIORITY = [
-            'generateDocumentInline', 'draftNewDocument', 'editCanvasDocument',
+            'generateDocumentInline', 'draftNewDocument', 'batchEditCanvasDocument', 'editCanvasDocument',
             'reviewDocument', 'searchLegalKnowledge',
             'searchProjectDocuments', 'searchAfricanLegalSources', 'fetchLegalDocument', 'searchAgent', 'researchAgent', 'legalDocumentAgent', 'legalDraftingAgent',
             'createCalendarEvent', 'updateCalendarEvent', 'deleteCalendarEvent',
@@ -1263,6 +1544,7 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
           let capturedSearchPreview: Array<{ title: string; url: string; date: string | null; platform: string }> = [];
           let capturedPlatformName = '';
           let capturedPlatformSearchUrl = '';
+          let anyCanvasEditCompleted = false;
 
           // Helper: execute one batch of function calls and return their responses
           const executeFunctionBatch = async (calls: any[], parts: any[]) => {
@@ -1290,7 +1572,20 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                   const result = await executeAgentCall(
                     fc, genAI, modelName, baseContext, relevantContent, content,
                     projectId, project, conversationDocuments, canvasDocument,
-                    previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content), userId
+                    previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content), userId,
+                    (event: any) => {
+                      controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'));
+                      if (event.type === 'search_preview' && Array.isArray(event.results) && event.results.length > 0) {
+                        capturedSearchPreview = event.results;
+                        if (!capturedPlatformName && event.results[0]?.platform) {
+                          capturedPlatformName = event.results[0].platform;
+                        }
+                      }
+                    },
+                    currentCanvasHtml,
+                    conversationId,
+                    hasRecentInlineDoc,
+                    messageIntent
                   );
                   if ((fc.name === 'searchAgent' || fc.name === 'researchAgent') && result.searchSources) {
                     for (const source of result.searchSources) {
@@ -1301,7 +1596,7 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                   }
                   return { functionResponse: { name: fc.name, response: result } };
                 } else {
-                  const result = await executeFunctionCall(
+                  let result = await executeFunctionCall(
                     fc, projectId, project, conversationDocuments, canvasDocument,
                     previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content),
                     (event: any) => {
@@ -1317,8 +1612,64 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                       }
                     },
                     userId,
-                    currentCanvasHtml
+                    currentCanvasHtml,
+                    conversationId
                   );
+
+                  // Auto-trigger Google Search when LII returns no results or weak/partial matches.
+                  // This supplements the LII links with a detailed Google-grounded answer.
+                  if (fc.name === 'searchAfricanLegalSources' && result.needsGoogleFallback) {
+                    try {
+
+                      const fallbackQuery = result.googleFallbackQuery || fc.args?.query || '';
+                      const googleResult = await executeAgentCall(
+                        { name: 'searchAgent', args: { query: fallbackQuery } },
+                        genAI, modelName, baseContext, relevantContent, content,
+                        projectId, project, conversationDocuments, canvasDocument,
+                        previewDocument, messageHistory.slice(-3).map((msg: any) => msg.content), userId
+                      );
+
+                      // Collect Google Search sources for the web sources panel
+                      if (googleResult.searchSources) {
+                        for (const source of googleResult.searchSources) {
+                          if (!webSearchSources.some((s: any) => s.uri === source.uri)) {
+                            webSearchSources.push(source);
+                          }
+                        }
+                      }
+
+                      // Merge Google content into the result INSTRUCTION so Gemini can write
+                      // a detailed answer while still linking only from the LII sources above.
+                      if (googleResult.result) {
+                        const liiLinksSection = result.INSTRUCTION || '';
+                        const googleSection = [
+                          '',
+                          '── GOOGLE SEARCH SUPPLEMENT ──',
+                          'The Google Search content below provides a detailed answer to the user\'s question.',
+                          'Use it to write a comprehensive, well-structured response.',
+                          'For ALL citations and inline links, use ONLY the LII links listed above — NEVER use any URL from the Google Search content.',
+                          '',
+                          'GOOGLE SEARCH CONTENT:',
+                          googleResult.result,
+                          '',
+                          'PRESENTATION FORMAT:',
+                          '1. Write a thorough answer drawing from the Google Search content.',
+                          '2. For every case or statute you mention, embed its LII link inline (from the links listed above).',
+                          '3. If a source appears in Google Search but not in the LII links above, DO NOT link it — state it without a URL or call searchAfricanLegalSources again.',
+                          '4. End with ⚖️ Legal Sources listing ONLY the LII links.',
+                          googleResult.searchSources?.length
+                            ? '5. Add a 🌐 Additional Sources section listing the Google Search sources provided.'
+                            : '',
+                        ].filter(Boolean).join('\n');
+
+                        result = { ...result, INSTRUCTION: liiLinksSection + googleSection };
+                      }
+                    } catch (fallbackErr: any) {
+                      console.error('[searchAfricanLegalSources] Google fallback failed:', fallbackErr?.message);
+                      // Proceed with LII-only results — no impact on the user
+                    }
+                  }
+
                   return { functionResponse: { name: fc.name, response: result } };
                 }
               })
@@ -1340,8 +1691,11 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
           const callGeminiWithRetry = async (forceText = false) => {
             let callConfig: any;
             if (forceText) {
-              // Remove tools entirely — model has no choice but to respond with text
-              const { tools: _tools, thoughtSignature: _ts, ...textOnlyConfig } = generateConfig;
+              // Remove tools AND toolConfig entirely — model has no choice but to respond
+              // with text. toolConfig MUST be stripped too: leaving mode=ANY with no tools
+              // causes the Gemini API to error, producing an empty response and triggering
+              // the fallback message instead of a proper confirmation.
+              const { tools: _tools, thoughtSignature: _ts, toolConfig: _tc, ...textOnlyConfig } = generateConfig;
               callConfig = textOnlyConfig;
             } else {
               callConfig = generateConfig;
@@ -1386,6 +1740,20 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             // Execute this round's function calls
             const functionResponses = await executeFunctionBatch(functionCalls, functionCallParts);
 
+            // If an edit timed out, emit the message directly and skip the Gemini round-trip.
+            const timedOutEdit = functionResponses.find((fr: any) => fr.functionResponse?.response?.timeout === true);
+            if (timedOutEdit) {
+              const timeoutMsg = timedOutEdit.functionResponse.response.message as string;
+              fullContent = timeoutMsg;
+              controller.enqueue(encoder.encode(JSON.stringify({
+                type: 'delta',
+                conversationId: conversation.id,
+                messageId: tempMessageId,
+                content: timeoutMsg,
+              }) + '\n'));
+              break;
+            }
+
             // Capture platform metadata from any searchAfricanLegalSources response
             // (works for success, partial, zero-results, and hard-failure responses —
             //  all now include platform/platformSearchUrl so the fallback can link there)
@@ -1415,14 +1783,72 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             fullContents.push({ role: 'model', parts: functionCallParts });
             fullContents.push({ role: 'user', parts: functionResponses.map((fr: any) => ({ functionResponse: fr.functionResponse })) });
 
+            // When the search returned results but Gemini treated it as a failure, inject
+            // an explicit synthesis instruction so Gemini composes a real response from
+            // those results rather than producing nothing (which triggers the raw-list fallback).
+            if (searchAgentFailed && capturedSearchPreview.length > 0) {
+              const platformLabel = capturedPlatformName || 'the legal database';
+              fullContents.push({
+                role: 'user',
+                parts: [{
+                  text: `The search returned ${capturedSearchPreview.length} result(s) from ${platformLabel}. ` +
+                    `Using those results together with your legal knowledge, write a comprehensive and well-structured response for the user. ` +
+                    `For each relevant result, explain the case/statute and how it relates to the user's query. ` +
+                    `Cite sources inline using markdown links. Do not say the search failed.`
+                }]
+              });
+            }
+
             // Reset for next round
             functionCalls = [];
             functionCallParts = [];
             fullContent = '';
 
+            // Detect ANY response from an edit tool — success, known error, or unknown failure.
+            // ANY result means the edit attempt is done; force text-only so the model does NOT
+            // retry the edit (which would loop up to MAX_AGENTIC_ITERATIONS, all failing, then
+            // produce an empty fullContent that triggers the fallback message).
+            const canvasEditAttempted = functionResponses.some((fr: any) => {
+              const name = fr.functionResponse?.name;
+              return name === 'editCanvasDocument' || name === 'batchEditCanvasDocument';
+            });
+            const canvasEditSucceeded = functionResponses.some((fr: any) => {
+              const name = fr.functionResponse?.name;
+              const res = fr.functionResponse?.response;
+              return (
+                (name === 'editCanvasDocument' || name === 'batchEditCanvasDocument') &&
+                (res?.success === true || res?.error === 'NO_CANVAS_DOCUMENT')
+              );
+            });
+            if (canvasEditSucceeded) anyCanvasEditCompleted = true;
+
+            // If the edit tool ran but failed, use the tool's own error message as the
+            // response and stop — do NOT let Gemini retry (it would loop until MAX_AGENTIC_ITERATIONS
+            // with the same failure each time and produce an empty fullContent → fallback).
+            if (canvasEditAttempted && !canvasEditSucceeded) {
+              const failedEdit = functionResponses.find((fr: any) => {
+                const name = fr.functionResponse?.name;
+                return name === 'editCanvasDocument' || name === 'batchEditCanvasDocument';
+              });
+              const res = failedEdit?.functionResponse?.response;
+              // NO_CANVAS_DOCUMENT is handled by the success path (it prompts user to open editor).
+              // For all other failures, use the tool's message or a generic fallback.
+              const errorMsg = res?.instruction
+                || res?.message
+                || "I wasn't able to apply the edit. Please describe the change more specifically — for example, quote the exact text and what it should become.";
+              fullContent = errorMsg;
+              controller.enqueue(encoder.encode(JSON.stringify({
+                type: 'delta',
+                conversationId: conversation.id,
+                messageId: tempMessageId,
+                content: errorMsg,
+              }) + '\n'));
+              break;
+            }
+
             // If searchAgent failed, force a text-only call (no tools) so the model
             // cannot retry the search. It will respond with training knowledge only.
-            const nextResult = await callGeminiWithRetry(searchAgentFailed);
+            const nextResult = await callGeminiWithRetry(searchAgentFailed || canvasEditSucceeded);
 
             // Stream next response — collect any new function calls
             for await (const chunk of nextResult) {
@@ -1454,31 +1880,18 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             if (fullContent) break;
           }
 
-          // Fallback: if all iterations produced no text, build a formatted response
-          // from any legal search results that were streamed during tool execution.
-          // Never surface internal tool errors to the user.
+          // Fallback: if all iterations produced no text, surface a minimal helpful message.
+          // Gemini should have synthesized a response from any search results above — this
+          // only fires if it truly produced nothing at all.
           if (!fullContent) {
-            if (capturedSearchPreview.length > 0) {
-              const platformLabel = capturedPlatformName || 'the official legal database';
-              const lines: string[] = [
-                `I did not find an exact match for your query, but here are the closest sources retrieved from ${platformLabel}:\n`,
-              ];
-              capturedSearchPreview.forEach((r, i) => {
-                const meta = [r.date, r.platform].filter(Boolean).join(' · ');
-                lines.push(`${i + 1}. [${r.title}](${r.url})${meta ? `  —  ${meta}` : ''}`);
-              });
-              if (capturedPlatformSearchUrl) {
-                lines.push(`\nFor a more specific search, you can look directly at [${platformLabel}](${capturedPlatformSearchUrl}).`);
-              }
-              lines.push('\n---\n**⚖️ Legal Sources**\n');
-              capturedSearchPreview.forEach((r, i) => {
-                lines.push(`${i + 1}. [${r.title}](${r.url})${r.date ? `  —  ${r.date}` : ''}`);
-              });
-              fullContent = lines.join('\n');
+            if (anyCanvasEditCompleted) {
+              // A canvas edit tool succeeded but the follow-up Gemini text call returned
+              // nothing — surface a clear confirmation so the user knows to review the diff.
+              fullContent = "Done! The document has been updated. Review the highlighted changes in the canvas editor and click **Accept** to apply or **Reject** to discard them.";
             } else if (capturedPlatformSearchUrl) {
-              fullContent = `The search did not return any matching sources for your query on ${capturedPlatformName || 'the official legal database'}.\n\nYou can search directly at [${capturedPlatformName || capturedPlatformSearchUrl}](${capturedPlatformSearchUrl}).`;
+              fullContent = `No results were found for your query on ${capturedPlatformName || 'the legal database'}. You can search directly at [${capturedPlatformName || capturedPlatformSearchUrl}](${capturedPlatformSearchUrl}).`;
             } else {
-              fullContent = "The search did not return any results for your query. Please try rephrasing or search directly on the official legal platform for your jurisdiction.";
+              fullContent = "I wasn't able to find relevant results for your query. Please try rephrasing, or search directly on the official legal platform for your jurisdiction.";
             }
             controller.enqueue(encoder.encode(JSON.stringify({
               type: 'delta',
@@ -1762,7 +2175,12 @@ async function executeAgentCall(
   canvasDocument?: any,
   previewDocument?: any,
   recentMessages?: string[],
-  userId?: string
+  userId?: string,
+  streamCallback?: (event: any) => void,
+  currentCanvasHtml?: string,
+  conversationId?: string,
+  hasInlineDoc?: boolean,
+  messageIntent?: 'edit' | 'draft_new' | 'research'
 ): Promise<any> {
   try {
     const agentName = functionCall.name;
@@ -1816,18 +2234,41 @@ ${baseContext}`;
             const agentSettings = typeof project.knowledgeBase.settings === 'string'
               ? JSON.parse(project.knowledgeBase.settings)
               : project.knowledgeBase.settings;
-            agentCanvasMode = agentSettings.canvasMode === true || agentSettings.legalDrafting === true;
+            agentCanvasMode = agentSettings.canvasMode === true || agentSettings.legalDrafting === true || (!!canvasDocument && !!currentCanvasHtml);
           } catch (err) {
             // Ignore parsing errors
           }
         }
 
-        // Always include core document tools + African legal search
-        const agentDocTools: any[] = [...coreDocumentTools, ...africanLegalSearchTools];
+        // Apply the same intent-based tool routing as the direct path.
+        // Uses the pre-computed AI classifier result (messageIntent) for consistency.
+        const agentCanvasIsOpen = !!(canvasDocument || currentCanvasHtml);
+        // Use DB record as authoritative source (same as direct path).
+        const agentCanvasDocumentExists = !!canvasDocument;
+        const agentHasRecentDoc = agentCanvasIsOpen || hasInlineDoc;
+        // Use the classifier result if available; fall back to regex heuristic.
+        const agentIntent = messageIntent ?? (agentCanvasDocumentExists && agentHasRecentDoc ? 'edit' : 'research');
+        const agentUserWantsEdit = agentIntent === 'edit' && agentHasRecentDoc;
 
-        // Add canvas tools if canvas mode is enabled
-        if (agentCanvasMode) {
-          agentDocTools.push(...canvasTools);
+        let agentDocTools: any[];
+        if (agentUserWantsEdit) {
+          // Same fix as the direct path: only one edit tool when no canvas is open
+          // to prevent Gemini from calling both tools in parallel and creating duplicates.
+          const agentEditTools = agentCanvasIsOpen ? documentEditTools : [editCanvasDocumentTool];
+          agentDocTools = [
+            ...agentEditTools,
+            ...coreDocumentTools.filter((t: any) => t.name !== 'generateDocumentInline'),
+            ...africanLegalSearchTools
+          ];
+        } else {
+          const coreAgentTools = agentCanvasMode
+            ? coreDocumentTools.filter((t: any) => t.name !== 'generateDocumentInline')
+            : coreDocumentTools;
+          agentDocTools = [...coreAgentTools, ...africanLegalSearchTools];
+          // Only allow draftNewDocument when the classifier says "draft_new" or no canvas doc exists.
+          const agentAllowDraftNew = agentCanvasMode && (!agentCanvasDocumentExists || agentIntent === 'draft_new');
+          if (agentAllowDraftNew) agentDocTools.push(...canvasTools);
+          if (canvasDocument || currentCanvasHtml) agentDocTools.push(...documentEditTools);
         }
 
         agentTools.push({
@@ -1889,7 +2330,7 @@ ${baseContext}`;
     // Wrap the agent call in a timeout to prevent indefinite hangs.
     // searchAgent uses Google Search grounding which can take 30-50 s under load;
     // researchAgent is pure generation and rarely exceeds 15 s.
-    const AGENT_TIMEOUT_MS = 120_000; // 2 minutes — Google Search grounding can be slow
+    const AGENT_TIMEOUT_MS = agentName === 'researchAgent' ? 30_000 : 120_000;
     const agentResult = await Promise.race([
       genAI.models.generateContent({
         model: modelName,
@@ -1948,8 +2389,10 @@ ${baseContext}`;
           canvasDocument,
           previewDocument,
           recentMessages || [],
-          () => { }, // No event streaming for sub-agents
-          userId
+          streamCallback || (() => { }),
+          userId,
+          currentCanvasHtml,
+          conversationId
         );
 
         // Append function result to response
