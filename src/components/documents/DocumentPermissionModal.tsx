@@ -1,4 +1,4 @@
-// components/documents/FolderPermissionModal.tsx
+// components/documents/DocumentPermissionModal.tsx
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -16,6 +16,8 @@ import { cn } from '@/lib/utils';
 import { apiService } from '@/lib/api';
 import { useNotifications } from '@/hooks/useNotifications';
 
+type Visibility = 'private' | 'organization' | 'restricted';
+
 interface OrgMember {
   id: string;
   name: string;
@@ -23,11 +25,12 @@ interface OrgMember {
   role: string;
 }
 
-interface FolderPermissionModalProps {
+interface DocumentPermissionModalProps {
   open: boolean;
   onClose: () => void;
-  folderId: string;
-  folderName: string;
+  documentId: string;
+  documentTitle: string;
+  onUpdated?: () => void;
 }
 
 function Avatar({ name }: { name: string }) {
@@ -62,12 +65,13 @@ function SkeletonRows() {
 
 const EVERYONE_ID = '__everyone__';
 
-export function FolderPermissionModal({
+export function DocumentPermissionModal({
   open,
   onClose,
-  folderId,
-  folderName,
-}: FolderPermissionModalProps) {
+  documentId,
+  documentTitle,
+  onUpdated,
+}: DocumentPermissionModalProps) {
   const { notify } = useNotifications();
 
   const [loading, setLoading] = useState(true);
@@ -75,6 +79,7 @@ export function FolderPermissionModal({
   const [isOwner, setIsOwner] = useState(false);
   const [currentUserId, setCurrentUserId] = useState('');
   const [orgMembers, setOrgMembers] = useState<OrgMember[]>([]);
+  // IDs currently selected (not including the owner who is always selected)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [everyoneSelected, setEveryoneSelected] = useState(false);
   const [search, setSearch] = useState('');
@@ -84,27 +89,26 @@ export function FolderPermissionModal({
     setLoading(true);
     setSearch('');
     try {
-      const res = await apiService.get(`/api/folders/${folderId}/permissions`) as any;
+      const res = await apiService.get(`/api/documents/${documentId}/permissions`) as any;
       // API returns { status, message, data: { ... } } — unwrap the nested data
       const data = res.data?.data ?? res.data;
 
-      setIsOwner(data?.isCreator ?? false);
+      setIsOwner(data?.isOwner ?? false);
       setCurrentUserId(data?.currentUserId ?? '');
 
       const members: OrgMember[] = data?.orgMembers ?? [];
       setOrgMembers(members);
 
-      const vis: string = data?.visibility ?? 'restricted';
+      const vis: Visibility = data?.visibility ?? 'private';
 
       if (vis === 'organization') {
         setEveryoneSelected(true);
         setSelectedIds(new Set(members.map((m: OrgMember) => m.id)));
       } else {
         setEveryoneSelected(false);
-        // Permitted users excluding the creator (always implicit)
         const permitted: string[] = (data?.permittedUsers ?? [])
           .map((p: any) => p.id)
-          .filter((id: string) => id !== data?.currentUserId);
+          .filter((id: string) => id !== data?.currentUserId); // owner already implicit
         setSelectedIds(new Set(permitted));
       }
     } catch {
@@ -112,7 +116,7 @@ export function FolderPermissionModal({
     } finally {
       setLoading(false);
     }
-  }, [open, folderId]);
+  }, [open, documentId]);
 
   useEffect(() => {
     loadData();
@@ -120,7 +124,7 @@ export function FolderPermissionModal({
 
   const toggle = (id: string) => {
     if (!isOwner) return;
-    if (id === currentUserId) return; // creator always selected
+    if (id === currentUserId) return; // owner always selected
 
     if (id === EVERYONE_ID) {
       if (everyoneSelected) {
@@ -149,19 +153,26 @@ export function FolderPermissionModal({
   const handleSave = async () => {
     setSaving(true);
     try {
-      let visibility: string;
+      let visibility: Visibility;
       let userIds: string[];
 
       if (everyoneSelected || (orgMembers.length > 0 && orgMembers.every((m) => selectedIds.has(m.id)))) {
         visibility = 'organization';
+        userIds = [];
+      } else if (selectedIds.size === 0) {
+        visibility = 'private';
         userIds = [];
       } else {
         visibility = 'restricted';
         userIds = Array.from(selectedIds);
       }
 
-      await apiService.put(`/api/folders/${folderId}/permissions`, { visibility, userIds });
-      notify.success('Folder sharing updated');
+      await apiService.put(`/api/documents/${documentId}/permissions`, {
+        visibility,
+        userIds,
+      });
+      notify.success('Sharing updated');
+      onUpdated?.();
       onClose();
     } catch (err: any) {
       const msg =
@@ -189,10 +200,10 @@ export function FolderPermissionModal({
       <DialogContent className="max-w-sm p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-5 pt-5 pb-4 border-b">
           <DialogTitle className="text-sm font-semibold text-muted-foreground truncate">
-            Share folder
+            Share document
           </DialogTitle>
           <p className="text-base font-semibold truncate leading-snug mt-0.5">
-            {folderName}
+            {documentTitle}
           </p>
         </DialogHeader>
 
@@ -302,7 +313,7 @@ export function FolderPermissionModal({
         <DialogFooter className="px-4 py-3 border-t bg-muted/30">
           {!loading && !isOwner && (
             <p className="text-xs text-muted-foreground mr-auto">
-              Only the folder owner can manage sharing.
+              Only the document owner can manage sharing.
             </p>
           )}
           <Button variant="outline" size="sm" onClick={onClose} disabled={saving}>

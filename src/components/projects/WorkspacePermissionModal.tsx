@@ -1,4 +1,4 @@
-// components/documents/FolderPermissionModal.tsx
+// components/projects/WorkspacePermissionModal.tsx
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -23,11 +23,11 @@ interface OrgMember {
   role: string;
 }
 
-interface FolderPermissionModalProps {
+interface WorkspacePermissionModalProps {
   open: boolean;
   onClose: () => void;
-  folderId: string;
-  folderName: string;
+  projectId: string;
+  projectTitle: string;
 }
 
 function Avatar({ name }: { name: string }) {
@@ -62,18 +62,19 @@ function SkeletonRows() {
 
 const EVERYONE_ID = '__everyone__';
 
-export function FolderPermissionModal({
+export function WorkspacePermissionModal({
   open,
   onClose,
-  folderId,
-  folderName,
-}: FolderPermissionModalProps) {
+  projectId,
+  projectTitle,
+}: WorkspacePermissionModalProps) {
   const { notify } = useNotifications();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentUserId, setCurrentUserId] = useState('');
+  const [adminIds, setAdminIds] = useState<string[]>([]);
   const [orgMembers, setOrgMembers] = useState<OrgMember[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [everyoneSelected, setEveryoneSelected] = useState(false);
@@ -84,12 +85,13 @@ export function FolderPermissionModal({
     setLoading(true);
     setSearch('');
     try {
-      const res = await apiService.get(`/api/folders/${folderId}/permissions`) as any;
+      const res = await apiService.get(`/api/projects/${projectId}/permissions`) as any;
       // API returns { status, message, data: { ... } } — unwrap the nested data
       const data = res.data?.data ?? res.data;
 
-      setIsOwner(data?.isCreator ?? false);
+      setIsAdmin(data?.isAdmin ?? false);
       setCurrentUserId(data?.currentUserId ?? '');
+      setAdminIds(data?.adminIds ?? []);
 
       const members: OrgMember[] = data?.orgMembers ?? [];
       setOrgMembers(members);
@@ -98,13 +100,12 @@ export function FolderPermissionModal({
 
       if (vis === 'organization') {
         setEveryoneSelected(true);
-        setSelectedIds(new Set(members.map((m: OrgMember) => m.id)));
+        setSelectedIds(new Set(members.map((m) => m.id)));
       } else {
         setEveryoneSelected(false);
-        // Permitted users excluding the creator (always implicit)
-        const permitted: string[] = (data?.permittedUsers ?? [])
-          .map((p: any) => p.id)
-          .filter((id: string) => id !== data?.currentUserId);
+        const permitted: string[] = (data?.memberIds ?? []).filter(
+          (id: string) => !(data?.adminIds ?? []).includes(id)
+        );
         setSelectedIds(new Set(permitted));
       }
     } catch {
@@ -112,15 +113,15 @@ export function FolderPermissionModal({
     } finally {
       setLoading(false);
     }
-  }, [open, folderId]);
+  }, [open, projectId]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
   const toggle = (id: string) => {
-    if (!isOwner) return;
-    if (id === currentUserId) return; // creator always selected
+    if (!isAdmin) return;
+    if (adminIds.includes(id)) return;
 
     if (id === EVERYONE_ID) {
       if (everyoneSelected) {
@@ -157,11 +158,11 @@ export function FolderPermissionModal({
         userIds = [];
       } else {
         visibility = 'restricted';
-        userIds = Array.from(selectedIds);
+        userIds = Array.from(selectedIds).filter((id) => !adminIds.includes(id));
       }
 
-      await apiService.put(`/api/folders/${folderId}/permissions`, { visibility, userIds });
-      notify.success('Folder sharing updated');
+      await apiService.put(`/api/projects/${projectId}/permissions`, { visibility, userIds });
+      notify.success('Workspace sharing updated');
       onClose();
     } catch (err: any) {
       const msg =
@@ -189,10 +190,10 @@ export function FolderPermissionModal({
       <DialogContent className="max-w-sm p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-5 pt-5 pb-4 border-b">
           <DialogTitle className="text-sm font-semibold text-muted-foreground truncate">
-            Share folder
+            Share workspace
           </DialogTitle>
           <p className="text-base font-semibold truncate leading-snug mt-0.5">
-            {folderName}
+            {projectTitle}
           </p>
         </DialogHeader>
 
@@ -206,7 +207,7 @@ export function FolderPermissionModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus={!loading}
-              disabled={loading || !isOwner}
+              disabled={loading || !isAdmin}
             />
           </div>
         </div>
@@ -221,11 +222,11 @@ export function FolderPermissionModal({
               {showEveryone && (
                 <button
                   type="button"
-                  disabled={!isOwner}
+                  disabled={!isAdmin}
                   onClick={() => toggle(EVERYONE_ID)}
                   className={cn(
                     'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
-                    isOwner ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
+                    isAdmin ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
                     everyoneSelected && 'bg-primary/5'
                   )}
                 >
@@ -258,17 +259,17 @@ export function FolderPermissionModal({
 
               {/* Individual members */}
               {filtered.map((member) => {
-                const isOwnerRow = member.id === currentUserId;
+                const isOwnerRow = adminIds.includes(member.id);
                 const isChecked = isOwnerRow || selectedIds.has(member.id);
                 return (
                   <button
                     key={member.id}
                     type="button"
-                    disabled={!isOwner || isOwnerRow}
+                    disabled={!isAdmin || isOwnerRow}
                     onClick={() => toggle(member.id)}
                     className={cn(
                       'flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors',
-                      isOwner && !isOwnerRow ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
+                      isAdmin && !isOwnerRow ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
                       isChecked && !isOwnerRow && 'bg-primary/5'
                     )}
                   >
@@ -300,15 +301,15 @@ export function FolderPermissionModal({
         </div>
 
         <DialogFooter className="px-4 py-3 border-t bg-muted/30">
-          {!loading && !isOwner && (
+          {!loading && !isAdmin && (
             <p className="text-xs text-muted-foreground mr-auto">
-              Only the folder owner can manage sharing.
+              Only the workspace owner can manage sharing.
             </p>
           )}
           <Button variant="outline" size="sm" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          {!loading && isOwner && (
+          {!loading && isAdmin && (
             <Button size="sm" onClick={handleSave} disabled={saving}>
               {saving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
               Done

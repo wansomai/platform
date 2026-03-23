@@ -31,13 +31,13 @@ import {
   FolderPlus,
   ArrowUpDown,
   MoreVertical,
-  Users,
+  UserPlus,
   Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
-import { ProjectMembersModal } from "@/components/projects/ProjectMembersModal";
+import { WorkspacePermissionModal } from "@/components/projects/WorkspacePermissionModal";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProfile } from "@/store/profile.store";
 
@@ -276,8 +276,8 @@ export default function ProjectsPage() {
                           setSelectedProjectForMembers({ id: project.id, title: project.title });
                         }}
                       >
-                        <Users className="h-4 w-4 mr-2" />
-                        Manage Members
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Share
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -321,13 +321,13 @@ export default function ProjectsPage() {
         />
       )}
 
-      {/* Members Modal */}
+      {/* Share Modal */}
       {selectedProjectForMembers && (
-        <ProjectMembersModal
+        <WorkspacePermissionModal
+          open={!!selectedProjectForMembers}
+          onClose={() => setSelectedProjectForMembers(null)}
           projectId={selectedProjectForMembers.id}
           projectTitle={selectedProjectForMembers.title}
-          isOpen={!!selectedProjectForMembers}
-          onClose={() => setSelectedProjectForMembers(null)}
         />
       )}
 

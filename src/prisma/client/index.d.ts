@@ -94,6 +94,11 @@ export type Folder = $Result.DefaultSelection<Prisma.$FolderPayload>
  */
 export type FolderPermission = $Result.DefaultSelection<Prisma.$FolderPermissionPayload>
 /**
+ * Model DocumentPermission
+ * 
+ */
+export type DocumentPermission = $Result.DefaultSelection<Prisma.$DocumentPermissionPayload>
+/**
  * Model ProjectDocument
  * 
  */
@@ -569,6 +574,16 @@ export class PrismaClient<
     * ```
     */
   get folderPermission(): Prisma.FolderPermissionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.documentPermission`: Exposes CRUD operations for the **DocumentPermission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocumentPermissions
+    * const documentPermissions = await prisma.documentPermission.findMany()
+    * ```
+    */
+  get documentPermission(): Prisma.DocumentPermissionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.projectDocument`: Exposes CRUD operations for the **ProjectDocument** model.
@@ -1289,6 +1304,7 @@ export namespace Prisma {
     Document: 'Document',
     Folder: 'Folder',
     FolderPermission: 'FolderPermission',
+    DocumentPermission: 'DocumentPermission',
     ProjectDocument: 'ProjectDocument',
     ConversationDocument: 'ConversationDocument',
     DocumentContent: 'DocumentContent',
@@ -1331,7 +1347,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "legal_knowledge" | "legal_knowledge_chunks"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "legal_knowledge" | "legal_knowledge_chunks"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2516,6 +2532,80 @@ export namespace Prisma {
           count: {
             args: Prisma.FolderPermissionCountArgs<ExtArgs>
             result: $Utils.Optional<FolderPermissionCountAggregateOutputType> | number
+          }
+        }
+      }
+      DocumentPermission: {
+        payload: Prisma.$DocumentPermissionPayload<ExtArgs>
+        fields: Prisma.DocumentPermissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentPermissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentPermissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentPermissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentPermissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentPermissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentPermissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentPermissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentPermissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentPermissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>
+          }
+          update: {
+            args: Prisma.DocumentPermissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentPermissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentPermissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DocumentPermissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.DocumentPermissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentPermissionPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentPermissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocumentPermission>
+          }
+          groupBy: {
+            args: Prisma.DocumentPermissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentPermissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentPermissionCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentPermissionCountAggregateOutputType> | number
           }
         }
       }
@@ -4641,6 +4731,7 @@ export namespace Prisma {
     document?: DocumentOmit
     folder?: FolderOmit
     folderPermission?: FolderPermissionOmit
+    documentPermission?: DocumentPermissionOmit
     projectDocument?: ProjectDocumentOmit
     conversationDocument?: ConversationDocumentOmit
     documentContent?: DocumentContentOmit
@@ -4767,6 +4858,7 @@ export namespace Prisma {
     organizationMemberships: number
     digestSubscriptions: number
     legal_knowledge: number
+    documentPermissions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4789,6 +4881,7 @@ export namespace Prisma {
     organizationMemberships?: boolean | UserCountOutputTypeCountOrganizationMembershipsArgs
     digestSubscriptions?: boolean | UserCountOutputTypeCountDigestSubscriptionsArgs
     legal_knowledge?: boolean | UserCountOutputTypeCountLegal_knowledgeArgs
+    documentPermissions?: boolean | UserCountOutputTypeCountDocumentPermissionsArgs
   }
 
   // Custom InputTypes
@@ -4933,6 +5026,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountLegal_knowledgeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: legal_knowledgeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDocumentPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentPermissionWhereInput
   }
 
 
@@ -5232,6 +5332,7 @@ export namespace Prisma {
     messageReferences: number
     projectReferences: number
     SharedMessageReference: number
+    permissions: number
   }
 
   export type DocumentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5240,6 +5341,7 @@ export namespace Prisma {
     messageReferences?: boolean | DocumentCountOutputTypeCountMessageReferencesArgs
     projectReferences?: boolean | DocumentCountOutputTypeCountProjectReferencesArgs
     SharedMessageReference?: boolean | DocumentCountOutputTypeCountSharedMessageReferenceArgs
+    permissions?: boolean | DocumentCountOutputTypeCountPermissionsArgs
   }
 
   // Custom InputTypes
@@ -5286,6 +5388,13 @@ export namespace Prisma {
    */
   export type DocumentCountOutputTypeCountSharedMessageReferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SharedMessageReferenceWhereInput
+  }
+
+  /**
+   * DocumentCountOutputType without action
+   */
+  export type DocumentCountOutputTypeCountPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentPermissionWhereInput
   }
 
 
@@ -9052,6 +9161,7 @@ export namespace Prisma {
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
     digestSubscriptions?: boolean | User$digestSubscriptionsArgs<ExtArgs>
     legal_knowledge?: boolean | User$legal_knowledgeArgs<ExtArgs>
+    documentPermissions?: boolean | User$documentPermissionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -9124,6 +9234,7 @@ export namespace Prisma {
     organizationMemberships?: boolean | User$organizationMembershipsArgs<ExtArgs>
     digestSubscriptions?: boolean | User$digestSubscriptionsArgs<ExtArgs>
     legal_knowledge?: boolean | User$legal_knowledgeArgs<ExtArgs>
+    documentPermissions?: boolean | User$documentPermissionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9159,6 +9270,7 @@ export namespace Prisma {
       organizationMemberships: Prisma.$UserOrganizationPayload<ExtArgs>[]
       digestSubscriptions: Prisma.$DigestSubscriptionPayload<ExtArgs>[]
       legal_knowledge: Prisma.$legal_knowledgePayload<ExtArgs>[]
+      documentPermissions: Prisma.$DocumentPermissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9587,6 +9699,7 @@ export namespace Prisma {
     organizationMemberships<T extends User$organizationMembershipsArgs<ExtArgs> = {}>(args?: Subset<T, User$organizationMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOrganizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     digestSubscriptions<T extends User$digestSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$digestSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     legal_knowledge<T extends User$legal_knowledgeArgs<ExtArgs> = {}>(args?: Subset<T, User$legal_knowledgeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$legal_knowledgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documentPermissions<T extends User$documentPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$documentPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10495,6 +10608,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: Legal_knowledgeScalarFieldEnum | Legal_knowledgeScalarFieldEnum[]
+  }
+
+  /**
+   * User.documentPermissions
+   */
+  export type User$documentPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    where?: DocumentPermissionWhereInput
+    orderBy?: DocumentPermissionOrderByWithRelationInput | DocumentPermissionOrderByWithRelationInput[]
+    cursor?: DocumentPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentPermissionScalarFieldEnum | DocumentPermissionScalarFieldEnum[]
   }
 
   /**
@@ -21628,6 +21765,7 @@ export namespace Prisma {
     created_at: Date | null
     updated_at: Date | null
     folderId: string | null
+    visibility: string | null
   }
 
   export type DocumentMaxAggregateOutputType = {
@@ -21644,6 +21782,7 @@ export namespace Prisma {
     created_at: Date | null
     updated_at: Date | null
     folderId: string | null
+    visibility: string | null
   }
 
   export type DocumentCountAggregateOutputType = {
@@ -21663,6 +21802,7 @@ export namespace Prisma {
     created_at: number
     updated_at: number
     folderId: number
+    visibility: number
     _all: number
   }
 
@@ -21689,6 +21829,7 @@ export namespace Prisma {
     created_at?: true
     updated_at?: true
     folderId?: true
+    visibility?: true
   }
 
   export type DocumentMaxAggregateInputType = {
@@ -21705,6 +21846,7 @@ export namespace Prisma {
     created_at?: true
     updated_at?: true
     folderId?: true
+    visibility?: true
   }
 
   export type DocumentCountAggregateInputType = {
@@ -21724,6 +21866,7 @@ export namespace Prisma {
     created_at?: true
     updated_at?: true
     folderId?: true
+    visibility?: true
     _all?: true
   }
 
@@ -21830,6 +21973,7 @@ export namespace Prisma {
     created_at: Date
     updated_at: Date
     folderId: string | null
+    visibility: string
     _count: DocumentCountAggregateOutputType | null
     _avg: DocumentAvgAggregateOutputType | null
     _sum: DocumentSumAggregateOutputType | null
@@ -21868,6 +22012,7 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     folderId?: boolean
+    visibility?: boolean
     conversationReferences?: boolean | Document$conversationReferencesArgs<ExtArgs>
     createdByUser?: boolean | UserDefaultArgs<ExtArgs>
     folder?: boolean | Document$folderArgs<ExtArgs>
@@ -21878,6 +22023,7 @@ export namespace Prisma {
     messageReferences?: boolean | Document$messageReferencesArgs<ExtArgs>
     projectReferences?: boolean | Document$projectReferencesArgs<ExtArgs>
     SharedMessageReference?: boolean | Document$SharedMessageReferenceArgs<ExtArgs>
+    permissions?: boolean | Document$permissionsArgs<ExtArgs>
     _count?: boolean | DocumentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["document"]>
 
@@ -21898,6 +22044,7 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     folderId?: boolean
+    visibility?: boolean
     createdByUser?: boolean | UserDefaultArgs<ExtArgs>
     folder?: boolean | Document$folderArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -21921,6 +22068,7 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     folderId?: boolean
+    visibility?: boolean
     createdByUser?: boolean | UserDefaultArgs<ExtArgs>
     folder?: boolean | Document$folderArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -21944,9 +22092,10 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     folderId?: boolean
+    visibility?: boolean
   }
 
-  export type DocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "project_id" | "organization_id" | "title" | "description" | "file_url" | "file_type" | "file_size" | "status" | "section" | "created_by" | "metadata" | "content_extracted" | "created_at" | "updated_at" | "folderId", ExtArgs["result"]["document"]>
+  export type DocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "project_id" | "organization_id" | "title" | "description" | "file_url" | "file_type" | "file_size" | "status" | "section" | "created_by" | "metadata" | "content_extracted" | "created_at" | "updated_at" | "folderId" | "visibility", ExtArgs["result"]["document"]>
   export type DocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversationReferences?: boolean | Document$conversationReferencesArgs<ExtArgs>
     createdByUser?: boolean | UserDefaultArgs<ExtArgs>
@@ -21958,6 +22107,7 @@ export namespace Prisma {
     messageReferences?: boolean | Document$messageReferencesArgs<ExtArgs>
     projectReferences?: boolean | Document$projectReferencesArgs<ExtArgs>
     SharedMessageReference?: boolean | Document$SharedMessageReferenceArgs<ExtArgs>
+    permissions?: boolean | Document$permissionsArgs<ExtArgs>
     _count?: boolean | DocumentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DocumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21986,6 +22136,7 @@ export namespace Prisma {
       messageReferences: Prisma.$MessageReferencePayload<ExtArgs>[]
       projectReferences: Prisma.$ProjectDocumentPayload<ExtArgs>[]
       SharedMessageReference: Prisma.$SharedMessageReferencePayload<ExtArgs>[]
+      permissions: Prisma.$DocumentPermissionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -22004,6 +22155,7 @@ export namespace Prisma {
       created_at: Date
       updated_at: Date
       folderId: string | null
+      visibility: string
     }, ExtArgs["result"]["document"]>
     composites: {}
   }
@@ -22408,6 +22560,7 @@ export namespace Prisma {
     messageReferences<T extends Document$messageReferencesArgs<ExtArgs> = {}>(args?: Subset<T, Document$messageReferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projectReferences<T extends Document$projectReferencesArgs<ExtArgs> = {}>(args?: Subset<T, Document$projectReferencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     SharedMessageReference<T extends Document$SharedMessageReferenceArgs<ExtArgs> = {}>(args?: Subset<T, Document$SharedMessageReferenceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SharedMessageReferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    permissions<T extends Document$permissionsArgs<ExtArgs> = {}>(args?: Subset<T, Document$permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22453,6 +22606,7 @@ export namespace Prisma {
     readonly created_at: FieldRef<"Document", 'DateTime'>
     readonly updated_at: FieldRef<"Document", 'DateTime'>
     readonly folderId: FieldRef<"Document", 'String'>
+    readonly visibility: FieldRef<"Document", 'String'>
   }
     
 
@@ -23023,6 +23177,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SharedMessageReferenceScalarFieldEnum | SharedMessageReferenceScalarFieldEnum[]
+  }
+
+  /**
+   * Document.permissions
+   */
+  export type Document$permissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    where?: DocumentPermissionWhereInput
+    orderBy?: DocumentPermissionOrderByWithRelationInput | DocumentPermissionOrderByWithRelationInput[]
+    cursor?: DocumentPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentPermissionScalarFieldEnum | DocumentPermissionScalarFieldEnum[]
   }
 
   /**
@@ -25312,6 +25490,1059 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: FolderPermissionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DocumentPermission
+   */
+
+  export type AggregateDocumentPermission = {
+    _count: DocumentPermissionCountAggregateOutputType | null
+    _min: DocumentPermissionMinAggregateOutputType | null
+    _max: DocumentPermissionMaxAggregateOutputType | null
+  }
+
+  export type DocumentPermissionMinAggregateOutputType = {
+    id: string | null
+    documentId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type DocumentPermissionMaxAggregateOutputType = {
+    id: string | null
+    documentId: string | null
+    userId: string | null
+    createdAt: Date | null
+  }
+
+  export type DocumentPermissionCountAggregateOutputType = {
+    id: number
+    documentId: number
+    userId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DocumentPermissionMinAggregateInputType = {
+    id?: true
+    documentId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type DocumentPermissionMaxAggregateInputType = {
+    id?: true
+    documentId?: true
+    userId?: true
+    createdAt?: true
+  }
+
+  export type DocumentPermissionCountAggregateInputType = {
+    id?: true
+    documentId?: true
+    userId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DocumentPermissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentPermission to aggregate.
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentPermissions to fetch.
+     */
+    orderBy?: DocumentPermissionOrderByWithRelationInput | DocumentPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocumentPermissions
+    **/
+    _count?: true | DocumentPermissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentPermissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentPermissionMaxAggregateInputType
+  }
+
+  export type GetDocumentPermissionAggregateType<T extends DocumentPermissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocumentPermission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocumentPermission[P]>
+      : GetScalarType<T[P], AggregateDocumentPermission[P]>
+  }
+
+
+
+
+  export type DocumentPermissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentPermissionWhereInput
+    orderBy?: DocumentPermissionOrderByWithAggregationInput | DocumentPermissionOrderByWithAggregationInput[]
+    by: DocumentPermissionScalarFieldEnum[] | DocumentPermissionScalarFieldEnum
+    having?: DocumentPermissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentPermissionCountAggregateInputType | true
+    _min?: DocumentPermissionMinAggregateInputType
+    _max?: DocumentPermissionMaxAggregateInputType
+  }
+
+  export type DocumentPermissionGroupByOutputType = {
+    id: string
+    documentId: string
+    userId: string
+    createdAt: Date
+    _count: DocumentPermissionCountAggregateOutputType | null
+    _min: DocumentPermissionMinAggregateOutputType | null
+    _max: DocumentPermissionMaxAggregateOutputType | null
+  }
+
+  type GetDocumentPermissionGroupByPayload<T extends DocumentPermissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentPermissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentPermissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentPermissionGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentPermissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentPermissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    documentId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentPermission"]>
+
+  export type DocumentPermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    documentId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentPermission"]>
+
+  export type DocumentPermissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    documentId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentPermission"]>
+
+  export type DocumentPermissionSelectScalar = {
+    id?: boolean
+    documentId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+  }
+
+  export type DocumentPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "documentId" | "userId" | "createdAt", ExtArgs["result"]["documentPermission"]>
+  export type DocumentPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DocumentPermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DocumentPermissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    document?: boolean | DocumentDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DocumentPermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocumentPermission"
+    objects: {
+      document: Prisma.$DocumentPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      documentId: string
+      userId: string
+      createdAt: Date
+    }, ExtArgs["result"]["documentPermission"]>
+    composites: {}
+  }
+
+  type DocumentPermissionGetPayload<S extends boolean | null | undefined | DocumentPermissionDefaultArgs> = $Result.GetResult<Prisma.$DocumentPermissionPayload, S>
+
+  type DocumentPermissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DocumentPermissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DocumentPermissionCountAggregateInputType | true
+    }
+
+  export interface DocumentPermissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocumentPermission'], meta: { name: 'DocumentPermission' } }
+    /**
+     * Find zero or one DocumentPermission that matches the filter.
+     * @param {DocumentPermissionFindUniqueArgs} args - Arguments to find a DocumentPermission
+     * @example
+     * // Get one DocumentPermission
+     * const documentPermission = await prisma.documentPermission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentPermissionFindUniqueArgs>(args: SelectSubset<T, DocumentPermissionFindUniqueArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DocumentPermission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DocumentPermissionFindUniqueOrThrowArgs} args - Arguments to find a DocumentPermission
+     * @example
+     * // Get one DocumentPermission
+     * const documentPermission = await prisma.documentPermission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentPermissionFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentPermissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DocumentPermission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionFindFirstArgs} args - Arguments to find a DocumentPermission
+     * @example
+     * // Get one DocumentPermission
+     * const documentPermission = await prisma.documentPermission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentPermissionFindFirstArgs>(args?: SelectSubset<T, DocumentPermissionFindFirstArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DocumentPermission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionFindFirstOrThrowArgs} args - Arguments to find a DocumentPermission
+     * @example
+     * // Get one DocumentPermission
+     * const documentPermission = await prisma.documentPermission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentPermissionFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentPermissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DocumentPermissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocumentPermissions
+     * const documentPermissions = await prisma.documentPermission.findMany()
+     * 
+     * // Get first 10 DocumentPermissions
+     * const documentPermissions = await prisma.documentPermission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentPermissionWithIdOnly = await prisma.documentPermission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentPermissionFindManyArgs>(args?: SelectSubset<T, DocumentPermissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DocumentPermission.
+     * @param {DocumentPermissionCreateArgs} args - Arguments to create a DocumentPermission.
+     * @example
+     * // Create one DocumentPermission
+     * const DocumentPermission = await prisma.documentPermission.create({
+     *   data: {
+     *     // ... data to create a DocumentPermission
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentPermissionCreateArgs>(args: SelectSubset<T, DocumentPermissionCreateArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DocumentPermissions.
+     * @param {DocumentPermissionCreateManyArgs} args - Arguments to create many DocumentPermissions.
+     * @example
+     * // Create many DocumentPermissions
+     * const documentPermission = await prisma.documentPermission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentPermissionCreateManyArgs>(args?: SelectSubset<T, DocumentPermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocumentPermissions and returns the data saved in the database.
+     * @param {DocumentPermissionCreateManyAndReturnArgs} args - Arguments to create many DocumentPermissions.
+     * @example
+     * // Create many DocumentPermissions
+     * const documentPermission = await prisma.documentPermission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocumentPermissions and only return the `id`
+     * const documentPermissionWithIdOnly = await prisma.documentPermission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentPermissionCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentPermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DocumentPermission.
+     * @param {DocumentPermissionDeleteArgs} args - Arguments to delete one DocumentPermission.
+     * @example
+     * // Delete one DocumentPermission
+     * const DocumentPermission = await prisma.documentPermission.delete({
+     *   where: {
+     *     // ... filter to delete one DocumentPermission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentPermissionDeleteArgs>(args: SelectSubset<T, DocumentPermissionDeleteArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DocumentPermission.
+     * @param {DocumentPermissionUpdateArgs} args - Arguments to update one DocumentPermission.
+     * @example
+     * // Update one DocumentPermission
+     * const documentPermission = await prisma.documentPermission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentPermissionUpdateArgs>(args: SelectSubset<T, DocumentPermissionUpdateArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DocumentPermissions.
+     * @param {DocumentPermissionDeleteManyArgs} args - Arguments to filter DocumentPermissions to delete.
+     * @example
+     * // Delete a few DocumentPermissions
+     * const { count } = await prisma.documentPermission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentPermissionDeleteManyArgs>(args?: SelectSubset<T, DocumentPermissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocumentPermissions
+     * const documentPermission = await prisma.documentPermission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentPermissionUpdateManyArgs>(args: SelectSubset<T, DocumentPermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentPermissions and returns the data updated in the database.
+     * @param {DocumentPermissionUpdateManyAndReturnArgs} args - Arguments to update many DocumentPermissions.
+     * @example
+     * // Update many DocumentPermissions
+     * const documentPermission = await prisma.documentPermission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DocumentPermissions and only return the `id`
+     * const documentPermissionWithIdOnly = await prisma.documentPermission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DocumentPermissionUpdateManyAndReturnArgs>(args: SelectSubset<T, DocumentPermissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DocumentPermission.
+     * @param {DocumentPermissionUpsertArgs} args - Arguments to update or create a DocumentPermission.
+     * @example
+     * // Update or create a DocumentPermission
+     * const documentPermission = await prisma.documentPermission.upsert({
+     *   create: {
+     *     // ... data to create a DocumentPermission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocumentPermission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentPermissionUpsertArgs>(args: SelectSubset<T, DocumentPermissionUpsertArgs<ExtArgs>>): Prisma__DocumentPermissionClient<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DocumentPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionCountArgs} args - Arguments to filter DocumentPermissions to count.
+     * @example
+     * // Count the number of DocumentPermissions
+     * const count = await prisma.documentPermission.count({
+     *   where: {
+     *     // ... the filter for the DocumentPermissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentPermissionCountArgs>(
+      args?: Subset<T, DocumentPermissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentPermissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocumentPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentPermissionAggregateArgs>(args: Subset<T, DocumentPermissionAggregateArgs>): Prisma.PrismaPromise<GetDocumentPermissionAggregateType<T>>
+
+    /**
+     * Group by DocumentPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentPermissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentPermissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentPermissionGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentPermissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentPermissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentPermissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocumentPermission model
+   */
+  readonly fields: DocumentPermissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocumentPermission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentPermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    document<T extends DocumentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DocumentDefaultArgs<ExtArgs>>): Prisma__DocumentClient<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocumentPermission model
+   */
+  interface DocumentPermissionFieldRefs {
+    readonly id: FieldRef<"DocumentPermission", 'String'>
+    readonly documentId: FieldRef<"DocumentPermission", 'String'>
+    readonly userId: FieldRef<"DocumentPermission", 'String'>
+    readonly createdAt: FieldRef<"DocumentPermission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocumentPermission findUnique
+   */
+  export type DocumentPermissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentPermission to fetch.
+     */
+    where: DocumentPermissionWhereUniqueInput
+  }
+
+  /**
+   * DocumentPermission findUniqueOrThrow
+   */
+  export type DocumentPermissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentPermission to fetch.
+     */
+    where: DocumentPermissionWhereUniqueInput
+  }
+
+  /**
+   * DocumentPermission findFirst
+   */
+  export type DocumentPermissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentPermission to fetch.
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentPermissions to fetch.
+     */
+    orderBy?: DocumentPermissionOrderByWithRelationInput | DocumentPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentPermissions.
+     */
+    cursor?: DocumentPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentPermissions.
+     */
+    distinct?: DocumentPermissionScalarFieldEnum | DocumentPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentPermission findFirstOrThrow
+   */
+  export type DocumentPermissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentPermission to fetch.
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentPermissions to fetch.
+     */
+    orderBy?: DocumentPermissionOrderByWithRelationInput | DocumentPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentPermissions.
+     */
+    cursor?: DocumentPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentPermissions.
+     */
+    distinct?: DocumentPermissionScalarFieldEnum | DocumentPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentPermission findMany
+   */
+  export type DocumentPermissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentPermissions to fetch.
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentPermissions to fetch.
+     */
+    orderBy?: DocumentPermissionOrderByWithRelationInput | DocumentPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocumentPermissions.
+     */
+    cursor?: DocumentPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentPermissions.
+     */
+    skip?: number
+    distinct?: DocumentPermissionScalarFieldEnum | DocumentPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentPermission create
+   */
+  export type DocumentPermissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocumentPermission.
+     */
+    data: XOR<DocumentPermissionCreateInput, DocumentPermissionUncheckedCreateInput>
+  }
+
+  /**
+   * DocumentPermission createMany
+   */
+  export type DocumentPermissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocumentPermissions.
+     */
+    data: DocumentPermissionCreateManyInput | DocumentPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentPermission createManyAndReturn
+   */
+  export type DocumentPermissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many DocumentPermissions.
+     */
+    data: DocumentPermissionCreateManyInput | DocumentPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocumentPermission update
+   */
+  export type DocumentPermissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocumentPermission.
+     */
+    data: XOR<DocumentPermissionUpdateInput, DocumentPermissionUncheckedUpdateInput>
+    /**
+     * Choose, which DocumentPermission to update.
+     */
+    where: DocumentPermissionWhereUniqueInput
+  }
+
+  /**
+   * DocumentPermission updateMany
+   */
+  export type DocumentPermissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocumentPermissions.
+     */
+    data: XOR<DocumentPermissionUpdateManyMutationInput, DocumentPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentPermissions to update
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * Limit how many DocumentPermissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DocumentPermission updateManyAndReturn
+   */
+  export type DocumentPermissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * The data used to update DocumentPermissions.
+     */
+    data: XOR<DocumentPermissionUpdateManyMutationInput, DocumentPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentPermissions to update
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * Limit how many DocumentPermissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DocumentPermission upsert
+   */
+  export type DocumentPermissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocumentPermission to update in case it exists.
+     */
+    where: DocumentPermissionWhereUniqueInput
+    /**
+     * In case the DocumentPermission found by the `where` argument doesn't exist, create a new DocumentPermission with this data.
+     */
+    create: XOR<DocumentPermissionCreateInput, DocumentPermissionUncheckedCreateInput>
+    /**
+     * In case the DocumentPermission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentPermissionUpdateInput, DocumentPermissionUncheckedUpdateInput>
+  }
+
+  /**
+   * DocumentPermission delete
+   */
+  export type DocumentPermissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
+    /**
+     * Filter which DocumentPermission to delete.
+     */
+    where: DocumentPermissionWhereUniqueInput
+  }
+
+  /**
+   * DocumentPermission deleteMany
+   */
+  export type DocumentPermissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentPermissions to delete
+     */
+    where?: DocumentPermissionWhereInput
+    /**
+     * Limit how many DocumentPermissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DocumentPermission without action
+   */
+  export type DocumentPermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentPermission
+     */
+    select?: DocumentPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DocumentPermission
+     */
+    omit?: DocumentPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentPermissionInclude<ExtArgs> | null
   }
 
 
@@ -55665,7 +56896,8 @@ export namespace Prisma {
     content_extracted: 'content_extracted',
     created_at: 'created_at',
     updated_at: 'updated_at',
-    folderId: 'folderId'
+    folderId: 'folderId',
+    visibility: 'visibility'
   };
 
   export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
@@ -55693,6 +56925,16 @@ export namespace Prisma {
   };
 
   export type FolderPermissionScalarFieldEnum = (typeof FolderPermissionScalarFieldEnum)[keyof typeof FolderPermissionScalarFieldEnum]
+
+
+  export const DocumentPermissionScalarFieldEnum: {
+    id: 'id',
+    documentId: 'documentId',
+    userId: 'userId',
+    createdAt: 'createdAt'
+  };
+
+  export type DocumentPermissionScalarFieldEnum = (typeof DocumentPermissionScalarFieldEnum)[keyof typeof DocumentPermissionScalarFieldEnum]
 
 
   export const ProjectDocumentScalarFieldEnum: {
@@ -56460,6 +57702,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationListRelationFilter
     digestSubscriptions?: DigestSubscriptionListRelationFilter
     legal_knowledge?: Legal_knowledgeListRelationFilter
+    documentPermissions?: DocumentPermissionListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -56495,6 +57738,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationOrderByRelationAggregateInput
     digestSubscriptions?: DigestSubscriptionOrderByRelationAggregateInput
     legal_knowledge?: legal_knowledgeOrderByRelationAggregateInput
+    documentPermissions?: DocumentPermissionOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -56533,6 +57777,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationListRelationFilter
     digestSubscriptions?: DigestSubscriptionListRelationFilter
     legal_knowledge?: Legal_knowledgeListRelationFilter
+    documentPermissions?: DocumentPermissionListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -57432,6 +58677,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Document"> | Date | string
     updated_at?: DateTimeFilter<"Document"> | Date | string
     folderId?: StringNullableFilter<"Document"> | string | null
+    visibility?: StringFilter<"Document"> | string
     conversationReferences?: ConversationDocumentListRelationFilter
     createdByUser?: XOR<UserScalarRelationFilter, UserWhereInput>
     folder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
@@ -57442,6 +58688,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceListRelationFilter
     projectReferences?: ProjectDocumentListRelationFilter
     SharedMessageReference?: SharedMessageReferenceListRelationFilter
+    permissions?: DocumentPermissionListRelationFilter
   }
 
   export type DocumentOrderByWithRelationInput = {
@@ -57461,6 +58708,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     folderId?: SortOrderInput | SortOrder
+    visibility?: SortOrder
     conversationReferences?: ConversationDocumentOrderByRelationAggregateInput
     createdByUser?: UserOrderByWithRelationInput
     folder?: FolderOrderByWithRelationInput
@@ -57471,6 +58719,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceOrderByRelationAggregateInput
     projectReferences?: ProjectDocumentOrderByRelationAggregateInput
     SharedMessageReference?: SharedMessageReferenceOrderByRelationAggregateInput
+    permissions?: DocumentPermissionOrderByRelationAggregateInput
   }
 
   export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -57493,6 +58742,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Document"> | Date | string
     updated_at?: DateTimeFilter<"Document"> | Date | string
     folderId?: StringNullableFilter<"Document"> | string | null
+    visibility?: StringFilter<"Document"> | string
     conversationReferences?: ConversationDocumentListRelationFilter
     createdByUser?: XOR<UserScalarRelationFilter, UserWhereInput>
     folder?: XOR<FolderNullableScalarRelationFilter, FolderWhereInput> | null
@@ -57503,6 +58753,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceListRelationFilter
     projectReferences?: ProjectDocumentListRelationFilter
     SharedMessageReference?: SharedMessageReferenceListRelationFilter
+    permissions?: DocumentPermissionListRelationFilter
   }, "id">
 
   export type DocumentOrderByWithAggregationInput = {
@@ -57522,6 +58773,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     folderId?: SortOrderInput | SortOrder
+    visibility?: SortOrder
     _count?: DocumentCountOrderByAggregateInput
     _avg?: DocumentAvgOrderByAggregateInput
     _max?: DocumentMaxOrderByAggregateInput
@@ -57549,6 +58801,7 @@ export namespace Prisma {
     created_at?: DateTimeWithAggregatesFilter<"Document"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Document"> | Date | string
     folderId?: StringNullableWithAggregatesFilter<"Document"> | string | null
+    visibility?: StringWithAggregatesFilter<"Document"> | string
   }
 
   export type FolderWhereInput = {
@@ -57688,6 +58941,60 @@ export namespace Prisma {
     folderId?: StringWithAggregatesFilter<"FolderPermission"> | string
     userId?: StringWithAggregatesFilter<"FolderPermission"> | string
     createdAt?: DateTimeWithAggregatesFilter<"FolderPermission"> | Date | string
+  }
+
+  export type DocumentPermissionWhereInput = {
+    AND?: DocumentPermissionWhereInput | DocumentPermissionWhereInput[]
+    OR?: DocumentPermissionWhereInput[]
+    NOT?: DocumentPermissionWhereInput | DocumentPermissionWhereInput[]
+    id?: StringFilter<"DocumentPermission"> | string
+    documentId?: StringFilter<"DocumentPermission"> | string
+    userId?: StringFilter<"DocumentPermission"> | string
+    createdAt?: DateTimeFilter<"DocumentPermission"> | Date | string
+    document?: XOR<DocumentScalarRelationFilter, DocumentWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type DocumentPermissionOrderByWithRelationInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    document?: DocumentOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type DocumentPermissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    documentId_userId?: DocumentPermissionDocumentIdUserIdCompoundUniqueInput
+    AND?: DocumentPermissionWhereInput | DocumentPermissionWhereInput[]
+    OR?: DocumentPermissionWhereInput[]
+    NOT?: DocumentPermissionWhereInput | DocumentPermissionWhereInput[]
+    documentId?: StringFilter<"DocumentPermission"> | string
+    userId?: StringFilter<"DocumentPermission"> | string
+    createdAt?: DateTimeFilter<"DocumentPermission"> | Date | string
+    document?: XOR<DocumentScalarRelationFilter, DocumentWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "documentId_userId">
+
+  export type DocumentPermissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    _count?: DocumentPermissionCountOrderByAggregateInput
+    _max?: DocumentPermissionMaxOrderByAggregateInput
+    _min?: DocumentPermissionMinOrderByAggregateInput
+  }
+
+  export type DocumentPermissionScalarWhereWithAggregatesInput = {
+    AND?: DocumentPermissionScalarWhereWithAggregatesInput | DocumentPermissionScalarWhereWithAggregatesInput[]
+    OR?: DocumentPermissionScalarWhereWithAggregatesInput[]
+    NOT?: DocumentPermissionScalarWhereWithAggregatesInput | DocumentPermissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DocumentPermission"> | string
+    documentId?: StringWithAggregatesFilter<"DocumentPermission"> | string
+    userId?: StringWithAggregatesFilter<"DocumentPermission"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DocumentPermission"> | Date | string
   }
 
   export type ProjectDocumentWhereInput = {
@@ -59829,6 +61136,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -59862,6 +61170,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -59895,6 +61204,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -59928,6 +61238,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -60929,6 +62240,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -60939,6 +62251,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateInput = {
@@ -60958,12 +62271,14 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUpdateInput = {
@@ -60979,6 +62294,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -60989,6 +62305,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateInput = {
@@ -61008,12 +62325,14 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentCreateManyInput = {
@@ -61033,6 +62352,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
   }
 
   export type DocumentUpdateManyMutationInput = {
@@ -61048,6 +62368,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type DocumentUncheckedUpdateManyInput = {
@@ -61067,6 +62388,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type FolderCreateInput = {
@@ -61198,6 +62520,53 @@ export namespace Prisma {
   export type FolderPermissionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     folderId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentPermissionCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    document: DocumentCreateNestedOneWithoutPermissionsInput
+    user: UserCreateNestedOneWithoutDocumentPermissionsInput
+  }
+
+  export type DocumentPermissionUncheckedCreateInput = {
+    id?: string
+    documentId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type DocumentPermissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    document?: DocumentUpdateOneRequiredWithoutPermissionsNestedInput
+    user?: UserUpdateOneRequiredWithoutDocumentPermissionsNestedInput
+  }
+
+  export type DocumentPermissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentPermissionCreateManyInput = {
+    id?: string
+    documentId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type DocumentPermissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentPermissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -63544,6 +64913,12 @@ export namespace Prisma {
     none?: legal_knowledgeWhereInput
   }
 
+  export type DocumentPermissionListRelationFilter = {
+    every?: DocumentPermissionWhereInput
+    some?: DocumentPermissionWhereInput
+    none?: DocumentPermissionWhereInput
+  }
+
   export type AIAssociateOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -63617,6 +64992,10 @@ export namespace Prisma {
   }
 
   export type legal_knowledgeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocumentPermissionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -64430,6 +65809,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     folderId?: SortOrder
+    visibility?: SortOrder
   }
 
   export type DocumentAvgOrderByAggregateInput = {
@@ -64450,6 +65830,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     folderId?: SortOrder
+    visibility?: SortOrder
   }
 
   export type DocumentMinOrderByAggregateInput = {
@@ -64466,6 +65847,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     folderId?: SortOrder
+    visibility?: SortOrder
   }
 
   export type DocumentSumOrderByAggregateInput = {
@@ -64539,6 +65921,32 @@ export namespace Prisma {
   export type DocumentScalarRelationFilter = {
     is?: DocumentWhereInput
     isNot?: DocumentWhereInput
+  }
+
+  export type DocumentPermissionDocumentIdUserIdCompoundUniqueInput = {
+    documentId: string
+    userId: string
+  }
+
+  export type DocumentPermissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocumentPermissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DocumentPermissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    documentId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type ProjectDocumentProject_idDocument_idCompoundUniqueInput = {
@@ -65804,6 +67212,13 @@ export namespace Prisma {
     connect?: legal_knowledgeWhereUniqueInput | legal_knowledgeWhereUniqueInput[]
   }
 
+  export type DocumentPermissionCreateNestedManyWithoutUserInput = {
+    create?: XOR<DocumentPermissionCreateWithoutUserInput, DocumentPermissionUncheckedCreateWithoutUserInput> | DocumentPermissionCreateWithoutUserInput[] | DocumentPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutUserInput | DocumentPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: DocumentPermissionCreateManyUserInputEnvelope
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -65935,6 +67350,13 @@ export namespace Prisma {
     connectOrCreate?: legal_knowledgeCreateOrConnectWithoutUserInput | legal_knowledgeCreateOrConnectWithoutUserInput[]
     createMany?: legal_knowledgeCreateManyUserInputEnvelope
     connect?: legal_knowledgeWhereUniqueInput | legal_knowledgeWhereUniqueInput[]
+  }
+
+  export type DocumentPermissionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DocumentPermissionCreateWithoutUserInput, DocumentPermissionUncheckedCreateWithoutUserInput> | DocumentPermissionCreateWithoutUserInput[] | DocumentPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutUserInput | DocumentPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: DocumentPermissionCreateManyUserInputEnvelope
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -66225,6 +67647,20 @@ export namespace Prisma {
     deleteMany?: legal_knowledgeScalarWhereInput | legal_knowledgeScalarWhereInput[]
   }
 
+  export type DocumentPermissionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DocumentPermissionCreateWithoutUserInput, DocumentPermissionUncheckedCreateWithoutUserInput> | DocumentPermissionCreateWithoutUserInput[] | DocumentPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutUserInput | DocumentPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: DocumentPermissionUpsertWithWhereUniqueWithoutUserInput | DocumentPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DocumentPermissionCreateManyUserInputEnvelope
+    set?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    disconnect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    delete?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    update?: DocumentPermissionUpdateWithWhereUniqueWithoutUserInput | DocumentPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DocumentPermissionUpdateManyWithWhereWithoutUserInput | DocumentPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -66489,6 +67925,20 @@ export namespace Prisma {
     update?: legal_knowledgeUpdateWithWhereUniqueWithoutUserInput | legal_knowledgeUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: legal_knowledgeUpdateManyWithWhereWithoutUserInput | legal_knowledgeUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: legal_knowledgeScalarWhereInput | legal_knowledgeScalarWhereInput[]
+  }
+
+  export type DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DocumentPermissionCreateWithoutUserInput, DocumentPermissionUncheckedCreateWithoutUserInput> | DocumentPermissionCreateWithoutUserInput[] | DocumentPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutUserInput | DocumentPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: DocumentPermissionUpsertWithWhereUniqueWithoutUserInput | DocumentPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DocumentPermissionCreateManyUserInputEnvelope
+    set?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    disconnect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    delete?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    update?: DocumentPermissionUpdateWithWhereUniqueWithoutUserInput | DocumentPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DocumentPermissionUpdateManyWithWhereWithoutUserInput | DocumentPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
   }
 
   export type OrganizationCreatepracticeAreasInput = {
@@ -67756,6 +69206,13 @@ export namespace Prisma {
     connect?: SharedMessageReferenceWhereUniqueInput | SharedMessageReferenceWhereUniqueInput[]
   }
 
+  export type DocumentPermissionCreateNestedManyWithoutDocumentInput = {
+    create?: XOR<DocumentPermissionCreateWithoutDocumentInput, DocumentPermissionUncheckedCreateWithoutDocumentInput> | DocumentPermissionCreateWithoutDocumentInput[] | DocumentPermissionUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutDocumentInput | DocumentPermissionCreateOrConnectWithoutDocumentInput[]
+    createMany?: DocumentPermissionCreateManyDocumentInputEnvelope
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+  }
+
   export type ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput = {
     create?: XOR<ConversationDocumentCreateWithoutDocumentInput, ConversationDocumentUncheckedCreateWithoutDocumentInput> | ConversationDocumentCreateWithoutDocumentInput[] | ConversationDocumentUncheckedCreateWithoutDocumentInput[]
     connectOrCreate?: ConversationDocumentCreateOrConnectWithoutDocumentInput | ConversationDocumentCreateOrConnectWithoutDocumentInput[]
@@ -67795,6 +69252,13 @@ export namespace Prisma {
     connectOrCreate?: SharedMessageReferenceCreateOrConnectWithoutDocumentInput | SharedMessageReferenceCreateOrConnectWithoutDocumentInput[]
     createMany?: SharedMessageReferenceCreateManyDocumentInputEnvelope
     connect?: SharedMessageReferenceWhereUniqueInput | SharedMessageReferenceWhereUniqueInput[]
+  }
+
+  export type DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput = {
+    create?: XOR<DocumentPermissionCreateWithoutDocumentInput, DocumentPermissionUncheckedCreateWithoutDocumentInput> | DocumentPermissionCreateWithoutDocumentInput[] | DocumentPermissionUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutDocumentInput | DocumentPermissionCreateOrConnectWithoutDocumentInput[]
+    createMany?: DocumentPermissionCreateManyDocumentInputEnvelope
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
   }
 
   export type ConversationDocumentUpdateManyWithoutDocumentNestedInput = {
@@ -67913,6 +69377,20 @@ export namespace Prisma {
     deleteMany?: SharedMessageReferenceScalarWhereInput | SharedMessageReferenceScalarWhereInput[]
   }
 
+  export type DocumentPermissionUpdateManyWithoutDocumentNestedInput = {
+    create?: XOR<DocumentPermissionCreateWithoutDocumentInput, DocumentPermissionUncheckedCreateWithoutDocumentInput> | DocumentPermissionCreateWithoutDocumentInput[] | DocumentPermissionUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutDocumentInput | DocumentPermissionCreateOrConnectWithoutDocumentInput[]
+    upsert?: DocumentPermissionUpsertWithWhereUniqueWithoutDocumentInput | DocumentPermissionUpsertWithWhereUniqueWithoutDocumentInput[]
+    createMany?: DocumentPermissionCreateManyDocumentInputEnvelope
+    set?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    disconnect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    delete?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    update?: DocumentPermissionUpdateWithWhereUniqueWithoutDocumentInput | DocumentPermissionUpdateWithWhereUniqueWithoutDocumentInput[]
+    updateMany?: DocumentPermissionUpdateManyWithWhereWithoutDocumentInput | DocumentPermissionUpdateManyWithWhereWithoutDocumentInput[]
+    deleteMany?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
+  }
+
   export type ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput = {
     create?: XOR<ConversationDocumentCreateWithoutDocumentInput, ConversationDocumentUncheckedCreateWithoutDocumentInput> | ConversationDocumentCreateWithoutDocumentInput[] | ConversationDocumentUncheckedCreateWithoutDocumentInput[]
     connectOrCreate?: ConversationDocumentCreateOrConnectWithoutDocumentInput | ConversationDocumentCreateOrConnectWithoutDocumentInput[]
@@ -67991,6 +69469,20 @@ export namespace Prisma {
     update?: SharedMessageReferenceUpdateWithWhereUniqueWithoutDocumentInput | SharedMessageReferenceUpdateWithWhereUniqueWithoutDocumentInput[]
     updateMany?: SharedMessageReferenceUpdateManyWithWhereWithoutDocumentInput | SharedMessageReferenceUpdateManyWithWhereWithoutDocumentInput[]
     deleteMany?: SharedMessageReferenceScalarWhereInput | SharedMessageReferenceScalarWhereInput[]
+  }
+
+  export type DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput = {
+    create?: XOR<DocumentPermissionCreateWithoutDocumentInput, DocumentPermissionUncheckedCreateWithoutDocumentInput> | DocumentPermissionCreateWithoutDocumentInput[] | DocumentPermissionUncheckedCreateWithoutDocumentInput[]
+    connectOrCreate?: DocumentPermissionCreateOrConnectWithoutDocumentInput | DocumentPermissionCreateOrConnectWithoutDocumentInput[]
+    upsert?: DocumentPermissionUpsertWithWhereUniqueWithoutDocumentInput | DocumentPermissionUpsertWithWhereUniqueWithoutDocumentInput[]
+    createMany?: DocumentPermissionCreateManyDocumentInputEnvelope
+    set?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    disconnect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    delete?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+    update?: DocumentPermissionUpdateWithWhereUniqueWithoutDocumentInput | DocumentPermissionUpdateWithWhereUniqueWithoutDocumentInput[]
+    updateMany?: DocumentPermissionUpdateManyWithWhereWithoutDocumentInput | DocumentPermissionUpdateManyWithWhereWithoutDocumentInput[]
+    deleteMany?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
   }
 
   export type DocumentCreateNestedManyWithoutFolderInput = {
@@ -68189,6 +69681,34 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutFolderPermissionsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFolderPermissionsInput, UserUpdateWithoutFolderPermissionsInput>, UserUncheckedUpdateWithoutFolderPermissionsInput>
+  }
+
+  export type DocumentCreateNestedOneWithoutPermissionsInput = {
+    create?: XOR<DocumentCreateWithoutPermissionsInput, DocumentUncheckedCreateWithoutPermissionsInput>
+    connectOrCreate?: DocumentCreateOrConnectWithoutPermissionsInput
+    connect?: DocumentWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutDocumentPermissionsInput = {
+    create?: XOR<UserCreateWithoutDocumentPermissionsInput, UserUncheckedCreateWithoutDocumentPermissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDocumentPermissionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type DocumentUpdateOneRequiredWithoutPermissionsNestedInput = {
+    create?: XOR<DocumentCreateWithoutPermissionsInput, DocumentUncheckedCreateWithoutPermissionsInput>
+    connectOrCreate?: DocumentCreateOrConnectWithoutPermissionsInput
+    upsert?: DocumentUpsertWithoutPermissionsInput
+    connect?: DocumentWhereUniqueInput
+    update?: XOR<XOR<DocumentUpdateToOneWithWhereWithoutPermissionsInput, DocumentUpdateWithoutPermissionsInput>, DocumentUncheckedUpdateWithoutPermissionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutDocumentPermissionsNestedInput = {
+    create?: XOR<UserCreateWithoutDocumentPermissionsInput, UserUncheckedCreateWithoutDocumentPermissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDocumentPermissionsInput
+    upsert?: UserUpsertWithoutDocumentPermissionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDocumentPermissionsInput, UserUpdateWithoutDocumentPermissionsInput>, UserUncheckedUpdateWithoutDocumentPermissionsInput>
   }
 
   export type UserCreateNestedOneWithoutProjectDocumentsInput = {
@@ -69821,6 +71341,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -69853,6 +71374,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -69901,6 +71423,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -69933,6 +71456,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -69965,6 +71489,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -69997,6 +71522,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -70045,6 +71571,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -70077,6 +71604,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AIAssociateCreateWithoutCreatedByInput = {
@@ -70232,6 +71760,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
     organization: OrganizationCreateNestedOneWithoutDocumentsInput
@@ -70241,6 +71770,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutCreatedByUserInput = {
@@ -70259,12 +71789,14 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutCreatedByUserInput = {
@@ -70905,6 +72437,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DocumentPermissionCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    document: DocumentCreateNestedOneWithoutPermissionsInput
+  }
+
+  export type DocumentPermissionUncheckedCreateWithoutUserInput = {
+    id?: string
+    documentId: string
+    createdAt?: Date | string
+  }
+
+  export type DocumentPermissionCreateOrConnectWithoutUserInput = {
+    where: DocumentPermissionWhereUniqueInput
+    create: XOR<DocumentPermissionCreateWithoutUserInput, DocumentPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type DocumentPermissionCreateManyUserInputEnvelope = {
+    data: DocumentPermissionCreateManyUserInput | DocumentPermissionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AIAssociateUpsertWithWhereUniqueWithoutCreatedByInput = {
     where: AIAssociateWhereUniqueInput
     update: XOR<AIAssociateUpdateWithoutCreatedByInput, AIAssociateUncheckedUpdateWithoutCreatedByInput>
@@ -71067,6 +72621,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Document"> | Date | string
     updated_at?: DateTimeFilter<"Document"> | Date | string
     folderId?: StringNullableFilter<"Document"> | string | null
+    visibility?: StringFilter<"Document"> | string
   }
 
   export type FolderUpsertWithWhereUniqueWithoutUserInput = {
@@ -71657,6 +73212,32 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"legal_knowledge"> | Date | string
   }
 
+  export type DocumentPermissionUpsertWithWhereUniqueWithoutUserInput = {
+    where: DocumentPermissionWhereUniqueInput
+    update: XOR<DocumentPermissionUpdateWithoutUserInput, DocumentPermissionUncheckedUpdateWithoutUserInput>
+    create: XOR<DocumentPermissionCreateWithoutUserInput, DocumentPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type DocumentPermissionUpdateWithWhereUniqueWithoutUserInput = {
+    where: DocumentPermissionWhereUniqueInput
+    data: XOR<DocumentPermissionUpdateWithoutUserInput, DocumentPermissionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DocumentPermissionUpdateManyWithWhereWithoutUserInput = {
+    where: DocumentPermissionScalarWhereInput
+    data: XOR<DocumentPermissionUpdateManyMutationInput, DocumentPermissionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DocumentPermissionScalarWhereInput = {
+    AND?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
+    OR?: DocumentPermissionScalarWhereInput[]
+    NOT?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
+    id?: StringFilter<"DocumentPermission"> | string
+    documentId?: StringFilter<"DocumentPermission"> | string
+    userId?: StringFilter<"DocumentPermission"> | string
+    createdAt?: DateTimeFilter<"DocumentPermission"> | Date | string
+  }
+
   export type AIAssociateCreateWithoutOrganizationInput = {
     id?: string
     name: string
@@ -71714,6 +73295,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -71723,6 +73305,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutOrganizationInput = {
@@ -71741,12 +73324,14 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutOrganizationInput = {
@@ -71861,6 +73446,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedOrganizationsInput = {
@@ -71893,6 +73479,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedOrganizationsInput = {
@@ -71980,6 +73567,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActiveOrganizationInput = {
@@ -72012,6 +73600,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActiveOrganizationInput = {
@@ -72054,6 +73643,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -72086,6 +73676,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -72388,6 +73979,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedOrganizationsInput = {
@@ -72420,6 +74012,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -73522,6 +75115,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
@@ -73554,6 +75148,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
@@ -73681,6 +75276,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
@@ -73713,6 +75309,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CanvasDocumentCreateWithoutProjectInput = {
@@ -73798,6 +75395,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -73807,6 +75405,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutProjectInput = {
@@ -73825,12 +75424,14 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutProjectInput = {
@@ -74487,6 +76088,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembersInput = {
@@ -74519,6 +76121,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembersInput = {
@@ -74618,6 +76221,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembersInput = {
@@ -74650,6 +76254,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationDocumentCreateWithoutDocumentInput = {
@@ -74704,6 +76309,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentsInput = {
@@ -74736,6 +76342,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -75013,6 +76620,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DocumentPermissionCreateWithoutDocumentInput = {
+    id?: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutDocumentPermissionsInput
+  }
+
+  export type DocumentPermissionUncheckedCreateWithoutDocumentInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type DocumentPermissionCreateOrConnectWithoutDocumentInput = {
+    where: DocumentPermissionWhereUniqueInput
+    create: XOR<DocumentPermissionCreateWithoutDocumentInput, DocumentPermissionUncheckedCreateWithoutDocumentInput>
+  }
+
+  export type DocumentPermissionCreateManyDocumentInputEnvelope = {
+    data: DocumentPermissionCreateManyDocumentInput | DocumentPermissionCreateManyDocumentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ConversationDocumentUpsertWithWhereUniqueWithoutDocumentInput = {
     where: ConversationDocumentWhereUniqueInput
     update: XOR<ConversationDocumentUpdateWithoutDocumentInput, ConversationDocumentUncheckedUpdateWithoutDocumentInput>
@@ -75070,6 +76699,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentsInput = {
@@ -75102,6 +76732,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FolderUpsertWithoutDocumentsInput = {
@@ -75396,6 +77027,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"SharedMessageReference"> | Date | string
   }
 
+  export type DocumentPermissionUpsertWithWhereUniqueWithoutDocumentInput = {
+    where: DocumentPermissionWhereUniqueInput
+    update: XOR<DocumentPermissionUpdateWithoutDocumentInput, DocumentPermissionUncheckedUpdateWithoutDocumentInput>
+    create: XOR<DocumentPermissionCreateWithoutDocumentInput, DocumentPermissionUncheckedCreateWithoutDocumentInput>
+  }
+
+  export type DocumentPermissionUpdateWithWhereUniqueWithoutDocumentInput = {
+    where: DocumentPermissionWhereUniqueInput
+    data: XOR<DocumentPermissionUpdateWithoutDocumentInput, DocumentPermissionUncheckedUpdateWithoutDocumentInput>
+  }
+
+  export type DocumentPermissionUpdateManyWithWhereWithoutDocumentInput = {
+    where: DocumentPermissionScalarWhereInput
+    data: XOR<DocumentPermissionUpdateManyMutationInput, DocumentPermissionUncheckedUpdateManyWithoutDocumentInput>
+  }
+
   export type DocumentCreateWithoutFolderInput = {
     id?: string
     title: string
@@ -75409,6 +77056,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     organization: OrganizationCreateNestedOneWithoutDocumentsInput
@@ -75418,6 +77066,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutFolderInput = {
@@ -75436,12 +77085,14 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutFolderInput = {
@@ -75484,6 +77135,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderInput = {
@@ -75516,6 +77168,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderInput = {
@@ -75742,6 +77395,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderInput = {
@@ -75774,6 +77428,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutFolderInput = {
@@ -75985,6 +77640,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderPermissionsInput = {
@@ -76017,6 +77673,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderPermissionsInput = {
@@ -76102,6 +77759,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderPermissionsInput = {
@@ -76122,6 +77780,275 @@ export namespace Prisma {
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type DocumentCreateWithoutPermissionsInput = {
+    id?: string
+    title: string
+    description?: NullableJsonNullValueInput | InputJsonValue
+    file_url: string
+    file_type: string
+    file_size: number
+    status?: string
+    section?: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    content_extracted?: NullableJsonNullValueInput | InputJsonValue
+    created_at?: Date | string
+    updated_at?: Date | string
+    visibility?: string
+    conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
+    createdByUser: UserCreateNestedOneWithoutDocumentsInput
+    folder?: FolderCreateNestedOneWithoutDocumentsInput
+    organization: OrganizationCreateNestedOneWithoutDocumentsInput
+    project?: ProjectCreateNestedOneWithoutDocumentsInput
+    content?: DocumentContentCreateNestedOneWithoutDocumentInput
+    embeddings?: EmbeddingCreateNestedManyWithoutDocumentInput
+    messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
+    projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
+    SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentUncheckedCreateWithoutPermissionsInput = {
+    id?: string
+    project_id?: string | null
+    organization_id: string
+    title: string
+    description?: NullableJsonNullValueInput | InputJsonValue
+    file_url: string
+    file_type: string
+    file_size: number
+    status?: string
+    section?: string
+    created_by: string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    content_extracted?: NullableJsonNullValueInput | InputJsonValue
+    created_at?: Date | string
+    updated_at?: Date | string
+    folderId?: string | null
+    visibility?: string
+    conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
+    content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
+    embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
+    messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
+    SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+  }
+
+  export type DocumentCreateOrConnectWithoutPermissionsInput = {
+    where: DocumentWhereUniqueInput
+    create: XOR<DocumentCreateWithoutPermissionsInput, DocumentUncheckedCreateWithoutPermissionsInput>
+  }
+
+  export type UserCreateWithoutDocumentPermissionsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutDocumentPermissionsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutDocumentPermissionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDocumentPermissionsInput, UserUncheckedCreateWithoutDocumentPermissionsInput>
+  }
+
+  export type DocumentUpsertWithoutPermissionsInput = {
+    update: XOR<DocumentUpdateWithoutPermissionsInput, DocumentUncheckedUpdateWithoutPermissionsInput>
+    create: XOR<DocumentCreateWithoutPermissionsInput, DocumentUncheckedCreateWithoutPermissionsInput>
+    where?: DocumentWhereInput
+  }
+
+  export type DocumentUpdateToOneWithWhereWithoutPermissionsInput = {
+    where?: DocumentWhereInput
+    data: XOR<DocumentUpdateWithoutPermissionsInput, DocumentUncheckedUpdateWithoutPermissionsInput>
+  }
+
+  export type DocumentUpdateWithoutPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableJsonNullValueInput | InputJsonValue
+    file_url?: StringFieldUpdateOperationsInput | string
+    file_type?: StringFieldUpdateOperationsInput | string
+    file_size?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    section?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    content_extracted?: NullableJsonNullValueInput | InputJsonValue
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
+    conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
+    createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    folder?: FolderUpdateOneWithoutDocumentsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutDocumentsNestedInput
+    project?: ProjectUpdateOneWithoutDocumentsNestedInput
+    content?: DocumentContentUpdateOneWithoutDocumentNestedInput
+    embeddings?: EmbeddingUpdateManyWithoutDocumentNestedInput
+    messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
+    projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
+    SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type DocumentUncheckedUpdateWithoutPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project_id?: NullableStringFieldUpdateOperationsInput | string | null
+    organization_id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableJsonNullValueInput | InputJsonValue
+    file_url?: StringFieldUpdateOperationsInput | string
+    file_type?: StringFieldUpdateOperationsInput | string
+    file_size?: IntFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    section?: StringFieldUpdateOperationsInput | string
+    created_by?: StringFieldUpdateOperationsInput | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    content_extracted?: NullableJsonNullValueInput | InputJsonValue
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
+    conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
+    content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
+    embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
+    messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
+    SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+  }
+
+  export type UserUpsertWithoutDocumentPermissionsInput = {
+    update: XOR<UserUpdateWithoutDocumentPermissionsInput, UserUncheckedUpdateWithoutDocumentPermissionsInput>
+    create: XOR<UserCreateWithoutDocumentPermissionsInput, UserUncheckedCreateWithoutDocumentPermissionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDocumentPermissionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDocumentPermissionsInput, UserUncheckedUpdateWithoutDocumentPermissionsInput>
+  }
+
+  export type UserUpdateWithoutDocumentPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDocumentPermissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
     sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
     messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
     ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
@@ -76166,6 +78093,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectDocumentsInput = {
@@ -76198,6 +78126,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectDocumentsInput = {
@@ -76218,6 +78147,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -76227,6 +78157,7 @@ export namespace Prisma {
     embeddings?: EmbeddingCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutProjectReferencesInput = {
@@ -76246,11 +78177,13 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutProjectReferencesInput = {
@@ -76344,6 +78277,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectDocumentsInput = {
@@ -76376,6 +78310,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithoutProjectReferencesInput = {
@@ -76402,6 +78337,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -76411,6 +78347,7 @@ export namespace Prisma {
     embeddings?: EmbeddingUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutProjectReferencesInput = {
@@ -76430,11 +78367,13 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type ProjectUpsertWithoutProjectDocumentsInput = {
@@ -76518,6 +78457,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationDocumentsInput = {
@@ -76550,6 +78490,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationDocumentsInput = {
@@ -76605,6 +78546,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
     organization: OrganizationCreateNestedOneWithoutDocumentsInput
@@ -76614,6 +78556,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutConversationReferencesInput = {
@@ -76633,11 +78576,13 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutConversationReferencesInput = {
@@ -76686,6 +78631,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationDocumentsInput = {
@@ -76718,6 +78664,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutDocumentReferencesInput = {
@@ -76785,6 +78732,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutDocumentsNestedInput
@@ -76794,6 +78742,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutConversationReferencesInput = {
@@ -76813,11 +78762,13 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutContentInput = {
@@ -76833,6 +78784,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -76842,6 +78794,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutContentInput = {
@@ -76861,11 +78814,13 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutContentInput = {
@@ -76897,6 +78852,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -76906,6 +78862,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutContentInput = {
@@ -76925,11 +78882,13 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentCreateWithoutEmbeddingsInput = {
@@ -76945,6 +78904,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -76954,6 +78914,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutEmbeddingsInput = {
@@ -76973,11 +78934,13 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutEmbeddingsInput = {
@@ -77009,6 +78972,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -77018,6 +78982,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutEmbeddingsInput = {
@@ -77037,11 +79002,13 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type AIAssociateCreateWithoutConversationsInput = {
@@ -77527,6 +79494,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -77559,6 +79527,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -77674,6 +79643,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -77706,6 +79676,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageReferenceUpsertWithWhereUniqueWithoutMessageInput = {
@@ -77737,6 +79708,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -77746,6 +79718,7 @@ export namespace Prisma {
     embeddings?: EmbeddingCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutMessageReferencesInput = {
@@ -77765,11 +79738,13 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
     SharedMessageReference?: SharedMessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutMessageReferencesInput = {
@@ -77826,6 +79801,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -77835,6 +79811,7 @@ export namespace Prisma {
     embeddings?: EmbeddingUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutMessageReferencesInput = {
@@ -77854,11 +79831,13 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type MessageUpsertWithoutReferencesInput = {
@@ -78114,6 +80093,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -78146,6 +80126,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -78312,6 +80293,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -78344,6 +80326,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutInvitationsInput = {
@@ -78617,6 +80600,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -78649,6 +80633,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -78738,6 +80723,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -78770,6 +80756,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedWorkspaceCreateWithoutSharedMessageInput = {
@@ -78839,6 +80826,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedMessageInput = {
@@ -78871,6 +80859,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedMessageInput = {
@@ -78988,6 +80977,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedMessageInput = {
@@ -79020,6 +81010,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedMessageReferenceUpsertWithWhereUniqueWithoutSharedMessageInput = {
@@ -79051,6 +81042,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
     conversationReferences?: ConversationDocumentCreateNestedManyWithoutDocumentInput
     createdByUser: UserCreateNestedOneWithoutDocumentsInput
     folder?: FolderCreateNestedOneWithoutDocumentsInput
@@ -79060,6 +81052,7 @@ export namespace Prisma {
     embeddings?: EmbeddingCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentUncheckedCreateWithoutSharedMessageReferenceInput = {
@@ -79079,11 +81072,13 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
     conversationReferences?: ConversationDocumentUncheckedCreateNestedManyWithoutDocumentInput
     content?: DocumentContentUncheckedCreateNestedOneWithoutDocumentInput
     embeddings?: EmbeddingUncheckedCreateNestedManyWithoutDocumentInput
     messageReferences?: MessageReferenceUncheckedCreateNestedManyWithoutDocumentInput
     projectReferences?: ProjectDocumentUncheckedCreateNestedManyWithoutDocumentInput
+    permissions?: DocumentPermissionUncheckedCreateNestedManyWithoutDocumentInput
   }
 
   export type DocumentCreateOrConnectWithoutSharedMessageReferenceInput = {
@@ -79142,6 +81137,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -79151,6 +81147,7 @@ export namespace Prisma {
     embeddings?: EmbeddingUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutSharedMessageReferenceInput = {
@@ -79170,11 +81167,13 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type SharedMessageUpsertWithoutSharedMessageReferenceInput = {
@@ -79307,6 +81306,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceInput = {
@@ -79339,6 +81339,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceInput = {
@@ -79515,6 +81516,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceInput = {
@@ -79547,6 +81549,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithoutSharedWorkspaceInput = {
@@ -79683,6 +81686,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceAccessInput = {
@@ -79715,6 +81719,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceAccessInput = {
@@ -79806,6 +81811,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceAccessInput = {
@@ -79838,6 +81844,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedAIAssociatesInput = {
@@ -79870,6 +81877,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedAIAssociatesInput = {
@@ -79902,6 +81910,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedAIAssociatesInput = {
@@ -80125,6 +82134,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedAIAssociatesInput = {
@@ -80157,6 +82167,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutAiAssociatesInput = {
@@ -80894,6 +82905,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDigestSubscriptionsInput = {
@@ -80926,6 +82938,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDigestSubscriptionsInput = {
@@ -81081,6 +83094,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDigestSubscriptionsInput = {
@@ -81113,6 +83127,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DigestSubscriptionCreateWithoutHistoryInput = {
@@ -81213,6 +83228,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutUsersInput
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLegal_knowledgeInput = {
@@ -81245,6 +83261,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLegal_knowledgeInput = {
@@ -81323,6 +83340,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLegal_knowledgeInput = {
@@ -81355,6 +83373,7 @@ export namespace Prisma {
     SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type legal_knowledge_chunksUpsertWithWhereUniqueWithoutLegal_knowledgeInput = {
@@ -81549,6 +83568,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
   }
 
   export type FolderCreateManyUserInput = {
@@ -81699,6 +83719,12 @@ export namespace Prisma {
     isPublished?: boolean
     createdAt?: Date | string
     updatedAt: Date | string
+  }
+
+  export type DocumentPermissionCreateManyUserInput = {
+    id?: string
+    documentId: string
+    createdAt?: Date | string
   }
 
   export type AIAssociateUpdateWithoutCreatedByInput = {
@@ -81860,6 +83886,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutDocumentsNestedInput
@@ -81869,6 +83896,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutCreatedByUserInput = {
@@ -81887,12 +83915,14 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutCreatedByUserInput = {
@@ -81911,6 +83941,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type FolderUpdateWithoutUserInput = {
@@ -82405,6 +84436,24 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DocumentPermissionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    document?: DocumentUpdateOneRequiredWithoutPermissionsNestedInput
+  }
+
+  export type DocumentPermissionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentPermissionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyOrganizationInput = {
     id?: string
     name: string
@@ -82434,6 +84483,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
   }
 
   export type FolderCreateManyOrganizationInput = {
@@ -82605,6 +84655,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -82614,6 +84665,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutOrganizationInput = {
@@ -82632,12 +84684,14 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutOrganizationInput = {
@@ -82656,6 +84710,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type FolderUpdateWithoutOrganizationInput = {
@@ -82813,6 +84868,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActiveOrganizationInput = {
@@ -82845,6 +84901,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutActiveOrganizationInput = {
@@ -82890,6 +84947,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -82922,6 +84980,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -83207,6 +85266,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     folderId?: string | null
+    visibility?: string
   }
 
   export type EventCreateManyProjectInput = {
@@ -83347,6 +85407,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     folder?: FolderUpdateOneWithoutDocumentsNestedInput
@@ -83356,6 +85417,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutProjectInput = {
@@ -83374,12 +85436,14 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutProjectInput = {
@@ -83398,6 +85462,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     folderId?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventUpdateWithoutProjectInput = {
@@ -83607,6 +85672,12 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type DocumentPermissionCreateManyDocumentInput = {
+    id?: string
+    userId: string
+    createdAt?: Date | string
+  }
+
   export type ConversationDocumentUpdateWithoutDocumentInput = {
     added_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutConversationDocumentsNestedInput
@@ -83721,6 +85792,24 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DocumentPermissionUpdateWithoutDocumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDocumentPermissionsNestedInput
+  }
+
+  export type DocumentPermissionUncheckedUpdateWithoutDocumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentPermissionUncheckedUpdateManyWithoutDocumentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DocumentCreateManyFolderInput = {
     id?: string
     project_id?: string | null
@@ -83737,6 +85826,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
+    visibility?: string
   }
 
   export type FolderCreateManyParentInput = {
@@ -83768,6 +85858,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUpdateManyWithoutDocumentNestedInput
     createdByUser?: UserUpdateOneRequiredWithoutDocumentsNestedInput
     organization?: OrganizationUpdateOneRequiredWithoutDocumentsNestedInput
@@ -83777,6 +85868,7 @@ export namespace Prisma {
     messageReferences?: MessageReferenceUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateWithoutFolderInput = {
@@ -83795,12 +85887,14 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
     conversationReferences?: ConversationDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     content?: DocumentContentUncheckedUpdateOneWithoutDocumentNestedInput
     embeddings?: EmbeddingUncheckedUpdateManyWithoutDocumentNestedInput
     messageReferences?: MessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
     projectReferences?: ProjectDocumentUncheckedUpdateManyWithoutDocumentNestedInput
     SharedMessageReference?: SharedMessageReferenceUncheckedUpdateManyWithoutDocumentNestedInput
+    permissions?: DocumentPermissionUncheckedUpdateManyWithoutDocumentNestedInput
   }
 
   export type DocumentUncheckedUpdateManyWithoutFolderInput = {
@@ -83819,6 +85913,7 @@ export namespace Prisma {
     content_extracted?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    visibility?: StringFieldUpdateOperationsInput | string
   }
 
   export type FolderUpdateWithoutParentInput = {

@@ -9,7 +9,9 @@ export interface Document {
   createdById: string;
   createdAt: string;
   updatedAt: string;
-  contentExtracted: boolean; 
+  contentExtracted: boolean;
+  visibility?: 'private' | 'organization' | 'restricted';
+  isOwner?: boolean;
   // Optional fields for different contexts
   folderId?: string | null;
   addedAt?: string;       

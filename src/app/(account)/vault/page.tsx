@@ -50,7 +50,9 @@ import {
   MoreVertical,
   X,
   Loader2,
-  Lock,
+  Globe,
+  EyeOff,
+  UserPlus,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
@@ -66,6 +68,7 @@ import { apiService } from "@/lib/api"
 import { FolderTree } from "@/components/documents/FolderTree"
 import { FolderModal } from "@/components/documents/FolderModal"
 import { FolderPermissionModal } from "@/components/documents/FolderPermissionModal"
+import { DocumentPermissionModal } from "@/components/documents/DocumentPermissionModal"
 import { ComponentLoading, EmptyDocuments } from "@/components/commons/LoadingState"
 import { UploadDocumentModal } from "@/components/modals/UploadModal"
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog"
@@ -166,6 +169,10 @@ export default function VaultPage() {
   const [isFetchingMoveConflicts, setIsFetchingMoveConflicts] = useState(false);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [permissionFolder, setPermissionFolder] = useState<{ id: string; name: string } | null>(null);
+
+  // Document permission modal state
+  const [showDocPermissionModal, setShowDocPermissionModal] = useState(false);
+  const [permissionDocument, setPermissionDocument] = useState<{ id: string; title: string } | null>(null);
 
   // Rename document state
   const [renamingDocId, setRenamingDocId] = useState<string | null>(null);
@@ -632,6 +639,7 @@ export default function VaultPage() {
               <TableHead>Size</TableHead>
               <TableHead>Uploaded</TableHead>
               <TableHead>By</TableHead>
+              <TableHead>Visibility</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -683,6 +691,21 @@ export default function VaultPage() {
                 <TableCell>{formatBytes(document.fileSize)}</TableCell>
                 <TableCell>{formatDate(document.createdAt)}</TableCell>
                 <TableCell>{document.createdBy}</TableCell>
+                <TableCell>
+                  {(document as any).visibility === 'organization' ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-green-700">
+                      <Globe className="h-3 w-3" /> Org
+                    </span>
+                  ) : (document as any).visibility === 'restricted' ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-amber-700">
+                      <UserPlus className="h-3 w-3" /> Shared
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <EyeOff className="h-3 w-3" /> Private
+                    </span>
+                  )}
+                </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -747,6 +770,18 @@ export default function VaultPage() {
                         <Edit className="h-4 w-4 mr-2" />
                         Rename
                       </DropdownMenuItem>
+                      {document.createdById === user?.id && (
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPermissionDocument({ id: document.id, title: document.title });
+                            setShowDocPermissionModal(true);
+                          }}
+                        >
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Share
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
@@ -831,64 +866,19 @@ export default function VaultPage() {
                 activeFolder={activeFolder}
                 onFolderSelect={handleFolderSelect}
                 totalDocumentCount={totalAllDocs}
+                currentUserId={user?.id}
+                onEdit={(folder) => {
+                  setEditFolder({ id: folder.id, name: folder.name, parentId: folder.parentId });
+                  setShowFolderModal(true);
+                }}
+                onDelete={(folderId) => handleDeleteFolder(folderId)}
+                onShare={(folder) => {
+                  setPermissionFolder({ id: folder.id, name: folder.name });
+                  setShowPermissionModal(true);
+                }}
               />
             )}
             
-            {/* Folder actions */}
-            {activeFolder && activeFolder !== 'root' && (() => {
-              const allFolders = [...folders, ...folders.flatMap((f: any) => f.children ?? [])];
-              const activeF = allFolders.find((f: any) => f.id === activeFolder);
-              return (
-                <div className="mt-4 pt-4 border-t flex flex-col space-y-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      const folder = allFolders.find((f: any) => f.id === activeFolder);
-                      if (folder) {
-                        setEditFolder({
-                          id: folder.id,
-                          name: folder.name,
-                          parentId: folder.parentId
-                        });
-                        setShowFolderModal(true);
-                      }
-                    }}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Folder
-                  </Button>
-
-                  {activeF?.createdBy === user?.id && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => {
-                        if (activeF) {
-                          setPermissionFolder({ id: activeF.id, name: activeF.name });
-                          setShowPermissionModal(true);
-                        }
-                      }}
-                    >
-                      <Lock className="h-4 w-4 mr-2" />
-                      Change Permission
-                    </Button>
-                  )}
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start text-red-600"
-                    onClick={() => handleDeleteFolder(activeFolder)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Folder
-                  </Button>
-                </div>
-              );
-            })()}
           </div>
           
           {/* Main document area */}
@@ -938,23 +928,53 @@ export default function VaultPage() {
               </Select>
             </div>
             
-            {/* Folder path breadcrumb */}
-            {activeFolder && (
-              <div className="flex items-center text-sm text-gray-500">
-                <span>Location:</span>
-                {activeFolder === 'root' ? (
-                  <span className="ml-2 inline-flex items-center">
-                    <Folder className="h-4 w-4 mr-1" />
-                    Root
-                  </span>
-                ) : (
-                  <span className="ml-2 inline-flex items-center">
-                    <Folder className="h-4 w-4 mr-1" />
-                    {folders.find(f => f.id === activeFolder)?.name || 'Unknown Folder'}
-                  </span>
-                )}
-              </div>
-            )}
+            {/* Inline folder action bar — shown when a folder is selected */}
+            {activeFolder && activeFolder !== 'root' && (() => {
+              const allFolders = [...folders, ...folders.flatMap((f: any) => f.children ?? [])];
+              const activeF = allFolders.find((f: any) => f.id === activeFolder);
+              if (!activeF) return null;
+              return (
+                <div className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2">
+                  <Folder className="h-4 w-4 text-amber-500 shrink-0" />
+                  <span className="text-sm font-medium truncate flex-1">{activeF.name}</span>
+                  {activeF.createdBy === user?.id && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs gap-1.5"
+                      onClick={() => {
+                        setPermissionFolder({ id: activeF.id, name: activeF.name });
+                        setShowPermissionModal(true);
+                      }}
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Share
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs gap-1.5"
+                    onClick={() => {
+                      setEditFolder({ id: activeF.id, name: activeF.name, parentId: activeF.parentId });
+                      setShowFolderModal(true);
+                    }}
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs gap-1.5 text-red-600 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => handleDeleteFolder(activeFolder)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Delete
+                  </Button>
+                </div>
+              );
+            })()}
             
             {/* Selected Documents Actions */}
             {selectedDocuments.length > 0 && (
@@ -983,6 +1003,24 @@ export default function VaultPage() {
                     <FolderSymlinkIcon className="h-4 w-4 sm:mr-2" />
                     <span className="hidden sm:inline">Move to Folder</span>
                   </Button>
+
+                  {selectedDocuments.length === 1 && (() => {
+                    const doc = documents.find((d: any) => d.id === selectedDocuments[0]);
+                    return doc && doc.createdById === user?.id ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        title="Manage Sharing"
+                        onClick={() => {
+                          setPermissionDocument({ id: doc.id, title: doc.title });
+                          setShowDocPermissionModal(true);
+                        }}
+                      >
+                        <UserPlus className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Share</span>
+                      </Button>
+                    ) : null;
+                  })()}
 
                  <Button variant="outline" size="sm" onClick={clearSelectedDocuments}>
                     <span className="sm:inline hidden">Cancel</span>
@@ -1129,6 +1167,22 @@ export default function VaultPage() {
           }}
           folderId={permissionFolder.id}
           folderName={permissionFolder.name}
+        />
+      )}
+
+      {/* Document Permission Modal */}
+      {permissionDocument && (
+        <DocumentPermissionModal
+          open={showDocPermissionModal}
+          onClose={() => {
+            setShowDocPermissionModal(false);
+            setPermissionDocument(null);
+          }}
+          documentId={permissionDocument.id}
+          documentTitle={permissionDocument.title}
+          onUpdated={() => {
+            fetchDocuments({ ...currentParamsRef.current }, true);
+          }}
         />
       )}
 

@@ -29,13 +29,23 @@ export async function GET(
     const url = new URL(request.url);
     const searchParams = url.searchParams;
 
-    // Get document — user must be the uploader
+    // Get document — user must be the uploader, or document must be org-wide / explicitly shared
     const includeContent = searchParams.get('includeContent') === 'true';
-    const document = await prisma.document.findUnique({
+
+    // Pre-check if user has an explicit DocumentPermission for this document
+    const hasExplicitPermission = (prisma as any).documentPermission
+      ? await (prisma as any).documentPermission.findFirst({ where: { documentId, userId }, select: { documentId: true } })
+      : null;
+
+    const document = await prisma.document.findFirst({
       where: {
         id: documentId,
         organization_id: organizationId,
-        created_by: userId
+        OR: [
+          { created_by: userId },
+          { visibility: 'organization' },
+          ...(hasExplicitPermission ? [{ id: documentId }] : [])
+        ]
       },
       include: {
         createdByUser: {
@@ -47,10 +57,10 @@ export async function GET(
         content: includeContent // Only include content if requested
       }
     });
-    
+
     if (!document) {
       return NextResponse.json(
-        { message: 'Document not found', error: true }, 
+        { message: 'Document not found', error: true },
         { status: 404 }
       );
     }
@@ -67,11 +77,13 @@ export async function GET(
       createdById: document.created_by,
       createdAt: document.created_at.toISOString(),
       updatedAt: document.updated_at.toISOString(),
-      contentExtracted: document.content_extracted ? 
-        (typeof document.content_extracted === 'object' && 'Bool' in document.content_extracted ? 
-          (document.content_extracted as any).Bool : 
-          false) : 
+      contentExtracted: document.content_extracted ?
+        (typeof document.content_extracted === 'object' && 'Bool' in document.content_extracted ?
+          (document.content_extracted as any).Bool :
+          false) :
         false,
+      visibility: document.visibility ?? 'private',
+      isOwner: document.created_by === userId,
       content: document.content?.content || null
     };
     
