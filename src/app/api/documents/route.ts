@@ -71,51 +71,67 @@ export async function GET(request: NextRequest) {
     // --- Ownership / access enforcement ---
     // A user can see a document if:
     //   1. They uploaded it (created_by === userId), OR
-    //   2. It lives in the root folder (folderId = null) — org-wide shared space, OR
-    //   3. It lives in a folder they own or have been explicitly granted access to.
+    //   2. Its visibility is 'organization' (visible to all org members), OR
+    //   3. Its visibility is 'restricted' and they have an explicit DocumentPermission row.
+    // For folder-scoped requests we also verify the user can access that folder.
 
-    // Get IDs of every folder this user can access (owns or has explicit permission for).
-    const accessibleFolders = await prisma.folder.findMany({
-      where: {
-        organizationId,
-        OR: [
-          { createdBy: userId },
-          { permissions: { some: { userId } } }
-        ]
-      },
-      select: { id: true }
-    });
-    const accessibleFolderIds = accessibleFolders.map((f: any) => f.id as string);
+    const isFolderRequest = Boolean(folderId && folderId !== 'root');
 
-    // If the user is requesting a specific folder, verify they can access it.
-    if (folderId && folderId !== 'root' && !accessibleFolderIds.includes(folderId)) {
-      return NextResponse.json({
-        status: 200,
-        message: 'Documents retrieved successfully',
-        data: [],
-        pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
+    // --- Access enforcement ---
+    //
+    // Root view: show only documents the user uploaded.
+    //
+    // Folder view: if the user can access the folder (owns it, has been
+    // granted explicit permission, or the folder is org-wide), they can
+    // see ALL documents inside it regardless of per-document visibility.
+    // If they have no folder access, return an empty result.
+    //
+    // Sharing a document is always restricted to its uploader (enforced
+    // separately in the permissions PUT route).
+
+    let ownershipFilter: any;
+
+    if (isFolderRequest) {
+      // Single query: does the user have access to this folder?
+      const accessibleFolder = await prisma.folder.findFirst({
+        where: {
+          id: folderId as string,
+          organizationId,
+          OR: [
+            { createdBy: userId },
+            { visibility: 'organization' },
+            { permissions: { some: { userId } } }
+          ]
+        },
+        select: { id: true }
       });
+
+      if (!accessibleFolder) {
+        return NextResponse.json({
+          status: 200,
+          message: 'Documents retrieved successfully',
+          data: [],
+          pagination: { total: 0, page, limit, pages: 0, hasNext: false, hasPrev: false }
+        });
+      }
+
+      // Folder accessible — no per-document filter needed; show everything in the folder
+      ownershipFilter = null;
+    } else {
+      // Root / all-documents view — only documents the user uploaded
+      ownershipFilter = { created_by: userId };
     }
 
-    // Ownership filter: user sees their own docs, root-folder docs (org-wide), or docs in accessible folders.
-    const ownershipFilter = {
-      OR: [
-        { created_by: userId },
-        { folderId: null }, // Root folder is org-wide — visible to all members
-        ...(accessibleFolderIds.length > 0
-          ? [{ folderId: { in: accessibleFolderIds } }]
-          : [])
-      ]
-    };
-
-    if (where.OR) {
-      // Wrap existing OR (search) in AND together with the ownership filter
-      where.AND = [{ OR: where.OR }, ownershipFilter];
-      delete where.OR;
-    } else if (where.AND) {
-      where.AND.push(ownershipFilter);
-    } else {
-      where.AND = [ownershipFilter];
+    if (ownershipFilter) {
+      if (where.OR) {
+        // Wrap existing OR (search) in AND together with the ownership filter
+        where.AND = [{ OR: where.OR }, ownershipFilter];
+        delete where.OR;
+      } else if (where.AND) {
+        where.AND.push(ownershipFilter);
+      } else {
+        where.AND = [ownershipFilter];
+      }
     }
 
     // Fast path: caller only needs titles for conflict detection (e.g., upload modal).
@@ -174,6 +190,7 @@ export async function GET(request: NextRequest) {
           updated_at: true,
           folderId: true,
           content_extracted: true,
+          visibility: true,
           createdByUser: {
             select: {
               id: true,
@@ -219,6 +236,7 @@ export async function GET(request: NextRequest) {
           fileUrl: (doc as any).file_url,
           updatedAt: (doc as any).updated_at?.toISOString(),
           folderId: (doc as any).folderId,
+          visibility: (doc as any).visibility ?? 'private',
         }),
       };
       return base;
@@ -409,6 +427,7 @@ export async function POST(request: NextRequest) {
         file_type: fileExt.toLowerCase(),
         file_size: file.size,
         status: 'active',
+        visibility: 'private',
         created_by: userId,
         organization_id: organizationId,
         folderId: folderId || null,
@@ -467,7 +486,8 @@ export async function POST(request: NextRequest) {
       createdById: document.created_by,
       createdAt: document.created_at.toISOString(),
       updatedAt: document.updated_at.toISOString(),
-      contentExtracted: false  // Extraction runs after response; vault polls for completion
+      contentExtracted: false,  // Extraction runs after response; vault polls for completion
+      visibility: 'private'
     };
     
     return NextResponse.json({

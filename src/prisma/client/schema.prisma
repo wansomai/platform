@@ -78,6 +78,7 @@ model User {
   organizationMemberships UserOrganization[]
   digestSubscriptions     DigestSubscription[]
   legal_knowledge         legal_knowledge[]
+  documentPermissions     DocumentPermission[]
 
   @@index([activeOrganizationId], map: "idx_user_active_org")
 }
@@ -280,6 +281,7 @@ model Document {
   created_at             DateTime                 @default(now()) @map("createdAt")
   updated_at             DateTime                 @updatedAt @map("updatedAt")
   folderId               String?
+  visibility             String                   @default("private")
   conversationReferences ConversationDocument[]
   createdByUser          User                     @relation(fields: [created_by], references: [id])
   folder                 Folder?                  @relation(fields: [folderId], references: [id])
@@ -290,6 +292,7 @@ model Document {
   messageReferences      MessageReference[]
   projectReferences      ProjectDocument[]
   SharedMessageReference SharedMessageReference[]
+  permissions            DocumentPermission[]
 
   @@index([organization_id])
   @@index([organization_id, created_at(sort: Desc)], map: "idx_document_org_created")
@@ -328,6 +331,19 @@ model FolderPermission {
   @@unique([folderId, userId])
   @@index([folderId], map: "idx_folder_permission_folder")
   @@index([userId], map: "idx_folder_permission_user")
+}
+
+model DocumentPermission {
+  id         String   @id @default(cuid())
+  documentId String
+  userId     String
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, userId])
+  @@index([documentId], map: "idx_document_permission_document")
+  @@index([userId], map: "idx_document_permission_user")
 }
 
 model ProjectDocument {

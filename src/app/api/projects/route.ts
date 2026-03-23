@@ -19,9 +19,10 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
   const projects = await prisma.project.findMany({
     where: {
       organizationId: currentOrgId,
-      members: {
-        some: { userId: userId }
-      }
+      OR: [
+        { members: { some: { userId: userId } } },
+        { visibility: 'organization' }
+      ]
     },
     orderBy: { updatedAt: 'desc' },
     take: limit,
@@ -150,6 +151,7 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
         title,
         description,
         status: 'active',
+        visibility: 'restricted',
         organizationId: organizationId,
         // Add the creating user as a project member with admin role
         members: {
