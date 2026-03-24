@@ -236,7 +236,7 @@ model Project {
   organizationId   String
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-  visibility       String             @default("organization")
+  visibility       String             @default("restricted")
   canvasDocuments  CanvasDocument[]
   conversations    Conversation[]
   documents        Document[]

@@ -44,21 +44,19 @@ export async function canAccessWorkspace(
     return true;
   }
 
-  // If workspace is restricted, check if user is a workspace member
-  if (project.visibility === WorkspaceVisibility.RESTRICTED) {
-    const workspaceMember = await prisma.projectMember.findUnique({
-      where: {
-        userId_projectId: {
-          userId,
-          projectId
-        }
+  // Treat NULL/undefined as 'restricted' (old workspaces created before the
+  // visibility column was added default to creator-only access)
+  // If workspace is restricted (or visibility is unset), check explicit membership
+  const workspaceMember = await prisma.projectMember.findUnique({
+    where: {
+      userId_projectId: {
+        userId,
+        projectId
       }
-    });
+    }
+  });
 
-    return !!workspaceMember;
-  }
-
-  return false;
+  return !!workspaceMember;
 }
 
 /**
@@ -173,11 +171,12 @@ export async function getAccessibleWorkspaces(
     }
   });
 
-  // Get restricted workspaces where user is a member
+  // Get restricted (or legacy NULL-visibility) workspaces where user is a member
   const restrictedWorkspaces = await prisma.project.findMany({
     where: {
       organizationId,
-      visibility: WorkspaceVisibility.RESTRICTED,
+      // Include anything that is NOT org-wide: covers 'restricted' and legacy NULL values
+      NOT: { visibility: WorkspaceVisibility.ORGANIZATION },
       members: {
         some: {
           userId
