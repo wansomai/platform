@@ -55,6 +55,7 @@ export interface Message {
   statusMessage?: string;
   actionType?: string;
   canvasUpdated?: boolean;
+  canvasDocumentId?: string; // ID of canvas doc created/edited — enables "View document" button
   canvasMessage?: string; // Message for canvas processing status
   isSuggestion?: boolean; // true when this message carries a canvas_suggestion diff
   searchPreview?: Array<{ title: string; url: string; date: string | null; platform: string }>;

@@ -141,24 +141,43 @@ function EditorRefPlugin({ editorRef }: { editorRef: React.MutableRefObject<Lexi
 function LoadContentPlugin({
   canvasDocument,
   bypassLoadRef,
+  isLoadingContentRef,
 }: {
   canvasDocument: any;
   bypassLoadRef?: React.MutableRefObject<string | null>;
+  isLoadingContentRef?: React.MutableRefObject<boolean>;
 }) {
   const [editor] = useLexicalComposerContext();
   const loadedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!canvasDocument) return;
+    if (!canvasDocument) {
+      // Clear the editor when there is no canvas document (e.g. project has none,
+      // or we just cleared state while switching projects).
+      if (isLoadingContentRef) isLoadingContentRef.current = true;
+      editor.update(() => {
+        const root = $getRoot();
+        root.clear();
+        root.append($createParagraphNode());
+      }, { onUpdate: () => { if (isLoadingContentRef) isLoadingContentRef.current = false; } });
+      loadedRef.current = null;
+      return;
+    }
 
     const docId = canvasDocument.id + '_' + canvasDocument.updatedAt;
     if (loadedRef.current === docId) return;
 
-    // If this canvasDocument update was caused by our own save, skip the reload.
-    // Re-parsing and applying the just-saved state would reset cursor/selection.
+    // If this canvasDocument update was caused by our own save, skip the reload
+    // to avoid resetting the cursor/selection while the user is still editing.
+    // Safety check: only bypass if the editor actually has content — if the editor
+    // is empty (fresh mount after a tab switch) we must load regardless.
     if (bypassLoadRef?.current === docId) {
-      loadedRef.current = docId; // mark as loaded so future checks still work
-      return;
+      const rootIsEmpty = editor.getEditorState().read(() => $getRoot().isEmpty());
+      if (!rootIsEmpty) {
+        loadedRef.current = docId; // mark as loaded so future checks still work
+        return;
+      }
+      // Editor is empty despite the bypass — fall through and load content.
     }
 
     const content = canvasDocument.content;
@@ -167,17 +186,24 @@ function LoadContentPlugin({
     // (must be called outside editor.update())
     if (content && content.root) {
       try {
+        if (isLoadingContentRef) isLoadingContentRef.current = true;
         const editorState = editor.parseEditorState(JSON.stringify(content));
         editor.setEditorState(editorState);
         loadedRef.current = docId;
+        // Clear after a tick — Lexical fires OnChangePlugin listeners synchronously
+        // during setEditorState, so we must keep isLoadingContentRef=true until after
+        // those listeners run to prevent a phantom hasPendingChanges flag.
+        setTimeout(() => { if (isLoadingContentRef) isLoadingContentRef.current = false; }, 0);
         return;
       } catch {
+        if (isLoadingContentRef) isLoadingContentRef.current = false;
         // Fall through to HTML loading
       }
     }
 
     // Fall back to loading from htmlContent (w "Open in Editor")
     if (canvasDocument.htmlContent) {
+      if (isLoadingContentRef) isLoadingContentRef.current = true;
       editor.update(() => {
         const root = $getRoot();
         root.clear();
@@ -187,7 +213,7 @@ function LoadContentPlugin({
         if (nodes.length > 0) {
           root.append(...wrapTopLevelNodes(nodes));
         }
-      });
+      }, { onUpdate: () => { if (isLoadingContentRef) isLoadingContentRef.current = false; } });
       loadedRef.current = docId;
     }
   }, [canvasDocument, editor]);
@@ -574,21 +600,42 @@ const LegalCanvas: React.FC = () => {
   // Always-current reference to autoSave so interval/unmount callbacks stay fresh.
   const autoSaveRef = useRef<() => Promise<void>>(async () => {});
 
+  // Stores the latest HTML content from the editor so it can be saved when switching
+  // to a different document (before activeCanvasId changes causes the editor to remount).
+  const lastHtmlRef = useRef<string>('');
+
   // bypassLoadRef: after a local save we store the resulting docId here so that
   // LoadContentPlugin can skip the redundant reload triggered by the store update.
   const bypassLoadRef = useRef<string | null>(null);
 
+  // isLoadingContentRef: true while LoadContentPlugin is programmatically writing
+  // content into the editor (initial load, doc switch, etc.).  handleEditorChange
+  // checks this flag and skips marking changes as pending while it is set, which
+  // prevents the auto-save race condition where an empty initial editor state
+  // triggers a save that overwrites the newly-loaded document content.
+  const isLoadingContentRef = useRef(false);
+
+
 
   // Use store hooks for canvas data management
   const { addToast } = useUIStore();
-  const { canvasDocument, isLoading, error, fetchCanvasDocument, refreshCanvasDocument } = useCanvasDocument();
-  const { isSaving, saveCanvasDocument, deleteCanvasDocument } = useCanvasSaving();
+  const { canvasDocument, canvasDocuments, activeCanvasId, isLoading, error, fetchCanvasDocuments, refreshCanvasDocument } = useCanvasDocument();
+  const { isSaving, saveCanvasDocument, deleteCanvasDocument, createCanvasDocument } = useCanvasSaving();
+  const saveDocumentById = useCanvasStore(state => state.saveDocumentById);
+  const setCanvasDocument = useCanvasStore(state => state.setCanvasDocument);
+  const setActiveCanvasId = useCanvasStore(state => state.setActiveCanvasId);
+  const resetForProject = useCanvasStore(state => state.resetForProject);
+  const setCurrentEditorHtml = useCanvasStore(state => state.setCurrentEditorHtml);
+  const renameCanvasDocument = useCanvasStore(state => state.renameCanvasDocument);
   const { currentConversation } = useChatStore();
+
+  // Rename-in-place state for the active document tab
+  const [renamingDocId, setRenamingDocId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
 
   const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
   const setPendingSuggestion = useCanvasStore(state => state.setPendingSuggestion);
   const clearPendingSuggestion = useCanvasStore(state => state.clearPendingSuggestion);
-  const setCurrentEditorHtml = useCanvasStore(state => state.setCurrentEditorHtml);
 
   // Show error toast if there's an error
   useEffect(() => {
@@ -686,6 +733,9 @@ const LegalCanvas: React.FC = () => {
   const autoSave = useCallback(async () => {
     const editor = editorRef.current;
     if (!editor) return;
+    // No active document — skip. saveCanvasDocument would return null anyway, but
+    // guard here too so we don't even read the editor state needlessly.
+    if (!useCanvasStore.getState().activeCanvasId) return;
 
     setAutoSaveStatus('saving');
     try {
@@ -702,9 +752,10 @@ const LegalCanvas: React.FC = () => {
         // Tell LoadContentPlugin to skip the reload triggered by this store update
         bypassLoadRef.current = savedDoc.id + '_' + savedDoc.updatedAt;
         hasPendingChangesRef.current = false;
+        setAutoSaveStatus('saved');
+        setTimeout(() => setAutoSaveStatus('idle'), 2000);
       }
-      setAutoSaveStatus('saved');
-      setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      // If savedDoc is null (no activeCanvasId), leave status as 'pending' — nothing was saved.
     } catch {
       // Auto-save failed — revert to 'pending' so the user sees unsaved-changes
       // indicator and can trigger a manual save if needed
@@ -756,10 +807,22 @@ const LegalCanvas: React.FC = () => {
       if (editorRef.current) {
         const html = $generateHtmlFromNodes(editorRef.current);
         setCurrentEditorHtml(html);
+        // Track latest HTML in a ref so we can save it when switching documents.
+        // Only update when NOT loading content to avoid storing transitional empty state.
+        if (!isLoadingContentRef.current) {
+          lastHtmlRef.current = html;
+        }
       }
     });
-    hasPendingChangesRef.current = true;
-    setAutoSaveStatus('pending');
+    // Skip marking changes as pending while the plugin is programmatically loading
+    // content (initial mount, document switch).  Without this guard, Lexical's
+    // OnChangePlugin fires immediately after editor.update()/setEditorState() with
+    // empty or transitional content, causing auto-save to overwrite the real document
+    // content before it has been fetched from the DB.
+    if (!isLoadingContentRef.current) {
+      hasPendingChangesRef.current = true;
+      setAutoSaveStatus('pending');
+    }
   }, [setCurrentEditorHtml]);
 
 
@@ -829,7 +892,7 @@ const LegalCanvas: React.FC = () => {
       }
 
       const editor = editorRef.current;
-      const { suggestedHtml } = suggestion;
+      const { suggestedHtml, canvasDocumentId } = suggestion;
 
       // Load the accepted HTML into the live Lexical editor (visual update)
       editor.update(() => {
@@ -843,14 +906,24 @@ const LegalCanvas: React.FC = () => {
 
       // Use suggestedHtml directly for saving — avoids reading Lexical state immediately
       // after an update (which can capture the pre-update state before reconciliation).
-      // Passing null for the Lexical JSON content so LoadContentPlugin falls back to
-      // htmlContent on next load (null is stored as {} by the API, which has no .root).
+      // Pass {} (empty object) for the Lexical JSON content so the DB content field is
+      // cleared (no .root). If we passed null the API would skip updating content entirely,
+      // leaving the old Lexical JSON in the DB. LoadContentPlugin would then find .root
+      // and reload the editor with the pre-edit content, reverting the accepted change.
       const plainText = new DOMParser()
         .parseFromString(suggestedHtml, 'text/html')
         .body.textContent || '';
 
-      const result = await saveCanvasDocument(projectId, null, suggestedHtml, plainText);
+      // Prefer saving by explicit canvasDocumentId (avoids relying on activeCanvasId
+      // being correctly set — it may be null if no canvas_document_created event fired).
+      const saveDocumentById = useCanvasStore.getState().saveDocumentById;
+      const result = canvasDocumentId
+        ? await saveDocumentById(projectId, canvasDocumentId, {}, suggestedHtml, plainText)
+        : await saveCanvasDocument(projectId, {}, suggestedHtml, plainText);
       if (result) {
+        // Prevent LoadContentPlugin from reloading from the just-saved doc (it would
+        // load htmlContent which is correct, but causes a flicker and cursor reset).
+        bypassLoadRef.current = result.id + '_' + result.updatedAt;
         clearPendingSuggestion();
         setCurrentEditorHtml(suggestedHtml);
         addToast({ message: 'Changes accepted and saved', type: 'success' });
@@ -876,39 +949,76 @@ const LegalCanvas: React.FC = () => {
   acceptHandlerRef.current = handleAcceptSuggestion;
   rejectHandlerRef.current = handleRejectSuggestion;
 
-  // Fetch canvas document on mount
+  // Fetch canvas documents on mount — atomically clear ALL stale state first so
+  // the editor never shows content from a different project while fetch is in flight.
   useEffect(() => {
+    resetForProject();
+    setCurrentEditorHtml('');
+    setStreamingPreviewHtml(null);
+    bypassLoadRef.current = null;
+    hasPendingChangesRef.current = false;
+    isLoadingContentRef.current = true;
     if (projectId) {
-      fetchCanvasDocument(projectId);
+      fetchCanvasDocuments(projectId);
     }
-  }, [projectId, fetchCanvasDocument]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
+
+  // When the active document changes, the LexicalComposer remounts (key changes).
+  // React runs child effects (OnChangePlugin) before parent effects, so the initial
+  // empty-state OnChangePlugin fire happens BEFORE this effect runs, potentially setting
+  // hasPendingChangesRef = true. This effect immediately corrects that by:
+  // 1. Setting isLoadingContentRef = true (blocks future OnChangePlugin fires during load)
+  // 2. Resetting hasPendingChangesRef = false (discards the spurious empty-state flag)
+  // This prevents auto-save from overwriting the newly active document with empty content.
+  const prevActiveCanvasIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (activeCanvasId !== prevActiveCanvasIdRef.current) {
+      const prevId = prevActiveCanvasIdRef.current;
+      prevActiveCanvasIdRef.current = activeCanvasId;
+
+      // Before discarding pending state: fire-and-forget save of the PREVIOUS document.
+      // This preserves edits that haven't been flushed to the DB yet when the user
+      // triggers a new document generation (which switches activeCanvasId away).
+      if (hasPendingChangesRef.current && prevId && lastHtmlRef.current) {
+        const htmlToSave = lastHtmlRef.current;
+        const plainText = htmlToSave.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+        saveDocumentById(projectId, prevId, null, htmlToSave, plainText);
+      }
+
+      // Clear the bypass so the new document's content is always loaded fresh.
+      // Without this, bypassLoadRef from a previous save to this same doc would
+      // prevent LoadContentPlugin from loading the content on switch-back.
+      bypassLoadRef.current = null;
+      isLoadingContentRef.current = true;
+      hasPendingChangesRef.current = false; // discard any empty-state trigger from remount
+      setAutoSaveStatus('idle'); // clear stale 'pending' so blur doesn't trigger save on new empty editor
+    }
+  }, [activeCanvasId, projectId, saveDocumentById]);
 
   // Listen for canvas updates from chat (when AI updates the document)
   useEffect(() => {
-    const handleCanvasUpdate = (event: any) => {
+    const handleCanvasUpdate = async (event: any) => {
       if (projectId && event.detail?.projectId === projectId) {
-        refreshCanvasDocument(projectId);
+        // Clear the streaming preview — the real content is now in the DB.
+        // For 'generating': a new doc was created, fetchCanvasDocuments will activate it.
+        // For 'editing': the suggestion overlay (pendingSuggestion) handles accept/reject.
+        setStreamingPreviewHtml(null);
+        // Refresh the document list without forcing a specific active doc — the
+        // current activeCanvasId (set by switchToStreamingDocument or the user clicking
+        // a different tab) is preserved by fetchCanvasDocuments automatically.
+        await fetchCanvasDocuments(projectId);
       }
     };
 
     const handleCanvasContentUpdate = (event: any) => {
       if (projectId && event.detail?.projectId === projectId) {
-        if (event.detail.actionType === 'editing') {
-          // Route editing stream to overlay preview — do not touch the live editor
+        // Only show streaming preview for document generation, NOT for editing.
+        // For editing, the suggestion diff overlay (canvas_suggestion) handles the UX
+        // once editing completes. Showing a full rewrite preview during editing is
+        // confusing — it looks like a new document is being created.
+        if (event.detail.actionType !== 'editing') {
           setStreamingPreviewHtml(event.detail.partialContent);
-        } else if (editorRef.current) {
-          // 'generating' — draft new document, update Lexical directly
-          const editor = editorRef.current;
-          editor.update(() => {
-            const root = $getRoot();
-            root.clear();
-            const parser = new DOMParser();
-            const dom = parser.parseFromString(event.detail.partialContent, 'text/html');
-            const nodes = $generateNodesFromDOM(editor, dom);
-            if (nodes.length > 0) {
-              root.append(...wrapTopLevelNodes(nodes));
-            }
-          });
         }
       }
     };
@@ -916,11 +1026,26 @@ const LegalCanvas: React.FC = () => {
     const handleCanvasSuggestion = (event: any) => {
       if (projectId && event.detail?.projectId === projectId) {
         setStreamingPreviewHtml(null);
+        // If the suggestion carries a canvasDocumentId and the store doesn't have
+        // an active canvas yet, activate it so subsequent saves (autoSave, Accept)
+        // will target the correct document.
+        const { canvasDocumentId } = event.detail;
+        if (canvasDocumentId) {
+          const storeState = useCanvasStore.getState();
+          if (!storeState.activeCanvasId) {
+            storeState.setActiveCanvasId(canvasDocumentId);
+          }
+        }
         setPendingSuggestion({
           suggestedHtml: event.detail.suggestedHtml,
           originalHtml: event.detail.originalHtml,
-          changeDescription: event.detail.changeDescription
+          changeDescription: event.detail.changeDescription,
+          canvasDocumentId
         });
+        // Update currentEditorHtml to the suggested version so that subsequent
+        // edit messages use the suggestion as their base, not the stale DB version.
+        // Without this, chained edits would all apply to the original content.
+        setCurrentEditorHtml(event.detail.suggestedHtml);
       }
     };
 
@@ -950,7 +1075,7 @@ const LegalCanvas: React.FC = () => {
       window.removeEventListener('canvasRejectSuggestion', handleRejectFromChat);
       window.removeEventListener('focus', handleFocusUpdate);
     };
-  }, [projectId, refreshCanvasDocument, setPendingSuggestion]);
+  }, [projectId, refreshCanvasDocument, fetchCanvasDocuments, setPendingSuggestion]);
 
   // Handle template insertion
   const handleInsertTemplate = async (file: File) => {
@@ -1150,6 +1275,82 @@ const LegalCanvas: React.FC = () => {
         </div>
       </div>
 
+      {/* Document Tabs — switch between multiple canvas documents in this project */}
+      {canvasDocuments.length > 0 && (
+        <div className="flex items-center gap-0 border-b border-gray-200 bg-gray-50 overflow-x-auto">
+          {canvasDocuments.map((doc) => (
+            <div
+              key={doc.id}
+              className={`group flex items-center gap-1 px-3 py-1.5 text-xs border-r border-gray-200 cursor-pointer shrink-0 max-w-[160px] ${
+                doc.id === activeCanvasId
+                  ? 'bg-white text-gray-900 font-medium border-b-2 border-b-blue-500 -mb-px'
+                  : 'text-gray-500 hover:bg-gray-100'
+              }`}
+              onClick={() => {
+                if (doc.id !== activeCanvasId) {
+                  setActiveCanvasId(doc.id);
+                }
+              }}
+            >
+              {renamingDocId === doc.id ? (
+                <input
+                  autoFocus
+                  className="w-24 text-xs border border-blue-400 rounded px-1 outline-none"
+                  value={renameValue}
+                  onChange={(e) => setRenameValue(e.target.value)}
+                  onBlur={async () => {
+                    if (renameValue.trim()) {
+                      await renameCanvasDocument(doc.id, renameValue.trim());
+                    }
+                    setRenamingDocId(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                    if (e.key === 'Escape') { setRenamingDocId(null); }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <span
+                  className="truncate max-w-[110px]"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    setRenamingDocId(doc.id);
+                    setRenameValue(doc.title);
+                  }}
+                  title={doc.title}
+                >
+                  {doc.title}
+                </span>
+              )}
+              {doc.id === activeCanvasId && canvasDocuments.length > 1 && (
+                <button
+                  className="opacity-0 group-hover:opacity-100 ml-1 text-gray-400 hover:text-red-500 transition-opacity"
+                  title="Delete this document"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    const ok = await deleteCanvasDocument(projectId);
+                    if (ok) addToast({ message: 'Document deleted', type: 'success' });
+                  }}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-700 hover:bg-gray-100 shrink-0"
+            title="New document"
+            onClick={async () => {
+              const doc = await createCanvasDocument(projectId, 'Untitled Document');
+              if (doc) addToast({ message: 'New document created', type: 'success' });
+            }}
+          >
+            <span className="text-base leading-none">+</span>
+          </button>
+        </div>
+      )}
+
       {/* Main Editor */}
       {/* onBlur fires when focus leaves this container entirely (e.g. user clicks into
           the chat input). It does NOT fire for clicks on toolbar buttons because those
@@ -1158,12 +1359,12 @@ const LegalCanvas: React.FC = () => {
         className="flex-1 relative flex flex-col overflow-hidden"
         ref={canvasRef}
         onBlur={(e) => {
-          if (autoSaveStatus === 'pending' && !e.currentTarget.contains(e.relatedTarget as Node)) {
+          if (hasPendingChangesRef.current && !e.currentTarget.contains(e.relatedTarget as Node)) {
             autoSave();
           }
         }}
       >
-        <LexicalComposer initialConfig={initialConfig}>
+        <LexicalComposer key={activeCanvasId ?? projectId} initialConfig={initialConfig}>
           <ToolbarPlugin />
 
           {/* Diff/preview overlay — shown during streaming or suggestion review */}
@@ -1205,7 +1406,7 @@ const LegalCanvas: React.FC = () => {
           <LinkPlugin />
           <OnChangePlugin onChange={handleEditorChange} />
           <EditorRefPlugin editorRef={editorRef} />
-          <LoadContentPlugin canvasDocument={canvasDocument} bypassLoadRef={bypassLoadRef} />
+          <LoadContentPlugin canvasDocument={canvasDocument} bypassLoadRef={bypassLoadRef} isLoadingContentRef={isLoadingContentRef} />
         </LexicalComposer>
       </div>
 

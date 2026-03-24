@@ -301,7 +301,8 @@ exports.Prisma.DocumentScalarFieldEnum = {
   content_extracted: 'content_extracted',
   created_at: 'created_at',
   updated_at: 'updated_at',
-  folderId: 'folderId'
+  folderId: 'folderId',
+  visibility: 'visibility'
 };
 
 exports.Prisma.FolderScalarFieldEnum = {
@@ -318,6 +319,13 @@ exports.Prisma.FolderScalarFieldEnum = {
 exports.Prisma.FolderPermissionScalarFieldEnum = {
   id: 'id',
   folderId: 'folderId',
+  userId: 'userId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.DocumentPermissionScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
   userId: 'userId',
   createdAt: 'createdAt'
 };
@@ -520,6 +528,7 @@ exports.Prisma.ProjectAssociateScalarFieldEnum = {
 exports.Prisma.CanvasDocumentScalarFieldEnum = {
   id: 'id',
   projectId: 'projectId',
+  title: 'title',
   content: 'content',
   htmlContent: 'htmlContent',
   plainText: 'plainText',
@@ -685,6 +694,7 @@ exports.Prisma.ModelName = {
   Document: 'Document',
   Folder: 'Folder',
   FolderPermission: 'FolderPermission',
+  DocumentPermission: 'DocumentPermission',
   ProjectDocument: 'ProjectDocument',
   ConversationDocument: 'ConversationDocument',
   DocumentContent: 'DocumentContent',

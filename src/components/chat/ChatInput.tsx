@@ -101,6 +101,7 @@ export function ChatInput({
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
   const { user: profile, fetchProfile } = useProfile();
   const currentEditorHtml = useCanvasStore(state => state.currentEditorHtml);
+  const setCurrentEditorHtml = useCanvasStore(state => state.setCurrentEditorHtml);
 
   const {
     settings,
@@ -142,6 +143,12 @@ export function ChatInput({
   });
 
   const { data: session } = useSession();
+
+  // Clear stale canvas editor state when navigating to a different project
+  useEffect(() => {
+    setCurrentEditorHtml('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   // Fetch fresh profile data for organization ID in homepage mode
   useEffect(() => {
