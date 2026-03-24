@@ -26,17 +26,32 @@ function getJwtSecret(): Uint8Array {
  * @returns boolean - True if the user has access, false otherwise
  */
 export async function checkProjectAccess(projectId: string, userId: string): Promise<boolean> {
-  // Access is granted only through explicit ProjectMember membership.
-  // Belonging to the project's organization does NOT grant access.
   // DB errors are NOT caught here — they propagate to the caller so the route
   // returns HTTP 500 rather than a misleading 403 "Permission denied".
-  const projectMember = await prisma.projectMember.findUnique({
-    where: {
-      userId_projectId: { userId, projectId }
-    }
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { organizationId: true, visibility: true }
   });
 
-  return !!projectMember;
+  if (!project) return false;
+
+  // Explicit ProjectMember row always grants access (covers all roles: admin, member)
+  const projectMember = await prisma.projectMember.findUnique({
+    where: { userId_projectId: { userId, projectId } }
+  });
+  if (projectMember) return true;
+
+  // For org-wide workspaces, also allow any org member to access.
+  // This covers members who joined after the workspace was set to 'organization'
+  // visibility (they see it in the listing but were not yet given a ProjectMember row).
+  if (project.visibility === 'organization') {
+    const orgMember = await prisma.userOrganization.findUnique({
+      where: { userId_organizationId: { userId, organizationId: project.organizationId } }
+    });
+    return !!orgMember;
+  }
+
+  return false;
 }
 
 /**

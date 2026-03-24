@@ -1783,10 +1783,14 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
             fullContents.push({ role: 'model', parts: functionCallParts });
             fullContents.push({ role: 'user', parts: functionResponses.map((fr: any) => ({ functionResponse: fr.functionResponse })) });
 
-            // When the search returned results but Gemini treated it as a failure, inject
-            // an explicit synthesis instruction so Gemini composes a real response from
-            // those results rather than producing nothing (which triggers the raw-list fallback).
-            if (searchAgentFailed && capturedSearchPreview.length > 0) {
+            // Inject an explicit synthesis instruction whenever search results were captured
+            // but Gemini has not yet produced text.  This covers two failure modes:
+            //   1. searchAgentFailed — search returned success:false but results were streamed
+            //   2. Last-iteration guard — search succeeded but Gemini kept calling more tools
+            //      (e.g. fetchLegalDocument) and is about to exhaust the iteration limit without
+            //      ever writing a response.
+            const isLastIteration = agenticIteration >= MAX_AGENTIC_ITERATIONS - 1;
+            if (capturedSearchPreview.length > 0 && (searchAgentFailed || isLastIteration)) {
               const platformLabel = capturedPlatformName || 'the legal database';
               fullContents.push({
                 role: 'user',
@@ -1888,8 +1892,26 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
               // A canvas edit tool succeeded but the follow-up Gemini text call returned
               // nothing — surface a clear confirmation so the user knows to review the diff.
               fullContent = "Done! The document has been updated. Review the highlighted changes in the canvas editor and click **Accept** to apply or **Reject** to discard them.";
+            } else if (capturedSearchPreview.length > 0) {
+              // Results were found but Gemini failed to synthesise text after all iterations.
+              // Render the captured results directly so the user still gets useful output
+              // rather than the misleading "no results" message.
+              const platform = capturedPlatformName || 'the legal database';
+              const resultLines = capturedSearchPreview
+                .map((r, i) => `${i + 1}. [${r.title}](${r.url})${r.date ? ` — ${r.date}` : ''}`)
+                .join('\n');
+              fullContent = [
+                `Here are the results I found on ${platform}:`,
+                '',
+                resultLines,
+                '',
+                capturedPlatformSearchUrl
+                  ? `You can also [search directly on ${platform}](${capturedPlatformSearchUrl}) for more results.`
+                  : ''
+              ].filter(Boolean).join('\n');
             } else if (capturedPlatformSearchUrl) {
-              fullContent = `No results were found for your query on ${capturedPlatformName || 'the legal database'}. You can search directly at [${capturedPlatformName || capturedPlatformSearchUrl}](${capturedPlatformSearchUrl}).`;
+              // Search ran but genuinely returned zero results.
+              fullContent = `No matching results were found for your query on ${capturedPlatformName || 'the legal database'}. You can [search directly on ${capturedPlatformName || 'the platform'}](${capturedPlatformSearchUrl}) for more specific results.`;
             } else {
               fullContent = "I wasn't able to find relevant results for your query. Please try rephrasing, or search directly on the official legal platform for your jurisdiction.";
             }
