@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ProAccessModal from '@/components/modals/ProAccess';
+import BillingCard from '@/components/billing/BillingCard';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useProfile, useTeamManagement, useOrganization, useSubscription, useProfileStore } from '@/store/profile.store';
 
@@ -71,7 +72,7 @@ const Page = () => {
     switchOrganization: switchOrg,
     downgradeAccount: performDowngrade,
   } = useOrganization();
-  const { subscriptionStatus, fetchSubscriptionStatus, cancelSubscription } = useSubscription();
+  const { subscriptionStatus, fetchSubscriptionStatus, cancelSubscription, retryPayment, isCancellingSubscription, isRetryingPayment } = useSubscription();
 
   // Local UI state only
   const [isEditing, setIsEditing] = useState(false);
@@ -252,18 +253,30 @@ const Page = () => {
           <p className="text-gray-600">Manage your organization.</p>
         </div>
 
-        {(profile?.role === 'admin' || profile?.role === 'owner') && (subscriptionStatus?.isEnterprise || profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise') ? (
-          // Enterprise accounts - show tabs with Members
+        {(() => {
+          const isEnterprise = subscriptionStatus?.isEnterprise || profile?.activeOrganization?.accountType === 'enterprise' || profile?.organization?.accountType === 'enterprise';
+          const showMembers = (profile?.role === 'admin' || profile?.role === 'owner') && isEnterprise;
+          const showBilling = subscriptionStatus?.canViewBilling ?? false;
+          const colClass = showMembers && showBilling ? 'grid-cols-3' : (showMembers || showBilling) ? 'grid-cols-2' : 'grid-cols-1';
+          return (
           <Tabs defaultValue="general" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsList className={`grid w-full max-w-lg ${colClass}`}>
               <TabsTrigger value="general" className="flex items-center gap-2">
                 <Crown className="h-4 w-4" />
                 General
               </TabsTrigger>
-              <TabsTrigger value="members" className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Members
-              </TabsTrigger>
+              {showMembers && (
+                <TabsTrigger value="members" className="flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Members
+                </TabsTrigger>
+              )}
+              {showBilling && (
+                <TabsTrigger value="billing" className="flex items-center gap-2">
+                  <RefreshCw className="h-4 w-4" />
+                  Billing
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="general" className="space-y-6">
@@ -634,158 +647,27 @@ const Page = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-          </Tabs>
-        ) : (
-          // For personal accounts (owners/admins) or regular members - show content without tabs
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-                <CardDescription>
-                  Manage your personal information and account settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {profileLoading ? (
-                  <div className="text-center py-8 text-gray-500">Loading profile...</div>
-                ) : profile ? (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      {isEditing ? (
-                        <Input
-                          id="name"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          placeholder="Enter your full name"
-                        />
-                      ) : (
-                        <p className="text-lg">{profile.fullName || 'Not set'}</p>
-                      )}
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <p className="text-lg">{profile.email}</p>
-                    </div>
-
-                    {profile?.role === 'owner' && (
-                      <div className="space-y-2">
-                        <Label htmlFor="organization-name">Organization Name</Label>
-                        {isEditing ? (
-                          <Input
-                            id="organization-name"
-                            value={organizationName}
-                            onChange={(e) => setOrganizationName(e.target.value)}
-                            placeholder="Enter organization name"
-                          />
-                        ) : (
-                          <p className="text-lg">{profile.organization?.name || 'Not set'}</p>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="space-y-2">
-                      <Label htmlFor="org-select">Organization</Label>
-                      {!orgsLoading && organizations.length > 1 ? (
-                        <Select
-                          value={currentOrgId}
-                          onValueChange={handleSwitchOrganization}
-                          disabled={isSwitching}
-                        >
-                          <SelectTrigger id="org-select" className="w-full">
-                            <SelectValue placeholder="Select organization" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {organizations.map((org) => (
-                              <SelectItem key={org.id} value={org.id}>
-                                <div className="flex items-center gap-2">
-                                  <Building2 className="h-4 w-4 text-gray-400" />
-                                  <span className="font-medium">{org.name}</span>
-                                  <span className="text-xs text-gray-500 capitalize">
-                                    ({org.role} • {org.accountType}{org.isPrimary && ' - Personal'})
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <p className="text-lg">{profile.organization?.name || 'Not assigned'}</p>
-                      )}
-                      {!orgsLoading && organizations.length > 1 && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Switch between organizations you have access to
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500">Failed to load profile</div>
-                )}
-
-                <Separator className="my-4" />
-
-                <div className="flex justify-end space-x-4">
-                  {isEditing ? (
-                    <>
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsEditing(false)}
-                        disabled={isSaving}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                      >
-                        {isSaving ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button onClick={() => setIsEditing(true)}>
-                        Edit Profile
-                      </Button>
-                      {profile?.role === 'owner' && (
-                        <>
-                          {!hasProAccess ? (
-                            <Button
-                              onClick={() => setShowProAccess(true)}
-                              className='bg-secondary'
-                            >
-                              <Crown className="h-4 w-4 mr-1" />
-                              Upgrade Plan
-                            </Button>
-                          ) : isNonRenewing ? (
-                            <Button
-                              disabled
-                              variant="outline"
-                            >
-                              <Crown className="h-4 w-4 mr-1" />
-                              Plan ends {subscriptionStatus?.subscription?.currentPeriodEnd
-                                ? new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()
-                                : 'soon'}
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={() => setShowDowngradeDialog(true)}
-                              disabled={isDowngrading}
-                              variant="destructive"
-                            >
-                              {isDowngrading ? "Downgrading..." : "Switch to Free Plan"}
-                            </Button>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
+            {/* Billing Tab Content */}
+            {showBilling && <TabsContent value="billing" className="space-y-6">
+              {subscriptionStatus?.subscription ? (
+                <BillingCard
+                  subscriptionStatus={subscriptionStatus}
+                  onCancelClick={() => setShowDowngradeDialog(true)}
+                  onRetry={retryPayment}
+                  isCancelling={isCancellingSubscription}
+                  isRetrying={isRetryingPayment}
+                />
+              ) : (
+                <div className="rounded-xl border border-dashed border-gray-200 py-16 text-center text-gray-400">
+                  <Crown className="mx-auto mb-3 h-8 w-8 text-gray-300" />
+                  <p className="text-sm font-medium">No billing data available</p>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+              )}
+            </TabsContent>}
+          </Tabs>
+          );
+        })()}
       </div>
 
       {/* Upgrade Confirmation Dialog */}
@@ -807,34 +689,38 @@ const Page = () => {
             {profile?.organization?.accountType === 'enterprise' ? (
               <>
                 <AlertDialogTitle>Downgrade to Personal Account?</AlertDialogTitle>
-                <AlertDialogDescription className="space-y-2">
-                  <p className="font-semibold text-destructive">Warning: This action cannot be undone.</p>
-                  <p>Downgrading to a Personal account will:</p>
-                  <ul className="list-disc pl-6 space-y-1">
-                    <li>Remove all team members from your organization</li>
-                    <li>Cancel all pending invitations</li>
-                    <li>Disable team collaboration features</li>
-                  </ul>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2">
+                    <span className="block font-semibold text-destructive">Warning: This action cannot be undone.</span>
+                    <span className="block">Downgrading to a Personal account will:</span>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Remove all team members from your organization</li>
+                      <li>Cancel all pending invitations</li>
+                      <li>Disable team collaboration features</li>
+                    </ul>
+                  </div>
                 </AlertDialogDescription>
               </>
             ) : (
               <>
                 <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
-                <AlertDialogDescription className="space-y-2">
-                  <p>Cancelling your subscription will:</p>
-                  <ul className="list-disc pl-6 space-y-1">
-                    <li>Revert to the free plan at the end of your billing period</li>
-                    <li>Limit you to {2} projects and {8} messages per month</li>
-                    <li>Disable premium features like AI Associates</li>
-                  </ul>
-                  {subscriptionStatus?.subscription?.currentPeriodEnd && (
-                    <p className="text-sm mt-2">
-                      You will retain access current plan until{' '}
-                      <span className="font-semibold">
-                        {new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()}
-                      </span>.
-                    </p>
-                  )}
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2">
+                    <span className="block">Cancelling your subscription will:</span>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Revert to the free plan at the end of your billing period</li>
+                      <li>Limit you to {2} projects and {8} messages per month</li>
+                      <li>Disable premium features like AI Associates</li>
+                    </ul>
+                    {subscriptionStatus?.subscription?.currentPeriodEnd && (
+                      <span className="block text-sm mt-2">
+                        You will retain access to the current plan until{' '}
+                        <span className="font-semibold">
+                          {new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()}
+                        </span>.
+                      </span>
+                    )}
+                  </div>
                 </AlertDialogDescription>
               </>
             )}

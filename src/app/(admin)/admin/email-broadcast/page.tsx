@@ -273,25 +273,30 @@ export default function EmailBroadcastPage() {
             {error}
           </div>
         )}
-
-        <div className="flex gap-3 pt-2">
-          {!running ? (
-            <button
-              onClick={handleStart}
-              disabled={!subject.trim() || !htmlContent.trim()}
-              className="px-6 py-2 bg-primary-600 text-white text-sm font-medium rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {done ? 'Send Again' : 'Start Broadcast'}
-            </button>
-          ) : (
-            <button
-              onClick={() => { abortRef.current = true; }}
-              className="px-6 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
-            >
-              Stop
-            </button>
-          )}
-        </div>
+      </div>
+      {/* Broadcast action — always visible outside the card */}
+      <div className="flex items-center gap-4">
+        {!running ? (
+          <button
+            onClick={handleStart}
+            disabled={!subject.trim() || !htmlContent.trim()}
+            className="px-8 py-3 bg-primary text-white text-sm font-semibold rounded-md hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {done ? 'Send Again to All Users' : 'Start Broadcast'}
+          </button>
+        ) : (
+          <button
+            onClick={() => { abortRef.current = true; }}
+            className="px-8 py-3 bg-red-600 text-white text-sm font-semibold rounded-md hover:bg-red-700 transition-colors"
+          >
+            Stop Broadcast
+          </button>
+        )}
+        {!subject.trim() || !htmlContent.trim() ? (
+          <p className="text-sm text-gray-400">Fill in Subject and Email HTML to enable broadcast.</p>
+        ) : (
+          <p className="text-sm text-gray-500">Ready to send to all registered users.</p>
+        )}
       </div>
 
       {/* Progress */}
@@ -308,7 +313,7 @@ export default function EmailBroadcastPage() {
 
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
-              className="bg-primary-600 h-2.5 rounded-full transition-all duration-300"
+              className="bg-primary h-2.5 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
