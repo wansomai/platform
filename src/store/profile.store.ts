@@ -89,6 +89,8 @@ interface SubscriptionStatus {
   canUpgrade: boolean;
   canCancel: boolean;
   hasProAccess: boolean;
+  associateCount: number;
+  canViewBilling: boolean;
 }
 
 interface UpdateProfileData {
