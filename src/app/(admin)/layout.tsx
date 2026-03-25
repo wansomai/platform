@@ -41,6 +41,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                 >
                   Knowledge Base
                 </Link>
+                <Link
+                  href="/admin/email-broadcast"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Email Broadcast
+                </Link>
               </div>
             </div>
 

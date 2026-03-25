@@ -10,7 +10,8 @@ Wansom AI is a legal tech  AI powered platform built with Next.js 16 that provid
 
 ```bash
 npm run dev           # Development server (http://localhost:3000)
-npm run build         # Production build (includes prisma generate)
+npm run build         # Production build (runs prisma generate then next build)
+npm run start         # Start production server
 npm run lint          # ESLint
 npx prisma generate   # Generate Prisma client (required after schema changes)
 npx prisma migrate dev --name <name>  # Create and apply migration
@@ -334,6 +335,15 @@ Optional (for RAG tuning):
 ### Billing
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
+
+#### 9. Visibility & Permissions System
+- `Project`, `Document`, and `Folder` each have a `visibility` field:
+  - `Project.visibility`: `"restricted"` (default — only explicit members) | `"public"` (all org members)
+  - `Document.visibility`: `"private"` (default — only creator) | `"restricted"` (explicit grants) | `"public"` (all org members)
+  - `Folder.visibility`: `"restricted"` (default) | `"public"`
+- Fine-grained access is granted via join tables: `DocumentPermission` (per-document user grants) and `FolderPermission` (per-folder user grants)
+- Permission management endpoints: `GET/POST /api/documents/[id]/permissions` and `GET/POST /api/projects/[id]/permissions`
+- The org owner always has implicit access regardless of visibility/permission settings
 
 ### Subscription Limits (`src/lib/subscription.ts`)
 - **Free plan**: 2 projects, 8 messages/month
