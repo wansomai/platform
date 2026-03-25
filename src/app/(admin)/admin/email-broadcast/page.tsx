@@ -66,6 +66,8 @@ export default function EmailBroadcastPage() {
         subject,
         htmlContent,
         testEmails: emails,
+      }, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
       });
       const sent = response.results.filter((r) => r.status === 'sent').map((r) => r.email);
       const failed = response.results.filter((r) => r.status === 'failed').map((r) => r.email);
@@ -103,6 +105,8 @@ export default function EmailBroadcastPage() {
           offset,
           limit: batchSize,
           delayMs,
+        }, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` },
         });
 
         total = response.total;
