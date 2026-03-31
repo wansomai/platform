@@ -159,7 +159,11 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt',
   activeOrganizationId: 'activeOrganizationId',
   resetToken: 'resetToken',
-  resetTokenExpiry: 'resetTokenExpiry'
+  resetTokenExpiry: 'resetTokenExpiry',
+  emailVerified: 'emailVerified',
+  emailVerificationToken: 'emailVerificationToken',
+  emailVerificationExpires: 'emailVerificationExpires',
+  authProvider: 'authProvider'
 };
 
 exports.Prisma.OrganizationScalarFieldEnum = {
@@ -578,6 +582,32 @@ exports.Prisma.DigestHistoryScalarFieldEnum = {
   sentAt: 'sentAt'
 };
 
+exports.Prisma.DigestCacheScalarFieldEnum = {
+  id: 'id',
+  fingerprint: 'fingerprint',
+  frequency: 'frequency',
+  jurisdictions: 'jurisdictions',
+  topics: 'topics',
+  content: 'content',
+  synthesizedAt: 'synthesizedAt',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.DigestItemScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  url: 'url',
+  excerpt: 'excerpt',
+  aiSummary: 'aiSummary',
+  source: 'source',
+  jurisdiction: 'jurisdiction',
+  topics: 'topics',
+  contentType: 'contentType',
+  publishedAt: 'publishedAt',
+  ingestedAt: 'ingestedAt',
+  sentTo: 'sentTo'
+};
+
 exports.Prisma.Legal_knowledgeScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -720,6 +750,8 @@ exports.Prisma.ModelName = {
   Publications: 'Publications',
   DigestSubscription: 'DigestSubscription',
   DigestHistory: 'DigestHistory',
+  DigestCache: 'DigestCache',
+  DigestItem: 'DigestItem',
   legal_knowledge: 'legal_knowledge',
   legal_knowledge_chunks: 'legal_knowledge_chunks'
 };

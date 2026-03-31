@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import BrandLogos from "@/components/home/Partnerlogos";
 import HerroPattern from "@/components/layout/HeroPattern";
@@ -13,6 +13,18 @@ import ActivationModal from "@/components/law360/ActivationModal";
 const Law360Components = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const handleActivate = () => setModalOpen(true);
+
+    // Auto-open modal after Google OAuth redirect to complete activation
+    useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('activate') === '1') {
+        setModalOpen(true);
+        // Clean up the URL param without a page reload
+        const url = new URL(window.location.href);
+        url.searchParams.delete('activate');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }, []);
 
     return (    <div className="overflow-x-hidden">
       <Navbar />

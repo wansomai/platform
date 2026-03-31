@@ -224,6 +224,16 @@ export type DigestSubscription = $Result.DefaultSelection<Prisma.$DigestSubscrip
  */
 export type DigestHistory = $Result.DefaultSelection<Prisma.$DigestHistoryPayload>
 /**
+ * Model DigestCache
+ * 
+ */
+export type DigestCache = $Result.DefaultSelection<Prisma.$DigestCachePayload>
+/**
+ * Model DigestItem
+ * 
+ */
+export type DigestItem = $Result.DefaultSelection<Prisma.$DigestItemPayload>
+/**
  * Model legal_knowledge
  * 
  */
@@ -836,6 +846,26 @@ export class PrismaClient<
   get digestHistory(): Prisma.DigestHistoryDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.digestCache`: Exposes CRUD operations for the **DigestCache** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DigestCaches
+    * const digestCaches = await prisma.digestCache.findMany()
+    * ```
+    */
+  get digestCache(): Prisma.DigestCacheDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.digestItem`: Exposes CRUD operations for the **DigestItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DigestItems
+    * const digestItems = await prisma.digestItem.findMany()
+    * ```
+    */
+  get digestItem(): Prisma.DigestItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.legal_knowledge`: Exposes CRUD operations for the **legal_knowledge** model.
     * Example usage:
     * ```ts
@@ -1330,6 +1360,8 @@ export namespace Prisma {
     Publications: 'Publications',
     DigestSubscription: 'DigestSubscription',
     DigestHistory: 'DigestHistory',
+    DigestCache: 'DigestCache',
+    DigestItem: 'DigestItem',
     legal_knowledge: 'legal_knowledge',
     legal_knowledge_chunks: 'legal_knowledge_chunks'
   };
@@ -1347,7 +1379,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "legal_knowledge" | "legal_knowledge_chunks"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4459,6 +4491,154 @@ export namespace Prisma {
           }
         }
       }
+      DigestCache: {
+        payload: Prisma.$DigestCachePayload<ExtArgs>
+        fields: Prisma.DigestCacheFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DigestCacheFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DigestCacheFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>
+          }
+          findFirst: {
+            args: Prisma.DigestCacheFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DigestCacheFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>
+          }
+          findMany: {
+            args: Prisma.DigestCacheFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>[]
+          }
+          create: {
+            args: Prisma.DigestCacheCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>
+          }
+          createMany: {
+            args: Prisma.DigestCacheCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DigestCacheCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>[]
+          }
+          delete: {
+            args: Prisma.DigestCacheDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>
+          }
+          update: {
+            args: Prisma.DigestCacheUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>
+          }
+          deleteMany: {
+            args: Prisma.DigestCacheDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DigestCacheUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DigestCacheUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>[]
+          }
+          upsert: {
+            args: Prisma.DigestCacheUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestCachePayload>
+          }
+          aggregate: {
+            args: Prisma.DigestCacheAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDigestCache>
+          }
+          groupBy: {
+            args: Prisma.DigestCacheGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DigestCacheGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DigestCacheCountArgs<ExtArgs>
+            result: $Utils.Optional<DigestCacheCountAggregateOutputType> | number
+          }
+        }
+      }
+      DigestItem: {
+        payload: Prisma.$DigestItemPayload<ExtArgs>
+        fields: Prisma.DigestItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DigestItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DigestItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>
+          }
+          findFirst: {
+            args: Prisma.DigestItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DigestItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>
+          }
+          findMany: {
+            args: Prisma.DigestItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>[]
+          }
+          create: {
+            args: Prisma.DigestItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>
+          }
+          createMany: {
+            args: Prisma.DigestItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DigestItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>[]
+          }
+          delete: {
+            args: Prisma.DigestItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>
+          }
+          update: {
+            args: Prisma.DigestItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.DigestItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DigestItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DigestItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.DigestItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DigestItemPayload>
+          }
+          aggregate: {
+            args: Prisma.DigestItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDigestItem>
+          }
+          groupBy: {
+            args: Prisma.DigestItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DigestItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DigestItemCountArgs<ExtArgs>
+            result: $Utils.Optional<DigestItemCountAggregateOutputType> | number
+          }
+        }
+      }
       legal_knowledge: {
         payload: Prisma.$legal_knowledgePayload<ExtArgs>
         fields: Prisma.legal_knowledgeFieldRefs
@@ -4757,6 +4937,8 @@ export namespace Prisma {
     publications?: PublicationsOmit
     digestSubscription?: DigestSubscriptionOmit
     digestHistory?: DigestHistoryOmit
+    digestCache?: DigestCacheOmit
+    digestItem?: DigestItemOmit
     legal_knowledge?: legal_knowledgeOmit
     legal_knowledge_chunks?: legal_knowledge_chunksOmit
   }
@@ -8950,6 +9132,10 @@ export namespace Prisma {
     activeOrganizationId: string | null
     resetToken: string | null
     resetTokenExpiry: Date | null
+    emailVerified: boolean | null
+    emailVerificationToken: string | null
+    emailVerificationExpires: Date | null
+    authProvider: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -8964,6 +9150,10 @@ export namespace Prisma {
     activeOrganizationId: string | null
     resetToken: string | null
     resetTokenExpiry: Date | null
+    emailVerified: boolean | null
+    emailVerificationToken: string | null
+    emailVerificationExpires: Date | null
+    authProvider: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -8978,6 +9168,10 @@ export namespace Prisma {
     activeOrganizationId: number
     resetToken: number
     resetTokenExpiry: number
+    emailVerified: number
+    emailVerificationToken: number
+    emailVerificationExpires: number
+    authProvider: number
     _all: number
   }
 
@@ -8994,6 +9188,10 @@ export namespace Prisma {
     activeOrganizationId?: true
     resetToken?: true
     resetTokenExpiry?: true
+    emailVerified?: true
+    emailVerificationToken?: true
+    emailVerificationExpires?: true
+    authProvider?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -9008,6 +9206,10 @@ export namespace Prisma {
     activeOrganizationId?: true
     resetToken?: true
     resetTokenExpiry?: true
+    emailVerified?: true
+    emailVerificationToken?: true
+    emailVerificationExpires?: true
+    authProvider?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -9022,6 +9224,10 @@ export namespace Prisma {
     activeOrganizationId?: true
     resetToken?: true
     resetTokenExpiry?: true
+    emailVerified?: true
+    emailVerificationToken?: true
+    emailVerificationExpires?: true
+    authProvider?: true
     _all?: true
   }
 
@@ -9109,6 +9315,10 @@ export namespace Prisma {
     activeOrganizationId: string | null
     resetToken: string | null
     resetTokenExpiry: Date | null
+    emailVerified: boolean
+    emailVerificationToken: string | null
+    emailVerificationExpires: Date | null
+    authProvider: string
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -9140,6 +9350,10 @@ export namespace Prisma {
     activeOrganizationId?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    emailVerified?: boolean
+    emailVerificationToken?: boolean
+    emailVerificationExpires?: boolean
+    authProvider?: boolean
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
@@ -9177,6 +9391,10 @@ export namespace Prisma {
     activeOrganizationId?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    emailVerified?: boolean
+    emailVerificationToken?: boolean
+    emailVerificationExpires?: boolean
+    authProvider?: boolean
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -9193,6 +9411,10 @@ export namespace Prisma {
     activeOrganizationId?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    emailVerified?: boolean
+    emailVerificationToken?: boolean
+    emailVerificationExpires?: boolean
+    authProvider?: boolean
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -9209,9 +9431,13 @@ export namespace Prisma {
     activeOrganizationId?: boolean
     resetToken?: boolean
     resetTokenExpiry?: boolean
+    emailVerified?: boolean
+    emailVerificationToken?: boolean
+    emailVerificationExpires?: boolean
+    authProvider?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId" | "resetToken" | "resetTokenExpiry", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId" | "resetToken" | "resetTokenExpiry" | "emailVerified" | "emailVerificationToken" | "emailVerificationExpires" | "authProvider", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -9284,6 +9510,10 @@ export namespace Prisma {
       activeOrganizationId: string | null
       resetToken: string | null
       resetTokenExpiry: Date | null
+      emailVerified: boolean
+      emailVerificationToken: string | null
+      emailVerificationExpires: Date | null
+      authProvider: string
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -9740,6 +9970,10 @@ export namespace Prisma {
     readonly activeOrganizationId: FieldRef<"User", 'String'>
     readonly resetToken: FieldRef<"User", 'String'>
     readonly resetTokenExpiry: FieldRef<"User", 'DateTime'>
+    readonly emailVerified: FieldRef<"User", 'Boolean'>
+    readonly emailVerificationToken: FieldRef<"User", 'String'>
+    readonly emailVerificationExpires: FieldRef<"User", 'DateTime'>
+    readonly authProvider: FieldRef<"User", 'String'>
   }
     
 
@@ -54275,6 +54509,2106 @@ export namespace Prisma {
 
 
   /**
+   * Model DigestCache
+   */
+
+  export type AggregateDigestCache = {
+    _count: DigestCacheCountAggregateOutputType | null
+    _min: DigestCacheMinAggregateOutputType | null
+    _max: DigestCacheMaxAggregateOutputType | null
+  }
+
+  export type DigestCacheMinAggregateOutputType = {
+    id: string | null
+    fingerprint: string | null
+    frequency: string | null
+    synthesizedAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type DigestCacheMaxAggregateOutputType = {
+    id: string | null
+    fingerprint: string | null
+    frequency: string | null
+    synthesizedAt: Date | null
+    expiresAt: Date | null
+  }
+
+  export type DigestCacheCountAggregateOutputType = {
+    id: number
+    fingerprint: number
+    frequency: number
+    jurisdictions: number
+    topics: number
+    content: number
+    synthesizedAt: number
+    expiresAt: number
+    _all: number
+  }
+
+
+  export type DigestCacheMinAggregateInputType = {
+    id?: true
+    fingerprint?: true
+    frequency?: true
+    synthesizedAt?: true
+    expiresAt?: true
+  }
+
+  export type DigestCacheMaxAggregateInputType = {
+    id?: true
+    fingerprint?: true
+    frequency?: true
+    synthesizedAt?: true
+    expiresAt?: true
+  }
+
+  export type DigestCacheCountAggregateInputType = {
+    id?: true
+    fingerprint?: true
+    frequency?: true
+    jurisdictions?: true
+    topics?: true
+    content?: true
+    synthesizedAt?: true
+    expiresAt?: true
+    _all?: true
+  }
+
+  export type DigestCacheAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestCache to aggregate.
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestCaches to fetch.
+     */
+    orderBy?: DigestCacheOrderByWithRelationInput | DigestCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DigestCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestCaches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DigestCaches
+    **/
+    _count?: true | DigestCacheCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DigestCacheMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DigestCacheMaxAggregateInputType
+  }
+
+  export type GetDigestCacheAggregateType<T extends DigestCacheAggregateArgs> = {
+        [P in keyof T & keyof AggregateDigestCache]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDigestCache[P]>
+      : GetScalarType<T[P], AggregateDigestCache[P]>
+  }
+
+
+
+
+  export type DigestCacheGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestCacheWhereInput
+    orderBy?: DigestCacheOrderByWithAggregationInput | DigestCacheOrderByWithAggregationInput[]
+    by: DigestCacheScalarFieldEnum[] | DigestCacheScalarFieldEnum
+    having?: DigestCacheScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DigestCacheCountAggregateInputType | true
+    _min?: DigestCacheMinAggregateInputType
+    _max?: DigestCacheMaxAggregateInputType
+  }
+
+  export type DigestCacheGroupByOutputType = {
+    id: string
+    fingerprint: string
+    frequency: string
+    jurisdictions: string[]
+    topics: string[]
+    content: JsonValue
+    synthesizedAt: Date
+    expiresAt: Date
+    _count: DigestCacheCountAggregateOutputType | null
+    _min: DigestCacheMinAggregateOutputType | null
+    _max: DigestCacheMaxAggregateOutputType | null
+  }
+
+  type GetDigestCacheGroupByPayload<T extends DigestCacheGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DigestCacheGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DigestCacheGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DigestCacheGroupByOutputType[P]>
+            : GetScalarType<T[P], DigestCacheGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DigestCacheSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fingerprint?: boolean
+    frequency?: boolean
+    jurisdictions?: boolean
+    topics?: boolean
+    content?: boolean
+    synthesizedAt?: boolean
+    expiresAt?: boolean
+  }, ExtArgs["result"]["digestCache"]>
+
+  export type DigestCacheSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fingerprint?: boolean
+    frequency?: boolean
+    jurisdictions?: boolean
+    topics?: boolean
+    content?: boolean
+    synthesizedAt?: boolean
+    expiresAt?: boolean
+  }, ExtArgs["result"]["digestCache"]>
+
+  export type DigestCacheSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fingerprint?: boolean
+    frequency?: boolean
+    jurisdictions?: boolean
+    topics?: boolean
+    content?: boolean
+    synthesizedAt?: boolean
+    expiresAt?: boolean
+  }, ExtArgs["result"]["digestCache"]>
+
+  export type DigestCacheSelectScalar = {
+    id?: boolean
+    fingerprint?: boolean
+    frequency?: boolean
+    jurisdictions?: boolean
+    topics?: boolean
+    content?: boolean
+    synthesizedAt?: boolean
+    expiresAt?: boolean
+  }
+
+  export type DigestCacheOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fingerprint" | "frequency" | "jurisdictions" | "topics" | "content" | "synthesizedAt" | "expiresAt", ExtArgs["result"]["digestCache"]>
+
+  export type $DigestCachePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DigestCache"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      fingerprint: string
+      frequency: string
+      jurisdictions: string[]
+      topics: string[]
+      content: Prisma.JsonValue
+      synthesizedAt: Date
+      expiresAt: Date
+    }, ExtArgs["result"]["digestCache"]>
+    composites: {}
+  }
+
+  type DigestCacheGetPayload<S extends boolean | null | undefined | DigestCacheDefaultArgs> = $Result.GetResult<Prisma.$DigestCachePayload, S>
+
+  type DigestCacheCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DigestCacheFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DigestCacheCountAggregateInputType | true
+    }
+
+  export interface DigestCacheDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DigestCache'], meta: { name: 'DigestCache' } }
+    /**
+     * Find zero or one DigestCache that matches the filter.
+     * @param {DigestCacheFindUniqueArgs} args - Arguments to find a DigestCache
+     * @example
+     * // Get one DigestCache
+     * const digestCache = await prisma.digestCache.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DigestCacheFindUniqueArgs>(args: SelectSubset<T, DigestCacheFindUniqueArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DigestCache that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DigestCacheFindUniqueOrThrowArgs} args - Arguments to find a DigestCache
+     * @example
+     * // Get one DigestCache
+     * const digestCache = await prisma.digestCache.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DigestCacheFindUniqueOrThrowArgs>(args: SelectSubset<T, DigestCacheFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestCache that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheFindFirstArgs} args - Arguments to find a DigestCache
+     * @example
+     * // Get one DigestCache
+     * const digestCache = await prisma.digestCache.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DigestCacheFindFirstArgs>(args?: SelectSubset<T, DigestCacheFindFirstArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestCache that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheFindFirstOrThrowArgs} args - Arguments to find a DigestCache
+     * @example
+     * // Get one DigestCache
+     * const digestCache = await prisma.digestCache.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DigestCacheFindFirstOrThrowArgs>(args?: SelectSubset<T, DigestCacheFindFirstOrThrowArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DigestCaches that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DigestCaches
+     * const digestCaches = await prisma.digestCache.findMany()
+     * 
+     * // Get first 10 DigestCaches
+     * const digestCaches = await prisma.digestCache.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const digestCacheWithIdOnly = await prisma.digestCache.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DigestCacheFindManyArgs>(args?: SelectSubset<T, DigestCacheFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DigestCache.
+     * @param {DigestCacheCreateArgs} args - Arguments to create a DigestCache.
+     * @example
+     * // Create one DigestCache
+     * const DigestCache = await prisma.digestCache.create({
+     *   data: {
+     *     // ... data to create a DigestCache
+     *   }
+     * })
+     * 
+     */
+    create<T extends DigestCacheCreateArgs>(args: SelectSubset<T, DigestCacheCreateArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DigestCaches.
+     * @param {DigestCacheCreateManyArgs} args - Arguments to create many DigestCaches.
+     * @example
+     * // Create many DigestCaches
+     * const digestCache = await prisma.digestCache.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DigestCacheCreateManyArgs>(args?: SelectSubset<T, DigestCacheCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DigestCaches and returns the data saved in the database.
+     * @param {DigestCacheCreateManyAndReturnArgs} args - Arguments to create many DigestCaches.
+     * @example
+     * // Create many DigestCaches
+     * const digestCache = await prisma.digestCache.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DigestCaches and only return the `id`
+     * const digestCacheWithIdOnly = await prisma.digestCache.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DigestCacheCreateManyAndReturnArgs>(args?: SelectSubset<T, DigestCacheCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DigestCache.
+     * @param {DigestCacheDeleteArgs} args - Arguments to delete one DigestCache.
+     * @example
+     * // Delete one DigestCache
+     * const DigestCache = await prisma.digestCache.delete({
+     *   where: {
+     *     // ... filter to delete one DigestCache
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DigestCacheDeleteArgs>(args: SelectSubset<T, DigestCacheDeleteArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DigestCache.
+     * @param {DigestCacheUpdateArgs} args - Arguments to update one DigestCache.
+     * @example
+     * // Update one DigestCache
+     * const digestCache = await prisma.digestCache.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DigestCacheUpdateArgs>(args: SelectSubset<T, DigestCacheUpdateArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DigestCaches.
+     * @param {DigestCacheDeleteManyArgs} args - Arguments to filter DigestCaches to delete.
+     * @example
+     * // Delete a few DigestCaches
+     * const { count } = await prisma.digestCache.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DigestCacheDeleteManyArgs>(args?: SelectSubset<T, DigestCacheDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestCaches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DigestCaches
+     * const digestCache = await prisma.digestCache.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DigestCacheUpdateManyArgs>(args: SelectSubset<T, DigestCacheUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestCaches and returns the data updated in the database.
+     * @param {DigestCacheUpdateManyAndReturnArgs} args - Arguments to update many DigestCaches.
+     * @example
+     * // Update many DigestCaches
+     * const digestCache = await prisma.digestCache.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DigestCaches and only return the `id`
+     * const digestCacheWithIdOnly = await prisma.digestCache.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DigestCacheUpdateManyAndReturnArgs>(args: SelectSubset<T, DigestCacheUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DigestCache.
+     * @param {DigestCacheUpsertArgs} args - Arguments to update or create a DigestCache.
+     * @example
+     * // Update or create a DigestCache
+     * const digestCache = await prisma.digestCache.upsert({
+     *   create: {
+     *     // ... data to create a DigestCache
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DigestCache we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DigestCacheUpsertArgs>(args: SelectSubset<T, DigestCacheUpsertArgs<ExtArgs>>): Prisma__DigestCacheClient<$Result.GetResult<Prisma.$DigestCachePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DigestCaches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheCountArgs} args - Arguments to filter DigestCaches to count.
+     * @example
+     * // Count the number of DigestCaches
+     * const count = await prisma.digestCache.count({
+     *   where: {
+     *     // ... the filter for the DigestCaches we want to count
+     *   }
+     * })
+    **/
+    count<T extends DigestCacheCountArgs>(
+      args?: Subset<T, DigestCacheCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DigestCacheCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DigestCache.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DigestCacheAggregateArgs>(args: Subset<T, DigestCacheAggregateArgs>): Prisma.PrismaPromise<GetDigestCacheAggregateType<T>>
+
+    /**
+     * Group by DigestCache.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestCacheGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DigestCacheGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DigestCacheGroupByArgs['orderBy'] }
+        : { orderBy?: DigestCacheGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DigestCacheGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDigestCacheGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DigestCache model
+   */
+  readonly fields: DigestCacheFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DigestCache.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DigestCacheClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DigestCache model
+   */
+  interface DigestCacheFieldRefs {
+    readonly id: FieldRef<"DigestCache", 'String'>
+    readonly fingerprint: FieldRef<"DigestCache", 'String'>
+    readonly frequency: FieldRef<"DigestCache", 'String'>
+    readonly jurisdictions: FieldRef<"DigestCache", 'String[]'>
+    readonly topics: FieldRef<"DigestCache", 'String[]'>
+    readonly content: FieldRef<"DigestCache", 'Json'>
+    readonly synthesizedAt: FieldRef<"DigestCache", 'DateTime'>
+    readonly expiresAt: FieldRef<"DigestCache", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DigestCache findUnique
+   */
+  export type DigestCacheFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestCache to fetch.
+     */
+    where: DigestCacheWhereUniqueInput
+  }
+
+  /**
+   * DigestCache findUniqueOrThrow
+   */
+  export type DigestCacheFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestCache to fetch.
+     */
+    where: DigestCacheWhereUniqueInput
+  }
+
+  /**
+   * DigestCache findFirst
+   */
+  export type DigestCacheFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestCache to fetch.
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestCaches to fetch.
+     */
+    orderBy?: DigestCacheOrderByWithRelationInput | DigestCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestCaches.
+     */
+    cursor?: DigestCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestCaches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestCaches.
+     */
+    distinct?: DigestCacheScalarFieldEnum | DigestCacheScalarFieldEnum[]
+  }
+
+  /**
+   * DigestCache findFirstOrThrow
+   */
+  export type DigestCacheFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestCache to fetch.
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestCaches to fetch.
+     */
+    orderBy?: DigestCacheOrderByWithRelationInput | DigestCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestCaches.
+     */
+    cursor?: DigestCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestCaches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestCaches.
+     */
+    distinct?: DigestCacheScalarFieldEnum | DigestCacheScalarFieldEnum[]
+  }
+
+  /**
+   * DigestCache findMany
+   */
+  export type DigestCacheFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestCaches to fetch.
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestCaches to fetch.
+     */
+    orderBy?: DigestCacheOrderByWithRelationInput | DigestCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DigestCaches.
+     */
+    cursor?: DigestCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestCaches.
+     */
+    skip?: number
+    distinct?: DigestCacheScalarFieldEnum | DigestCacheScalarFieldEnum[]
+  }
+
+  /**
+   * DigestCache create
+   */
+  export type DigestCacheCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * The data needed to create a DigestCache.
+     */
+    data: XOR<DigestCacheCreateInput, DigestCacheUncheckedCreateInput>
+  }
+
+  /**
+   * DigestCache createMany
+   */
+  export type DigestCacheCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DigestCaches.
+     */
+    data: DigestCacheCreateManyInput | DigestCacheCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigestCache createManyAndReturn
+   */
+  export type DigestCacheCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * The data used to create many DigestCaches.
+     */
+    data: DigestCacheCreateManyInput | DigestCacheCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigestCache update
+   */
+  export type DigestCacheUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * The data needed to update a DigestCache.
+     */
+    data: XOR<DigestCacheUpdateInput, DigestCacheUncheckedUpdateInput>
+    /**
+     * Choose, which DigestCache to update.
+     */
+    where: DigestCacheWhereUniqueInput
+  }
+
+  /**
+   * DigestCache updateMany
+   */
+  export type DigestCacheUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DigestCaches.
+     */
+    data: XOR<DigestCacheUpdateManyMutationInput, DigestCacheUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestCaches to update
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * Limit how many DigestCaches to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestCache updateManyAndReturn
+   */
+  export type DigestCacheUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * The data used to update DigestCaches.
+     */
+    data: XOR<DigestCacheUpdateManyMutationInput, DigestCacheUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestCaches to update
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * Limit how many DigestCaches to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestCache upsert
+   */
+  export type DigestCacheUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * The filter to search for the DigestCache to update in case it exists.
+     */
+    where: DigestCacheWhereUniqueInput
+    /**
+     * In case the DigestCache found by the `where` argument doesn't exist, create a new DigestCache with this data.
+     */
+    create: XOR<DigestCacheCreateInput, DigestCacheUncheckedCreateInput>
+    /**
+     * In case the DigestCache was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DigestCacheUpdateInput, DigestCacheUncheckedUpdateInput>
+  }
+
+  /**
+   * DigestCache delete
+   */
+  export type DigestCacheDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+    /**
+     * Filter which DigestCache to delete.
+     */
+    where: DigestCacheWhereUniqueInput
+  }
+
+  /**
+   * DigestCache deleteMany
+   */
+  export type DigestCacheDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestCaches to delete
+     */
+    where?: DigestCacheWhereInput
+    /**
+     * Limit how many DigestCaches to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestCache without action
+   */
+  export type DigestCacheDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestCache
+     */
+    select?: DigestCacheSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestCache
+     */
+    omit?: DigestCacheOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DigestItem
+   */
+
+  export type AggregateDigestItem = {
+    _count: DigestItemCountAggregateOutputType | null
+    _min: DigestItemMinAggregateOutputType | null
+    _max: DigestItemMaxAggregateOutputType | null
+  }
+
+  export type DigestItemMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    url: string | null
+    excerpt: string | null
+    aiSummary: string | null
+    source: string | null
+    jurisdiction: string | null
+    contentType: string | null
+    publishedAt: Date | null
+    ingestedAt: Date | null
+  }
+
+  export type DigestItemMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    url: string | null
+    excerpt: string | null
+    aiSummary: string | null
+    source: string | null
+    jurisdiction: string | null
+    contentType: string | null
+    publishedAt: Date | null
+    ingestedAt: Date | null
+  }
+
+  export type DigestItemCountAggregateOutputType = {
+    id: number
+    title: number
+    url: number
+    excerpt: number
+    aiSummary: number
+    source: number
+    jurisdiction: number
+    topics: number
+    contentType: number
+    publishedAt: number
+    ingestedAt: number
+    sentTo: number
+    _all: number
+  }
+
+
+  export type DigestItemMinAggregateInputType = {
+    id?: true
+    title?: true
+    url?: true
+    excerpt?: true
+    aiSummary?: true
+    source?: true
+    jurisdiction?: true
+    contentType?: true
+    publishedAt?: true
+    ingestedAt?: true
+  }
+
+  export type DigestItemMaxAggregateInputType = {
+    id?: true
+    title?: true
+    url?: true
+    excerpt?: true
+    aiSummary?: true
+    source?: true
+    jurisdiction?: true
+    contentType?: true
+    publishedAt?: true
+    ingestedAt?: true
+  }
+
+  export type DigestItemCountAggregateInputType = {
+    id?: true
+    title?: true
+    url?: true
+    excerpt?: true
+    aiSummary?: true
+    source?: true
+    jurisdiction?: true
+    topics?: true
+    contentType?: true
+    publishedAt?: true
+    ingestedAt?: true
+    sentTo?: true
+    _all?: true
+  }
+
+  export type DigestItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestItem to aggregate.
+     */
+    where?: DigestItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestItems to fetch.
+     */
+    orderBy?: DigestItemOrderByWithRelationInput | DigestItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DigestItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DigestItems
+    **/
+    _count?: true | DigestItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DigestItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DigestItemMaxAggregateInputType
+  }
+
+  export type GetDigestItemAggregateType<T extends DigestItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateDigestItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDigestItem[P]>
+      : GetScalarType<T[P], AggregateDigestItem[P]>
+  }
+
+
+
+
+  export type DigestItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DigestItemWhereInput
+    orderBy?: DigestItemOrderByWithAggregationInput | DigestItemOrderByWithAggregationInput[]
+    by: DigestItemScalarFieldEnum[] | DigestItemScalarFieldEnum
+    having?: DigestItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DigestItemCountAggregateInputType | true
+    _min?: DigestItemMinAggregateInputType
+    _max?: DigestItemMaxAggregateInputType
+  }
+
+  export type DigestItemGroupByOutputType = {
+    id: string
+    title: string
+    url: string
+    excerpt: string
+    aiSummary: string
+    source: string
+    jurisdiction: string
+    topics: string[]
+    contentType: string
+    publishedAt: Date
+    ingestedAt: Date
+    sentTo: string[]
+    _count: DigestItemCountAggregateOutputType | null
+    _min: DigestItemMinAggregateOutputType | null
+    _max: DigestItemMaxAggregateOutputType | null
+  }
+
+  type GetDigestItemGroupByPayload<T extends DigestItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DigestItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DigestItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DigestItemGroupByOutputType[P]>
+            : GetScalarType<T[P], DigestItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DigestItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    excerpt?: boolean
+    aiSummary?: boolean
+    source?: boolean
+    jurisdiction?: boolean
+    topics?: boolean
+    contentType?: boolean
+    publishedAt?: boolean
+    ingestedAt?: boolean
+    sentTo?: boolean
+  }, ExtArgs["result"]["digestItem"]>
+
+  export type DigestItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    excerpt?: boolean
+    aiSummary?: boolean
+    source?: boolean
+    jurisdiction?: boolean
+    topics?: boolean
+    contentType?: boolean
+    publishedAt?: boolean
+    ingestedAt?: boolean
+    sentTo?: boolean
+  }, ExtArgs["result"]["digestItem"]>
+
+  export type DigestItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    excerpt?: boolean
+    aiSummary?: boolean
+    source?: boolean
+    jurisdiction?: boolean
+    topics?: boolean
+    contentType?: boolean
+    publishedAt?: boolean
+    ingestedAt?: boolean
+    sentTo?: boolean
+  }, ExtArgs["result"]["digestItem"]>
+
+  export type DigestItemSelectScalar = {
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    excerpt?: boolean
+    aiSummary?: boolean
+    source?: boolean
+    jurisdiction?: boolean
+    topics?: boolean
+    contentType?: boolean
+    publishedAt?: boolean
+    ingestedAt?: boolean
+    sentTo?: boolean
+  }
+
+  export type DigestItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "url" | "excerpt" | "aiSummary" | "source" | "jurisdiction" | "topics" | "contentType" | "publishedAt" | "ingestedAt" | "sentTo", ExtArgs["result"]["digestItem"]>
+
+  export type $DigestItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DigestItem"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      url: string
+      excerpt: string
+      aiSummary: string
+      source: string
+      jurisdiction: string
+      topics: string[]
+      contentType: string
+      publishedAt: Date
+      ingestedAt: Date
+      sentTo: string[]
+    }, ExtArgs["result"]["digestItem"]>
+    composites: {}
+  }
+
+  type DigestItemGetPayload<S extends boolean | null | undefined | DigestItemDefaultArgs> = $Result.GetResult<Prisma.$DigestItemPayload, S>
+
+  type DigestItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DigestItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DigestItemCountAggregateInputType | true
+    }
+
+  export interface DigestItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DigestItem'], meta: { name: 'DigestItem' } }
+    /**
+     * Find zero or one DigestItem that matches the filter.
+     * @param {DigestItemFindUniqueArgs} args - Arguments to find a DigestItem
+     * @example
+     * // Get one DigestItem
+     * const digestItem = await prisma.digestItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DigestItemFindUniqueArgs>(args: SelectSubset<T, DigestItemFindUniqueArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DigestItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DigestItemFindUniqueOrThrowArgs} args - Arguments to find a DigestItem
+     * @example
+     * // Get one DigestItem
+     * const digestItem = await prisma.digestItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DigestItemFindUniqueOrThrowArgs>(args: SelectSubset<T, DigestItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemFindFirstArgs} args - Arguments to find a DigestItem
+     * @example
+     * // Get one DigestItem
+     * const digestItem = await prisma.digestItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DigestItemFindFirstArgs>(args?: SelectSubset<T, DigestItemFindFirstArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DigestItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemFindFirstOrThrowArgs} args - Arguments to find a DigestItem
+     * @example
+     * // Get one DigestItem
+     * const digestItem = await prisma.digestItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DigestItemFindFirstOrThrowArgs>(args?: SelectSubset<T, DigestItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DigestItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DigestItems
+     * const digestItems = await prisma.digestItem.findMany()
+     * 
+     * // Get first 10 DigestItems
+     * const digestItems = await prisma.digestItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const digestItemWithIdOnly = await prisma.digestItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DigestItemFindManyArgs>(args?: SelectSubset<T, DigestItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DigestItem.
+     * @param {DigestItemCreateArgs} args - Arguments to create a DigestItem.
+     * @example
+     * // Create one DigestItem
+     * const DigestItem = await prisma.digestItem.create({
+     *   data: {
+     *     // ... data to create a DigestItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends DigestItemCreateArgs>(args: SelectSubset<T, DigestItemCreateArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DigestItems.
+     * @param {DigestItemCreateManyArgs} args - Arguments to create many DigestItems.
+     * @example
+     * // Create many DigestItems
+     * const digestItem = await prisma.digestItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DigestItemCreateManyArgs>(args?: SelectSubset<T, DigestItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DigestItems and returns the data saved in the database.
+     * @param {DigestItemCreateManyAndReturnArgs} args - Arguments to create many DigestItems.
+     * @example
+     * // Create many DigestItems
+     * const digestItem = await prisma.digestItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DigestItems and only return the `id`
+     * const digestItemWithIdOnly = await prisma.digestItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DigestItemCreateManyAndReturnArgs>(args?: SelectSubset<T, DigestItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DigestItem.
+     * @param {DigestItemDeleteArgs} args - Arguments to delete one DigestItem.
+     * @example
+     * // Delete one DigestItem
+     * const DigestItem = await prisma.digestItem.delete({
+     *   where: {
+     *     // ... filter to delete one DigestItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DigestItemDeleteArgs>(args: SelectSubset<T, DigestItemDeleteArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DigestItem.
+     * @param {DigestItemUpdateArgs} args - Arguments to update one DigestItem.
+     * @example
+     * // Update one DigestItem
+     * const digestItem = await prisma.digestItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DigestItemUpdateArgs>(args: SelectSubset<T, DigestItemUpdateArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DigestItems.
+     * @param {DigestItemDeleteManyArgs} args - Arguments to filter DigestItems to delete.
+     * @example
+     * // Delete a few DigestItems
+     * const { count } = await prisma.digestItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DigestItemDeleteManyArgs>(args?: SelectSubset<T, DigestItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DigestItems
+     * const digestItem = await prisma.digestItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DigestItemUpdateManyArgs>(args: SelectSubset<T, DigestItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DigestItems and returns the data updated in the database.
+     * @param {DigestItemUpdateManyAndReturnArgs} args - Arguments to update many DigestItems.
+     * @example
+     * // Update many DigestItems
+     * const digestItem = await prisma.digestItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DigestItems and only return the `id`
+     * const digestItemWithIdOnly = await prisma.digestItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DigestItemUpdateManyAndReturnArgs>(args: SelectSubset<T, DigestItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DigestItem.
+     * @param {DigestItemUpsertArgs} args - Arguments to update or create a DigestItem.
+     * @example
+     * // Update or create a DigestItem
+     * const digestItem = await prisma.digestItem.upsert({
+     *   create: {
+     *     // ... data to create a DigestItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DigestItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DigestItemUpsertArgs>(args: SelectSubset<T, DigestItemUpsertArgs<ExtArgs>>): Prisma__DigestItemClient<$Result.GetResult<Prisma.$DigestItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DigestItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemCountArgs} args - Arguments to filter DigestItems to count.
+     * @example
+     * // Count the number of DigestItems
+     * const count = await prisma.digestItem.count({
+     *   where: {
+     *     // ... the filter for the DigestItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends DigestItemCountArgs>(
+      args?: Subset<T, DigestItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DigestItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DigestItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DigestItemAggregateArgs>(args: Subset<T, DigestItemAggregateArgs>): Prisma.PrismaPromise<GetDigestItemAggregateType<T>>
+
+    /**
+     * Group by DigestItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DigestItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DigestItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DigestItemGroupByArgs['orderBy'] }
+        : { orderBy?: DigestItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DigestItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDigestItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DigestItem model
+   */
+  readonly fields: DigestItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DigestItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DigestItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DigestItem model
+   */
+  interface DigestItemFieldRefs {
+    readonly id: FieldRef<"DigestItem", 'String'>
+    readonly title: FieldRef<"DigestItem", 'String'>
+    readonly url: FieldRef<"DigestItem", 'String'>
+    readonly excerpt: FieldRef<"DigestItem", 'String'>
+    readonly aiSummary: FieldRef<"DigestItem", 'String'>
+    readonly source: FieldRef<"DigestItem", 'String'>
+    readonly jurisdiction: FieldRef<"DigestItem", 'String'>
+    readonly topics: FieldRef<"DigestItem", 'String[]'>
+    readonly contentType: FieldRef<"DigestItem", 'String'>
+    readonly publishedAt: FieldRef<"DigestItem", 'DateTime'>
+    readonly ingestedAt: FieldRef<"DigestItem", 'DateTime'>
+    readonly sentTo: FieldRef<"DigestItem", 'String[]'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DigestItem findUnique
+   */
+  export type DigestItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestItem to fetch.
+     */
+    where: DigestItemWhereUniqueInput
+  }
+
+  /**
+   * DigestItem findUniqueOrThrow
+   */
+  export type DigestItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestItem to fetch.
+     */
+    where: DigestItemWhereUniqueInput
+  }
+
+  /**
+   * DigestItem findFirst
+   */
+  export type DigestItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestItem to fetch.
+     */
+    where?: DigestItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestItems to fetch.
+     */
+    orderBy?: DigestItemOrderByWithRelationInput | DigestItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestItems.
+     */
+    cursor?: DigestItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestItems.
+     */
+    distinct?: DigestItemScalarFieldEnum | DigestItemScalarFieldEnum[]
+  }
+
+  /**
+   * DigestItem findFirstOrThrow
+   */
+  export type DigestItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestItem to fetch.
+     */
+    where?: DigestItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestItems to fetch.
+     */
+    orderBy?: DigestItemOrderByWithRelationInput | DigestItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DigestItems.
+     */
+    cursor?: DigestItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DigestItems.
+     */
+    distinct?: DigestItemScalarFieldEnum | DigestItemScalarFieldEnum[]
+  }
+
+  /**
+   * DigestItem findMany
+   */
+  export type DigestItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * Filter, which DigestItems to fetch.
+     */
+    where?: DigestItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DigestItems to fetch.
+     */
+    orderBy?: DigestItemOrderByWithRelationInput | DigestItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DigestItems.
+     */
+    cursor?: DigestItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DigestItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DigestItems.
+     */
+    skip?: number
+    distinct?: DigestItemScalarFieldEnum | DigestItemScalarFieldEnum[]
+  }
+
+  /**
+   * DigestItem create
+   */
+  export type DigestItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * The data needed to create a DigestItem.
+     */
+    data: XOR<DigestItemCreateInput, DigestItemUncheckedCreateInput>
+  }
+
+  /**
+   * DigestItem createMany
+   */
+  export type DigestItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DigestItems.
+     */
+    data: DigestItemCreateManyInput | DigestItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigestItem createManyAndReturn
+   */
+  export type DigestItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many DigestItems.
+     */
+    data: DigestItemCreateManyInput | DigestItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DigestItem update
+   */
+  export type DigestItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * The data needed to update a DigestItem.
+     */
+    data: XOR<DigestItemUpdateInput, DigestItemUncheckedUpdateInput>
+    /**
+     * Choose, which DigestItem to update.
+     */
+    where: DigestItemWhereUniqueInput
+  }
+
+  /**
+   * DigestItem updateMany
+   */
+  export type DigestItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DigestItems.
+     */
+    data: XOR<DigestItemUpdateManyMutationInput, DigestItemUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestItems to update
+     */
+    where?: DigestItemWhereInput
+    /**
+     * Limit how many DigestItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestItem updateManyAndReturn
+   */
+  export type DigestItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * The data used to update DigestItems.
+     */
+    data: XOR<DigestItemUpdateManyMutationInput, DigestItemUncheckedUpdateManyInput>
+    /**
+     * Filter which DigestItems to update
+     */
+    where?: DigestItemWhereInput
+    /**
+     * Limit how many DigestItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestItem upsert
+   */
+  export type DigestItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * The filter to search for the DigestItem to update in case it exists.
+     */
+    where: DigestItemWhereUniqueInput
+    /**
+     * In case the DigestItem found by the `where` argument doesn't exist, create a new DigestItem with this data.
+     */
+    create: XOR<DigestItemCreateInput, DigestItemUncheckedCreateInput>
+    /**
+     * In case the DigestItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DigestItemUpdateInput, DigestItemUncheckedUpdateInput>
+  }
+
+  /**
+   * DigestItem delete
+   */
+  export type DigestItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+    /**
+     * Filter which DigestItem to delete.
+     */
+    where: DigestItemWhereUniqueInput
+  }
+
+  /**
+   * DigestItem deleteMany
+   */
+  export type DigestItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DigestItems to delete
+     */
+    where?: DigestItemWhereInput
+    /**
+     * Limit how many DigestItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DigestItem without action
+   */
+  export type DigestItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DigestItem
+     */
+    select?: DigestItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DigestItem
+     */
+    omit?: DigestItemOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model legal_knowledge
    */
 
@@ -56724,7 +59058,11 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     activeOrganizationId: 'activeOrganizationId',
     resetToken: 'resetToken',
-    resetTokenExpiry: 'resetTokenExpiry'
+    resetTokenExpiry: 'resetTokenExpiry',
+    emailVerified: 'emailVerified',
+    emailVerificationToken: 'emailVerificationToken',
+    emailVerificationExpires: 'emailVerificationExpires',
+    authProvider: 'authProvider'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -57260,6 +59598,38 @@ export namespace Prisma {
   export type DigestHistoryScalarFieldEnum = (typeof DigestHistoryScalarFieldEnum)[keyof typeof DigestHistoryScalarFieldEnum]
 
 
+  export const DigestCacheScalarFieldEnum: {
+    id: 'id',
+    fingerprint: 'fingerprint',
+    frequency: 'frequency',
+    jurisdictions: 'jurisdictions',
+    topics: 'topics',
+    content: 'content',
+    synthesizedAt: 'synthesizedAt',
+    expiresAt: 'expiresAt'
+  };
+
+  export type DigestCacheScalarFieldEnum = (typeof DigestCacheScalarFieldEnum)[keyof typeof DigestCacheScalarFieldEnum]
+
+
+  export const DigestItemScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    url: 'url',
+    excerpt: 'excerpt',
+    aiSummary: 'aiSummary',
+    source: 'source',
+    jurisdiction: 'jurisdiction',
+    topics: 'topics',
+    contentType: 'contentType',
+    publishedAt: 'publishedAt',
+    ingestedAt: 'ingestedAt',
+    sentTo: 'sentTo'
+  };
+
+  export type DigestItemScalarFieldEnum = (typeof DigestItemScalarFieldEnum)[keyof typeof DigestItemScalarFieldEnum]
+
+
   export const Legal_knowledgeScalarFieldEnum: {
     id: 'id',
     title: 'title',
@@ -57681,6 +60051,10 @@ export namespace Prisma {
     activeOrganizationId?: StringNullableFilter<"User"> | string | null
     resetToken?: StringNullableFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    emailVerified?: BoolFilter<"User"> | boolean
+    emailVerificationToken?: StringNullableFilter<"User"> | string | null
+    emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+    authProvider?: StringFilter<"User"> | string
     createdAIAssociates?: AIAssociateListRelationFilter
     accounts?: AccountListRelationFilter
     actions?: ConversationActionListRelationFilter
@@ -57717,6 +60091,10 @@ export namespace Prisma {
     activeOrganizationId?: SortOrderInput | SortOrder
     resetToken?: SortOrderInput | SortOrder
     resetTokenExpiry?: SortOrderInput | SortOrder
+    emailVerified?: SortOrder
+    emailVerificationToken?: SortOrderInput | SortOrder
+    emailVerificationExpires?: SortOrderInput | SortOrder
+    authProvider?: SortOrder
     createdAIAssociates?: AIAssociateOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     actions?: ConversationActionOrderByRelationAggregateInput
@@ -57756,6 +60134,10 @@ export namespace Prisma {
     activeOrganizationId?: StringNullableFilter<"User"> | string | null
     resetToken?: StringNullableFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    emailVerified?: BoolFilter<"User"> | boolean
+    emailVerificationToken?: StringNullableFilter<"User"> | string | null
+    emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+    authProvider?: StringFilter<"User"> | string
     createdAIAssociates?: AIAssociateListRelationFilter
     accounts?: AccountListRelationFilter
     actions?: ConversationActionListRelationFilter
@@ -57792,6 +60174,10 @@ export namespace Prisma {
     activeOrganizationId?: SortOrderInput | SortOrder
     resetToken?: SortOrderInput | SortOrder
     resetTokenExpiry?: SortOrderInput | SortOrder
+    emailVerified?: SortOrder
+    emailVerificationToken?: SortOrderInput | SortOrder
+    emailVerificationExpires?: SortOrderInput | SortOrder
+    authProvider?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -57812,6 +60198,10 @@ export namespace Prisma {
     activeOrganizationId?: StringNullableWithAggregatesFilter<"User"> | string | null
     resetToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
+    emailVerificationToken?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emailVerificationExpires?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    authProvider?: StringWithAggregatesFilter<"User"> | string
   }
 
   export type OrganizationWhereInput = {
@@ -60716,6 +63106,160 @@ export namespace Prisma {
     sentAt?: DateTimeWithAggregatesFilter<"DigestHistory"> | Date | string
   }
 
+  export type DigestCacheWhereInput = {
+    AND?: DigestCacheWhereInput | DigestCacheWhereInput[]
+    OR?: DigestCacheWhereInput[]
+    NOT?: DigestCacheWhereInput | DigestCacheWhereInput[]
+    id?: StringFilter<"DigestCache"> | string
+    fingerprint?: StringFilter<"DigestCache"> | string
+    frequency?: StringFilter<"DigestCache"> | string
+    jurisdictions?: StringNullableListFilter<"DigestCache">
+    topics?: StringNullableListFilter<"DigestCache">
+    content?: JsonFilter<"DigestCache">
+    synthesizedAt?: DateTimeFilter<"DigestCache"> | Date | string
+    expiresAt?: DateTimeFilter<"DigestCache"> | Date | string
+  }
+
+  export type DigestCacheOrderByWithRelationInput = {
+    id?: SortOrder
+    fingerprint?: SortOrder
+    frequency?: SortOrder
+    jurisdictions?: SortOrder
+    topics?: SortOrder
+    content?: SortOrder
+    synthesizedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type DigestCacheWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    fingerprint?: string
+    AND?: DigestCacheWhereInput | DigestCacheWhereInput[]
+    OR?: DigestCacheWhereInput[]
+    NOT?: DigestCacheWhereInput | DigestCacheWhereInput[]
+    frequency?: StringFilter<"DigestCache"> | string
+    jurisdictions?: StringNullableListFilter<"DigestCache">
+    topics?: StringNullableListFilter<"DigestCache">
+    content?: JsonFilter<"DigestCache">
+    synthesizedAt?: DateTimeFilter<"DigestCache"> | Date | string
+    expiresAt?: DateTimeFilter<"DigestCache"> | Date | string
+  }, "id" | "fingerprint">
+
+  export type DigestCacheOrderByWithAggregationInput = {
+    id?: SortOrder
+    fingerprint?: SortOrder
+    frequency?: SortOrder
+    jurisdictions?: SortOrder
+    topics?: SortOrder
+    content?: SortOrder
+    synthesizedAt?: SortOrder
+    expiresAt?: SortOrder
+    _count?: DigestCacheCountOrderByAggregateInput
+    _max?: DigestCacheMaxOrderByAggregateInput
+    _min?: DigestCacheMinOrderByAggregateInput
+  }
+
+  export type DigestCacheScalarWhereWithAggregatesInput = {
+    AND?: DigestCacheScalarWhereWithAggregatesInput | DigestCacheScalarWhereWithAggregatesInput[]
+    OR?: DigestCacheScalarWhereWithAggregatesInput[]
+    NOT?: DigestCacheScalarWhereWithAggregatesInput | DigestCacheScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DigestCache"> | string
+    fingerprint?: StringWithAggregatesFilter<"DigestCache"> | string
+    frequency?: StringWithAggregatesFilter<"DigestCache"> | string
+    jurisdictions?: StringNullableListFilter<"DigestCache">
+    topics?: StringNullableListFilter<"DigestCache">
+    content?: JsonWithAggregatesFilter<"DigestCache">
+    synthesizedAt?: DateTimeWithAggregatesFilter<"DigestCache"> | Date | string
+    expiresAt?: DateTimeWithAggregatesFilter<"DigestCache"> | Date | string
+  }
+
+  export type DigestItemWhereInput = {
+    AND?: DigestItemWhereInput | DigestItemWhereInput[]
+    OR?: DigestItemWhereInput[]
+    NOT?: DigestItemWhereInput | DigestItemWhereInput[]
+    id?: StringFilter<"DigestItem"> | string
+    title?: StringFilter<"DigestItem"> | string
+    url?: StringFilter<"DigestItem"> | string
+    excerpt?: StringFilter<"DigestItem"> | string
+    aiSummary?: StringFilter<"DigestItem"> | string
+    source?: StringFilter<"DigestItem"> | string
+    jurisdiction?: StringFilter<"DigestItem"> | string
+    topics?: StringNullableListFilter<"DigestItem">
+    contentType?: StringFilter<"DigestItem"> | string
+    publishedAt?: DateTimeFilter<"DigestItem"> | Date | string
+    ingestedAt?: DateTimeFilter<"DigestItem"> | Date | string
+    sentTo?: StringNullableListFilter<"DigestItem">
+  }
+
+  export type DigestItemOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    excerpt?: SortOrder
+    aiSummary?: SortOrder
+    source?: SortOrder
+    jurisdiction?: SortOrder
+    topics?: SortOrder
+    contentType?: SortOrder
+    publishedAt?: SortOrder
+    ingestedAt?: SortOrder
+    sentTo?: SortOrder
+  }
+
+  export type DigestItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    url?: string
+    AND?: DigestItemWhereInput | DigestItemWhereInput[]
+    OR?: DigestItemWhereInput[]
+    NOT?: DigestItemWhereInput | DigestItemWhereInput[]
+    title?: StringFilter<"DigestItem"> | string
+    excerpt?: StringFilter<"DigestItem"> | string
+    aiSummary?: StringFilter<"DigestItem"> | string
+    source?: StringFilter<"DigestItem"> | string
+    jurisdiction?: StringFilter<"DigestItem"> | string
+    topics?: StringNullableListFilter<"DigestItem">
+    contentType?: StringFilter<"DigestItem"> | string
+    publishedAt?: DateTimeFilter<"DigestItem"> | Date | string
+    ingestedAt?: DateTimeFilter<"DigestItem"> | Date | string
+    sentTo?: StringNullableListFilter<"DigestItem">
+  }, "id" | "url">
+
+  export type DigestItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    excerpt?: SortOrder
+    aiSummary?: SortOrder
+    source?: SortOrder
+    jurisdiction?: SortOrder
+    topics?: SortOrder
+    contentType?: SortOrder
+    publishedAt?: SortOrder
+    ingestedAt?: SortOrder
+    sentTo?: SortOrder
+    _count?: DigestItemCountOrderByAggregateInput
+    _max?: DigestItemMaxOrderByAggregateInput
+    _min?: DigestItemMinOrderByAggregateInput
+  }
+
+  export type DigestItemScalarWhereWithAggregatesInput = {
+    AND?: DigestItemScalarWhereWithAggregatesInput | DigestItemScalarWhereWithAggregatesInput[]
+    OR?: DigestItemScalarWhereWithAggregatesInput[]
+    NOT?: DigestItemScalarWhereWithAggregatesInput | DigestItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DigestItem"> | string
+    title?: StringWithAggregatesFilter<"DigestItem"> | string
+    url?: StringWithAggregatesFilter<"DigestItem"> | string
+    excerpt?: StringWithAggregatesFilter<"DigestItem"> | string
+    aiSummary?: StringWithAggregatesFilter<"DigestItem"> | string
+    source?: StringWithAggregatesFilter<"DigestItem"> | string
+    jurisdiction?: StringWithAggregatesFilter<"DigestItem"> | string
+    topics?: StringNullableListFilter<"DigestItem">
+    contentType?: StringWithAggregatesFilter<"DigestItem"> | string
+    publishedAt?: DateTimeWithAggregatesFilter<"DigestItem"> | Date | string
+    ingestedAt?: DateTimeWithAggregatesFilter<"DigestItem"> | Date | string
+    sentTo?: StringNullableListFilter<"DigestItem">
+  }
+
   export type legal_knowledgeWhereInput = {
     AND?: legal_knowledgeWhereInput | legal_knowledgeWhereInput[]
     OR?: legal_knowledgeWhereInput[]
@@ -61115,6 +63659,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -61151,6 +63699,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -61183,6 +63735,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -61219,6 +63775,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -61253,6 +63813,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
   }
 
   export type UserUpdateManyMutationInput = {
@@ -61265,6 +63829,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -61279,6 +63847,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrganizationCreateInput = {
@@ -64322,6 +66894,188 @@ export namespace Prisma {
     sentAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DigestCacheCreateInput = {
+    id?: string
+    fingerprint: string
+    frequency: string
+    jurisdictions?: DigestCacheCreatejurisdictionsInput | string[]
+    topics?: DigestCacheCreatetopicsInput | string[]
+    content: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type DigestCacheUncheckedCreateInput = {
+    id?: string
+    fingerprint: string
+    frequency: string
+    jurisdictions?: DigestCacheCreatejurisdictionsInput | string[]
+    topics?: DigestCacheCreatetopicsInput | string[]
+    content: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type DigestCacheUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fingerprint?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    jurisdictions?: DigestCacheUpdatejurisdictionsInput | string[]
+    topics?: DigestCacheUpdatetopicsInput | string[]
+    content?: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestCacheUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fingerprint?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    jurisdictions?: DigestCacheUpdatejurisdictionsInput | string[]
+    topics?: DigestCacheUpdatetopicsInput | string[]
+    content?: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestCacheCreateManyInput = {
+    id?: string
+    fingerprint: string
+    frequency: string
+    jurisdictions?: DigestCacheCreatejurisdictionsInput | string[]
+    topics?: DigestCacheCreatetopicsInput | string[]
+    content: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: Date | string
+    expiresAt: Date | string
+  }
+
+  export type DigestCacheUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fingerprint?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    jurisdictions?: DigestCacheUpdatejurisdictionsInput | string[]
+    topics?: DigestCacheUpdatetopicsInput | string[]
+    content?: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestCacheUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fingerprint?: StringFieldUpdateOperationsInput | string
+    frequency?: StringFieldUpdateOperationsInput | string
+    jurisdictions?: DigestCacheUpdatejurisdictionsInput | string[]
+    topics?: DigestCacheUpdatetopicsInput | string[]
+    content?: JsonNullValueInput | InputJsonValue
+    synthesizedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DigestItemCreateInput = {
+    id?: string
+    title: string
+    url: string
+    excerpt?: string
+    aiSummary?: string
+    source: string
+    jurisdiction: string
+    topics?: DigestItemCreatetopicsInput | string[]
+    contentType?: string
+    publishedAt: Date | string
+    ingestedAt?: Date | string
+    sentTo?: DigestItemCreatesentToInput | string[]
+  }
+
+  export type DigestItemUncheckedCreateInput = {
+    id?: string
+    title: string
+    url: string
+    excerpt?: string
+    aiSummary?: string
+    source: string
+    jurisdiction: string
+    topics?: DigestItemCreatetopicsInput | string[]
+    contentType?: string
+    publishedAt: Date | string
+    ingestedAt?: Date | string
+    sentTo?: DigestItemCreatesentToInput | string[]
+  }
+
+  export type DigestItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    excerpt?: StringFieldUpdateOperationsInput | string
+    aiSummary?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    jurisdiction?: StringFieldUpdateOperationsInput | string
+    topics?: DigestItemUpdatetopicsInput | string[]
+    contentType?: StringFieldUpdateOperationsInput | string
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ingestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentTo?: DigestItemUpdatesentToInput | string[]
+  }
+
+  export type DigestItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    excerpt?: StringFieldUpdateOperationsInput | string
+    aiSummary?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    jurisdiction?: StringFieldUpdateOperationsInput | string
+    topics?: DigestItemUpdatetopicsInput | string[]
+    contentType?: StringFieldUpdateOperationsInput | string
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ingestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentTo?: DigestItemUpdatesentToInput | string[]
+  }
+
+  export type DigestItemCreateManyInput = {
+    id?: string
+    title: string
+    url: string
+    excerpt?: string
+    aiSummary?: string
+    source: string
+    jurisdiction: string
+    topics?: DigestItemCreatetopicsInput | string[]
+    contentType?: string
+    publishedAt: Date | string
+    ingestedAt?: Date | string
+    sentTo?: DigestItemCreatesentToInput | string[]
+  }
+
+  export type DigestItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    excerpt?: StringFieldUpdateOperationsInput | string
+    aiSummary?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    jurisdiction?: StringFieldUpdateOperationsInput | string
+    topics?: DigestItemUpdatetopicsInput | string[]
+    contentType?: StringFieldUpdateOperationsInput | string
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ingestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentTo?: DigestItemUpdatesentToInput | string[]
+  }
+
+  export type DigestItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    excerpt?: StringFieldUpdateOperationsInput | string
+    aiSummary?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    jurisdiction?: StringFieldUpdateOperationsInput | string
+    topics?: DigestItemUpdatetopicsInput | string[]
+    contentType?: StringFieldUpdateOperationsInput | string
+    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    ingestedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sentTo?: DigestItemUpdatesentToInput | string[]
+  }
+
   export type legal_knowledgeCreateInput = {
     id: string
     title: string
@@ -64789,6 +67543,11 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type AIAssociateListRelationFilter = {
     every?: AIAssociateWhereInput
     some?: AIAssociateWhereInput
@@ -65011,6 +67770,10 @@ export namespace Prisma {
     activeOrganizationId?: SortOrder
     resetToken?: SortOrder
     resetTokenExpiry?: SortOrder
+    emailVerified?: SortOrder
+    emailVerificationToken?: SortOrder
+    emailVerificationExpires?: SortOrder
+    authProvider?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -65025,6 +67788,10 @@ export namespace Prisma {
     activeOrganizationId?: SortOrder
     resetToken?: SortOrder
     resetTokenExpiry?: SortOrder
+    emailVerified?: SortOrder
+    emailVerificationToken?: SortOrder
+    emailVerificationExpires?: SortOrder
+    authProvider?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -65039,6 +67806,10 @@ export namespace Prisma {
     activeOrganizationId?: SortOrder
     resetToken?: SortOrder
     resetTokenExpiry?: SortOrder
+    emailVerified?: SortOrder
+    emailVerificationToken?: SortOrder
+    emailVerificationExpires?: SortOrder
+    authProvider?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -65055,9 +67826,12 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {
@@ -65235,14 +68009,6 @@ export namespace Prisma {
 
   export type OrganizationSumOrderByAggregateInput = {
     yearsInPractice?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -66866,6 +69632,74 @@ export namespace Prisma {
     sourceCount?: SortOrder
   }
 
+  export type DigestCacheCountOrderByAggregateInput = {
+    id?: SortOrder
+    fingerprint?: SortOrder
+    frequency?: SortOrder
+    jurisdictions?: SortOrder
+    topics?: SortOrder
+    content?: SortOrder
+    synthesizedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type DigestCacheMaxOrderByAggregateInput = {
+    id?: SortOrder
+    fingerprint?: SortOrder
+    frequency?: SortOrder
+    synthesizedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type DigestCacheMinOrderByAggregateInput = {
+    id?: SortOrder
+    fingerprint?: SortOrder
+    frequency?: SortOrder
+    synthesizedAt?: SortOrder
+    expiresAt?: SortOrder
+  }
+
+  export type DigestItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    excerpt?: SortOrder
+    aiSummary?: SortOrder
+    source?: SortOrder
+    jurisdiction?: SortOrder
+    topics?: SortOrder
+    contentType?: SortOrder
+    publishedAt?: SortOrder
+    ingestedAt?: SortOrder
+    sentTo?: SortOrder
+  }
+
+  export type DigestItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    excerpt?: SortOrder
+    aiSummary?: SortOrder
+    source?: SortOrder
+    jurisdiction?: SortOrder
+    contentType?: SortOrder
+    publishedAt?: SortOrder
+    ingestedAt?: SortOrder
+  }
+
+  export type DigestItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    excerpt?: SortOrder
+    aiSummary?: SortOrder
+    source?: SortOrder
+    jurisdiction?: SortOrder
+    contentType?: SortOrder
+    publishedAt?: SortOrder
+    ingestedAt?: SortOrder
+  }
+
   export type EnumLegalKnowledgeTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.LegalKnowledgeType | EnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
     in?: $Enums.LegalKnowledgeType[] | ListEnumLegalKnowledgeTypeFieldRefInput<$PrismaModel>
@@ -67361,6 +70195,10 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type AIAssociateUpdateManyWithoutCreatedByNestedInput = {
@@ -68119,10 +70957,6 @@ export namespace Prisma {
     create?: XOR<SubscriptionCreateWithoutOrganizationInput, SubscriptionUncheckedCreateWithoutOrganizationInput>
     connectOrCreate?: SubscriptionCreateOrConnectWithoutOrganizationInput
     connect?: SubscriptionWhereUniqueInput
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type OrganizationUpdatepracticeAreasInput = {
@@ -70918,6 +73752,42 @@ export namespace Prisma {
     update?: XOR<XOR<DigestSubscriptionUpdateToOneWithWhereWithoutHistoryInput, DigestSubscriptionUpdateWithoutHistoryInput>, DigestSubscriptionUncheckedUpdateWithoutHistoryInput>
   }
 
+  export type DigestCacheCreatejurisdictionsInput = {
+    set: string[]
+  }
+
+  export type DigestCacheCreatetopicsInput = {
+    set: string[]
+  }
+
+  export type DigestCacheUpdatejurisdictionsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type DigestCacheUpdatetopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type DigestItemCreatetopicsInput = {
+    set: string[]
+  }
+
+  export type DigestItemCreatesentToInput = {
+    set: string[]
+  }
+
+  export type DigestItemUpdatetopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type DigestItemUpdatesentToInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type legal_knowledgeCreatepracticeAreasInput = {
     set: $Enums.PracticeArea[]
   }
@@ -71161,6 +74031,11 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -71173,11 +74048,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -71321,6 +74191,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -71356,6 +74230,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -71403,6 +74281,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -71438,6 +74320,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -71469,6 +74355,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -71504,6 +74394,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -71551,6 +74445,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -71586,6 +74484,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -73426,6 +76328,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -73461,6 +76367,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -73547,6 +76457,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -73581,6 +76495,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -73623,6 +76541,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -73657,6 +76579,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -73959,6 +76885,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -73994,6 +76924,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -74076,6 +77010,10 @@ export namespace Prisma {
     activeOrganizationId?: StringNullableFilter<"User"> | string | null
     resetToken?: StringNullableFilter<"User"> | string | null
     resetTokenExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    emailVerified?: BoolFilter<"User"> | boolean
+    emailVerificationToken?: StringNullableFilter<"User"> | string | null
+    emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+    authProvider?: StringFilter<"User"> | string
   }
 
   export type UserUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -75095,6 +78033,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -75130,6 +78072,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -75256,6 +78202,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -75291,6 +78241,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -76068,6 +79022,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -76103,6 +79061,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -76201,6 +79163,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -76236,6 +79202,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -76289,6 +79259,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -76324,6 +79298,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -76679,6 +79657,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -76714,6 +79696,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -77115,6 +80101,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -77150,6 +80140,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -77375,6 +80369,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -77410,6 +80408,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -77620,6 +80622,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -77655,6 +80661,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -77739,6 +80749,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -77774,6 +80788,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -77862,6 +80880,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -77897,6 +80919,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -78007,6 +81033,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -78042,6 +81072,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -78073,6 +81107,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -78108,6 +81146,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -78257,6 +81299,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -78292,6 +81338,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -78437,6 +81487,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -78472,6 +81526,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -78611,6 +81669,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -78646,6 +81708,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -79474,6 +82540,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -79509,6 +82579,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -79623,6 +82697,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -79658,6 +82736,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -80073,6 +83155,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -80108,6 +83194,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -80273,6 +83363,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -80308,6 +83402,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -80580,6 +83678,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -80615,6 +83717,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -80703,6 +83809,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -80738,6 +83848,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -80806,6 +83920,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -80841,6 +83959,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -80957,6 +84079,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -80992,6 +84118,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -81286,6 +84416,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -81321,6 +84455,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -81496,6 +84634,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -81531,6 +84673,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -81666,6 +84812,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -81701,6 +84851,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -81791,6 +84945,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -81826,6 +84984,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -81857,6 +85019,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -81892,6 +85058,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -82114,6 +85284,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -82149,6 +85323,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -82885,6 +86063,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -82920,6 +86102,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -83074,6 +86260,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -83109,6 +86299,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -83208,6 +86402,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
@@ -83243,6 +86441,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
@@ -83320,6 +86522,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -83355,6 +86561,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -84530,6 +87740,10 @@ export namespace Prisma {
     updatedAt?: Date | string
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
   }
 
   export type UserCreateManyOrganizationInput = {
@@ -84543,6 +87757,10 @@ export namespace Prisma {
     activeOrganizationId?: string | null
     resetToken?: string | null
     resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
   }
 
   export type UserOrganizationCreateManyOrganizationInput = {
@@ -84848,6 +88066,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -84882,6 +88104,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -84915,6 +88141,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserUpdateWithoutOrganizationInput = {
@@ -84927,6 +88157,10 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
@@ -84961,6 +88195,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
@@ -84994,6 +88232,10 @@ export namespace Prisma {
     activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
     resetToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserOrganizationUpdateWithoutOrganizationInput = {

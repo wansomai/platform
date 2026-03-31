@@ -24,13 +24,17 @@ import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 
 // Get organization members
 export const GET = withErrorHandler(
-  withOrganizationAccess(
-    OrganizationPermission.VIEW_MEMBERS,
-    async (request: NextRequest, context: OrganizationContext) => {
-      const { organizationId } = context;
+  withAuth(async (request: NextRequest, userId: string) => {
+    const organizationId = await getActiveOrganizationId(userId);
 
-      // Get organization details including owner info
-      const orgDetails = await getOrganizationDetails(organizationId);
+    // Return empty list for users without VIEW_MEMBERS permission — avoids 403 toast
+    const canView = await hasOrganizationPermission(userId, organizationId, OrganizationPermission.VIEW_MEMBERS);
+    if (!canView) {
+      return createApiResponse({ members: [] });
+    }
+
+    // Get organization details including owner info
+    const orgDetails = await getOrganizationDetails(organizationId);
 
       const members = await prisma.userOrganization.findMany({
         where: {
@@ -60,17 +64,16 @@ export const GET = withErrorHandler(
         isOwner: member.user.id === orgDetails?.ownerId,
       }));
 
-      return NextResponse.json({
-        members: formattedMembers,
-        organization: {
-          id: orgDetails?.id,
-          name: orgDetails?.name,
-          accountType: orgDetails?.accountType,
-          ownerId: orgDetails?.ownerId,
-        },
-      });
-    }
-  )
+    return NextResponse.json({
+      members: formattedMembers,
+      organization: {
+        id: orgDetails?.id,
+        name: orgDetails?.name,
+        accountType: orgDetails?.accountType,
+        ownerId: orgDetails?.ownerId,
+      },
+    });
+  })
 );
 
 // Remove a member from organization

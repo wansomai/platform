@@ -62,7 +62,7 @@ function LoginPageContent() {
       });
 
       if (!res?.ok) {
-        throw new Error(res?.error || 'Invalid email or password');
+        throw new Error(res?.error === 'CredentialsSignin' ? 'Invalid email or password' : res?.error || 'Invalid email or password');
       }
 
       return res;

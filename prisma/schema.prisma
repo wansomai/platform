@@ -55,8 +55,12 @@ model User {
   createdAt               DateTime                @default(now())
   updatedAt               DateTime                @updatedAt
   activeOrganizationId    String?
-  resetToken              String?
-  resetTokenExpiry        DateTime?
+  resetToken                String?
+  resetTokenExpiry          DateTime?
+  emailVerified             Boolean   @default(false)
+  emailVerificationToken    String?
+  emailVerificationExpires  DateTime?
+  authProvider              String    @default("email")
   createdAIAssociates     AIAssociate[]
   accounts                Account[]
   actions                 ConversationAction[]
@@ -688,6 +692,47 @@ model DigestHistory {
 
   @@index([subscriptionId, sentAt(sort: Desc)])
   @@map("digest_history")
+}
+
+// ─── Briefly digest pipeline ──────────────────────────────────────────────────
+// Items are ingested continuously (every 2–4 hours) from RSS feeds, the LII
+// scraper, and Tavily fallback.  At send time the cron job queries this table
+// instead of doing a live search, guaranteeing fresh, timestamped content.
+
+// Pre-computed synthesis results keyed by subscriber fingerprint.
+// Written by digest-ingest after each ingestion run so that legal-digest
+// only needs a DB read + SMTP dispatch — no Gemini calls at send time.
+model DigestCache {
+  id            String   @id @default(cuid())
+  fingerprint   String   @unique              // frequency::sorted-jurisdictions::sorted-topics
+  frequency     String
+  jurisdictions String[]
+  topics        String[]
+  content       Json                          // DigestContent JSON
+  synthesizedAt DateTime @default(now())
+  expiresAt     DateTime                      // synthesizedAt + 5 h (matches 4 h ingest cadence + 1 h buffer)
+
+  @@index([expiresAt])
+  @@map("digest_cache")
+}
+
+model DigestItem {
+  id           String   @id @default(cuid())
+  title        String
+  url          String   @unique
+  excerpt      String   @default("")       // raw / og:description-enriched excerpt
+  aiSummary    String   @default("")       // Gemini-generated 1–2 sentence summary (always populated at ingest)
+  source       String                      // "Kenya Law", "nation.africa", etc.
+  jurisdiction String                      // "KE", "ZA", "NG", etc.
+  topics       String[]                    // ["Criminal Law", "Commercial Law"]
+  contentType  String   @default("general") // "case_law" | "legislation" | "general"
+  publishedAt  DateTime
+  ingestedAt   DateTime @default(now())
+  sentTo       String[]                    // userId values already sent this item
+
+  @@index([jurisdiction, publishedAt(sort: Desc)])
+  @@index([publishedAt(sort: Desc)])
+  @@map("digest_items")
 }
 
 model legal_knowledge {

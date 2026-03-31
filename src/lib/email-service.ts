@@ -7,6 +7,7 @@ interface EmailOptions {
   subject: string;
   html: string;
   from?: string;
+  replyTo?: string;
   cc?: string[];
   bcc?: string[];
   attachments?: Array<{
@@ -48,7 +49,7 @@ function createTransporter() {
  * @returns Object indicating success or failure
  */
 export async function sendEmail(options: EmailOptions) {
-  const { to, subject, html, from, cc, bcc, attachments } = options;
+  const { to, subject, html, from, replyTo, cc, bcc, attachments } = options;
   
   try {
     const transporter = createTransporter();
@@ -57,6 +58,7 @@ export async function sendEmail(options: EmailOptions) {
     // Send email
     const info = await transporter.sendMail({
       from: from || `"Wansom" <${user}>`,
+      replyTo,
       to,
       cc,
       bcc,
@@ -1302,10 +1304,12 @@ export function sendLaw360WelcomeEmail({
 /**
  * Sends a confirmation email when a user subscribes to Briefly by Wansom
  */
-export function sendDigestSubscriptionEmail({
+export async function sendDigestSubscriptionEmail({
   email,
   fullName,
   frequency,
+  jurisdictions,
+  topics,
 }: {
   email: string;
   fullName: string;
@@ -1318,6 +1322,13 @@ export function sendDigestSubscriptionEmail({
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
 
   const subject = `You're subscribed to ${frequencyLabel} Briefly by Wansom`;
+
+  const jurisdictionsList = jurisdictions.map(
+    (j) => `<li style="margin-bottom:4px">${j}</li>`
+  ).join('');
+  const topicsList = topics.map(
+    (t) => `<li style="margin-bottom:4px">${t}</li>`
+  ).join('');
 
   const html = `
     <!DOCTYPE html>
@@ -1338,16 +1349,22 @@ export function sendDigestSubscriptionEmail({
 
           <p>You've successfully subscribed to <strong>Briefly by Wansom</strong>, your personalized legal news digest powered by Wansom AI.</p>
 
-          <h3 style="color: #0a4b5e; font-size: 15px;">What to Expect</h3>
-          <p>Each digest will include:</p>
-          <ul style="padding-left: 20px; color: #4a4a4a;">
-            <li>Case law updates and notable court decisions from your selected jurisdictions</li>
-            <li>Regulatory changes and government policy updates</li>
-            <li>Legal industry news and developments</li>
-            <li>Source citations with links for further reading</li>
-          </ul>
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 16px; border-radius: 0 6px 6px 0; margin: 20px 0;">
+            <p style="margin: 0 0 12px 0; font-weight: 600; color: #0a4b5e;">Your subscription</p>
+            <p style="margin: 0 0 4px 0; font-size: 14px;"><strong>Frequency:</strong> ${frequencyLabel}</p>
+            <div style="display: flex; gap: 24px; margin-top: 12px; flex-wrap: wrap;">
+              <div>
+                <p style="margin: 0 0 6px 0; font-size: 14px; font-weight: 600;">Jurisdictions</p>
+                <ul style="padding-left: 18px; margin: 0; color: #4a4a4a; font-size: 14px;">${jurisdictionsList}</ul>
+              </div>
+              <div>
+                <p style="margin: 0 0 6px 0; font-size: 14px; font-weight: 600;">Practice Areas</p>
+                <ul style="padding-left: 18px; margin: 0; color: #4a4a4a; font-size: 14px;">${topicsList}</ul>
+              </div>
+            </div>
+          </div>
 
-          <p>Your first digest will arrive ${frequency === 'daily' ? 'tomorrow morning' : 'next Monday morning'}.</p>
+          <p>Your first digest will arrive ${frequency === 'daily' ? 'tomorrow morning' : 'next Monday morning'} at 08:00 UTC.</p>
 
           <div style="margin-top: 24px; text-align: center;">
             <a href="${manageUrl}" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600;">Manage Subscription</a>
@@ -1378,21 +1395,26 @@ export function sendDigestSubscriptionEmail({
 /**
  * Sends a legal news digest email
  */
-export function sendLegalDigestEmail({
+export async function sendLegalDigestEmail({
   email,
   fullName,
   digest,
   frequency,
+  isPreview = false,
 }: {
   email: string;
   fullName: string;
   digest: DigestContent;
   frequency: string;
+  isPreview?: boolean;
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wansom.ai';
   const unsubscribeUrl = `${appUrl}/workflows/template/law-360`;
   const frequencyLabel = frequency === 'daily' ? 'Daily' : 'Weekly';
-  const subject = `Briefly by Wansom ${frequencyLabel} Digest: ${digest.headline}`;
+  const todayShort = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const subject = isPreview
+    ? `[PREVIEW] Briefly by Wansom — ${frequencyLabel} Digest · ${todayShort}`
+    : `Briefly by Wansom ${frequencyLabel} Digest · ${todayShort}: ${digest.headline}`;
 
   const sectionsHtml = digest.sections
     .filter((s) => s.items.length > 0)
@@ -1405,17 +1427,17 @@ export function sendLegalDigestEmail({
         ${section.items
           .map(
             (item) => `
-          <div style="margin-bottom: 16px; padding: 12px; background-color: #f8fafc; border-radius: 6px; border-left: 3px solid #0a4b5e;">
-            <h3 style="color: #1a1a1a; font-size: 15px; margin: 0 0 6px 0;">${item.title}</h3>
-            <p style="color: #4a4a4a; font-size: 14px; line-height: 1.5; margin: 0 0 8px 0;">${item.summary}</p>
-            ${
-              item.sourceUrl
-                ? `<a href="${item.sourceUrl}" style="color: #0a4b5e; font-size: 13px; text-decoration: none;">${item.sourceName || 'Read more'} &rarr;</a>`
-                : item.sourceName
-                  ? `<span style="color: #666; font-size: 13px;">Source: ${item.sourceName}</span>`
-                  : ''
-            }
-          </div>`
+          ${(() => {
+              const cardStyle = 'display:block;margin-bottom:16px;padding:12px;background-color:#f8fafc;border-radius:6px;border-left:3px solid #0a4b5e;text-decoration:none;color:inherit;';
+              const inner = `
+                <h3 style="color:#1a1a1a;font-size:15px;margin:0 0 6px 0;">${item.title}</h3>
+                <p style="color:#4a4a4a;font-size:14px;line-height:1.5;margin:0 0 8px 0;">${item.summary}</p>
+                ${item.sourceName ? `<span style="color:#0a4b5e;font-size:13px;">${item.sourceName}${item.sourceUrl ? ' &rarr;' : ''}</span>` : ''}
+              `;
+              return item.sourceUrl
+                ? `<a href="${item.sourceUrl}" style="${cardStyle}">${inner}</a>`
+                : `<div style="${cardStyle}">${inner}</div>`;
+            })()}`
           )
           .join('')}
       </div>`
@@ -1454,6 +1476,12 @@ export function sendLegalDigestEmail({
         </div>
 
         <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          ${isPreview ? `
+          <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 13px; color: #92400e; font-weight: 600;">This is a preview — the real thing looks exactly like this.</p>
+            <p style="margin: 6px 0 0 0; font-size: 13px; color: #92400e;">Once you subscribe, you'll receive your personalised digest every ${frequencyLabel.toLowerCase()}. <a href="${appUrl}/briefly-by-wansom" style="color: #0a4b5e; font-weight: 600;">Activate Briefly &rarr;</a></p>
+          </div>` : ''}
+
           <p style="font-size: 15px;">Hello ${fullName},</p>
 
           <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px; margin: 16px 0; border-radius: 0 6px 6px 0;">
@@ -1488,4 +1516,68 @@ export function sendLegalDigestEmail({
     subject,
     html,
   });
+}
+
+
+/**
+ * Sends an email verification email
+ */
+export function sendVerificationEmail(user: { email: string; fullName?: string | null }, verificationUrl: string) {
+  const name = user.fullName?.split(' ')[0] || 'there';
+  const subject = 'Verify your email — Wansom AI';
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#0a4b5e,#005c4d);padding:28px 40px;text-align:center;">
+            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Wansom <span style="color:#7ee8c8;">AI</span></p>
+            <p style="margin:4px 0 0;font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:1.5px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Legal Intelligence Platform</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 40px 28px;">
+            <p style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Hi ${name} 👋</p>
+            <p style="margin:0 0 24px;font-size:15px;color:#52525b;line-height:1.7;">You're almost ready! Please confirm your email address so we know it's really you. This keeps your workspace secure and unlocks all features.</p>
+
+            <!-- CTA Button -->
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+              <tr>
+                <td style="background:linear-gradient(135deg,#0a4b5e,#005c4d);border-radius:8px;">
+                  <a href="${verificationUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Verify my email &rarr;</a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 6px;font-size:13px;color:#71717a;">Button not working? Copy and paste this link into your browser:</p>
+            <p style="margin:0 0 24px;font-size:12px;color:#0a4b5e;word-break:break-all;">${verificationUrl}</p>
+
+            <hr style="border:none;border-top:1px solid #f0f0f0;margin:0 0 20px;"/>
+            <p style="margin:0;font-size:13px;color:#a1a1aa;line-height:1.6;">This link expires in <strong style="color:#71717a;">24 hours</strong>. If you didn't create a Wansom AI account, you can safely ignore this email.</p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:18px 40px;background:#fafafa;border-top:1px solid #f0f0f0;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#a1a1aa;">Wansom AI &nbsp;&middot;&nbsp; Legal Intelligence Platform &nbsp;&middot;&nbsp; <a href="mailto:support@wansom.ai" style="color:#a1a1aa;text-decoration:none;">support@wansom.ai</a></p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+  return sendEmail({ to: user.email, subject, html });
 }

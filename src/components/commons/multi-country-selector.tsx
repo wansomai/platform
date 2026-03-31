@@ -68,15 +68,16 @@ export default function MultiCountrySelector({
   return (
     <div ref={ref}>
       <div className="mt-1 relative">
-        <button
-          type="button"
+        <div
+          role="combobox"
+          tabIndex={disabled ? -1 : 0}
           className={`${
-            disabled ? "bg-neutral-100" : "bg-white"
+            disabled ? "bg-neutral-100 pointer-events-none" : "bg-white"
           } relative w-full border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-teal-800 focus:border-teal-800 sm:text-sm min-h-[38px]`}
           aria-haspopup="listbox"
           aria-expanded={open}
-          onClick={onToggle}
-          disabled={disabled}
+          onClick={disabled ? undefined : onToggle}
+          onKeyDown={(e) => { if (!disabled && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onToggle(); } }}
         >
           {selectedCountries.length === 0 ? (
             <span className="text-gray-400">{placeholder}</span>
@@ -123,7 +124,7 @@ export default function MultiCountrySelector({
               />
             </svg>
           </span>
-        </button>
+        </div>
 
         <AnimatePresence>
           {open && (

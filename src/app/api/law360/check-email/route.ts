@@ -12,10 +12,14 @@ export async function POST(request: NextRequest) {
 
     const existingUser = await prisma.user.findUnique({
       where: { email: email.trim() },
-      select: { id: true },
+      select: { id: true, authProvider: true, emailVerified: true },
     });
 
-    return createApiResponse({ exists: !!existingUser });
+    return createApiResponse({
+      exists:        !!existingUser,
+      authProvider:  existingUser?.authProvider ?? null,
+      emailVerified: existingUser?.emailVerified ?? false,
+    });
   } catch {
     return createApiResponse({ exists: false });
   }

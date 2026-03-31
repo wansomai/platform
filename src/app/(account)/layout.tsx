@@ -37,6 +37,8 @@ import {
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import OrgSwitcher from "@/components/sidebar/OrgSwitcher";
 import { SessionExpiryModal } from "@/components/session-expiry-modal";
+import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
+import SupportModal from "@/components/support/SupportModal";
 
 interface SidebarLinkProps {
   href: string;
@@ -92,6 +94,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [collapsed, setCollapsed] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { projects, fetchProjects } = useProjectStore();
   const { clearAssociates } = useAssociatesStore();
@@ -302,17 +305,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Footer links */}
       <div className={cn("border-t", collapsed && !isMobile ? "p-2" : "p-4")}>
         <nav className="flex flex-col gap-1">
-          <a
-            href="mailto:law@wansom.ai"
+          <button
+            onClick={() => setSupportOpen(true)}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100 text-gray-600",
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100 text-gray-600 w-full",
               collapsed && !isMobile ? "justify-center px-2" : ""
             )}
-            onClick={isMobile ? handleMobileNavigation : undefined}
           >
             <img src="/icons/customer-service.svg" className="h-5 w-5 text-gray-500" />
             {(!collapsed || isMobile) && <span>Help & Support</span>}
-          </a>
+          </button>
           <button
             onClick={handleLogout}
             className={cn(
@@ -474,6 +476,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Session expiry modal — shown globally across all authenticated pages */}
       <SessionExpiryModal />
+
+      {/* Email verification modal — shown once per session for unverified users */}
+      <EmailVerificationModal />
+
+      {/* Help & Support form modal */}
+      <SupportModal open={supportOpen} onOpenChange={setSupportOpen} />
     </div>
   );
 }

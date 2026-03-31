@@ -40,45 +40,103 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get all organizations user is a member of
+    // Use a mutable copy so self-heal can update organizationId in-memory
+    let primaryOrgId: string | null = user.organizationId;
+
+    // Self-heal: user has no organizationId at all — create one or adopt from memberships
+    if (!primaryOrgId) {
+      const anyMembership = await prisma.userOrganization.findFirst({
+        where: { userId },
+        include: { organization: true },
+      });
+
+      if (anyMembership) {
+        // Adopt the first available membership org as their primary
+        await prisma.user.update({
+          where: { id: userId },
+          data: { organizationId: anyMembership.organizationId },
+        });
+        primaryOrgId = anyMembership.organizationId;
+      } else {
+        // No org anywhere — create a personal one from scratch
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { fullName: true },
+        });
+        const org = await prisma.organization.create({
+          data: {
+            name: `${dbUser?.fullName || 'My'} Organization`,
+            accountType: 'personal',
+            ownerId: userId,
+            practiceAreas: [],
+            serviceAreas: [],
+          },
+        });
+        await prisma.user.update({
+          where: { id: userId },
+          data: { organizationId: org.id },
+        });
+        await prisma.userOrganization.create({
+          data: { userId, organizationId: org.id, role: 'owner' },
+        });
+        primaryOrgId = org.id;
+      }
+    }
+
+    // Self-heal: has organizationId but no UserOrganization row — create it
+    if (primaryOrgId) {
+      const hasMembership = await prisma.userOrganization.findUnique({
+        where: { userId_organizationId: { userId, organizationId: primaryOrgId } },
+      });
+      if (!hasMembership) {
+        await prisma.userOrganization.create({
+          data: { userId, organizationId: primaryOrgId, role: 'owner' },
+        });
+        await prisma.organization.updateMany({
+          where: { id: primaryOrgId, ownerId: null },
+          data: { ownerId: userId },
+        });
+      }
+    }
+
+    // Get all organizations user is a member of (now includes self-healed primary)
     const memberships = await prisma.userOrganization.findMany({
       where: { userId },
       include: {
         organization: {
-          select: {
-            id: true,
-            name: true,
-            accountType: true,
-          }
+          select: { id: true, name: true, accountType: true, ownerId: true }
         }
       }
     });
 
-    // Combine primary organization with member organizations
-    const organizations = [
-      {
+    // Build org list from UserOrganization — the source of truth
+    const orgsFromMemberships = memberships.map((m: any) => ({
+      id: m.organization.id,
+      name: m.organization.name,
+      accountType: m.organization.accountType,
+      isPrimary: m.organizationId === primaryOrgId,
+      role: m.role,
+    }));
+
+    // If user has a primary org not in memberships at all, add it as fallback
+    const primaryCovered = orgsFromMemberships.some((o) => o.id === primaryOrgId);
+    if (!primaryCovered && user.organization) {
+      orgsFromMemberships.unshift({
         id: user.organization.id,
         name: user.organization.name,
         accountType: user.organization.accountType,
         isPrimary: true,
-        role: 'owner', // Primary org owner
-      },
-      ...memberships.map((m:any) => ({
-        id: m.organization.id,
-        name: m.organization.name,
-        accountType: m.organization.accountType,
-        isPrimary: false,
-        role: m.role,
-      }))
-    ];
+        role: 'owner',
+      });
+    }
 
-    // Remove duplicates (in case primary org is also in memberships)
-    const uniqueOrgs = organizations.filter((org, index, self) =>
-      index === self.findIndex(o => o.id === org.id)
+    // Remove duplicates
+    const uniqueOrgs = orgsFromMemberships.filter((org, index, self) =>
+      index === self.findIndex((o) => o.id === org.id)
     );
 
     return NextResponse.json({
-      currentOrganizationId: user.activeOrganizationId || user.organizationId,
+      currentOrganizationId: user.activeOrganizationId || primaryOrgId,
       organizations: uniqueOrgs
     });
 

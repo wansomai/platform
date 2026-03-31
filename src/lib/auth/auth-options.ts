@@ -143,7 +143,43 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Use active organization if set, otherwise use primary organization
-          const currentOrg = user.activeOrganization || user.organization;
+          let currentOrg = user.activeOrganization || user.organization;
+
+          // Self-heal: user has no organization at all
+          if (!currentOrg) {
+            // Try to find an existing membership first
+            const membership = await prisma.userOrganization.findFirst({
+              where: { userId: user.id },
+              include: { organization: true },
+            });
+
+            if (membership) {
+              currentOrg = membership.organization;
+              await prisma.user.update({
+                where: { id: user.id },
+                data: { organizationId: membership.organizationId },
+              });
+            } else {
+              // Create a personal org for this user
+              const org = await prisma.organization.create({
+                data: {
+                  name: `${user.fullName || 'My'} Organization`,
+                  accountType: 'personal',
+                  ownerId: user.id,
+                  practiceAreas: [],
+                  serviceAreas: [],
+                },
+              });
+              await prisma.user.update({
+                where: { id: user.id },
+                data: { organizationId: org.id },
+              });
+              await prisma.userOrganization.create({
+                data: { userId: user.id, organizationId: org.id, role: 'owner' },
+              });
+              currentOrg = org;
+            }
+          }
 
           const authUser = {
             id: user.id,
@@ -204,12 +240,27 @@ export const authOptions: NextAuthOptions = {
                 fullName: user.name || '',
                 password: await bcrypt.hash(Math.random().toString(36).slice(-8), 10),
                 role: 'admin',
-                organizationId: organization.id
+                organizationId: organization.id,
+                emailVerified: true,
+                authProvider: 'google',
               },
               include: {
                 organization: true,
                 activeOrganization: true
               }
+            });
+          }
+
+          // Ensure UserOrganization row exists and org has an ownerId (self-heal for all Google users)
+          if (dbUser.organizationId) {
+            await prisma.userOrganization.upsert({
+              where: { userId_organizationId: { userId: dbUser.id, organizationId: dbUser.organizationId } },
+              create: { userId: dbUser.id, organizationId: dbUser.organizationId, role: 'owner' },
+              update: {},
+            });
+            await prisma.organization.updateMany({
+              where: { id: dbUser.organizationId, ownerId: null },
+              data: { ownerId: dbUser.id },
             });
           }
 

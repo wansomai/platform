@@ -5,7 +5,9 @@ import { withErrorHandler, withAuth } from '@/lib/api/middleware';
 import {
   createApiResponse,
   createBadRequestResponse,
+  createErrorResponse,
 } from '@/lib/api/response';
+import { AppError } from '@/types/error';
 import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 import { sendDigestSubscriptionEmail } from '@/lib/email-service';
 import { PRACTICE_AREA_LABELS } from '@/types/associates';
@@ -52,6 +54,21 @@ export const POST = withErrorHandler(
     const organizationId = await getActiveOrganizationId(userId);
     if (!organizationId) {
       return createBadRequestResponse('No active organization');
+    }
+
+    // Block unverified email users — Google users are always verified
+    const requester = await prisma.user.findUnique({
+      where:  { id: userId },
+      select: { emailVerified: true, authProvider: true },
+    });
+    if (requester && requester.authProvider !== 'google' && !requester.emailVerified) {
+      return createErrorResponse(
+        new AppError(
+          'Please verify your email address before subscribing to Briefly.',
+          'EMAIL_NOT_VERIFIED',
+          422,
+        )
+      );
     }
 
     const body = await request.json();
@@ -109,7 +126,7 @@ export const POST = withErrorHandler(
           frequency,
           jurisdictions: jurisdictionNames,
           topics: topicLabels,
-        });
+        }).catch((err) => console.error('[digest-subscription] confirmation email failed:', err));
       }
     }
 
