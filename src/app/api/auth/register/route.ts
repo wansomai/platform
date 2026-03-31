@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import { generateTokens } from '@/lib/auth/token-service';
 import { prepareUserForToken, prepareUserResponse, generateAuthCookieHeader } from '@/lib/auth/auth-utils';
-import { sendWelcomeEmail } from '@/lib/email-service';
+import { sendWelcomeEmail, sendVerificationEmail } from '@/lib/email-service';
 import { OrganizationRole, AccountType } from '@/lib/constants/roles';
 
 // Schema validation for normal registration
@@ -195,15 +195,25 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Send welcome email
+    // Send welcome email + verification email
     try {
-      await sendWelcomeEmail({
-        email: user.email,
-        fullName: user.fullName || 'User'
-      });
+      await sendWelcomeEmail({ email: user.email, fullName: user.fullName || 'User' });
     } catch (emailError) {
-      // Log the error but don't fail the registration process
       console.error('Error sending welcome email:', emailError);
+    }
+
+    try {
+      const crypto = await import('crypto');
+      const token = crypto.randomBytes(32).toString('hex');
+      const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerificationToken: token, emailVerificationExpires: expires },
+      });
+      const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`;
+      await sendVerificationEmail({ email: user.email, fullName: user.fullName }, verificationUrl);
+    } catch (emailError) {
+      console.error('Error sending verification email:', emailError);
     }
     
     // Prepare user data using shared utilities

@@ -75,7 +75,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-lg md:min-w-[600px] md:max-w-[95vw] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader className="space-y-0">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="bg-amber-100 p-1.5 sm:p-2 rounded-full shrink-0">
@@ -96,12 +96,12 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </p>
         )}
 
-        <div className="flex flex-col gap-3 md:flex-row md:gap-0">
+        <div className="flex flex-col gap-3">
           {/* Personal Plan */}
-          <div className="border border-gray-300 rounded-t-lg md:rounded-l-lg md:rounded-tr-none md:rounded-br-none p-3 sm:p-4 md:basis-1/2">
+          <div className="border border-gray-300 rounded-lg p-3 sm:p-4">
             <div className="min-w-0">
               <h2 className="text-sm sm:text-base font-semibold">Personal Plan</h2>
-              <p className="text-xs text-gray-600 mb-4 sm:mb-8 break-words">
+              <p className="text-xs text-gray-600 mb-3 break-words">
                 Best for solo practitioners who want to explore Wansom AI
               </p>
               <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">
@@ -165,10 +165,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
 
           {/* Team Plan */}
-          <div className="border border-gray-300 rounded-b-lg md:rounded-r-lg md:rounded-tl-none md:rounded-bl-none p-3 sm:p-4 md:basis-1/2">
+          <div className="border border-gray-300 rounded-lg p-3 sm:p-4">
             <div className="min-w-0">
               <h2 className="text-sm sm:text-base font-semibold">Team Plan</h2>
-              <p className="text-xs text-gray-600 mb-4 sm:mb-8 break-words">
+              <p className="text-xs text-gray-600 mb-3 break-words">
                 Collaborate more on client/matter workspaces with AI
               </p>
               <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">

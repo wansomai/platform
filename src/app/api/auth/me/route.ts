@@ -24,6 +24,8 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
       role: true,
       organizationId: true,
       activeOrganizationId: true,
+      emailVerified: true,
+      authProvider: true,
       organization: {
         select: {
           id: true,

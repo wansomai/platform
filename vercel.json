@@ -9,8 +9,20 @@
   },
   "crons": [
     {
+      "path": "/api/cron/digest-ingest?tier=1",
+      "schedule": "0 */4 * * *"
+    },
+    {
+      "path": "/api/cron/digest-ingest?tier=2",
+      "schedule": "30 */4 * * *"
+    },
+    {
       "path": "/api/cron/legal-digest",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/digest-cleanup",
+      "schedule": "0 3 * * 0"
     }
   ]
 }

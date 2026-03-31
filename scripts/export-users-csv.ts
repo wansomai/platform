@@ -1,14 +1,14 @@
 // scripts/export-users-csv.ts
-// Run: npx tsx scripts/export-users-csv.ts
+// Run:npx tsx scripts/export-users-csv.ts
 
 import path from 'node:path';
 import fs from 'node:fs';
 
-// Load .env
-const envPath = path.resolve(__dirname, '..', '.env');
-if (fs.existsSync(envPath)) {
-  const envContent = fs.readFileSync(envPath, 'utf-8');
-  for (const line of envContent.split('\n')) {
+// Load env files — mirrors Next.js precedence: .env.local overrides .env
+function loadEnvFile(filePath: string, override = false) {
+  if (!fs.existsSync(filePath)) return;
+  const content = fs.readFileSync(filePath, 'utf-8');
+  for (const line of content.split('\n')) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith('#')) continue;
     const eqIndex = trimmed.indexOf('=');
@@ -18,11 +18,15 @@ if (fs.existsSync(envPath)) {
     if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
     }
-    if (!process.env[key]) {
+    if (override || !process.env[key]) {
       process.env[key] = value;
     }
   }
 }
+
+const root = path.resolve(__dirname, '..');
+loadEnvFile(path.join(root, '.env'));
+loadEnvFile(path.join(root, '.env.local'), true);
 
 import { PrismaClient } from '../src/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';

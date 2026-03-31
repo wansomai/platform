@@ -14,6 +14,8 @@ export const GET = withErrorHandler(withAuth(async (request: NextRequest, userId
       role: true,
       organizationId: true,
       activeOrganizationId: true,
+      emailVerified: true,
+      authProvider: true,
       createdAt: true,
       updatedAt: true,
       organization: {

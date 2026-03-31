@@ -152,10 +152,11 @@ async function searchUKLegislation(query: string): Promise<LegalSearchResult[]> 
 }
 
 // ─── US Federal — CourtListener native API first ──────────────────────────────
-async function searchUSFederalLaw(query: string): Promise<LegalSearchResult[]> {
+async function searchUSFederalLaw(query: string, sinceDate?: string): Promise<LegalSearchResult[]> {
   try {
+    const dateParam = sinceDate ? `&filed_after=${sinceDate.slice(0, 10)}` : '';
     const res = await fetch(
-      `https://www.courtlistener.com/api/rest/v3/search/?q=${encodeURIComponent(query)}&type=o&order_by=score+desc&page_size=5`,
+      `https://www.courtlistener.com/api/rest/v3/search/?q=${encodeURIComponent(query)}&type=o&order_by=dateFiled+desc&page_size=5${dateParam}`,
       { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(8000) },
     );
     if (res.ok) {
@@ -201,7 +202,7 @@ const DATABASE_MAP: Record<string, LegalDatabaseConfig> = {
   'hk':              { name: 'HKLII',                       baseUrl: 'https://www.hklii.org',             searchSites: ['hklii.org'] },
 };
 
-const NATIVE_API_HANDLERS: Partial<Record<string, (query: string) => Promise<LegalSearchResult[]>>> = {
+const NATIVE_API_HANDLERS: Partial<Record<string, (query: string, sinceDate?: string) => Promise<LegalSearchResult[]>>> = {
   'ke':               searchKenyaLaw,
   'uk-england-wales': searchUKLegislation,
   'uk-scotland':      searchUKLegislation,
@@ -220,6 +221,7 @@ export interface LegalDatabaseSearchResult {
 export async function searchJurisdictionDatabase(
   query:          string,
   jurisdictionId: string,
+  sinceDate?:     string,
 ): Promise<LegalDatabaseSearchResult> {
   const config = DATABASE_MAP[jurisdictionId];
 
@@ -237,7 +239,7 @@ export async function searchJurisdictionDatabase(
   try {
     const nativeHandler = NATIVE_API_HANDLERS[jurisdictionId];
     const results = nativeHandler
-      ? await nativeHandler(query)
+      ? await nativeHandler(query, sinceDate)
       : await searchViaTavily(query, config.searchSites, config.name);
 
     return {

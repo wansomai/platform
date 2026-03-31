@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2, Loader2, RefreshCw } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, Crown, Mail, Building2, Loader2, RefreshCw, CheckCircle2, ShieldAlert } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +40,7 @@ import ProAccessModal from '@/components/modals/ProAccess';
 import BillingCard from '@/components/billing/BillingCard';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useProfile, useTeamManagement, useOrganization, useSubscription, useProfileStore } from '@/store/profile.store';
+import { apiService } from '@/lib/api';
 
 const Page = () => {
   const { data: session, update: updateSession } = useSession();
@@ -86,7 +87,43 @@ const Page = () => {
   const [changingRoleForMember, setChangingRoleForMember] = useState<string | null>(null);
   const [resendingInvitation, setResendingInvitation] = useState<string | null>(null);
 
- const { notify } = useNotifications();
+  const { notify } = useNotifications();
+
+  // Email verification inline state
+  const [verifySending, setVerifySending] = useState(false);
+  const [verifySent, setVerifySent] = useState(false);
+  const [verifyCooldown, setVerifyCooldown] = useState(0);
+
+  useEffect(() => {
+    if (verifyCooldown <= 0) return;
+    const t = setTimeout(() => setVerifyCooldown((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [verifyCooldown]);
+
+  const handleSendVerification = async () => {
+    setVerifySending(true);
+    try {
+      const res = await apiService.post<any>('/api/auth/send-verification', {});
+      const message: string = (res as any)?.message ?? '';
+      if (message === 'Email is already verified') {
+        notify.success('Your email is already verified.');
+        fetchProfile(true);
+      } else {
+        setVerifySent(true);
+        setVerifyCooldown(120);
+        notify.success('Verification email sent — check your inbox!');
+      }
+    } catch (err: any) {
+      const status = err?.status ?? err?.response?.status;
+      if (status === 429) {
+        notify.error('Please wait a moment before requesting another verification email.');
+      } else {
+        notify.error('Failed to send verification email. Please try again.');
+      }
+    } finally {
+      setVerifySending(false);
+    }
+  };
 
   // Fetch data on mount
   useEffect(() => {
@@ -308,7 +345,38 @@ const Page = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <p className="text-lg">{profile.email}</p>
+                      <div className="flex items-center gap-3">
+                        <p className="text-lg">{profile.email}</p>
+                        {profile.authProvider !== 'google' && (
+                          profile.emailVerified ? (
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              Verified
+                            </span>
+                          ) : (
+                            <button
+                              onClick={handleSendVerification}
+                              disabled={verifySending || verifyCooldown > 0}
+                              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-800 border border-amber-300 hover:border-amber-400 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                              {verifySending ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : verifySent ? (
+                                <Mail className="h-3 w-3" />
+                              ) : (
+                                <ShieldAlert className="h-3 w-3" />
+                              )}
+                              {verifySending
+                                ? 'Sending…'
+                                : verifyCooldown > 0
+                                  ? `Resend in ${verifyCooldown}s`
+                                  : verifySent
+                                    ? 'Resend email'
+                                    : 'Verify email'}
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
 
                     {profile?.role === 'owner' && (

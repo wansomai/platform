@@ -26,6 +26,8 @@ interface User {
     ownerId: string;
     upgradeRequestedAt?: string | null;
   } | null;
+  emailVerified?: boolean | null;
+  authProvider?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
