@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && cross-env NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -117,6 +117,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-react": "^5.18.0",
     "baseline-browser-mapping": "^2.9.19",
+    "cross-env": "^10.1.0",
     "postcss": "^8",
     "prisma": "^7.3.0",
     "swagger-jsdoc": "^6.2.8",
