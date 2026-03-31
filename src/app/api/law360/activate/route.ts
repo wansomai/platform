@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
   const tempPassword = generateTempPassword();
   const fullName     = getNameFromEmail(email);
 
-  const { Organization, OrganizationRole, AccountType } = await import('@/lib/constants/roles');
+  const { OrganizationRole, AccountType } = await import('@/lib/constants/roles');
 
   const newUser = await prisma.$transaction(async (tx) => {
     const org = await tx.organization.create({
