@@ -2,13 +2,13 @@
 //
 // Public (no auth required) subscription endpoint for Briefly by Wansom.
 //
-// Three paths:
-//   1. Email exists + emailVerified  → subscribe immediately, send confirmation email
-//   2. Email exists + !emailVerified → reject with a prompt to verify their Wansom email
-//   3. Email not found               → create Wansom account, subscribe, send welcome + credentials email
+// Two paths:
+//   1. Email exists → subscribe immediately (email verification handled on Wansom AI side)
+//   2. Email not found → create Wansom account, subscribe, send welcome + credentials email
 
 import { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import { createApiResponse, createErrorResponse, createBadRequestResponse } from '@/lib/api/response';
@@ -62,19 +62,8 @@ export async function POST(request: NextRequest) {
     include: { organization: true },
   });
 
-  // ── Path 2: existing Wansom user but email not yet verified ──────────────────
-  if (existingUser && !existingUser.emailVerified) {
-    return createErrorResponse(
-      new AppError(
-        'Please verify your Wansom email address first. Check your inbox for the verification link.',
-        'EMAIL_NOT_VERIFIED',
-        422,
-      )
-    );
-  }
-
-  // ── Path 1: existing verified Wansom user ─────────────────────────────────
-  if (existingUser && existingUser.emailVerified) {
+  // ── Path 1: existing Wansom user (verified or not) ───────────────────────
+  if (existingUser) {
     const organizationId = existingUser.organizationId;
 
     const isNew = !(await prisma.digestSubscription.findUnique({
@@ -98,14 +87,16 @@ export async function POST(request: NextRequest) {
     }
 
     return createApiResponse(
-      { isNewUser: false },
+      { isNewUser: false, userEmail: existingUser.email },
       'You\'re subscribed to Briefly by Wansom!'
     );
   }
 
   // ── Path 3: new user — create account, subscribe, send welcome email ────────
-  const tempPassword = generateTempPassword();
-  const fullName     = getNameFromEmail(email);
+  const tempPassword  = generateTempPassword();
+  const fullName      = getNameFromEmail(email);
+  const magicToken    = crypto.randomBytes(32).toString('hex');
+  const magicExpiry   = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
   const { OrganizationRole, AccountType } = await import('@/lib/constants/roles');
 
@@ -119,12 +110,14 @@ export async function POST(request: NextRequest) {
 
     const user = await tx.user.create({
       data: {
-        email:          email.trim().toLowerCase(),
-        password:       await bcrypt.hash(tempPassword, 10),
+        email:            email.trim().toLowerCase(),
+        password:         await bcrypt.hash(tempPassword, 10),
         fullName,
-        organizationId: org.id,
-        emailVerified:  false,
-        authProvider:   'email',
+        organizationId:   org.id,
+        emailVerified:    true,
+        authProvider:     'email',
+        resetToken:       magicToken,
+        resetTokenExpiry: magicExpiry,
       },
     });
 
@@ -160,7 +153,7 @@ export async function POST(request: NextRequest) {
   }).catch((err) => console.error('[activate] welcome email failed:', err));
 
   return createApiResponse(
-    { isNewUser: true },
+    { isNewUser: true, tempPassword, userEmail: newUser.email, magicToken },
     'Your Wansom account and Briefly subscription have been created!'
   );
 }

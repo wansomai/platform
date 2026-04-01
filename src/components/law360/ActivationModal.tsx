@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PracticeArea, PRACTICE_AREA_LABELS } from '@/types/associates';
 import MultiCountrySelector from '@/components/commons/multi-country-selector';
 import { toast } from 'sonner';
-import { apiService } from '@/lib/api';
 import {
   Globe,
   Clock,
@@ -24,7 +23,11 @@ import {
   CheckCircle2,
   Send,
   Sparkles,
-  ShieldAlert,
+  Eye,
+  EyeOff,
+  Copy,
+  ExternalLink,
+  KeyRound,
 } from 'lucide-react';
 
 interface ActivationModalProps {
@@ -32,7 +35,7 @@ interface ActivationModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type Step = 'preferences' | 'confirmed';
+type Step = 'preferences' | 'confirmed' | 'access';
 
 export default function ActivationModal({ open, onOpenChange }: ActivationModalProps) {
   // Preferences
@@ -55,14 +58,57 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
   const [previewSent, setPreviewSent] = useState(false);
   const [step, setStep] = useState<Step>('preferences');
   const [isNewUser, setIsNewUser] = useState(false);
+  const [tempPassword, setTempPassword] = useState('');
+  const [subscribedEmail, setSubscribedEmail] = useState('');
+  const [magicToken, setMagicToken] = useState('');
 
-  // Authenticated user email-verification state
-  const [authEmailVerified, setAuthEmailVerified] = useState<boolean | null>(null);
-  const [isSendingAuthVerify, setIsSendingAuthVerify] = useState(false);
-  const [authVerifySent, setAuthVerifySent] = useState(false);
+  // Access step state
+  const [showPassword, setShowPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [passwordUpdated, setPasswordUpdated] = useState(false);
 
+  // ─── Google OAuth return ───────────────────────────────────────────────────
   const { data: session, status } = useSession();
-  const isAuthenticated = status === 'authenticated';
+
+  // When the modal opens after a Google OAuth redirect (?ga=1), restore the
+  // saved preferences and pre-fill the email from the Google session.
+  useEffect(() => {
+    if (!open) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('ga') !== '1' || status !== 'authenticated') return;
+
+    const gEmail = (session as any)?.user?.email as string | undefined;
+    if (gEmail) {
+      setEmail(gEmail);
+      setEmailChecked(true);
+      setEmailStatus('verified_user');
+    }
+
+    const pending = sessionStorage.getItem('briefly_pending_prefs');
+    if (pending) {
+      try {
+        const prefs = JSON.parse(pending);
+        if (prefs.jurisdictions?.length) setJurisdictions(prefs.jurisdictions);
+        if (prefs.frequency)             setFrequency(prefs.frequency);
+        if (prefs.topics?.length)        setTopics(prefs.topics);
+      } catch {}
+      sessionStorage.removeItem('briefly_pending_prefs');
+    }
+
+    // Clean the ?ga=1 param now that we've consumed it
+    const url = new URL(window.location.href);
+    url.searchParams.delete('ga');
+    window.history.replaceState({}, '', url.toString());
+  }, [open, status, session]);
+
+  const handleGoogleSignIn = () => {
+    sessionStorage.setItem('briefly_pending_prefs', JSON.stringify({ jurisdictions, frequency, topics }));
+    const returnUrl = `${window.location.pathname}?ga=1`;
+    signIn('google', { callbackUrl: returnUrl });
+  };
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -83,50 +129,10 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     if (next.length > 0) setErrors((e) => ({ ...e, topics: false }));
   };
 
-  // Fetch email verification status for authenticated users when modal opens
-  useEffect(() => {
-    if (!open || !isAuthenticated) return;
-    setAuthEmailVerified(null);
-    apiService.get('/api/auth/me').then((res: any) => {
-      const user = res?.data?.data?.user ?? res?.data?.user;
-      if (!user) return;
-      // Google users are always verified
-      setAuthEmailVerified(user.authProvider === 'google' || !!user.emailVerified);
-    }).catch(() => setAuthEmailVerified(true)); // fail open — backend will catch it
-  }, [open, isAuthenticated]);
-
-  const handleSendAuthVerification = async () => {
-    setIsSendingAuthVerify(true);
-    try {
-      await apiService.post('/api/auth/send-verification', {});
-      setAuthVerifySent(true);
-      toast.success('Verification email sent — check your inbox!');
-    } catch {
-      toast.error('Failed to send verification email. Please try again.');
-    } finally {
-      setIsSendingAuthVerify(false);
-    }
-  };
-
-  // Restore preferences saved before a potential OAuth redirect
-  useEffect(() => {
-    if (!open || !isAuthenticated) return;
-    const pending = sessionStorage.getItem('briefly_pending_prefs');
-    if (!pending) return;
-    try {
-      const prefs = JSON.parse(pending);
-      if (prefs.jurisdictions?.length) setJurisdictions(prefs.jurisdictions);
-      if (prefs.frequency)             setFrequency(prefs.frequency);
-      if (prefs.topics?.length)        setTopics(prefs.topics);
-      sessionStorage.removeItem('briefly_pending_prefs');
-    } catch {}
-  }, [open, isAuthenticated]);
 
   // ─── Preview email ─────────────────────────────────────────────────────────
 
-  const previewEmail = isAuthenticated
-    ? (session as any)?.user?.email
-    : emailChecked ? email.trim() : '';
+  const previewEmail = emailChecked ? email.trim() : '';
 
   const handleSendPreview = async () => {
     if (jurisdictions.length === 0 || topics.length === 0) {
@@ -196,34 +202,32 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     const newErrors = {
       jurisdictions: jurisdictions.length === 0,
       topics:        topics.length === 0,
-      email:         !isAuthenticated && !emailChecked,
+      email:         !emailChecked,
     };
     if (newErrors.jurisdictions || newErrors.topics || newErrors.email) {
       setErrors(newErrors);
       return;
     }
-    if (!isAuthenticated && emailStatus === 'unverified_user') return;
 
     setErrors({ jurisdictions: false, topics: false, email: false });
     setIsSubmitting(true);
 
     try {
-      if (isAuthenticated) {
-        // Authenticated: use the standard subscription API (Bearer token via apiService)
-        await apiService.post('/api/digest/subscription', { frequency, topics, jurisdictions });
-      } else {
-        // Unauthenticated: email-based activation (verified existing user or new user)
-        const res = await fetch('/api/law360/activate', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ email: email.trim(), frequency, topics, jurisdictions }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          toast.error(data.message || 'Something went wrong. Please try again.');
-          return;
-        }
-        setIsNewUser(data.data?.isNewUser ?? false);
+      const res = await fetch('/api/law360/activate', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email: email.trim(), frequency, topics, jurisdictions }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || 'Something went wrong. Please try again.');
+        return;
+      }
+      setIsNewUser(data.data?.isNewUser ?? false);
+      setSubscribedEmail(data.data?.userEmail ?? email.trim());
+      if (data.data?.isNewUser) {
+        setTempPassword(data.data?.tempPassword ?? '');
+        setMagicToken(data.data?.magicToken ?? '');
       }
 
       setStep('confirmed');
@@ -251,16 +255,260 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
       setPreviewSent(false);
       setStep('preferences');
       setIsNewUser(false);
-      setAuthEmailVerified(null);
-      setAuthVerifySent(false);
+      setTempPassword('');
+      setSubscribedEmail('');
+      setMagicToken('');
+      setShowPassword(false);
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowNewPassword(false);
+      setPasswordUpdated(false);
+      setExistingPasswordError('');
+      setIsSigningIn(false);
     }
     onOpenChange(newOpen);
   };
 
+  // ─── Access screen ────────────────────────────────────────────────────────────
+
+  // State used for existing-user password entry (reuse newPassword field)
+  const [existingPasswordError, setExistingPasswordError] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const handleOpenWansom = async () => {
+    const activeEmail = subscribedEmail || email.trim();
+
+    // ── Existing user: sign in with their Wansom password ──────────────────
+    if (!isNewUser) {
+      if (!newPassword) {
+        setExistingPasswordError('Please enter your Wansom password.');
+        return;
+      }
+      setExistingPasswordError('');
+      setIsSigningIn(true);
+      const result = await signIn('credentials', {
+        email:       activeEmail,
+        password:    newPassword,
+        callbackUrl: '/dashboard',
+        redirect:    false,
+      });
+      setIsSigningIn(false);
+      if (result?.error) {
+        setExistingPasswordError('Incorrect password. Please try again.');
+        return;
+      }
+      window.location.href = result?.url || '/dashboard';
+      return;
+    }
+
+    // ── New user: optional password change, then magic-link login ──────────
+    if (newPassword && !passwordUpdated) {
+      if (newPassword.length < 8) {
+        toast.error('New password must be at least 8 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        toast.error('Passwords do not match.');
+        return;
+      }
+      setIsUpdatingPassword(true);
+      try {
+        const res = await fetch('/api/law360/set-password', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            email:           activeEmail,
+            currentPassword: tempPassword,
+            newPassword,
+          }),
+        });
+        if (!res.ok) {
+          toast.error('Failed to update password. Please change it after logging in.');
+        } else {
+          setPasswordUpdated(true);
+          toast.success('Password updated!');
+        }
+      } catch {
+        toast.error('Network error. Please change your password after logging in.');
+      } finally {
+        setIsUpdatingPassword(false);
+      }
+    }
+
+    const loginUrl = magicToken
+      ? `/magic-login?token=${magicToken}`
+      : `/login?email=${encodeURIComponent(activeEmail)}`;
+    window.location.href = loginUrl;
+  };
+
+  if (step === 'access') {
+    const activeEmail = subscribedEmail || email.trim();
+    const displayPassword = passwordUpdated ? newPassword : tempPassword;
+    return (
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-[480px]">
+          <div className="flex flex-col py-4 px-1 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#0a4b5e]/10 flex items-center justify-center shrink-0">
+                <KeyRound className="h-5 w-5 text-[#0a4b5e]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {isNewUser ? 'Your Wansom AI Access' : 'Sign in to Wansom AI'}
+                </h2>
+                <p className="text-xs text-gray-500">
+                  {isNewUser ? 'Use these credentials to sign in' : 'Enter your Wansom password to continue'}
+                </p>
+              </div>
+            </div>
+
+            {/* Email — always shown */}
+            <div>
+              <p className="text-xs font-medium text-gray-500 mb-1">Email</p>
+              <div className="flex items-center gap-2 bg-gray-50 border rounded-md px-3 py-2">
+                <span className="text-sm text-gray-800 flex-1 truncate">{activeEmail}</span>
+                <button
+                  type="button"
+                  onClick={() => { navigator.clipboard.writeText(activeEmail); toast.success('Email copied!'); }}
+                  className="text-gray-400 hover:text-gray-600 shrink-0"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* ── New user: show generated password + optional change ── */}
+            {isNewUser && (
+              <>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-1">Generated password</p>
+                  <div className="flex items-center gap-2 bg-gray-50 border rounded-md px-3 py-2">
+                    <span className="text-sm text-gray-800 flex-1 font-mono">
+                      {showPassword ? displayPassword : '•'.repeat(displayPassword.length)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-gray-400 hover:text-gray-600 shrink-0"
+                    >
+                      {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { navigator.clipboard.writeText(displayPassword); toast.success('Password copied!'); }}
+                      className="text-gray-400 hover:text-gray-600 shrink-0"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {!passwordUpdated && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-gray-500">Choose a new password (optional)</p>
+                    <div className="relative">
+                      <Input
+                        type={showNewPassword ? 'text' : 'password'}
+                        placeholder="New password (min. 8 characters)"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="pr-10 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                      >
+                        {showNewPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                      </button>
+                    </div>
+                    {newPassword && (
+                      <Input
+                        type="password"
+                        placeholder="Confirm new password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="text-sm"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {passwordUpdated && (
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 rounded-md px-3 py-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0" />
+                    Password updated successfully.
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ── Existing user: password input ── */}
+            {!isNewUser && (
+              <div className="space-y-1.5">
+                <p className="text-xs font-medium text-gray-500">Wansom password</p>
+                <div className="relative">
+                  <Input
+                    type={showNewPassword ? 'text' : 'password'}
+                    placeholder="Enter your Wansom password"
+                    value={newPassword}
+                    onChange={(e) => { setNewPassword(e.target.value); setExistingPasswordError(''); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleOpenWansom(); }}
+                    className={`pr-10 text-sm ${existingPasswordError ? 'border-red-400 ring-1 ring-red-400' : ''}`}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    {showNewPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+                {existingPasswordError && (
+                  <p className="text-xs text-red-500">{existingPasswordError}</p>
+                )}
+                <p className="text-xs text-gray-400">
+                  Forgot your password?{' '}
+                  <a
+                    href={`/forgot-password?email=${encodeURIComponent(activeEmail)}`}
+                    className="text-[#0a4b5e] underline underline-offset-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Reset it here
+                  </a>
+                </p>
+              </div>
+            )}
+
+            <Button
+              onClick={handleOpenWansom}
+              disabled={isUpdatingPassword || isSigningIn}
+              className="w-full bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
+            >
+              {(isUpdatingPassword || isSigningIn)
+                ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{isSigningIn ? 'Signing in…' : 'Updating password…'}</>
+                : <><ExternalLink className="h-4 w-4 mr-2" />Open Wansom AI</>
+              }
+            </Button>
+            <button
+              type="button"
+              onClick={() => setStep('confirmed')}
+              className="text-xs text-gray-400 hover:text-gray-600 text-center w-full"
+            >
+              ← Back
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   // ─── Confirmed screen ──────────────────────────────────────────────────────
 
   if (step === 'confirmed') {
-    const confirmedEmail = isAuthenticated ? (session as any)?.user?.email : email.trim();
+    const confirmedEmail = email.trim();
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-[480px]">
@@ -298,12 +546,22 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
               </p>
             </div>
 
-            <Button
-              onClick={() => handleOpenChange(false)}
-              className="w-full bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
-            >
-              Done
-            </Button>
+            <div className="w-full flex flex-col gap-2">
+              <Button
+                onClick={() => setStep('access')}
+                className="w-full bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Try Wansom AI
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => handleOpenChange(false)}
+                className="w-full text-gray-500"
+              >
+                Done
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -405,119 +663,103 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
 
           <div className="h-px bg-gray-100" />
 
-          {/* Account section */}
-          {isAuthenticated ? (
-            authEmailVerified === false ? (
-              // Authenticated but email not verified — show prompt
-              <div className="space-y-2">
-                <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                  <ShieldAlert className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                  <div className="space-y-1.5 flex-1">
-                    <p className="text-sm text-amber-800 font-medium">Email not verified</p>
-                    <p className="text-xs text-amber-700">
-                      Please verify <strong>{(session as any)?.user?.email}</strong> before subscribing to Briefly.
-                    </p>
-                    <button
-                      onClick={handleSendAuthVerification}
-                      disabled={isSendingAuthVerify || authVerifySent}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold bg-[#0a4b5e] hover:bg-[#0a4b5e]/90 text-white px-3 py-1.5 rounded-md transition-colors disabled:opacity-60"
-                    >
-                      {isSendingAuthVerify
-                        ? <><Loader2 className="h-3 w-3 animate-spin" />Sending…</>
-                        : authVerifySent
-                          ? <><CheckCircle2 className="h-3 w-3" />Email sent — check your inbox</>
-                          : <><Mail className="h-3 w-3" />Send verification email</>
-                      }
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg">
-                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-green-700">
-                  Signed in as <strong>{(session as any)?.user?.email}</strong>. Your subscription will be linked to this account.
-                </p>
-              </div>
-            )
-          ) : (
-            <div>
-              <Label htmlFor="activation-email" className={`text-sm font-medium ${errors.email ? 'text-red-600' : ''}`}>
-                Email Address
-              </Label>
-              <div className="flex gap-2 mt-1.5">
-                <Input
-                  id="activation-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setErrors((err) => ({ ...err, email: false }));
-                    if (emailChecked) { setEmailChecked(false); setEmailStatus('idle'); }
-                  }}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !emailChecked) handleEmailCheck(); }}
-                  placeholder="you@example.com"
-                  disabled={isCheckingEmail || isSubmitting}
-                  className={errors.email ? 'border-red-400 ring-2 ring-red-400' : ''}
-                />
-                {!emailChecked && (
-                  <Button
-                    onClick={handleEmailCheck}
-                    disabled={isCheckingEmail || !email.trim()}
-                    className="shrink-0"
-                  >
-                    {isCheckingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Continue'}
-                  </Button>
-                )}
-              </div>
-              {errors.email && (
-                <p className="text-xs text-red-500 mt-1">Please enter and verify your email address.</p>
-              )}
-
-              {/* Email status feedback */}
-              {emailStatus === 'verified_user' && (
-                <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg mt-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-green-700">
-                    Your Wansom account is verified. Click below to start your digest.
-                  </p>
-                </div>
-              )}
-              {emailStatus === 'unverified_user' && (
-                <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg mt-2">
-                  <Mail className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-amber-800">
-                    Please verify your Wansom email address first — check your inbox for the verification link.
-                  </p>
-                </div>
-              )}
-              {emailStatus === 'new_user' && (
-                <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg mt-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-green-700">
-                    We'll create your Wansom account and email your login details to <strong>{email}</strong>.
-                  </p>
-                </div>
+          {/* Email */}
+          <div>
+            <Label htmlFor="activation-email" className={`text-sm font-medium ${errors.email ? 'text-red-600' : ''}`}>
+              Email Address
+            </Label>
+            <div className="flex gap-2 mt-1.5">
+              <Input
+                id="activation-email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors((err) => ({ ...err, email: false }));
+                  if (emailChecked) { setEmailChecked(false); setEmailStatus('idle'); }
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !emailChecked) handleEmailCheck(); }}
+                placeholder="you@example.com"
+                disabled={isCheckingEmail || isSubmitting}
+                className={errors.email ? 'border-red-400 ring-2 ring-red-400' : ''}
+              />
+              {!emailChecked && (
+                <Button
+                  onClick={handleEmailCheck}
+                  disabled={isCheckingEmail || !email.trim()}
+                  className="shrink-0"
+                >
+                  {isCheckingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Continue'}
+                </Button>
               )}
             </div>
-          )}
-
-          {/* Preview button */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleSendPreview}
-            disabled={isSendingPreview || isSubmitting}
-          >
-            {isSendingPreview ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Generating your preview…</>
-            ) : previewSent ? (
-              <><CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />Preview sent — send again?</>
-            ) : (
-              <><Send className="h-4 w-4 mr-2" />Send me a preview digest</>
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">Please enter and verify your email address.</p>
             )}
-          </Button>
+
+            {emailStatus === 'verified_user' && (
+              <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg mt-2">
+                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-green-700">
+                  Your Wansom account is verified. Click below to start your digest.
+                </p>
+              </div>
+            )}
+            {emailStatus === 'new_user' && (
+              <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg mt-2">
+                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-green-700">
+                  We'll create your Wansom account and email your login details to <strong>{email}</strong>.
+                </p>
+              </div>
+            )}
+
+            {!emailChecked && (
+              <>
+                <div className="relative mt-3">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-white px-2 text-xs text-gray-400">or</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  className="mt-2 w-full flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                  Continue with Google
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Preview button — only before email is confirmed */}
+          {!emailChecked && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleSendPreview}
+              disabled={isSendingPreview || isSubmitting}
+            >
+              {isSendingPreview ? (
+                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Generating your preview…</>
+              ) : previewSent ? (
+                <><CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />Preview sent — send again?</>
+              ) : (
+                <><Send className="h-4 w-4 mr-2" />Send me a preview digest</>
+              )}
+            </Button>
+          )}
 
           {/* Activate button */}
           <Button
@@ -526,8 +768,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             disabled={
               isSubmitting ||
               isCheckingEmail ||
-              (isAuthenticated && authEmailVerified === false) ||
-              (!isAuthenticated && (!emailChecked || emailStatus === 'unverified_user'))
+              !emailChecked
             }
           >
             {isSubmitting ? (

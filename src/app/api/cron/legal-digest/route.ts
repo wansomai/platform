@@ -73,7 +73,23 @@ export async function GET(req: NextRequest) {
     console.log(`[digest] Skipping ${alreadySent} subscriber(s) already sent today`);
   }
 
-  if (subscriptions.length === 0) {
+  // Deduplicate by email — keep the most recently updated subscription per address.
+  // A user in multiple organizations can have one DigestSubscription per org; we
+  // must only send one email per address or they receive duplicate digests.
+  const emailMap = new Map<string, typeof subscriptions[0]>();
+  for (const sub of subscriptions) {
+    const existing = emailMap.get(sub.user.email);
+    if (!existing || sub.updatedAt > existing.updatedAt) {
+      emailMap.set(sub.user.email, sub);
+    }
+  }
+  const dedupedSubscriptions = Array.from(emailMap.values());
+  const dedupedCount = subscriptions.length - dedupedSubscriptions.length;
+  if (dedupedCount > 0) {
+    console.log(`[digest] Deduplicated ${dedupedCount} subscription(s) — same email, multiple orgs`);
+  }
+
+  if (dedupedSubscriptions.length === 0) {
     return createApiResponse(
       { sent: 0, failed: 0, skipped: alreadySent, total: totalEligible },
       alreadySent > 0 ? 'All eligible subscribers already sent today' : 'No active subscriptions',
@@ -81,12 +97,13 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Cache-first digest resolver ────────────────────────────────────────────
+  // Operates on dedupedSubscriptions — one entry per unique email address.
   // Priority: persistent DigestCache (written by digest-ingest) → fresh synthesis.
   // A local Promise map deduplicates within-run: concurrent subscribers sharing
   // the same fingerprint resolve from one DB read rather than N parallel reads.
   const localCache = new Map<string, Promise<{ digest: DigestContent; source: string }>>();
 
-  const getDigest = (sub: typeof subscriptions[0]) => {
+  const getDigest = (sub: typeof dedupedSubscriptions[0]) => {
     const topicLabels = sub.topics.map(
       (t) => PRACTICE_AREA_LABELS[t as keyof typeof PRACTICE_AREA_LABELS] || t
     );
@@ -123,8 +140,8 @@ export async function GET(req: NextRequest) {
   let failed = 0;
 
   // ── Process subscribers in parallel batches ────────────────────────────────
-  for (let i = 0; i < subscriptions.length; i += SEND_CONCURRENCY) {
-    const batch = subscriptions.slice(i, i + SEND_CONCURRENCY);
+  for (let i = 0; i < dedupedSubscriptions.length; i += SEND_CONCURRENCY) {
+    const batch = dedupedSubscriptions.slice(i, i + SEND_CONCURRENCY);
 
     const batchResults = await Promise.allSettled(
       batch.map(async (sub) => {
@@ -174,7 +191,7 @@ export async function GET(req: NextRequest) {
   }
 
   return createApiResponse(
-    { sent, failed, skipped: alreadySent, total: totalEligible },
+    { sent, failed, skipped: alreadySent, deduped: dedupedCount, total: totalEligible },
     `Digest run complete: ${sent} sent, ${failed} failed, ${alreadySent} already sent today`,
   );
 }
