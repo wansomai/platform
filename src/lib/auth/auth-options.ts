@@ -110,10 +110,40 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email:      { label: "Email",       type: "email" },
+        password:   { label: "Password",    type: "password" },
+        magicToken: { label: "Magic Token", type: "text" },
       },
       async authorize(credentials, req) {
+        // ── Magic-link login (Briefly one-time auto-login) ───────────────────
+        if (credentials?.magicToken) {
+          try {
+            const user = await prisma.user.findFirst({
+              where: { resetToken: credentials.magicToken },
+              include: { organization: true, activeOrganization: true },
+            });
+            if (!user || !user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+              return null;
+            }
+            // Consume token — single use
+            await prisma.user.update({
+              where: { id: user.id },
+              data:  { resetToken: null, resetTokenExpiry: null },
+            });
+            const currentOrg = user.activeOrganization || user.organization;
+            return {
+              id:             user.id,
+              email:          user.email,
+              name:           user.fullName || '',
+              role:           user.role,
+              organizationId: currentOrg.id,
+              organization:   { id: currentOrg.id, name: currentOrg.name },
+            } as CustomUser;
+          } catch {
+            return null;
+          }
+        }
+
         if (!credentials?.email || !credentials?.password) {
           return null;
         }

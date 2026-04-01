@@ -17,11 +17,12 @@ const Law360Components = () => {
     // Auto-open modal after Google OAuth redirect to complete activation
     useEffect(() => {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('activate') === '1') {
+      if (params.get('activate') === '1' || params.get('ga') === '1') {
         setModalOpen(true);
         // Clean up the URL param without a page reload
         const url = new URL(window.location.href);
         url.searchParams.delete('activate');
+        // Keep 'ga' param — the modal reads it to restore Google preferences
         window.history.replaceState({}, '', url.toString());
       }
     }, []);
