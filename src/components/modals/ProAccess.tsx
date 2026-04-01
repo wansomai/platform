@@ -75,7 +75,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-lg md:min-w-[600px] md:max-w-[95vw] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="w-[calc(100vw-1rem)] max-w-4xl sm:max-w-lg md:min-w-[600px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader className="space-y-0">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="bg-amber-100 p-1.5 sm:p-2 rounded-full shrink-0">
@@ -158,7 +158,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Upgrade to Pro — $12/month"
+                  "Upgrade to Pro"
                 )}
               </Button>
             </div>
@@ -169,13 +169,13 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             <div className="min-w-0">
               <h2 className="text-sm sm:text-base font-semibold">Team Plan</h2>
               <p className="text-xs text-gray-600 mb-4 sm:mb-8 break-words">
-                Collaborate more on client/matter workspaces with AI
+               Best for law firms and organizations
               </p>
               <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">
-                <li className="flex items-start gap-1">
+                 <li className="flex items-start gap-1">
                   {" "}
-                  <Zap className="h-3 w-3 text-green-500" /> Everything in
-                  Personal Plan{" "}
+                  <Zap className="h-3 w-3 text-green-500" />
+                 Collaborate more on client/matter workspaces with AI{" "}
                 </li>
                 <li className="flex items-center gap-1">
                   {" "}
@@ -226,7 +226,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Upgrade for Team — $15/seat"
+                  "Request Team Access"
                 )}
               </Button>
             </div>
