@@ -6,7 +6,7 @@ import type { LegalKnowledgeType, Jurisdiction } from '@/types/legalKnowledge';
 import { PracticeArea } from '@/prisma/client';
 
 const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || ''
+  apiKey: process.env.GEMINI_API_KEY || ''
 });
 
 interface ClassificationResult {

@@ -4,7 +4,7 @@
 import { GoogleGenAI } from '@google/genai';
 import prisma from '@/lib/prisma';
 import { findAssociateByFunctionName } from './associateTools';
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 /**
  * Execute an AI Associate function call
