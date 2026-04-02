@@ -1538,7 +1538,7 @@ export function sendVerificationEmail(user: { email: string; fullName?: string |
 
         <!-- Header -->
         <tr>
-          <td style="background:linear-gradient(135deg,#0a4b5e,#005c4d);padding:28px 40px;text-align:center;">
+          <td bgcolor="#0a4b5e" style="background:linear-gradient(135deg,#0a4b5e,#005c4d);padding:28px 40px;text-align:center;">
             <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Wansom <span style="color:#7ee8c8;">AI</span></p>
             <p style="margin:4px 0 0;font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:1.5px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Legal Intelligence Platform</p>
           </td>
@@ -1551,10 +1551,10 @@ export function sendVerificationEmail(user: { email: string; fullName?: string |
             <p style="margin:0 0 24px;font-size:15px;color:#52525b;line-height:1.7;">You're almost ready! Please confirm your email address so we know it's really you. This keeps your workspace secure and unlocks all features.</p>
 
             <!-- CTA Button -->
-            <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+            <table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 28px;">
               <tr>
-                <td style="background:linear-gradient(135deg,#0a4b5e,#005c4d);border-radius:8px;">
-                  <a href="${verificationUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Verify my email &rarr;</a>
+                <td align="center" bgcolor="#0a4b5e" style="background:linear-gradient(135deg,#0a4b5e,#005c4d);border-radius:8px;">
+                  <a href="${verificationUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Verify my email &#8594;</a>
                 </td>
               </tr>
             </table>

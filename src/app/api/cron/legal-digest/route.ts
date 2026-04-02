@@ -15,10 +15,10 @@ import { PRACTICE_AREA_LABELS } from '@/types/associates';
 
 export const maxDuration = 300;
 
-// Maximum number of subscribers processed concurrently.
-// Each subscriber may trigger a Gemini synthesis call; 5 parallel keeps
-// Gemini rate limits comfortable while cutting wall-clock time by ~5×.
-const SEND_CONCURRENCY = 5;
+// Phase 1: resolve unique fingerprints via Gemini — keep low to avoid 503s.
+const SYNTHESIS_CONCURRENCY = 2;
+// Phase 2: send emails — no Gemini involved, so we can go wide.
+const EMAIL_CONCURRENCY = 15;
 
 export async function GET(req: NextRequest) {
   // Verify cron secret (Vercel sends this header for cron jobs)
@@ -42,6 +42,22 @@ export async function GET(req: NextRequest) {
   const now = new Date();
   const isMonday = now.getUTCDay() === 1;
 
+  // ?email=a@b.com,c@d.com  — restrict run to specific addresses (dev/testing only).
+  // The idempotency gate is bypassed for these addresses so you can re-test freely.
+  // ?nocache=1 — skip the digest cache and force fresh Gemini synthesis (dev/testing only).
+  const { searchParams } = new URL(req.url);
+  const testEmails = searchParams.get('email')
+    ? searchParams.get('email')!.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
+    : null;
+  const noCache = searchParams.get('nocache') === '1';
+
+  if (testEmails) {
+    console.log(`[digest] TEST MODE — limiting run to: ${testEmails.join(', ')}`);
+  }
+  if (noCache) {
+    console.log('[digest] nocache=1 — bypassing digest cache, forcing fresh synthesis');
+  }
+
   // Idempotency gate: skip subscribers already sent today.
   // If Vercel retries this cron after a partial failure, subscribers who
   // already received their digest are filtered out at the DB level.
@@ -54,21 +70,23 @@ export async function GET(req: NextRequest) {
   // Count total eligible before the dedup filter (for reporting)
   const totalEligible = await prisma.digestSubscription.count({ where: baseWhere });
 
-  // Fetch only subscribers not yet sent today
+  // Fetch subscribers — in test mode, match by email and skip the idempotency gate.
   const subscriptions = await prisma.digestSubscription.findMany({
-    where: {
-      ...baseWhere,
-      OR: [
-        { lastSentAt: null },
-        { lastSentAt: { lt: todayUtcMidnight } },
-      ],
-    },
+    where: testEmails
+      ? { ...baseWhere, user: { email: { in: testEmails } } }
+      : {
+          ...baseWhere,
+          OR: [
+            { lastSentAt: null },
+            { lastSentAt: { lt: todayUtcMidnight } },
+          ],
+        },
     include: {
       user: { select: { email: true, fullName: true } },
     },
   });
 
-  const alreadySent = totalEligible - subscriptions.length;
+  const alreadySent = testEmails ? 0 : totalEligible - subscriptions.length;
   if (alreadySent > 0) {
     console.log(`[digest] Skipping ${alreadySent} subscriber(s) already sent today`);
   }
@@ -96,57 +114,84 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // ── Cache-first digest resolver ────────────────────────────────────────────
-  // Operates on dedupedSubscriptions — one entry per unique email address.
-  // Priority: persistent DigestCache (written by digest-ingest) → fresh synthesis.
-  // A local Promise map deduplicates within-run: concurrent subscribers sharing
-  // the same fingerprint resolve from one DB read rather than N parallel reads.
-  const localCache = new Map<string, Promise<{ digest: DigestContent; source: string }>>();
+  // ── Phase 1: Resolve all unique fingerprints ──────────────────────────────
+  // Build a map of fingerprint → { digest, source } for every unique combination
+  // of frequency + jurisdictions + topics across all pending subscribers.
+  // Cache hits resolve instantly; misses call Gemini at low concurrency (2) to
+  // avoid 503s. All synthesis is done before a single email is sent, so Phase 2
+  // is purely fast I/O with no Gemini involvement.
 
-  const getDigest = (sub: typeof dedupedSubscriptions[0]) => {
+  // Map each subscriber to its fingerprint up front
+  type SubWithMeta = typeof dedupedSubscriptions[0] & {
+    fingerprint: string;
+    topicLabels: string[];
+  };
+  const subsWithMeta: SubWithMeta[] = dedupedSubscriptions.map((sub) => {
     const topicLabels = sub.topics.map(
       (t) => PRACTICE_AREA_LABELS[t as keyof typeof PRACTICE_AREA_LABELS] || t
     );
-    const fingerprint = buildDigestFingerprint(sub.frequency, sub.jurisdictions, topicLabels);
+    return { ...sub, fingerprint: buildDigestFingerprint(sub.frequency, sub.jurisdictions, topicLabels), topicLabels };
+  });
 
-    let promise = localCache.get(fingerprint);
-    if (!promise) {
-      promise = (async () => {
-        // 1. Try persistent DB cache (pre-computed by digest-ingest)
-        const cached = await getCachedDigest(fingerprint);
-        if (cached) {
-          console.log(`[digest] cache hit: ${fingerprint.slice(0, 60)}`);
-          return { digest: cached, source: 'cache' };
+  // Collect unique fingerprints
+  const uniqueFingerprints = [
+    ...new Map(subsWithMeta.map((s) => [s.fingerprint, s])).values(),
+  ];
+
+  console.log(`[digest] Phase 1: resolving ${uniqueFingerprints.length} unique fingerprint(s) for ${subsWithMeta.length} subscriber(s)`);
+
+  const digestMap = new Map<string, DigestContent>();
+
+  // Resolve fingerprints in batches of SYNTHESIS_CONCURRENCY
+  for (let i = 0; i < uniqueFingerprints.length; i += SYNTHESIS_CONCURRENCY) {
+    const batch = uniqueFingerprints.slice(i, i + SYNTHESIS_CONCURRENCY);
+    await Promise.all(
+      batch.map(async (sub) => {
+        // 1. Try persistent DB cache (pre-computed by digest-ingest), unless bypassed
+        if (!noCache) {
+          const cached = await getCachedDigest(sub.fingerprint);
+          if (cached) {
+            console.log(`[digest] cache hit: ${sub.fingerprint.slice(0, 60)}`);
+            digestMap.set(sub.fingerprint, cached);
+            return;
+          }
         }
 
         // 2. Cache miss — synthesize fresh and persist for next run
-        console.log(`[digest] cache miss — synthesizing: ${fingerprint.slice(0, 60)}`);
+        console.log(`[digest] cache miss — synthesizing: ${sub.fingerprint.slice(0, 60)}`);
         const result = await generateLegalDigestFromDB(
-          topicLabels,
+          sub.topicLabels,
           sub.jurisdictions,
           sub.frequency as 'daily' | 'weekly',
         );
-        // Fire-and-forget: don't let a cache write failure block email delivery
-        setCachedDigest(fingerprint, sub.frequency, sub.jurisdictions, topicLabels, result.digest)
-          .catch((err) => console.error('[digest] failed to write cache:', err.message));
-        return { digest: result.digest, source: result.source };
-      })();
-      localCache.set(fingerprint, promise);
-    }
-    return promise;
-  };
+        try {
+          await setCachedDigest(sub.fingerprint, sub.frequency, sub.jurisdictions, sub.topicLabels, result.digest);
+        } catch (err) {
+          console.error('[digest] failed to write cache:', err instanceof Error ? err.message : String(err));
+        }
+        digestMap.set(sub.fingerprint, result.digest);
+      })
+    );
+  }
+
+  console.log(`[digest] Phase 1 complete: ${digestMap.size} digest(s) resolved. Starting Phase 2: sending ${subsWithMeta.length} email(s) at concurrency ${EMAIL_CONCURRENCY}`);
+
+  // ── Phase 2: Send all emails at high concurrency ───────────────────────────
+  // All digests are resolved — no Gemini calls here. Pure email I/O.
 
   let sent = 0;
   let failed = 0;
 
-  // ── Process subscribers in parallel batches ────────────────────────────────
-  for (let i = 0; i < dedupedSubscriptions.length; i += SEND_CONCURRENCY) {
-    const batch = dedupedSubscriptions.slice(i, i + SEND_CONCURRENCY);
+  for (let i = 0; i < subsWithMeta.length; i += EMAIL_CONCURRENCY) {
+    const batch = subsWithMeta.slice(i, i + EMAIL_CONCURRENCY);
 
     const batchResults = await Promise.allSettled(
       batch.map(async (sub) => {
-        const { digest, source } = await getDigest(sub);
-        console.log(`[digest] ${sub.user.email}: source=${source}`);
+        const digest = digestMap.get(sub.fingerprint);
+        if (!digest) {
+          console.error(`[digest] No resolved digest for ${sub.user.email} (fingerprint: ${sub.fingerprint.slice(0, 60)}) — skipping`);
+          return 'failed';
+        }
 
         const result = await sendLegalDigestEmail({
           email: sub.user.email,
@@ -172,7 +217,7 @@ export async function GET(req: NextRequest) {
           ]);
           return 'sent';
         } else {
-          console.error(`Failed to send digest to ${sub.user.email}:`, result.error);
+          console.error(`[digest] Failed to send to ${sub.user.email}:`, result.error);
           return 'failed';
         }
       })
@@ -183,7 +228,7 @@ export async function GET(req: NextRequest) {
         sent++;
       } else {
         if (result.status === 'rejected') {
-          console.error('Error processing digest for a subscription:', result.reason);
+          console.error('[digest] Unexpected error in send batch:', result.reason);
         }
         failed++;
       }

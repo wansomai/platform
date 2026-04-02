@@ -1234,6 +1234,68 @@ Return ONLY valid JSON — no markdown fences, no extra text:
 
 const MIN_DB_ITEMS = 5;
 
+// ── Deduplication helpers ────────────────────────────────────────────────────
+// Two media houses often cover the same story. We deduplicate in two passes:
+//   Pass 1 — exact URL: trivially catches reposts of the same article.
+//   Pass 2 — title Jaccard similarity: catches same story, different headlines.
+//            Threshold 0.65 + minimum 3 shared words avoids false positives on
+//            short titles that share only jurisdiction/court words (e.g. "Kenya
+//            Court" appears in many unrelated cases).
+// Remaining semantic duplicates (different titles, same event) are handled by
+// Gemini — see prompt rule below.
+
+const STOP_WORDS = new Set([
+  'the','a','an','in','on','at','to','for','of','and','or','is','are',
+  'was','were','by','with','from','as','its','it','this','that','has',
+  'have','been','be','will','new','over',
+]);
+
+function titleWordSet(title: string): Set<string> {
+  return new Set(
+    title.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !STOP_WORDS.has(w))
+  );
+}
+
+function jaccardSimilarity(a: Set<string>, b: Set<string>): number {
+  if (a.size === 0 || b.size === 0) return 0;
+  let intersection = 0;
+  for (const w of a) if (b.has(w)) intersection++;
+  return intersection / (a.size + b.size - intersection);
+}
+
+function deduplicateByTitle<T extends { title: string; url: string }>(
+  items: T[],
+  threshold = 0.65,
+  minSharedWords = 3,
+): T[] {
+  // Pass 1: exact URL dedup
+  const seenUrls = new Set<string>();
+  const urlDeduped = items.filter((item) => {
+    if (seenUrls.has(item.url)) return false;
+    seenUrls.add(item.url);
+    return true;
+  });
+
+  // Pass 2: title similarity dedup
+  const selected: Array<{ item: T; words: Set<string> }> = [];
+  for (const item of urlDeduped) {
+    const words = titleWordSet(item.title);
+    const isDuplicate = selected.some((s) => {
+      let shared = 0;
+      for (const w of words) if (s.words.has(w)) shared++;
+      return shared >= minSharedWords && jaccardSimilarity(s.words, words) >= threshold;
+    });
+    if (!isDuplicate) selected.push({ item, words });
+  }
+  return selected.map((s) => s.item);
+}
+
+// Maximum unique stories to include per digest email.
+const MAX_DIGEST_ITEMS = 12;
+
 export async function generateLegalDigestFromDB(
   topics:        string[],
   jurisdictions: string[],
@@ -1242,9 +1304,10 @@ export async function generateLegalDigestFromDB(
   const { queryDigestItems } = await import('@/services/digestIngestService');
 
   const sinceDate = getSinceDate(frequency);
-  // 20 items is enough for a well-structured digest and keeps the Gemini
-  // synthesis prompt manageable (60 items caused >5 min timeouts).
-  const items = await queryDigestItems({ jurisdictions, topics, sinceDate, limit: 20 });
+  // Fetch 40 items so deduplication has enough material to produce 12 unique stories.
+  const rawItems = await queryDigestItems({ jurisdictions, topics, sinceDate, limit: 40 });
+  // Deduplicate by title similarity, then cap at MAX_DIGEST_ITEMS unique stories.
+  const items = deduplicateByTitle(rawItems).slice(0, MAX_DIGEST_ITEMS);
 
   if (items.length === 0) {
     console.log(`[Briefly] No items in DB for ${jurisdictions.join(',')} — returning empty digest`);
@@ -1266,17 +1329,16 @@ export async function generateLegalDigestFromDB(
 
   if (items.length < MIN_DB_ITEMS) {
     console.log(
-      `[Briefly] DB has only ${items.length} item(s) for ${jurisdictions.join(',')} — ` +
+      `[Briefly] DB has only ${items.length} unique item(s) for ${jurisdictions.join(',')} — ` +
       `synthesising from available items (no live search)`,
     );
   } else {
-    console.log(`[Briefly] DB synthesis: ${items.length} item(s) for ${jurisdictions.join(',')}`);
+    console.log(`[Briefly] DB synthesis: ${rawItems.length} fetched → ${items.length} unique item(s) for ${jurisdictions.join(',')}`);
   }
 
   const todayLabel  = getTodayLabel();
   const timeframe   = frequency === 'daily' ? 'the past 24 hours' : 'the past 7 days';
   const topicList   = topics.length > 0 ? topics.join(', ') : 'general legal developments';
-  const nowIso      = new Date().toISOString();
   const jurisdictionNames = jurisdictions
     .map((c) => JURISDICTION_CONFIG[c]?.name)
     .filter(Boolean).join(', ');
@@ -1303,9 +1365,9 @@ TOPICS: ${topicList}
 JURISDICTIONS: ${jurisdictionNames}
 
 RULES:
-1. Include EVERY item from the list below — do NOT drop, merge, or skip any item.
+1. If two or more items clearly cover the same legal event or story (even with different titles), merge them into ONE entry. Use the title of the most informative item, write one combined summary, and list all their URLs in "sourceUrl" separated by " | ". Do not list the same story twice.
 2. Do NOT search for additional information. Do NOT generate, guess, or modify any URLs.
-3. For "sourceUrl": copy the "url" field EXACTLY from the item. Do not alter it.
+3. For "sourceUrl": copy the "url" field(s) EXACTLY from the item(s). Do not alter them.
 4. Write each summary in 2 concise plain-English sentences suitable for practising attorneys.
 5. Each item title must include the jurisdiction name if not already present.
 
@@ -1314,7 +1376,7 @@ CLASSIFY each item into one of these categories:
 - Statute, regulation, gazette notice, government policy → "Regulatory Changes"
 - News article, law firm alert, commentary, industry update → "Legal News"
 
-ITEMS TO INCLUDE (${rawResults.length} total — include all of them):
+ITEMS (${rawResults.length} unique stories):
 ${JSON.stringify(rawResults, null, 2)}
 
 Return ONLY valid JSON — no markdown fences, no extra text:
@@ -1339,11 +1401,28 @@ Return ONLY valid JSON — no markdown fences, no extra text:
   ]
 }`;
 
-  const response = await genAI.models.generateContent({
-    model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
-    contents: synthesisPrompt,
-    config:   { temperature: 0.2 },
-  });
+  // Retry up to 3 times with exponential backoff on Gemini 503 (overloaded)
+  let response: Awaited<ReturnType<typeof genAI.models.generateContent>>;
+  const maxAttempts = 3;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      response = await genAI.models.generateContent({
+        model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+        contents: synthesisPrompt,
+        config:   { temperature: 0.2 },
+      });
+      break;
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status;
+      if (status === 503 && attempt < maxAttempts) {
+        const delay = 5000 * attempt; // 5s, 10s
+        console.warn(`[Briefly] Gemini 503 on attempt ${attempt} — retrying in ${delay}ms`);
+        await new Promise((r) => setTimeout(r, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
 
   const text = (response.text || '').trim();
   let cleanText = text;
