@@ -190,6 +190,32 @@ export const GET = withErrorHandler(
 );
 ```
 
+### Request Validation
+Use `validateRequest()` from `src/lib/api/validation.ts` to validate request bodies against Zod schemas. Pre-built schemas cover common cases:
+```typescript
+import { validateRequest, schemas } from '@/lib/api/validation';
+
+const body = await req.json();
+const data = validateRequest(schemas.projectCreate, body); // throws AppError(400) on failure
+```
+Available schemas: `pagination`, `documentFilters`, `projectCreate`, `conversationCreate`, `messageCreate`.
+
+### Organization Resolution in API Routes
+Use helpers from `src/lib/api/org-helpers.ts` to resolve the correct organization context:
+```typescript
+import { getUserOrganizationId, getActiveOrganizationId, getUserWithOrganization } from '@/lib/api/org-helpers';
+
+// Primary org (for user-owned resources)
+const orgId = await getUserOrganizationId(userId);
+
+// Active org (for multi-org context — respects org switching)
+const orgId = await getActiveOrganizationId(userId); // falls back to primary if no active org set
+
+// User + org details in one query
+const user = await getUserWithOrganization(userId); // { id, organizationId, organization: { id, name, accountType, ownerId } }
+```
+Prefer `getActiveOrganizationId` over `getUserOrganizationId` when the operation should respect the user's current org context (e.g., creating projects, listing org members).
+
 ### Streaming AI Responses
 The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/messages/route.ts`) returns a `ReadableStream` of newline-delimited JSON (NDJSON). Each line is a complete JSON object:
 
