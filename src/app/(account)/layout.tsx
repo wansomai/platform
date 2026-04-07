@@ -20,6 +20,7 @@ import {
   UserCircleIcon,
   FolderOpen,
   HelpCircle,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,6 +40,8 @@ import OrgSwitcher from "@/components/sidebar/OrgSwitcher";
 import { SessionExpiryModal } from "@/components/session-expiry-modal";
 import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
 import SupportModal from "@/components/support/SupportModal";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import NotificationModal from "@/components/notifications/NotificationModal";
 
 interface SidebarLinkProps {
   href: string;
@@ -95,6 +98,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { projects, fetchProjects } = useProjectStore();
   const { clearAssociates } = useAssociatesStore();
@@ -306,6 +311,23 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className={cn("border-t", collapsed && !isMobile ? "p-2" : "p-4")}>
         <nav className="flex flex-col gap-1">
           <button
+            onClick={() => setNotificationsOpen(true)}
+            className={cn(
+              "flex items-center rounded-lg py-2 text-sm transition-all hover:bg-gray-100 text-gray-600 w-full",
+              collapsed && !isMobile ? "justify-center px-2" : "gap-3 px-3"
+            )}
+          >
+            <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
+              <Bell className="h-5 w-5 text-gray-500" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </span>
+            {(!collapsed || isMobile) && <span>Notifications</span>}
+          </button>
+          <button
             onClick={() => setSupportOpen(true)}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-gray-100 text-gray-600 w-full",
@@ -424,7 +446,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Assistant button */}
+              {/* Notification bell */}
+              <NotificationBell
+                unreadCount={unreadCount}
+                onClick={() => setNotificationsOpen(true)}
+              />
 
               {/* User dropdown */}
               <div className="relative group">
@@ -482,6 +508,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       {/* Help & Support form modal */}
       <SupportModal open={supportOpen} onOpenChange={setSupportOpen} />
+
+      {/* Notifications modal */}
+      <NotificationModal
+        open={notificationsOpen}
+        onOpenChange={setNotificationsOpen}
+        onUnreadCountChange={setUnreadCount}
+      />
     </div>
   );
 }

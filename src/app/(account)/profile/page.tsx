@@ -272,6 +272,10 @@ const Page = () => {
   // Determine pro access from subscription status (covers both Paystack subscription and enterprise accountType)
   const hasProAccess = subscriptionStatus?.hasProAccess || false;
   const isNonRenewing = subscriptionStatus?.effectiveStatus === 'non_renewing';
+  const isManualTrial = subscriptionStatus?.isManualTrial || false;
+  const trialExpiresAt = subscriptionStatus?.trialExpiresAt
+    ? new Date(subscriptionStatus.trialExpiresAt)
+    : null;
 
   const filteredMembers = getFilteredMembers();
 
@@ -436,7 +440,8 @@ const Page = () => {
 
                 <Separator className="my-4" />
 
-                <div className="flex justify-end space-x-4">
+                <div className="flex flex-col items-end gap-1.5">
+                  <div className="flex justify-end space-x-4">
                   {isEditing ? (
                     <>
                       <Button
@@ -460,7 +465,15 @@ const Page = () => {
                       </Button>
                       {profile?.role === 'owner' && (
                         <>
-                          {!hasProAccess ? (
+                          {isManualTrial ? (
+                            <Button
+                              onClick={() => setShowProAccess(true)}
+                              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                            >
+                              <Crown className="h-4 w-4 mr-2" />
+                              Upgrade to Pro
+                            </Button>
+                          ) : !hasProAccess ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
                             >
@@ -489,6 +502,20 @@ const Page = () => {
                         </>
                       )}
                     </>
+                  )}
+                  </div>
+                  {/* Trial expiry note — sits flush below the button row */}
+                  {isManualTrial && !isEditing && profile?.role === 'owner' && (
+                    <p className="text-xs text-gray-500">
+                      You&apos;re on a 15-day trial &mdash; expires{' '}
+                      <span className="font-medium text-amber-600">
+                        {trialExpiresAt?.toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </p>
                   )}
                 </div>
               </CardContent>

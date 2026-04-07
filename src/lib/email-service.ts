@@ -1581,3 +1581,180 @@ export function sendVerificationEmail(user: { email: string; fullName?: string |
 </html>`;
   return sendEmail({ to: user.email, subject, html });
 }
+
+/**
+ * Sends a trial expiry notification email to the org owner
+ */
+export function sendTrialExpiryEmail(user: { email: string; fullName?: string | null }, orgName: string) {
+  const name = user.fullName || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const upgradeUrl = `${appUrl}/profile`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#0a4b5e;padding:28px 40px;">
+            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">Wansom AI</h1>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 40px;">
+            <h2 style="margin:0 0 16px;color:#0a4b5e;font-size:20px;">Your Pro trial has ended, ${name}</h2>
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+              Your 15-day Pro trial for <strong>${orgName}</strong> has expired. Your account has been returned to the free plan.
+            </p>
+            <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.6;">
+              All your documents, projects, and conversation history are safe and untouched. To continue enjoying unlimited AI responses, AI Associates, and all Pro features, upgrade to a paid plan today.
+            </p>
+
+            <!-- Feature recap -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:6px;padding:20px;margin-bottom:28px;">
+              <tr><td>
+                <p style="margin:0 0 10px;color:#0a4b5e;font-weight:700;font-size:14px;">What you had with Pro:</p>
+                <ul style="margin:0;padding-left:20px;color:#374151;font-size:14px;line-height:2;">
+                  <li>Unlimited client/matter workspaces</li>
+                  <li>Unlimited AI responses</li>
+                  <li>Draft &amp; review unlimited contracts</li>
+                  <li>Multi-jurisdiction research</li>
+                  <li>AI Associates &amp; custom workflows</li>
+                </ul>
+              </td></tr>
+            </table>
+
+            <a href="${upgradeUrl}" style="display:inline-block;background:#d97706;color:#ffffff;padding:13px 28px;border-radius:6px;text-decoration:none;font-weight:700;font-size:15px;">Upgrade to Pro Now</a>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:18px 40px;background:#fafafa;border-top:1px solid #f0f0f0;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#a1a1aa;">Wansom AI &nbsp;&middot;&nbsp; Legal Intelligence Platform &nbsp;&middot;&nbsp; <a href="mailto:support@wansom.ai" style="color:#a1a1aa;text-decoration:none;">support@wansom.ai</a></p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  return sendEmail({
+    to: user.email,
+    subject: 'Your Wansom AI Pro trial has ended — upgrade to keep going',
+    html,
+  });
+}
+
+/**
+ * Sends a trial-start email to the org owner when manually upgraded by an admin.
+ */
+export function sendTrialStartEmail(
+  user: { email: string; fullName?: string | null },
+  orgName: string,
+  trialExpiresAt: Date
+) {
+  const name = user.fullName || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const upgradeUrl = `${appUrl}/profile`;
+  const expiryDateStr = trialExpiresAt.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#0a4b5e;padding:28px 40px;">
+            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">Wansom AI</h1>
+          </td>
+        </tr>
+
+        <!-- Hero -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#d97706,#f59e0b);padding:32px 40px;text-align:center;">
+            <p style="margin:0 0 6px;color:#ffffff;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Pro Access Activated</p>
+            <h2 style="margin:0;color:#ffffff;font-size:26px;font-weight:800;">Your 15-day Pro trial has started!</h2>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 40px;">
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+              Hi ${name},
+            </p>
+            <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+              Great news — <strong>${orgName}</strong> has been granted full Pro access on Wansom AI.
+              You have <strong>15 days</strong> to explore everything the platform has to offer.
+            </p>
+
+            <!-- Expiry callout -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;margin-bottom:28px;">
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0;color:#92400e;font-size:14px;">
+                    ⏳ &nbsp;<strong>Trial expires on ${expiryDateStr}.</strong>
+                    Upgrade to a paid plan before then to keep uninterrupted access.
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Feature list -->
+            <p style="margin:0 0 12px;color:#0a4b5e;font-weight:700;font-size:14px;">What you can do during your trial:</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+              <tr><td style="padding:4px 0;color:#374151;font-size:14px;">✅ &nbsp;Unlimited client/matter workspaces</td></tr>
+              <tr><td style="padding:4px 0;color:#374151;font-size:14px;">✅ &nbsp;Unlimited AI responses</td></tr>
+              <tr><td style="padding:4px 0;color:#374151;font-size:14px;">✅ &nbsp;Draft &amp; review unlimited contracts</td></tr>
+              <tr><td style="padding:4px 0;color:#374151;font-size:14px;">✅ &nbsp;Multi-jurisdiction legal research</td></tr>
+              <tr><td style="padding:4px 0;color:#374151;font-size:14px;">✅ &nbsp;AI Associates &amp; custom workflows</td></tr>
+              <tr><td style="padding:4px 0;color:#374151;font-size:14px;">✅ &nbsp;Google Calendar &amp; Email integrations</td></tr>
+            </table>
+
+            <a href="${upgradeUrl}" style="display:inline-block;background:#0a4b5e;color:#ffffff;padding:13px 28px;border-radius:6px;text-decoration:none;font-weight:700;font-size:15px;">Go to My Account</a>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:18px 40px;background:#fafafa;border-top:1px solid #f0f0f0;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#a1a1aa;">Wansom AI &nbsp;&middot;&nbsp; Legal Intelligence Platform &nbsp;&middot;&nbsp; <a href="mailto:support@wansom.ai" style="color:#a1a1aa;text-decoration:none;">support@wansom.ai</a></p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  return sendEmail({
+    to: user.email,
+    subject: `Your Wansom AI Pro trial is live — expires ${expiryDateStr}`,
+    html,
+  });
+}

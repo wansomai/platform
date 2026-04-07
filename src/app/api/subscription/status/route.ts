@@ -60,6 +60,15 @@ export const GET = withErrorHandler(
     const subscription = org.subscription;
     const isEnterprise = org.accountType === 'enterprise';
 
+    // Detect active manual trial (enterprise with no Paystack subscription, trial window still open)
+    const now = new Date();
+    const isManualTrial =
+      isEnterprise &&
+      !subscription &&
+      !org.trialExpired &&
+      org.trialExpiresAt != null &&
+      org.trialExpiresAt > now;
+
     const associateCount = await prisma.aIAssociate.count({
       where: { organizationId: activeOrgId },
     });
@@ -112,8 +121,10 @@ export const GET = withErrorHandler(
       canUpgrade,
       canCancel,
       hasProAccess: hasActiveSubscription || isEnterprise,
+      isManualTrial,
+      trialExpiresAt: org.trialExpiresAt?.toISOString() ?? null,
       associateCount,
-      canViewBilling: true,
+      canViewBilling: !!subscription,
     });
   })
 );
