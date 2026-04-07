@@ -243,6 +243,16 @@ export type legal_knowledge = $Result.DefaultSelection<Prisma.$legal_knowledgePa
  * 
  */
 export type legal_knowledge_chunks = $Result.DefaultSelection<Prisma.$legal_knowledge_chunksPayload>
+/**
+ * Model AdminLog
+ * 
+ */
+export type AdminLog = $Result.DefaultSelection<Prisma.$AdminLogPayload>
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 
 /**
  * Enums
@@ -884,6 +894,26 @@ export class PrismaClient<
     * ```
     */
   get legal_knowledge_chunks(): Prisma.legal_knowledge_chunksDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.adminLog`: Exposes CRUD operations for the **AdminLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdminLogs
+    * const adminLogs = await prisma.adminLog.findMany()
+    * ```
+    */
+  get adminLog(): Prisma.AdminLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notification.findMany()
+    * ```
+    */
+  get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1363,7 +1393,9 @@ export namespace Prisma {
     DigestCache: 'DigestCache',
     DigestItem: 'DigestItem',
     legal_knowledge: 'legal_knowledge',
-    legal_knowledge_chunks: 'legal_knowledge_chunks'
+    legal_knowledge_chunks: 'legal_knowledge_chunks',
+    AdminLog: 'AdminLog',
+    Notification: 'Notification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1379,7 +1411,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks" | "adminLog" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4787,6 +4819,154 @@ export namespace Prisma {
           }
         }
       }
+      AdminLog: {
+        payload: Prisma.$AdminLogPayload<ExtArgs>
+        fields: Prisma.AdminLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdminLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdminLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AdminLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdminLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>
+          }
+          findMany: {
+            args: Prisma.AdminLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>[]
+          }
+          create: {
+            args: Prisma.AdminLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>
+          }
+          createMany: {
+            args: Prisma.AdminLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AdminLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>[]
+          }
+          delete: {
+            args: Prisma.AdminLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>
+          }
+          update: {
+            args: Prisma.AdminLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AdminLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdminLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AdminLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.AdminLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdminLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AdminLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAdminLog>
+          }
+          groupBy: {
+            args: Prisma.AdminLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AdminLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdminLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AdminLogCountAggregateOutputType> | number
+          }
+        }
+      }
+      Notification: {
+        payload: Prisma.$NotificationPayload<ExtArgs>
+        fields: Prisma.NotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.NotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          findMany: {
+            args: Prisma.NotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          create: {
+            args: Prisma.NotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          createMany: {
+            args: Prisma.NotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.NotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          update: {
+            args: Prisma.NotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.NotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.NotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.NotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotification>
+          }
+          groupBy: {
+            args: Prisma.NotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<NotificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4941,6 +5121,8 @@ export namespace Prisma {
     digestItem?: DigestItemOmit
     legal_knowledge?: legal_knowledgeOmit
     legal_knowledge_chunks?: legal_knowledge_chunksOmit
+    adminLog?: AdminLogOmit
+    notification?: NotificationOmit
   }
 
   /* Types for Logging */
@@ -5041,6 +5223,7 @@ export namespace Prisma {
     digestSubscriptions: number
     legal_knowledge: number
     documentPermissions: number
+    notifications: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5064,6 +5247,7 @@ export namespace Prisma {
     digestSubscriptions?: boolean | UserCountOutputTypeCountDigestSubscriptionsArgs
     legal_knowledge?: boolean | UserCountOutputTypeCountLegal_knowledgeArgs
     documentPermissions?: boolean | UserCountOutputTypeCountDocumentPermissionsArgs
+    notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   }
 
   // Custom InputTypes
@@ -5217,6 +5401,13 @@ export namespace Prisma {
     where?: DocumentPermissionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+  }
+
 
   /**
    * Count Type OrganizationCountOutputType
@@ -5234,6 +5425,7 @@ export namespace Prisma {
     content: number
     digestSubscriptions: number
     onboardingSteps: number
+    adminLogs: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5248,6 +5440,7 @@ export namespace Prisma {
     content?: boolean | OrganizationCountOutputTypeCountContentArgs
     digestSubscriptions?: boolean | OrganizationCountOutputTypeCountDigestSubscriptionsArgs
     onboardingSteps?: boolean | OrganizationCountOutputTypeCountOnboardingStepsArgs
+    adminLogs?: boolean | OrganizationCountOutputTypeCountAdminLogsArgs
   }
 
   // Custom InputTypes
@@ -5336,6 +5529,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountOnboardingStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OnboardingAnalyticsWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountAdminLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminLogWhereInput
   }
 
 
@@ -9376,6 +9576,7 @@ export namespace Prisma {
     digestSubscriptions?: boolean | User$digestSubscriptionsArgs<ExtArgs>
     legal_knowledge?: boolean | User$legal_knowledgeArgs<ExtArgs>
     documentPermissions?: boolean | User$documentPermissionsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -9461,6 +9662,7 @@ export namespace Prisma {
     digestSubscriptions?: boolean | User$digestSubscriptionsArgs<ExtArgs>
     legal_knowledge?: boolean | User$legal_knowledgeArgs<ExtArgs>
     documentPermissions?: boolean | User$documentPermissionsArgs<ExtArgs>
+    notifications?: boolean | User$notificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9497,6 +9699,7 @@ export namespace Prisma {
       digestSubscriptions: Prisma.$DigestSubscriptionPayload<ExtArgs>[]
       legal_knowledge: Prisma.$legal_knowledgePayload<ExtArgs>[]
       documentPermissions: Prisma.$DocumentPermissionPayload<ExtArgs>[]
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9930,6 +10133,7 @@ export namespace Prisma {
     digestSubscriptions<T extends User$digestSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$digestSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     legal_knowledge<T extends User$legal_knowledgeArgs<ExtArgs> = {}>(args?: Subset<T, User$legal_knowledgeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$legal_knowledgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documentPermissions<T extends User$documentPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$documentPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10869,6 +11073,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.notifications
+   */
+  export type User$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10925,6 +11153,9 @@ export namespace Prisma {
     ownerId: string | null
     upgradeRequestToken: string | null
     upgradeRequestedAt: Date | null
+    trialUpgradedAt: Date | null
+    trialExpiresAt: Date | null
+    trialExpired: boolean | null
   }
 
   export type OrganizationMaxAggregateOutputType = {
@@ -10945,6 +11176,9 @@ export namespace Prisma {
     ownerId: string | null
     upgradeRequestToken: string | null
     upgradeRequestedAt: Date | null
+    trialUpgradedAt: Date | null
+    trialExpiresAt: Date | null
+    trialExpired: boolean | null
   }
 
   export type OrganizationCountAggregateOutputType = {
@@ -10968,6 +11202,9 @@ export namespace Prisma {
     ownerId: number
     upgradeRequestToken: number
     upgradeRequestedAt: number
+    trialUpgradedAt: number
+    trialExpiresAt: number
+    trialExpired: number
     _all: number
   }
 
@@ -10998,6 +11235,9 @@ export namespace Prisma {
     ownerId?: true
     upgradeRequestToken?: true
     upgradeRequestedAt?: true
+    trialUpgradedAt?: true
+    trialExpiresAt?: true
+    trialExpired?: true
   }
 
   export type OrganizationMaxAggregateInputType = {
@@ -11018,6 +11258,9 @@ export namespace Prisma {
     ownerId?: true
     upgradeRequestToken?: true
     upgradeRequestedAt?: true
+    trialUpgradedAt?: true
+    trialExpiresAt?: true
+    trialExpired?: true
   }
 
   export type OrganizationCountAggregateInputType = {
@@ -11041,6 +11284,9 @@ export namespace Prisma {
     ownerId?: true
     upgradeRequestToken?: true
     upgradeRequestedAt?: true
+    trialUpgradedAt?: true
+    trialExpiresAt?: true
+    trialExpired?: true
     _all?: true
   }
 
@@ -11151,6 +11397,9 @@ export namespace Prisma {
     ownerId: string | null
     upgradeRequestToken: string | null
     upgradeRequestedAt: Date | null
+    trialUpgradedAt: Date | null
+    trialExpiresAt: Date | null
+    trialExpired: boolean
     _count: OrganizationCountAggregateOutputType | null
     _avg: OrganizationAvgAggregateOutputType | null
     _sum: OrganizationSumAggregateOutputType | null
@@ -11193,6 +11442,9 @@ export namespace Prisma {
     ownerId?: boolean
     upgradeRequestToken?: boolean
     upgradeRequestedAt?: boolean
+    trialUpgradedAt?: boolean
+    trialExpiresAt?: boolean
+    trialExpired?: boolean
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
     Folder?: boolean | Organization$FolderArgs<ExtArgs>
@@ -11206,6 +11458,7 @@ export namespace Prisma {
     digestSubscriptions?: boolean | Organization$digestSubscriptionsArgs<ExtArgs>
     onboardingSteps?: boolean | Organization$onboardingStepsArgs<ExtArgs>
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
+    adminLogs?: boolean | Organization$adminLogsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -11230,6 +11483,9 @@ export namespace Prisma {
     ownerId?: boolean
     upgradeRequestToken?: boolean
     upgradeRequestedAt?: boolean
+    trialUpgradedAt?: boolean
+    trialExpiresAt?: boolean
+    trialExpired?: boolean
     owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -11254,6 +11510,9 @@ export namespace Prisma {
     ownerId?: boolean
     upgradeRequestToken?: boolean
     upgradeRequestedAt?: boolean
+    trialUpgradedAt?: boolean
+    trialExpiresAt?: boolean
+    trialExpired?: boolean
     owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -11278,9 +11537,12 @@ export namespace Prisma {
     ownerId?: boolean
     upgradeRequestToken?: boolean
     upgradeRequestedAt?: boolean
+    trialUpgradedAt?: boolean
+    trialExpiresAt?: boolean
+    trialExpired?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "ownerId" | "upgradeRequestToken" | "upgradeRequestedAt", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "ownerId" | "upgradeRequestToken" | "upgradeRequestedAt" | "trialUpgradedAt" | "trialExpiresAt" | "trialExpired", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
@@ -11295,6 +11557,7 @@ export namespace Prisma {
     digestSubscriptions?: boolean | Organization$digestSubscriptionsArgs<ExtArgs>
     onboardingSteps?: boolean | Organization$onboardingStepsArgs<ExtArgs>
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
+    adminLogs?: boolean | Organization$adminLogsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11320,6 +11583,7 @@ export namespace Prisma {
       digestSubscriptions: Prisma.$DigestSubscriptionPayload<ExtArgs>[]
       onboardingSteps: Prisma.$OnboardingAnalyticsPayload<ExtArgs>[]
       subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
+      adminLogs: Prisma.$AdminLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11342,6 +11606,9 @@ export namespace Prisma {
       ownerId: string | null
       upgradeRequestToken: string | null
       upgradeRequestedAt: Date | null
+      trialUpgradedAt: Date | null
+      trialExpiresAt: Date | null
+      trialExpired: boolean
     }, ExtArgs["result"]["organization"]>
     composites: {}
   }
@@ -11749,6 +12016,7 @@ export namespace Prisma {
     digestSubscriptions<T extends Organization$digestSubscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$digestSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DigestSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     onboardingSteps<T extends Organization$onboardingStepsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$onboardingStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OnboardingAnalyticsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscription<T extends Organization$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Organization$subscriptionArgs<ExtArgs>>): Prisma__SubscriptionClient<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    adminLogs<T extends Organization$adminLogsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$adminLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11798,6 +12066,9 @@ export namespace Prisma {
     readonly ownerId: FieldRef<"Organization", 'String'>
     readonly upgradeRequestToken: FieldRef<"Organization", 'String'>
     readonly upgradeRequestedAt: FieldRef<"Organization", 'DateTime'>
+    readonly trialUpgradedAt: FieldRef<"Organization", 'DateTime'>
+    readonly trialExpiresAt: FieldRef<"Organization", 'DateTime'>
+    readonly trialExpired: FieldRef<"Organization", 'Boolean'>
   }
     
 
@@ -12493,6 +12764,30 @@ export namespace Prisma {
      */
     include?: SubscriptionInclude<ExtArgs> | null
     where?: SubscriptionWhereInput
+  }
+
+  /**
+   * Organization.adminLogs
+   */
+  export type Organization$adminLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    where?: AdminLogWhereInput
+    orderBy?: AdminLogOrderByWithRelationInput | AdminLogOrderByWithRelationInput[]
+    cursor?: AdminLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AdminLogScalarFieldEnum | AdminLogScalarFieldEnum[]
   }
 
   /**
@@ -58997,6 +59292,2144 @@ export namespace Prisma {
 
 
   /**
+   * Model AdminLog
+   */
+
+  export type AggregateAdminLog = {
+    _count: AdminLogCountAggregateOutputType | null
+    _min: AdminLogMinAggregateOutputType | null
+    _max: AdminLogMaxAggregateOutputType | null
+  }
+
+  export type AdminLogMinAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    event: string | null
+    createdAt: Date | null
+  }
+
+  export type AdminLogMaxAggregateOutputType = {
+    id: string | null
+    organizationId: string | null
+    event: string | null
+    createdAt: Date | null
+  }
+
+  export type AdminLogCountAggregateOutputType = {
+    id: number
+    organizationId: number
+    event: number
+    details: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AdminLogMinAggregateInputType = {
+    id?: true
+    organizationId?: true
+    event?: true
+    createdAt?: true
+  }
+
+  export type AdminLogMaxAggregateInputType = {
+    id?: true
+    organizationId?: true
+    event?: true
+    createdAt?: true
+  }
+
+  export type AdminLogCountAggregateInputType = {
+    id?: true
+    organizationId?: true
+    event?: true
+    details?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AdminLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdminLog to aggregate.
+     */
+    where?: AdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminLogs to fetch.
+     */
+    orderBy?: AdminLogOrderByWithRelationInput | AdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AdminLogs
+    **/
+    _count?: true | AdminLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdminLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdminLogMaxAggregateInputType
+  }
+
+  export type GetAdminLogAggregateType<T extends AdminLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdminLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdminLog[P]>
+      : GetScalarType<T[P], AggregateAdminLog[P]>
+  }
+
+
+
+
+  export type AdminLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdminLogWhereInput
+    orderBy?: AdminLogOrderByWithAggregationInput | AdminLogOrderByWithAggregationInput[]
+    by: AdminLogScalarFieldEnum[] | AdminLogScalarFieldEnum
+    having?: AdminLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdminLogCountAggregateInputType | true
+    _min?: AdminLogMinAggregateInputType
+    _max?: AdminLogMaxAggregateInputType
+  }
+
+  export type AdminLogGroupByOutputType = {
+    id: string
+    organizationId: string
+    event: string
+    details: JsonValue | null
+    createdAt: Date
+    _count: AdminLogCountAggregateOutputType | null
+    _min: AdminLogMinAggregateOutputType | null
+    _max: AdminLogMaxAggregateOutputType | null
+  }
+
+  type GetAdminLogGroupByPayload<T extends AdminLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdminLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdminLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdminLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AdminLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdminLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    event?: boolean
+    details?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminLog"]>
+
+  export type AdminLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    event?: boolean
+    details?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminLog"]>
+
+  export type AdminLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organizationId?: boolean
+    event?: boolean
+    details?: boolean
+    createdAt?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["adminLog"]>
+
+  export type AdminLogSelectScalar = {
+    id?: boolean
+    organizationId?: boolean
+    event?: boolean
+    details?: boolean
+    createdAt?: boolean
+  }
+
+  export type AdminLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organizationId" | "event" | "details" | "createdAt", ExtArgs["result"]["adminLog"]>
+  export type AdminLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type AdminLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type AdminLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $AdminLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AdminLog"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organizationId: string
+      event: string
+      details: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["adminLog"]>
+    composites: {}
+  }
+
+  type AdminLogGetPayload<S extends boolean | null | undefined | AdminLogDefaultArgs> = $Result.GetResult<Prisma.$AdminLogPayload, S>
+
+  type AdminLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AdminLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AdminLogCountAggregateInputType | true
+    }
+
+  export interface AdminLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AdminLog'], meta: { name: 'AdminLog' } }
+    /**
+     * Find zero or one AdminLog that matches the filter.
+     * @param {AdminLogFindUniqueArgs} args - Arguments to find a AdminLog
+     * @example
+     * // Get one AdminLog
+     * const adminLog = await prisma.adminLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdminLogFindUniqueArgs>(args: SelectSubset<T, AdminLogFindUniqueArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AdminLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AdminLogFindUniqueOrThrowArgs} args - Arguments to find a AdminLog
+     * @example
+     * // Get one AdminLog
+     * const adminLog = await prisma.adminLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdminLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AdminLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AdminLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogFindFirstArgs} args - Arguments to find a AdminLog
+     * @example
+     * // Get one AdminLog
+     * const adminLog = await prisma.adminLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdminLogFindFirstArgs>(args?: SelectSubset<T, AdminLogFindFirstArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AdminLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogFindFirstOrThrowArgs} args - Arguments to find a AdminLog
+     * @example
+     * // Get one AdminLog
+     * const adminLog = await prisma.adminLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdminLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AdminLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AdminLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdminLogs
+     * const adminLogs = await prisma.adminLog.findMany()
+     * 
+     * // Get first 10 AdminLogs
+     * const adminLogs = await prisma.adminLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const adminLogWithIdOnly = await prisma.adminLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AdminLogFindManyArgs>(args?: SelectSubset<T, AdminLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AdminLog.
+     * @param {AdminLogCreateArgs} args - Arguments to create a AdminLog.
+     * @example
+     * // Create one AdminLog
+     * const AdminLog = await prisma.adminLog.create({
+     *   data: {
+     *     // ... data to create a AdminLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AdminLogCreateArgs>(args: SelectSubset<T, AdminLogCreateArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AdminLogs.
+     * @param {AdminLogCreateManyArgs} args - Arguments to create many AdminLogs.
+     * @example
+     * // Create many AdminLogs
+     * const adminLog = await prisma.adminLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AdminLogCreateManyArgs>(args?: SelectSubset<T, AdminLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AdminLogs and returns the data saved in the database.
+     * @param {AdminLogCreateManyAndReturnArgs} args - Arguments to create many AdminLogs.
+     * @example
+     * // Create many AdminLogs
+     * const adminLog = await prisma.adminLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AdminLogs and only return the `id`
+     * const adminLogWithIdOnly = await prisma.adminLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AdminLogCreateManyAndReturnArgs>(args?: SelectSubset<T, AdminLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AdminLog.
+     * @param {AdminLogDeleteArgs} args - Arguments to delete one AdminLog.
+     * @example
+     * // Delete one AdminLog
+     * const AdminLog = await prisma.adminLog.delete({
+     *   where: {
+     *     // ... filter to delete one AdminLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AdminLogDeleteArgs>(args: SelectSubset<T, AdminLogDeleteArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AdminLog.
+     * @param {AdminLogUpdateArgs} args - Arguments to update one AdminLog.
+     * @example
+     * // Update one AdminLog
+     * const adminLog = await prisma.adminLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AdminLogUpdateArgs>(args: SelectSubset<T, AdminLogUpdateArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AdminLogs.
+     * @param {AdminLogDeleteManyArgs} args - Arguments to filter AdminLogs to delete.
+     * @example
+     * // Delete a few AdminLogs
+     * const { count } = await prisma.adminLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AdminLogDeleteManyArgs>(args?: SelectSubset<T, AdminLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdminLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdminLogs
+     * const adminLog = await prisma.adminLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AdminLogUpdateManyArgs>(args: SelectSubset<T, AdminLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdminLogs and returns the data updated in the database.
+     * @param {AdminLogUpdateManyAndReturnArgs} args - Arguments to update many AdminLogs.
+     * @example
+     * // Update many AdminLogs
+     * const adminLog = await prisma.adminLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AdminLogs and only return the `id`
+     * const adminLogWithIdOnly = await prisma.adminLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AdminLogUpdateManyAndReturnArgs>(args: SelectSubset<T, AdminLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AdminLog.
+     * @param {AdminLogUpsertArgs} args - Arguments to update or create a AdminLog.
+     * @example
+     * // Update or create a AdminLog
+     * const adminLog = await prisma.adminLog.upsert({
+     *   create: {
+     *     // ... data to create a AdminLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdminLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdminLogUpsertArgs>(args: SelectSubset<T, AdminLogUpsertArgs<ExtArgs>>): Prisma__AdminLogClient<$Result.GetResult<Prisma.$AdminLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AdminLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogCountArgs} args - Arguments to filter AdminLogs to count.
+     * @example
+     * // Count the number of AdminLogs
+     * const count = await prisma.adminLog.count({
+     *   where: {
+     *     // ... the filter for the AdminLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdminLogCountArgs>(
+      args?: Subset<T, AdminLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdminLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AdminLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdminLogAggregateArgs>(args: Subset<T, AdminLogAggregateArgs>): Prisma.PrismaPromise<GetAdminLogAggregateType<T>>
+
+    /**
+     * Group by AdminLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdminLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdminLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdminLogGroupByArgs['orderBy'] }
+        : { orderBy?: AdminLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdminLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdminLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AdminLog model
+   */
+  readonly fields: AdminLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AdminLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdminLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AdminLog model
+   */
+  interface AdminLogFieldRefs {
+    readonly id: FieldRef<"AdminLog", 'String'>
+    readonly organizationId: FieldRef<"AdminLog", 'String'>
+    readonly event: FieldRef<"AdminLog", 'String'>
+    readonly details: FieldRef<"AdminLog", 'Json'>
+    readonly createdAt: FieldRef<"AdminLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AdminLog findUnique
+   */
+  export type AdminLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminLog to fetch.
+     */
+    where: AdminLogWhereUniqueInput
+  }
+
+  /**
+   * AdminLog findUniqueOrThrow
+   */
+  export type AdminLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminLog to fetch.
+     */
+    where: AdminLogWhereUniqueInput
+  }
+
+  /**
+   * AdminLog findFirst
+   */
+  export type AdminLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminLog to fetch.
+     */
+    where?: AdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminLogs to fetch.
+     */
+    orderBy?: AdminLogOrderByWithRelationInput | AdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdminLogs.
+     */
+    cursor?: AdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdminLogs.
+     */
+    distinct?: AdminLogScalarFieldEnum | AdminLogScalarFieldEnum[]
+  }
+
+  /**
+   * AdminLog findFirstOrThrow
+   */
+  export type AdminLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminLog to fetch.
+     */
+    where?: AdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminLogs to fetch.
+     */
+    orderBy?: AdminLogOrderByWithRelationInput | AdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdminLogs.
+     */
+    cursor?: AdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdminLogs.
+     */
+    distinct?: AdminLogScalarFieldEnum | AdminLogScalarFieldEnum[]
+  }
+
+  /**
+   * AdminLog findMany
+   */
+  export type AdminLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AdminLogs to fetch.
+     */
+    where?: AdminLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdminLogs to fetch.
+     */
+    orderBy?: AdminLogOrderByWithRelationInput | AdminLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AdminLogs.
+     */
+    cursor?: AdminLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdminLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdminLogs.
+     */
+    skip?: number
+    distinct?: AdminLogScalarFieldEnum | AdminLogScalarFieldEnum[]
+  }
+
+  /**
+   * AdminLog create
+   */
+  export type AdminLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AdminLog.
+     */
+    data: XOR<AdminLogCreateInput, AdminLogUncheckedCreateInput>
+  }
+
+  /**
+   * AdminLog createMany
+   */
+  export type AdminLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdminLogs.
+     */
+    data: AdminLogCreateManyInput | AdminLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AdminLog createManyAndReturn
+   */
+  export type AdminLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many AdminLogs.
+     */
+    data: AdminLogCreateManyInput | AdminLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AdminLog update
+   */
+  export type AdminLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AdminLog.
+     */
+    data: XOR<AdminLogUpdateInput, AdminLogUncheckedUpdateInput>
+    /**
+     * Choose, which AdminLog to update.
+     */
+    where: AdminLogWhereUniqueInput
+  }
+
+  /**
+   * AdminLog updateMany
+   */
+  export type AdminLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdminLogs.
+     */
+    data: XOR<AdminLogUpdateManyMutationInput, AdminLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AdminLogs to update
+     */
+    where?: AdminLogWhereInput
+    /**
+     * Limit how many AdminLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdminLog updateManyAndReturn
+   */
+  export type AdminLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * The data used to update AdminLogs.
+     */
+    data: XOR<AdminLogUpdateManyMutationInput, AdminLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AdminLogs to update
+     */
+    where?: AdminLogWhereInput
+    /**
+     * Limit how many AdminLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AdminLog upsert
+   */
+  export type AdminLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AdminLog to update in case it exists.
+     */
+    where: AdminLogWhereUniqueInput
+    /**
+     * In case the AdminLog found by the `where` argument doesn't exist, create a new AdminLog with this data.
+     */
+    create: XOR<AdminLogCreateInput, AdminLogUncheckedCreateInput>
+    /**
+     * In case the AdminLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdminLogUpdateInput, AdminLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AdminLog delete
+   */
+  export type AdminLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+    /**
+     * Filter which AdminLog to delete.
+     */
+    where: AdminLogWhereUniqueInput
+  }
+
+  /**
+   * AdminLog deleteMany
+   */
+  export type AdminLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdminLogs to delete
+     */
+    where?: AdminLogWhereInput
+    /**
+     * Limit how many AdminLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdminLog without action
+   */
+  export type AdminLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdminLog
+     */
+    select?: AdminLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdminLog
+     */
+    omit?: AdminLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdminLogInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Notification
+   */
+
+  export type AggregateNotification = {
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  export type NotificationMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    title: string | null
+    message: string | null
+    type: string | null
+    read: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    title: string | null
+    message: string | null
+    type: string | null
+    read: boolean | null
+    createdAt: Date | null
+  }
+
+  export type NotificationCountAggregateOutputType = {
+    id: number
+    userId: number
+    title: number
+    message: number
+    type: number
+    read: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type NotificationMinAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    message?: true
+    type?: true
+    read?: true
+    createdAt?: true
+  }
+
+  export type NotificationMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    message?: true
+    type?: true
+    read?: true
+    createdAt?: true
+  }
+
+  export type NotificationCountAggregateInputType = {
+    id?: true
+    userId?: true
+    title?: true
+    message?: true
+    type?: true
+    read?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type NotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notification to aggregate.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Notifications
+    **/
+    _count?: true | NotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type GetNotificationAggregateType<T extends NotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotification[P]>
+      : GetScalarType<T[P], AggregateNotification[P]>
+  }
+
+
+
+
+  export type NotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithAggregationInput | NotificationOrderByWithAggregationInput[]
+    by: NotificationScalarFieldEnum[] | NotificationScalarFieldEnum
+    having?: NotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NotificationCountAggregateInputType | true
+    _min?: NotificationMinAggregateInputType
+    _max?: NotificationMaxAggregateInputType
+  }
+
+  export type NotificationGroupByOutputType = {
+    id: string
+    userId: string
+    title: string
+    message: string
+    type: string
+    read: boolean
+    createdAt: Date
+    _count: NotificationCountAggregateOutputType | null
+    _min: NotificationMinAggregateOutputType | null
+    _max: NotificationMaxAggregateOutputType | null
+  }
+
+  type GetNotificationGroupByPayload<T extends NotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], NotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    read?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    read?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    read?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["notification"]>
+
+  export type NotificationSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    title?: boolean
+    message?: boolean
+    type?: boolean
+    read?: boolean
+    createdAt?: boolean
+  }
+
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "message" | "type" | "read" | "createdAt", ExtArgs["result"]["notification"]>
+  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Notification"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      title: string
+      message: string
+      type: string
+      read: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["notification"]>
+    composites: {}
+  }
+
+  type NotificationGetPayload<S extends boolean | null | undefined | NotificationDefaultArgs> = $Result.GetResult<Prisma.$NotificationPayload, S>
+
+  type NotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NotificationCountAggregateInputType | true
+    }
+
+  export interface NotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Notification'], meta: { name: 'Notification' } }
+    /**
+     * Find zero or one Notification that matches the filter.
+     * @param {NotificationFindUniqueArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NotificationFindUniqueArgs>(args: SelectSubset<T, NotificationFindUniqueArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NotificationFindUniqueOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NotificationFindFirstArgs>(args?: SelectSubset<T, NotificationFindFirstArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindFirstOrThrowArgs} args - Arguments to find a Notification
+     * @example
+     * // Get one Notification
+     * const notification = await prisma.notification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notifications
+     * const notifications = await prisma.notification.findMany()
+     * 
+     * // Get first 10 Notifications
+     * const notifications = await prisma.notification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const notificationWithIdOnly = await prisma.notification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NotificationFindManyArgs>(args?: SelectSubset<T, NotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notification.
+     * @param {NotificationCreateArgs} args - Arguments to create a Notification.
+     * @example
+     * // Create one Notification
+     * const Notification = await prisma.notification.create({
+     *   data: {
+     *     // ... data to create a Notification
+     *   }
+     * })
+     * 
+     */
+    create<T extends NotificationCreateArgs>(args: SelectSubset<T, NotificationCreateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notifications.
+     * @param {NotificationCreateManyArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NotificationCreateManyArgs>(args?: SelectSubset<T, NotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Notifications and returns the data saved in the database.
+     * @param {NotificationCreateManyAndReturnArgs} args - Arguments to create many Notifications.
+     * @example
+     * // Create many Notifications
+     * const notification = await prisma.notification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Notification.
+     * @param {NotificationDeleteArgs} args - Arguments to delete one Notification.
+     * @example
+     * // Delete one Notification
+     * const Notification = await prisma.notification.delete({
+     *   where: {
+     *     // ... filter to delete one Notification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NotificationDeleteArgs>(args: SelectSubset<T, NotificationDeleteArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notification.
+     * @param {NotificationUpdateArgs} args - Arguments to update one Notification.
+     * @example
+     * // Update one Notification
+     * const notification = await prisma.notification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NotificationUpdateArgs>(args: SelectSubset<T, NotificationUpdateArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notifications.
+     * @param {NotificationDeleteManyArgs} args - Arguments to filter Notifications to delete.
+     * @example
+     * // Delete a few Notifications
+     * const { count } = await prisma.notification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NotificationDeleteManyArgs>(args?: SelectSubset<T, NotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NotificationUpdateManyArgs>(args: SelectSubset<T, NotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notifications and returns the data updated in the database.
+     * @param {NotificationUpdateManyAndReturnArgs} args - Arguments to update many Notifications.
+     * @example
+     * // Update many Notifications
+     * const notification = await prisma.notification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Notifications and only return the `id`
+     * const notificationWithIdOnly = await prisma.notification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, NotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Notification.
+     * @param {NotificationUpsertArgs} args - Arguments to update or create a Notification.
+     * @example
+     * // Update or create a Notification
+     * const notification = await prisma.notification.upsert({
+     *   create: {
+     *     // ... data to create a Notification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NotificationUpsertArgs>(args: SelectSubset<T, NotificationUpsertArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationCountArgs} args - Arguments to filter Notifications to count.
+     * @example
+     * // Count the number of Notifications
+     * const count = await prisma.notification.count({
+     *   where: {
+     *     // ... the filter for the Notifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends NotificationCountArgs>(
+      args?: Subset<T, NotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NotificationAggregateArgs>(args: Subset<T, NotificationAggregateArgs>): Prisma.PrismaPromise<GetNotificationAggregateType<T>>
+
+    /**
+     * Group by Notification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NotificationGroupByArgs['orderBy'] }
+        : { orderBy?: NotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Notification model
+   */
+  readonly fields: NotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Notification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Notification model
+   */
+  interface NotificationFieldRefs {
+    readonly id: FieldRef<"Notification", 'String'>
+    readonly userId: FieldRef<"Notification", 'String'>
+    readonly title: FieldRef<"Notification", 'String'>
+    readonly message: FieldRef<"Notification", 'String'>
+    readonly type: FieldRef<"Notification", 'String'>
+    readonly read: FieldRef<"Notification", 'Boolean'>
+    readonly createdAt: FieldRef<"Notification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Notification findUnique
+   */
+  export type NotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findUniqueOrThrow
+   */
+  export type NotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification findFirst
+   */
+  export type NotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findFirstOrThrow
+   */
+  export type NotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notification to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification findMany
+   */
+  export type NotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which Notifications to fetch.
+     */
+    where?: NotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Notifications to fetch.
+     */
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Notifications.
+     */
+    cursor?: NotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Notifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Notifications.
+     */
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Notification create
+   */
+  export type NotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Notification.
+     */
+    data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+  }
+
+  /**
+   * Notification createMany
+   */
+  export type NotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Notification createManyAndReturn
+   */
+  export type NotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Notifications.
+     */
+    data: NotificationCreateManyInput | NotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification update
+   */
+  export type NotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Notification.
+     */
+    data: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+    /**
+     * Choose, which Notification to update.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification updateMany
+   */
+  export type NotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification updateManyAndReturn
+   */
+  export type NotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update Notifications.
+     */
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which Notifications to update
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Notification upsert
+   */
+  export type NotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Notification to update in case it exists.
+     */
+    where: NotificationWhereUniqueInput
+    /**
+     * In case the Notification found by the `where` argument doesn't exist, create a new Notification with this data.
+     */
+    create: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
+    /**
+     * In case the Notification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NotificationUpdateInput, NotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * Notification delete
+   */
+  export type NotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    /**
+     * Filter which Notification to delete.
+     */
+    where: NotificationWhereUniqueInput
+  }
+
+  /**
+   * Notification deleteMany
+   */
+  export type NotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Notifications to delete
+     */
+    where?: NotificationWhereInput
+    /**
+     * Limit how many Notifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Notification without action
+   */
+  export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -59088,7 +61521,10 @@ export namespace Prisma {
     accountType: 'accountType',
     ownerId: 'ownerId',
     upgradeRequestToken: 'upgradeRequestToken',
-    upgradeRequestedAt: 'upgradeRequestedAt'
+    upgradeRequestedAt: 'upgradeRequestedAt',
+    trialUpgradedAt: 'trialUpgradedAt',
+    trialExpiresAt: 'trialExpiresAt',
+    trialExpired: 'trialExpired'
   };
 
   export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -59668,6 +62104,30 @@ export namespace Prisma {
   export type Legal_knowledge_chunksScalarFieldEnum = (typeof Legal_knowledge_chunksScalarFieldEnum)[keyof typeof Legal_knowledge_chunksScalarFieldEnum]
 
 
+  export const AdminLogScalarFieldEnum: {
+    id: 'id',
+    organizationId: 'organizationId',
+    event: 'event',
+    details: 'details',
+    createdAt: 'createdAt'
+  };
+
+  export type AdminLogScalarFieldEnum = (typeof AdminLogScalarFieldEnum)[keyof typeof AdminLogScalarFieldEnum]
+
+
+  export const NotificationScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    title: 'title',
+    message: 'message',
+    type: 'type',
+    read: 'read',
+    createdAt: 'createdAt'
+  };
+
+  export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -60077,6 +62537,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionListRelationFilter
     legal_knowledge?: Legal_knowledgeListRelationFilter
     documentPermissions?: DocumentPermissionListRelationFilter
+    notifications?: NotificationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -60117,6 +62578,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionOrderByRelationAggregateInput
     legal_knowledge?: legal_knowledgeOrderByRelationAggregateInput
     documentPermissions?: DocumentPermissionOrderByRelationAggregateInput
+    notifications?: NotificationOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -60160,6 +62622,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionListRelationFilter
     legal_knowledge?: Legal_knowledgeListRelationFilter
     documentPermissions?: DocumentPermissionListRelationFilter
+    notifications?: NotificationListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -60228,6 +62691,9 @@ export namespace Prisma {
     ownerId?: StringNullableFilter<"Organization"> | string | null
     upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
     upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialUpgradedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialExpired?: BoolFilter<"Organization"> | boolean
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
@@ -60241,6 +62707,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionListRelationFilter
     onboardingSteps?: OnboardingAnalyticsListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
+    adminLogs?: AdminLogListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -60264,6 +62731,9 @@ export namespace Prisma {
     ownerId?: SortOrderInput | SortOrder
     upgradeRequestToken?: SortOrderInput | SortOrder
     upgradeRequestedAt?: SortOrderInput | SortOrder
+    trialUpgradedAt?: SortOrderInput | SortOrder
+    trialExpiresAt?: SortOrderInput | SortOrder
+    trialExpired?: SortOrder
     aiAssociates?: AIAssociateOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
     Folder?: FolderOrderByRelationAggregateInput
@@ -60277,6 +62747,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionOrderByRelationAggregateInput
     onboardingSteps?: OnboardingAnalyticsOrderByRelationAggregateInput
     subscription?: SubscriptionOrderByWithRelationInput
+    adminLogs?: AdminLogOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -60303,6 +62774,9 @@ export namespace Prisma {
     ownerId?: StringNullableFilter<"Organization"> | string | null
     upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
     upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialUpgradedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialExpired?: BoolFilter<"Organization"> | boolean
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
@@ -60316,6 +62790,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionListRelationFilter
     onboardingSteps?: OnboardingAnalyticsListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
+    adminLogs?: AdminLogListRelationFilter
   }, "id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -60339,6 +62814,9 @@ export namespace Prisma {
     ownerId?: SortOrderInput | SortOrder
     upgradeRequestToken?: SortOrderInput | SortOrder
     upgradeRequestedAt?: SortOrderInput | SortOrder
+    trialUpgradedAt?: SortOrderInput | SortOrder
+    trialExpiresAt?: SortOrderInput | SortOrder
+    trialExpired?: SortOrder
     _count?: OrganizationCountOrderByAggregateInput
     _avg?: OrganizationAvgOrderByAggregateInput
     _max?: OrganizationMaxOrderByAggregateInput
@@ -60370,6 +62848,9 @@ export namespace Prisma {
     ownerId?: StringNullableWithAggregatesFilter<"Organization"> | string | null
     upgradeRequestToken?: StringNullableWithAggregatesFilter<"Organization"> | string | null
     upgradeRequestedAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    trialUpgradedAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    trialExpiresAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    trialExpired?: BoolWithAggregatesFilter<"Organization"> | boolean
   }
 
   export type ContentWhereInput = {
@@ -63455,6 +65936,126 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"legal_knowledge_chunks"> | Date | string
   }
 
+  export type AdminLogWhereInput = {
+    AND?: AdminLogWhereInput | AdminLogWhereInput[]
+    OR?: AdminLogWhereInput[]
+    NOT?: AdminLogWhereInput | AdminLogWhereInput[]
+    id?: StringFilter<"AdminLog"> | string
+    organizationId?: StringFilter<"AdminLog"> | string
+    event?: StringFilter<"AdminLog"> | string
+    details?: JsonNullableFilter<"AdminLog">
+    createdAt?: DateTimeFilter<"AdminLog"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type AdminLogOrderByWithRelationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    event?: SortOrder
+    details?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type AdminLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AdminLogWhereInput | AdminLogWhereInput[]
+    OR?: AdminLogWhereInput[]
+    NOT?: AdminLogWhereInput | AdminLogWhereInput[]
+    organizationId?: StringFilter<"AdminLog"> | string
+    event?: StringFilter<"AdminLog"> | string
+    details?: JsonNullableFilter<"AdminLog">
+    createdAt?: DateTimeFilter<"AdminLog"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id">
+
+  export type AdminLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    event?: SortOrder
+    details?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: AdminLogCountOrderByAggregateInput
+    _max?: AdminLogMaxOrderByAggregateInput
+    _min?: AdminLogMinOrderByAggregateInput
+  }
+
+  export type AdminLogScalarWhereWithAggregatesInput = {
+    AND?: AdminLogScalarWhereWithAggregatesInput | AdminLogScalarWhereWithAggregatesInput[]
+    OR?: AdminLogScalarWhereWithAggregatesInput[]
+    NOT?: AdminLogScalarWhereWithAggregatesInput | AdminLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AdminLog"> | string
+    organizationId?: StringWithAggregatesFilter<"AdminLog"> | string
+    event?: StringWithAggregatesFilter<"AdminLog"> | string
+    details?: JsonNullableWithAggregatesFilter<"AdminLog">
+    createdAt?: DateTimeWithAggregatesFilter<"AdminLog"> | Date | string
+  }
+
+  export type NotificationWhereInput = {
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    read?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type NotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type NotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NotificationWhereInput | NotificationWhereInput[]
+    OR?: NotificationWhereInput[]
+    NOT?: NotificationWhereInput | NotificationWhereInput[]
+    userId?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    read?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type NotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+    _count?: NotificationCountOrderByAggregateInput
+    _max?: NotificationMaxOrderByAggregateInput
+    _min?: NotificationMinOrderByAggregateInput
+  }
+
+  export type NotificationScalarWhereWithAggregatesInput = {
+    AND?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    OR?: NotificationScalarWhereWithAggregatesInput[]
+    NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Notification"> | string
+    userId?: StringWithAggregatesFilter<"Notification"> | string
+    title?: StringWithAggregatesFilter<"Notification"> | string
+    message?: StringWithAggregatesFilter<"Notification"> | string
+    type?: StringWithAggregatesFilter<"Notification"> | string
+    read?: BoolWithAggregatesFilter<"Notification"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -63685,6 +66286,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -63723,6 +66325,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -63761,6 +66364,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -63799,6 +66403,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -63873,6 +66478,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -63886,6 +66494,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -63909,6 +66518,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -63921,6 +66533,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -63943,6 +66556,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -63956,6 +66572,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -63979,6 +66596,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -63991,6 +66611,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -64014,6 +66635,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
   }
 
   export type OrganizationUpdateManyMutationInput = {
@@ -64036,6 +66660,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type OrganizationUncheckedUpdateManyInput = {
@@ -64059,6 +66686,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ContentCreateInput = {
@@ -67302,6 +69932,130 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AdminLogCreateInput = {
+    id?: string
+    event: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutAdminLogsInput
+  }
+
+  export type AdminLogUncheckedCreateInput = {
+    id?: string
+    organizationId: string
+    event: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutAdminLogsNestedInput
+  }
+
+  export type AdminLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminLogCreateManyInput = {
+    id?: string
+    organizationId: string
+    event: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateInput = {
+    id?: string
+    userId: string
+    title: string
+    message: string
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationCreateManyInput = {
+    id?: string
+    userId: string
+    title: string
+    message: string
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -67678,6 +70432,12 @@ export namespace Prisma {
     none?: DocumentPermissionWhereInput
   }
 
+  export type NotificationListRelationFilter = {
+    every?: NotificationWhereInput
+    some?: NotificationWhereInput
+    none?: NotificationWhereInput
+  }
+
   export type AIAssociateOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -67755,6 +70515,10 @@ export namespace Prisma {
   }
 
   export type DocumentPermissionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NotificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -67924,6 +70688,12 @@ export namespace Prisma {
     isNot?: SubscriptionWhereInput | null
   }
 
+  export type AdminLogListRelationFilter = {
+    every?: AdminLogWhereInput
+    some?: AdminLogWhereInput
+    none?: AdminLogWhereInput
+  }
+
   export type ProjectOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -67937,6 +70707,10 @@ export namespace Prisma {
   }
 
   export type OnboardingAnalyticsOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AdminLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -67961,6 +70735,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     upgradeRequestToken?: SortOrder
     upgradeRequestedAt?: SortOrder
+    trialUpgradedAt?: SortOrder
+    trialExpiresAt?: SortOrder
+    trialExpired?: SortOrder
   }
 
   export type OrganizationAvgOrderByAggregateInput = {
@@ -67985,6 +70762,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     upgradeRequestToken?: SortOrder
     upgradeRequestedAt?: SortOrder
+    trialUpgradedAt?: SortOrder
+    trialExpiresAt?: SortOrder
+    trialExpired?: SortOrder
   }
 
   export type OrganizationMinOrderByAggregateInput = {
@@ -68005,6 +70785,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     upgradeRequestToken?: SortOrder
     upgradeRequestedAt?: SortOrder
+    trialUpgradedAt?: SortOrder
+    trialExpiresAt?: SortOrder
+    trialExpired?: SortOrder
   }
 
   export type OrganizationSumOrderByAggregateInput = {
@@ -69853,6 +72636,58 @@ export namespace Prisma {
     endOffset?: SortOrder
   }
 
+  export type AdminLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    event?: SortOrder
+    details?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdminLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    event?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdminLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    organizationId?: SortOrder
+    event?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type NotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    type?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -70053,6 +72888,13 @@ export namespace Prisma {
     connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
   }
 
+  export type NotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -70191,6 +73033,13 @@ export namespace Prisma {
     connectOrCreate?: DocumentPermissionCreateOrConnectWithoutUserInput | DocumentPermissionCreateOrConnectWithoutUserInput[]
     createMany?: DocumentPermissionCreateManyUserInputEnvelope
     connect?: DocumentPermissionWhereUniqueInput | DocumentPermissionWhereUniqueInput[]
+  }
+
+  export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -70499,6 +73348,20 @@ export namespace Prisma {
     deleteMany?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
   }
 
+  export type NotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -70779,6 +73642,20 @@ export namespace Prisma {
     deleteMany?: DocumentPermissionScalarWhereInput | DocumentPermissionScalarWhereInput[]
   }
 
+  export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutUserInput | NotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: NotificationCreateManyUserInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type OrganizationCreatepracticeAreasInput = {
     set: string[]
   }
@@ -70876,6 +73753,13 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput
   }
 
+  export type AdminLogCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<AdminLogCreateWithoutOrganizationInput, AdminLogUncheckedCreateWithoutOrganizationInput> | AdminLogCreateWithoutOrganizationInput[] | AdminLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: AdminLogCreateOrConnectWithoutOrganizationInput | AdminLogCreateOrConnectWithoutOrganizationInput[]
+    createMany?: AdminLogCreateManyOrganizationInputEnvelope
+    connect?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<AIAssociateCreateWithoutOrganizationInput, AIAssociateUncheckedCreateWithoutOrganizationInput> | AIAssociateCreateWithoutOrganizationInput[] | AIAssociateUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutOrganizationInput | AIAssociateCreateOrConnectWithoutOrganizationInput[]
@@ -70957,6 +73841,13 @@ export namespace Prisma {
     create?: XOR<SubscriptionCreateWithoutOrganizationInput, SubscriptionUncheckedCreateWithoutOrganizationInput>
     connectOrCreate?: SubscriptionCreateOrConnectWithoutOrganizationInput
     connect?: SubscriptionWhereUniqueInput
+  }
+
+  export type AdminLogUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<AdminLogCreateWithoutOrganizationInput, AdminLogUncheckedCreateWithoutOrganizationInput> | AdminLogCreateWithoutOrganizationInput[] | AdminLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: AdminLogCreateOrConnectWithoutOrganizationInput | AdminLogCreateOrConnectWithoutOrganizationInput[]
+    createMany?: AdminLogCreateManyOrganizationInputEnvelope
+    connect?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
   }
 
   export type OrganizationUpdatepracticeAreasInput = {
@@ -71151,6 +74042,20 @@ export namespace Prisma {
     update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutOrganizationInput, SubscriptionUpdateWithoutOrganizationInput>, SubscriptionUncheckedUpdateWithoutOrganizationInput>
   }
 
+  export type AdminLogUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<AdminLogCreateWithoutOrganizationInput, AdminLogUncheckedCreateWithoutOrganizationInput> | AdminLogCreateWithoutOrganizationInput[] | AdminLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: AdminLogCreateOrConnectWithoutOrganizationInput | AdminLogCreateOrConnectWithoutOrganizationInput[]
+    upsert?: AdminLogUpsertWithWhereUniqueWithoutOrganizationInput | AdminLogUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: AdminLogCreateManyOrganizationInputEnvelope
+    set?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    disconnect?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    delete?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    connect?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    update?: AdminLogUpdateWithWhereUniqueWithoutOrganizationInput | AdminLogUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: AdminLogUpdateManyWithWhereWithoutOrganizationInput | AdminLogUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: AdminLogScalarWhereInput | AdminLogScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<AIAssociateCreateWithoutOrganizationInput, AIAssociateUncheckedCreateWithoutOrganizationInput> | AIAssociateCreateWithoutOrganizationInput[] | AIAssociateUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutOrganizationInput | AIAssociateCreateOrConnectWithoutOrganizationInput[]
@@ -71313,6 +74218,20 @@ export namespace Prisma {
     delete?: SubscriptionWhereInput | boolean
     connect?: SubscriptionWhereUniqueInput
     update?: XOR<XOR<SubscriptionUpdateToOneWithWhereWithoutOrganizationInput, SubscriptionUpdateWithoutOrganizationInput>, SubscriptionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<AdminLogCreateWithoutOrganizationInput, AdminLogUncheckedCreateWithoutOrganizationInput> | AdminLogCreateWithoutOrganizationInput[] | AdminLogUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: AdminLogCreateOrConnectWithoutOrganizationInput | AdminLogCreateOrConnectWithoutOrganizationInput[]
+    upsert?: AdminLogUpsertWithWhereUniqueWithoutOrganizationInput | AdminLogUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: AdminLogCreateManyOrganizationInputEnvelope
+    set?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    disconnect?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    delete?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    connect?: AdminLogWhereUniqueInput | AdminLogWhereUniqueInput[]
+    update?: AdminLogUpdateWithWhereUniqueWithoutOrganizationInput | AdminLogUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: AdminLogUpdateManyWithWhereWithoutOrganizationInput | AdminLogUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: AdminLogScalarWhereInput | AdminLogScalarWhereInput[]
   }
 
   export type ContentCreatekeywordsInput = {
@@ -73884,6 +76803,34 @@ export namespace Prisma {
     update?: XOR<XOR<legal_knowledgeUpdateToOneWithWhereWithoutLegal_knowledge_chunksInput, legal_knowledgeUpdateWithoutLegal_knowledge_chunksInput>, legal_knowledgeUncheckedUpdateWithoutLegal_knowledge_chunksInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutAdminLogsInput = {
+    create?: XOR<OrganizationCreateWithoutAdminLogsInput, OrganizationUncheckedCreateWithoutAdminLogsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutAdminLogsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutAdminLogsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutAdminLogsInput, OrganizationUncheckedCreateWithoutAdminLogsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutAdminLogsInput
+    upsert?: OrganizationUpsertWithoutAdminLogsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutAdminLogsInput, OrganizationUpdateWithoutAdminLogsInput>, OrganizationUncheckedUpdateWithoutAdminLogsInput>
+  }
+
+  export type UserCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutNotificationsInput
+    upsert?: UserUpsertWithoutNotificationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -74216,6 +77163,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -74253,6 +77201,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -74306,6 +77255,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -74343,6 +77293,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -74380,6 +77331,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -74417,6 +77369,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -74470,6 +77423,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -74507,6 +77461,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AIAssociateCreateWithoutCreatedByInput = {
@@ -74855,6 +77810,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -74867,6 +77825,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOwnerInput = {
@@ -74889,6 +77848,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -74901,6 +77863,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOwnerInput = {
@@ -75101,6 +78064,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -75113,6 +78079,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutActiveUsersInput = {
@@ -75136,6 +78103,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -75147,6 +78117,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutActiveUsersInput = {
@@ -75174,6 +78145,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -75186,6 +78160,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsersInput = {
@@ -75209,6 +78184,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -75220,6 +78198,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsersInput = {
@@ -75358,6 +78337,34 @@ export namespace Prisma {
 
   export type DocumentPermissionCreateManyUserInputEnvelope = {
     data: DocumentPermissionCreateManyUserInput | DocumentPermissionCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationCreateWithoutUserInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationUncheckedCreateWithoutUserInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateOrConnectWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationCreateManyUserInputEnvelope = {
+    data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -75684,6 +78691,9 @@ export namespace Prisma {
     ownerId?: StringNullableFilter<"Organization"> | string | null
     upgradeRequestToken?: StringNullableFilter<"Organization"> | string | null
     upgradeRequestedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialUpgradedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    trialExpired?: BoolFilter<"Organization"> | boolean
   }
 
   export type ProjectDocumentUpsertWithWhereUniqueWithoutUserInput = {
@@ -75888,6 +78898,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -75900,6 +78913,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutActiveUsersInput = {
@@ -75923,6 +78937,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -75934,6 +78951,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUpsertWithoutUsersInput = {
@@ -75967,6 +78985,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -75979,6 +79000,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsersInput = {
@@ -76002,6 +79024,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -76013,6 +79038,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserOrganizationUpsertWithWhereUniqueWithoutUserInput = {
@@ -76138,6 +79164,35 @@ export namespace Prisma {
     documentId?: StringFilter<"DocumentPermission"> | string
     userId?: StringFilter<"DocumentPermission"> | string
     createdAt?: DateTimeFilter<"DocumentPermission"> | Date | string
+  }
+
+  export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutUserInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type NotificationScalarWhereInput = {
+    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    OR?: NotificationScalarWhereInput[]
+    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+    id?: StringFilter<"Notification"> | string
+    userId?: StringFilter<"Notification"> | string
+    title?: StringFilter<"Notification"> | string
+    message?: StringFilter<"Notification"> | string
+    type?: StringFilter<"Notification"> | string
+    read?: BoolFilter<"Notification"> | boolean
+    createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
   export type AIAssociateCreateWithoutOrganizationInput = {
@@ -76353,6 +79408,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedOrganizationsInput = {
@@ -76390,6 +79446,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedOrganizationsInput = {
@@ -76482,6 +79539,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActiveOrganizationInput = {
@@ -76519,6 +79577,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActiveOrganizationInput = {
@@ -76566,6 +79625,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -76603,6 +79663,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -76800,6 +79861,30 @@ export namespace Prisma {
     create: XOR<SubscriptionCreateWithoutOrganizationInput, SubscriptionUncheckedCreateWithoutOrganizationInput>
   }
 
+  export type AdminLogCreateWithoutOrganizationInput = {
+    id?: string
+    event: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminLogUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    event: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AdminLogCreateOrConnectWithoutOrganizationInput = {
+    where: AdminLogWhereUniqueInput
+    create: XOR<AdminLogCreateWithoutOrganizationInput, AdminLogUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type AdminLogCreateManyOrganizationInputEnvelope = {
+    data: AdminLogCreateManyOrganizationInput | AdminLogCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AIAssociateUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: AIAssociateWhereUniqueInput
     update: XOR<AIAssociateUpdateWithoutOrganizationInput, AIAssociateUncheckedUpdateWithoutOrganizationInput>
@@ -76910,6 +79995,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedOrganizationsInput = {
@@ -76947,6 +80033,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -77182,6 +80269,33 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutSubscriptionNestedInput
   }
 
+  export type AdminLogUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: AdminLogWhereUniqueInput
+    update: XOR<AdminLogUpdateWithoutOrganizationInput, AdminLogUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<AdminLogCreateWithoutOrganizationInput, AdminLogUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type AdminLogUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: AdminLogWhereUniqueInput
+    data: XOR<AdminLogUpdateWithoutOrganizationInput, AdminLogUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type AdminLogUpdateManyWithWhereWithoutOrganizationInput = {
+    where: AdminLogScalarWhereInput
+    data: XOR<AdminLogUpdateManyMutationInput, AdminLogUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type AdminLogScalarWhereInput = {
+    AND?: AdminLogScalarWhereInput | AdminLogScalarWhereInput[]
+    OR?: AdminLogScalarWhereInput[]
+    NOT?: AdminLogScalarWhereInput | AdminLogScalarWhereInput[]
+    id?: StringFilter<"AdminLog"> | string
+    organizationId?: StringFilter<"AdminLog"> | string
+    event?: StringFilter<"AdminLog"> | string
+    details?: JsonNullableFilter<"AdminLog">
+    createdAt?: DateTimeFilter<"AdminLog"> | Date | string
+  }
+
   export type OrganizationCreateWithoutContentInput = {
     id?: string
     name: string
@@ -77202,6 +80316,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -77214,6 +80331,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutContentInput = {
@@ -77237,6 +80355,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -77248,6 +80369,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutContentInput = {
@@ -77312,6 +80434,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -77324,6 +80449,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutContentInput = {
@@ -77347,6 +80473,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -77358,6 +80487,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ContentSectionUpsertWithWhereUniqueWithoutContentInput = {
@@ -77546,6 +80676,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -77558,6 +80691,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSubscriptionInput = {
@@ -77581,6 +80715,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -77592,6 +80729,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSubscriptionInput = {
@@ -77662,6 +80800,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -77674,6 +80815,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSubscriptionInput = {
@@ -77697,6 +80839,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -77708,6 +80853,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type SubscriptionCreateWithoutPaymentsInput = {
@@ -77818,6 +80964,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -77830,6 +80979,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutOnboardingStepsInput = {
@@ -77853,6 +81003,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -77864,6 +81017,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutOnboardingStepsInput = {
@@ -77902,6 +81056,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -77914,6 +81071,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOnboardingStepsInput = {
@@ -77937,6 +81095,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -77948,6 +81109,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutMembersInput = {
@@ -77970,6 +81132,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -77982,6 +81147,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -78005,6 +81171,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -78016,6 +81185,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -78058,6 +81228,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
@@ -78095,6 +81266,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
@@ -78133,6 +81305,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -78145,6 +81320,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -78168,6 +81344,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -78179,6 +81358,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutOrganizationMembershipsInput = {
@@ -78227,6 +81407,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
@@ -78264,6 +81445,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CanvasDocumentCreateWithoutProjectInput = {
@@ -78505,6 +81687,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -78517,6 +81702,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutProjectsInput = {
@@ -78540,6 +81726,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -78551,6 +81740,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutProjectsInput = {
@@ -78846,6 +82036,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -78858,6 +82051,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutProjectsInput = {
@@ -78881,6 +82075,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -78892,6 +82089,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectAssociateUpsertWithWhereUniqueWithoutProjectInput = {
@@ -79047,6 +82245,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembersInput = {
@@ -79084,6 +82283,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembersInput = {
@@ -79188,6 +82388,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembersInput = {
@@ -79225,6 +82426,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationDocumentCreateWithoutDocumentInput = {
@@ -79284,6 +82486,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentsInput = {
@@ -79321,6 +82524,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -79379,6 +82583,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -79391,6 +82598,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDocumentsInput = {
@@ -79414,6 +82622,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -79425,6 +82636,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDocumentsInput = {
@@ -79682,6 +82894,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentsInput = {
@@ -79719,6 +82932,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FolderUpsertWithoutDocumentsInput = {
@@ -79789,6 +83003,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -79801,6 +83018,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDocumentsInput = {
@@ -79824,6 +83042,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -79835,6 +83056,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectUpsertWithoutDocumentsInput = {
@@ -80126,6 +83348,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderInput = {
@@ -80163,6 +83386,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderInput = {
@@ -80190,6 +83414,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -80202,6 +83429,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFolderInput = {
@@ -80225,6 +83453,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -80236,6 +83467,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFolderInput = {
@@ -80394,6 +83626,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderInput = {
@@ -80431,6 +83664,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutFolderInput = {
@@ -80464,6 +83698,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -80476,6 +83713,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFolderInput = {
@@ -80499,6 +83737,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -80510,6 +83751,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FolderUpsertWithoutChildrenInput = {
@@ -80647,6 +83889,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderPermissionsInput = {
@@ -80684,6 +83927,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderPermissionsInput = {
@@ -80774,6 +84018,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderPermissionsInput = {
@@ -80811,6 +84056,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentCreateWithoutPermissionsInput = {
@@ -80905,6 +84151,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentPermissionsInput = {
@@ -80942,6 +84189,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentPermissionsInput = {
@@ -81058,6 +84306,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentPermissionsInput = {
@@ -81095,6 +84344,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProjectDocumentsInput = {
@@ -81132,6 +84382,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectDocumentsInput = {
@@ -81169,6 +84420,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectDocumentsInput = {
@@ -81324,6 +84576,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectDocumentsInput = {
@@ -81361,6 +84614,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithoutProjectReferencesInput = {
@@ -81512,6 +84766,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationDocumentsInput = {
@@ -81549,6 +84804,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationDocumentsInput = {
@@ -81694,6 +84950,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationDocumentsInput = {
@@ -81731,6 +84988,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutDocumentReferencesInput = {
@@ -82565,6 +85823,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -82602,6 +85861,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -82722,6 +85982,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -82759,6 +86020,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageReferenceUpsertWithWhereUniqueWithoutMessageInput = {
@@ -83180,6 +86442,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -83217,6 +86480,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -83244,6 +86508,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -83256,6 +86523,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -83279,6 +86547,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -83290,6 +86561,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -83388,6 +86660,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -83425,6 +86698,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutInvitationsInput = {
@@ -83458,6 +86732,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -83470,6 +86747,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -83493,6 +86771,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -83504,6 +86785,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ProjectUpsertWithoutInvitationsInput = {
@@ -83703,6 +86985,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -83740,6 +87023,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -83834,6 +87118,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -83871,6 +87156,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedWorkspaceCreateWithoutSharedMessageInput = {
@@ -83945,6 +87231,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedMessageInput = {
@@ -83982,6 +87269,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedMessageInput = {
@@ -84104,6 +87392,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedMessageInput = {
@@ -84141,6 +87430,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedMessageReferenceUpsertWithWhereUniqueWithoutSharedMessageInput = {
@@ -84441,6 +87731,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceInput = {
@@ -84478,6 +87769,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceInput = {
@@ -84659,6 +87951,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceInput = {
@@ -84696,6 +87989,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithoutSharedWorkspaceInput = {
@@ -84837,6 +88131,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceAccessInput = {
@@ -84874,6 +88169,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceAccessInput = {
@@ -84970,6 +88266,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceAccessInput = {
@@ -85007,6 +88304,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedAIAssociatesInput = {
@@ -85044,6 +88342,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedAIAssociatesInput = {
@@ -85081,6 +88380,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedAIAssociatesInput = {
@@ -85108,6 +88408,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -85120,6 +88423,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAiAssociatesInput = {
@@ -85143,6 +88447,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -85154,6 +88461,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAiAssociatesInput = {
@@ -85309,6 +88617,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedAIAssociatesInput = {
@@ -85346,6 +88655,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutAiAssociatesInput = {
@@ -85379,6 +88689,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -85391,6 +88704,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAiAssociatesInput = {
@@ -85414,6 +88728,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -85425,6 +88742,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type AssociateStepUpsertWithWhereUniqueWithoutAssociateInput = {
@@ -86000,6 +89318,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -86012,6 +89333,7 @@ export namespace Prisma {
     content?: ContentCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutDigestSubscriptionsInput = {
@@ -86035,6 +89357,9 @@ export namespace Prisma {
     ownerId?: string | null
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -86046,6 +89371,7 @@ export namespace Prisma {
     content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
     onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    adminLogs?: AdminLogUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutDigestSubscriptionsInput = {
@@ -86088,6 +89414,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDigestSubscriptionsInput = {
@@ -86125,6 +89452,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDigestSubscriptionsInput = {
@@ -86191,6 +89519,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -86203,6 +89534,7 @@ export namespace Prisma {
     content?: ContentUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutDigestSubscriptionsInput = {
@@ -86226,6 +89558,9 @@ export namespace Prisma {
     ownerId?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -86237,6 +89572,7 @@ export namespace Prisma {
     content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutDigestSubscriptionsInput = {
@@ -86285,6 +89621,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDigestSubscriptionsInput = {
@@ -86322,6 +89659,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DigestSubscriptionCreateWithoutHistoryInput = {
@@ -86427,6 +89765,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLegal_knowledgeInput = {
@@ -86464,6 +89803,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLegal_knowledgeInput = {
@@ -86547,6 +89887,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLegal_knowledgeInput = {
@@ -86584,6 +89925,7 @@ export namespace Prisma {
     organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type legal_knowledge_chunksUpsertWithWhereUniqueWithoutLegal_knowledgeInput = {
@@ -86716,6 +90058,342 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type OrganizationCreateWithoutAdminLogsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
+    aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
+    documents?: DocumentCreateNestedManyWithoutOrganizationInput
+    Folder?: FolderCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    owner?: UserCreateNestedOneWithoutOwnedOrganizationsInput
+    projects?: ProjectCreateNestedManyWithoutOrganizationInput
+    activeUsers?: UserCreateNestedManyWithoutActiveOrganizationInput
+    users?: UserCreateNestedManyWithoutOrganizationInput
+    members?: UserOrganizationCreateNestedManyWithoutOrganizationInput
+    content?: ContentCreateNestedManyWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutOrganizationInput
+    onboardingSteps?: OnboardingAnalyticsCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutAdminLogsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contactEmail?: string
+    contactPhone?: string
+    currentWebsite?: string
+    firmSize?: string
+    firmStory?: string
+    linkedinUrl?: string
+    onboardingCompleted?: boolean
+    practiceAreas?: OrganizationCreatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: string
+    serviceAreas?: OrganizationCreateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: number
+    accountType?: string
+    ownerId?: string | null
+    upgradeRequestToken?: string | null
+    upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
+    aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+    activeUsers?: UserUncheckedCreateNestedManyWithoutActiveOrganizationInput
+    users?: UserUncheckedCreateNestedManyWithoutOrganizationInput
+    members?: UserOrganizationUncheckedCreateNestedManyWithoutOrganizationInput
+    content?: ContentUncheckedCreateNestedManyWithoutOrganizationInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutOrganizationInput
+    onboardingSteps?: OnboardingAnalyticsUncheckedCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutAdminLogsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutAdminLogsInput, OrganizationUncheckedCreateWithoutAdminLogsInput>
+  }
+
+  export type OrganizationUpsertWithoutAdminLogsInput = {
+    update: XOR<OrganizationUpdateWithoutAdminLogsInput, OrganizationUncheckedUpdateWithoutAdminLogsInput>
+    create: XOR<OrganizationCreateWithoutAdminLogsInput, OrganizationUncheckedCreateWithoutAdminLogsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutAdminLogsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutAdminLogsInput, OrganizationUncheckedUpdateWithoutAdminLogsInput>
+  }
+
+  export type OrganizationUpdateWithoutAdminLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
+    documents?: DocumentUpdateManyWithoutOrganizationNestedInput
+    Folder?: FolderUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    owner?: UserUpdateOneWithoutOwnedOrganizationsNestedInput
+    projects?: ProjectUpdateManyWithoutOrganizationNestedInput
+    activeUsers?: UserUpdateManyWithoutActiveOrganizationNestedInput
+    users?: UserUpdateManyWithoutOrganizationNestedInput
+    members?: UserOrganizationUpdateManyWithoutOrganizationNestedInput
+    content?: ContentUpdateManyWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
+    onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutAdminLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contactEmail?: StringFieldUpdateOperationsInput | string
+    contactPhone?: StringFieldUpdateOperationsInput | string
+    currentWebsite?: StringFieldUpdateOperationsInput | string
+    firmSize?: StringFieldUpdateOperationsInput | string
+    firmStory?: StringFieldUpdateOperationsInput | string
+    linkedinUrl?: StringFieldUpdateOperationsInput | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    practiceAreas?: OrganizationUpdatepracticeAreasInput | string[]
+    primaryLocation?: NullableJsonNullValueInput | InputJsonValue
+    profileStatus?: StringFieldUpdateOperationsInput | string
+    serviceAreas?: OrganizationUpdateserviceAreasInput | InputJsonValue[]
+    yearsInPractice?: IntFieldUpdateOperationsInput | number
+    accountType?: StringFieldUpdateOperationsInput | string
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
+    upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+    activeUsers?: UserUncheckedUpdateManyWithoutActiveOrganizationNestedInput
+    users?: UserUncheckedUpdateManyWithoutOrganizationNestedInput
+    members?: UserOrganizationUncheckedUpdateManyWithoutOrganizationNestedInput
+    content?: ContentUncheckedUpdateManyWithoutOrganizationNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
+    onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+  }
+
+  export type UserCreateWithoutNotificationsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutNotificationsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutNotificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type UserUpsertWithoutNotificationsInput = {
+    update: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<UserCreateWithoutNotificationsInput, UserUncheckedCreateWithoutNotificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutNotificationsInput, UserUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type UserUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type AIAssociateCreateManyCreatedByInput = {
     id?: string
     name: string
@@ -86839,6 +90517,9 @@ export namespace Prisma {
     accountType?: string
     upgradeRequestToken?: string | null
     upgradeRequestedAt?: Date | string | null
+    trialUpgradedAt?: Date | string | null
+    trialExpiresAt?: Date | string | null
+    trialExpired?: boolean
   }
 
   export type ProjectDocumentCreateManyUserInput = {
@@ -86934,6 +90615,15 @@ export namespace Prisma {
   export type DocumentPermissionCreateManyUserInput = {
     id?: string
     documentId: string
+    createdAt?: Date | string
+  }
+
+  export type NotificationCreateManyUserInput = {
+    id?: string
+    title: string
+    message: string
+    type?: string
+    read?: boolean
     createdAt?: Date | string
   }
 
@@ -87296,6 +90986,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -87308,6 +91001,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutOwnerInput = {
@@ -87330,6 +91024,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -87342,6 +91039,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutOrganizationNestedInput
     onboardingSteps?: OnboardingAnalyticsUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    adminLogs?: AdminLogUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateManyWithoutOwnerInput = {
@@ -87364,6 +91062,9 @@ export namespace Prisma {
     accountType?: StringFieldUpdateOperationsInput | string
     upgradeRequestToken?: NullableStringFieldUpdateOperationsInput | string | null
     upgradeRequestedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    trialExpired?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ProjectDocumentUpdateWithoutUserInput = {
@@ -87664,6 +91365,33 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type NotificationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyOrganizationInput = {
     id?: string
     name: string
@@ -87810,6 +91538,13 @@ export namespace Prisma {
     stepData?: NullableJsonNullValueInput | InputJsonValue
     timeSpent?: number | null
     completedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type AdminLogCreateManyOrganizationInput = {
+    id?: string
+    event: string
+    details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
   }
 
@@ -88091,6 +91826,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActiveOrganizationInput = {
@@ -88128,6 +91864,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutActiveOrganizationInput = {
@@ -88182,6 +91919,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -88219,6 +91957,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -88389,6 +92128,27 @@ export namespace Prisma {
     stepData?: NullableJsonNullValueInput | InputJsonValue
     timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
     completedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminLogUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminLogUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdminLogUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

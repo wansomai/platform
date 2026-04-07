@@ -34,10 +34,20 @@ export const POST = withErrorHandler(
       );
     }
 
-    // Get user and primary organization
+    // Get user and primary organization (including trial fields)
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { organization: true },
+      include: {
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            ownerId: true,
+            trialExpiresAt: true,
+            trialExpired: true,
+          },
+        },
+      },
     });
 
     if (!user?.organization) {
@@ -72,6 +82,16 @@ export const POST = withErrorHandler(
 
     const reference = `WAN-${user.organization.id.slice(0, 8)}-${Date.now()}`;
 
+    // If the user is currently on an active manual trial, defer the billing
+    // start date to the day the trial expires so they are not charged twice.
+    const now = new Date();
+    const trialExpiresAt = user.organization.trialExpiresAt;
+    const isActiveTrial =
+      !user.organization.trialExpired &&
+      trialExpiresAt != null &&
+      trialExpiresAt > now;
+    const startDate = isActiveTrial ? trialExpiresAt.toISOString() : undefined;
+
     const paystackResponse = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
       method: 'POST',
       headers: {
@@ -85,6 +105,7 @@ export const POST = withErrorHandler(
         // The plan amount overrides this for actual billing — 100 is the safe minimum (1 unit of currency).
         amount: 100,
         reference,
+        ...(startDate ? { start_date: startDate } : {}),
         callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback`,
         metadata: {
           userId: user.id,

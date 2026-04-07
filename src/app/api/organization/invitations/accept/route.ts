@@ -96,6 +96,16 @@ export const POST = withErrorHandler(withAuth(async (request: NextRequest, userI
     role: invitation.role,
   }).catch((err) => console.error('Failed to send acceptance email:', err));
 
+  // In-app notification for the inviter
+  prisma.notification.create({
+    data: {
+      userId: invitation.invitedBy.id,
+      title: 'Invitation accepted',
+      message: `${user.fullName || user.email} has joined ${invitation.organization.name} as ${invitation.role}.`,
+      type: 'success',
+    },
+  }).catch((err) => console.error('Failed to create invitation accepted notification:', err));
+
   // Seat billing for Teams plan organizations (completely non-blocking)
   billedSeatCharge({
     organizationId: invitation.organizationId,
