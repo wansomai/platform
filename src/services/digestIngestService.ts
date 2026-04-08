@@ -821,7 +821,7 @@ async function classifyAndSummarise(
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         const response = await genAI.models.generateContent({
-          model:    'gemini-2.0-flash',
+          model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
           contents: prompt,
           config:   { temperature: 0 },
         });

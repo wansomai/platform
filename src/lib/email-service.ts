@@ -21,25 +21,20 @@ interface EmailOptions {
  * Creates a nodemailer transporter using environment variables
  */
 function createTransporter() {
-  // Get email credentials from environment variables
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASSWORD;
   const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
   const port = parseInt(process.env.EMAIL_PORT || '587', 10);
-  
+
   if (!user || !pass) {
-    // Email credentials not found in environment variables
+    console.error('[email-service] EMAIL_USER or EMAIL_PASSWORD is not set — emails will fail to send');
   }
-  
-  // Create a transporter
+
   return nodemailer.createTransport({
     host,
     port,
-    secure: port === 465, // true for 465, false for other ports
-    auth: {
-      user,
-      pass,
-    },
+    secure: port === 465,
+    auth: { user, pass },
   });
 }
 
@@ -53,11 +48,10 @@ export async function sendEmail(options: EmailOptions) {
   
   try {
     const transporter = createTransporter();
-    const user = process.env.EMAIL_USER;
-    
-    // Send email
+    const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+
     const info = await transporter.sendMail({
-      from: from || `"Wansom" <${user}>`,
+      from: from || `"Wansom" <${fromAddress}>`,
       replyTo,
       to,
       cc,

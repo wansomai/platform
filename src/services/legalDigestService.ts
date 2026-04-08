@@ -25,7 +25,7 @@ import { searchAfricanLegalSources } from '@/lib/legalScraper';
 import { searchJurisdictionDatabase } from '@/services/legalDatabaseService';
 import prisma from '@/lib/prisma';
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
 
 // ─── Unified jurisdiction config ──────────────────────────────────────────────
 
@@ -627,7 +627,7 @@ async function searchViaGeminiGrounding(
   const today = getTodayLabel();
 
   const response = await genAI.models.generateContent({
-    model:    'gemini-2.0-flash',
+    model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
     // Keep contents short — verbose prompts cause Gemini to generate poor Google queries.
     contents: `Today is ${today}. ${prompt}`,
     config: {
@@ -1146,7 +1146,7 @@ Return ONLY valid JSON — no markdown fences, no extra text:
 }`;
 
   const response = await genAI.models.generateContent({
-    model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+    model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
     contents: synthesisPrompt,
     config: {
       temperature: 0.2,
@@ -1407,7 +1407,7 @@ Return ONLY valid JSON — no markdown fences, no extra text:
   for (let attempt = 1; ; attempt++) {
     try {
       response = await genAI.models.generateContent({
-        model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+        model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
         contents: synthesisPrompt,
         config:   { temperature: 0.2 },
       });
@@ -1518,7 +1518,7 @@ Return ONLY valid JSON — no markdown fences, no extra text:
       })));
 
     const retryResponse = await genAI.models.generateContent({
-      model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: retryPrompt,
       config:   { temperature: 0 },
     });

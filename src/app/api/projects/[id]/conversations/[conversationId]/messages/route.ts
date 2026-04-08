@@ -80,7 +80,7 @@ Respond with ONLY one word: edit, draft_new, or research`;
 
   try {
     const classificationResult = await genAI.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: { temperature: 0, maxOutputTokens: 10 }
     });

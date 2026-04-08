@@ -93,7 +93,7 @@ Requirements:
   try {
     const encoder = new TextEncoder();
     const result = await genAI.models.generateContentStream({
-      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,

@@ -52,7 +52,7 @@ Always apply ${jurisdictionName} law. Keep responses concise and practical.`;
 
   try {
     const result = await genAI.models.generateContentStream({
-      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [
         { role: 'user', parts: [{ text: docContext }] },
         { role: 'model', parts: [{ text: 'I have reviewed the document and I am ready to help.' }] },
