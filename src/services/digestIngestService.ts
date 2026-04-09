@@ -962,6 +962,7 @@ export async function ingestJurisdictions(
     const jName    = JURISDICTION_NAMES[code] ?? code;
     const t0       = Date.now();
     const errors: string[] = [];
+    try {
 
     // ── 1. RSS feeds ──────────────────────────────────────────────────────────
     const rssItems = await pollRssFeeds(code, jName, since, errors);
@@ -1027,6 +1028,17 @@ export async function ingestJurisdictions(
         elapsed_ms:   Date.now() - t0,
         errors,
       };
+    } catch (err: any) {
+      // Unhandled error in this jurisdiction — log and return a safe failure result
+      // so other jurisdictions in the same batch are not affected.
+      console.error(`[Ingest] ${code}: unexpected error — ${err.message}`);
+      return {
+        jurisdiction: code, name: jName,
+        rss: 0, scraper: 0, tavily: 0, stored: 0, skipped: 0, dropped: 0,
+        elapsed_ms: Date.now() - t0,
+        errors: [...errors, `unexpected: ${err.message}`],
+      };
+    }
     }));
     results.push(...batchResults);
   }

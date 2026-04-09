@@ -1244,8 +1244,6 @@ Return ONLY valid JSON — no markdown fences, no extra text:
 // enters via the ingestion cron (digest-ingest).  If the DB is sparse the
 // digest will be shorter but will never contain live/real-time fetched content.
 
-const MIN_DB_ITEMS = 5;
-
 // ── Deduplication helpers ────────────────────────────────────────────────────
 // Two media houses often cover the same story. We deduplicate in two passes:
 //   Pass 1 — exact URL: trivially catches reposts of the same article.
@@ -1306,7 +1304,7 @@ function deduplicateByTitle<T extends { title: string; url: string }>(
 }
 
 // Maximum unique stories to include per digest email.
-const MAX_DIGEST_ITEMS = 10;
+const MAX_DIGEST_ITEMS = 12;
 
 export async function generateLegalDigestFromDB(
   topics:        string[],
@@ -1315,7 +1313,6 @@ export async function generateLegalDigestFromDB(
 ): Promise<{ digest: DigestContent; source: 'db'; itemCount: number }> {
   const { queryDigestItems } = await import('@/services/digestIngestService');
 
-  const BACKDATE_DAYS = 3;
   const sinceDate = getSinceDate(frequency);
   let effectiveSinceDate = sinceDate;
   let backdatedDays: number | undefined;
@@ -1328,52 +1325,81 @@ export async function generateLegalDigestFromDB(
   const supportedJurs   = jurisdictions.filter(j => JURISDICTION_CONFIG[j] !== undefined);
   const unsupportedJurs = jurisdictions.filter(j => JURISDICTION_CONFIG[j] === undefined);
 
-  // Fetch 40 items so deduplication has enough material to produce 12 unique stories.
-  // Only query supported jurisdictions — unsupported ones have no ingested feeds.
+  // Query the primary window first.  Only query supported jurisdictions —
+  // unsupported ones have no ingested feeds and are handled later by Gemini grounding.
+  const MIN_ITEMS_BEFORE_BACKDATE = 10;
   let rawItems = supportedJurs.length > 0
-    ? await queryDigestItems({ jurisdictions: supportedJurs, topics, sinceDate, limit: 40 })
+    ? await queryDigestItems({ jurisdictions: supportedJurs, topics, sinceDate, limit: 60 })
     : [];
-  // Deduplicate by title similarity, then cap at MAX_DIGEST_ITEMS unique stories.
-  let items = deduplicateByTitle(rawItems).slice(0, MAX_DIGEST_ITEMS);
+  const primaryItems = deduplicateByTitle(rawItems);
 
-  // ── Backdate fallback ─────────────────────────────────────────────────────
-  // If the primary window returned fewer than MIN_ITEMS_BEFORE_BACKDATE items,
-  // extend by BACKDATE_DAYS and retry.  This guarantees we never send a thin or
-  // empty email: the digest is always well-populated, and the email template
-  // renders a disclaimer so subscribers know the content predates their window.
-  const MIN_ITEMS_BEFORE_BACKDATE = 6;
-  // Only trigger backdate for supported jurisdictions — unsupported ones are
-  // handled separately by Gemini grounding and never stored in the DB.
-  if (supportedJurs.length > 0 && items.length < MIN_ITEMS_BEFORE_BACKDATE) {
+  // items will be finalised below — declare here so the rest of the function can use it.
+  let items: typeof primaryItems;
+
+  // ── Backdate fallback — two-step ──────────────────────────────────────────
+  // If the primary window is thin (< 10 items), supplement from the DB using
+  // progressively wider windows — purely from the ingest pipeline, no live search.
+  //
+  // Step 1: extend by 3 days.
+  // Step 2: if still thin, extend to a full 7-day (one-week) window.
+  //
+  // Ordering guarantee: primary-window items ALWAYS come first in the final list;
+  // backdated items fill the remaining slots up to MAX_DIGEST_ITEMS.
+  const buildItemsFromExtendedQuery = async (extendDays: number) => {
     effectiveSinceDate = new Date(
-      new Date(sinceDate).getTime() - BACKDATE_DAYS * 24 * 60 * 60 * 1000,
+      new Date(sinceDate).getTime() - extendDays * 24 * 60 * 60 * 1000,
     ).toISOString();
-    console.log(
-      `[Briefly] No items in primary window for ${supportedJurs.join(',')} — ` +
-      `extending by ${BACKDATE_DAYS} days (new since: ${effectiveSinceDate.slice(0, 10)})`,
-    );
-    rawItems = await queryDigestItems({ jurisdictions: supportedJurs, topics, sinceDate: effectiveSinceDate, limit: 40 });
-    items    = deduplicateByTitle(rawItems).slice(0, MAX_DIGEST_ITEMS);
-    if (items.length > 0) {
-      backdatedDays = BACKDATE_DAYS;
-      console.log(
-        `[Briefly] Backdate produced ${items.length} item(s) for ${jurisdictions.join(',')} — disclaimer will be shown`,
-      );
-    }
-  }
+    rawItems = await queryDigestItems({ jurisdictions: supportedJurs, topics, sinceDate: effectiveSinceDate, limit: 60 });
+    const allDeduped      = deduplicateByTitle(rawItems);
+    const primaryWindowMs = new Date(sinceDate).getTime();
+    const inWindow  = allDeduped.filter(item => new Date(item.publishedAt).getTime() >= primaryWindowMs);
+    const backdated = allDeduped.filter(item => new Date(item.publishedAt).getTime() < primaryWindowMs);
+    return { inWindow, backdated, allDeduped };
+  };
 
-  if (items.length < MIN_DB_ITEMS) {
-    if (items.length === 0) {
-      console.log(`[Briefly] No DB items for ${supportedJurs.join(',') || 'none'} even after ${BACKDATE_DAYS}-day backdate`);
-    } else {
+  if (supportedJurs.length > 0 && primaryItems.length < MIN_ITEMS_BEFORE_BACKDATE) {
+    // Step 1: 3-day extension
+    console.log(
+      `[Briefly] Primary window thin (${primaryItems.length} item(s)) for ${supportedJurs.join(',')} — ` +
+      `trying 3-day extension (since: ${new Date(Date.now() - 3 * 86400_000).toISOString().slice(0, 10)})`,
+    );
+    let { inWindow, backdated } = await buildItemsFromExtendedQuery(3);
+    const after3Days = [...inWindow, ...backdated];
+
+    if (after3Days.length < MIN_ITEMS_BEFORE_BACKDATE) {
+      // Step 2: still thin — run a fresh ingest for these jurisdictions with a
+      // 7-day window, then re-query the DB.  The ingest will fetch whatever the
+      // RSS feeds and scrapers have published in the past week and store those
+      // items before we widen the DB query to pick them up.
       console.log(
-        `[Briefly] DB has only ${items.length} unique item(s) for ${supportedJurs.join(',')} — ` +
-        `synthesising from available items`,
+        `[Briefly] Still thin after 3 days (${after3Days.length} item(s)) — running fresh 7-day ingest for ${supportedJurs.join(',')}`,
       );
+      const { ingestJurisdictions } = await import('@/services/digestIngestService');
+      await ingestJurisdictions(supportedJurs);
+      console.log(`[Briefly] Fresh ingest complete — re-querying 7-day window for ${supportedJurs.join(',')}`);
+      ({ inWindow, backdated } = await buildItemsFromExtendedQuery(7));
+    }
+
+    if (backdated.length > 0 || inWindow.length > 0) {
+      backdatedDays = Math.round(
+        (new Date(sinceDate).getTime() - new Date(effectiveSinceDate).getTime()) / 86400_000,
+      );
+      items = [...inWindow, ...backdated].slice(0, MAX_DIGEST_ITEMS);
+      console.log(
+        `[Briefly] Backdate (${backdatedDays}d): ${inWindow.length} primary + ${backdated.length} backdated item(s) for ${supportedJurs.join(',')}`,
+      );
+    } else {
+      items = [];
     }
   } else {
-    console.log(`[Briefly] DB synthesis: ${rawItems.length} fetched → ${items.length} unique item(s) for ${supportedJurs.join(',')}`);
+    items = primaryItems.slice(0, MAX_DIGEST_ITEMS);
   }
+
+  console.log(
+    `[Briefly] DB synthesis: ${rawItems.length} fetched → ${items.length} item(s)` +
+    (backdatedDays ? ` (${backdatedDays}-day backdate)` : '') +
+    ` for ${supportedJurs.join(',') || 'none'}`,
+  );
 
   const todayLabel  = getTodayLabel();
   // When backdated, reflect the actual window so Gemini's synthesis prompt is accurate.

@@ -742,8 +742,8 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             )}
           </div>
 
-          {/* Preview button — only before email is confirmed */}
-          {!emailChecked && (
+          {/* Preview button — only after email is verified */}
+          {emailChecked && (
             <Button
               type="button"
               variant="outline"
