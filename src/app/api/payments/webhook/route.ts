@@ -156,10 +156,37 @@ export async function POST(request: NextRequest) {
         const subscriptionCode = data.subscription_code;
 
         if (subscriptionCode) {
-          await prisma.subscription.updateMany({
+          const sub = await prisma.subscription.findFirst({
             where: { paystackSubscriptionId: subscriptionCode },
-            data: { status: 'non_renewing' },
+            select: { id: true, planName: true, currentPeriodEnd: true, organizationId: true },
           });
+
+          if (sub) {
+            await prisma.subscription.update({
+              where: { id: sub.id },
+              data: { status: 'non_renewing' },
+            });
+
+            const org = await prisma.organization.findUnique({
+              where: { id: sub.organizationId },
+              select: { ownerId: true },
+            });
+
+            if (org?.ownerId) {
+              const expiryStr = sub.currentPeriodEnd
+                ? sub.currentPeriodEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                : 'the end of your billing period';
+
+              await prisma.notification.create({
+                data: {
+                  userId: org.ownerId,
+                  title: 'Subscription set to cancel',
+                  message: `Your ${sub.planName} plan will not renew. You will retain full access until ${expiryStr}.`,
+                  type: 'info',
+                },
+              });
+            }
+          }
 
           console.log(`[Paystack Webhook] Subscription marked non-renewing: ${subscriptionCode}`);
         }
@@ -171,10 +198,33 @@ export async function POST(request: NextRequest) {
         const subscriptionCode = data.subscription_code;
 
         if (subscriptionCode) {
-          await prisma.subscription.updateMany({
+          const sub = await prisma.subscription.findFirst({
             where: { paystackSubscriptionId: subscriptionCode },
-            data: { status: 'cancelled' },
+            select: { id: true, planName: true, organizationId: true },
           });
+
+          if (sub) {
+            await prisma.subscription.update({
+              where: { id: sub.id },
+              data: { status: 'cancelled' },
+            });
+
+            const org = await prisma.organization.findUnique({
+              where: { id: sub.organizationId },
+              select: { ownerId: true },
+            });
+
+            if (org?.ownerId) {
+              await prisma.notification.create({
+                data: {
+                  userId: org.ownerId,
+                  title: 'Subscription cancelled',
+                  message: `Your ${sub.planName} subscription has been cancelled. You can resubscribe at any time from your profile.`,
+                  type: 'warning',
+                },
+              });
+            }
+          }
 
           console.log(`[Paystack Webhook] Subscription disabled: ${subscriptionCode}`);
         }
@@ -281,6 +331,35 @@ export async function POST(request: NextRequest) {
             });
           }
 
+          // In-app success notification for org owner
+          const orgForNotif = await prisma.organization.findUnique({
+            where: { id: subscription.organizationId },
+            select: { ownerId: true },
+          });
+
+          if (orgForNotif?.ownerId) {
+            const major = amount / 100;
+            let amountStr: string;
+            try {
+              amountStr = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: (currency || 'USD').toUpperCase(),
+                minimumFractionDigits: 2,
+              }).format(major);
+            } catch {
+              amountStr = `${(currency || 'USD').toUpperCase()} ${major.toFixed(2)}`;
+            }
+
+            await prisma.notification.create({
+              data: {
+                userId: orgForNotif.ownerId,
+                title: 'Payment successful',
+                message: `Your payment of ${amountStr} was processed successfully. Thank you!`,
+                type: 'success',
+              },
+            });
+          }
+
           console.log(`[Paystack Webhook] Payment recorded for subscription: ${subscription.id}`);
         }
         break;
@@ -332,6 +411,23 @@ export async function POST(request: NextRequest) {
                   },
                 });
               }
+            }
+
+            // In-app error notification for org owner
+            const org = await prisma.organization.findUnique({
+              where: { id: subscription.organizationId },
+              select: { ownerId: true },
+            });
+
+            if (org?.ownerId) {
+              await prisma.notification.create({
+                data: {
+                  userId: org.ownerId,
+                  title: 'Payment failed',
+                  message: 'Your last payment could not be processed. Please check your payment method to avoid losing access to your plan.',
+                  type: 'error',
+                },
+              });
             }
 
             console.log(`[Paystack Webhook] Payment failed for subscription: ${subscriptionCode}, reason: ${description}`);

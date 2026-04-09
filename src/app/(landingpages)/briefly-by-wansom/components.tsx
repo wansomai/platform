@@ -33,7 +33,7 @@ const Law360Components = () => {
       <main>
         <HeroSection onActivate={handleActivate} />
         <FeaturesSection onActivate={handleActivate} />
-
+        <UseCasesSection onActivate={handleActivate} />
         <CTASection onActivate={handleActivate} />
         <StatSection />
       </main>
@@ -164,6 +164,97 @@ const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
               </button>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
+  const [activeTab, setActiveTab] = useState(0);
+
+  const useCases = [
+    {
+      title: "Law Firms",
+      image: "/images/law-firm-boardroom.jpg",
+      alt: "Law firm attorneys reviewing legal updates",
+      description: "Equip your attorneys with the latest caselaw and regulatory updates. Enhance client advisory services and maintain a competitive edge with daily insights.",
+    },
+    {
+      title: "In-House Counsel",
+      image: "/images/in-house-counsel.jpg",
+      alt: "In-house counsel monitoring legal developments",
+      description: "Monitor critical legal developments affecting your industry. Proactively manage risks and streamline compliance operations with tailored intelligence.",
+    },
+    {
+      title: "Legal Consultants",
+      image: "/images/legal-insights.jpg",
+      alt: "Legal consultant reviewing global legal intelligence",
+      description: "Receive timely intelligence to support your strategic guidance. Stay informed globally to handle complex, cross-jurisdictional matters effortlessly.",
+    },
+    {
+      title: "Law Students & Academics",
+      image: "/images/students-studying.jpg",
+      alt: "Law students studying legal summaries",
+      description: "Keep up-to-date with emerging trends and landmark judgments. Utilize concise summaries for faster research and better academic performance.",
+    },
+  ];
+
+  return (
+    <section className="section-spacing bg-white" id="use-cases">
+      <div className="section-container pb-12">
+        <div className="text-center max-w-3xl mx-auto mb-4">
+          <h2 className="text-heading-2 mb-4 text-gray-900">Who Benefits from Briefly?</h2>
+          <p className="text-lg text-gray-600">
+            Whether you are navigating complex litigation or staying compliant, Briefly provides tailored insights to power your work.
+          </p>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-12 pt-5">
+          <div className="flex space-x-0 border-b border-gray-300">
+            {useCases.map((tab, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveTab(index)}
+                className={`px-8 py-4 font-medium transition-all relative ${
+                  activeTab === index
+                    ? "text-[#355e66] border-b-2 border-[#355e66]"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.title}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-10">
+            <div className="text-left lg:basis-1/2 max-w-lg">
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {useCases[activeTab].description}
+              </p>
+              <button
+                className="text-sm font-medium uppercase flex gap-1 items-center text-white bg-black hover:bg-amber-500 rounded-md py-3 px-6 my-5"
+                onClick={onActivate}
+                aria-label={`Get started with Briefly for ${useCases[activeTab].title}`}
+              >
+                Get Started
+                <ArrowUpRight className="w-5 h-5 text-white" />
+              </button>
+            </div>
+            <div className="flex-1 lg:basis-1/2 order-1 lg:order-2">
+              <Image
+                src={useCases[activeTab].image}
+                width={800}
+                height={600}
+                className="rounded-lg w-full h-auto"
+                alt={useCases[activeTab].alt}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

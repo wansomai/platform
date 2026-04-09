@@ -186,7 +186,10 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   accountType: 'accountType',
   ownerId: 'ownerId',
   upgradeRequestToken: 'upgradeRequestToken',
-  upgradeRequestedAt: 'upgradeRequestedAt'
+  upgradeRequestedAt: 'upgradeRequestedAt',
+  trialUpgradedAt: 'trialUpgradedAt',
+  trialExpiresAt: 'trialExpiresAt',
+  trialExpired: 'trialExpired'
 };
 
 exports.Prisma.ContentScalarFieldEnum = {
@@ -640,6 +643,24 @@ exports.Prisma.Legal_knowledge_chunksScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.AdminLogScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  event: 'event',
+  details: 'details',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  read: 'read',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -753,7 +774,9 @@ exports.Prisma.ModelName = {
   DigestCache: 'DigestCache',
   DigestItem: 'DigestItem',
   legal_knowledge: 'legal_knowledge',
-  legal_knowledge_chunks: 'legal_knowledge_chunks'
+  legal_knowledge_chunks: 'legal_knowledge_chunks',
+  AdminLog: 'AdminLog',
+  Notification: 'Notification'
 };
 
 /**

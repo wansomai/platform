@@ -70,8 +70,10 @@ interface Subscription {
   id: string;
   planName: string;
   planPrice: string | null;
+  planType?: string | null;
   billingCycle: string | null;
   status: string;
+  seatCount?: number | null;
   currentPeriodStart: string | null;
   currentPeriodEnd: string | null;
   paystackSubscriptionId: string | null;
@@ -91,6 +93,8 @@ interface SubscriptionStatus {
   canUpgrade: boolean;
   canCancel: boolean;
   hasProAccess: boolean;
+  isManualTrial: boolean;
+  trialExpiresAt: string | null;
   associateCount: number;
   canViewBilling: boolean;
 }

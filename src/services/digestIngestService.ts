@@ -814,30 +814,49 @@ async function classifyAndSummarise(
       `{"isLegal":false,"topics":[],"summary":""}]\n` +
       `Return only valid JSON, no markdown.`;
 
-    try {
-      const response = await genAI.models.generateContent({
-        model:    'gemini-2.0-flash',
-        contents: prompt,
-        config:   { temperature: 0 },
-      });
+    // Retry up to 3 times with exponential backoff on Gemini 503 (overloaded).
+    // A failed batch previously silently dropped all items — retrying prevents that.
+    const maxAttempts = 3;
+    let batchSucceeded = false;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await genAI.models.generateContent({
+          model:    'gemini-2.0-flash',
+          contents: prompt,
+          config:   { temperature: 0 },
+        });
 
-      let text = (response.text || '').trim();
-      if (text.startsWith('```')) text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-      const parsed: Array<{ isLegal: boolean; topics: string[]; summary: string }> = JSON.parse(text);
+        let text = (response.text || '').trim();
+        if (text.startsWith('```')) text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+        const parsed: Array<{ isLegal: boolean; topics: string[]; summary: string }> = JSON.parse(text);
 
-      for (let j = 0; j < batch.length; j++) {
-        const entry = parsed[j];
-        if (!entry) continue;
-        allIsLegal[i + j]  = entry.isLegal === true;
-        allTopics[i + j]   = allIsLegal[i + j] && Array.isArray(entry.topics) && entry.topics.length > 0
-          ? entry.topics
-          : ['General'];
-        if (entry.isLegal && entry.summary && entry.summary.trim().length > 10) {
-          allSummaries[i + j] = entry.summary.trim();
+        for (let j = 0; j < batch.length; j++) {
+          const entry = parsed[j];
+          if (!entry) continue;
+          allIsLegal[i + j]  = entry.isLegal === true;
+          allTopics[i + j]   = allIsLegal[i + j] && Array.isArray(entry.topics) && entry.topics.length > 0
+            ? entry.topics
+            : ['General'];
+          if (entry.isLegal && entry.summary && entry.summary.trim().length > 10) {
+            allSummaries[i + j] = entry.summary.trim();
+          }
+        }
+        batchSucceeded = true;
+        break;
+      } catch (err: unknown) {
+        const status = (err as { status?: number })?.status;
+        if (status === 503 && attempt < maxAttempts) {
+          const delay = 5000 * attempt; // 5s, 10s
+          console.warn(`[Ingest] Gemini 503 on classify attempt ${attempt} — retrying in ${delay}ms`);
+          await new Promise((r) => setTimeout(r, delay));
+        } else {
+          console.error(`[Ingest] classify batch failed after ${attempt} attempt(s):`, (err as Error)?.message ?? err);
+          break;
         }
       }
-    } catch {
-      // Batch failed — leave isLegal: false so all items in this batch are dropped
+    }
+    if (!batchSucceeded) {
+      // All retries exhausted — mark batch as General/non-legal so they are dropped.
       for (let j = 0; j < batch.length; j++) {
         allTopics[i + j] = ['General'];
       }

@@ -43,7 +43,7 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
       }),
       prisma.organization.findUnique({
         where: { id: organizationId },
-        select: { accountType: true }
+        select: { accountType: true, trialExpired: true, trialExpiresAt: true }
       })
     ]);
 
@@ -53,10 +53,18 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
       ['professional', 'enterprise', 'pro'].includes(subscription.planName.toLowerCase());
 
     const isEnterpriseAccount = organization?.accountType === 'enterprise';
-    const isProPlan = hasActiveSubscription || isEnterpriseAccount;
 
-    const planName = isEnterpriseAccount ? 'enterprise' : (subscription?.planName || 'free');
-    const status = isEnterpriseAccount ? 'active' : (subscription?.status || 'free');
+    // Check for active manual trial (15-day Pro access window)
+    const now = new Date();
+    const hasActiveTrial =
+      !organization?.trialExpired &&
+      organization?.trialExpiresAt != null &&
+      organization.trialExpiresAt > now;
+
+    const isProPlan = hasActiveSubscription || isEnterpriseAccount || hasActiveTrial;
+
+    const planName = isEnterpriseAccount ? 'enterprise' : hasActiveTrial ? 'trial_pro' : (subscription?.planName || 'free');
+    const status = isEnterpriseAccount ? 'active' : hasActiveTrial ? 'trial' : (subscription?.status || 'free');
 
     // Pro/Enterprise plans are unlimited — skip the count queries entirely
     if (isProPlan) {
