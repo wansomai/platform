@@ -1180,12 +1180,15 @@ Return ONLY valid JSON — no markdown fences, no extra text:
     parsed.generatedAt = new Date().toISOString();
 
     // ── 4. Validate every sourceUrl against real search results ───────────────
+    // Gemini may merge two items and output "url1 | url2" — split and take the
+    // first verified URL rather than discarding the whole entry.
     for (const section of parsed.sections) {
       for (const item of section.items) {
         if (item.sourceUrl) {
-          const norm = normalizeUrl(item.sourceUrl);
-          if (verifiedUrls.has(norm)) {
-            item.sourceUrl = normalToOriginal.get(norm) ?? item.sourceUrl;
+          const parts = item.sourceUrl.split(' | ').map(u => u.trim()).filter(Boolean);
+          const firstVerified = parts.find(u => verifiedUrls.has(normalizeUrl(u)));
+          if (firstVerified) {
+            item.sourceUrl = normalToOriginal.get(normalizeUrl(firstVerified)) ?? firstVerified;
           } else {
             item.sourceUrl = undefined;
           }
@@ -1604,10 +1607,17 @@ Return ONLY valid JSON — no markdown fences, no extra text:
     for (const section of d.sections) {
       for (const item of section.items) {
         if (item.sourceUrl) {
-          const norm = normalizeUrl(item.sourceUrl);
-          item.sourceUrl = verifiedUrls.has(norm)
-            ? (normalToOriginal.get(norm) ?? item.sourceUrl)
-            : undefined;
+          // Gemini sometimes merges two items about the same story and outputs
+          // "url1 | url2" as sourceUrl (per the merge rule in the synthesis prompt).
+          // Split on " | " and take the first URL that exists in verifiedUrls.
+          const parts = item.sourceUrl.split(' | ').map(u => u.trim()).filter(Boolean);
+          const firstVerified = parts.find(u => verifiedUrls.has(normalizeUrl(u)));
+          if (firstVerified) {
+            const norm = normalizeUrl(firstVerified);
+            item.sourceUrl = normalToOriginal.get(norm) ?? firstVerified;
+          } else {
+            item.sourceUrl = undefined;
+          }
         }
         // Stamp a compact age label on items that fall outside the primary window.
         // Items within the window get no tag — only genuinely backdated ones are labelled.
