@@ -181,7 +181,7 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
       description: "Equip your attorneys with the latest caselaw and regulatory updates. Enhance client advisory services and maintain a competitive edge with daily insights.",
     },
     {
-      title: "In-House Counsel",
+      title: "Businesses & In-House Counsel",
       image: "/images/in-house-counsel.jpg",
       alt: "In-house counsel monitoring legal developments",
       description: "Monitor critical legal developments affecting your industry. Proactively manage risks and streamline compliance operations with tailored intelligence.",
