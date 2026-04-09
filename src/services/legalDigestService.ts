@@ -25,7 +25,7 @@ import { searchAfricanLegalSources } from '@/lib/legalScraper';
 import { searchJurisdictionDatabase } from '@/services/legalDatabaseService';
 import prisma from '@/lib/prisma';
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 // ─── Unified jurisdiction config ──────────────────────────────────────────────
 
