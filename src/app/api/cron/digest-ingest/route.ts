@@ -28,6 +28,7 @@ import {
   setCachedDigest,
 } from '@/services/legalDigestService';
 import { PRACTICE_AREA_LABELS } from '@/types/associates';
+import { TIER_1_CODES, TIER_2_CODES } from '@/lib/briefly-jurisdictions';
 import prisma from '@/lib/prisma';
 
 // Maximum concurrent Gemini synthesis calls during pre-synthesis phase.
@@ -45,22 +46,10 @@ export const maxDuration = 300;
 // ingested and Tier 2 items from the previous run are already in the DB, so
 // synthesis covers all subscriber jurisdictions with at most 4-hour-old Tier 2 data.
 
-const TIER_1_JURISDICTIONS = new Set([
-  'KE', 'ZA', 'NG', 'GH', 'TZ', 'UG', 'RW', 'ET',
-  'GB', 'US', 'IN', 'AU', 'CA', 'EU',
-]);
-
-const TIER_2_JURISDICTIONS = new Set([
-  'MW', 'ZM', 'ZW', 'BW', 'LS', 'MZ', 'NA', 'SS', 'SD',
-  'SN', 'CI', 'CM', 'SL', 'GM', 'LR', 'GN', 'BI', 'DJ',
-  'SO', 'MG', 'MU', 'SC', 'AO', 'CG', 'CD', 'NE', 'ML',
-  'BF', 'TG', 'BJ',
-]);
-
-const CONFIGURED_JURISDICTIONS = new Set([
-  ...TIER_1_JURISDICTIONS,
-  ...TIER_2_JURISDICTIONS,
-]);
+// Aliases so existing logic below is unchanged
+const TIER_1_JURISDICTIONS   = TIER_1_CODES;
+const TIER_2_JURISDICTIONS   = TIER_2_CODES;
+const CONFIGURED_JURISDICTIONS = new Set([...TIER_1_CODES, ...TIER_2_CODES]);
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -97,14 +86,28 @@ export async function GET(req: NextRequest) {
       .map((j) => j.trim().toUpperCase())
       .filter((j) => CONFIGURED_JURISDICTIONS.has(j));
   } else {
-    // Subscriber-driven: collect every jurisdiction any active subscriber wants,
-    // filtered to this tier's allowed set.
+    // ── Jurisdiction resolution ──────────────────────────────────────────────
+    //
+    // Tier 1 always ingests ALL Tier 1 jurisdictions as a baseline, regardless
+    // of whether there are active subscribers.  This eliminates the chicken-and-egg
+    // problem where a new subscriber's first preview or digest would hit an empty DB
+    // because the ingest had never run for their jurisdiction.
+    //
+    // Tier 2 remains subscriber-driven: it covers 30 mostly thin jurisdictions and
+    // running all of them every 4 hours would consume too much of the 300 s budget.
+    //
+    // In both cases, any subscriber jurisdictions not already in the baseline are
+    // merged in so no subscriber is ever left without fresh content.
+
+    const baseline: Set<string> =
+      rawTier === '2' ? new Set() : new Set(TIER_1_JURISDICTIONS);
+
     const activeSubscriptions = await prisma.digestSubscription.findMany({
       where:  { isActive: true },
       select: { jurisdictions: true },
     });
 
-    const uniqueCodes = new Set<string>();
+    const uniqueCodes = new Set<string>(baseline);
     for (const sub of activeSubscriptions) {
       for (const code of sub.jurisdictions) {
         const upper = code.toUpperCase();
@@ -116,14 +119,22 @@ export async function GET(req: NextRequest) {
 
     jurisdictions = Array.from(uniqueCodes);
 
+    // After merging baseline + subscribers, Tier 2 with zero subscribers and no
+    // baseline is the only scenario that produces an empty list — skip cleanly.
     if (jurisdictions.length === 0) {
       const tierLabel = rawTier ? `tier ${rawTier}` : 'any tier';
-      console.log(`[digest-ingest] No active subscribers for ${tierLabel} — skipping ingestion`);
+      console.log(`[digest-ingest] No jurisdictions to ingest for ${tierLabel} — skipping`);
       return createApiResponse(
         { results: [], totalStored: 0, totalSkipped: 0, elapsed_ms: 0 },
-        `No active subscribers for ${tierLabel} — nothing to ingest`,
+        `No jurisdictions to ingest for ${tierLabel}`,
       );
     }
+
+    const subscriberExtra = Array.from(uniqueCodes).filter((j) => !baseline.has(j));
+    console.log(
+      `[digest-ingest] Baseline: ${baseline.size} jurisdiction(s)` +
+      (subscriberExtra.length ? ` + ${subscriberExtra.length} subscriber-only: ${subscriberExtra.join(', ')}` : ''),
+    );
   }
 
   const tierLabel = rawTier ? `tier ${rawTier}` : 'all tiers';

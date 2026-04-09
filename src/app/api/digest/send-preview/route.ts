@@ -14,6 +14,7 @@ import { generateLegalDigestFromDB } from '@/services/legalDigestService';
 import { ingestJurisdictions } from '@/services/digestIngestService';
 import { sendLegalDigestEmail } from '@/lib/email-service';
 import { PRACTICE_AREA_LABELS } from '@/types/associates';
+import { SUPPORTED_JURISDICTION_CODES } from '@/lib/briefly-jurisdictions';
 import prisma from '@/lib/prisma';
 
 export const maxDuration = 300;
@@ -99,8 +100,14 @@ export async function POST(req: NextRequest) {
     // A preview is a one-off quality request — we always want the latest content
     // rather than relying on however old the last background cron run was.
     // The DB-backed cooldown above (5 min per email+jurisdiction) prevents abuse.
-    console.log(`[send-preview] Running fresh ingestion for ${normJurisdictions.join(', ')}`);
-    await ingestJurisdictions(normJurisdictions);
+    // Only ingest supported (Tier 1+2) jurisdictions — unsupported ones have no
+    // configured feeds, so ingesting them is a no-op.  They are handled by live
+    // Gemini grounding inside generateLegalDigestFromDB.
+    const supportedForIngest = normJurisdictions.filter(j => SUPPORTED_JURISDICTION_CODES.has(j));
+    console.log(`[send-preview] Running fresh ingestion for ${supportedForIngest.join(', ')} (${normJurisdictions.length - supportedForIngest.length} unsupported jurisdiction(s) will use Gemini grounding)`);
+    if (supportedForIngest.length > 0) {
+      await ingestJurisdictions(supportedForIngest);
+    }
 
     // ── Step 2: Generate digest from DB (falls back to live search if needed) ─
     const { digest, source } = await generateLegalDigestFromDB(

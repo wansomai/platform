@@ -991,10 +991,12 @@ async function searchOneJurisdiction(
 export interface DigestSection {
   category: string;
   items: {
-    title:       string;
-    summary:     string;
-    sourceUrl?:  string;
-    sourceName?: string;
+    title:          string;
+    summary:        string;
+    sourceUrl?:     string;
+    sourceName?:    string;
+    /** Set when this item falls outside the subscriber's primary window (e.g. "3 days ago"). Rendered as a small tag in the email. */
+    backdatedLabel?: string;
   }[];
 }
 
@@ -1004,6 +1006,13 @@ export interface DigestContent {
   sections:    DigestSection[];
   sources:     { title: string; url: string }[];
   generatedAt: string;
+  /**
+   * Set when the digest extended beyond the subscriber's primary window.
+   * Value = number of extra days added (currently always 3).
+   * Used to stamp per-item backdatedLabel tags — items within the primary
+   * window get no tag; only out-of-window items are labelled.
+   */
+  backdatedDays?: number;
 }
 
 // ─── Search-only export (used by dev preview endpoint) ───────────────────────
@@ -1294,7 +1303,7 @@ function deduplicateByTitle<T extends { title: string; url: string }>(
 }
 
 // Maximum unique stories to include per digest email.
-const MAX_DIGEST_ITEMS = 12;
+const MAX_DIGEST_ITEMS = 10;
 
 export async function generateLegalDigestFromDB(
   topics:        string[],
@@ -1303,45 +1312,82 @@ export async function generateLegalDigestFromDB(
 ): Promise<{ digest: DigestContent; source: 'db'; itemCount: number }> {
   const { queryDigestItems } = await import('@/services/digestIngestService');
 
+  const BACKDATE_DAYS = 3;
   const sinceDate = getSinceDate(frequency);
-  // Fetch 40 items so deduplication has enough material to produce 12 unique stories.
-  const rawItems = await queryDigestItems({ jurisdictions, topics, sinceDate, limit: 40 });
-  // Deduplicate by title similarity, then cap at MAX_DIGEST_ITEMS unique stories.
-  const items = deduplicateByTitle(rawItems).slice(0, MAX_DIGEST_ITEMS);
+  let effectiveSinceDate = sinceDate;
+  let backdatedDays: number | undefined;
 
-  if (items.length === 0) {
-    console.log(`[Briefly] No items in DB for ${jurisdictions.join(',')} — returning empty digest`);
-    const jNames = jurisdictions
-      .map((c) => JURISDICTION_CONFIG[c]?.name)
-      .filter(Boolean).join(', ') || jurisdictions.join(', ');
-    return {
-      digest: {
-        headline:    `Legal digest for ${jNames}`,
-        summary:     'No legal updates are available for this period. Content will appear once the next ingestion run completes.',
-        sections:    [],
-        sources:     [],
-        generatedAt: new Date().toISOString(),
-      },
-      source:    'db',
-      itemCount: 0,
-    };
+  // ── Split jurisdictions into DB-backed (Tier 1+2) and grounding-only ────────
+  // Supported jurisdictions have configured RSS/scraper/Tavily feeds and are
+  // queried from the DigestItem DB table.  Unsupported jurisdictions (any other
+  // ISO code the subscriber selected) are handled by live Gemini grounding at
+  // synthesis time — no feeds are configured so the DB path would return nothing.
+  const supportedJurs   = jurisdictions.filter(j => JURISDICTION_CONFIG[j] !== undefined);
+  const unsupportedJurs = jurisdictions.filter(j => JURISDICTION_CONFIG[j] === undefined);
+
+  // Fetch 40 items so deduplication has enough material to produce 12 unique stories.
+  // Only query supported jurisdictions — unsupported ones have no ingested feeds.
+  let rawItems = supportedJurs.length > 0
+    ? await queryDigestItems({ jurisdictions: supportedJurs, topics, sinceDate, limit: 40 })
+    : [];
+  // Deduplicate by title similarity, then cap at MAX_DIGEST_ITEMS unique stories.
+  let items = deduplicateByTitle(rawItems).slice(0, MAX_DIGEST_ITEMS);
+
+  // ── Backdate fallback ─────────────────────────────────────────────────────
+  // If the primary window returned fewer than MIN_ITEMS_BEFORE_BACKDATE items,
+  // extend by BACKDATE_DAYS and retry.  This guarantees we never send a thin or
+  // empty email: the digest is always well-populated, and the email template
+  // renders a disclaimer so subscribers know the content predates their window.
+  const MIN_ITEMS_BEFORE_BACKDATE = 6;
+  // Only trigger backdate for supported jurisdictions — unsupported ones are
+  // handled separately by Gemini grounding and never stored in the DB.
+  if (supportedJurs.length > 0 && items.length < MIN_ITEMS_BEFORE_BACKDATE) {
+    effectiveSinceDate = new Date(
+      new Date(sinceDate).getTime() - BACKDATE_DAYS * 24 * 60 * 60 * 1000,
+    ).toISOString();
+    console.log(
+      `[Briefly] No items in primary window for ${supportedJurs.join(',')} — ` +
+      `extending by ${BACKDATE_DAYS} days (new since: ${effectiveSinceDate.slice(0, 10)})`,
+    );
+    rawItems = await queryDigestItems({ jurisdictions: supportedJurs, topics, sinceDate: effectiveSinceDate, limit: 40 });
+    items    = deduplicateByTitle(rawItems).slice(0, MAX_DIGEST_ITEMS);
+    if (items.length > 0) {
+      backdatedDays = BACKDATE_DAYS;
+      console.log(
+        `[Briefly] Backdate produced ${items.length} item(s) for ${jurisdictions.join(',')} — disclaimer will be shown`,
+      );
+    }
   }
 
   if (items.length < MIN_DB_ITEMS) {
-    console.log(
-      `[Briefly] DB has only ${items.length} unique item(s) for ${jurisdictions.join(',')} — ` +
-      `synthesising from available items (no live search)`,
-    );
+    if (items.length === 0) {
+      console.log(`[Briefly] No DB items for ${supportedJurs.join(',') || 'none'} even after ${BACKDATE_DAYS}-day backdate`);
+    } else {
+      console.log(
+        `[Briefly] DB has only ${items.length} unique item(s) for ${supportedJurs.join(',')} — ` +
+        `synthesising from available items`,
+      );
+    }
   } else {
-    console.log(`[Briefly] DB synthesis: ${rawItems.length} fetched → ${items.length} unique item(s) for ${jurisdictions.join(',')}`);
+    console.log(`[Briefly] DB synthesis: ${rawItems.length} fetched → ${items.length} unique item(s) for ${supportedJurs.join(',')}`);
   }
 
   const todayLabel  = getTodayLabel();
-  const timeframe   = frequency === 'daily' ? 'the past 24 hours' : 'the past 7 days';
+  // When backdated, reflect the actual window so Gemini's synthesis prompt is accurate.
+  const primaryDays = frequency === 'daily' ? 1 : 7;
+  const totalDays   = backdatedDays ? primaryDays + backdatedDays : primaryDays;
+  const timeframe   = totalDays === 1 ? 'the past 24 hours' : `the past ${totalDays} days`;
   const topicList   = topics.length > 0 ? topics.join(', ') : 'general legal developments';
-  const jurisdictionNames = jurisdictions
-    .map((c) => JURISDICTION_CONFIG[c]?.name)
-    .filter(Boolean).join(', ');
+
+  // Build jurisdiction name list: supported names from JURISDICTION_CONFIG,
+  // unsupported names from Intl.DisplayNames (ISO code → English country name).
+  const jDisplayNames = unsupportedJurs.length > 0
+    ? new Intl.DisplayNames(['en'], { type: 'region' })
+    : null;
+  const jurisdictionNames = [
+    ...supportedJurs.map(c => JURISDICTION_CONFIG[c]?.name).filter(Boolean),
+    ...unsupportedJurs.map(code => { try { return jDisplayNames!.of(code) ?? code; } catch { return code; } }),
+  ].join(', ') || jurisdictions.join(', ');
 
   // Convert DigestItemRow to the same shape as RawResult for the synthesis prompt.
   // Prefer the AI-written aiSummary over the raw excerpt — it is always present
@@ -1356,6 +1402,77 @@ export async function generateLegalDigestFromDB(
     jurisdiction: JURISDICTION_CONFIG[item.jurisdiction]?.name ?? item.jurisdiction,
     type:         item.contentType as RawResult['type'],
   }));
+
+  // ── Gemini grounding for unsupported jurisdictions ────────────────────────────
+  // Unsupported jurisdictions have no RSS/scraper feeds in the DB.  We call
+  // searchViaGeminiGrounding directly here so they are included in the same
+  // synthesis pass and appear alongside the DB-backed content in the email.
+  // Unlike DB items, these results are always treated as "primary window" —
+  // no backdatedLabel is stamped on them.
+  let unsupportedGroundingResults: RawResult[] = [];
+
+  if (unsupportedJurs.length > 0) {
+    const displayNames      = new Intl.DisplayNames(['en'], { type: 'region' });
+    const topicListGrounding = topics.length > 0 ? topics.join(', ') : 'general legal developments';
+    const dateWindow         = buildDateWindow(sinceDate);
+
+    const groundingTasks = unsupportedJurs.map(async (code) => {
+      const countryName = (() => { try { return displayNames.of(code) ?? code; } catch { return code; } })();
+      const prompt =
+        `Find the most recent legal news, court decisions, and regulatory changes from ${countryName} ` +
+        `from ${dateWindow}. Topics: ${topicListGrounding}. ` +
+        `For each result include: headline, publication, date, and the key legal development.`;
+      try {
+        const results = await withTimeout(
+          searchViaGeminiGrounding(prompt, countryName, 6, undefined),
+          40_000, `Gemini grounding unsupported [${code}]`,
+        );
+        console.log(`[Briefly] Grounding unsupported jurisdiction ${code} (${countryName}): ${results.length} result(s)`);
+        return results;
+      } catch (err: any) {
+        console.error(`[Briefly] Grounding failed for unsupported jurisdiction ${code} (${countryName}):`, err.message);
+        return [] as RawResult[];
+      }
+    });
+
+    const settled = await Promise.allSettled(groundingTasks);
+    unsupportedGroundingResults = settled.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+  }
+
+  // ── Merge DB results and grounding results ─────────────────────────────────
+  const allRawResults: RawResult[] = [
+    ...rawResults,
+    ...unsupportedGroundingResults.map(r => ({
+      title:        r.title,
+      url:          r.url,
+      snippet:      r.snippet.slice(0, 150),
+      date:         r.date,
+      source:       r.source,
+      jurisdiction: r.jurisdiction,
+      type:         r.type,
+    })),
+  ];
+
+  // ── Empty check (after grounding) ─────────────────────────────────────────
+  // Only return empty if both the DB path AND grounding produced nothing.
+  if (allRawResults.length === 0) {
+    console.log(`[Briefly] No items found (DB + grounding) for ${jurisdictions.join(',')} — sending empty digest notification`);
+    return {
+      digest: {
+        headline: `No legal updates found for ${jurisdictionNames}`,
+        summary:
+          `We searched your selected jurisdictions (${jurisdictionNames}) and practice areas over the past ` +
+          `${frequency === 'daily' ? '4' : '10'} days but could not find any matching legal updates. ` +
+          `This is rare — you can help Briefly find more content by adding additional jurisdictions ` +
+          `or practice areas to your subscription.`,
+        sections:    [],
+        sources:     [],
+        generatedAt: new Date().toISOString(),
+      },
+      source:    'db',
+      itemCount: 0,
+    };
+  }
 
   // Re-use the same synthesis prompt and URL-verification logic as the live path
   const synthesisPrompt = `You are a legal editor organising pre-fetched news items into a ${timeframe} email digest for practising attorneys.
@@ -1376,8 +1493,8 @@ CLASSIFY each item into one of these categories:
 - Statute, regulation, gazette notice, government policy → "Regulatory Changes"
 - News article, law firm alert, commentary, industry update → "Legal News"
 
-ITEMS (${rawResults.length} unique stories):
-${JSON.stringify(rawResults, null, 2)}
+ITEMS (${allRawResults.length} unique stories):
+${JSON.stringify(allRawResults, null, 2)}
 
 Return ONLY valid JSON — no markdown fences, no extra text:
 {
@@ -1430,9 +1547,10 @@ Return ONLY valid JSON — no markdown fences, no extra text:
     cleanText = cleanText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
   }
 
-  const verifiedUrls     = new Set(rawResults.map((r) => normalizeUrl(r.url)).filter(Boolean));
+  // Build verified URL sets from all results (DB + grounding).
+  const verifiedUrls     = new Set(allRawResults.map((r) => normalizeUrl(r.url)).filter(Boolean));
   const normalToOriginal = new Map<string, string>();
-  for (const r of rawResults) {
+  for (const r of allRawResults) {
     if (r.url) normalToOriginal.set(normalizeUrl(r.url), r.url);
   }
 
@@ -1471,6 +1589,18 @@ Return ONLY valid JSON — no markdown fences, no extra text:
   // ── Helper: validate and stamp a successfully parsed digest ─────────────────
   function finaliseDigest(d: DigestContent): DigestContent {
     d.generatedAt = new Date().toISOString();
+    if (backdatedDays) d.backdatedDays = backdatedDays;
+
+    // Build a URL → publishedAt map so we can label out-of-window items.
+    const urlToDate = new Map<string, number>();
+    for (const r of rawResults) {
+      if (r.url && r.date) {
+        const t = new Date(r.date).getTime();
+        if (!isNaN(t)) urlToDate.set(normalizeUrl(r.url), t);
+      }
+    }
+    const primaryWindowStart = new Date(sinceDate).getTime();
+
     for (const section of d.sections) {
       for (const item of section.items) {
         if (item.sourceUrl) {
@@ -1479,11 +1609,20 @@ Return ONLY valid JSON — no markdown fences, no extra text:
             ? (normalToOriginal.get(norm) ?? item.sourceUrl)
             : undefined;
         }
+        // Stamp a compact age label on items that fall outside the primary window.
+        // Items within the window get no tag — only genuinely backdated ones are labelled.
+        if (backdatedDays && item.sourceUrl) {
+          const itemTime = urlToDate.get(normalizeUrl(item.sourceUrl));
+          if (itemTime && itemTime < primaryWindowStart) {
+            const daysAgo = Math.ceil((Date.now() - itemTime) / (1000 * 60 * 60 * 24));
+            item.backdatedLabel = daysAgo <= 1 ? '1 day ago' : `${daysAgo} days ago`;
+          }
+        }
       }
     }
     const seenUrls = new Set<string>();
     d.sources = [];
-    for (const r of rawResults) {
+    for (const r of allRawResults) {
       if (r.url && !seenUrls.has(r.url)) {
         d.sources.push({ title: r.title, url: r.url });
         seenUrls.add(r.url);
@@ -1508,8 +1647,8 @@ Return ONLY valid JSON — no markdown fences, no extra text:
       `Schema (follow exactly):\n` +
       `{"headline":"string","summary":"string","sections":[{"category":"Case Law Updates"|"Regulatory Changes"|"Legal News","items":[{"title":"string","summary":"2 plain-English sentences","sourceName":"string","sourceUrl":"copy url field verbatim"}]}],"sources":[{"title":"string","url":"string"}]}\n\n` +
       `Rules: include every item, copy each sourceUrl verbatim from the list, do not invent URLs.\n\n` +
-      `Items (${rawResults.length}):\n` +
-      JSON.stringify(rawResults.map((r) => ({
+      `Items (${allRawResults.length}):\n` +
+      JSON.stringify(allRawResults.map((r) => ({
         title:  r.title,
         url:    r.url,
         snippet: r.snippet.slice(0, 100),
@@ -1547,7 +1686,7 @@ Return ONLY valid JSON — no markdown fences, no extra text:
     { category: 'Legal News',         items: [] },
   ];
 
-  for (const r of rawResults) {
+  for (const r of allRawResults) {
     const categoryIndex =
       r.type === 'case_law'    ? 0 :
       r.type === 'legislation' ? 1 : 2;
@@ -1565,10 +1704,11 @@ Return ONLY valid JSON — no markdown fences, no extra text:
 
   const fallbackDigest: DigestContent = {
     headline:    `${jurisdictionNames} Legal Digest — ${todayLbl}`,
-    summary:     `${items.length} legal developments across ${jurisdictionNames} for ${timeframe}.`,
+    summary:     `${allRawResults.length} legal developments across ${jurisdictionNames} for ${timeframe}.`,
     sections:    nonEmpty,
-    sources:     rawResults.map((r) => ({ title: r.title, url: r.url })),
+    sources:     allRawResults.map((r) => ({ title: r.title, url: r.url })),
     generatedAt: new Date().toISOString(),
+    ...(backdatedDays ? { backdatedDays } : {}),
   };
 
   return { digest: fallbackDigest, source: 'db', itemCount: items.length };
