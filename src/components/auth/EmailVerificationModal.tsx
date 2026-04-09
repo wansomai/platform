@@ -76,20 +76,20 @@ export default function EmailVerificationModal() {
 
         <div className="px-7 pt-7 pb-6">
 
-          {/* Icon */}
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 transition-colors duration-500 ${
-            status === 'verified' ? 'bg-emerald-50' : 'bg-[#eaf4f7]'
-          }`}>
-            {status === 'verified'
-              ? <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-              : <Mail className="h-5 w-5 text-[#0a4b5e]" />
-            }
+          {/* Icon + Title */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center transition-colors duration-500 ${
+              status === 'verified' ? 'bg-emerald-50' : 'bg-[#eaf4f7]'
+            }`}>
+              {status === 'verified'
+                ? <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                : <Mail className="h-5 w-5 text-[#0a4b5e]" />
+              }
+            </div>
+            <DialogTitle className="text-[17px] font-semibold text-gray-900">
+              {status === 'verified' ? 'Email verified' : 'Check your inbox'}
+            </DialogTitle>
           </div>
-
-          {/* Title */}
-          <DialogTitle className="text-[17px] font-semibold text-gray-900 mb-1.5">
-            {status === 'verified' ? 'Email verified' : 'Check your inbox'}
-          </DialogTitle>
 
           {/* Description */}
           <DialogDescription className="text-sm text-gray-500 leading-relaxed mb-6">

@@ -75,7 +75,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-4">
         <DialogHeader className="space-y-0">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="bg-amber-100 p-1.5 sm:p-2 rounded-full shrink-0">
@@ -96,7 +96,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </p>
         )}
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col md:flex-row gap-3">
           {/* Personal Plan */}
           <div className="border border-gray-300 rounded-lg p-3 sm:p-4">
             <div className="min-w-0">
@@ -158,7 +158,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Upgrade to Pro — $12/month"
+                  "Upgrade to Pro"
                 )}
               </Button>
             </div>
@@ -226,7 +226,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Upgrade for Team — $15/seat"
+                  "Upgrade for Team"
                 )}
               </Button>
             </div>

@@ -21,7 +21,6 @@ import {
   Mail,
   Loader2,
   CheckCircle2,
-  Send,
   Sparkles,
   Eye,
   EyeOff,
@@ -54,8 +53,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
 
   const [errors, setErrors] = useState({ jurisdictions: false, topics: false, email: false });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSendingPreview, setIsSendingPreview] = useState(false);
-  const [previewSent, setPreviewSent] = useState(false);
   const [step, setStep] = useState<Step>('preferences');
   const [isNewUser, setIsNewUser] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
@@ -129,41 +126,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     if (next.length > 0) setErrors((e) => ({ ...e, topics: false }));
   };
 
-
-  // ─── Preview email ─────────────────────────────────────────────────────────
-
-  const previewEmail = emailChecked ? email.trim() : '';
-
-  const handleSendPreview = async () => {
-    if (jurisdictions.length === 0 || topics.length === 0) {
-      setErrors((e) => ({
-        ...e,
-        jurisdictions: jurisdictions.length === 0,
-        topics:        topics.length === 0,
-      }));
-      return;
-    }
-    if (!previewEmail) {
-      toast.info('Enter and verify your email above to receive a preview.');
-      return;
-    }
-    setIsSendingPreview(true);
-    try {
-      const res = await fetch('/api/digest/send-preview', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email: previewEmail, topics, jurisdictions, frequency }),
-      });
-      const data = await res.json();
-      if (!res.ok) { toast.error(data.error || 'Failed to send preview.'); return; }
-      setPreviewSent(true);
-      toast.success(`Preview sent to ${previewEmail} — check your inbox!`);
-    } catch {
-      toast.error('Network error. Please try again.');
-    } finally {
-      setIsSendingPreview(false);
-    }
-  };
 
   // ─── Email check ───────────────────────────────────────────────────────────
 
@@ -252,7 +214,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
       setIsSubmitting(false);
       setErrors({ jurisdictions: false, topics: false, email: false });
       setJurisdictionSelectorOpen(false);
-      setPreviewSent(false);
       setStep('preferences');
       setIsNewUser(false);
       setTempPassword('');
@@ -742,25 +703,6 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             )}
           </div>
 
-          {/* Preview button — only after email is verified */}
-          {emailChecked && (
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={handleSendPreview}
-              disabled={isSendingPreview || isSubmitting}
-            >
-              {isSendingPreview ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Generating your preview…</>
-              ) : previewSent ? (
-                <><CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />Preview sent — send again?</>
-              ) : (
-                <><Send className="h-4 w-4 mr-2" />Send me a preview digest</>
-              )}
-            </Button>
-          )}
-
           {/* Activate button */}
           <Button
             onClick={handleActivate}
@@ -774,7 +716,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             {isSubmitting ? (
               <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Setting up your digest…</>
             ) : (
-              <><Sparkles className="h-4 w-4 mr-2" />Start My Digest</>
+              <><Sparkles className="h-4 w-4 mr-2" />Activate Briefly</>
             )}
           </Button>
 

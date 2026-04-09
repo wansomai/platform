@@ -13,7 +13,7 @@ const API_BASE = 'https://generativelanguage.googleapis.com';
 // The @google/genai SDK warns when both are set because it reads env vars directly;
 // here we control which key we use explicitly.
 function getApiKey(): string {
-  return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
+  return process.env.GEMINI_API_KEY ||'';
 }
 
 // Default: text-embedding-004 (768 dims, stable v1). Override with GEMINI_EMBEDDING_MODEL.

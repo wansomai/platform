@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { RAGResult } from '@/types/legalKnowledge';
 import { RAGService } from './ragService';
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 export interface ProjectContext {
   jurisdiction?: string;

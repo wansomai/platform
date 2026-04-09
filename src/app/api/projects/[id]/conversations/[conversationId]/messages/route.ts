@@ -97,7 +97,7 @@ Respond with ONLY one word: edit, draft_new, or research`;
 
 
 // Initialize Gemini with the new API
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 // Default settings if none exist
 type JurisdictionObject = {

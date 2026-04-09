@@ -10,7 +10,8 @@ Wansom AI is a legal tech  AI powered platform built with Next.js 16 that provid
 
 ```bash
 npm run dev           # Development server (http://localhost:3000)
-npm run build         # Production build (includes prisma generate)
+npm run build         # Production build (runs prisma generate then next build)
+npm run start         # Start production server
 npm run lint          # ESLint
 npx prisma generate   # Generate Prisma client (required after schema changes)
 npx prisma migrate dev --name <name>  # Create and apply migration
@@ -189,6 +190,32 @@ export const GET = withErrorHandler(
 );
 ```
 
+### Request Validation
+Use `validateRequest()` from `src/lib/api/validation.ts` to validate request bodies against Zod schemas. Pre-built schemas cover common cases:
+```typescript
+import { validateRequest, schemas } from '@/lib/api/validation';
+
+const body = await req.json();
+const data = validateRequest(schemas.projectCreate, body); // throws AppError(400) on failure
+```
+Available schemas: `pagination`, `documentFilters`, `projectCreate`, `conversationCreate`, `messageCreate`.
+
+### Organization Resolution in API Routes
+Use helpers from `src/lib/api/org-helpers.ts` to resolve the correct organization context:
+```typescript
+import { getUserOrganizationId, getActiveOrganizationId, getUserWithOrganization } from '@/lib/api/org-helpers';
+
+// Primary org (for user-owned resources)
+const orgId = await getUserOrganizationId(userId);
+
+// Active org (for multi-org context — respects org switching)
+const orgId = await getActiveOrganizationId(userId); // falls back to primary if no active org set
+
+// User + org details in one query
+const user = await getUserWithOrganization(userId); // { id, organizationId, organization: { id, name, accountType, ownerId } }
+```
+Prefer `getActiveOrganizationId` over `getUserOrganizationId` when the operation should respect the user's current org context (e.g., creating projects, listing org members).
+
 ### Streaming AI Responses
 The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/messages/route.ts`) returns a `ReadableStream` of newline-delimited JSON (NDJSON). Each line is a complete JSON object:
 
@@ -334,6 +361,15 @@ Optional (for RAG tuning):
 ### Billing
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
+
+#### 9. Visibility & Permissions System
+- `Project`, `Document`, and `Folder` each have a `visibility` field:
+  - `Project.visibility`: `"restricted"` (default — only explicit members) | `"public"` (all org members)
+  - `Document.visibility`: `"private"` (default — only creator) | `"restricted"` (explicit grants) | `"public"` (all org members)
+  - `Folder.visibility`: `"restricted"` (default) | `"public"`
+- Fine-grained access is granted via join tables: `DocumentPermission` (per-document user grants) and `FolderPermission` (per-folder user grants)
+- Permission management endpoints: `GET/POST /api/documents/[id]/permissions` and `GET/POST /api/projects/[id]/permissions`
+- The org owner always has implicit access regardless of visibility/permission settings
 
 ### Subscription Limits (`src/lib/subscription.ts`)
 - **Free plan**: 2 projects, 8 messages/month

@@ -20,7 +20,7 @@ import { searchAfricanLegalSources } from '@/lib/legalScraper';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const Parser = require('rss-parser');
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
