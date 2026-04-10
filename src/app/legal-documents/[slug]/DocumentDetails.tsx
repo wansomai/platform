@@ -61,6 +61,7 @@ const DocDetailPageClient = ({ blog, initialJurisdictionId }: PageProps) => {
           initialJurisdictionId={initialJurisdictionId}
           documentTitle={plainTitle}
           documentDescription={blog.contentHtml || undefined}
+          templateUrl={blog.template?.url}
         />
       </main>
 
