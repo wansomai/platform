@@ -9,9 +9,10 @@ import { z } from "zod";
 const createAssociateSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name too long"),
   instructions: z.string().min(10, "Instructions must be at least 10 characters"),
-  description: z.string().max(500, "Description too long").optional(),
+  description: z.string().max(2000, "Description too long").optional(),
   practiceAreas: z.array(z.string()).min(1, "At least one practice area is required"),
   knowledgeBase: z.array(z.string()).optional(),
+  tools: z.array(z.string()).optional(),
   steps: z.array(z.object({
     description: z.string(),
     stepOrder: z.number()
@@ -102,10 +103,17 @@ export const POST = withErrorHandler(withAuth(async (
         createdById: userId,
         steps: validatedData.steps ? {
           createMany: { data: validatedData.steps }
-        } : undefined
+        } : undefined,
+        tools: validatedData.tools && validatedData.tools.length > 0 ? {
+          createMany: {
+            data: validatedData.tools.map(toolId => ({ toolId })),
+            skipDuplicates: true,
+          }
+        } : undefined,
       },
       include: {
-        steps: { orderBy: { stepOrder: 'asc' } }
+        steps: { orderBy: { stepOrder: 'asc' } },
+        tools: true,
       }
     });
 

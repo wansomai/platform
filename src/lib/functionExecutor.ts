@@ -1732,7 +1732,11 @@ Please provide a structured review report.`;
             conversationDocuments,
             recentMessages,
             streamCallback,
-            userId
+            userId,
+            canvasDocument,
+            previewDocument,
+            currentCanvasHtml,
+            conversationId
           );
         }
 

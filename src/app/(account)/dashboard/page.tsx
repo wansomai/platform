@@ -24,6 +24,7 @@ import { useProjectStore } from "@/store/project.store";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { useDocumentsStore } from "@/store/documents.store";
 import { useNotifications } from "@/hooks/useNotifications";
+import { apiService } from "@/lib/api";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { useProfile } from "@/store/profile.store";
 import {
@@ -109,6 +110,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
+  const [isPreparingCase, setIsPreparingCase] = useState(false);
   const [showDraftDropdown, setShowDraftDropdown] = useState(false);
   const {
     fetchProjects,
@@ -174,6 +176,25 @@ export default function DashboardPage() {
   const handleWorkspaceCreated = useCallback((projectId: string) => {
     // Optional: Handle workspace creation if needed
   }, []);
+
+  const handlePrepareForCase = useCallback(async () => {
+    if (isPreparingCase) return;
+    setIsPreparingCase(true);
+    try {
+      const response = await apiService.post<{ data: { projectId: string } }>(
+        '/api/associates/start-premade-session',
+        { premadeId: 'litigation-assistant' }
+      );
+      router.push(`/projects/${response.data.projectId}`);
+    } catch (error: any) {
+      if (error.status === 403 && error.requiresUpgrade) {
+        notify.error('AI Associates require a Pro plan. Upgrade to use this feature.');
+      } else {
+        notify.error('Failed to start case preparation. Please try again.');
+      }
+      setIsPreparingCase(false);
+    }
+  }, [isPreparingCase, router, notify]);
 
 
   return (
@@ -244,10 +265,11 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={Scale}
               title="Prepare for A Case"
-              description="Automate predefined legal processes with AI"
-              href="/workflows"
+              description="Start a session with the Litigation Research Assistant"
+              onClick={handlePrepareForCase}
               color="text-amber-600"
-              disabled={isCreatingQuickChat}
+              loading={isPreparingCase}
+              disabled={isCreatingQuickChat || isPreparingCase}
             />
                <QuickActionCard
               icon={MessageSquare}

@@ -616,6 +616,8 @@ model AssociateTool {
   associateId String
   toolId      String
   associate   AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+
+  @@unique([associateId, toolId])
 }
 
 model ProjectAssociate {

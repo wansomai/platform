@@ -12,7 +12,8 @@ import {
   CheckCircle,
   X,
   FileText,
-  ChevronDown
+  ChevronDown,
+  Users
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -181,6 +182,76 @@ export function ChatInterface() {
       )}
     </div>
   )
+}
+
+// Suggestion card shown below an associate response when a different specialist
+// would be a better fit for the user's query. Clicking "Switch" patches the
+// conversation's aiAssociateId so the next message goes to the suggested associate.
+function AssociateSuggestionCard({
+  suggestion,
+  projectId,
+  conversationId,
+}: {
+  suggestion: { id: string; name: string; reason: string };
+  projectId: string;
+  conversationId: string;
+}) {
+  const [dismissed, setDismissed] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const assignAssociate = useChatStore(state => state.assignAssociateToConversation);
+
+  if (dismissed) return null;
+
+  const handleSwitch = async () => {
+    setSwitching(true);
+    try {
+      const success = await assignAssociate(projectId, conversationId, suggestion.id);
+      if (success) {
+        setDismissed(true);
+      } else {
+        setSwitching(false);
+      }
+    } catch {
+      setSwitching(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 flex items-start gap-3 rounded-lg border border-[#74C6B8]/40 bg-[#74C6B8]/5 px-4 py-3 text-sm">
+      <div className="mt-0.5 flex-shrink-0 rounded-full bg-[#74C6B8]/20 p-1.5">
+        <Users className="h-3.5 w-3.5 text-[#4a7279]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-gray-800 text-sm">
+          {suggestion.name} might be better suited for this
+        </p>
+        <p className="mt-0.5 text-gray-500 text-xs leading-snug">{suggestion.reason}</p>
+        <div className="mt-2 flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 border-[#74C6B8] text-[#4a7279] hover:bg-[#74C6B8]/10 text-xs px-3"
+            disabled={switching}
+            onClick={handleSwitch}
+          >
+            {switching ? 'Switching…' : `Switch to ${suggestion.name}`}
+          </Button>
+          <button
+            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            onClick={() => setDismissed(true)}
+          >
+            Dismiss
+          </button>
+        </div>
+      </div>
+      <button
+        className="flex-shrink-0 text-gray-300 hover:text-gray-500 transition-colors"
+        onClick={() => setDismissed(true)}
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
 }
 
 // ChatMessageItem to handle streaming messages
@@ -479,6 +550,15 @@ const ChatMessageItem = React.memo(({
           {/* View canvas document button — shown when AI generated a new canvas doc */}
           {!isUser && message.canvasUpdated && message.actionType === 'generating' && message.canvasDocumentId && (
             <CanvasDocumentButton canvasDocumentId={message.canvasDocumentId} projectId={projectId} />
+          )}
+
+          {/* Associate switch suggestion — shown when a different specialist is a better fit */}
+          {!isUser && message.suggestedAssociate && message.conversationId && (
+            <AssociateSuggestionCard
+              suggestion={message.suggestedAssociate}
+              projectId={projectId}
+              conversationId={message.conversationId}
+            />
           )}
         </div>
       </div>

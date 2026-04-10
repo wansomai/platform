@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +15,7 @@ type Step = "form" | "calendly" | "success";
 const DemoPage = () => {
   const [step, setStep] = useState<Step>("form");
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -44,6 +46,7 @@ const DemoPage = () => {
       ) {
         submittedRef.current = true;
         setStep("success");
+        setTimeout(() => router.push("/"), 10000);
       }
     };
 

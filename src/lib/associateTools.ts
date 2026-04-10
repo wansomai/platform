@@ -107,7 +107,8 @@ export async function generateProjectAssociateTools(
       include: {
         associate: {
           include: {
-            steps: { orderBy: { stepOrder: 'asc' } }
+            steps: { orderBy: { stepOrder: 'asc' } },
+            tools: true,
           }
         }
       }
@@ -149,7 +150,8 @@ export async function findAssociateByFunctionName(
       include: {
         associate: {
           include: {
-            steps: { orderBy: { stepOrder: 'asc' } }
+            steps: { orderBy: { stepOrder: 'asc' } },
+            tools: true,
           }
         }
       }
