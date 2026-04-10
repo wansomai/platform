@@ -1503,231 +1503,26 @@ export async function generateLegalDigestFromDB(
     };
   }
 
-  // Re-use the same synthesis prompt and URL-verification logic as the live path
-  const synthesisPrompt = `You are a legal editor organising pre-fetched news items into a ${timeframe} email digest for practising attorneys.
-
-TODAY: ${todayLabel}
-TOPICS: ${topicList}
-JURISDICTIONS: ${jurisdictionNames}
-
-RULES:
-1. If two or more items clearly cover the same legal event or story (even with different titles), merge them into ONE entry. Use the title of the most informative item, write one combined summary, and list all their URLs in "sourceUrl" separated by " | ". Do not list the same story twice.
-2. Do NOT search for additional information. Do NOT generate, guess, or modify any URLs.
-3. For "sourceUrl": copy the "url" field(s) EXACTLY from the item(s). Do not alter them.
-4. Write each summary in 2 concise plain-English sentences suitable for practising attorneys.
-5. Each item title must include the jurisdiction name if not already present.
-
-CLASSIFY each item into one of these categories:
-- Court judgment / ruling / order → "Case Law Updates"
-- Statute, regulation, gazette notice, government policy → "Regulatory Changes"
-- News article, law firm alert, commentary, industry update → "Legal News"
-
-ITEMS (${allRawResults.length} unique stories):
-${JSON.stringify(allRawResults, null, 2)}
-
-Return ONLY valid JSON — no markdown fences, no extra text:
-{
-  "headline": "Single sentence: the most significant legal development in this digest",
-  "summary": "2–3 sentences: executive overview of key developments across all jurisdictions",
-  "sections": [
-    {
-      "category": "Case Law Updates",
-      "items": [
-        {
-          "title": "item title (include jurisdiction)",
-          "summary": "2-sentence plain-English summary",
-          "sourceName": "source field from item",
-          "sourceUrl": "exact url from item — copy verbatim"
-        }
-      ]
-    }
-  ],
-  "sources": [
-    { "title": "title from item", "url": "exact url from item" }
-  ]
-}`;
-
-  // Retry up to 3 times with exponential backoff on Gemini 503 (overloaded)
-  let response: Awaited<ReturnType<typeof genAI.models.generateContent>>;
-  const maxAttempts = 3;
-  for (let attempt = 1; ; attempt++) {
-    try {
-      response = await genAI.models.generateContent({
-        model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
-        contents: synthesisPrompt,
-        config:   { temperature: 0.2 },
-      });
-      break;
-    } catch (err: unknown) {
-      const status = (err as { status?: number })?.status;
-      if (status === 503 && attempt < maxAttempts) {
-        const delay = 5000 * attempt; // 5s, 10s
-        console.warn(`[Briefly] Gemini 503 on attempt ${attempt} — retrying in ${delay}ms`);
-        await new Promise((r) => setTimeout(r, delay));
-      } else {
-        throw err;
-      }
-    }
-  }
-
-  const text = (response.text || '').trim();
-  let cleanText = text;
-  if (cleanText.startsWith('```')) {
-    cleanText = cleanText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-  }
-
-  // Build verified URL sets from all results (DB + grounding).
-  const verifiedUrls     = new Set(allRawResults.map((r) => normalizeUrl(r.url)).filter(Boolean));
-  const normalToOriginal = new Map<string, string>();
-  for (const r of allRawResults) {
-    if (r.url) normalToOriginal.set(normalizeUrl(r.url), r.url);
-  }
-
-  // ── JSON extraction helpers ──────────────────────────────────────────────────
-  // Gemini occasionally wraps JSON in markdown fences, adds preamble text, or
-  // returns a truncated response.  Try progressively more aggressive repairs
-  // before giving up on the Gemini response entirely.
-  function tryParseDigest(raw: string): DigestContent | null {
-    const attempts: string[] = [raw];
-
-    // Strip ```json … ``` fences
-    attempts.push(raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, ''));
-
-    // Extract first {...} block (handles preamble / postamble text)
-    const jsonBlock = raw.match(/\{[\s\S]*\}/);
-    if (jsonBlock) attempts.push(jsonBlock[0]);
-
-    // Remove trailing commas before } or ] (common Gemini mistake)
-    if (jsonBlock) {
-      attempts.push(jsonBlock[0].replace(/,(\s*[}\]])/g, '$1'));
-    }
-
-    for (const attempt of attempts) {
-      try {
-        const parsed = JSON.parse(attempt.trim());
-        if (parsed && typeof parsed === 'object' && Array.isArray(parsed.sections)) {
-          return parsed as DigestContent;
-        }
-      } catch {
-        // try next
-      }
-    }
-    return null;
-  }
-
-  // ── Helper: validate and stamp a successfully parsed digest ─────────────────
-  function finaliseDigest(d: DigestContent): DigestContent {
-    d.generatedAt = new Date().toISOString();
-    if (backdatedDays) d.backdatedDays = backdatedDays;
-
-    // Build a URL → publishedAt map so we can label out-of-window items.
-    const urlToDate = new Map<string, number>();
-    for (const r of rawResults) {
-      if (r.url && r.date) {
-        const t = new Date(r.date).getTime();
-        if (!isNaN(t)) urlToDate.set(normalizeUrl(r.url), t);
-      }
-    }
-    const primaryWindowStart = new Date(sinceDate).getTime();
-
-    for (const section of d.sections) {
-      for (const item of section.items) {
-        if (item.sourceUrl) {
-          // Gemini sometimes merges two items about the same story and outputs
-          // "url1 | url2" as sourceUrl (per the merge rule in the synthesis prompt).
-          // Split on " | " and take the first URL that exists in verifiedUrls.
-          const parts = item.sourceUrl.split(' | ').map(u => u.trim()).filter(Boolean);
-          const firstVerified = parts.find(u => verifiedUrls.has(normalizeUrl(u)));
-          if (firstVerified) {
-            const norm = normalizeUrl(firstVerified);
-            item.sourceUrl = normalToOriginal.get(norm) ?? firstVerified;
-          } else {
-            item.sourceUrl = undefined;
-          }
-        }
-        // Stamp a compact age label on items that fall outside the primary window.
-        // Items within the window get no tag — only genuinely backdated ones are labelled.
-        if (backdatedDays && item.sourceUrl) {
-          const itemTime = urlToDate.get(normalizeUrl(item.sourceUrl));
-          if (itemTime && itemTime < primaryWindowStart) {
-            const daysAgo = Math.ceil((Date.now() - itemTime) / (1000 * 60 * 60 * 24));
-            item.backdatedLabel = daysAgo <= 1 ? '1 day ago' : `${daysAgo} days ago`;
-          }
-        }
-      }
-    }
-    const seenUrls = new Set<string>();
-    d.sources = [];
-    for (const r of allRawResults) {
-      if (r.url && !seenUrls.has(r.url)) {
-        d.sources.push({ title: r.title, url: r.url });
-        seenUrls.add(r.url);
-      }
-    }
-    return d;
-  }
-
-  const parsed = tryParseDigest(cleanText);
-  if (parsed) {
-    return { digest: finaliseDigest(parsed), source: 'db', itemCount: items.length };
-  }
-
-  // ── First attempt returned invalid JSON — retry with a tighter prompt ────────
-  // Transient Gemini failures (truncated output, stray markdown) resolve almost
-  // always on a single retry with a shorter, more explicit instruction.
-  console.warn(`[Briefly] First synthesis attempt returned invalid JSON for ${jurisdictions.join(',')} — retrying`);
-  let retryParsed: DigestContent | null = null;
-  try {
-    const retryPrompt =
-      `Return ONLY valid JSON — no markdown fences, no extra text.\n\n` +
-      `Schema (follow exactly):\n` +
-      `{"headline":"string","summary":"string","sections":[{"category":"Case Law Updates"|"Regulatory Changes"|"Legal News","items":[{"title":"string","summary":"2 plain-English sentences","sourceName":"string","sourceUrl":"copy url field verbatim"}]}],"sources":[{"title":"string","url":"string"}]}\n\n` +
-      `Rules: include every item, copy each sourceUrl verbatim from the list, do not invent URLs.\n\n` +
-      `Items (${allRawResults.length}):\n` +
-      JSON.stringify(allRawResults.map((r) => ({
-        title:  r.title,
-        url:    r.url,
-        snippet: r.snippet.slice(0, 100),
-        source: r.source,
-        type:   r.type,
-      })));
-
-    const retryResponse = await genAI.models.generateContent({
-      model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
-      contents: retryPrompt,
-      config:   { temperature: 0 },
-    });
-    retryParsed = tryParseDigest((retryResponse.text || '').trim());
-  } catch (retryErr: any) {
-    console.error(`[Briefly] Synthesis retry also failed for ${jurisdictions.join(',')}:`, retryErr.message);
-  }
-
-  if (retryParsed) {
-    console.log(`[Briefly] Retry synthesis succeeded for ${jurisdictions.join(',')}`);
-    return { digest: finaliseDigest(retryParsed), source: 'db', itemCount: items.length };
-  }
-
-  // ── Both attempts failed — build digest from pre-computed aiSummary fields ───
-  // rawResults.snippet already contains the Gemini-written aiSummary from ingest
-  // (see rawResults mapping above), so even this last-resort path sends clean,
-  // AI-authored content rather than raw Tavily / RSS excerpts.
-  console.warn(
-    `[Briefly] Both synthesis attempts failed for ${jurisdictions.join(',')} — ` +
-    `building digest from aiSummary fields (${items.length} item(s))`,
+  // ── Build digest from pre-computed aiSummary fields — no Gemini synthesis ───
+  // Each item's aiSummary was written by Gemini at ingest time and is already
+  // clean, attorney-ready content.  Skipping a second synthesis pass makes this
+  // path instant (no Gemini call) and reliable for any number of subscribers.
+  console.log(
+    `[Briefly] Building digest from aiSummary fields: ${allRawResults.length} item(s) for ${jurisdictions.join(',')}`,
   );
 
-  const fallbackSections: DigestContent['sections'] = [
+  const sections: DigestContent['sections'] = [
     { category: 'Case Law Updates',   items: [] },
     { category: 'Regulatory Changes', items: [] },
     { category: 'Legal News',         items: [] },
   ];
 
   for (const r of allRawResults) {
-    const categoryIndex =
+    const idx =
       r.type === 'case_law'    ? 0 :
       r.type === 'legislation' ? 1 : 2;
 
-    fallbackSections[categoryIndex].items.push({
+    sections[idx].items.push({
       title:      r.title,
       summary:    r.snippet || r.title,
       sourceName: r.source,
@@ -1735,19 +1530,16 @@ Return ONLY valid JSON — no markdown fences, no extra text:
     });
   }
 
-  const nonEmpty = fallbackSections.filter((s) => s.items.length > 0);
-  const todayLbl = getTodayLabel();
-
-  const fallbackDigest: DigestContent = {
-    headline:    `${jurisdictionNames} Legal Digest — ${todayLbl}`,
+  const digest: DigestContent = {
+    headline:    `${jurisdictionNames} Legal Digest — ${getTodayLabel()}`,
     summary:     `${allRawResults.length} legal developments across ${jurisdictionNames} for ${timeframe}.`,
-    sections:    nonEmpty,
+    sections:    sections.filter((s) => s.items.length > 0),
     sources:     allRawResults.map((r) => ({ title: r.title, url: r.url })),
     generatedAt: new Date().toISOString(),
     ...(backdatedDays ? { backdatedDays } : {}),
   };
 
-  return { digest: fallbackDigest, source: 'db', itemCount: items.length };
+  return { digest, source: 'db', itemCount: items.length };
 }
 
 // ─── DigestCache helpers ──────────────────────────────────────────────────────

@@ -1425,9 +1425,9 @@ export async function sendLegalDigestEmail({
               const cardStyle = 'display:block;margin-bottom:16px;padding:12px;background-color:#f8fafc;border-radius:6px;border-left:3px solid #0a4b5e;text-decoration:none;color:inherit;';
               const inner = `
                 <h3 style="color:#1a1a1a;font-size:15px;margin:0 0 6px 0;">${item.title}</h3>
-                <p style="color:#4a4a4a;font-size:14px;line-height:1.5;margin:0 0 8px 0;">${item.summary}</p>
+                <p style="color:#4a4a4a;font-size:14px;line-height:1.5;margin:0 0 8px 0;">${item.summary}${item.sourceUrl ? ` <span style="color:#0a4b5e;font-weight:600;text-decoration:underline;">Read more &rarr;</span>` : ''}</p>
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                  ${item.sourceName ? `<span style="color:#0a4b5e;font-size:13px;">${item.sourceName}${item.sourceUrl ? ' &rarr;' : ''}</span>` : ''}
+                  ${item.sourceName ? `<span style="color:#0a4b5e;font-size:13px;">${item.sourceName}</span>` : ''}
                   ${item.backdatedLabel ? `<span style="display:inline-block;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;padding:1px 8px;border-radius:10px;white-space:nowrap;">&#128337; ${item.backdatedLabel}</span>` : ''}
                 </div>
               `;
