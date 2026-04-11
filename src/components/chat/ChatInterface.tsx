@@ -54,19 +54,25 @@ function getStatusText(status?: string, statusMessage?: string): string {
 }
 
 // Empty state component for when there are no messages
-const EmptyState = () => (
+const EmptyState = ({ associate }: { associate?: { name: string; description?: string } }) => (
   <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 text-center">
     <div className="max-w-md mx-auto space-y-6">
-      {/* Logo and greeting */}
       <div className="space-y-4">
         <div className="space-y-2">
-
-          <p className="text-gray-600 text-3xl capitalize">
-            All Your favorite legal tools in a unified AI workspace
-          </p>
+          {associate ? (
+            <>
+              <p className="text-gray-800 text-2xl font-medium">{associate.name}</p>
+              {associate.description && (
+                <p className="text-gray-500 text-sm">{associate.description}</p>
+              )}
+            </>
+          ) : (
+            <p className="text-gray-600 text-3xl capitalize">
+              All Your favorite legal tools in a unified AI workspace
+            </p>
+          )}
         </div>
       </div>
-
     </div>
   </div>
 );
@@ -140,16 +146,16 @@ export function ChatInterface() {
       {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
           <Globe className="h-4 w-4 flex-shrink-0" />
-          <span> <strong>{suggestedJurisdiction.name}</strong>jurisdction detected</span>
+          <span><strong>{suggestedJurisdiction.name}</strong> jurisdiction detected.</span>
           <button
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
-            className=" font-medium hover:text-green-900"
+            className="font-medium underline hover:text-green-900"
           >
-            Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
+            Apply {suggestedJurisdiction.name} law
           </button>
           <button
             onClick={() => setDismissedSuggestion(true)}
-            className="ml-auto text-primary hover:text-green-600"
+            className="ml-auto text-green-500 hover:text-green-700"
           >
             ✕
           </button>
@@ -158,7 +164,7 @@ export function ChatInterface() {
 
       {/* Messages area or empty/loading state */}
       {!hasMessages ? (
-        hasPendingMessage || isLoading ? <PendingMessageState /> : <EmptyState />
+        hasPendingMessage || isLoading ? <PendingMessageState /> : <EmptyState associate={currentConversation?.aiAssociate} />
       ) : (
         <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style jsx>{`
@@ -173,6 +179,7 @@ export function ChatInterface() {
                 message={message}
                 user={session?.user}
                 projectId={currentConversation.projectId}
+                associateName={currentConversation.aiAssociate?.name}
                 onCopy={() => copyMessageToClipboard(message.content)}
               />
             ))}
@@ -259,11 +266,13 @@ const ChatMessageItem = React.memo(({
   message,
   user,
   projectId,
+  associateName,
   onCopy
 }: {
   message: Message,
   user: any,
   projectId: string,
+  associateName?: string,
   onCopy: () => void
 }) => {
   const isUser = message.role === 'user';
@@ -286,10 +295,6 @@ const ChatMessageItem = React.memo(({
     };
   }, []);
 
-  // Debug: Check if message has report
-  if (!isUser && (message.metadata?.report || message.report)) {
-  }
-
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
 
@@ -302,7 +307,7 @@ const ChatMessageItem = React.memo(({
 
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
-            <span className="font-medium">{isUser ? 'You' : 'Wansom'}</span>
+            <span className="font-medium">{isUser ? 'You' : (associateName ?? 'Wansom')}</span>
             <span className="text-muted-foreground text-xs">
               {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
@@ -380,7 +385,7 @@ const ChatMessageItem = React.memo(({
           )}
 
           <div
-            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-white" : "bg-transparent"
+            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-gray-900" : "bg-transparent"
               }`}
           >
             {message.isLoading || isStreaming ? (
