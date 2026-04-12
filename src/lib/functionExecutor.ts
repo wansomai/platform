@@ -10,6 +10,19 @@ import { RAGService } from '@/services/ragService';
 import { Jurisdiction } from '@/types/legalKnowledge';
 
 /**
+ * Expand relative date references ("today", "today's date", "current date") in an
+ * edit instruction to the actual current date so the document AI always uses the
+ * right date regardless of what the chat model inferred from its training data.
+ */
+function resolveRelativeDates(instruction: string): string {
+  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  return instruction
+    .replace(/\btoday'?s\s+date\b/gi, today)
+    .replace(/\bcurrent\s+date\b/gi, today)
+    .replace(/\btoday\b/gi, today);
+}
+
+/**
  * Execute a function call from Gemini
  * @param functionCall - Function call object from Gemini (new @google/genai format)
  * @param streamCallback - Optional callback for streaming updates
@@ -240,7 +253,8 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       }
 
       case 'editCanvasDocument': {
-        const { changeDescription, targetSection } = functionCall.args as any;
+        const { changeDescription: rawChangeDescription, targetSection } = functionCall.args as any;
+        const changeDescription = resolveRelativeDates(rawChangeDescription);
 
         // If the route didn't pass a canvas document (race condition: activeCanvasId was
         // null/stale while fetchCanvasDocuments was still resolving), do a fresh DB lookup
@@ -541,11 +555,18 @@ ${additionalContext ? `Additional Context: ${additionalContext}` : ''}`;
       }
 
       case 'batchEditCanvasDocument': {
-        const { edits } = functionCall.args as any;
+        const { edits: rawEdits } = functionCall.args as any;
 
-        if (!Array.isArray(edits) || edits.length === 0) {
+        if (!Array.isArray(rawEdits) || rawEdits.length === 0) {
           return { error: 'No edits provided to batchEditCanvasDocument.' };
         }
+
+        // Expand relative date references in every edit description so the document AI
+        // always uses the real current date, not whatever the chat model inferred.
+        const edits = rawEdits.map((e: any) => ({
+          ...e,
+          changeDescription: resolveRelativeDates(e.changeDescription ?? ''),
+        }));
 
         // Same DB-first fallback as editCanvasDocument: try the most recent canvas doc
         // before looking for an inline-generated doc to promote.

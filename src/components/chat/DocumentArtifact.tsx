@@ -1,7 +1,7 @@
 // src/components/chat/DocumentArtifact.tsx
 'use client'
 import React from 'react'
-import { FileText, } from 'lucide-react'
+import { FileText, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -101,6 +101,7 @@ export function DocumentArtifact({
             onClick={(e) => { e.stopPropagation(); handleCardClick(); }}
             className="flex-shrink-0"
           >
+            <ExternalLink className="h-3.5 w-3.5 sm:hidden" />
             <span className="hidden sm:inline">{isOpening ? 'Opening…' : 'Open in Editor'}</span>
           </Button>
         </div>

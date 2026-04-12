@@ -6,7 +6,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
-import { createApiResponse, createBadRequestResponse } from '@/lib/api/response';
+import { createApiResponse, createBadRequestResponse, createErrorResponse } from '@/lib/api/response';
 import { getActiveOrganizationId } from '@/lib/api/org-helpers';
 import { canCreateProject, canUseAssociates } from '@/lib/subscription';
 import { premadeAssociates } from '@/lib/constants/premadeAssociates';
@@ -38,16 +38,10 @@ export const POST = withErrorHandler(
     ]);
 
     if (!projectCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: projectCheck.reason, requiresUpgrade: true }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } }
-      );
+      return createErrorResponse(projectCheck.reason ?? 'Upgrade required', 403);
     }
     if (!associateCheck.allowed) {
-      return new Response(
-        JSON.stringify({ error: associateCheck.reason, requiresUpgrade: true }),
-        { status: 403, headers: { 'Content-Type': 'application/json' } }
-      );
+      return createErrorResponse(associateCheck.reason ?? 'Upgrade required', 403);
     }
 
     const result = await prisma.$transaction(async (tx) => {

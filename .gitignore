@@ -10,8 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
-# google creads 
+# google creads
 google-credentials.json
+google-service-account.json
 
 # testing
 /coverage
