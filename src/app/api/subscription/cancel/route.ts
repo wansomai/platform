@@ -127,21 +127,22 @@ export const POST = withErrorHandler(
       }
     }
 
-    // No Paystack subscription found (manual upgrade, or customer exists but no subscription).
-    // Cancel locally without touching Paystack.
+    // No Paystack subscription found — direct-payment subscription (multi-currency flow).
+    // Mark as non_renewing so the user keeps access until currentPeriodEnd.
+    // The renewal cron will downgrade the account after the grace period.
     if (!paystackSubId) {
       await prisma.subscription.update({
         where: { id: subscription.id },
-        data: { status: 'cancelled' },
+        data: { status: 'non_renewing' },
       });
 
       return createApiResponse(
         {
           message: 'Subscription cancelled successfully',
           effectiveUntil: subscription.currentPeriodEnd,
-          status: 'cancelled',
+          status: 'non_renewing',
         },
-        'Your subscription has been cancelled and your account has been downgraded to the free plan.'
+        'Your subscription has been cancelled. You will have access until the end of your current billing period.'
       );
     }
 

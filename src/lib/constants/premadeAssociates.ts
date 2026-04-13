@@ -1,9 +1,10 @@
 import { PracticeArea } from '@/types/associates';
 import { FileText, CheckCircle2, Scale, Clipboard, User, Newspaper } from 'lucide-react';
 import { LightBulbIcon } from '@heroicons/react/24/outline';
+import { DEFAULT_TOOLS_BY_PRACTICE_AREA } from './associateToolDefaults';
 
 export const premadeAssociates = [
-   {
+  {
     id: "briefly-by-wansom",
     name: "Briefly by Wansom",
     description:
@@ -20,6 +21,7 @@ Features:
     icon: Newspaper,
     color: "text-orange-600",
     isDigest: true,
+    defaultTools: DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.GENERAL_PRACTICE] ?? [],
   },
   {
     id: "contract-review",
@@ -38,6 +40,7 @@ Always be thorough, precise, and explain your reasoning in business-friendly lan
     practiceAreas: [PracticeArea.CONTRACTS_COMMERCIAL],
     icon: FileText,
     color: "text-blue-600",
+    defaultTools: DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.CONTRACTS_COMMERCIAL] ?? [],
   },
   {
     id: "compliance-advisor",
@@ -59,6 +62,10 @@ Focus on practical, implementable compliance strategies that balance legal requi
     ],
     icon: CheckCircle2,
     color: "text-green-600",
+    defaultTools: Array.from(new Set([
+      ...(DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.COMPLIANCE_REGULATORY] ?? []),
+      ...(DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.PRIVACY_DATA_PROTECTION] ?? []),
+    ])),
   },
   {
     id: "litigation-assistant",
@@ -77,6 +84,7 @@ Provide thorough, well-cited analysis with proper legal reasoning and attention 
     practiceAreas: [PracticeArea.LITIGATION_DISPUTE_RESOLUTION],
     icon: Scale,
     color: "text-purple-600",
+    defaultTools: DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.LITIGATION_DISPUTE_RESOLUTION] ?? [],
   },
   {
     id: "ip-specialist",
@@ -98,6 +106,10 @@ Combine technical IP knowledge with practical business considerations to provide
     ],
     icon: LightBulbIcon,
     color: "text-amber-600",
+    defaultTools: Array.from(new Set([
+      ...(DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.INTELLECTUAL_PROPERTY] ?? []),
+      ...(DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.TECHNOLOGY_LICENSING] ?? []),
+    ])),
   },
   {
     id: "ma-advisor",
@@ -119,6 +131,10 @@ Focus on practical risk identification and clear communication of findings to fa
     ],
     icon: Clipboard,
     color: "text-indigo-600",
+    defaultTools: Array.from(new Set([
+      ...(DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.MERGERS_AND_ACQUISITIONS] ?? []),
+      ...(DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.CORPORATE_GOVERNANCE] ?? []),
+    ])),
   },
   {
     id: "employment-advisor",
@@ -137,6 +153,6 @@ Balance legal compliance with practical HR considerations and business needs.`,
     practiceAreas: [PracticeArea.EMPLOYMENT_LABOR],
     icon: User,
     color: "text-teal-600",
+    defaultTools: DEFAULT_TOOLS_BY_PRACTICE_AREA[PracticeArea.EMPLOYMENT_LABOR] ?? [],
   },
- 
 ];

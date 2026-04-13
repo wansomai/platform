@@ -65169,13 +65169,14 @@ export namespace Prisma {
 
   export type AssociateToolWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    associateId_toolId?: AssociateToolAssociateIdToolIdCompoundUniqueInput
     AND?: AssociateToolWhereInput | AssociateToolWhereInput[]
     OR?: AssociateToolWhereInput[]
     NOT?: AssociateToolWhereInput | AssociateToolWhereInput[]
     associateId?: StringFilter<"AssociateTool"> | string
     toolId?: StringFilter<"AssociateTool"> | string
     associate?: XOR<AIAssociateScalarRelationFilter, AIAssociateWhereInput>
-  }, "id">
+  }, "id" | "associateId_toolId">
 
   export type AssociateToolOrderByWithAggregationInput = {
     id?: SortOrder
@@ -72144,6 +72145,11 @@ export namespace Prisma {
 
   export type AssociateStepSumOrderByAggregateInput = {
     stepOrder?: SortOrder
+  }
+
+  export type AssociateToolAssociateIdToolIdCompoundUniqueInput = {
+    associateId: string
+    toolId: string
   }
 
   export type AssociateToolCountOrderByAggregateInput = {

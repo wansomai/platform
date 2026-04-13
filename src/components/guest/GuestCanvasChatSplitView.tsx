@@ -1,7 +1,7 @@
 'use client';
 // Orchestrates the full guest drafting experience:
 // auto-generates the document on mount, manages state, handles the Paystack export gate.
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SplitView } from '@/components/layout/SplitView';
 import GuestCanvasInterface from './GuestCanvasInterface';
 import GuestChatPanel from './GuestChatPanel';
@@ -21,36 +21,14 @@ interface GuestCanvasChatSplitViewProps {
   templateUrl?: string;
 }
 
-// Pricing per jurisdiction (amount in smallest currency unit for Paystack)
-const EXPORT_PRICING: Record<string, { amount: number; currency: string; label: string }> = {
-  
-  // 🌍 CORE AFRICAN MARKETS
-  // Target: ~$5-6 USD equivalent (PPP-adjusted, high price sensitivity)
-  
-  ng: { amount: 349900, currency: 'NGN', label: '₦3,499' },  // $2.50 — impulse buy
-  ke: { amount: 44900,  currency: 'KES', label: 'KES 449' }, // $3.47 — M-Pesa friendly
-  za: { amount: 5900,   currency: 'ZAR', label: 'R59'     }, // $3.62
-  gh: { amount: 3999,   currency: 'GHS', label: 'GHS 40'  }, // $3.71
-  
-  // 🇬🇧 UK — Diaspora #1 Target (high purchase power)
-  gb: { amount: 499,     currency: 'GBP', label: '£4.99'   }, // ~$10.10
-  
-  // 🇺🇸 USA — Diaspora #2 Target
-  us: { amount: 499,     currency: 'USD', label: '$4.99'   },
-  
-  // 🇨🇦 Canada — Diaspora #3 Target  
-  ca: { amount: 1099,    currency: 'CAD', label: 'CA$10.99' }, // ~$9.10
-  
-  // 🇦🇺 Australia — South African diaspora hub
-  au: { amount: 1099,    currency: 'AUD', label: 'A$10.99'  }, // ~$9.50
-  
-  // 🇦🇪 UAE — High-income African professionals
-  ae: { amount: 2699,    currency: 'AED', label: 'AED 26.99' }, // ~$10.07
-  
-};
+interface PaymentConfig {
+  amount: number;
+  currency: string;
+  label: string;
+  channels: string[];
+  publicKey: string;
+}
 
-// Default for all other countries (raised from $5 → $7.99)
-const DEFAULT_PRICING  = { amount: 499, currency: 'USD', label: '$4.99' };
 // Placeholder HTML shown (blurred/masked) when there is no template.
 // Looks like a real document so the mask feels convincing.
 const MASKED_PLACEHOLDER_HTML = `
@@ -87,11 +65,20 @@ export default function GuestCanvasChatSplitView({
   const [exportEmail, setExportEmail] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState('');
+  const [paymentConfig, setPaymentConfig] = useState<PaymentConfig | null>(null);
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
 
-  // On mount: show skeleton for a minimum duration, then load canvas content and open export modal
+  // On mount: fetch payment config + load canvas content in parallel, then open export modal
   useEffect(() => {
     const init = async () => {
       const minSkeleton = new Promise<void>((res) => setTimeout(res, 2500));
+
+      // Fetch payment config in parallel — ready before modal opens
+      const configPromise = fetch('/api/public/export-payment-config')
+        .then((r) => r.json())
+        .then((json) => { if (json.data) setPaymentConfig(json.data); })
+        .catch(() => { /* Keep null — handlePayClick will surface error */ })
+        .finally(() => setIsLoadingConfig(false));
 
       if (templateUrl) {
         try {
@@ -109,6 +96,7 @@ export default function GuestCanvasChatSplitView({
               return data.html as string | null;
             }),
             minSkeleton,
+            configPromise,
           ]);
 
           if (result && result.trim().length > 50) {
@@ -120,13 +108,13 @@ export default function GuestCanvasChatSplitView({
           }
         } catch (err) {
           console.error('[fetch-template] unexpected:', err);
-          await minSkeleton;
+          await Promise.all([minSkeleton, configPromise]);
           setDocumentHtml(MASKED_PLACEHOLDER_HTML);
           setIsMasked(true);
         }
       } else {
         // No template — show masked placeholder
-        await minSkeleton;
+        await Promise.all([minSkeleton, configPromise]);
         setDocumentHtml(MASKED_PLACEHOLDER_HTML);
         setIsMasked(true);
       }
@@ -189,9 +177,13 @@ export default function GuestCanvasChatSplitView({
       // Export generated document
       if (accumulated) {
         await exportHtmlAsDocx(accumulated);
+      } else {
+        throw new Error('Document generation produced no content.');
       }
     } catch (err: any) {
+      console.error('[generateAndExport] failed:', err);
       setExportError(err.message || 'Failed to generate document. Please try again.');
+      setShowExportModal(true); // Re-open modal so the error is visible
     } finally {
       setIsGenerating(false);
       setIsExporting(false);
@@ -221,7 +213,6 @@ export default function GuestCanvasChatSplitView({
 
   // ── Export / Paystack flow ──────────────────────────────────────────────────
 
-  const pricing = EXPORT_PRICING[jurisdictionId] || DEFAULT_PRICING;
   const jurisdiction = JURISDICTIONS.find((j) => j.id === jurisdictionId);
 
   const exportHtmlAsDocx = async (html: string) => {
@@ -294,6 +285,11 @@ export default function GuestCanvasChatSplitView({
     }
     setExportError('');
 
+    if (!paymentConfig) {
+      setExportError('Payment configuration is still loading. Please try again in a moment.');
+      return;
+    }
+
     // Load Paystack inline script once
     await new Promise<void>((resolve) => {
       if ((window as any).PaystackPop) { resolve(); return; }
@@ -303,14 +299,12 @@ export default function GuestCanvasChatSplitView({
       document.body.appendChild(script);
     });
 
-    const channels = jurisdictionId === 'ke' ? ['mobile_money', 'card'] : ['card'];
-
     (window as any).PaystackPop.setup({
-      key: 'pk_live_fcef983434b15b8b03d03189ebff007c36adfe48',
+      key: paymentConfig.publicKey,
       email: exportEmail,
-      amount: pricing.amount,
-      currency: pricing.currency,
-      channels,
+      amount: paymentConfig.amount,
+      currency: paymentConfig.currency,
+      channels: paymentConfig.channels,
       ref: `WANSOM-DOC-${Date.now()}`,
       metadata: {
         custom_fields: [
@@ -318,17 +312,22 @@ export default function GuestCanvasChatSplitView({
           { display_name: 'Jurisdiction', variable_name: 'jurisdiction', value: jurisdictionId },
         ],
       },
-      callback: async function() {
+      callback: function() {
         setShowExportModal(false);
         if (templateUrl) {
           // Template exists — download original file directly
           setIsExporting(true);
           downloadTemplateFile()
-            .catch((err: any) => setExportError(err.message || 'Failed to download template.'))
+            .catch((err: any) => {
+              console.error('[downloadTemplateFile] failed:', err);
+              setExportError(err.message || 'Failed to download template.');
+              setShowExportModal(true); // Re-open modal so the error is visible
+            })
             .finally(() => setIsExporting(false));
         } else {
           // No template — generate with Gemini and export
-          await generateAndExport(jurisdictionId);
+          // (generateAndExport re-opens the modal on error)
+          generateAndExport(jurisdictionId);
         }
       },
       onClose: () => {},
@@ -419,13 +418,15 @@ export default function GuestCanvasChatSplitView({
 
               <button
                 onClick={handlePayClick}
-                disabled={isExporting}
+                disabled={isExporting || isLoadingConfig}
                 className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
                 {isExporting ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> Generating document…</>
+                ) : isLoadingConfig ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Loading…</>
                 ) : (
-                  `Pay ${pricing.label} & Download`
+                  `Pay ${paymentConfig?.label ?? '…'} & Download`
                 )}
               </button>
 

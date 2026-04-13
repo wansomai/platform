@@ -365,6 +365,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     ...(data.document && { document: data.document })
                   }
                   : undefined,
+                suggestedAssociate: data.suggestedAssociate,
                 isStreaming: false
               });
               break;

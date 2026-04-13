@@ -8,10 +8,11 @@ import { z } from "zod";
 const updateAssociateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   instructions: z.string().min(10).optional(),
-  description: z.string().max(500).optional(),
+  description: z.string().max(2000).optional(),
   practiceAreas: z.array(z.string()).min(1).optional(),
   knowledgeBase: z.array(z.string()).optional(),
   isActive: z.boolean().optional(),
+  tools: z.array(z.string()).optional(),
   steps: z.array(z.object({
     id: z.string().optional(),
     description: z.string(),
@@ -124,10 +125,7 @@ export const PUT = withErrorHandler(withAuth(async (
     // Handle steps update if provided
     let stepsUpdate = {};
     if (validatedData.steps) {
-      // Delete existing steps and recreate
-      await prisma.associateStep.deleteMany({
-        where: { associateId: id }
-      });
+      await prisma.associateStep.deleteMany({ where: { associateId: id } });
       stepsUpdate = {
         steps: {
           createMany: {
@@ -138,6 +136,17 @@ export const PUT = withErrorHandler(withAuth(async (
           }
         }
       };
+    }
+
+    // Handle tools update if provided — delete all then re-insert
+    if (validatedData.tools !== undefined) {
+      await prisma.associateTool.deleteMany({ where: { associateId: id } });
+      if (validatedData.tools.length > 0) {
+        await prisma.associateTool.createMany({
+          data: validatedData.tools.map(toolId => ({ associateId: id, toolId })),
+          skipDuplicates: true,
+        });
+      }
     }
 
     const updatedAssociate = await prisma.aIAssociate.update({
@@ -152,7 +161,8 @@ export const PUT = withErrorHandler(withAuth(async (
         ...stepsUpdate
       },
       include: {
-        steps: { orderBy: { stepOrder: 'asc' } }
+        steps: { orderBy: { stepOrder: 'asc' } },
+        tools: true,
       }
     });
 

@@ -21,25 +21,20 @@ interface EmailOptions {
  * Creates a nodemailer transporter using environment variables
  */
 function createTransporter() {
-  // Get email credentials from environment variables
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASSWORD;
   const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
   const port = parseInt(process.env.EMAIL_PORT || '587', 10);
-  
+
   if (!user || !pass) {
-    // Email credentials not found in environment variables
+    console.error('[email-service] EMAIL_USER or EMAIL_PASSWORD is not set — emails will fail to send');
   }
-  
-  // Create a transporter
+
   return nodemailer.createTransport({
     host,
     port,
-    secure: port === 465, // true for 465, false for other ports
-    auth: {
-      user,
-      pass,
-    },
+    secure: port === 465,
+    auth: { user, pass },
   });
 }
 
@@ -53,11 +48,10 @@ export async function sendEmail(options: EmailOptions) {
   
   try {
     const transporter = createTransporter();
-    const user = process.env.EMAIL_USER;
-    
-    // Send email
+    const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+
     const info = await transporter.sendMail({
-      from: from || `"Wansom" <${user}>`,
+      from: from || `"Wansom" <${fromAddress}>`,
       replyTo,
       to,
       cc,
@@ -1431,8 +1425,11 @@ export async function sendLegalDigestEmail({
               const cardStyle = 'display:block;margin-bottom:16px;padding:12px;background-color:#f8fafc;border-radius:6px;border-left:3px solid #0a4b5e;text-decoration:none;color:inherit;';
               const inner = `
                 <h3 style="color:#1a1a1a;font-size:15px;margin:0 0 6px 0;">${item.title}</h3>
-                <p style="color:#4a4a4a;font-size:14px;line-height:1.5;margin:0 0 8px 0;">${item.summary}</p>
-                ${item.sourceName ? `<span style="color:#0a4b5e;font-size:13px;">${item.sourceName}${item.sourceUrl ? ' &rarr;' : ''}</span>` : ''}
+                <p style="color:#4a4a4a;font-size:14px;line-height:1.5;margin:0 0 8px 0;">${item.summary}${item.sourceUrl ? ` <span style="color:#0a4b5e;font-weight:600;text-decoration:underline;">Read more &rarr;</span>` : ''}</p>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  ${item.sourceName ? `<span style="color:#0a4b5e;font-size:13px;">${item.sourceName}</span>` : ''}
+                  ${item.backdatedLabel ? `<span style="display:inline-block;background:#fff7ed;border:1px solid #fdba74;color:#9a3412;font-size:11px;padding:1px 8px;border-radius:10px;white-space:nowrap;">&#128337; ${item.backdatedLabel}</span>` : ''}
+                </div>
               `;
               return item.sourceUrl
                 ? `<a href="${item.sourceUrl}" style="${cardStyle}">${inner}</a>`
@@ -1482,6 +1479,7 @@ export async function sendLegalDigestEmail({
             <p style="margin: 6px 0 0 0; font-size: 13px; color: #92400e;">Once you subscribe, you'll receive your personalised digest every ${frequencyLabel.toLowerCase()}. <a href="${appUrl}/briefly-by-wansom" style="color: #0a4b5e; font-weight: 600;">Activate Briefly &rarr;</a></p>
           </div>` : ''}
 
+
           <p style="font-size: 15px;">Hello ${fullName},</p>
 
           <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px; margin: 16px 0; border-radius: 0 6px 6px 0;">
@@ -1489,7 +1487,19 @@ export async function sendLegalDigestEmail({
             <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a4a4a;">${digest.summary}</p>
           </div>
 
-          ${sectionsHtml}
+          ${sectionsHtml || `
+          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 28px 24px; text-align: center; margin: 24px 0;">
+            <p style="font-size: 22px; margin: 0 0 8px 0;">📭</p>
+            <p style="font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 0 0 8px 0;">No updates found for this period</p>
+            <p style="font-size: 14px; color: #4a4a4a; line-height: 1.6; margin: 0 0 20px 0;">
+              Briefly searched your selected jurisdictions and practice areas but could not find enough legal content for this window — even after looking back further than usual.<br><br>
+              You can improve your digest by <strong>adding more jurisdictions</strong> or <strong>selecting additional practice areas</strong>. The more sources you cover, the more reliably Briefly can keep you informed.
+            </p>
+            <a href="${appUrl}/briefly-by-wansom"
+               style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 600;">
+              Update my Briefly settings &rarr;
+            </a>
+          </div>`}
           ${sourcesHtml}
 
           <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e5e5; text-align: center;">

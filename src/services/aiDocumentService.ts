@@ -188,9 +188,13 @@ Return ONLY a JSON object (no markdown) with this structure:
   ): Promise<{ success: boolean; patches?: Array<{ original: string; replacement: string }>; error?: string }> {
     try {
       const wordCount = this.stripHtml(currentContent).split(/\s+/).filter(Boolean).length;
+      const todayFormatted = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      const todayIso = new Date().toISOString().split('T')[0];
       const prompt = `You are editing a legal document. Apply the following edit by identifying the EXACT text spans to change.
 
 EDIT INSTRUCTION: ${instruction}
+
+TODAY'S DATE: ${todayFormatted} (${todayIso}) — use this whenever the instruction references "today", "current date", or "today's date".
 
 DOCUMENT (${wordCount} words):
 ${currentContent}
@@ -474,8 +478,13 @@ ${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
       ? RAGService.buildContextString(context.ragContext)
       : '';
 
+    const todayFormatted = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const todayIso = new Date().toISOString().split('T')[0];
+
     return `
 Generate a legal document based on this request: ${instruction}
+
+TODAY'S DATE: ${todayFormatted} (${todayIso}) — use this as the document date unless the instruction specifies otherwise.
 
 ${context.conversationHistory && context.conversationHistory.length > 0 ? `
 Recent Conversation Context:
@@ -518,8 +527,12 @@ ${ragContextStr ? '- Reference and adapt provisions from the legal framework pro
   
   private static buildEditPrompt(instruction: string, currentContent: string, context: ProjectContext): string {
     const wordCount = this.stripHtml(currentContent).split(/\s+/).filter(Boolean).length;
+    const todayFormatted = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const todayIso = new Date().toISOString().split('T')[0];
     return `
 EDIT INSTRUCTION: ${instruction}
+
+TODAY'S DATE: ${todayFormatted} (${todayIso}) — use this whenever the instruction references "today", "current date", or "today's date".
 
 RULES — READ CAREFULLY:
 1. Do NOT generate a new document. The document below is the authoritative source.

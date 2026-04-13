@@ -10,6 +10,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Crown, Zap, Loader2 } from "lucide-react";
 import { apiService } from "@/lib/api";
+import {
+  formatSubscriptionPrice,
+  type PlanPricing,
+} from "@/lib/subscriptionPricing";
+
+interface PopupConfig {
+  pricing: PlanPricing;
+}
 
 interface ProAccessModalProps {
   isOpen: boolean;
@@ -26,18 +34,29 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
   isOpen,
   onClose,
   errorMessage = "You have reached your plan limits. Upgrade to continue.",
-  userData,
 }) => {
   const [isProcessingPersonal, setIsProcessingPersonal] = useState(false);
   const [isProcessingTeams, setIsProcessingTeams] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [pricing, setPricing] = useState<PlanPricing | null>(null);
 
-  // Clear payment error when modal closes
+  // Clear error when modal closes
   useEffect(() => {
-    if (!isOpen) {
-      setPaymentError(null);
-    }
+    if (!isOpen) setPaymentError(null);
   }, [isOpen]);
+
+  // Fetch localised pricing when modal opens (display only — amount is enforced server-side)
+  useEffect(() => {
+    if (!isOpen || pricing) return;
+    apiService
+      .get<{ data: PopupConfig }>("/api/payments/popup-config")
+      .then((res) => {
+        if (res.data?.pricing) setPricing(res.data.pricing);
+      })
+      .catch(() => {
+        // Non-fatal — buttons still work, just show generic labels
+      });
+  }, [isOpen, pricing]);
 
   const initializePayment = async (planType: "personal" | "teams") => {
     const setLoading =
@@ -46,32 +65,37 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
     setPaymentError(null);
 
     try {
+      // Server sets the amount and currency — Paystack locks it in the authorization URL
       const response = await apiService.post<{
-        data: {
-          authorizationUrl: string;
-          accessCode: string;
-          reference: string;
-        };
+        data: { authorizationUrl: string };
       }>("/api/payments/initialize", { planType });
 
       if (response.data?.authorizationUrl) {
         window.location.href = response.data.authorizationUrl;
       } else {
         setPaymentError("Failed to initialize payment. Please try again.");
+        setLoading(false);
       }
     } catch (error: any) {
       console.error("Payment initialization error:", error);
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to initialize payment";
-      setPaymentError(message);
-    } finally {
+      setPaymentError(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to initialize payment. Please try again."
+      );
       setLoading(false);
     }
   };
 
   const isAnyLoading = isProcessingPersonal || isProcessingTeams;
+
+  const personalLabel = pricing
+    ? `Upgrade to Pro · ${formatSubscriptionPrice(pricing.personal, pricing.currency)}/mo`
+    : "Upgrade to Pro";
+
+  const teamsLabel = pricing
+    ? `Upgrade for Team · ${formatSubscriptionPrice(pricing.teams, pricing.currency)}/mo`
+    : "Upgrade for Team";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -106,43 +130,35 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </p>
               <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Unlimited
-                  client/matter workspaces{" "}
+                  client/matter workspaces
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Unlimited AI
-                  responses{" "}
+                  responses
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Draft & Review
-                  unlimited Contracts{" "}
-                </li>
-                 <li className="flex items-center gap-1">
-                  {" "}
-                  <Zap className="h-3 w-3 text-green-500" /> Multi-jurisdiction research{" "}
+                  unlimited Contracts
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
+                  <Zap className="h-3 w-3 text-green-500" /> Multi-jurisdiction research
+                </li>
+                <li className="flex items-center gap-1">
                   <Zap className="h-3 w-3 text-green-500" /> Upto 5GB Vault
-                  Storage{" "}
+                  Storage
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Upto 10 AI
-                  Associates{" "}
+                  Associates
                 </li>
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" />
-                  Google Calendar & Email integrations{" "}
+                  Google Calendar & Email integrations
                 </li>
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" />
-                 Email and phone support{" "}
+                  Email and phone support
                 </li>
               </ul>
               <div className="bg-gray-300 my-2 h-0.5 w-full"></div>
@@ -158,7 +174,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Upgrade to Pro"
+                  personalLabel
                 )}
               </Button>
             </div>
@@ -173,44 +189,36 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </p>
               <ul className="text-xs text-gray-600 mb-4 space-y-1 break-words">
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Everything in
-                  Personal Plan{" "}
+                  Personal Plan
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Draft & Review
-                  longer Contracts{" "}
+                  longer Contracts
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Unlimited AI
-                  Associates{" "}
+                  Associates
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Invite team members
-                  to projects,documents{" "}
+                  to projects, documents
                 </li>
                 <li className="flex items-center gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Upto 50 GB Vault
-                  Storage{" "}
+                  Storage
                 </li>
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Custom Workflows,
-                  Integrations{" "}
+                  Integrations
                 </li>
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Custom
-                  Deployments{" "}
+                  Deployments
                 </li>
                 <li className="flex items-start gap-1">
-                  {" "}
                   <Zap className="h-3 w-3 text-green-500" /> Team Training &amp;
-                  Support{" "}
+                  Support
                 </li>
               </ul>
               <div className="bg-gray-300 my-2 h-0.5 w-full"></div>
@@ -226,7 +234,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     Processing...
                   </>
                 ) : (
-                  "Upgrade for Team"
+                  teamsLabel
                 )}
               </Button>
             </div>

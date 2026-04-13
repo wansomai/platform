@@ -9,11 +9,11 @@
 
 const API_BASE = 'https://generativelanguage.googleapis.com';
 
-// Prefer GEMINI_API_KEY; GOOGLE_API_KEY is the fallback.
-// The @google/genai SDK warns when both are set because it reads env vars directly;
-// here we control which key we use explicitly.
+// When both GOOGLE_API_KEY and GEMINI_API_KEY are set, the @google/genai SDK uses
+// GOOGLE_API_KEY (it warns about this). Mirror that behaviour here so the embedding
+// REST calls use the same key as the model calls, maximising the chance of success.
 function getApiKey(): string {
-  return process.env.GEMINI_API_KEY ||'';
+  return process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || '';
 }
 
 // Default: text-embedding-004 (768 dims, stable v1). Override with GEMINI_EMBEDDING_MODEL.

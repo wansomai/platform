@@ -15,9 +15,9 @@ import { PRACTICE_AREA_LABELS } from '@/types/associates';
 
 export const maxDuration = 300;
 
-// Phase 1: resolve unique fingerprints via Gemini — keep low to avoid 503s.
-const SYNTHESIS_CONCURRENCY = 2;
-// Phase 2: send emails — no Gemini involved, so we can go wide.
+// Phase 1: resolve unique fingerprints (cache read + instant aiSummary build — no Gemini).
+const FINGERPRINT_CONCURRENCY = 15;
+// Phase 2: send emails.
 const EMAIL_CONCURRENCY = 15;
 
 export async function GET(req: NextRequest) {
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 
   // ?email=a@b.com,c@d.com  — restrict run to specific addresses (dev/testing only).
   // The idempotency gate is bypassed for these addresses so you can re-test freely.
-  // ?nocache=1 — skip the digest cache and force fresh Gemini synthesis (dev/testing only).
+  // ?nocache=1 — skip the digest cache and force a fresh build (dev/testing only).
   const { searchParams } = new URL(req.url);
   const testEmails = searchParams.get('email')
     ? searchParams.get('email')!.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
@@ -115,11 +115,10 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Phase 1: Resolve all unique fingerprints ──────────────────────────────
-  // Build a map of fingerprint → { digest, source } for every unique combination
-  // of frequency + jurisdictions + topics across all pending subscribers.
-  // Cache hits resolve instantly; misses call Gemini at low concurrency (2) to
-  // avoid 503s. All synthesis is done before a single email is sent, so Phase 2
-  // is purely fast I/O with no Gemini involvement.
+  // Build a map of fingerprint → DigestContent for every unique combination of
+  // frequency + jurisdictions + topics across all pending subscribers.
+  // Cache hits return the stored digest instantly. Misses call generateLegalDigestFromDB
+  // which builds directly from aiSummary fields — no Gemini call, completes in milliseconds.
 
   // Map each subscriber to its fingerprint up front
   type SubWithMeta = typeof dedupedSubscriptions[0] & {
@@ -142,9 +141,9 @@ export async function GET(req: NextRequest) {
 
   const digestMap = new Map<string, DigestContent>();
 
-  // Resolve fingerprints in batches of SYNTHESIS_CONCURRENCY
-  for (let i = 0; i < uniqueFingerprints.length; i += SYNTHESIS_CONCURRENCY) {
-    const batch = uniqueFingerprints.slice(i, i + SYNTHESIS_CONCURRENCY);
+  // Resolve fingerprints in batches of FINGERPRINT_CONCURRENCY
+  for (let i = 0; i < uniqueFingerprints.length; i += FINGERPRINT_CONCURRENCY) {
+    const batch = uniqueFingerprints.slice(i, i + FINGERPRINT_CONCURRENCY);
     await Promise.all(
       batch.map(async (sub) => {
         // 1. Try persistent DB cache (pre-computed by digest-ingest), unless bypassed
@@ -157,8 +156,8 @@ export async function GET(req: NextRequest) {
           }
         }
 
-        // 2. Cache miss — synthesize fresh and persist for next run
-        console.log(`[digest] cache miss — synthesizing: ${sub.fingerprint.slice(0, 60)}`);
+        // 2. Cache miss — build fresh from aiSummary fields and persist for next run
+        console.log(`[digest] cache miss — building: ${sub.fingerprint.slice(0, 60)}`);
         const result = await generateLegalDigestFromDB(
           sub.topicLabels,
           sub.jurisdictions,
@@ -174,7 +173,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  console.log(`[digest] Phase 1 complete: ${digestMap.size} digest(s) resolved. Starting Phase 2: sending ${subsWithMeta.length} email(s) at concurrency ${EMAIL_CONCURRENCY}`);
+  console.log(`[digest] Phase 1 complete: ${digestMap.size} digest(s) resolved. Starting Phase 2: sending ${subsWithMeta.length} email(s)`);
 
   // ── Phase 2: Send all emails at high concurrency ───────────────────────────
   // All digests are resolved — no Gemini calls here. Pure email I/O.

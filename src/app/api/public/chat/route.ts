@@ -22,8 +22,11 @@ export async function POST(request: NextRequest) {
   const jurisdiction = jurisdictionId ? getJurisdictionById(jurisdictionId) : null;
   const jurisdictionName = jurisdiction?.name || 'Nigeria';
 
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
   const docLabel = documentTitle?.trim() || documentType || 'legal';
   const systemPrompt = `You are a legal document assistant helping a user with their ${docLabel} document governed by ${jurisdictionName} law.
+Today's date is ${today}. Always use this date whenever the user refers to "today", "current date", or asks you to insert a date.
 
 You can:
 1. Answer questions about the document or legal concepts
@@ -52,7 +55,7 @@ Always apply ${jurisdictionName} law. Keep responses concise and practical.`;
 
   try {
     const result = await genAI.models.generateContentStream({
-      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [
         { role: 'user', parts: [{ text: docContext }] },
         { role: 'model', parts: [{ text: 'I have reviewed the document and I am ready to help.' }] },

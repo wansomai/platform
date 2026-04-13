@@ -58,6 +58,11 @@ export interface Message {
   canvasDocumentId?: string; // ID of canvas doc created/edited — enables "View document" button
   canvasMessage?: string; // Message for canvas processing status
   isSuggestion?: boolean; // true when this message carries a canvas_suggestion diff
+  suggestedAssociate?: {
+    id: string;
+    name: string;
+    reason: string;
+  };
   searchPreview?: Array<{ title: string; url: string; date: string | null; platform: string }>;
   attachedDocuments?: Array<{
     id: string;

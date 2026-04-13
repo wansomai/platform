@@ -54,48 +54,52 @@ export const POST = withErrorHandler(
       );
     }
 
-    if (!subscription.paystackCustomerId) {
-      return createBadRequestResponse('No payment method on file');
-    }
+    // Resolve authorization code — prefer the one stored directly on the subscription
+    // (set by verify route for direct/localized payments), fall back to Paystack customer lookup
+    // for legacy plan-based subscriptions.
+    let authorizationCode: string | null = subscription.paystackAuthCode || null;
+    let authChannel = 'card';
 
-    // Get customer's authorization (card) from Paystack
-    const customerResponse = await fetch(
-      `${PAYSTACK_BASE_URL}/customer/${subscription.paystackCustomerId}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-        },
+    if (!authorizationCode) {
+      if (!subscription.paystackCustomerId) {
+        return createBadRequestResponse('No payment method on file');
       }
-    );
 
-    const customerData = await customerResponse.json();
-
-    if (!customerData.status || !customerData.data.authorizations?.length) {
-      return createBadRequestResponse(
-        'No valid payment method found. Please update your card details.'
+      const customerResponse = await fetch(
+        `${PAYSTACK_BASE_URL}/customer/${subscription.paystackCustomerId}`,
+        { method: 'GET', headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` } }
       );
+      const customerData = await customerResponse.json();
+
+      if (!customerData.status || !customerData.data.authorizations?.length) {
+        return createBadRequestResponse('No valid payment method found. Please update your card details.');
+      }
+
+      const authorization = customerData.data.authorizations.find(
+        (auth: any) => auth.reusable && !auth.expired
+      );
+
+      if (!authorization) {
+        return createBadRequestResponse('Your payment method has expired. Please update your card details.');
+      }
+
+      authorizationCode = authorization.authorization_code;
+      authChannel = authorization.channel || 'card';
     }
 
-    // Get the most recent valid authorization
-    const authorization = customerData.data.authorizations.find(
-      (auth: any) => auth.reusable && !auth.expired
-    );
+    // Resolve amount and currency from the last successful payment record
+    const lastPayment = await prisma.payment.findFirst({
+      where: { subscriptionId: subscription.id, status: 'success' },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    if (!authorization) {
-      return createBadRequestResponse(
-        'Your payment method has expired. Please update your card details.'
-      );
-    }
-
-    // Calculate amount from subscription
-    const amount = parseFloat(subscription.planPrice || '0') * 100; // Convert to kobo/cents
+    const amount = parseFloat(subscription.planPrice || '0') * 100; // major unit → kobo/cents
+    const currency = lastPayment?.currency || 'USD';
 
     if (amount <= 0) {
       return createBadRequestResponse('Invalid subscription amount');
     }
 
-    // Charge the authorization (recurring charge)
     const reference = `RETRY-${subscription.id.slice(0, 8)}-${Date.now()}`;
 
     const chargeResponse = await fetch(
@@ -107,10 +111,11 @@ export const POST = withErrorHandler(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          authorization_code: authorization.authorization_code,
+          authorization_code: authorizationCode,
           email: user.email,
-          amount: amount,
-          reference: reference,
+          amount,
+          currency,
+          reference,
           metadata: {
             userId: user.id,
             organizationId: user.organization.id,
@@ -175,13 +180,13 @@ export const POST = withErrorHandler(
             subscriptionId: subscription.id,
             paystackReference: reference,
             amount: amount,
-            currency: 'USD',
+            currency,
             status: 'success',
-            paymentMethod: authorization.channel || 'card',
+            paymentMethod: authChannel,
             paidAt: new Date(),
             metadata: {
               isRetry: true,
-              authorizationCode: authorization.authorization_code,
+              authorizationCode: authorizationCode,
             },
           },
         }),

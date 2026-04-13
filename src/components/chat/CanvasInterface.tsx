@@ -27,13 +27,16 @@ import {
   RemoveFormatting,
   Paintbrush,
   Type,
-  ChevronDown
+  ChevronDown,
+  Undo2,
+  Redo2
 } from 'lucide-react';
 import DiffMatchPatch from 'diff-match-patch';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/store/ui.store';
 import { useCanvasDocument, useCanvasSaving, useCanvasStore } from '@/store/canvas.store';
 import { useChatStore } from '@/store/chat.store';
+import { apiService } from '@/lib/api';
 
 function buildDiffHtml(originalHtml: string, suggestedHtml: string): string {
   const dmp = new DiffMatchPatch();
@@ -61,6 +64,8 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { ListNode, ListItemNode } from '@lexical/list';
 import { LinkNode, AutoLinkNode } from '@lexical/link';
+import { TableNode, TableRowNode, TableCellNode } from '@lexical/table';
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import {
   $isRangeSelection,
@@ -69,8 +74,6 @@ import {
   $createParagraphNode,
   FORMAT_TEXT_COMMAND,
   FORMAT_ELEMENT_COMMAND,
-  UNDO_COMMAND,
-  REDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
   LexicalEditor,
   EditorState,
@@ -114,6 +117,10 @@ const editorTheme = {
     code: 'lexical-code',
   },
   quote: 'lexical-quote',
+  table: 'lexical-table',
+  tableRow: 'lexical-table-row',
+  tableCell: 'lexical-table-cell',
+  tableCellHeader: 'lexical-table-cell-header',
 };
 
 // Wrap non-element/non-decorator nodes in paragraphs so they can be appended to root
@@ -126,6 +133,68 @@ function wrapTopLevelNodes(nodes: LexicalNode[]): LexicalNode[] {
     paragraph.append(node);
     return paragraph;
   });
+}
+
+// Extract HTML from a DOCX that was produced by html-docx-js.
+// html-docx-js stores content as an MHTML altChunk (word/afchunk.mht) rather than
+// native Word XML, so mammoth returns empty output for these files. We unzip the
+// DOCX ourselves with JSZip v2 (the project-level version), read the MHT part, and
+// decode the quoted-printable HTML.
+//
+// JSZip v2 API (project-level jszip@2.7.0):
+//   new JSZip(arrayBuffer)  — synchronous constructor, accepts ArrayBuffer
+//   zip.file(nameOrRegex)   — returns file object (or array for regex)
+//   file.asText()           — synchronous string read
+async function extractHtmlFromDocxAltChunk(arrayBuffer: ArrayBuffer): Promise<string | null> {
+  try {
+    const JSZipModule = await import('jszip');
+    const JSZip = (JSZipModule as any).default || JSZipModule;
+
+    // v2: constructor loads synchronously
+    const zip = new (JSZip as any)(arrayBuffer);
+
+    // html-docx-js puts the MHTML at word/afchunk.mht; fall back to regex search
+    // in case a future version uses a different name
+    let mhtEntry = zip.file('word/afchunk.mht');
+    if (!mhtEntry) {
+      const matches = zip.file(/\.mht$/i);
+      mhtEntry = Array.isArray(matches) ? matches[0] : null;
+    }
+    if (!mhtEntry) {
+      console.warn('[extractHtmlFromDocxAltChunk] No .mht file found in DOCX zip');
+      return null;
+    }
+
+    // v2: synchronous read
+    const mhtContent: string = mhtEntry.asText();
+
+    const boundary = '------=mhtDocumentPart';
+    const parts = mhtContent.split(boundary);
+
+    for (const part of parts) {
+      if (!part.includes('text/html')) continue;
+      // Headers and body are separated by a blank line (CRLF or LF)
+      const sepCrlf = part.indexOf('\r\n\r\n');
+      const sepLf   = part.indexOf('\n\n');
+      const sep = sepCrlf !== -1 ? sepCrlf + 4 : sepLf !== -1 ? sepLf + 2 : -1;
+      if (sep === -1) continue;
+      const body = part.slice(sep);
+      // Decode quoted-printable encoding used by html-docx-js
+      const html = body
+        .replace(/=\r\n/g, '')                                               // soft CRLF
+        .replace(/=\n/g, '')                                                 // soft LF
+        .replace(/=([0-9A-Fa-f]{2})/g,
+          (_: string, hex: string) => String.fromCharCode(parseInt(hex, 16))) // =XX
+        .trim();
+      if (html.length > 20) return html;
+    }
+
+    console.warn('[extractHtmlFromDocxAltChunk] No HTML part found in MHT');
+    return null;
+  } catch (e) {
+    console.warn('[extractHtmlFromDocxAltChunk] failed:', e);
+    return null;
+  }
 }
 
 // Plugin to expose editor ref
@@ -144,7 +213,7 @@ function LoadContentPlugin({
   isLoadingContentRef,
 }: {
   canvasDocument: any;
-  bypassLoadRef?: React.MutableRefObject<string | null>;
+  bypassLoadRef?: React.MutableRefObject<Set<string>>;
   isLoadingContentRef?: React.MutableRefObject<boolean>;
 }) {
   const [editor] = useLexicalComposerContext();
@@ -171,7 +240,8 @@ function LoadContentPlugin({
     // to avoid resetting the cursor/selection while the user is still editing.
     // Safety check: only bypass if the editor actually has content — if the editor
     // is empty (fresh mount after a tab switch) we must load regardless.
-    if (bypassLoadRef?.current === docId) {
+    if (bypassLoadRef?.current.has(docId)) {
+      bypassLoadRef.current.delete(docId); // consume — each bypass is one-time
       const rootIsEmpty = editor.getEditorState().read(() => $getRoot().isEmpty());
       if (!rootIsEmpty) {
         loadedRef.current = docId; // mark as loaded so future checks still work
@@ -441,7 +511,7 @@ function ToolbarPlugin() {
     `p-1.5 rounded transition-colors ${active ? 'bg-indigo-100 text-indigo-600' : 'hover:bg-gray-100 text-gray-700'}`;
 
   return (
-    <div className="border-b border-gray-200 bg-white px-2 py-1.5 flex items-center gap-0.5 flex-wrap overflow-visible relative z-10">
+    <div className="border-b border-gray-200 bg-white px-2 py-1.5 flex items-center gap-0.5 overflow-x-auto flex-nowrap sticky top-0 z-20 shrink-0">
       {/* Heading selector */}
       <div className="relative" ref={headingMenuRef}>
         <button
@@ -604,9 +674,13 @@ const LegalCanvas: React.FC = () => {
   // to a different document (before activeCanvasId changes causes the editor to remount).
   const lastHtmlRef = useRef<string>('');
 
-  // bypassLoadRef: after a local save we store the resulting docId here so that
-  // LoadContentPlugin can skip the redundant reload triggered by the store update.
-  const bypassLoadRef = useRef<string | null>(null);
+  // bypassLoadRef: tracks docIds from in-flight local saves so LoadContentPlugin
+  // can skip the redundant reload those saves trigger. Using a Set (not a string)
+  // means multiple concurrent saves each register their own bypass without
+  // overwriting each other — a single-string approach caused a race condition
+  // where Save B's docId overwrote Save A's, making Save A's LoadContentPlugin
+  // fail the bypass and reload the content, polluting the undo history stack.
+  const bypassLoadRef = useRef<Set<string>>(new Set());
 
   // isLoadingContentRef: true while LoadContentPlugin is programmatically writing
   // content into the editor (initial load, doc switch, etc.).  handleEditorChange
@@ -614,6 +688,21 @@ const LegalCanvas: React.FC = () => {
   // prevents the auto-save race condition where an empty initial editor state
   // triggers a save that overwrites the newly-loaded document content.
   const isLoadingContentRef = useRef(false);
+
+  // Snapshot-based undo/redo — stores HTML at every auto-save / manual-save point.
+  // Completely independent of Lexical's HistoryPlugin (which gets corrupted by the
+  // auto-save → LoadContentPlugin → setEditorState cycle). Undo/redo works by
+  // reloading the snapshot HTML via $generateNodesFromDOM, which is the same path
+  // the rest of the document loading uses and always succeeds.
+  const snapshotHistoryRef = useRef<string[]>([]);
+  const snapshotIndexRef = useRef<number>(-1);
+  const [canUndoSnapshot, setCanUndoSnapshot] = useState(false);
+  const [canRedoSnapshot, setCanRedoSnapshot] = useState(false);
+  // Prevents the auto-save triggered immediately after an undo/redo from pushing
+  // a new snapshot (which would truncate the redo stack). Cleared when the user
+  // makes a real edit via handleEditorChange.
+  const isApplyingSnapshotRef = useRef(false);
+
 
 
 
@@ -723,11 +812,79 @@ const LegalCanvas: React.FC = () => {
   const initialConfig = useMemo(() => ({
     namespace: 'LegalCanvas',
     theme: editorTheme,
-    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, AutoLinkNode],
+    nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, LinkNode, AutoLinkNode, TableNode, TableRowNode, TableCellNode],
     onError: (error: Error) => {
       console.error('Lexical error:', error);
     },
   }), []);
+
+  // Push an HTML snapshot onto the history stack (deduplicates automatically).
+  // Truncates any forward (redo) history so that new edits after an undo discard
+  // the now-stale redo states.
+  const pushSnapshot = useCallback((html: string) => {
+    if (!html || html.trim().length < 20) return;
+    // If we're in the middle of applying an undo/redo, the auto-save that fires
+    // immediately after would push the Lexical-regenerated HTML as a new snapshot,
+    // truncating the redo stack. Consume the flag and skip just this one push.
+    if (isApplyingSnapshotRef.current) {
+      isApplyingSnapshotRef.current = false;
+      return;
+    }
+    const current = snapshotHistoryRef.current[snapshotIndexRef.current];
+    if (current === html) return; // identical to current state — skip
+    const truncated = snapshotHistoryRef.current.slice(0, snapshotIndexRef.current + 1);
+    truncated.push(html);
+    snapshotHistoryRef.current = truncated;
+    snapshotIndexRef.current = truncated.length - 1;
+    setCanUndoSnapshot(snapshotIndexRef.current > 0);
+    setCanRedoSnapshot(false);
+  }, []);
+
+  // Load a snapshot HTML string into the Lexical editor.
+  // Uses $generateNodesFromDOM (same path as LoadContentPlugin) which reliably
+  // converts HTML to Lexical nodes on all document sizes.
+  const applySnapshotHtml = useCallback((html: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    // Flag as loading so handleEditorChange skips the pending marker —
+    // we set hasPendingChangesRef manually below so the content gets saved.
+    isLoadingContentRef.current = true;
+    // Mark that we're applying a snapshot so the next pushSnapshot call
+    // (from the auto-save that fires after editor.update) is suppressed.
+    isApplyingSnapshotRef.current = true;
+    setCurrentEditorHtml(html);
+    lastHtmlRef.current = html;
+    hasPendingChangesRef.current = true;
+    setAutoSaveStatus('pending');
+    editor.update(() => {
+      const root = $getRoot();
+      root.clear();
+      const parser = new DOMParser();
+      const dom = parser.parseFromString(html, 'text/html');
+      const nodes = $generateNodesFromDOM(editor, dom);
+      root.append(...(nodes.length > 0 ? wrapTopLevelNodes(nodes) : [$createParagraphNode()]));
+    }, { onUpdate: () => { isLoadingContentRef.current = false; } });
+  }, [setCurrentEditorHtml]);
+
+  const handleUndoSnapshot = useCallback((e: React.MouseEvent) => {
+    e.preventDefault(); // keep editor focus — prevents blur → auto-save race
+    if (snapshotIndexRef.current <= 0) return;
+    snapshotIndexRef.current--;
+    const html = snapshotHistoryRef.current[snapshotIndexRef.current];
+    setCanUndoSnapshot(snapshotIndexRef.current > 0);
+    setCanRedoSnapshot(true);
+    applySnapshotHtml(html);
+  }, [applySnapshotHtml]);
+
+  const handleRedoSnapshot = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    if (snapshotIndexRef.current >= snapshotHistoryRef.current.length - 1) return;
+    snapshotIndexRef.current++;
+    const html = snapshotHistoryRef.current[snapshotIndexRef.current];
+    setCanUndoSnapshot(true);
+    setCanRedoSnapshot(snapshotIndexRef.current < snapshotHistoryRef.current.length - 1);
+    applySnapshotHtml(html);
+  }, [applySnapshotHtml]);
 
   // Silently persist the current editor state (used by auto-save, blur, and unmount)
   const autoSave = useCallback(async () => {
@@ -747,15 +904,21 @@ const LegalCanvas: React.FC = () => {
       });
       const content = editor.getEditorState().toJSON();
 
+      // Snapshot BEFORE the await so the state captured is exactly what we're saving
+      pushSnapshot(htmlContent);
+
       const savedDoc = await saveCanvasDocument(projectId, content, htmlContent, plainText);
       if (savedDoc) {
         // Tell LoadContentPlugin to skip the reload triggered by this store update
-        bypassLoadRef.current = savedDoc.id + '_' + savedDoc.updatedAt;
+        bypassLoadRef.current.add(savedDoc.id + '_' + savedDoc.updatedAt);
         hasPendingChangesRef.current = false;
         setAutoSaveStatus('saved');
         setTimeout(() => setAutoSaveStatus('idle'), 2000);
+      } else {
+        // Save returned null (e.g. activeCanvasId disappeared mid-flight) — revert to
+        // 'pending' so the user sees the unsaved indicator rather than a stuck 'saving'.
+        setAutoSaveStatus('pending');
       }
-      // If savedDoc is null (no activeCanvasId), leave status as 'pending' — nothing was saved.
     } catch {
       // Auto-save failed — revert to 'pending' so the user sees unsaved-changes
       // indicator and can trigger a manual save if needed
@@ -782,10 +945,12 @@ const LegalCanvas: React.FC = () => {
       });
       content = editor.getEditorState().toJSON();
 
+      pushSnapshot(htmlContent);
+
       const result = await saveCanvasDocument(projectId, content, htmlContent, plainText);
 
       if (result) {
-        bypassLoadRef.current = result.id + '_' + result.updatedAt;
+        bypassLoadRef.current.add(result.id + '_' + result.updatedAt);
         hasPendingChangesRef.current = false;
         setAutoSaveStatus('saved');
         setTimeout(() => setAutoSaveStatus('idle'), 2000);
@@ -820,6 +985,9 @@ const LegalCanvas: React.FC = () => {
     // empty or transitional content, causing auto-save to overwrite the real document
     // content before it has been fetched from the DB.
     if (!isLoadingContentRef.current) {
+      // A real user edit — clear the snapshot-applying flag so the next save
+      // correctly records a new snapshot instead of being suppressed.
+      isApplyingSnapshotRef.current = false;
       hasPendingChangesRef.current = true;
       setAutoSaveStatus('pending');
     }
@@ -923,7 +1091,7 @@ const LegalCanvas: React.FC = () => {
       if (result) {
         // Prevent LoadContentPlugin from reloading from the just-saved doc (it would
         // load htmlContent which is correct, but causes a flicker and cursor reset).
-        bypassLoadRef.current = result.id + '_' + result.updatedAt;
+        bypassLoadRef.current.add(result.id + '_' + result.updatedAt);
         clearPendingSuggestion();
         setCurrentEditorHtml(suggestedHtml);
         addToast({ message: 'Changes accepted and saved', type: 'success' });
@@ -955,7 +1123,7 @@ const LegalCanvas: React.FC = () => {
     resetForProject();
     setCurrentEditorHtml('');
     setStreamingPreviewHtml(null);
-    bypassLoadRef.current = null;
+    bypassLoadRef.current.clear();
     hasPendingChangesRef.current = false;
     isLoadingContentRef.current = true;
     if (projectId) {
@@ -989,12 +1157,28 @@ const LegalCanvas: React.FC = () => {
       // Clear the bypass so the new document's content is always loaded fresh.
       // Without this, bypassLoadRef from a previous save to this same doc would
       // prevent LoadContentPlugin from loading the content on switch-back.
-      bypassLoadRef.current = null;
+      bypassLoadRef.current.clear();
       isLoadingContentRef.current = true;
       hasPendingChangesRef.current = false; // discard any empty-state trigger from remount
       setAutoSaveStatus('idle'); // clear stale 'pending' so blur doesn't trigger save on new empty editor
+
+      // Reset snapshot history for the new document
+      snapshotHistoryRef.current = [];
+      snapshotIndexRef.current = -1;
+      setCanUndoSnapshot(false);
+      setCanRedoSnapshot(false);
     }
   }, [activeCanvasId, projectId, saveDocumentById]);
+
+  // Push an initial snapshot whenever a new document finishes loading so that
+  // the Undo button is available immediately (not only after the first auto-save).
+  // canvasDocument.htmlContent is the authoritative HTML from the DB.
+  // pushSnapshot deduplicates, so extra firings (from auto-save store updates) are no-ops.
+  useEffect(() => {
+    if (canvasDocument?.htmlContent && snapshotHistoryRef.current.length === 0) {
+      pushSnapshot(canvasDocument.htmlContent);
+    }
+  }, [canvasDocument, pushSnapshot]);
 
   // Listen for canvas updates from chat (when AI updates the document)
   useEffect(() => {
@@ -1081,70 +1265,194 @@ const LegalCanvas: React.FC = () => {
   const handleInsertTemplate = async (file: File) => {
     setIsLoadingTemplate(true);
 
-    // Mammoth only supports .docx — reject .doc (old binary format)
-    if (file.name.toLowerCase().endsWith('.doc') && !file.name.toLowerCase().endsWith('.docx')) {
-      addToast({
-        message: 'Only .docx files are supported. Please convert your .doc file to .docx format first.',
-        type: 'error'
-      });
+    const fileName = file.name.toLowerCase();
+    const isDocx = fileName.endsWith('.docx');
+    const isDoc  = fileName.endsWith('.doc') && !isDocx;
+
+    if (!isDocx && !isDoc) {
+      addToast({ message: 'Please upload a .doc or .docx Word file.', type: 'error' });
       setIsLoadingTemplate(false);
       return;
     }
 
     try {
-      const mammothModule = await import('mammoth/mammoth.browser');
-      const mammoth = mammothModule.default || mammothModule;
       const arrayBuffer = await file.arrayBuffer();
-      const result = await mammoth.convertToHtml({ arrayBuffer });
 
-      if (result.value) {
-        let cleanHtml = result.value
-          .replace(/class="[^"]*"/g, '')
-          .replace(/style="[^"]*"/g, '')
-          .replace(/<p><\/p>/g, '<br>')
-          .replace(/<span[^>]*><\/span>/g, '')
-          .replace(/\s+/g, ' ')
-          .trim();
+      let importedHtml: string | null = null;
 
-        const editor = editorRef.current;
-        if (editor) {
-          editor.update(() => {
-            const root = $getRoot();
-            root.clear();
-            const parser = new DOMParser();
-            const dom = parser.parseFromString(cleanHtml, 'text/html');
-            const nodes = $generateNodesFromDOM(editor, dom);
-            if (nodes.length > 0) {
-              root.append(...wrapTopLevelNodes(nodes));
-            }
-          }, { discrete: true });
+      // ── Path 1: mammoth (handles real .docx from MS Word / LibreOffice) ──
+      // mammoth throws (not just returns empty) for binary .doc files, so we wrap
+      // it in its own try/catch and fall through to the altChunk path on failure.
+      try {
+        const mammothModule = await import('mammoth');
+        const mammoth = mammothModule.default || mammothModule;
+        const result = await (mammoth as any).convertToHtml({ arrayBuffer });
 
-          let htmlContent = '';
-          let plainText = '';
-          editor.getEditorState().read(() => {
-            htmlContent = $generateHtmlFromNodes(editor);
-            plainText = $getRoot().getTextContent();
-          });
-          const content = editor.getEditorState().toJSON();
-
-          const saveResult = await saveCanvasDocument(projectId, content, htmlContent, plainText);
-          if (!saveResult) {
-            addToast({ message: 'Failed to save template to canvas', type: 'error' });
-            return;
-          }
+        if (result.messages?.length) {
+          console.warn('[CanvasInterface] Mammoth warnings:', result.messages);
         }
 
-        setShowTemplateModal(false);
-      } else {
-        throw new Error('Failed to extract content from the document');
+        if (result.value && result.value.trim().length > 0) {
+          // Mammoth succeeded — preserve structural formatting (headings, bold, italic,
+          // underline, tables, lists). Strip only mammoth's generated class names since
+          // they reference CSS that isn't loaded in the editor. Keep text-align styles.
+          importedHtml = result.value
+            .replace(/\s*class="[^"]*"/g, '')
+            .replace(/style="([^"]*)"/g, (_: string, s: string) => {
+              const m = s.match(/text-align\s*:\s*[^;]+/);
+              return m ? `style="${m[0].trim()}"` : '';
+            })
+            .replace(/<span>\s*<\/span>/g, '')
+            .replace(/<p>\s*<\/p>/g, '<p><br></p>')
+            .trim();
+        }
+      } catch (mammothErr) {
+        // Binary .doc files throw "Could not find main document part" — that is expected.
+        // Any other mammoth error is also non-fatal here; altChunk extraction is next.
+        console.info('[CanvasInterface] Mammoth could not read file — trying altChunk extraction:', mammothErr);
       }
 
+      // ── Path 2: altChunk extraction (handles Wansom-exported .docx/.doc files) ──
+      // html-docx-js stores content as an MHTML altChunk (word/afchunk.mht) rather
+      // than native Word XML, so mammoth returns empty for these files. We read the
+      // zip directly and decode the MHTML to recover the original HTML.
+      // Also reached when mammoth threw (e.g. binary .doc input).
+      if (!importedHtml) {
+        importedHtml = await extractHtmlFromDocxAltChunk(arrayBuffer);
+      }
+
+      // ── Path 3: server-side conversion (binary .doc — OLE2 / RTF) ──────────
+      // The browser cannot parse binary .doc or detect RTF structure. We send
+      // the file to the server which tries three paths in order:
+      //   mammoth  → full formatting if it's a docx-as-doc
+      //   RTF      → full formatting if it's an rtf-as-doc (Google Docs, LibreOffice)
+      //   cfb      → plain text if it's genuine binary Word 97-2003
+      if (!importedHtml && isDoc) {
+        try {
+          const form = new FormData();
+          form.append('file', file);
+          const res = await apiService.postMultipart<{ data: { html: string; quality: string } }>(
+            `/api/projects/${projectId}/canvas/import-doc`,
+            form
+          );
+          const serverHtml    = (res as any)?.data?.html    ?? (res as any)?.html    ?? '';
+          const serverQuality = (res as any)?.data?.quality ?? (res as any)?.quality ?? '';
+          if (serverHtml && serverHtml.trim().length > 0) {
+            importedHtml = serverHtml;
+            if (serverQuality === 'text-only') {
+              // Binary Word 97-2003: text was extracted but formatting could not
+              // be recovered.  Warn the user after the editor loads.
+              setTimeout(() => addToast({
+                message: 'Text imported, but formatting could not be preserved for this binary .doc file. For full formatting, open it in Word and save as .docx.',
+                type: 'info',
+              }), 500);
+            }
+          }
+        } catch (serverErr) {
+          console.info('[CanvasInterface] Server-side .doc conversion failed:', serverErr);
+        }
+      }
+
+      if (!importedHtml || importedHtml.trim().length === 0) {
+        throw new Error(
+          isDoc
+            ? 'Could not read this .doc file. Please open it in Microsoft Word or Google Docs and save as .docx, then import again.'
+            : 'Document appears empty or could not be converted. Try opening it in Word and saving as .docx.'
+        );
+      }
+
+      // ── Phase 1: Ensure a canvas document exists BEFORE touching the editor ──
+      // If activeCanvasId is null the LexicalComposer key would change when we call
+      // createCanvasDocument mid-import, remounting the editor and wiping its content.
+      // By creating the document first (and waiting a tick for React to re-render /
+      // remount), editorRef.current will point to the correct stable editor before we
+      // load any content into it. autoSave then handles the final save uniformly
+      // regardless of whether the doc was pre-existing or freshly created.
+      if (!useCanvasStore.getState().activeCanvasId) {
+        const docTitle = file.name.replace(/\.(docx?)$/i, '').trim() || 'Imported Document';
+        const newDoc = await createCanvasDocument(projectId, docTitle);
+        if (!newDoc) {
+          throw new Error('Failed to create canvas document. Please try again.');
+        }
+        // Give React one animation frame to re-render with the new activeCanvasId
+        // so that editorRef.current is the fresh (stable) editor by the time we write.
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+      }
+
+      // ── Phase 2: Load HTML into the (now stable) editor ──
+      const editor = editorRef.current;
+      if (!editor) throw new Error('Editor is not ready. Please try again.');
+
+      // Flag as loading so handleEditorChange does not mark pending during the load.
+      // We set hasPendingChangesRef manually so the content is picked up by auto-save.
+      isLoadingContentRef.current = true;
+
+      // Suppress the auto-snapshot that fires inside pushSnapshot after editor.update;
+      // we push the snapshot manually once Lexical has normalised the HTML.
+      isApplyingSnapshotRef.current = true;
+
+      // Optimistic ref updates so blur-triggered saves that race the async onUpdate
+      // always have the correct HTML to write.
+      lastHtmlRef.current = importedHtml!;
+      setCurrentEditorHtml(importedHtml!);
+      hasPendingChangesRef.current = true;
+      setAutoSaveStatus('pending');
+
+      editor.update(() => {
+        const root = $getRoot();
+        root.clear();
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(importedHtml!, 'text/html');
+        const nodes = $generateNodesFromDOM(editor, dom);
+        root.append(...(nodes.length > 0 ? wrapTopLevelNodes(nodes) : [$createParagraphNode()]));
+      }, {
+        onUpdate: () => {
+          isLoadingContentRef.current = false;
+
+          // Read the Lexical-normalised HTML (may differ slightly after Lexical
+          // normalises whitespace / unknown elements).
+          let htmlContent = '';
+          let plainText  = '';
+          editor.getEditorState().read(() => {
+            htmlContent = $generateHtmlFromNodes(editor);
+            plainText   = $getRoot().getTextContent();
+          });
+
+          // Sync refs to the normalised version.
+          lastHtmlRef.current = htmlContent;
+          setCurrentEditorHtml(htmlContent);
+
+          // Re-enable snapshot tracking and record this import as the first snapshot
+          // so that Undo is available once the user makes subsequent edits.
+          isApplyingSnapshotRef.current = false;
+          pushSnapshot(htmlContent);
+
+          // ── Phase 3: Persist to the database ──
+          // activeCanvasId is guaranteed to be set now (Phase 1 ensured it).
+          // autoSave reads directly from the live editor state and handles all
+          // the bypass/dedup logic, so this single call covers every case.
+          autoSaveRef.current();
+        }
+      });
+
+      // Close modal immediately — save happens asynchronously in onUpdate above.
+      addToast({ message: 'Document imported — saving...', type: 'success' });
+      setShowTemplateModal(false);
+
     } catch (error) {
+      console.error('[CanvasInterface] Import error:', error);
+      const msg = error instanceof Error ? error.message : String(error);
+      const isFormatErr = /zip|invalid|corrupt|not.*docx|unexpected/i.test(msg);
       addToast({
-        message: 'Failed to process template document',
+        message: isFormatErr
+          ? 'Could not read this file. If it is a .doc file, open it in Word, save as .docx, then import again.'
+          : msg || 'Failed to import document',
         type: 'error'
       });
     } finally {
+      // Safety net: never leave these refs stuck regardless of what happened above.
+      isLoadingContentRef.current = false;
+      isApplyingSnapshotRef.current = false;
       setIsLoadingTemplate(false);
     }
   };
@@ -1174,8 +1482,8 @@ const LegalCanvas: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Top Action Bar */}
-      <div className="border-b border-gray-200 p-2 md:p-3 flex items-center justify-between bg-gray-50 flex-wrap gap-1 md:gap-2">
-        <div className="flex items-center space-x-1 md:space-x-2">
+      <div className="border-b border-gray-200 p-2 md:p-3 flex items-center justify-between bg-gray-50 gap-1 md:gap-2 min-w-0 overflow-hidden shrink-0">
+        <div className="flex items-center space-x-1 md:space-x-2 min-w-0 overflow-hidden">
           <span className="text-sm text-gray-600"></span>
 
           {/* Canvas streaming status indicator */}
@@ -1218,24 +1526,49 @@ const LegalCanvas: React.FC = () => {
           )}
         </div>
 
-        <div className="flex items-center space-x-1 md:space-x-2 flex-wrap">
+        <div className="flex items-center space-x-1 md:space-x-2 flex-nowrap overflow-x-auto shrink-0">
           <Button
             variant="outline"
             size="sm"
-            onClick={async () => {
-              const success = await deleteCanvasDocument(projectId);
-              if (success) {
-                if (editorRef.current) {
-                  editorRef.current.update(() => {
-                    $getRoot().clear();
-                  });
-                }
-                addToast({ message: 'Document cleared successfully', type: 'success' });
-              } else {
-                addToast({ message: 'Failed to clear document', type: 'error' });
-              }
+            onMouseDown={handleUndoSnapshot}
+            disabled={!canUndoSnapshot}
+            className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
+            title="Undo to previous saved state"
+          >
+            <Undo2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Undo</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onMouseDown={handleRedoSnapshot}
+            disabled={!canRedoSnapshot}
+            className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
+            title="Redo to next saved state"
+          >
+            <Redo2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Redo</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const editor = editorRef.current;
+              if (!editor) return;
+              // Use editor.update so HistoryPlugin records the change and Undo restores it.
+              // Do NOT delete the canvas document — that remounts LexicalComposer (key change)
+              // which wipes the history stack, making Undo impossible.
+              editor.update(() => {
+                const root = $getRoot();
+                root.clear();
+                root.append($createParagraphNode());
+              });
+              addToast({ message: 'Document cleared', type: 'success' });
             }}
             className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
+            title="Clear document"
           >
             <X className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="hidden sm:inline">Clear</span>
@@ -1247,6 +1580,7 @@ const LegalCanvas: React.FC = () => {
             onClick={handleSave}
             disabled={isSaving}
             className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
+            title={isSaving ? 'Saving…' : 'Save'}
           >
             <Save className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save'}</span>
@@ -1258,16 +1592,18 @@ const LegalCanvas: React.FC = () => {
             onClick={handleExportWord}
             disabled={!canvasDocument?.htmlContent}
             className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
+            title="Export as Word document"
           >
             <FileDown className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="hidden sm:inline">Export</span>
           </Button>
 
-           <Button
+          <Button
             variant="outline"
             size="sm"
             onClick={() => setShowTemplateModal(true)}
             className="flex items-center space-x-1 p-1.5 md:p-2 h-8 md:h-9"
+            title="Import document"
           >
             <Download className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="hidden sm:inline">Import</span>
@@ -1356,7 +1692,7 @@ const LegalCanvas: React.FC = () => {
           the chat input). It does NOT fire for clicks on toolbar buttons because those
           stay inside the container. This gives us zero-timer auto-save. */}
       <div
-        className="flex-1 relative flex flex-col overflow-hidden"
+        className="flex-1 relative flex flex-col min-h-0"
         ref={canvasRef}
         onBlur={(e) => {
           if (hasPendingChangesRef.current && !e.currentTarget.contains(e.relatedTarget as Node)) {
@@ -1404,6 +1740,7 @@ const LegalCanvas: React.FC = () => {
           <HistoryPlugin />
           <ListPlugin />
           <LinkPlugin />
+          <TablePlugin />
           <OnChangePlugin onChange={handleEditorChange} />
           <EditorRefPlugin editorRef={editorRef} />
           <LoadContentPlugin canvasDocument={canvasDocument} bypassLoadRef={bypassLoadRef} isLoadingContentRef={isLoadingContentRef} />
@@ -1415,7 +1752,7 @@ const LegalCanvas: React.FC = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96 max-w-md">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Insert Document Template</h3>
+              <h3 className="text-lg font-semibold">Import Document</h3>
               <Button
                 variant="ghost"
                 size="icon"
@@ -1428,13 +1765,13 @@ const LegalCanvas: React.FC = () => {
 
             <div className="space-y-4">
               <p className="text-sm text-gray-600">
-                Upload a Word document (.docx) to use as a template for your legal document.
+                Upload a Word document (.doc or .docx) to import it into the canvas. Formatting, headings, tables, and lists are preserved.
               </p>
 
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <input
                   type="file"
-                  accept=".docx"
+                  accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
@@ -1453,10 +1790,10 @@ const LegalCanvas: React.FC = () => {
                 >
                   <FileText className="h-12 w-12 text-gray-400 mb-2" />
                   <span className="text-sm font-medium">
-                    {isLoadingTemplate ? 'Processing template...' : 'Click to upload template'}
+                    {isLoadingTemplate ? 'Processing document...' : 'Click to upload document'}
                   </span>
                   <span className="text-xs text-gray-500 mt-1">
-                    Supports .docx files only
+                    Supports .doc and .docx files
                   </span>
                 </label>
               </div>
@@ -1615,6 +1952,34 @@ const LegalCanvas: React.FC = () => {
           color: #000;
           font-style: italic;
           line-height: 1.5;
+        }
+
+        /* ── Tables (imported from .docx / Google Drive conversion) ── */
+        .lexical-table {
+          border-collapse: collapse;
+          width: 100%;
+          margin: 8pt 0;
+          table-layout: auto;
+        }
+
+        .lexical-table-row {
+          /* no extra styles needed — inherits from table */
+        }
+
+        .lexical-table-cell {
+          border: 1px solid #000;
+          padding: 4pt 6pt;
+          vertical-align: top;
+          min-width: 20px;
+        }
+
+        .lexical-table-cell-header {
+          border: 1px solid #000;
+          padding: 4pt 6pt;
+          vertical-align: top;
+          background-color: #f5f5f5;
+          font-weight: 700;
+          text-align: left;
         }
 
         /* ── Page break indicators ── */

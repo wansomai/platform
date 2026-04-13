@@ -82,6 +82,7 @@ export interface CreateAssociateInput {
   practiceAreas: PracticeArea[];
   knowledgeBase?: string[];
   steps?: { description: string; stepOrder: number }[];
+  tools?: string[];
 }
 
 export interface UpdateAssociateInput extends Partial<CreateAssociateInput> {

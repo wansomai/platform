@@ -85,8 +85,9 @@ export default async function Page({ params }: Props) {
     const { slug } = await params;
 
     // Detect jurisdiction from Vercel's IP geolocation header, default to US
+    // DEV_COUNTRY_CODE in .env.local overrides the header for local testing (e.g. DEV_COUNTRY_CODE=ke)
     const headersList = await headers();
-    const countryCode = headersList.get('x-vercel-ip-country') ?? '';
+    const countryCode = headersList.get('x-vercel-ip-country') ?? process.env.DEV_COUNTRY_CODE ?? '';
     const detectedJurisdiction = getJurisdictionByCountryCode(countryCode);
     const initialJurisdictionId = detectedJurisdiction?.id ?? 'us-federal';
 

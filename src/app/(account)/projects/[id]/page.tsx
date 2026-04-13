@@ -29,8 +29,9 @@ export default function ProjectPage() {
   const connectionHandledRef = useRef(false)
 
   // Get core workspace data (no settings)
-  const { projects } = useProjectStore()
+  const { projects, currentProject, isLoading: projectLoading, fetchProjectById } = useProjectStore()
   const project = projects.find(p => p.id === projectId)
+    ?? (currentProject?.id === projectId ? currentProject : undefined)
 
   // Get settings from dedicated store
   const { settings, updateSetting, fetchSettings } = useProjectSettingsStore()
@@ -50,6 +51,16 @@ export default function ProjectPage() {
       });
     }
   }, [projectId, fetchSettings, fetchConversation, currentConversation?.projectId]);
+
+  // If project isn't in the store yet (e.g., just created and navigated directly),
+  // fetch it individually rather than waiting for a full fetchProjects() call.
+  useEffect(() => {
+    if (!project && projectId) {
+      fetchProjectById(projectId).catch(err => {
+        console.error('[ProjectPage] Failed to fetch project by id:', err);
+      });
+    }
+  }, [projectId, project, fetchProjectById]);
 
   // Handle Google connection notifications
   useEffect(() => {
@@ -118,8 +129,8 @@ export default function ProjectPage() {
     return () => clearTimeout(timeoutId);
   }, [searchParams, router, notify, projectId, updateSetting, settings]);
 
-  // Show skeleton loading state if project is loading
-  if (chatLoading || (!project && projectId)) {
+  // Show skeleton loading state while project or conversation is loading
+  if (chatLoading || projectLoading || (!project && projectId)) {
     return (
       <WorkspaceSkeleton
         showSidebar={false}

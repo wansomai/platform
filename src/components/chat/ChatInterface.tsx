@@ -12,7 +12,8 @@ import {
   CheckCircle,
   X,
   FileText,
-  ChevronDown
+  ChevronDown,
+  Users
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -53,19 +54,25 @@ function getStatusText(status?: string, statusMessage?: string): string {
 }
 
 // Empty state component for when there are no messages
-const EmptyState = () => (
+const EmptyState = ({ associate }: { associate?: { name: string; description?: string } }) => (
   <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 text-center">
     <div className="max-w-md mx-auto space-y-6">
-      {/* Logo and greeting */}
       <div className="space-y-4">
         <div className="space-y-2">
-
-          <p className="text-gray-600 text-3xl capitalize">
-            All Your favorite legal tools in a unified AI workspace
-          </p>
+          {associate ? (
+            <>
+              <p className="text-gray-800 text-2xl font-medium">{associate.name}</p>
+              {associate.description && (
+                <p className="text-gray-500 text-sm">{associate.description}</p>
+              )}
+            </>
+          ) : (
+            <p className="text-gray-600 text-3xl capitalize">
+              All Your favorite legal tools in a unified AI workspace
+            </p>
+          )}
         </div>
       </div>
-
     </div>
   </div>
 );
@@ -139,16 +146,16 @@ export function ChatInterface() {
       {!hasJurisdiction && suggestedJurisdiction && !dismissedSuggestion && (
         <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-b border-green-100 text-sm text-green-700 flex-shrink-0">
           <Globe className="h-4 w-4 flex-shrink-0" />
-          <span> <strong>{suggestedJurisdiction.name}</strong>jurisdction detected</span>
+          <span><strong>{suggestedJurisdiction.name}</strong> jurisdiction detected.</span>
           <button
             onClick={() => applyJurisdiction(suggestedJurisdiction)}
-            className=" font-medium hover:text-green-900"
+            className="font-medium underline hover:text-green-900"
           >
-            Applying {suggestedJurisdiction.name} law. Switch jurisdiction from chat settings.
+            Apply {suggestedJurisdiction.name} law
           </button>
           <button
             onClick={() => setDismissedSuggestion(true)}
-            className="ml-auto text-primary hover:text-green-600"
+            className="ml-auto text-green-500 hover:text-green-700"
           >
             ✕
           </button>
@@ -157,7 +164,7 @@ export function ChatInterface() {
 
       {/* Messages area or empty/loading state */}
       {!hasMessages ? (
-        hasPendingMessage || isLoading ? <PendingMessageState /> : <EmptyState />
+        hasPendingMessage || isLoading ? <PendingMessageState /> : <EmptyState associate={currentConversation?.aiAssociate} />
       ) : (
         <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 pb-32 lg:mb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <style jsx>{`
@@ -172,6 +179,7 @@ export function ChatInterface() {
                 message={message}
                 user={session?.user}
                 projectId={currentConversation.projectId}
+                associateName={currentConversation.aiAssociate?.name}
                 onCopy={() => copyMessageToClipboard(message.content)}
               />
             ))}
@@ -183,16 +191,88 @@ export function ChatInterface() {
   )
 }
 
+// Suggestion card shown below an associate response when a different specialist
+// would be a better fit for the user's query. Clicking "Switch" patches the
+// conversation's aiAssociateId so the next message goes to the suggested associate.
+function AssociateSuggestionCard({
+  suggestion,
+  projectId,
+  conversationId,
+}: {
+  suggestion: { id: string; name: string; reason: string };
+  projectId: string;
+  conversationId: string;
+}) {
+  const [dismissed, setDismissed] = useState(false);
+  const [switching, setSwitching] = useState(false);
+  const assignAssociate = useChatStore(state => state.assignAssociateToConversation);
+
+  if (dismissed) return null;
+
+  const handleSwitch = async () => {
+    setSwitching(true);
+    try {
+      const success = await assignAssociate(projectId, conversationId, suggestion.id);
+      if (success) {
+        setDismissed(true);
+      } else {
+        setSwitching(false);
+      }
+    } catch {
+      setSwitching(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 flex items-start gap-3 rounded-lg border border-[#74C6B8]/40 bg-[#74C6B8]/5 px-4 py-3 text-sm">
+      <div className="mt-0.5 flex-shrink-0 rounded-full bg-[#74C6B8]/20 p-1.5">
+        <Users className="h-3.5 w-3.5 text-[#4a7279]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-gray-800 text-sm">
+          {suggestion.name} might be better suited for this
+        </p>
+        <p className="mt-0.5 text-gray-500 text-xs leading-snug">{suggestion.reason}</p>
+        <div className="mt-2 flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 border-[#74C6B8] text-[#4a7279] hover:bg-[#74C6B8]/10 text-xs px-3"
+            disabled={switching}
+            onClick={handleSwitch}
+          >
+            {switching ? 'Switching…' : `Switch to ${suggestion.name}`}
+          </Button>
+          <button
+            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            onClick={() => setDismissed(true)}
+          >
+            Dismiss
+          </button>
+        </div>
+      </div>
+      <button
+        className="flex-shrink-0 text-gray-300 hover:text-gray-500 transition-colors"
+        onClick={() => setDismissed(true)}
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
+}
+
 // ChatMessageItem to handle streaming messages
 const ChatMessageItem = React.memo(({
   message,
   user,
   projectId,
+  associateName,
   onCopy
 }: {
   message: Message,
   user: any,
   projectId: string,
+  associateName?: string,
   onCopy: () => void
 }) => {
   const isUser = message.role === 'user';
@@ -215,10 +295,6 @@ const ChatMessageItem = React.memo(({
     };
   }, []);
 
-  // Debug: Check if message has report
-  if (!isUser && (message.metadata?.report || message.report)) {
-  }
-
   // Format the message content
   const formattedContent = formatMessageContent(message.content);
 
@@ -231,7 +307,7 @@ const ChatMessageItem = React.memo(({
 
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
-            <span className="font-medium">{isUser ? 'You' : 'Wansom'}</span>
+            <span className="font-medium">{isUser ? 'You' : (associateName ?? 'Wansom')}</span>
             <span className="text-muted-foreground text-xs">
               {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
             </span>
@@ -309,7 +385,7 @@ const ChatMessageItem = React.memo(({
           )}
 
           <div
-            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-white" : "bg-transparent"
+            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-gray-900" : "bg-transparent"
               }`}
           >
             {message.isLoading || isStreaming ? (
@@ -479,6 +555,15 @@ const ChatMessageItem = React.memo(({
           {/* View canvas document button — shown when AI generated a new canvas doc */}
           {!isUser && message.canvasUpdated && message.actionType === 'generating' && message.canvasDocumentId && (
             <CanvasDocumentButton canvasDocumentId={message.canvasDocumentId} projectId={projectId} />
+          )}
+
+          {/* Associate switch suggestion — shown when a different specialist is a better fit */}
+          {!isUser && message.suggestedAssociate && message.conversationId && (
+            <AssociateSuggestionCard
+              suggestion={message.suggestedAssociate}
+              projectId={projectId}
+              conversationId={message.conversationId}
+            />
           )}
         </div>
       </div>

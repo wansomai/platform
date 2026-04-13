@@ -66,7 +66,10 @@ export async function POST(request: NextRequest) {
   const jurisdictionName = jurisdiction?.name || 'Nigeria';
   const legalSystem = jurisdiction?.legalSystem === 'civil-law' ? 'civil law' : 'common law';
 
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
   const systemPrompt = `You are an expert legal document drafter specialising in ${jurisdictionName} law. You produce complete, professionally formatted legal documents ready for immediate use.
+Today's date is ${today}. Use this whenever a date is required in the document.
 
 Output rules — follow exactly:
 - All variable fields use [SQUARE_BRACKETS] e.g. [FULL_NAME], [DATE], [ADDRESS], [AMOUNT]
@@ -93,7 +96,7 @@ Requirements:
   try {
     const encoder = new TextEncoder();
     const result = await genAI.models.generateContentStream({
-      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,

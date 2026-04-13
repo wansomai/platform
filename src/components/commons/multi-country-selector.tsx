@@ -1,6 +1,7 @@
 "use client";
 
 import { COUNTRIES } from "@/lib/country-picker/countries";
+import { SUPPORTED_JURISDICTION_CODES } from "@/lib/briefly-jurisdictions";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
@@ -105,6 +106,9 @@ export default function MultiCountrySelector({
               className="inline h-3 rounded-sm"
             />
             {country.title}
+            {SUPPORTED_JURISDICTION_CODES.has(country.value) && (
+              <span className="ml-0.5 text-emerald-600" title="Fully supported by Briefly">✓</span>
+            )}
             <button
               type="button"
               onClick={(e) => removeCountry(country.value, e)}
@@ -179,6 +183,9 @@ export default function MultiCountrySelector({
                       className="inline mr-2 h-4 rounded-sm"
                     />
                     <span className="font-normal truncate text-gray-900">{value.title}</span>
+                    {SUPPORTED_JURISDICTION_CODES.has(value.value) && (
+                      <span className="ml-auto pl-2 text-emerald-600 text-xs font-medium whitespace-nowrap">✓ Fully supported</span>
+                    )}
                   </li>
                 );
               })
