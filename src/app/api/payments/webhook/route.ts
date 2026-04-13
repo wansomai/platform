@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import prisma from '@/lib/prisma';
+import { getSubscriptionPricing } from '@/lib/subscriptionPricing';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
@@ -253,6 +254,22 @@ export async function POST(request: NextRequest) {
           break;
         }
 
+        // Amount verification for inline-popup payments (anti-manipulation)
+        if (metadata.paymentMode === 'inline-popup') {
+          const countryCode = (metadata.countryCode as string | undefined) ?? '';
+          const planType = (metadata.planType as string | undefined) ?? '';
+          const pricing = getSubscriptionPricing(countryCode);
+          const expectedAmount = planType === 'teams' ? pricing.teams : pricing.personal;
+          if (amount < expectedAmount) {
+            console.error(
+              `[Paystack Webhook] Amount manipulation detected for ref ${reference}: ` +
+              `received ${amount}, expected ${expectedAmount} (${pricing.currency}, ${planType})`
+            );
+            // Return 200 so Paystack doesn't retry, but do NOT activate the subscription.
+            return NextResponse.json({ received: true, skipped: 'amount_mismatch' });
+          }
+        }
+
         // Find the subscription to link the payment
         let subscription = null;
 
@@ -297,6 +314,8 @@ export async function POST(request: NextRequest) {
         }
 
         if (subscription) {
+          const isRenewalCharge = metadata.renewalSource === 'subscription-renewal-cron';
+
           // Create payment record
           await prisma.payment.create({
             data: {
@@ -310,14 +329,14 @@ export async function POST(request: NextRequest) {
               metadata: {
                 gatewayResponse: data.gateway_response,
                 channel: channel,
-                source: 'webhook',
+                source: isRenewalCharge ? 'renewal-cron' : 'webhook',
               },
             },
           });
 
-          // Update subscription period for recurring payments
-          if (data.plan) {
-            const planInterval = data.plan?.interval || 'monthly';
+          // Update subscription period for recurring payments (plan-based or renewal cron)
+          if (data.plan || isRenewalCharge) {
+            const planInterval = data.plan?.interval || subscription.billingCycle || 'monthly';
             const now = new Date();
             const periodEnd = calculatePeriodEnd(planInterval);
 

@@ -163,6 +163,8 @@ export async function GET(req: NextRequest) {
       trialExpired: false,
       trialExpiresAt: { lte: now },
       trialUpgradedAt: { not: null },
+      // Skip orgs that converted to a paid subscription during the trial
+      NOT: { subscription: { is: { status: { in: ['active', 'non_renewing'] } } } },
     },
     include: {
       owner: { select: { id: true, email: true, fullName: true } },
@@ -218,6 +220,19 @@ export async function GET(req: NextRequest) {
       console.error(`[trial-expiry] Error expiring org ${org.id}:`, err);
     }
   }
+
+  // ── Phase 4: Stamp trialExpired on paying subscribers whose trial date passed ─
+  // These orgs were excluded from Phase 3 (active subscription), but trialExpired
+  // is still false — mark it silently so they don't appear in Phase 3 every day.
+  await prisma.organization.updateMany({
+    where: {
+      trialExpired: false,
+      trialExpiresAt: { lte: now },
+      trialUpgradedAt: { not: null },
+      subscription: { is: { status: { in: ['active', 'non_renewing'] } } },
+    },
+    data: { trialExpired: true },
+  });
 
   console.log('[trial-expiry] Run complete:', results);
 

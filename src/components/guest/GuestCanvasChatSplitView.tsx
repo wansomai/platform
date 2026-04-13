@@ -6,6 +6,7 @@ import { SplitView } from '@/components/layout/SplitView';
 import GuestCanvasInterface from './GuestCanvasInterface';
 import GuestChatPanel from './GuestChatPanel';
 import { JURISDICTIONS } from '@/lib/jurisdictions';
+import { getExportPricing } from '@/lib/exportPricing';
 import { X, Loader2 } from 'lucide-react';
 
 interface PendingSuggestion {
@@ -16,43 +17,22 @@ interface PendingSuggestion {
 interface GuestCanvasChatSplitViewProps {
   documentType: string;
   initialJurisdictionId: string;
+  userCountryCode?: string;
   documentTitle?: string;
   documentDescription?: string;
 }
 
-// Pricing per jurisdiction (amount in smallest currency unit for Paystack)
-const EXPORT_PRICING: Record<string, { amount: number; currency: string; label: string }> = {
-  
-  // 🌍 CORE AFRICAN MARKETS
-  // Target: ~$5-6 USD equivalent (PPP-adjusted, high price sensitivity)
-  
-  ng: { amount: 349900, currency: 'NGN', label: '₦3,499' },  // $2.50 — impulse buy
-  ke: { amount: 44900,  currency: 'KES', label: 'KES 449' }, // $3.47 — M-Pesa friendly
-  za: { amount: 5900,   currency: 'ZAR', label: 'R59'     }, // $3.62
-  gh: { amount: 3999,   currency: 'GHS', label: 'GHS 40'  }, // $3.71
-  
-  // 🇬🇧 UK — Diaspora #1 Target (high purchase power)
-  gb: { amount: 499,     currency: 'GBP', label: '£4.99'   }, // ~$10.10
-  
-  // 🇺🇸 USA — Diaspora #2 Target
-  us: { amount: 499,     currency: 'USD', label: '$4.99'   },
-  
-  // 🇨🇦 Canada — Diaspora #3 Target  
-  ca: { amount: 1099,    currency: 'CAD', label: 'CA$10.99' }, // ~$9.10
-  
-  // 🇦🇺 Australia — South African diaspora hub
-  au: { amount: 1099,    currency: 'AUD', label: 'A$10.99'  }, // ~$9.50
-  
-  // 🇦🇪 UAE — High-income African professionals
-  ae: { amount: 2699,    currency: 'AED', label: 'AED 26.99' }, // ~$10.07
-  
-};
-
-// Default for all other countries (raised from $5 → $7.99)
-const DEFAULT_PRICING  = { amount: 499, currency: 'USD', label: '$4.99' };
+interface PaymentConfig {
+  amount: number;
+  currency: string;
+  label: string;
+  channels: string[];
+  publicKey: string;
+}
 export default function GuestCanvasChatSplitView({
   documentType,
   initialJurisdictionId,
+  userCountryCode = '',
   documentTitle,
   documentDescription,
 }: GuestCanvasChatSplitViewProps) {
@@ -66,6 +46,8 @@ export default function GuestCanvasChatSplitView({
   const [exportEmail, setExportEmail] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState('');
+  const [paymentConfig, setPaymentConfig] = useState<PaymentConfig | null>(null);
+  const [isLoadingConfig, setIsLoadingConfig] = useState(false);
   const hasGenerated = useRef(false);
 
   // Auto-generate on mount
@@ -153,8 +135,25 @@ export default function GuestCanvasChatSplitView({
 
   // ── Export / Paystack flow ──────────────────────────────────────────────────
 
-  const pricing = EXPORT_PRICING[jurisdictionId] || DEFAULT_PRICING;
+  // Display-only pricing while the server config is loading.
+  // Once fetched, paymentConfig.label replaces this (may differ if currency fell back to USD).
+  const displayPricing = getExportPricing(userCountryCode);
   const jurisdiction = JURISDICTIONS.find((j) => j.id === jurisdictionId);
+
+  const openExportModal = async () => {
+    setShowExportModal(true);
+    if (paymentConfig) return; // already fetched
+    setIsLoadingConfig(true);
+    try {
+      const res = await fetch('/api/public/export-payment-config');
+      const json = await res.json();
+      if (json.data) setPaymentConfig(json.data);
+    } catch {
+      // Network error — keep null; handlePayClick will surface the error
+    } finally {
+      setIsLoadingConfig(false);
+    }
+  };
 
   const generateAndDownload = async () => {
     const htmlToExport = currentEditorHtml || documentHtml || '';
@@ -207,6 +206,11 @@ export default function GuestCanvasChatSplitView({
     }
     setExportError('');
 
+    if (!paymentConfig) {
+      setExportError('Payment configuration is still loading. Please try again in a moment.');
+      return;
+    }
+
     // Load Paystack inline script once
     await new Promise<void>((resolve) => {
       if ((window as any).PaystackPop) { resolve(); return; }
@@ -216,14 +220,12 @@ export default function GuestCanvasChatSplitView({
       document.body.appendChild(script);
     });
 
-    const channels = jurisdictionId === 'ke' ? ['mobile_money', 'card'] : ['card'];
-
     (window as any).PaystackPop.setup({
-      key: 'pk_live_fcef983434b15b8b03d03189ebff007c36adfe48',
+      key: paymentConfig.publicKey,
       email: exportEmail,
-      amount: pricing.amount,
-      currency: pricing.currency,
-      channels,
+      amount: paymentConfig.amount,
+      currency: paymentConfig.currency,
+      channels: paymentConfig.channels,
       ref: `WANSOM-DOC-${Date.now()}`,
       metadata: {
         custom_fields: [
@@ -252,7 +254,7 @@ export default function GuestCanvasChatSplitView({
             isGenerating={isGenerating}
             pendingSuggestion={pendingSuggestion}
             onEditorHtmlChange={setCurrentEditorHtml}
-            onExportClick={() => setShowExportModal(true)}
+            onExportClick={openExportModal}
             onAcceptSuggestion={handleAcceptSuggestion}
             onRejectSuggestion={handleRejectSuggestion}
           />
@@ -288,7 +290,7 @@ export default function GuestCanvasChatSplitView({
                 <h2 className="text-lg font-semibold text-gray-900">Export Document</h2>
               </div>
               <button
-                onClick={() => { setShowExportModal(false); setIsExporting(false); setExportError(''); }}
+                onClick={() => { setShowExportModal(false); setIsExporting(false); setExportError(''); setIsLoadingConfig(false); }}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded"
               >
                 <X className="h-5 w-5" />
@@ -325,13 +327,15 @@ export default function GuestCanvasChatSplitView({
 
               <button
                 onClick={handlePayClick}
-                disabled={isExporting}
+                disabled={isExporting || isLoadingConfig}
                 className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
               >
                 {isExporting ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> Generating document…</>
+                ) : isLoadingConfig ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Loading…</>
                 ) : (
-                  `Pay ${pricing.label} & Download`
+                  `Pay ${paymentConfig?.label ?? displayPricing.label} & Download`
                 )}
               </button>
 

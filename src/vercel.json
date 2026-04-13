@@ -5,6 +5,10 @@
       "schedule": "0 6 * * *"
     },
     {
+      "path": "/api/cron/subscription-renewal",
+      "schedule": "0 7 * * *"
+    },
+    {
       "path": "/api/cron/digest-ingest?tier=1",
       "schedule": "0 */4 * * *"
     },

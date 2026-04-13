@@ -147,14 +147,18 @@ async function processPayment(transaction: any, organizationId: string, referenc
     );
   }
 
-  // Read planType from metadata
+  // Read planType and payment mode from metadata
   const metadata = transaction.metadata || {};
   const planType: 'personal' | 'teams' = metadata.planType === 'teams' ? 'teams' : 'personal';
+  const isDirectPayment: boolean = metadata.isDirectPayment === true;
 
-  // Get plan details from transaction
+  // For direct payments there is no Paystack plan object — use sensible defaults.
+  // For plan-based payments, read plan details from the transaction as before.
   const plan = transaction.plan_object || transaction.plan || {};
   const planInterval = plan.interval || 'monthly';
-  const planName = plan.name || 'Professional';
+  const planName = isDirectPayment
+    ? (planType === 'teams' ? 'Teams' : 'Professional')
+    : (plan.name || 'Professional');
 
   // Extract Paystack subscription code if available
   const paystackSubscriptionId = transaction.subscription_code
@@ -192,18 +196,13 @@ async function processPayment(transaction: any, organizationId: string, referenc
 
   // Create or update subscription and payment in a transaction
   const subscription = await prisma.$transaction(async (tx) => {
-    // Build plan-type-specific fields
-    const planTypeFields =
-      planType === 'teams'
-        ? {
-            planType: 'teams',
-            seatCount: 1,
-            ...(paystackAuthCode ? { paystackAuthCode } : {}),
-          }
-        : {
-            planType: 'personal',
-            seatCount: 1,
-          };
+    // Always save the authorization code — the renewal cron uses it for recurring charges
+    // regardless of plan type (personal or teams).
+    const planTypeFields = {
+      planType,
+      seatCount: 1,
+      ...(paystackAuthCode ? { paystackAuthCode } : {}),
+    };
 
     // Create or update subscription
     const sub = await tx.subscription.upsert({

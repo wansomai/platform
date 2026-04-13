@@ -298,20 +298,45 @@ export default function GuestCanvasInterface({
   const editorRef = useRef<LexicalEditor | null>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
 
-  // Block clipboard copy/cut for the entire canvas area (covers keyboard shortcuts,
-  // right-click, and any other copy path) so the watermarked preview can't be scraped.
+  // Block all copy/cut/print/save paths so the preview cannot be scraped.
   useEffect(() => {
-    const prevent = (e: ClipboardEvent) => {
+    // Block clipboard events anywhere in the canvas
+    const preventClipboard = (e: ClipboardEvent) => {
       if (canvasContainerRef.current?.contains(e.target as Node)) {
         e.preventDefault();
         e.stopPropagation();
       }
     };
-    document.addEventListener('copy', prevent, true);
-    document.addEventListener('cut', prevent, true);
+
+    // Block keyboard shortcuts: Ctrl/Cmd + A, C, X, P, S
+    const preventKeys = (e: KeyboardEvent) => {
+      if (!canvasContainerRef.current?.contains(e.target as Node)) return;
+      const key = e.key.toLowerCase();
+      const isModifier = e.ctrlKey || e.metaKey;
+      if (isModifier && ['a', 'c', 'x', 'p', 's'].includes(key)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    // Block browser print (Ctrl+P from anywhere on the page triggers print)
+    const preventPrint = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    document.addEventListener('copy', preventClipboard, true);
+    document.addEventListener('cut', preventClipboard, true);
+    document.addEventListener('keydown', preventKeys, true);
+    document.addEventListener('keydown', preventPrint, true);
+
     return () => {
-      document.removeEventListener('copy', prevent, true);
-      document.removeEventListener('cut', prevent, true);
+      document.removeEventListener('copy', preventClipboard, true);
+      document.removeEventListener('cut', preventClipboard, true);
+      document.removeEventListener('keydown', preventKeys, true);
+      document.removeEventListener('keydown', preventPrint, true);
     };
   }, []);
 
@@ -455,43 +480,6 @@ export default function GuestCanvasInterface({
             onCut={(e) => { e.preventDefault(); }}
             onContextMenu={(e) => { e.preventDefault(); }}
           >
-            {/* Watermark */}
-            {documentHtml && !isGenerating && (
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  pointerEvents: 'none',
-                  zIndex: 5,
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignContent: 'flex-start',
-                  gap: '80px 40px',
-                  padding: '80px 20px',
-                  transform: 'rotate(-20deg)',
-                  transformOrigin: 'top left',
-                }}
-              >
-                {Array.from({ length: 30 }).map((_, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      fontSize: '13px',
-                      color: 'rgba(0,0,0,0.06)',
-                      fontFamily: 'Arial, sans-serif',
-                      whiteSpace: 'nowrap',
-                      userSelect: 'none',
-                      WebkitUserSelect: 'none',
-                    }}
-                  >
-                    WANSOM AI — EXPORT TO DOWNLOAD
-                  </span>
-                ))}
-              </div>
-            )}
-
             <div className="legal-page-wrapper">
               <div className="legal-page">
                 <div className="legal-page-content relative">
@@ -500,6 +488,15 @@ export default function GuestCanvasInterface({
                     ErrorBoundary={LexicalErrorBoundary}
                   />
                   <PageLayoutPlugin />
+
+                  {/* Watermark — SVG tile repeated as a background image.
+                      Reliable across all browsers; no complex DOM positioning needed. */}
+                  {documentHtml && !isGenerating && (
+                    <div
+                      aria-hidden="true"
+                      className="watermark-overlay"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -541,6 +538,15 @@ export default function GuestCanvasInterface({
         }
 
         .legal-page-content { position: relative; }
+
+        .watermark-overlay {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          pointer-events: none;
+          z-index: 10;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='160'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' transform='rotate(-30 110 80)' font-family='Arial%2C sans-serif' font-size='13' font-weight='600' fill='rgba(0%2C0%2C0%2C0.13)' letter-spacing='3'%3EWANSOM AI%3C/text%3E%3C/svg%3E");
+          background-repeat: repeat;
+        }
 
         .lexical-editor {
           font-family: "Times New Roman", Times, Georgia, serif;
@@ -635,12 +641,16 @@ export default function GuestCanvasInterface({
         .skeleton-line { height: 13px; margin-bottom: 9px; }
 
         @media print {
-          body * { visibility: hidden; }
-          .legal-page, .legal-page * { visibility: visible; }
-          .legal-page { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border-radius: 0; }
-          .lexical-editor { padding: 0; min-height: auto; }
-          .page-break-indicator, .page-footer-current { display: none; }
-          @page { size: A4; margin: 1in 1in 1in 1.5in; }
+          body * { display: none !important; }
+          body::after {
+            display: block !important;
+            content: "This document is protected. Purchase and download the file at wansom.ai to get a clean copy.";
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 40vh;
+            color: #333;
+          }
         }
 
         @media (max-width: 840px) {

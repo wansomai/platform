@@ -667,22 +667,26 @@ async function convertDocToDocxViaDrive(
         console.info('[import-doc] GOOGLE_SERVICE_ACCOUNT_KEY is not valid JSON:', (e as Error).message);
       }
     } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      // Must be a plain file path (the standard Google convention).
-      // dotenv corrupts multiline JSON values, so we only accept this var as a
-      // file path.  If the value starts with { or " it's (likely truncated) JSON
-      // — skip silently and let the RTF/cfb fallback run instead.
       const credVal = process.env.GOOGLE_APPLICATION_CREDENTIALS.trim();
       if (!credVal.startsWith('{') && !credVal.startsWith('"') && !credVal.startsWith("'")) {
+        // Plain file path — the standard Google convention for local dev.
         auth = new google.auth.GoogleAuth({
           keyFile: credVal,
           scopes: ['https://www.googleapis.com/auth/drive.file'],
         });
       } else {
-        console.info(
-          '[import-doc] GOOGLE_APPLICATION_CREDENTIALS looks like embedded JSON (dotenv ' +
-          'truncates multiline values). Save the key to a .json file and point the env var ' +
-          'at that path, or put minified single-line JSON in GOOGLE_SERVICE_ACCOUNT_KEY.',
-        );
+        // Value looks like inline JSON (Vercel stores multiline env vars correctly
+        // even when dotenv in .env.local would truncate them).  Try to parse it
+        // directly as service-account credentials.
+        try {
+          const credentials = parseInlineCredentials(credVal);
+          auth = new google.auth.GoogleAuth({
+            credentials,
+            scopes: ['https://www.googleapis.com/auth/drive.file'],
+          });
+        } catch (e) {
+          console.info('[import-doc] GOOGLE_APPLICATION_CREDENTIALS contains invalid JSON:', (e as Error).message);
+        }
       }
     }
 
@@ -739,6 +743,8 @@ async function convertDocToDocxViaDrive(
 // ---------------------------------------------------------------------------
 // Route handler
 // ---------------------------------------------------------------------------
+
+export const maxDuration = 60;
 
 export const POST = withErrorHandler(
   withAuth(async (request: NextRequest, _userId: string) => {
