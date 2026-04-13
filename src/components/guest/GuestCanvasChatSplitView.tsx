@@ -177,9 +177,13 @@ export default function GuestCanvasChatSplitView({
       // Export generated document
       if (accumulated) {
         await exportHtmlAsDocx(accumulated);
+      } else {
+        throw new Error('Document generation produced no content.');
       }
     } catch (err: any) {
+      console.error('[generateAndExport] failed:', err);
       setExportError(err.message || 'Failed to generate document. Please try again.');
+      setShowExportModal(true); // Re-open modal so the error is visible
     } finally {
       setIsGenerating(false);
       setIsExporting(false);
@@ -308,17 +312,22 @@ export default function GuestCanvasChatSplitView({
           { display_name: 'Jurisdiction', variable_name: 'jurisdiction', value: jurisdictionId },
         ],
       },
-      callback: async function() {
+      callback: function() {
         setShowExportModal(false);
         if (templateUrl) {
           // Template exists — download original file directly
           setIsExporting(true);
           downloadTemplateFile()
-            .catch((err: any) => setExportError(err.message || 'Failed to download template.'))
+            .catch((err: any) => {
+              console.error('[downloadTemplateFile] failed:', err);
+              setExportError(err.message || 'Failed to download template.');
+              setShowExportModal(true); // Re-open modal so the error is visible
+            })
             .finally(() => setIsExporting(false));
         } else {
           // No template — generate with Gemini and export
-          await generateAndExport(jurisdictionId);
+          // (generateAndExport re-opens the modal on error)
+          generateAndExport(jurisdictionId);
         }
       },
       onClose: () => {},
