@@ -9,7 +9,6 @@ import GuestCanvasChatSplitView from "@/components/guest/GuestCanvasChatSplitVie
 interface PageProps {
   blog: any | null;
   initialJurisdictionId: string;
-  userCountryCode: string;
 }
 
 // Strip HTML tags to get plain text for AI prompts
@@ -17,7 +16,7 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-const DocDetailPageClient = ({ blog, initialJurisdictionId, userCountryCode }: PageProps) => {
+const DocDetailPageClient = ({ blog, initialJurisdictionId }: PageProps) => {
   const [relatedPosts, setRelatedPosts] = useState<any[]>([]);
 
   // Fetch related documents for SEO section below the fold
@@ -60,9 +59,9 @@ const DocDetailPageClient = ({ blog, initialJurisdictionId, userCountryCode }: P
         <GuestCanvasChatSplitView
           documentType="nda"
           initialJurisdictionId={initialJurisdictionId}
-          userCountryCode={userCountryCode}
           documentTitle={plainTitle}
           documentDescription={blog.contentHtml || undefined}
+          templateUrl={blog.template?.url}
         />
       </main>
 

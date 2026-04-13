@@ -278,6 +278,7 @@ interface GuestCanvasInterfaceProps {
   documentHtml: string | null;        // Loaded into editor after generation completes
   streamingHtml: string | null;       // Live preview during generation
   isGenerating: boolean;
+  isMasked?: boolean;                 // Blur/cover canvas — no template, illusion mode
   pendingSuggestion: PendingSuggestion | null;
   onEditorHtmlChange: (html: string) => void;
   onExportClick: () => void;          // Triggers Paystack modal in parent
@@ -289,6 +290,7 @@ export default function GuestCanvasInterface({
   documentHtml,
   streamingHtml,
   isGenerating,
+  isMasked = false,
   pendingSuggestion,
   onEditorHtmlChange,
   onExportClick,
@@ -410,7 +412,7 @@ export default function GuestCanvasInterface({
           <Button
             size="sm"
             onClick={onExportClick}
-            disabled={!documentHtml && !editorRef.current}
+            disabled={isGenerating}
             className="flex items-center gap-1.5 h-8 bg-green-600 hover:bg-green-700 text-white"
           >
             <Download className="h-3.5 w-3.5" />
@@ -480,6 +482,21 @@ export default function GuestCanvasInterface({
             onCut={(e) => { e.preventDefault(); }}
             onContextMenu={(e) => { e.preventDefault(); }}
           >
+            {/* Mask overlay for no-template illusion mode */}
+            {isMasked && !isGenerating && (
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: 10,
+                  pointerEvents: 'none',
+                  backdropFilter: 'blur(6px)',
+                  WebkitBackdropFilter: 'blur(6px)',
+                  background: 'linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.55) 40%, rgba(255,255,255,0.92) 70%, rgba(255,255,255,1) 100%)',
+                }}
+              />
+            )}
             <div className="legal-page-wrapper">
               <div className="legal-page">
                 <div className="legal-page-content relative">

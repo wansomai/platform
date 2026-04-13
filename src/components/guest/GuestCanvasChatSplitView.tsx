@@ -1,12 +1,11 @@
 'use client';
 // Orchestrates the full guest drafting experience:
 // auto-generates the document on mount, manages state, handles the Paystack export gate.
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SplitView } from '@/components/layout/SplitView';
 import GuestCanvasInterface from './GuestCanvasInterface';
 import GuestChatPanel from './GuestChatPanel';
 import { JURISDICTIONS } from '@/lib/jurisdictions';
-import { getExportPricing } from '@/lib/exportPricing';
 import { X, Loader2 } from 'lucide-react';
 
 interface PendingSuggestion {
@@ -17,9 +16,9 @@ interface PendingSuggestion {
 interface GuestCanvasChatSplitViewProps {
   documentType: string;
   initialJurisdictionId: string;
-  userCountryCode?: string;
   documentTitle?: string;
   documentDescription?: string;
+  templateUrl?: string;
 }
 
 interface PaymentConfig {
@@ -29,16 +28,36 @@ interface PaymentConfig {
   channels: string[];
   publicKey: string;
 }
+
+// Placeholder HTML shown (blurred/masked) when there is no template.
+// Looks like a real document so the mask feels convincing.
+const MASKED_PLACEHOLDER_HTML = `
+<h1>LEGAL AGREEMENT</h1>
+<p>This Agreement is entered into as of the date of acceptance between the parties identified herein and governs the terms and conditions set forth below.</p>
+<h2>1. DEFINITIONS</h2>
+<p>"Confidential Information" means any non-public information disclosed by one party to the other, either directly or indirectly, in writing, orally or by inspection of tangible objects.</p>
+<p>"Effective Date" means the date upon which both parties have executed this Agreement or the date the recipient first receives any Confidential Information, whichever is earlier.</p>
+<h2>2. OBLIGATIONS OF RECEIVING PARTY</h2>
+<p>The Receiving Party agrees to: (a) hold the Confidential Information in strict confidence; (b) not to disclose the Confidential Information to any third parties; (c) use the Confidential Information solely for the purposes described herein.</p>
+<h2>3. TERM AND TERMINATION</h2>
+<p>This Agreement shall commence on the Effective Date and shall continue in full force and effect for a period of two (2) years, unless earlier terminated by either party upon thirty (30) days written notice to the other party.</p>
+<h2>4. GOVERNING LAW</h2>
+<p>This Agreement shall be governed by and construed in accordance with the laws of the applicable jurisdiction, without regard to its conflict of law provisions.</p>
+<h2>5. ENTIRE AGREEMENT</h2>
+<p>This Agreement constitutes the entire agreement between the parties with respect to the subject matter hereof and supersedes all prior and contemporaneous agreements and understandings.</p>
+`;
+
 export default function GuestCanvasChatSplitView({
   documentType,
   initialJurisdictionId,
-  userCountryCode = '',
   documentTitle,
   documentDescription,
+  templateUrl,
 }: GuestCanvasChatSplitViewProps) {
   const [documentHtml, setDocumentHtml] = useState<string | null>(null);
   const [streamingHtml, setStreamingHtml] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(true);
+  const [isMasked, setIsMasked] = useState(false);
   const [currentEditorHtml, setCurrentEditorHtml] = useState<string>('');
   const [jurisdictionId, setJurisdictionId] = useState(initialJurisdictionId);
   const [pendingSuggestion, setPendingSuggestion] = useState<PendingSuggestion | null>(null);
@@ -47,22 +66,74 @@ export default function GuestCanvasChatSplitView({
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState('');
   const [paymentConfig, setPaymentConfig] = useState<PaymentConfig | null>(null);
-  const [isLoadingConfig, setIsLoadingConfig] = useState(false);
-  const hasGenerated = useRef(false);
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
 
-  // Auto-generate on mount
+  // On mount: fetch payment config + load canvas content in parallel, then open export modal
   useEffect(() => {
-    if (hasGenerated.current) return;
-    hasGenerated.current = true;
-    generateDocument(jurisdictionId);
+    const init = async () => {
+      const minSkeleton = new Promise<void>((res) => setTimeout(res, 2500));
+
+      // Fetch payment config in parallel — ready before modal opens
+      const configPromise = fetch('/api/public/export-payment-config')
+        .then((r) => r.json())
+        .then((json) => { if (json.data) setPaymentConfig(json.data); })
+        .catch(() => { /* Keep null — handlePayClick will surface error */ })
+        .finally(() => setIsLoadingConfig(false));
+
+      if (templateUrl) {
+        try {
+          const [result] = await Promise.all([
+            fetch('/api/public/fetch-template', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ templateUrl, mode: 'html' }),
+            }).then(async (r) => {
+              const data = await r.json();
+              if (!r.ok) {
+                console.error('[fetch-template]', r.status, data);
+                return null;
+              }
+              return data.html as string | null;
+            }),
+            minSkeleton,
+            configPromise,
+          ]);
+
+          if (result && result.trim().length > 50) {
+            setDocumentHtml(result);
+          } else {
+            // .doc file or empty conversion — show masked but templateUrl still used for download
+            setDocumentHtml(MASKED_PLACEHOLDER_HTML);
+            setIsMasked(true);
+          }
+        } catch (err) {
+          console.error('[fetch-template] unexpected:', err);
+          await Promise.all([minSkeleton, configPromise]);
+          setDocumentHtml(MASKED_PLACEHOLDER_HTML);
+          setIsMasked(true);
+        }
+      } else {
+        // No template — show masked placeholder
+        await Promise.all([minSkeleton, configPromise]);
+        setDocumentHtml(MASKED_PLACEHOLDER_HTML);
+        setIsMasked(true);
+      }
+
+      setIsGenerating(false);
+      setShowExportModal(true);
+    };
+
+    init();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const generateDocument = async (jId: string) => {
+  // Called post-payment for non-template docs: generates with Gemini then exports
+  const generateAndExport = async (jId: string) => {
+    setIsExporting(true);
+    setIsMasked(false);
     setIsGenerating(true);
     setDocumentHtml(null);
     setStreamingHtml(null);
-    setPendingSuggestion(null);
 
     try {
       const response = await fetch('/api/public/generate', {
@@ -98,22 +169,25 @@ export default function GuestCanvasChatSplitView({
               setDocumentHtml(accumulated);
             }
           } catch {
-            // Ignore malformed chunks
+            // Ignore
           }
         }
       }
-    } catch {
-      setStreamingHtml(null);
-      setDocumentHtml('<p>Failed to generate document. Please refresh the page and try again.</p>');
+
+      // Export generated document
+      if (accumulated) {
+        await exportHtmlAsDocx(accumulated);
+      }
+    } catch (err: any) {
+      setExportError(err.message || 'Failed to generate document. Please try again.');
     } finally {
       setIsGenerating(false);
+      setIsExporting(false);
     }
   };
 
   const handleJurisdictionChange = (newId: string) => {
     setJurisdictionId(newId);
-    hasGenerated.current = false;
-    generateDocument(newId);
   };
 
   const handleCanvasStreamingUpdate = useCallback((html: string | null) => {
@@ -135,32 +209,11 @@ export default function GuestCanvasChatSplitView({
 
   // ── Export / Paystack flow ──────────────────────────────────────────────────
 
-  // Display-only pricing while the server config is loading.
-  // Once fetched, paymentConfig.label replaces this (may differ if currency fell back to USD).
-  const displayPricing = getExportPricing(userCountryCode);
   const jurisdiction = JURISDICTIONS.find((j) => j.id === jurisdictionId);
 
-  const openExportModal = async () => {
-    setShowExportModal(true);
-    if (paymentConfig) return; // already fetched
-    setIsLoadingConfig(true);
-    try {
-      const res = await fetch('/api/public/export-payment-config');
-      const json = await res.json();
-      if (json.data) setPaymentConfig(json.data);
-    } catch {
-      // Network error — keep null; handlePayClick will surface the error
-    } finally {
-      setIsLoadingConfig(false);
-    }
-  };
-
-  const generateAndDownload = async () => {
-    const htmlToExport = currentEditorHtml || documentHtml || '';
-    if (!htmlToExport) throw new Error('No document content to export.');
-
+  const exportHtmlAsDocx = async (html: string) => {
     const title = documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-    const cleanBody = htmlToExport
+    const cleanBody = html
       .replace(/class="lexical-[^"]*"/g, '')
       .replace(/class="[^"]*lexical[^"]*"/g, '');
 
@@ -189,6 +242,28 @@ export default function GuestCanvasChatSplitView({
     const blob = htmlDocx.asBlob(fullHtml);
 
     const filename = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-wansom.docx';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Download template file via proxy (handles cross-origin download attribute)
+  const downloadTemplateFile = async () => {
+    if (!templateUrl) throw new Error('No template URL');
+    const response = await fetch('/api/public/fetch-template', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ templateUrl, mode: 'download' }),
+    });
+    if (!response.ok) throw new Error('Failed to fetch template file');
+    const blob = await response.blob();
+    const title = documentTitle || documentType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const filename = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '.docx';
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -233,12 +308,18 @@ export default function GuestCanvasChatSplitView({
           { display_name: 'Jurisdiction', variable_name: 'jurisdiction', value: jurisdictionId },
         ],
       },
-      callback: function() {
-        setIsExporting(true);
-        generateAndDownload()
-          .then(() => setShowExportModal(false))
-          .catch((err: any) => setExportError(err.message || 'Failed to generate document. Please try again.'))
-          .finally(() => setIsExporting(false));
+      callback: async function() {
+        setShowExportModal(false);
+        if (templateUrl) {
+          // Template exists — download original file directly
+          setIsExporting(true);
+          downloadTemplateFile()
+            .catch((err: any) => setExportError(err.message || 'Failed to download template.'))
+            .finally(() => setIsExporting(false));
+        } else {
+          // No template — generate with Gemini and export
+          await generateAndExport(jurisdictionId);
+        }
       },
       onClose: () => {},
     }).openIframe();
@@ -252,9 +333,10 @@ export default function GuestCanvasChatSplitView({
             documentHtml={documentHtml}
             streamingHtml={streamingHtml}
             isGenerating={isGenerating}
+            isMasked={isMasked}
             pendingSuggestion={pendingSuggestion}
             onEditorHtmlChange={setCurrentEditorHtml}
-            onExportClick={openExportModal}
+            onExportClick={() => setShowExportModal(true)}
             onAcceptSuggestion={handleAcceptSuggestion}
             onRejectSuggestion={handleRejectSuggestion}
           />
@@ -290,7 +372,7 @@ export default function GuestCanvasChatSplitView({
                 <h2 className="text-lg font-semibold text-gray-900">Export Document</h2>
               </div>
               <button
-                onClick={() => { setShowExportModal(false); setIsExporting(false); setExportError(''); setIsLoadingConfig(false); }}
+                onClick={() => { setShowExportModal(false); setIsExporting(false); setExportError(''); }}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded"
               >
                 <X className="h-5 w-5" />
@@ -335,7 +417,7 @@ export default function GuestCanvasChatSplitView({
                 ) : isLoadingConfig ? (
                   <><Loader2 className="h-4 w-4 animate-spin" /> Loading…</>
                 ) : (
-                  `Pay ${paymentConfig?.label ?? displayPricing.label} & Download`
+                  `Pay ${paymentConfig?.label ?? '…'} & Download`
                 )}
               </button>
 

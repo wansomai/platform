@@ -95,14 +95,14 @@ export default async function Page({ params }: Props) {
     const sanityDoc = await getLegalDocumentBySlug(slug);
 
     if (!sanityDoc) {
-      return <DocDetailPageClient blog={null} initialJurisdictionId={initialJurisdictionId} userCountryCode={countryCode.toLowerCase()} />;
+      return <DocDetailPageClient blog={null} initialJurisdictionId={initialJurisdictionId} />;
     }
 
     const adaptedDoc = adaptSanityLegalDocument(sanityDoc);
 
-    return <DocDetailPageClient blog={adaptedDoc} initialJurisdictionId={initialJurisdictionId} userCountryCode={countryCode.toLowerCase()} />;
+    return <DocDetailPageClient blog={adaptedDoc} initialJurisdictionId={initialJurisdictionId} />;
   } catch (error) {
     console.error('Error loading document:', error);
-    return <DocDetailPageClient blog={null} initialJurisdictionId="us-federal" userCountryCode="" />;
+    return <DocDetailPageClient blog={null} initialJurisdictionId="us-federal" />;
   }
 }
