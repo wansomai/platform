@@ -12,6 +12,7 @@ import {
 } from '@/services/legalDigestService';
 import { sendLegalDigestEmail } from '@/lib/email-service';
 import { PRACTICE_AREA_LABELS } from '@/types/associates';
+import { ADMIN_EMAILS } from '@/lib/auth/admin';
 
 export const maxDuration = 300;
 
@@ -65,7 +66,11 @@ export async function GET(req: NextRequest) {
   todayUtcMidnight.setUTCHours(0, 0, 0, 0);
 
   const frequencyFilter = isMonday ? ['daily', 'weekly'] : ['daily'];
-  const baseWhere = { isActive: true, frequency: { in: frequencyFilter } };
+  const baseWhere = {
+    isActive: true,
+    frequency: { in: frequencyFilter },
+    user: { email: { in: ADMIN_EMAILS } },
+  };
 
   // Count total eligible before the dedup filter (for reporting)
   const totalEligible = await prisma.digestSubscription.count({ where: baseWhere });
