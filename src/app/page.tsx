@@ -122,7 +122,7 @@ export default function Home() {
           </div>
         </div>
       </section> */}
-        <LegalResearchSection />
+e        <LegalResearchSection />
         <LegalDraftingSection />
          <DocumentReview />
 <AutomateProcesses />

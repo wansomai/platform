@@ -74,23 +74,12 @@ export default function FeedbackFormPage() {
     <main className="relative bg-[#f3f4f4] min-h-screen">
       <Navbar />
 
-      {/* Hero */}
-      <section className="pt-24 md:pt-32 overflow-hidden bg-[#355e66] bg-[url(/1.jpg)] bg-blend-multiply bg-cover">
-        <div className="container mx-auto px-4 lg:px-8 py-12 text-white">
-          <h1 className="font-marcellus text-5xl mb-4 text-white">
-            Share Your Feedback
-          </h1>
-          <p className="font-jost text-sm text-white/80 mb-5">
-            Home / Feedback
-          </p>
-        </div>
-      </section>
-
       {/* Form */}
-      <section className="container mx-auto px-4 lg:px-8 py-16 max-w-2xl">
+      <section className="section-container section-spacing mx-auto px-4 lg:px-8 py-16 max-w-2xl">
         {submitted ? (
           <div className="bg-white rounded-lg p-10 flex flex-col items-center text-center gap-4 shadow-sm">
             <CheckCircle className="w-14 h-14 text-[#355e66]" />
+            
             <h2 className="font-marcellus text-2xl text-slate-800">
               Thank you for your feedback
             </h2>
@@ -101,10 +90,10 @@ export default function FeedbackFormPage() {
           </div>
         ) : (
           <div className="bg-white rounded-lg p-8 shadow-sm">
-            <p className="font-jost text-slate-500 text-sm mb-8 leading-relaxed">
-              We noticed you explored Wansom but haven&apos;t continued. Your
-              honest feedback takes less than 2 minutes and helps us build
-              something you&apos;d actually want to use.
+            <h1 className="text-heading-1 font-serif text-slate-800 mb-3">Hi there👋, </h1>
+            <p className="text-md text-slate-500 mb-8 leading-relaxed">
+              We noticed you signed up for Wansom AI but didn’t get a chance to explore it. Was something missing, unclear, or not useful?
+ Your honest feedback (2 minutes max) will really helps us improve our next update.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
