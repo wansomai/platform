@@ -503,7 +503,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
               </p>
               <p className="text-gray-500">
                 <span className="font-medium text-gray-700">First digest:</span>{' '}
-                {frequency === 'daily' ? 'Tomorrow at 08:00 UTC' : 'Next Monday at 08:00 UTC'}
+                {frequency === 'daily' ? 'Tomorrow at 09:30 EAT' : 'Next Monday at 09:30 EAT'}
               </p>
             </div>
 

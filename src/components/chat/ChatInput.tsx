@@ -417,6 +417,20 @@ export function ChatInput({
                   updatedAt: new Date().toISOString(),
                   isPinned: false
                 });
+
+                // If an associate was selected on the homepage, assign it to the new conversation
+                if (selectedAssociateId) {
+                  try {
+                    await assignAssociateToProject(newProject.id, selectedAssociateId);
+                  } catch {
+                    // Ignore — may already be assigned or non-fatal
+                  }
+                  await useChatStore.getState().assignAssociateToConversation(
+                    newProject.id,
+                    newProject.conversationId,
+                    selectedAssociateId
+                  );
+                }
               }
 
               // Apply dashboard-selected settings (jurisdiction, Deep Research) to the new project
@@ -697,6 +711,8 @@ export function ChatInput({
 
   // Handle associate toggle (add/remove)
   const handleAssociateToggle = async (associateId: string, isCurrentlySelected: boolean) => {
+    // Close selector immediately to avoid reopen flicker during async assignment
+    setShowAssociatesDropdown(false);
     const associate = associates.find(a => a.id === associateId);
 
     // Homepage mode - just update local state
