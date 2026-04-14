@@ -1402,10 +1402,9 @@ export async function generateLegalDigestFromDB(
   );
 
   const todayLabel  = getTodayLabel();
-  // When backdated, reflect the actual window so Gemini's synthesis prompt is accurate.
-  const primaryDays = frequency === 'daily' ? 1 : 7;
-  const totalDays   = backdatedDays ? primaryDays + backdatedDays : primaryDays;
-  const timeframe   = totalDays === 1 ? 'the past 24 hours' : `the past ${totalDays} days`;
+  // Email headline/summary should reflect the subscriber's selected cadence.
+  // Backdated items are still tagged individually via backdatedLabel in the item cards.
+  const timeframe   = frequency === 'daily' ? 'the past 24 hours' : 'the past 7 days';
   const topicList   = topics.length > 0 ? topics.join(', ') : 'general legal developments';
 
   // Build jurisdiction name list: supported names from JURISDICTION_CONFIG,

@@ -285,14 +285,8 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
   const downloadDocument = async (documentId: string, fileName: string) => {
     try {
       setIsProcessing(true);
-      
-      const response = await fetch(`/api/documents/${documentId}/download`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to download document');
-      }
 
-      const blob = await response.blob();
+      const blob = await apiService.downloadFile(`/api/documents/${documentId}/download`);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

@@ -50,6 +50,15 @@ const ERROR_MESSAGES = {
   UNKNOWN: 'An unexpected error occurred. Please try again.'
 };
 
+const getFirstString = (...values: unknown[]): string | null => {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value;
+    }
+  }
+  return null;
+};
+
 // Helper function to check if error is retryable
 const isRetryableError = (error: AxiosError): boolean => {
   // Network errors are always retryable
@@ -83,11 +92,9 @@ const getErrorMessage = (error: AxiosError): string => {
   const responseData = error.response.data as any;
 
   // Check if server provided a custom error message
-  if (responseData?.error) {
-    return responseData.error;
-  }
-  if (responseData?.message) {
-    return responseData.message;
+  const customMessage = getFirstString(responseData?.error, responseData?.message);
+  if (customMessage) {
+    return customMessage;
   }
 
   // Default messages based on status code
@@ -188,7 +195,7 @@ apiClient.interceptors.response.use(
     // Handle 403 Forbidden - preserve requiresUpgrade flag
     if (status === 403) {
       const responseData = error.response?.data as any;
-      const customError = new Error(responseData?.message || errorMessage) as any;
+      const customError = new Error(getFirstString(responseData?.message, responseData?.error, errorMessage) || errorMessage) as any;
       customError.status = 403;
       customError.requiresUpgrade = responseData?.requiresUpgrade;
       customError.response = error.response;
@@ -387,7 +394,7 @@ export const apiService = {
       let errorMessage = ERROR_MESSAGES.UNKNOWN;
       try {
         const errorData = await response.json();
-        errorMessage = errorData?.error || errorData?.message || errorMessage;
+        errorMessage = getFirstString(errorData?.error, errorData?.message, errorMessage) || errorMessage;
       } catch {
         switch (response.status) {
           case 404:
@@ -452,7 +459,7 @@ export const apiService = {
         // Handle 403 with possible subscription limit errors
         if (response.status === 403) {
           const errorData = await response.json().catch(() => null);
-          const customError = new Error(errorData?.error || errorData?.message || 'Access denied') as any;
+          const customError = new Error(getFirstString(errorData?.error, errorData?.message, 'Access denied') || 'Access denied') as any;
           customError.status = 403;
           customError.requiresUpgrade = errorData?.requiresUpgrade;
           throw customError;
@@ -462,7 +469,7 @@ export const apiService = {
         let errorMessage = ERROR_MESSAGES.UNKNOWN;
         try {
           const errorData = await response.json();
-          errorMessage = errorData?.error || errorData?.message || errorMessage;
+          errorMessage = getFirstString(errorData?.error, errorData?.message, errorMessage) || errorMessage;
         } catch {
           // If JSON parsing fails, use status-based message
           switch (response.status) {
