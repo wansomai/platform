@@ -25,15 +25,19 @@ function createTransporter() {
   const pass = process.env.EMAIL_PASSWORD;
   const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
   const port = parseInt(process.env.EMAIL_PORT || '587', 10);
+  const secure = port === 465;
 
-  if (!user || !pass) {
-    console.error('[email-service] EMAIL_USER or EMAIL_PASSWORD is not set — emails will fail to send');
-  }
+  // Config audit — logged on every transporter creation so we can spot misconfiguration
+  console.log(`[email] SMTP config — host:${host} port:${port} secure:${secure} user:${user ?? '(NOT SET)'} pass:${pass ? '(set)' : '(NOT SET)'}`);
+
+  if (!user) console.error('[email] EMAIL_USER is not set — all sends will fail');
+  if (!pass) console.error('[email] EMAIL_PASSWORD is not set — all sends will fail');
+  if (!process.env.EMAIL_FROM && !user) console.warn('[email] EMAIL_FROM is not set — "from" address will be empty');
 
   return nodemailer.createTransport({
     host,
     port,
-    secure: port === 465,
+    secure,
     auth: { user, pass },
   });
 }
@@ -45,13 +49,19 @@ function createTransporter() {
  */
 export async function sendEmail(options: EmailOptions) {
   const { to, subject, html, from, replyTo, cc, bcc, attachments } = options;
-  
+  const startedAt = Date.now();
+
+  console.log(`[email] Attempting send — to:"${to}" subject:"${subject}" cc:${cc?.join(',') ?? 'none'} bcc:${bcc?.join(',') ?? 'none'}`);
+
   try {
     const transporter = createTransporter();
     const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+    const resolvedFrom = from || `"Wansom" <${fromAddress}>`;
+
+    console.log(`[email] Connecting to SMTP — from:"${resolvedFrom}"`);
 
     const info = await transporter.sendMail({
-      from: from || `"Wansom" <${fromAddress}>`,
+      from: resolvedFrom,
       replyTo,
       to,
       cc,
@@ -60,15 +70,30 @@ export async function sendEmail(options: EmailOptions) {
       html,
       attachments
     });
-    
-    return { 
-      success: true, 
-      messageId: info.messageId 
+
+    const elapsed = Date.now() - startedAt;
+    console.log(`[email] Sent OK — to:"${to}" subject:"${subject}" messageId:${info.messageId} accepted:${JSON.stringify(info.accepted)} rejected:${JSON.stringify(info.rejected)} elapsed:${elapsed}ms`);
+
+    if (info.rejected && info.rejected.length > 0) {
+      console.warn(`[email] Some recipients were rejected — rejected:${JSON.stringify(info.rejected)}`);
+    }
+
+    return {
+      success: true,
+      messageId: info.messageId
     };
-  } catch (error) {
-    return { 
-      success: false, 
-      error 
+  } catch (error: any) {
+    const elapsed = Date.now() - startedAt;
+    console.error(`[email] FAILED — to:"${to}" subject:"${subject}" elapsed:${elapsed}ms`);
+    console.error(`[email] Error name:${error?.name} code:${error?.code} message:${error?.message}`);
+    if (error?.response)  console.error(`[email] SMTP response: ${error.response}`);
+    if (error?.responseCode) console.error(`[email] SMTP responseCode: ${error.responseCode}`);
+    if (error?.command)   console.error(`[email] SMTP command that failed: ${error.command}`);
+    console.error('[email] Full error:', error);
+
+    return {
+      success: false,
+      error
     };
   }
 }
@@ -79,6 +104,7 @@ export async function sendEmail(options: EmailOptions) {
  * @returns Result of sending the email
  */
 export function sendWelcomeEmail(user: { email: string; fullName?: string | null; }) {
+  console.log(`[email:welcome] Queuing welcome email — to:"${user.email}"`);
   const name = user.fullName || 'User';
   const subject = 'Welcome to Wansom AI - Do More Legal Work with Less';
   const email = user.email;
@@ -1358,7 +1384,7 @@ export async function sendDigestSubscriptionEmail({
             </div>
           </div>
 
-          <p>Your first digest will arrive ${frequency === 'daily' ? 'tomorrow morning' : 'next Monday morning'} at 08:00 UTC.</p>
+          <p>Your first digest will arrive ${frequency === 'daily' ? 'tomorrow morning' : 'next Monday morning'} at 09:30 EAT.</p>
 
           <div style="margin-top: 24px; text-align: center;">
             <a href="${manageUrl}" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-weight: 600;">Manage Subscription</a>
@@ -1533,6 +1559,7 @@ export async function sendLegalDigestEmail({
  * Sends an email verification email
  */
 export function sendVerificationEmail(user: { email: string; fullName?: string | null }, verificationUrl: string) {
+  console.log(`[email:verification] Queuing verification email — to:"${user.email}" url:"${verificationUrl}"`);
   const name = user.fullName?.split(' ')[0] || 'there';
   const subject = 'Verify your email — Wansom AI';
   const html = `<!DOCTYPE html>

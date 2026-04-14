@@ -96,8 +96,8 @@ export async function tryExtractDocumentContentOnDemand(
       try {
         const fileBuffer = await blobStorageService.downloadFile(doc.file_url);
         const extractedText = await extractTextFromFile(fileBuffer, mimeType);
-        // Meaningful text was extracted from a text-based PDF
-        if (extractedText && extractedText.trim().length > 50 &&
+        // Any non-empty extracted text is useful (short legal docs are common).
+        if (extractedText && extractedText.trim().length > 0 &&
             extractedText !== '[SCANNED_PDF_REQUIRES_PROCESSING]') {
           await persistContent(doc.id, extractedText);
           return extractedText;
@@ -123,7 +123,7 @@ export async function tryExtractDocumentContentOnDemand(
     // Only persist if we got real content (not an empty string or a sentinel).
     // Returning null (without persisting) keeps the document eligible for retry
     // on the next message, rather than caching a permanently broken state.
-    if (extractedText && extractedText.trim().length > 50 &&
+    if (extractedText && extractedText.trim().length > 0 &&
         !extractedText.startsWith('[SCANNED_')) {
       await persistContent(doc.id, extractedText);
       return extractedText;

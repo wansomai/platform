@@ -212,7 +212,7 @@ function DigestSubscriptionForm({
                       >
                         <p className="font-medium">Daily</p>
                         <p className="text-sm text-muted-foreground">
-                          Every morning at 8:00 AM UTC
+                          Every morning at 9:30 AM EAT
                         </p>
                       </button>
                       <button
@@ -226,7 +226,7 @@ function DigestSubscriptionForm({
                       >
                         <p className="font-medium">Weekly</p>
                         <p className="text-sm text-muted-foreground">
-                          Every Monday morning at 8:00 AM UTC
+                          Every Monday morning at 9:30 AM EAT
                         </p>
                       </button>
                     </div>
