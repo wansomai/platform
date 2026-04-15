@@ -185,6 +185,7 @@ export async function DELETE(
 ) {
   try {
     const documentId = (await params).id;
+    const forceDelete = request.nextUrl.searchParams.get('force') === 'true';
 
     // Get user ID and organization from token (with JWT signature verification)
     const userId = await getUserIdFromRequest(request);
@@ -212,6 +213,37 @@ export async function DELETE(
         { status: 404 }
       );
     }
+
+    // Check whether this document is attached to any associates in the same organization.
+    const linkedAssociates = await prisma.aIAssociate.findMany({
+      where: {
+        organizationId,
+        knowledgeBase: { has: documentId },
+      },
+      select: {
+        id: true,
+        name: true,
+        knowledgeBase: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    if (linkedAssociates.length > 0 && !forceDelete) {
+      return NextResponse.json(
+        {
+          error: `Cannot delete: Document is attached to ${linkedAssociates.length} associate(s).`,
+          code: 'DOCUMENT_IN_USE',
+          details: {
+            associateCount: linkedAssociates.length,
+            associates: linkedAssociates.map((associate) => ({
+              id: associate.id,
+              name: associate.name,
+            })),
+          },
+        },
+        { status: 409 }
+      );
+    }
     
     // Delete document from storage
     try {
@@ -221,14 +253,34 @@ export async function DELETE(
       // Continue with deletion even if storage removal fails
     }
     
-    // Delete document from database
-    await prisma.document.delete({
-      where: { id: documentId }
-    });
+    // Delete document from database. If force deleting, first detach it from associates.
+    if (forceDelete && linkedAssociates.length > 0) {
+      await prisma.$transaction([
+        ...linkedAssociates.map((associate) =>
+          prisma.aIAssociate.update({
+            where: { id: associate.id },
+            data: {
+              knowledgeBase: {
+                set: associate.knowledgeBase.filter((kbId) => kbId !== documentId),
+              },
+            },
+          })
+        ),
+        prisma.document.delete({
+          where: { id: documentId },
+        }),
+      ]);
+    } else {
+      await prisma.document.delete({
+        where: { id: documentId }
+      });
+    }
     
     return NextResponse.json({
       status: 200,
-      message: 'Document deleted successfully'
+      message: forceDelete
+        ? 'Document hard-deleted successfully. It was detached from associated AI associates.'
+        : 'Document deleted successfully'
     });
   } catch (error) {
     console.error('Error deleting document:', error);

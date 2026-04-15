@@ -75,6 +75,29 @@ export interface AssociateTool {
   toolId: string;
 }
 
+export interface KBDocumentProcessingStatus {
+  documentId: string;
+  title: string;
+  fileType: string;
+  textExtracted: boolean;
+  summaryGenerated: boolean;
+  rulesGenerated?: boolean;
+  rulesForThinking?: string;
+  contentLength: number;
+  error?: string;
+}
+
+export interface KnowledgeBaseStatusPayload {
+  documents: KBDocumentProcessingStatus[];
+  allExtracted: boolean;
+  allSummarized: boolean;
+}
+
+export interface AssociateMutationResult {
+  associate: AIAssociate;
+  knowledgeBaseStatus?: KnowledgeBaseStatusPayload;
+}
+
 export interface CreateAssociateInput {
   name: string;
   instructions: string;

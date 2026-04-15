@@ -1,7 +1,7 @@
 // src/store/associates.store.ts
 import { create } from 'zustand';
 import { apiService } from '@/lib/api';
-import { AIAssociate, CreateAssociateInput, UpdateAssociateInput } from '@/types/associates';
+import { AIAssociate, AssociateMutationResult, CreateAssociateInput, UpdateAssociateInput } from '@/types/associates';
 import { ApiResponse } from '@/types';
 
 interface AssociatesState {
@@ -12,9 +12,18 @@ interface AssociatesState {
 
   // Methods
   fetchAssociates: (forceRefresh?: boolean) => Promise<AIAssociate[]>;
-  createAssociate: (input: CreateAssociateInput) => Promise<AIAssociate | null>;
-  updateAssociate: (id: string, input: UpdateAssociateInput) => Promise<AIAssociate | null>;
-  deleteAssociate: (id: string) => Promise<boolean>;
+  createAssociate: (input: CreateAssociateInput) => Promise<AssociateMutationResult | null>;
+  updateAssociate: (id: string, input: UpdateAssociateInput) => Promise<AssociateMutationResult | null>;
+  deleteAssociate: (id: string, options?: { force?: boolean }) => Promise<{
+    success: boolean;
+    requiresForce?: boolean;
+    details?: {
+      projectCount: number;
+      conversationCount: number;
+      projects: Array<{ id: string; title: string }>;
+    };
+    error?: string;
+  }>;
   toggleAssociateStatus: (id: string) => Promise<boolean>;
   setAssociates: (associates: AIAssociate[]) => void;
   addAssociate: (associate: AIAssociate) => void;
@@ -78,12 +87,13 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
         try {
           set({ isLoading: true, error: null });
 
-          const response = await apiService.post<ApiResponse<{ associate: AIAssociate }>>(
+          const response = await apiService.post<ApiResponse<AssociateMutationResult>>(
             '/api/associates',
             input
           );
 
-          const newAssociate = response.data.associate;
+          const mutationResult = response.data;
+          const newAssociate = mutationResult.associate;
 
           // Add the new associate to the store
           set((state) => {
@@ -95,7 +105,7 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
             };
           });
 
-          return newAssociate;
+          return mutationResult;
         } catch (error: any) {
           const errorMessage = error.message || 'Failed to create associate';
           set({ error: errorMessage, isLoading: false });
@@ -107,12 +117,13 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
         try {
           set({ isLoading: true, error: null });
 
-          const response = await apiService.put<ApiResponse<{ associate: AIAssociate }>>(
+          const response = await apiService.put<ApiResponse<AssociateMutationResult>>(
             `/api/associates/${id}`,
             input
           );
 
-          const updatedAssociate = response.data.associate;
+          const mutationResult = response.data;
+          const updatedAssociate = mutationResult.associate;
 
           // Update the associate in the store
           set((state) => {
@@ -126,7 +137,7 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
             };
           });
 
-          return updatedAssociate;
+          return mutationResult;
         } catch (error: any) {
           const errorMessage = error.message || 'Failed to update associate';
           set({ error: errorMessage, isLoading: false });
@@ -134,9 +145,10 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
         }
       },
 
-      deleteAssociate: async (id: string) => {
+      deleteAssociate: async (id: string, options?: { force?: boolean }) => {
         try {
-          await apiService.delete(`/api/associates/${id}`);
+          const query = options?.force ? '?force=true' : '';
+          await apiService.delete(`/api/associates/${id}${query}`);
 
           // Remove associate from store
           set((state) => {
@@ -147,11 +159,20 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
             };
           });
 
-          return true;
+          return { success: true };
         } catch (error: any) {
           const errorMessage = error.message || 'Failed to delete associate';
           set({ error: errorMessage });
-          return false;
+          const responseData = error?.response?.data;
+          if (responseData?.code === 'ASSOCIATE_IN_USE') {
+            return {
+              success: false,
+              requiresForce: true,
+              details: responseData.details,
+              error: responseData.error ?? errorMessage
+            };
+          }
+          return { success: false, error: errorMessage };
         }
       },
 

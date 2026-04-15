@@ -54,11 +54,11 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
   const createAssociate = async (input: CreateAssociateInput) => {
     try {
       setIsProcessing(true);
-      const associate = await storeCreateAssociate(input);
+      const result = await storeCreateAssociate(input);
 
-      if (associate) {
+      if (result?.associate) {
         handleSuccess(`${input.name} created successfully`);
-        return associate;
+        return result;
       } else {
         handleError('Failed to create associate');
         return null;
@@ -76,11 +76,11 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
   const updateAssociate = async (id: string, input: UpdateAssociateInput) => {
     try {
       setIsProcessing(true);
-      const associate = await storeUpdateAssociate(id, input);
+      const result = await storeUpdateAssociate(id, input);
 
-      if (associate) {
+      if (result?.associate) {
         handleSuccess('Associate updated successfully');
-        return associate;
+        return result;
       } else {
         handleError('Failed to update associate');
         return null;
@@ -95,25 +95,26 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
   };
 
   // Delete associate
-  const deleteAssociate = async (id: string) => {
+  const deleteAssociate = async (id: string, options?: { force?: boolean }) => {
     const associate = getAssociateById(id);
     const name = associate?.name || 'Associate';
 
     try {
       setIsProcessing(true);
-      const success = await storeDeleteAssociate(id);
+      const result = await storeDeleteAssociate(id, options);
 
-      if (success) {
+      if (result.success) {
         handleSuccess(`${name} deleted successfully`);
-        return true;
-      } else {
-        handleError('Failed to delete associate');
-        return false;
+        return result;
       }
+      if (!result.requiresForce) {
+        handleError(result.error || 'Failed to delete associate');
+      }
+      return result;
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to delete associate';
       handleError(errorMessage);
-      return false;
+      return { success: false, error: errorMessage };
     } finally {
       setIsProcessing(false);
     }

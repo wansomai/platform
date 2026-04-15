@@ -7,9 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PracticeArea, PRACTICE_AREA_LABELS, CreateAssociateInput } from '@/types/associates';
+import { PracticeArea, PRACTICE_AREA_LABELS, CreateAssociateInput, KnowledgeBaseStatusPayload } from '@/types/associates';
 import { Plus, FileText, X } from 'lucide-react';
 import { useAssociates } from '@/hooks/useAssociates';
+import { useDocumentsStore } from '@/store/documents.store';
+import { apiService } from '@/lib/api';
+import { DraggableRulesList } from '@/components/associates/DraggableRulesList';
+import { parseRulesForDisplay } from '@/lib/rulesFormatting';
+import { AssociateSetupProgressModal } from '@/components/associates/AssociateSetupProgressModal';
 
 interface CreateAssociateModalProps {
   open: boolean;
@@ -18,6 +23,12 @@ interface CreateAssociateModalProps {
 }
 
 export function CreateAssociateModal({ open, onClose, onSuccess }: CreateAssociateModalProps) {
+  type SelectedKnowledgeFile = {
+    file: File;
+    source: 'upload' | 'vault';
+    existingDocumentId?: string;
+    existingTitle?: string;
+  };
   const [formData, setFormData] = useState<CreateAssociateInput>({
     name: '',
     instructions: '',
@@ -25,64 +36,129 @@ export function CreateAssociateModal({ open, onClose, onSuccess }: CreateAssocia
     practiceAreas: [],
     knowledgeBase: []
   });
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedKnowledgeFile[]>([]);
   const [error, setError] = useState('');
+  const [kbStatus, setKbStatus] = useState<KnowledgeBaseStatusPayload | null>(null);
+  const [showSetupModal, setShowSetupModal] = useState(false);
+  const [setupMessages, setSetupMessages] = useState<string[]>([]);
+  const [setupComplete, setSetupComplete] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { createAssociate, isProcessing } = useAssociates();
+  const { uploadDocument } = useDocumentsStore();
+
+  const getExistingRootDocs = async (): Promise<Array<{ id: string; title: string }>> => {
+    const res = await apiService.get<{ status: number; message: string; data: Array<{ id: string; title: string }> }>(
+      '/api/documents?titlesOnly=true&folder=root'
+    );
+    return res.data ?? [];
+  };
+
+  const pushSetupMessage = (message: string) => {
+    setSetupMessages((prev) => (prev[prev.length - 1] === message ? prev : [...prev, message]));
+  };
+
+  const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setKbStatus(null);
 
     if (formData.practiceAreas.length === 0) {
       setError('Please select at least one practice area');
       return;
     }
 
+    setShowSetupModal(true);
+    setSetupComplete(false);
+    setSetupMessages(['Initializing knowledge base setup...']);
+
     try {
       // Step 1: Upload files if any are selected
       const uploadedDocumentIds: string[] = [];
 
       if (selectedFiles.length > 0) {
-        for (const file of selectedFiles) {
-          const fileFormData = new FormData();
-          fileFormData.append('file', file);
+        pushSetupMessage(`Preparing upload queue for [${selectedFiles.length}] knowledge base document(s)...`);
+        const existingDocs = await getExistingRootDocs();
+        const existingByTitle = new Map(existingDocs.map((d) => [d.title.toLowerCase(), d]));
 
-          const response = await fetch('/api/documents', {
-            method: 'POST',
-            body: fileFormData
-          });
+        for (let i = 0; i < selectedFiles.length; i++) {
+          const fileItem = selectedFiles[i];
+          const file = fileItem.file;
+          pushSetupMessage(`Uploading [${i + 1}] ${file.name}...`);
+          const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
+          const existingDoc = existingByTitle.get(fileBaseName.toLowerCase());
 
-          if (!response.ok) {
-            throw new Error(`Failed to upload ${file.name}`);
+          if (existingDoc) {
+            uploadedDocumentIds.push(existingDoc.id);
+            pushSetupMessage(`[${i + 1}] ${existingDoc.title} picked from vault.`);
+            setSelectedFiles((prev) =>
+              prev.map((item, idx) =>
+                idx === i
+                  ? {
+                      ...item,
+                      source: 'vault',
+                      existingDocumentId: existingDoc.id,
+                      existingTitle: existingDoc.title,
+                    }
+                  : item
+              )
+            );
+            continue;
           }
 
-          const result = await response.json();
-          uploadedDocumentIds.push(result.data.id);
+          const fileFormData = new FormData();
+          fileFormData.append('file', file);
+          const uploadedDocument = await uploadDocument(fileFormData);
+          if (!uploadedDocument) {
+            throw new Error(`Failed to upload ${file.name}`);
+          }
+          uploadedDocumentIds.push(uploadedDocument.id);
+          pushSetupMessage(`[${i + 1}] ${file.name} uploaded successfully.`);
         }
       }
 
       // Step 2: Create associate with uploaded document IDs
       const associateData = {
         ...formData,
-        knowledgeBase: uploadedDocumentIds
+        knowledgeBase: Array.from(new Set(uploadedDocumentIds))
       };
 
-      const newAssociate = await createAssociate(associateData);
+      pushSetupMessage(`Rules being retrieved from [${associateData.knowledgeBase.length}] knowledge base document(s)...`);
+      const result = await createAssociate(associateData);
 
-      if (newAssociate) {
-        onSuccess(newAssociate);
-        resetForm();
+      if (result?.associate) {
+        setKbStatus(result.knowledgeBaseStatus ?? null);
+        const docStatuses = result.knowledgeBaseStatus?.documents ?? [];
+        docStatuses.forEach((doc, index) => {
+          const ruleMessage = doc.rulesGenerated
+            ? `[${index + 1}] ${doc.title}: document rules ready to be used.`
+            : `[${index + 1}] ${doc.title}: rules are still processing in background.`;
+          pushSetupMessage(ruleMessage);
+        });
+        pushSetupMessage(`Your associate ${result.associate.name} is ready to be used fully with updated rules.`);
+        setSetupComplete(true);
+        await wait(1200);
+        onSuccess(result.associate);
+        resetForm(false);
       } else {
         setError('Failed to create associate');
       }
     } catch (err: any) {
       setError(err.message || 'Failed to upload files or create associate');
+      setShowSetupModal(false);
+      setSetupMessages([]);
+      setSetupComplete(false);
+      return;
     }
+
+    setShowSetupModal(false);
+    setSetupMessages([]);
+    setSetupComplete(false);
   };
 
-  const resetForm = () => {
+  const resetForm = (clearStatus = true) => {
     setFormData({
       name: '',
       instructions: '',
@@ -92,9 +168,27 @@ export function CreateAssociateModal({ open, onClose, onSuccess }: CreateAssocia
     });
     setSelectedFiles([]);
     setError('');
+    if (clearStatus) {
+      setKbStatus(null);
+    }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const normalizeTitle = (value: string) => value.replace(/\.[^/.]+$/, '').trim().toLowerCase();
+
+  const getRulesForFile = (fileItem: SelectedKnowledgeFile): string[] => {
+    if (!kbStatus?.documents?.length) return [];
+    const candidateTitles = [
+      fileItem.existingTitle,
+      fileItem.file.name,
+      fileItem.file.name.replace(/\.[^/.]+$/, ''),
+    ].filter(Boolean) as string[];
+    const match = kbStatus.documents.find((doc) =>
+      candidateTitles.some((title) => normalizeTitle(title) === normalizeTitle(doc.title))
+    );
+    return parseRulesForDisplay(match?.rulesForThinking);
   };
 
   const togglePracticeArea = (area: PracticeArea) => {
@@ -109,7 +203,10 @@ export function CreateAssociateModal({ open, onClose, onSuccess }: CreateAssocia
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const newFiles = Array.from(files);
+      const newFiles = Array.from(files).map((file) => ({
+        file,
+        source: 'upload' as const,
+      }));
       setSelectedFiles(prev => [...prev, ...newFiles]);
       // Reset input so same file can be selected again
       if (fileInputRef.current) {
@@ -128,6 +225,12 @@ export function CreateAssociateModal({ open, onClose, onSuccess }: CreateAssocia
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <AssociateSetupProgressModal
+        open={showSetupModal}
+        associateName={formData.name || 'Associate'}
+        messages={setupMessages}
+        isComplete={setupComplete}
+      />
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create AI Associate</DialogTitle>
@@ -247,31 +350,41 @@ export function CreateAssociateModal({ open, onClose, onSuccess }: CreateAssocia
                   {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {selectedFiles.map((file, index) => (
+                  {selectedFiles.map((fileItem, index) => (
                     <div
                       key={index}
-                      className="inline-flex items-center gap-2 px-3 py-2 bg-[#E9F5F3] rounded-lg"
+                      className="px-3 py-2 bg-[#E9F5F3] rounded-lg max-w-[420px]"
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="bg-[#74C6B8] rounded-md p-1.5">
-                          <FileText className="h-4 w-4 text-white" />
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-[#74C6B8] rounded-md p-1.5">
+                            <FileText className="h-4 w-4 text-white" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-gray-900 max-w-[200px] truncate">
+                              {fileItem.source === 'vault'
+                                ? (fileItem.existingTitle || fileItem.file.name.replace(/\.[^/.]+$/, ''))
+                                : fileItem.file.name}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              {fileItem.source === 'vault' ? 'Picked from Vault' : 'Will be uploaded'}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-900 max-w-[200px] truncate">
-                            {file.name}
-                          </span>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(index);
+                          }}
+                          className="hover:bg-blue-100 rounded-full p-1 transition-colors"
+                          type="button"
+                        >
+                          <X className="h-3.5 w-3.5 text-gray-600" />
+                        </button>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeFile(index);
-                        }}
-                        className="hover:bg-blue-100 rounded-full p-1 transition-colors"
-                        type="button"
-                      >
-                        <X className="h-3.5 w-3.5 text-gray-600" />
-                      </button>
+                      {getRulesForFile(fileItem).length > 0 && (
+                        <DraggableRulesList rules={getRulesForFile(fileItem)} />
+                      )}
                     </div>
                   ))}
                 </div>

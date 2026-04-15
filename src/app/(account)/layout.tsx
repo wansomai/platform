@@ -21,6 +21,7 @@ import {
   FolderOpen,
   HelpCircle,
   Bell,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,6 +43,7 @@ import EmailVerificationModal from "@/components/auth/EmailVerificationModal";
 import SupportModal from "@/components/support/SupportModal";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import NotificationModal from "@/components/notifications/NotificationModal";
+import { useSubscription } from "@/store/profile.store";
 
 interface SidebarLinkProps {
   href: string;
@@ -103,6 +105,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { projects, fetchProjects } = useProjectStore();
   const { clearAssociates } = useAssociatesStore();
+  const { subscriptionStatus, fetchSubscriptionStatus } = useSubscription();
+  const hasPremiumAccess = !!subscriptionStatus?.hasProAccess;
 
   // Close mobile menu when screen resizes to desktop
   useEffect(() => {
@@ -120,6 +124,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
+
+  useEffect(() => {
+    if (!subscriptionStatus) {
+      fetchSubscriptionStatus();
+    }
+  }, [subscriptionStatus, fetchSubscriptionStatus]);
 
   // Recent projects - limit to 3
   const recentProjects = projects?.slice(0, 3) || [];
@@ -181,9 +191,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </Avatar>
         {(!collapsed || isMobile) && (
           <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-medium">
-              {session?.user?.name}
-            </p>
+            <div className="flex items-center gap-1">
+              <p className="truncate text-sm font-medium">
+                {session?.user?.name}
+              </p>
+              {hasPremiumAccess && (
+                <span title="Premium account" aria-label="Premium account" className="inline-flex">
+                  <Crown className="h-6 w-6 rotate-12 text-amber-500 shrink-0" />
+                </span>
+              )}
+            </div>
             <p className="truncate text-xs text-gray-500">
               {session?.user?.email}
             </p>
@@ -466,8 +483,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     />
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                   </Avatar>
-                  <span className="hidden md:inline-block">
-                    {session?.user?.name?.split(" ")[0]}
+                  <span className="hidden md:inline-flex items-center gap-1">
+                    <span>{session?.user?.name?.split(" ")[0]}</span>
+                    {hasPremiumAccess && (
+                      <span title="Premium account" aria-label="Premium account" className="inline-flex">
+                        <Crown className="h-6 w-6 rotate-12 text-amber-500 shrink-0" />
+                      </span>
+                    )}
                   </span>
                 </Button>
 

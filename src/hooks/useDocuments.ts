@@ -135,21 +135,21 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
   };
 
   // Enhanced delete function
-  const deleteDocument = async (documentId: string) => {
+  const deleteDocument = async (documentId: string, options?: { force?: boolean }) => {
     try {
       setIsProcessing(true);
       setError(null);
-      const success = await storeDeleteDocument(documentId);
+      const result = await storeDeleteDocument(documentId, options);
       
-      if (success) {
+      if (result.success) {
         handleSuccess('Document deleted successfully');
         // Remove from selection if selected
         setSelectedDocuments(prev => prev.filter(id => id !== documentId));
-      } else {
-        handleError('Failed to delete document');
+      } else if (!result.requiresForce) {
+        handleError(result.error || 'Failed to delete document');
       }
       
-      return success;
+      return result;
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Failed to delete document';
       handleError(errorMessage);
@@ -259,7 +259,9 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       const deletePromises = selectedDocuments.map(id => storeDeleteDocument(id));
       const results = await Promise.allSettled(deletePromises);
       
-      const successful = results.filter(result => result.status === 'fulfilled').length;
+      const successful = results.filter(
+        (result) => result.status === 'fulfilled' && result.value.success
+      ).length;
       const failed = results.length - successful;
 
       if (successful > 0) {

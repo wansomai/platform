@@ -83,7 +83,24 @@ export async function POST(request: NextRequest) {
         frequency,
         jurisdictions: jurisdictionNames,
         topics:        topicLabels,
-      }).catch((err) => console.error('[activate] confirmation email failed:', err));
+      }).catch((err) =>
+        console.error(
+          '[activate] confirmation email failed',
+          {
+            source: 'POST /api/law360/activate',
+            path: 'existing-user-subscription',
+            userId: existingUser.id,
+            organizationId,
+            email: existingUser.email,
+            frequency,
+            jurisdictions,
+            topics,
+            error: err instanceof Error
+              ? { name: err.name, message: err.message, stack: err.stack }
+              : err,
+          }
+        )
+      );
     }
 
     return createApiResponse(
@@ -150,7 +167,24 @@ export async function POST(request: NextRequest) {
     frequency,
     jurisdictions: jurisdictionNames,
     topics:        topicLabels,
-  }).catch((err) => console.error('[activate] welcome email failed:', err));
+  }).catch((err) =>
+    console.error(
+      '[activate] welcome email failed',
+      {
+        source: 'POST /api/law360/activate',
+        path: 'new-user-welcome',
+        userId: newUser.id,
+        organizationId: newUser.organizationId,
+        email: newUser.email,
+        frequency,
+        jurisdictions,
+        topics,
+        error: err instanceof Error
+          ? { name: err.name, message: err.message, stack: err.stack }
+          : err,
+      }
+    )
+  );
 
   return createApiResponse(
     { isNewUser: true, tempPassword, userEmail: newUser.email, magicToken },

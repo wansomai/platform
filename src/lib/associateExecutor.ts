@@ -4,6 +4,8 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import prisma from '@/lib/prisma';
 import { findAssociateByFunctionName } from './associateTools';
+import { getJurisdictionById, getJurisdictionInstructions } from '@/lib/jurisdictions';
+import { loadKBDocumentsWithSummaries } from '@/services/kbSummaryService';
 import {
   generateDocumentInlineTool,
   draftNewDocumentTool,
@@ -18,6 +20,82 @@ import {
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 const MAX_ITERATIONS = 5;
+
+type JurisdictionContext = {
+  id?: string;
+  name: string;
+  country: string;
+  state?: string;
+};
+
+type AssociateJurisdictionContext = {
+  activeJurisdiction?: JurisdictionContext;
+  selectedJurisdictions: JurisdictionContext[];
+  isAutoDetected: boolean;
+};
+
+function asJurisdictionObject(value: unknown): JurisdictionContext | undefined {
+  if (typeof value !== 'object' || value === null) return undefined;
+  const maybeJurisdiction = value as Partial<JurisdictionContext>;
+  if (typeof maybeJurisdiction.name !== 'string' || typeof maybeJurisdiction.country !== 'string') {
+    return undefined;
+  }
+  return {
+    id: typeof maybeJurisdiction.id === 'string' ? maybeJurisdiction.id : undefined,
+    name: maybeJurisdiction.name,
+    country: maybeJurisdiction.country,
+    state: typeof maybeJurisdiction.state === 'string' ? maybeJurisdiction.state : undefined,
+  };
+}
+
+function dedupeJurisdictions(jurisdictions: JurisdictionContext[]): JurisdictionContext[] {
+  const seen = new Set<string>();
+  const deduped: JurisdictionContext[] = [];
+  for (const jurisdiction of jurisdictions) {
+    const key = jurisdiction.id ?? `${jurisdiction.name.toLowerCase()}::${jurisdiction.country.toLowerCase()}::${(jurisdiction.state ?? '').toLowerCase()}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      deduped.push(jurisdiction);
+    }
+  }
+  return deduped;
+}
+
+function resolveJurisdictionContextFromProject(
+  project: any,
+  override?: Partial<AssociateJurisdictionContext>
+): AssociateJurisdictionContext {
+  let settings: any = {};
+  if (project?.knowledgeBase?.settings) {
+    try {
+      settings = typeof project.knowledgeBase.settings === 'string'
+        ? JSON.parse(project.knowledgeBase.settings)
+        : project.knowledgeBase.settings;
+    } catch {
+      settings = {};
+    }
+  }
+
+  const selectedFromSettings = [
+    asJurisdictionObject(settings?.jurisdiction),
+    ...(Array.isArray(settings?.jurisdictions)
+      ? settings.jurisdictions.map((item: unknown) => asJurisdictionObject(item))
+      : []),
+  ].filter(Boolean) as JurisdictionContext[];
+
+  const selectedJurisdictions = dedupeJurisdictions([
+    ...(override?.selectedJurisdictions ?? []),
+    ...selectedFromSettings,
+  ]);
+
+  const activeJurisdiction =
+    override?.activeJurisdiction ??
+    selectedJurisdictions[0];
+
+  const isAutoDetected = override?.isAutoDetected ?? false;
+
+  return { activeJurisdiction, selectedJurisdictions, isAutoDetected };
+}
 
 // Maps the toolId strings stored in AssociateTool.toolId to their Gemini
 // tool declaration objects. Only tools in this map can be given to an associate.
@@ -131,7 +209,8 @@ function buildAssociateSystemPrompt(
   associate: any,
   project: any,
   knowledgeBaseContent: string,
-  peerSpecialists: Array<{ id: string; name: string; practiceAreas: string[] }> = []
+  peerSpecialists: Array<{ id: string; name: string; practiceAreas: string[] }> = [],
+  jurisdictionContext?: AssociateJurisdictionContext
 ): string {
   const practiceAreasText = associate.practiceAreas
     .map((pa: string) => pa.replace(/_/g, ' '))
@@ -145,11 +224,24 @@ function buildAssociateSystemPrompt(
       : '';
 
   const kbBlock = knowledgeBaseContent
-    ? `\n**Your Specialized Knowledge Base**:\n\n${knowledgeBaseContent}\n\nIMPORTANT: Use this specialized knowledge to inform your responses. This is your domain expertise that makes you valuable as a specialist.\n`
+    ? `\n**Your Specialized Knowledge Base**:\n\n${knowledgeBaseContent}\n\n**KB CONSULTATION RULE — MANDATORY**:\n1. For EVERY query, FIRST check whether your Knowledge Base documents contain relevant information.\n2. If the KB has relevant content, ground your answer in it — cite the document title and specific sections.\n3. Only supplement with general legal knowledge AFTER exhausting KB content.\n4. When drafting documents, use KB content as templates, precedent, or reference for clauses and structure.\n5. NEVER ignore KB content when it is directly relevant to the user's question.\n6. If the KB contains conflicting information with general knowledge, prefer the KB and note the discrepancy.\n`
     : '';
 
-  const jurisdictionBlock = project?.knowledgeBase?.settings?.jurisdiction
-    ? `\n**Jurisdiction Context**: ${JSON.stringify(project.knowledgeBase.settings.jurisdiction)}\n`
+  const activeJurisdiction = jurisdictionContext?.activeJurisdiction;
+  const selectedJurisdictions = jurisdictionContext?.selectedJurisdictions ?? [];
+  const fullActiveJurisdiction = activeJurisdiction?.id
+    ? getJurisdictionById(activeJurisdiction.id)
+    : undefined;
+  const jurisdictionInstructions = fullActiveJurisdiction
+    ? getJurisdictionInstructions(fullActiveJurisdiction)
+    : '';
+  const selectedListText = selectedJurisdictions.length > 0
+    ? selectedJurisdictions
+        .map((j) => `${j.name}${j.state ? `, ${j.state}` : ''} (${j.country})`)
+        .join('; ')
+    : '';
+  const jurisdictionBlock = activeJurisdiction
+    ? `\n**Jurisdiction Context**:\n- Active jurisdiction: ${activeJurisdiction.name} (${activeJurisdiction.country}${activeJurisdiction.state ? `, ${activeJurisdiction.state}` : ''})${jurisdictionContext?.isAutoDetected ? ' [auto-detected]' : ''}\n${selectedListText ? `- All selected jurisdictions available: ${selectedListText}\n` : ''}${jurisdictionInstructions ? `- ${jurisdictionInstructions}\n` : ''}- Apply legal analysis to the active jurisdiction by default unless the user explicitly asks to compare or switch jurisdiction.\n`
     : '';
 
   const projectBlock = project?.knowledgeBase?.instructions
@@ -173,6 +265,30 @@ ${associate.instructions}
 ${stepsBlock}${kbBlock}${jurisdictionBlock}${projectBlock}${peersBlock}
 **Your Role**: You are a specialized AI legal associate. Provide expert-level responses drawing on your specialized knowledge and experience in ${practiceAreasText}.
 
+**KB TRANSPARENCY RULE — MANDATORY**:
+When the user asks any of these intents — "Who are you?", "What is your knowledge base?", "Summarize your knowledge base", "What documents are attached?" or similar:
+1. You MUST explicitly use the "KNOWLEDGE BASE INVENTORY" provided in your prompt.
+2. List the attached KB document titles and their status (summary YES/NO, text extracted YES/NO).
+3. Do NOT claim your KB is just generic legal expertise. Distinguish clearly between:
+   - your general practice-area expertise, and
+   - project-attached KB documents.
+4. If no documents are attached, say that clearly.
+5. If the user asks for a KB summary, summarize the attached KB documents first (using their summaries/content), then optionally add one short line on your general capabilities.
+6. When a query is relevant to KB-derived rules, begin your response with a brief line in this format:
+   Applying Rules: <comma-separated rule themes you are using>.
+   Then continue with your reasoning and answer.
+
+**KB STATUS BLOCK — STRICTLY CONDITIONAL**:
+Include the following block ONLY when the user explicitly asks about KB status, KB summary, or attached KB documents.
+Do NOT include this block for normal legal/drafting questions.
+KNOWLEDGE BASE STATUS
+Documents attached: <number>
+Formats supported: .doc, .docx, .pdf
+KB created: <YES/NO>
+Summary generated: <YES/NO/PARTIAL>
+Attached to agent: <YES/NO>
+Retrieval enabled: <YES/NO/PARTIAL>
+
 **OUT-OF-SCOPE RULE — MANDATORY**:
 When the user's question falls clearly outside your practice areas (${practiceAreasText}):
 1. Call suggest_associate FIRST using the EXACT name from the "Other Specialists" list above. If no list is shown, skip the tool call and proceed to step 2.
@@ -184,8 +300,8 @@ When a question IS within your practice areas, answer fully and expertly — no 
 
 **DRAFTING RULE — MANDATORY**:
 When the user asks you to draft, write, create, prepare, or produce any document (contracts, letters, agreements, notices, policies, pleadings, etc.):
-1. Call \`generateDocumentInline\` IMMEDIATELY — do NOT search for templates or context first. Go straight to drafting.
-2. Pass a detailed \`draftingInstruction\` that includes the document type, jurisdiction, parties, and any relevant context from the conversation.
+1. FIRST, check your Knowledge Base for relevant templates, clauses, or precedent documents that can inform the draft.
+2. Call \`generateDocumentInline\` with a detailed \`draftingInstruction\` that includes the document type, jurisdiction, parties, any relevant context from the conversation, AND relevant structures/clauses from your KB documents.
 3. If the user is working in canvas mode, call \`draftNewDocument\` instead of \`generateDocumentInline\`.
 4. Only output document text in chat for very short snippets (< 3 lines). Anything longer MUST go through \`generateDocumentInline\`.
 
@@ -196,31 +312,75 @@ Be thorough within your specialty. Be honest and redirect outside it.`.trim();
 
 /**
  * Loads an associate's knowledge base documents from the DB and returns
- * them as a single concatenated string for use in the system prompt.
+ * a structured string with summaries (for quick reference) and full text
+ * (for deep consultation). Preserves the document order from the associate's
+ * knowledgeBase array.
  */
 async function loadKnowledgeBase(associate: any): Promise<string> {
   if (!associate.knowledgeBase || associate.knowledgeBase.length === 0) {
     return '';
   }
   try {
-    const kbDocuments = await prisma.document.findMany({
-      where: { id: { in: associate.knowledgeBase } },
-      include: { content: { select: { content: true } } },
-    });
-    if (kbDocuments.length === 0) {
+    const kbDocs = await loadKBDocumentsWithSummaries(associate.knowledgeBase);
+
+    if (kbDocs.length === 0) {
       console.warn(`[loadKnowledgeBase] ${associate.name}: no documents found for IDs:`, associate.knowledgeBase);
       return '';
     }
+
+    const manifestLines: string[] = [];
     const parts: string[] = [];
-    for (const doc of kbDocuments) {
-      const text = doc.content?.content;
-      if (!text || text === '[SCANNED_PDF_REQUIRES_PROCESSING]' || text === '[SCANNED_IMAGE_REQUIRES_PROCESSING]') {
-        console.warn(`[loadKnowledgeBase] ${associate.name}: doc "${doc.title}" has no extractable text (content_extracted may be pending)`);
-        continue; // skip docs with no usable content rather than injecting placeholder noise
+    let loadedCount = 0;
+    let manifestCount = 0;
+
+    for (const doc of kbDocs) {
+      manifestCount++;
+      const hasSummary = !!doc.summary;
+      const hasExtractedText = !!doc.content;
+      manifestLines.push(
+        `${manifestCount}. ${doc.title} (${doc.fileType.toUpperCase()}) — summary: ${hasSummary ? 'YES' : 'NO'}, text extracted: ${hasExtractedText ? 'YES' : 'NO'}`
+      );
+
+      // Keep summary-only scanned/image documents visible to the model.
+      if (!doc.content && !doc.summary) {
+        console.warn(`[loadKnowledgeBase] ${associate.name}: doc "${doc.title}" has no extractable text`);
+        continue;
       }
-      parts.push(`### ${doc.title} ###\n${text}`);
+
+      loadedCount++;
+      const lines: string[] = [`### KB Document ${loadedCount}: ${doc.title} ###`];
+
+      if (doc.summary) {
+        lines.push('');
+        lines.push('**SUMMARY** (use for quick reference and when answering high-level questions):');
+        lines.push(doc.summary);
+      }
+
+      if (doc.groundedRules) {
+        lines.push('');
+        lines.push('**GROUNDED AGENT RULES** (prioritize these behavioral/document rules when reasoning and drafting):');
+        lines.push(doc.groundedRules);
+      }
+
+      if (doc.content) {
+        lines.push('');
+        lines.push('**FULL CONTENT** (consult for specific clauses, exact wording, or detailed analysis):');
+        lines.push(doc.content);
+      } else {
+        lines.push('');
+        lines.push('**FULL CONTENT**: Not extractable text (likely scanned/image-based). Use summary and ask user for clarifications when exact clause text is needed.');
+      }
+
+      parts.push(lines.join('\n'));
     }
-    return parts.join('\n\n---\n\n');
+
+    const manifestBlock = `**KNOWLEDGE BASE INVENTORY (Authoritative List of Attached KB Documents)**:\n${manifestLines.length > 0 ? manifestLines.join('\n') : '- No documents attached.'}`;
+
+    if (parts.length === 0) {
+      return `${manifestBlock}\n\n[No extractable KB text loaded yet. Use the inventory above when answering KB-status questions.]`;
+    }
+
+    return `${manifestBlock}\n\n[${parts.length} document(s) loaded with extractable text]\n\n` + parts.join('\n\n---\n\n');
   } catch (err) {
     console.error(`[loadKnowledgeBase] ${associate.name}: failed to load KB documents`, err);
     return '';
@@ -308,7 +468,8 @@ export async function executeAssociateCall(
   currentCanvasHtml?: string,
   conversationId?: string,
   depth = 0,
-  forcedAssociate?: any
+  forcedAssociate?: any,
+  jurisdictionContextOverride?: Partial<AssociateJurisdictionContext>
 ): Promise<any> {
   // Lazy-import to break the circular dependency:
   // associateExecutor → functionExecutor → associateExecutor
@@ -350,7 +511,14 @@ export async function executeAssociateCall(
     ]);
 
     // ── 3. Build system prompt ────────────────────────────────────────────────
-    const systemPrompt = buildAssociateSystemPrompt(associate, project, knowledgeBaseContent, peerSpecialists);
+    const jurisdictionContext = resolveJurisdictionContextFromProject(project, jurisdictionContextOverride);
+    const systemPrompt = buildAssociateSystemPrompt(
+      associate,
+      project,
+      knowledgeBaseContent,
+      peerSpecialists,
+      jurisdictionContext
+    );
 
     // ── 4. Build allowed tool declarations ───────────────────────────────────
     // Start from the associate's declared tools, falling back to an empty set

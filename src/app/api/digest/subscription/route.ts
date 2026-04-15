@@ -126,7 +126,23 @@ export const POST = withErrorHandler(
           frequency,
           jurisdictions: jurisdictionNames,
           topics: topicLabels,
-        }).catch((err) => console.error('[digest-subscription] confirmation email failed:', err));
+        }).catch((err) =>
+          console.error(
+            '[digest-subscription] confirmation email failed',
+            {
+              source: 'POST /api/digest/subscription',
+              userId,
+              organizationId,
+              email: user.email,
+              frequency,
+              jurisdictions,
+              topics,
+              error: err instanceof Error
+                ? { name: err.name, message: err.message, stack: err.stack }
+                : err,
+            }
+          )
+        );
       }
     }
 

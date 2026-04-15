@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { getActiveOrganizationId } from "@/lib/api/org-helpers";
+import { processKBDocuments } from "@/services/kbSummaryService";
 import { z } from "zod";
 
 // Validation schema for creating associates
@@ -76,15 +77,16 @@ export const POST = withErrorHandler(withAuth(async (
     }
 
     // Validate document IDs exist and belong to organization
-    if (validatedData.knowledgeBase && validatedData.knowledgeBase.length > 0) {
+    const kbIds = validatedData.knowledgeBase ?? [];
+    if (kbIds.length > 0) {
       const documentsCount = await prisma.document.count({
         where: {
-          id: { in: validatedData.knowledgeBase },
+          id: { in: kbIds },
           organization_id: currentOrgId
         }
       });
 
-      if (documentsCount !== validatedData.knowledgeBase.length) {
+      if (documentsCount !== kbIds.length) {
         return NextResponse.json(
           { error: 'Some documents not found or unauthorized' },
           { status: 400 }
@@ -92,13 +94,18 @@ export const POST = withErrorHandler(withAuth(async (
       }
     }
 
+    // Process KB documents: validate extraction + generate summaries
+    const kbResult = kbIds.length > 0
+      ? await processKBDocuments(kbIds)
+      : null;
+
     const associate = await prisma.aIAssociate.create({
       data: {
         name: validatedData.name,
         instructions: validatedData.instructions,
         description: validatedData.description,
         practiceAreas: validatedData.practiceAreas as any,
-        knowledgeBase: validatedData.knowledgeBase || [],
+        knowledgeBase: kbIds,
         organizationId: currentOrgId,
         createdById: userId,
         steps: validatedData.steps ? {
@@ -120,7 +127,16 @@ export const POST = withErrorHandler(withAuth(async (
     return NextResponse.json({
       status: 201,
       message: 'Associate created successfully',
-      data: { associate }
+      data: {
+        associate,
+        ...(kbResult && {
+          knowledgeBaseStatus: {
+            documents: kbResult.processed,
+            allExtracted: kbResult.allExtracted,
+            allSummarized: kbResult.allSummarized,
+          }
+        }),
+      }
     });
   } catch (error: any) {
     console.error('Error creating associate:', error);
