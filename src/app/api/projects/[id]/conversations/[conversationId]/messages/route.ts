@@ -594,7 +594,19 @@ export async function POST(
               currentCanvasHtml,
               conversationId,
               0,
-              boundAssociate
+              boundAssociate,
+              {
+                activeJurisdiction,
+                selectedJurisdictions: [
+                  ...(resolvedJurisdiction ? [resolvedJurisdiction] : []),
+                  ...(Array.isArray(settings.jurisdictions)
+                    ? settings.jurisdictions
+                        .map((item: JurisdictionType) => asJurisdictionObject(item))
+                        .filter((item): item is JurisdictionObject => !!item)
+                    : []),
+                ],
+                isAutoDetected,
+              }
             );
 
             const responseText = associateResult.response ?? associateResult.message ?? '';

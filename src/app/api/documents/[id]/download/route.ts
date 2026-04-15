@@ -58,6 +58,7 @@ export async function GET(
     }
 
     const fileBuffer = await blobStorageService.downloadFile(document.file_url);
+    const body = new Uint8Array(fileBuffer);
     const extension = (document.file_type || '').toLowerCase();
     const mimeType =
       getMimeTypeFromFileExtension(extension) || 'application/octet-stream';
@@ -65,7 +66,7 @@ export async function GET(
       `${document.title}.${extension || 'bin'}`
     );
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(body, {
       status: 200,
       headers: {
         'Content-Type': mimeType,

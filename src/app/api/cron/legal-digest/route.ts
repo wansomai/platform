@@ -12,7 +12,6 @@ import {
 } from '@/services/legalDigestService';
 import { sendLegalDigestEmail } from '@/lib/email-service';
 import { PRACTICE_AREA_LABELS } from '@/types/associates';
-import { ADMIN_EMAILS } from '@/lib/auth/admin';
 
 export const maxDuration = 300;
 
@@ -69,7 +68,6 @@ export async function GET(req: NextRequest) {
   const baseWhere = {
     isActive: true,
     frequency: { in: frequencyFilter },
-    user: { email: { in: ADMIN_EMAILS } },
   };
 
   // Count total eligible before the dedup filter (for reporting)
@@ -221,7 +219,7 @@ export async function GET(req: NextRequest) {
           ]);
           return 'sent';
         } else {
-          console.error(`[digest] Failed to send to ${sub.user.email}:`, result.error);
+          console.error(`[digest] Failed to send digest email (phase=send, email=${sub.user.email}, subscriptionId=${sub.id}, fingerprint=${sub.fingerprint.slice(0, 60)}):`, result.error);
           return 'failed';
         }
       })
@@ -232,7 +230,7 @@ export async function GET(req: NextRequest) {
         sent++;
       } else {
         if (result.status === 'rejected') {
-          console.error('[digest] Unexpected error in send batch:', result.reason);
+          console.error('[digest] Unexpected error in send batch (phase=batch-send):', result.reason);
         }
         failed++;
       }

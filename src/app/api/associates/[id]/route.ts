@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
 import { getActiveOrganizationId } from "@/lib/api/org-helpers";
+import { processKBDocuments } from "@/services/kbSummaryService";
+import { loadKBDocumentsWithSummaries } from "@/services/kbSummaryService";
 import { z } from "zod";
 
 const updateAssociateSchema = z.object({
@@ -72,9 +74,45 @@ export const GET = withErrorHandler(withAuth(async (
       }
     });
 
+    const kbIds = fullAssociate?.knowledgeBase ?? [];
+
+    // Ensure KB status is up-to-date when opening edit screen:
+    // - backfills missing summaries
+    // - validates extracted text availability
+    const kbResult = kbIds.length > 0
+      ? await processKBDocuments(kbIds)
+      : null;
+
+    const kbStatusById = new Map(
+      (kbResult?.processed ?? []).map((doc) => [doc.documentId, doc])
+    );
+
+    const knowledgeBaseDocuments = kbIds.length
+      ? await loadKBDocumentsWithSummaries(kbIds)
+      : [];
+
     return NextResponse.json({
       status: 200,
-      data: { associate: fullAssociate }
+      data: {
+        associate: {
+          ...fullAssociate,
+          knowledgeBaseDocuments: knowledgeBaseDocuments.map((doc) => {
+            const status = kbStatusById.get(doc.id);
+            return {
+              id: doc.id,
+              title: doc.title,
+              fileType: doc.fileType,
+              contentLength: doc.contentLength,
+              summaryGenerated: status?.summaryGenerated ?? !!doc.summary,
+              rulesGenerated: status?.rulesGenerated ?? !!doc.groundedRules,
+              textExtracted: status?.textExtracted ?? !!doc.content,
+              summaryPreview: doc.summary ? doc.summary.slice(0, 300) : null,
+              rulesPreview: doc.groundedRules ? doc.groundedRules.slice(0, 500) : null,
+              rulesFull: doc.groundedRules ?? null,
+            };
+          }),
+        }
+      }
     });
   } catch (error: any) {
     console.error('Error fetching associate:', error);
@@ -106,20 +144,25 @@ export const PUT = withErrorHandler(withAuth(async (
     }
 
     // Validate documents if knowledgeBase is being updated
-    if (validatedData.knowledgeBase && validatedData.knowledgeBase.length > 0) {
+    const kbIds = validatedData.knowledgeBase ?? [];
+    let kbResult = null;
+    if (kbIds.length > 0) {
       const documentsCount = await prisma.document.count({
         where: {
-          id: { in: validatedData.knowledgeBase },
+          id: { in: kbIds },
           organization_id: organizationId
         }
       });
 
-      if (documentsCount !== validatedData.knowledgeBase.length) {
+      if (documentsCount !== kbIds.length) {
         return NextResponse.json(
           { error: 'Some documents not found' },
           { status: 400 }
         );
       }
+
+      // Process KB documents: validate extraction + generate summaries
+      kbResult = await processKBDocuments(kbIds);
     }
 
     // Handle steps update if provided
@@ -169,7 +212,16 @@ export const PUT = withErrorHandler(withAuth(async (
     return NextResponse.json({
       status: 200,
       message: 'Associate updated successfully',
-      data: { associate: updatedAssociate }
+      data: {
+        associate: updatedAssociate,
+        ...(kbResult && {
+          knowledgeBaseStatus: {
+            documents: kbResult.processed,
+            allExtracted: kbResult.allExtracted,
+            allSummarized: kbResult.allSummarized,
+          }
+        }),
+      }
     });
   } catch (error: any) {
     console.error('Error updating associate:', error);
@@ -196,6 +248,7 @@ export const DELETE = withErrorHandler(withAuth(async (
 ) => {
   try {
     const { id } = await params;
+    const forceDelete = request.nextUrl.searchParams.get('force') === 'true';
     const { authorized } = await checkAssociateAccess(id, userId);
 
     if (!authorized) {
@@ -205,19 +258,26 @@ export const DELETE = withErrorHandler(withAuth(async (
       );
     }
 
-    // Check if associate is assigned to any active projects
-    const projectCount = await prisma.projectAssociate.count({
-      where: { associateId: id }
-    });
+    const [projectLinks, conversationCount] = await Promise.all([
+      prisma.projectAssociate.findMany({
+        where: { associateId: id },
+        select: {
+          project: {
+            select: { id: true, title: true }
+          }
+        }
+      }),
+      prisma.conversation.count({
+        where: { aiAssociateId: id }
+      })
+    ]);
 
-    // Check if associate is linked to any conversations
-    const conversationCount = await prisma.conversation.count({
-      where: { aiAssociateId: id }
-    });
+    const projects = projectLinks.map(link => link.project);
+    const projectCount = projects.length;
 
     const totalUsage = projectCount + conversationCount;
 
-    if (totalUsage > 0) {
+    if (totalUsage > 0 && !forceDelete) {
       const errors = [];
       if (projectCount > 0) {
         errors.push(`${projectCount} project(s)`);
@@ -227,16 +287,37 @@ export const DELETE = withErrorHandler(withAuth(async (
       }
 
       return NextResponse.json(
-        { error: `Cannot delete: Associate is assigned to ${errors.join(' and ')}. Remove the associate from these first.` },
-        { status: 400 }
+        {
+          error: `Cannot delete: Associate is assigned to ${errors.join(' and ')}.`,
+          code: 'ASSOCIATE_IN_USE',
+          details: {
+            projectCount,
+            conversationCount,
+            projects
+          }
+        },
+        { status: 409 }
       );
     }
 
-    await prisma.aIAssociate.delete({ where: { id } });
+    if (forceDelete) {
+      await prisma.$transaction([
+        prisma.projectAssociate.deleteMany({ where: { associateId: id } }),
+        prisma.conversation.updateMany({
+          where: { aiAssociateId: id },
+          data: { aiAssociateId: null }
+        }),
+        prisma.aIAssociate.delete({ where: { id } })
+      ]);
+    } else {
+      await prisma.aIAssociate.delete({ where: { id } });
+    }
 
     return NextResponse.json({
       status: 200,
-      message: 'Associate deleted successfully'
+      message: forceDelete
+        ? 'Associate hard-deleted successfully. Project bindings and conversation association were removed.'
+        : 'Associate deleted successfully'
     });
   } catch (error: any) {
     console.error('Error deleting associate:', error);

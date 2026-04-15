@@ -180,6 +180,7 @@ export function ChatInterface() {
                 user={session?.user}
                 projectId={currentConversation.projectId}
                 associateName={currentConversation.aiAssociate?.name}
+                redirectedQuestion={getRedirectedQuestion(currentConversation.messages, index)}
                 onCopy={() => copyMessageToClipboard(message.content)}
               />
             ))}
@@ -198,14 +199,19 @@ function AssociateSuggestionCard({
   suggestion,
   projectId,
   conversationId,
+  redirectedQuestion,
+  userId,
 }: {
   suggestion: { id: string; name: string; reason: string };
   projectId: string;
   conversationId: string;
+  redirectedQuestion?: string;
+  userId?: string;
 }) {
   const [dismissed, setDismissed] = useState(false);
   const [switching, setSwitching] = useState(false);
   const assignAssociate = useChatStore(state => state.assignAssociateToConversation);
+  const sendMessage = useChatStore(state => state.sendMessage);
 
   if (dismissed) return null;
 
@@ -214,6 +220,18 @@ function AssociateSuggestionCard({
     try {
       const success = await assignAssociate(projectId, conversationId, suggestion.id);
       if (success) {
+        if (redirectedQuestion?.trim()) {
+          await sendMessage(
+            projectId,
+            conversationId,
+            redirectedQuestion.trim(),
+            userId,
+            {},
+            undefined,
+            undefined,
+            undefined
+          );
+        }
         setDismissed(true);
       } else {
         setSwitching(false);
@@ -267,12 +285,14 @@ const ChatMessageItem = React.memo(({
   user,
   projectId,
   associateName,
+  redirectedQuestion,
   onCopy
 }: {
   message: Message,
   user: any,
   projectId: string,
   associateName?: string,
+  redirectedQuestion?: string,
   onCopy: () => void
 }) => {
   const isUser = message.role === 'user';
@@ -563,6 +583,8 @@ const ChatMessageItem = React.memo(({
               suggestion={message.suggestedAssociate}
               projectId={projectId}
               conversationId={message.conversationId}
+              redirectedQuestion={redirectedQuestion}
+              userId={user?.id}
             />
           )}
         </div>
@@ -641,4 +663,13 @@ function isCanvasProcessingStatus(status: string): boolean {
     'error'
   ];
   return canvasStatuses.includes(status);
+}
+
+function getRedirectedQuestion(messages: Message[], assistantMessageIndex: number): string | undefined {
+  for (let i = assistantMessageIndex - 1; i >= 0; i -= 1) {
+    if (messages[i]?.role === 'user') {
+      return messages[i].content;
+    }
+  }
+  return undefined;
 }

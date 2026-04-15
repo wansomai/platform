@@ -1,7 +1,7 @@
 // app/dashboard/workflows/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +14,7 @@ import {
   Trash2,
   Pencil,
   MoreVertical,
+  AlertTriangle,
 } from "lucide-react";
 import { AIAssociate, PracticeArea, PRACTICE_AREA_LABELS } from "@/types";
 import { useAssociates } from "@/hooks/useAssociates";
@@ -24,6 +25,14 @@ import { useProfile } from "@/store/profile.store";
 import { useSession } from "next-auth/react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import ProAccessModal from "@/components/modals/ProAccess";
 import { useOrganization } from "@/store/profile.store";
@@ -42,6 +51,12 @@ export default function WorkflowsPage() {
     id: string;
     name: string;
   } | null>(null);
+  const [deleteImpact, setDeleteImpact] = useState<{
+    projectCount: number;
+    conversationCount: number;
+    projects: Array<{ id: string; title: string }>;
+  } | null>(null);
+  const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [showProAccess, setShowProAccess] = useState(false);
 
   const router = useRouter();
@@ -67,9 +82,33 @@ export default function WorkflowsPage() {
 
   const handleDeleteConfirm = async () => {
     if (!associateToDelete) return;
-    await deleteAssociate(associateToDelete.id);
+    const result = await deleteAssociate(associateToDelete.id);
+    if (result.success) {
+      setAssociateToDelete(null);
+      return;
+    }
+    if ("requiresForce" in result && result.requiresForce && result.details) {
+      setDeleteImpact(result.details);
+      setShowHardDeleteDialog(true);
+      return;
+    }
     setAssociateToDelete(null);
   };
+
+  const handleHardDeleteConfirm = async () => {
+    if (!associateToDelete) return;
+    const result = await deleteAssociate(associateToDelete.id, { force: true });
+    if (result.success) {
+      setShowHardDeleteDialog(false);
+      setAssociateToDelete(null);
+      setDeleteImpact(null);
+    }
+  };
+
+  const associatedProjectNames = useMemo(
+    () => deleteImpact?.projects?.map((p) => p.title).filter(Boolean) ?? [],
+    [deleteImpact]
+  );
 
   const handleUseInChat = async (associate: AIAssociate) => {
     try {
@@ -374,13 +413,98 @@ export default function WorkflowsPage() {
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
-        open={!!associateToDelete}
-        onOpenChange={(open) => !open && setAssociateToDelete(null)}
+        open={!!associateToDelete && !showHardDeleteDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setAssociateToDelete(null);
+            setDeleteImpact(null);
+            setShowHardDeleteDialog(false);
+          }
+        }}
         onConfirm={handleDeleteConfirm}
         itemName={associateToDelete?.name}
         itemType="associate"
         isLoading={isProcessing}
       />
+
+      <Dialog
+        open={showHardDeleteDialog}
+        onOpenChange={(open) => {
+          setShowHardDeleteDialog(open);
+          if (!open) {
+            setDeleteImpact(null);
+            setAssociateToDelete(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Associate Bound to Active Projects
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              <span className="block text-foreground font-medium">
+                {associateToDelete?.name} is currently bound to{" "}
+                {deleteImpact?.projectCount ?? 0} project(s) and{" "}
+                {deleteImpact?.conversationCount ?? 0} conversation(s).
+              </span>
+              <span className="block mt-2">
+                If you hard delete this associate, their project-level association and
+                conversation-level reasoning context will be removed from those projects.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          {associatedProjectNames.length > 0 && (
+            <div className="rounded-md border bg-muted/30 p-3">
+              <p className="text-sm font-medium mb-2">Bound projects:</p>
+              <div className="flex flex-wrap gap-2">
+                {associatedProjectNames.map((name) => (
+                  <span
+                    key={name}
+                    className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-900"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="sm:justify-between gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowHardDeleteDialog(false);
+                if (associateToDelete?.id) {
+                  router.push(`/workflows/${associateToDelete.id}`);
+                }
+              }}
+            >
+              Update Associate Instead
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowHardDeleteDialog(false);
+                  setDeleteImpact(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleHardDeleteConfirm}
+                disabled={isProcessing}
+              >
+                Hard Delete Associate
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Pro Access Modal */}
       <ProAccessModal

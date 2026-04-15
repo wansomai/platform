@@ -36,7 +36,15 @@ interface ExtendedDocumentsState extends DocumentsState {
   // Methods
   fetchDocuments: (filters?: DocumentFilters, forceRefresh?: boolean) => Promise<Document[]>;
   uploadDocument: (fileData: FormData, onProgress?: ((progress: number) => void) | null) => Promise<Document | null>;
-  deleteDocument: (id: string) => Promise<boolean>;
+  deleteDocument: (id: string, options?: { force?: boolean }) => Promise<{
+    success: boolean;
+    requiresForce?: boolean;
+    details?: {
+      associateCount: number;
+      associates: Array<{ id: string; name: string }>;
+    };
+    error?: string;
+  }>;
   selectDocument: (id: string) => void;
   unselectDocument: (id: string) => void;
   toggleDocumentSelection: (id: string) => void;
@@ -202,9 +210,10 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
         }
       },
       
-      deleteDocument: async (id) => {
+      deleteDocument: async (id, options) => {
         try {
-          await apiService.delete(`/api/documents/${id}`);
+          const query = options?.force ? '?force=true' : '';
+          await apiService.delete(`/api/documents/${id}${query}`);
           
           // Remove document from list
           set((state) => {
@@ -223,10 +232,19 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
             };
           });
           
-          return true;
+          return { success: true };
         } catch (error: any) {
           set({ error: error.message || 'Failed to delete document' });
-          return false;
+          const responseData = error?.response?.data;
+          if (responseData?.code === 'DOCUMENT_IN_USE') {
+            return {
+              success: false,
+              requiresForce: true,
+              details: responseData.details,
+              error: responseData.error ?? error.message ?? 'Failed to delete document',
+            };
+          }
+          return { success: false, error: error.message || 'Failed to delete document' };
         }
       },
       

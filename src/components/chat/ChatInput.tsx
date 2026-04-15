@@ -70,7 +70,7 @@ export function ChatInput({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedVaultDocIds, setSelectedVaultDocIds] = useState<string[]>([]);
   const [pendingVaultDocs, setPendingVaultDocs] = useState<Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }>>([]);
-  const [existingVaultMatches, setExistingVaultMatches] = useState<Array<{ fileKey: string; docId: string; docTitle: string }>>([]);
+  const [existingVaultMatches, setExistingVaultMatches] = useState<Array<{ fileKey: string; docId: string; docTitle: string; fileSize?: number }>>([]);
   const [selectedAssociateId, setSelectedAssociateId] = useState<string | null>(null);
   const [homepageJurisdictions, setHomepageJurisdictions] = useState<Jurisdiction[]>([]);
   const [homepageWebSearch, setHomepageWebSearch] = useState(false);
@@ -369,16 +369,16 @@ export function ChatInput({
               // Upload new files first
               if (selectedFiles.length > 0) {
                 try {
-                  const existingDocsMap = new Map<string, { id: string; title: string }>();
+                  const existingDocsMap = new Map<string, { id: string; title: string; fileSize?: number }>();
                   const existingDocIds = new Set<string>();
 
                   // Resolve duplicate local files to existing vault docs.
                   try {
-                    const response = await apiService.get<{ data: Array<{ id: string; title: string }> }>(
-                      '/api/documents?titlesOnly=true'
+                    const response = await apiService.get<{ data: Array<{ id: string; title: string; fileSize?: number }> }>(
+                      '/api/documents?limit=1000'
                     );
                     for (const doc of response.data || []) {
-                      const normalized = doc.title.trim().toLowerCase();
+                      const normalized = `${doc.title.trim().toLowerCase()}::${doc.fileSize ?? -1}`;
                       if (!existingDocsMap.has(normalized)) {
                         existingDocsMap.set(normalized, doc);
                       }
@@ -388,7 +388,7 @@ export function ChatInput({
                   }
 
                   for (const file of selectedFiles) {
-                    const normalizedFileName = file.name.replace(/\.[^/.]+$/, '').trim().toLowerCase();
+                    const normalizedFileName = `${file.name.replace(/\.[^/.]+$/, '').trim().toLowerCase()}::${file.size}`;
                     const existing = existingDocsMap.get(normalizedFileName);
                     if (existing) {
                       if (!existingDocIds.has(existing.id)) {
@@ -549,15 +549,15 @@ export function ChatInput({
             const uploadedDocIds: string[] = [];
             const uploadedDocMeta: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> = [];
             const existingDocIds = new Set<string>();
-            const existingDocsMap = new Map<string, { id: string; title: string }>();
+            const existingDocsMap = new Map<string, { id: string; title: string; fileSize?: number }>();
 
             // Resolve duplicate local files to existing vault docs instead of re-uploading.
             try {
-              const response = await apiService.get<{ data: Array<{ id: string; title: string }> }>(
-                '/api/documents?titlesOnly=true'
+              const response = await apiService.get<{ data: Array<{ id: string; title: string; fileSize?: number }> }>(
+                '/api/documents?limit=1000'
               );
               for (const doc of response.data || []) {
-                const normalized = doc.title.trim().toLowerCase();
+                const normalized = `${doc.title.trim().toLowerCase()}::${doc.fileSize ?? -1}`;
                 if (!existingDocsMap.has(normalized)) {
                   existingDocsMap.set(normalized, doc);
                 }
@@ -567,7 +567,7 @@ export function ChatInput({
             }
 
             for (const file of selectedFiles) {
-              const normalizedFileName = file.name.replace(/\.[^/.]+$/, '').trim().toLowerCase();
+              const normalizedFileName = `${file.name.replace(/\.[^/.]+$/, '').trim().toLowerCase()}::${file.size}`;
               const existing = existingDocsMap.get(normalizedFileName);
               if (existing) {
                 if (!existingDocIds.has(existing.id)) {
@@ -876,11 +876,81 @@ export function ChatInput({
   };
 
   // Handle file selection
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const newFiles = Array.from(files);
-      setSelectedFiles(prev => [...prev, ...newFiles]);
+      const makeFileKey = (name: string, size?: number) => `${name.trim().toLowerCase()}::${size ?? -1}`;
+      const toBaseName = (name: string) => name.replace(/\.[^/.]+$/, '').trim();
+
+      try {
+        // Compare by base title + file size to ensure repeated file content matches.
+        const response = await apiService.get<{ data: Array<{ id: string; title: string; fileSize?: number; fileType?: string; fileUrl?: string }> }>(
+          '/api/documents?limit=1000'
+        );
+        const docs = response.data || [];
+        const byFingerprint = new Map<string, { id: string; title: string; fileSize?: number; fileType?: string; fileUrl?: string }>();
+        for (const doc of docs) {
+          const fingerprint = makeFileKey(doc.title, doc.fileSize);
+          if (!byFingerprint.has(fingerprint)) {
+            byFingerprint.set(fingerprint, doc);
+          }
+        }
+
+        const repeatedMatches: Array<{ fileKey: string; docId: string; docTitle: string; fileSize?: number }> = [];
+        const filesToUpload: File[] = [];
+
+        for (const file of newFiles) {
+          const fingerprint = makeFileKey(toBaseName(file.name), file.size);
+          const existing = byFingerprint.get(fingerprint);
+          if (existing) {
+            repeatedMatches.push({
+              fileKey: `${file.name}::${file.size}`,
+              docId: existing.id,
+              docTitle: existing.title,
+              fileSize: existing.fileSize,
+            });
+          } else {
+            filesToUpload.push(file);
+          }
+        }
+
+        if (repeatedMatches.length > 0) {
+          const docsToAdd = repeatedMatches.map((m) => ({
+            id: m.docId,
+            title: m.docTitle,
+            fileType: 'unknown',
+            fileSize: m.fileSize,
+          }));
+
+          setPendingVaultDocs((prev) => {
+            const seen = new Set(prev.map((d) => d.id));
+            return [...prev, ...docsToAdd.filter((d) => !seen.has(d.id))];
+          });
+
+          setSelectedVaultDocIds((prev) => {
+            const seen = new Set(prev);
+            const toAdd = docsToAdd.map((d) => d.id).filter((id) => !seen.has(id));
+            return [...prev, ...toAdd];
+          });
+
+          setExistingVaultMatches((prev) => {
+            const seen = new Set(prev.map((m) => m.fileKey));
+            return [...prev, ...repeatedMatches.filter((m) => !seen.has(m.fileKey))];
+          });
+        }
+
+        if (filesToUpload.length > 0) {
+          setSelectedFiles((prev) => {
+            const existing = new Set(prev.map((f) => `${f.name}::${f.size}`));
+            return [...prev, ...filesToUpload.filter((f) => !existing.has(`${f.name}::${f.size}`))];
+          });
+        }
+      } catch {
+        // If vault lookup fails, keep normal upload behavior.
+        setSelectedFiles(prev => [...prev, ...newFiles]);
+      }
+
       // Reset input so same file can be selected again
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -888,85 +958,9 @@ export function ChatInput({
     }
   };
 
-  // Detect selected local files that already exist in vault root by title.
-  useEffect(() => {
-    const detectExistingVaultFiles = async () => {
-      if (selectedFiles.length === 0) {
-        setExistingVaultMatches([]);
-        return;
-      }
-
-      try {
-        const response = await apiService.get<{ data: Array<{ id: string; title: string }> }>(
-          '/api/documents?titlesOnly=true'
-        );
-        const docs = response.data || [];
-        const byTitle = new Map<string, { id: string; title: string }>();
-
-        for (const doc of docs) {
-          const normalized = doc.title.trim().toLowerCase();
-          if (!byTitle.has(normalized)) {
-            byTitle.set(normalized, doc);
-          }
-        }
-
-        const matches = selectedFiles
-          .map((file) => {
-            const baseName = file.name.replace(/\.[^/.]+$/, '').trim().toLowerCase();
-            const existing = byTitle.get(baseName);
-            if (!existing) return null;
-            return {
-              fileKey: `${file.name}::${file.size}`,
-              docId: existing.id,
-              docTitle: existing.title,
-            };
-          })
-          .filter(Boolean) as Array<{ fileKey: string; docId: string; docTitle: string }>;
-
-        setExistingVaultMatches(matches);
-      } catch {
-        setExistingVaultMatches([]);
-      }
-    };
-
-    detectExistingVaultFiles();
-  }, [homepageMode, selectedFiles]);
-
   // Handle file removal
   const handleRemoveFile = (index: number) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  // One click: swap all duplicate local files for existing vault docs.
-  const handleUseExistingVaultMatches = () => {
-    if (existingVaultMatches.length === 0) return;
-
-    const matchedFileKeys = new Set(existingVaultMatches.map((m) => m.fileKey));
-    setSelectedFiles((prev) =>
-      prev.filter((file) => !matchedFileKeys.has(`${file.name}::${file.size}`))
-    );
-
-    const docsToAdd = existingVaultMatches.map((m) => ({
-      id: m.docId,
-      title: m.docTitle,
-      fileType: 'unknown',
-    }));
-
-    setPendingVaultDocs((prev) => {
-      const seen = new Set(prev.map((d) => d.id));
-      return [...prev, ...docsToAdd.filter((d) => !seen.has(d.id))];
-    });
-
-    setSelectedVaultDocIds((prev) => {
-      const seen = new Set(prev);
-      const toAdd = docsToAdd.map((d) => d.id).filter((id) => !seen.has(id));
-      return [...prev, ...toAdd];
-    });
-
-    setExistingVaultMatches([]);
-    notify.success(
-      `${docsToAdd.length} existing vault document${docsToAdd.length !== 1 ? 's' : ''} added`
-    );
   };
 
   // Trigger file input click - always use file picker
@@ -1465,21 +1459,19 @@ export function ChatInput({
             {(selectedFiles.length > 0 || pendingVaultDocs.length > 0 || (homepageMode && selectedVaultDocIds.length > 0)) && (
               <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
                 {existingVaultMatches.length > 0 && (
-                  <button
-                    onClick={handleUseExistingVaultMatches}
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
-                    type="button"
-                    title="Use existing vault files instead of uploading duplicates"
+                  <div
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg"
+                    title="Automatically added from vault when repeated"
                   >
                     <div className="bg-amber-500 rounded-md p-1.5">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4 text-white">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                       </svg>
                     </div>
                     <span className="text-sm font-medium text-amber-900">
-                      Add {existingVaultMatches.length} existing file{existingVaultMatches.length !== 1 ? 's' : ''} from Vault
+                      [{existingVaultMatches.length}] document{existingVaultMatches.length !== 1 ? 's' : ''} repeated from the vault
                     </span>
-                  </button>
+                  </div>
                 )}
                 {/* Uploaded files (pending) */}
                 {selectedFiles.map((file, index) => (

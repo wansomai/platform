@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   DropdownMenu,
@@ -53,6 +53,7 @@ import {
   Globe,
   EyeOff,
   UserPlus,
+  AlertTriangle,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
@@ -145,6 +146,11 @@ export default function VaultPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
+  const [deleteImpact, setDeleteImpact] = useState<{
+    associateCount: number;
+    associates: Array<{ id: string; name: string }>;
+  } | null>(null);
+  const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<string | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [previewDocument, setPreviewDocument] = useState<{ title: string; fileUrl: string; fileType: string } | null>(null);
@@ -268,15 +274,38 @@ export default function VaultPage() {
     if (!documentToDelete) return;
     
     try {
-      const success = await deleteDocument(documentToDelete.id);
-      if (success) {
+      const result = await deleteDocument(documentToDelete.id);
+      if (result.success) {
         setShowDeleteDialog(false);
         setDocumentToDelete(null);
+        setDeleteImpact(null);
+        setShowHardDeleteDialog(false);
+        return;
+      }
+      if (result.requiresForce && result.details) {
+        setDeleteImpact(result.details);
+        setShowHardDeleteDialog(true);
+        setShowDeleteDialog(false);
       }
     } catch (error) {
       // Delete error occurred
     }
   };
+
+  const handleHardDeleteDocument = async () => {
+    if (!documentToDelete) return;
+    const result = await deleteDocument(documentToDelete.id, { force: true });
+    if (result.success) {
+      setShowHardDeleteDialog(false);
+      setDeleteImpact(null);
+      setDocumentToDelete(null);
+    }
+  };
+
+  const associatedNames = useMemo(
+    () => deleteImpact?.associates?.map((a) => a.name).filter(Boolean) ?? [],
+    [deleteImpact]
+  );
   
   // Handle bulk document deletion
   const handleBulkDelete = async () => {
@@ -287,7 +316,9 @@ export default function VaultPage() {
       const deletePromises = selectedDocuments.map(id => storeDeleteDocument(id));
       const results = await Promise.allSettled(deletePromises);
 
-      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const successful = results.filter(
+        (r) => r.status === 'fulfilled' && r.value.success
+      ).length;
       const failed = results.length - successful;
 
       if (successful > 0) {
@@ -1128,13 +1159,94 @@ export default function VaultPage() {
       
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
-        open={!!documentToDelete}
-        onOpenChange={(open) => !open && setDocumentToDelete(null)}
+        open={!!documentToDelete && !showHardDeleteDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDocumentToDelete(null);
+            setDeleteImpact(null);
+            setShowHardDeleteDialog(false);
+          }
+        }}
         onConfirm={handleDeleteDocument}
         itemName={documentToDelete?.name}
         itemType="document"
         isLoading={isProcessing}
       />
+
+      <Dialog
+        open={showHardDeleteDialog}
+        onOpenChange={(open) => {
+          setShowHardDeleteDialog(open);
+          if (!open) {
+            setDeleteImpact(null);
+            setDocumentToDelete(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              Document Bound to Associates
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              <span className="block text-foreground font-medium">
+                This document is attached to {deleteImpact?.associateCount ?? 0} associate(s).
+              </span>
+              <span className="block mt-2">
+                If you hard delete this document, it will be removed from those associates&apos;
+                knowledge bases and the document-derived reasoning context will be lost.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          {associatedNames.length > 0 && (
+            <div className="rounded-md border bg-muted/30 p-3">
+              <p className="text-sm font-medium mb-2">Bound associates:</p>
+              <div className="flex flex-wrap gap-2">
+                {associatedNames.map((name) => (
+                  <span
+                    key={name}
+                    className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-900"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="sm:justify-between gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowHardDeleteDialog(false);
+                router.push('/workflows');
+              }}
+            >
+              Update Associate Instead
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowHardDeleteDialog(false);
+                  setDeleteImpact(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleHardDeleteDocument}
+                disabled={isProcessing}
+              >
+                Hard Delete Document
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Bulk Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
