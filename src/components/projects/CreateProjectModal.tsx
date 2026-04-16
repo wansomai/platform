@@ -132,14 +132,14 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         <div className="grid gap-4 py-4">
           <div className="space-y-1">
             <Label htmlFor="title" className="text-right">
-              Name
+              Name of Project
             </Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
               className="col-span-3"
-              placeholder="Enter name for the workspace"
+              placeholder="Enter name for the workspace (e.g. Client Name - Matter Name)"
               required
             />
           </div>

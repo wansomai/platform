@@ -270,10 +270,12 @@ export const DraftPlus = ({ title, subtitle }: { title?: string; subtitle?: stri
   // Common drafting prompts
   const draftingPrompts = [
     "Draft a mutual NDA for partnership discussions",
+    "Draft legal submissions for court hearing",
+    "Draft a demand letter for unpaid invoices",
+    "Draft an affidavit for a witness statement",
     "Draft an independent contractor agreement",
-    "Draft an Advisor Agreement for the UK",
     "Create a sales contract for goods",
-    "Draft a SAFE agreement to raise $250k from an angel investor",
+    "Draft a pleading for a civil lawsuit",
     "Draft a SaaS license for my first enterprise client",
   ];
 
