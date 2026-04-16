@@ -20,9 +20,17 @@ export const POST = withErrorHandler(
       );
     }
 
-    // Parse planType from body — default to 'personal'
+    // Parse planType and optional seatCount from body
     const body = await request.json().catch(() => ({}));
     const planType: 'personal' | 'teams' = body.planType === 'teams' ? 'teams' : 'personal';
+    const seatCount: number = planType === 'teams' && typeof body.seatCount === 'number' && body.seatCount >= 1
+      ? Math.floor(body.seatCount)
+      : 1;
+    const firmName = typeof body.firmName === 'string' ? body.firmName.trim() : '';
+
+    if (planType === 'teams' && !firmName) {
+      return createBadRequestResponse('Firm name is required for Team Plan payment');
+    }
 
     // Detect user country for localized pricing
     const countryCode = (
@@ -62,6 +70,17 @@ export const POST = withErrorHandler(
       return createErrorResponse(new AppError('Only organization owners can upgrade', 'FORBIDDEN', 403));
     }
 
+    // Persist firm name and team size on the organization if provided
+    if (firmName || (planType === 'teams' && seatCount >= 1)) {
+      const orgUpdate: Record<string, any> = {};
+      if (firmName) orgUpdate.name = firmName;
+      if (planType === 'teams') orgUpdate.firmSize = String(seatCount);
+      await prisma.organization.update({
+        where: { id: user.organization.id },
+        data: orgUpdate,
+      });
+    }
+
     // Check for an existing active subscription
     const existingSubscription = await prisma.subscription.findUnique({
       where: { organizationId: user.organization.id },
@@ -94,10 +113,12 @@ export const POST = withErrorHandler(
       organizationId: user.organization.id,
       organizationName: user.organization.name,
       planType,
+      seatCount,
       custom_fields: [
         { display_name: 'Organization', variable_name: 'organization_name', value: user.organization.name },
         { display_name: 'User',         variable_name: 'user_name',         value: user.fullName || user.email },
         { display_name: 'Plan Type',    variable_name: 'plan_type',         value: planType },
+        { display_name: 'Seats',        variable_name: 'seat_count',        value: String(seatCount) },
       ],
     };
 
@@ -147,7 +168,8 @@ export const POST = withErrorHandler(
 
     if (localPricing) {
       // ── Try local currency first ───────────────────────────────────────────
-      const amount = planType === 'teams' ? localPricing.teams : localPricing.personal;
+      const perSeatAmount = planType === 'teams' ? localPricing.teams : localPricing.personal;
+      const amount = planType === 'teams' ? perSeatAmount * seatCount : perSeatAmount;
 
       const localBody: Record<string, any> = {
         email: user.email,

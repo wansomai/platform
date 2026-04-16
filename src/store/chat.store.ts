@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import { apiService } from '@/lib/api'
 import { Message, Conversation } from '@/types/conversations';
 import { useCanvasStore } from '@/store/canvas.store';
+import { useProjectStore } from '@/store/project.store';
 
 interface ChatState {
   conversations: Conversation[];
@@ -296,6 +297,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument, currentCanvasHtml, attachedDocuments: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> | undefined = undefined) => {
+    const isFirstMessage = !get().currentConversation?.messages?.length;
+
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {
       id: tempId,
@@ -481,6 +484,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
               });
               break;
 
+            case 'title_update':
+              get().updateConversation(data.conversationId, { title: data.title });
+              if (data.projectId) {
+                const projectStore = useProjectStore.getState();
+                const existing = projectStore.getProjectById(data.projectId);
+                if (existing) {
+                  projectStore.updateProject({ ...existing, title: data.title });
+                }
+              }
+              break;
+
             case 'error':
               // Update the streaming message to show the error
               get().updateStreamingMessage(streamingId, {
@@ -512,6 +526,32 @@ export const useChatStore = create<ChatState>((set, get) => ({
           }
         }
       );
+
+      // After stream completes, poll for auto-generated title on first message
+      if (isFirstMessage) {
+        const pollForTitle = async () => {
+          for (let attempt = 0; attempt < 5; attempt++) {
+            await new Promise(r => setTimeout(r, 2000));
+            try {
+              const res = await apiService.get<{ data: { title?: string } }>(
+                `/api/projects/${projectId}/conversations/${conversationId}/title`
+              );
+              const newTitle = res.data?.title;
+              const currentTitle = get().currentConversation?.title;
+              if (newTitle && newTitle !== currentTitle) {
+                get().updateConversation(conversationId, { title: newTitle });
+                const projectStore = useProjectStore.getState();
+                const existing = projectStore.getProjectById(projectId);
+                if (existing) {
+                  projectStore.updateProject({ ...existing, title: newTitle });
+                }
+                return;
+              }
+            } catch { /* retry */ }
+          }
+        };
+        pollForTitle().catch(() => {});
+      }
 
     } catch (error: any) {
       // Error message already displayed in the streaming message

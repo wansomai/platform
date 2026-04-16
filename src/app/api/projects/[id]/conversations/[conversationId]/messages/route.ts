@@ -100,6 +100,59 @@ Respond with ONLY one word: edit, draft_new, or research`;
 // Initialize Gemini with the new API
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
+/**
+ * Fire-and-forget title generation. Runs after the stream is closed so
+ * it never blocks the user from interacting with the workspace.
+ */
+async function generateAndApplyTitle(
+  userMessage: string,
+  conversationId: string,
+  projectId: string,
+) {
+  const toFallbackTitle = (text: string) => {
+    const cleaned = text
+      .replace(/\s+/g, ' ')
+      .replace(/[^\w\s-]/g, '')
+      .trim();
+    const words = cleaned.split(' ').filter(Boolean).slice(0, 6);
+    const base = words.join(' ').trim();
+    return (base || 'New Workspace').slice(0, 80);
+  };
+
+  let generatedTitle = '';
+  try {
+    const titleResult = await genAI.models.generateContent({
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      contents: [{ role: 'user', parts: [{ text:
+        `Generate a very short title (3-6 words, no quotes) for a legal workspace conversation that starts with this message:\n\n"${userMessage.slice(0, 500)}"\n\nRespond with ONLY the title, nothing else.`
+      }] }],
+      config: { temperature: 0.2, maxOutputTokens: 24 },
+    });
+
+    generatedTitle = (titleResult.text ?? '')
+      .split('\n')[0]
+      .replace(/^["']|["']$/g, '')
+      .trim()
+      .slice(0, 80);
+  } catch (err) {
+    console.error('[auto-title] Model generation failed, using fallback:', err);
+  }
+
+  const finalTitle = generatedTitle || toFallbackTitle(userMessage);
+
+  await Promise.all([
+    prisma.conversation.update({
+      where: { id: conversationId },
+      data: { title: finalTitle },
+    }),
+    prisma.project.update({
+      where: { id: projectId },
+      data: { title: finalTitle },
+    }),
+  ]);
+  console.log(`[auto-title] Set title for project ${projectId}: "${finalTitle}"`);
+}
+
 // Default settings if none exist
 type JurisdictionObject = {
   id?: string;
@@ -689,6 +742,13 @@ export async function POST(
                 }) + '\n'
               )
             );
+
+            // Auto-generate workspace title from first message (non-blocking)
+            if (messageHistory.length === 0) {
+              generateAndApplyTitle(content, conversationId, projectId).catch(
+                (err) => console.error('[auto-title] Failed:', err)
+              );
+            }
 
             return;
           }
@@ -2263,6 +2323,13 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
               }) + '\n'
             )
           );
+
+          // Auto-generate workspace title from first message (non-blocking)
+          if (messageHistory.length === 0) {
+            generateAndApplyTitle(content, conversationId, projectId).catch(
+              (err) => console.error('[auto-title] Failed:', err)
+            );
+          }
         } catch (error) {
           console.error('Error in stream processing:', error);
 

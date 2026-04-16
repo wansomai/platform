@@ -15,12 +15,30 @@ import { PRACTICE_AREA_LABELS } from '@/types/associates';
 
 export const maxDuration = 300;
 
+type DigestLogStage =
+  | 'run_start'
+  | 'auth_ok'
+  | 'auth_fail'
+  | 'subs_loaded'
+  | 'phase1_start'
+  | 'phase1_complete'
+  | 'phase2_start'
+  | 'phase2_complete'
+  | 'run_complete';
+
+function logDigest(runId: string, stage: DigestLogStage, details: Record<string, unknown>) {
+  console.log(`[digest][${runId}][${stage}] ${JSON.stringify(details)}`);
+}
+
 // Phase 1: resolve unique fingerprints (cache read + instant aiSummary build — no Gemini).
 const FINGERPRINT_CONCURRENCY = 15;
 // Phase 2: send emails.
 const EMAIL_CONCURRENCY = 15;
 
 export async function GET(req: NextRequest) {
+  const runId = `${new Date().toISOString()}-${Math.random().toString(36).slice(2, 8)}`;
+  const startedAt = Date.now();
+
   // Verify cron secret (Vercel sends this header for cron jobs)
   const authHeader = req.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
@@ -28,16 +46,35 @@ export async function GET(req: NextRequest) {
   // In production CRON_SECRET is mandatory — block all requests if not configured.
   // In development it is optional (allows local testing without setting the var).
   const isProduction = process.env.NODE_ENV === 'production';
+  const { searchParams } = new URL(req.url);
+  const testEmails = searchParams.get('email')
+    ? searchParams.get('email')!.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
+    : null;
+  const noCache = searchParams.get('nocache') === '1';
+
+  logDigest(runId, 'run_start', {
+    isProduction,
+    hasCronSecret: Boolean(cronSecret),
+    hasAuthHeader: Boolean(authHeader),
+    testMode: Boolean(testEmails),
+    noCache,
+    path: req.nextUrl.pathname,
+    query: req.nextUrl.search,
+  });
+
   if (isProduction && !cronSecret) {
+    logDigest(runId, 'auth_fail', { reason: 'missing_cron_secret_in_production' });
     return createErrorResponse(
       new AppError('CRON_SECRET is not configured', 'AUTH_REQUIRED', 401)
     );
   }
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    logDigest(runId, 'auth_fail', { reason: 'authorization_header_mismatch' });
     return createErrorResponse(
       new AppError('Unauthorized', 'AUTH_REQUIRED', 401)
     );
   }
+  logDigest(runId, 'auth_ok', { mode: cronSecret ? 'secured' : 'dev_unsecured' });
 
   const now = new Date();
   const isMonday = now.getUTCDay() === 1;
@@ -45,12 +82,6 @@ export async function GET(req: NextRequest) {
   // ?email=a@b.com,c@d.com  — restrict run to specific addresses (dev/testing only).
   // The idempotency gate is bypassed for these addresses so you can re-test freely.
   // ?nocache=1 — skip the digest cache and force a fresh build (dev/testing only).
-  const { searchParams } = new URL(req.url);
-  const testEmails = searchParams.get('email')
-    ? searchParams.get('email')!.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
-    : null;
-  const noCache = searchParams.get('nocache') === '1';
-
   if (testEmails) {
     console.log(`[digest] TEST MODE — limiting run to: ${testEmails.join(', ')}`);
   }
@@ -93,6 +124,15 @@ export async function GET(req: NextRequest) {
   if (alreadySent > 0) {
     console.log(`[digest] Skipping ${alreadySent} subscriber(s) already sent today`);
   }
+  logDigest(runId, 'subs_loaded', {
+    weekdayUtc: now.getUTCDay(),
+    isMonday,
+    frequencyFilter,
+    totalEligible,
+    fetchedSubscriptions: subscriptions.length,
+    alreadySent,
+    testMode: Boolean(testEmails),
+  });
 
   // Deduplicate by email — keep the most recently updated subscription per address.
   // A user in multiple organizations can have one DigestSubscription per org; we
@@ -111,6 +151,14 @@ export async function GET(req: NextRequest) {
   }
 
   if (dedupedSubscriptions.length === 0) {
+    logDigest(runId, 'run_complete', {
+      outcome: alreadySent > 0 ? 'all_skipped_already_sent' : 'no_active_subscriptions',
+      sent: 0,
+      failed: 0,
+      skipped: alreadySent,
+      totalEligible,
+      elapsedMs: Date.now() - startedAt,
+    });
     return createApiResponse(
       { sent: 0, failed: 0, skipped: alreadySent, total: totalEligible },
       alreadySent > 0 ? 'All eligible subscribers already sent today' : 'No active subscriptions',
@@ -141,6 +189,10 @@ export async function GET(req: NextRequest) {
   ];
 
   console.log(`[digest] Phase 1: resolving ${uniqueFingerprints.length} unique fingerprint(s) for ${subsWithMeta.length} subscriber(s)`);
+  logDigest(runId, 'phase1_start', {
+    subscriberCount: subsWithMeta.length,
+    uniqueFingerprints: uniqueFingerprints.length,
+  });
 
   const digestMap = new Map<string, DigestContent>();
 
@@ -177,12 +229,20 @@ export async function GET(req: NextRequest) {
   }
 
   console.log(`[digest] Phase 1 complete: ${digestMap.size} digest(s) resolved. Starting Phase 2: sending ${subsWithMeta.length} email(s)`);
+  logDigest(runId, 'phase1_complete', {
+    resolvedDigests: digestMap.size,
+    expectedEmails: subsWithMeta.length,
+  });
+  logDigest(runId, 'phase2_start', { expectedEmails: subsWithMeta.length, emailConcurrency: EMAIL_CONCURRENCY });
 
   // ── Phase 2: Send all emails at high concurrency ───────────────────────────
   // All digests are resolved — no Gemini calls here. Pure email I/O.
 
   let sent = 0;
   let failed = 0;
+  let missingDigest = 0;
+  let sendRejected = 0;
+  let sendException = 0;
 
   for (let i = 0; i < subsWithMeta.length; i += EMAIL_CONCURRENCY) {
     const batch = subsWithMeta.slice(i, i + EMAIL_CONCURRENCY);
@@ -192,6 +252,7 @@ export async function GET(req: NextRequest) {
         const digest = digestMap.get(sub.fingerprint);
         if (!digest) {
           console.error(`[digest] No resolved digest for ${sub.user.email} (fingerprint: ${sub.fingerprint.slice(0, 60)}) — skipping`);
+          missingDigest++;
           return 'failed';
         }
 
@@ -220,6 +281,7 @@ export async function GET(req: NextRequest) {
           return 'sent';
         } else {
           console.error(`[digest] Failed to send digest email (phase=send, email=${sub.user.email}, subscriptionId=${sub.id}, fingerprint=${sub.fingerprint.slice(0, 60)}):`, result.error);
+          sendRejected++;
           return 'failed';
         }
       })
@@ -231,11 +293,29 @@ export async function GET(req: NextRequest) {
       } else {
         if (result.status === 'rejected') {
           console.error('[digest] Unexpected error in send batch (phase=batch-send):', result.reason);
+          sendException++;
         }
         failed++;
       }
     }
   }
+
+  logDigest(runId, 'phase2_complete', {
+    sent,
+    failed,
+    missingDigest,
+    sendRejected,
+    sendException,
+  });
+  logDigest(runId, 'run_complete', {
+    outcome: failed > 0 ? 'partial_or_full_failure' : 'success',
+    sent,
+    failed,
+    skipped: alreadySent,
+    deduped: dedupedCount,
+    totalEligible,
+    elapsedMs: Date.now() - startedAt,
+  });
 
   return createApiResponse(
     { sent, failed, skipped: alreadySent, deduped: dedupedCount, total: totalEligible },
