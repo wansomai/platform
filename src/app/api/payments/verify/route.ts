@@ -147,10 +147,13 @@ async function processPayment(transaction: any, organizationId: string, referenc
     );
   }
 
-  // Read planType and payment mode from metadata
+  // Read planType, seatCount, and payment mode from metadata
   const metadata = transaction.metadata || {};
   const planType: 'personal' | 'teams' = metadata.planType === 'teams' ? 'teams' : 'personal';
   const isDirectPayment: boolean = metadata.isDirectPayment === true;
+  const metadataSeatCount: number = typeof metadata.seatCount === 'number' && metadata.seatCount >= 1
+    ? metadata.seatCount
+    : 1;
 
   // For direct payments there is no Paystack plan object — use sensible defaults.
   // For plan-based payments, read plan details from the transaction as before.
@@ -200,9 +203,14 @@ async function processPayment(transaction: any, organizationId: string, referenc
     // regardless of plan type (personal or teams).
     const planTypeFields = {
       planType,
-      seatCount: 1,
+      seatCount: planType === 'teams' ? metadataSeatCount : 1,
       ...(paystackAuthCode ? { paystackAuthCode } : {}),
     };
+
+    // Per-seat price for storage (renewal cron multiplies by seatCount)
+    const storedPlanPrice = planType === 'teams' && metadataSeatCount > 1
+      ? String(transaction.amount / 100 / metadataSeatCount)
+      : String(transaction.amount / 100);
 
     // Create or update subscription
     const sub = await tx.subscription.upsert({
@@ -210,7 +218,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
       create: {
         organizationId,
         planName: planName,
-        planPrice: String(transaction.amount / 100),
+        planPrice: storedPlanPrice,
         billingCycle: planInterval,
         status: 'active',
         paystackCustomerId: transaction.customer?.customer_code || null,
@@ -221,7 +229,7 @@ async function processPayment(transaction: any, organizationId: string, referenc
       },
       update: {
         planName: planName,
-        planPrice: String(transaction.amount / 100),
+        planPrice: storedPlanPrice,
         billingCycle: planInterval,
         status: 'active',
         paystackCustomerId: transaction.customer?.customer_code || null,
