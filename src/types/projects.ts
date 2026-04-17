@@ -71,6 +71,7 @@ export interface ProjectSettings {
   googleCalendar?: boolean;
   gmail?: boolean;
   aiAssociates?: boolean;
+  notifyOnResearchComplete?: boolean;
   model?: string;
   temperature?: number;
   // Support both single jurisdiction (legacy) and multiple jurisdictions

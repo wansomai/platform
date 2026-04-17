@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { Search, Check, Globe, Loader2 } from 'lucide-react';
+import { Search, Globe, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { apiService } from '@/lib/api';
 import { useNotifications } from '@/hooks/useNotifications';
@@ -53,7 +54,7 @@ function SkeletonRows() {
             <div className="h-3.5 bg-muted rounded w-28" />
             <div className="h-3 bg-muted rounded w-44" />
           </div>
-          <div className="h-5 w-5 rounded border-2 border-muted shrink-0" />
+          <div className="h-4 w-4 rounded bg-muted shrink-0" />
         </div>
       ))}
     </>
@@ -85,7 +86,6 @@ export function FolderPermissionModal({
     setSearch('');
     try {
       const res = await apiService.get(`/api/folders/${folderId}/permissions`) as any;
-      // API returns { status, message, data: { ... } } — unwrap the nested data
       const data = res.data?.data ?? res.data;
 
       setIsOwner(data?.isCreator ?? false);
@@ -101,7 +101,6 @@ export function FolderPermissionModal({
         setSelectedIds(new Set(members.map((m: OrgMember) => m.id)));
       } else {
         setEveryoneSelected(false);
-        // Permitted users excluding the creator (always implicit)
         const permitted: string[] = (data?.permittedUsers ?? [])
           .map((p: any) => p.id)
           .filter((id: string) => id !== data?.currentUserId);
@@ -120,7 +119,7 @@ export function FolderPermissionModal({
 
   const toggle = (id: string) => {
     if (!isOwner) return;
-    if (id === currentUserId) return; // creator always selected
+    if (id === currentUserId) return;
 
     if (id === EVERYONE_ID) {
       if (everyoneSelected) {
@@ -186,7 +185,7 @@ export function FolderPermissionModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-sm p-0 gap-0 overflow-hidden">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm p-0 gap-0 overflow-hidden">
         <DialogHeader className="px-5 pt-5 pb-4 border-b">
           <DialogTitle className="text-sm font-semibold text-muted-foreground truncate">
             Share folder
@@ -196,7 +195,7 @@ export function FolderPermissionModal({
           </p>
         </DialogHeader>
 
-        {/* Search — always visible, disabled while loading */}
+        {/* Search */}
         <div className="px-4 py-3 border-b">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -212,17 +211,18 @@ export function FolderPermissionModal({
         </div>
 
         {/* Member list */}
-        <div className="max-h-72 overflow-y-auto divide-y">
+        <div className="max-h-[min(18rem,50vh)] overflow-y-auto divide-y">
           {loading ? (
             <SkeletonRows />
           ) : (
             <>
               {/* Everyone row */}
               {showEveryone && (
-                <button
-                  type="button"
-                  disabled={!isOwner}
-                  onClick={() => toggle(EVERYONE_ID)}
+                <div
+                  role={isOwner ? 'button' : undefined}
+                  tabIndex={isOwner ? 0 : undefined}
+                  onClick={() => isOwner && toggle(EVERYONE_ID)}
+                  onKeyDown={(e) => { if (isOwner && (e.key === 'Enter' || e.key === ' ')) toggle(EVERYONE_ID); }}
                   className={cn(
                     'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
                     isOwner ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
@@ -236,17 +236,14 @@ export function FolderPermissionModal({
                     <p className="text-sm font-medium">Everyone in organization</p>
                     <p className="text-xs text-muted-foreground">All current and future members</p>
                   </div>
-                  <div
-                    className={cn(
-                      'flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors',
-                      everyoneSelected
-                        ? 'bg-primary border-primary text-primary-foreground'
-                        : 'border-muted-foreground/30'
-                    )}
-                  >
-                    {everyoneSelected && <Check className="h-3 w-3" />}
-                  </div>
-                </button>
+                  <Checkbox
+                    checked={everyoneSelected}
+                    disabled={!isOwner}
+                    onCheckedChange={() => toggle(EVERYONE_ID)}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label="Share with everyone"
+                  />
+                </div>
               )}
 
               {/* No results */}
@@ -260,15 +257,17 @@ export function FolderPermissionModal({
               {filtered.map((member) => {
                 const isOwnerRow = member.id === currentUserId;
                 const isChecked = isOwnerRow || selectedIds.has(member.id);
+                const canToggle = isOwner && !isOwnerRow;
                 return (
-                  <button
+                  <div
                     key={member.id}
-                    type="button"
-                    disabled={!isOwner || isOwnerRow}
-                    onClick={() => toggle(member.id)}
+                    role={canToggle ? 'button' : undefined}
+                    tabIndex={canToggle ? 0 : undefined}
+                    onClick={() => canToggle && toggle(member.id)}
+                    onKeyDown={(e) => { if (canToggle && (e.key === 'Enter' || e.key === ' ')) toggle(member.id); }}
                     className={cn(
                       'flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors',
-                      isOwner && !isOwnerRow ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
+                      canToggle ? 'hover:bg-muted/50 cursor-pointer' : 'cursor-default',
                       isChecked && !isOwnerRow && 'bg-primary/5'
                     )}
                   >
@@ -282,17 +281,14 @@ export function FolderPermissionModal({
                       </p>
                       <p className="text-xs text-muted-foreground truncate">{member.email}</p>
                     </div>
-                    <div
-                      className={cn(
-                        'flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors',
-                        isChecked
-                          ? 'bg-primary border-primary text-primary-foreground'
-                          : 'border-muted-foreground/30'
-                      )}
-                    >
-                      {isChecked && <Check className="h-3 w-3" />}
-                    </div>
-                  </button>
+                    <Checkbox
+                      checked={isChecked}
+                      disabled={!isOwner || isOwnerRow}
+                      onCheckedChange={() => canToggle && toggle(member.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`Share with ${member.name}`}
+                    />
+                  </div>
                 );
               })}
             </>
@@ -308,8 +304,9 @@ export function FolderPermissionModal({
           <Button variant="outline" size="sm" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          {!loading && isOwner && (
-            <Button size="sm" onClick={handleSave} disabled={saving}>
+          {/* Always rendered — disabled when not the owner so it is always visible */}
+          {!loading && (
+            <Button size="sm" onClick={handleSave} disabled={saving || !isOwner}>
               {saving && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
               Done
             </Button>

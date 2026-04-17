@@ -513,6 +513,14 @@ exports.Prisma.AIAssociateScalarFieldEnum = {
   practiceAreas: 'practiceAreas'
 };
 
+exports.Prisma.AIAssociateShareScalarFieldEnum = {
+  id: 'id',
+  associateId: 'associateId',
+  userId: 'userId',
+  grantedById: 'grantedById',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AssociateStepScalarFieldEnum = {
   id: 'id',
   associateId: 'associateId',
@@ -763,6 +771,7 @@ exports.Prisma.ModelName = {
   SharedWorkspace: 'SharedWorkspace',
   SharedWorkspaceAccess: 'SharedWorkspaceAccess',
   AIAssociate: 'AIAssociate',
+  AIAssociateShare: 'AIAssociateShare',
   AssociateStep: 'AssociateStep',
   AssociateTool: 'AssociateTool',
   ProjectAssociate: 'ProjectAssociate',

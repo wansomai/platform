@@ -15,6 +15,7 @@ const DEFAULT_SETTINGS = {
   googleCalendar: false,
   gmail: false,
   aiAssociates: true,
+  notifyOnResearchComplete: false,
   model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
   temperature: 0.5,
   jurisdiction: undefined
@@ -107,6 +108,7 @@ export const PUT = withErrorHandler(withAuth(async (
     googleCalendar: typeof settings.googleCalendar === 'boolean' ? settings.googleCalendar : DEFAULT_SETTINGS.googleCalendar,
     gmail: typeof settings.gmail === 'boolean' ? settings.gmail : DEFAULT_SETTINGS.gmail,
     aiAssociates: typeof settings.aiAssociates === 'boolean' ? settings.aiAssociates : DEFAULT_SETTINGS.aiAssociates,
+    notifyOnResearchComplete: typeof settings.notifyOnResearchComplete === 'boolean' ? settings.notifyOnResearchComplete : DEFAULT_SETTINGS.notifyOnResearchComplete,
     model: typeof settings.model === 'string' ? settings.model : DEFAULT_SETTINGS.model,
     temperature: typeof settings.temperature === 'number' ? settings.temperature : DEFAULT_SETTINGS.temperature,
     // Support both singular jurisdiction and plural jurisdictions (from UI)

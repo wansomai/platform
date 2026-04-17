@@ -6,6 +6,10 @@ import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 import { processKBDocuments } from "@/services/kbSummaryService";
 import { z } from "zod";
 
+// Allow up to 120 s — processKBDocuments makes multiple Gemini API calls
+// (summary + rules per document) that can take 30-60 s for larger KB sets.
+export const maxDuration = 120;
+
 // Validation schema for creating associates
 const createAssociateSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name too long"),
@@ -35,12 +39,22 @@ export const GET = withErrorHandler(withAuth(async (
       );
     }
 
+    // Associates are user-level by default: only the creator sees them.
+    // Other organization members can access an associate only when it has been
+    // explicitly shared with them via AIAssociateShare.
     const associates = await prisma.aIAssociate.findMany({
-      where: { organizationId: currentOrgId },
+      where: {
+        organizationId: currentOrgId,
+        OR: [
+          { createdById: userId },
+          { sharedWith: { some: { userId } } }
+        ]
+      },
       include: {
         steps: { orderBy: { stepOrder: 'asc' } },
-        createdBy: { select: { fullName: true, email: true } },
-        _count: { select: { projects: true } }
+        createdBy: { select: { id: true, fullName: true, email: true } },
+        sharedWith: { select: { userId: true } },
+        _count: { select: { projects: true, sharedWith: true } }
       },
       orderBy: { createdAt: 'desc' }
     });

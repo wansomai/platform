@@ -32,9 +32,28 @@ export async function GET(request: NextRequest) {
     const folderId = searchParams.get('folder') || undefined;
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100);
     const page = parseInt(searchParams.get('page') || '1');
-    
-    // ✅ Use helper to get active organization ID (supports org switching)
-    const organizationId = await getActiveOrganizationId(userId);
+    // Optional org override — used when a user is editing an AI associate from
+    // a different active organization than the one the associate lives in.
+    // We still require the user to actually be a member of that org.
+    const orgOverride = searchParams.get('organizationId') || undefined;
+
+    let organizationId: string;
+    if (orgOverride) {
+      const membership = await prisma.userOrganization.findUnique({
+        where: { userId_organizationId: { userId, organizationId: orgOverride } },
+        select: { userId: true }
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { message: 'You are not a member of the requested organization', error: true },
+          { status: 403 }
+        );
+      }
+      organizationId = orgOverride;
+    } else {
+      // ✅ Use helper to get active organization ID (supports org switching)
+      organizationId = await getActiveOrganizationId(userId);
+    }
 
     // Build base query filters
     const where: any = {
@@ -72,14 +91,19 @@ export async function GET(request: NextRequest) {
     // A user can see a document if:
     //   1. They uploaded it (created_by === userId), OR
     //   2. Its visibility is 'organization' (visible to all org members), OR
-    //   3. Its visibility is 'restricted' and they have an explicit DocumentPermission row.
+    //   3. Its visibility is 'restricted' and they have an explicit
+    //      DocumentPermission row (e.g. granted when the owner shared an
+    //      AI associate whose knowledge base includes this document).
     // For folder-scoped requests we also verify the user can access that folder.
 
     const isFolderRequest = Boolean(folderId && folderId !== 'root');
 
     // --- Access enforcement ---
     //
-    // Root view: show only documents the user uploaded.
+    // Root view: show documents the user uploaded OR documents explicitly
+    // shared with the user (via DocumentPermission). Sharing happens either
+    // directly on the document or indirectly via an AI associate whose KB
+    // includes the document.
     //
     // Folder view: if the user can access the folder (owns it, has been
     // granted explicit permission, or the folder is org-wide), they can
@@ -118,8 +142,14 @@ export async function GET(request: NextRequest) {
       // Folder accessible — no per-document filter needed; show everything in the folder
       ownershipFilter = null;
     } else {
-      // Root / all-documents view — only documents the user uploaded
-      ownershipFilter = { created_by: userId };
+      // Root / all-documents view — documents the user uploaded, plus documents
+      // shared with them (e.g. KB documents cascade-shared via an associate).
+      ownershipFilter = {
+        OR: [
+          { created_by: userId },
+          { permissions: { some: { userId } } }
+        ]
+      };
     }
 
     if (ownershipFilter) {
@@ -284,14 +314,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get user's active organization (supports org switching) and name
-    const [organizationId, user] = await Promise.all([
-      getActiveOrganizationId(userId),
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { fullName: true }
-      })
-    ]);
+    // Load the user first — the active-org fallback is only used if the client
+    // does not explicitly override the target organization (see below).
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { fullName: true }
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -307,6 +335,27 @@ export async function POST(request: NextRequest) {
     const folderId = formData.get('folderId') as string || null;
     // Optional custom title supplied by the client (e.g. after rename-on-conflict)
     const customTitle = (formData.get('title') as string | null)?.trim() || null;
+    // Optional org override — used when uploading a KB document from an associate
+    // owned in a different organization than the user's currently-active one.
+    // Membership is verified before the upload proceeds.
+    const orgOverride = (formData.get('organizationId') as string | null)?.trim() || null;
+
+    let organizationId: string;
+    if (orgOverride) {
+      const membership = await prisma.userOrganization.findUnique({
+        where: { userId_organizationId: { userId, organizationId: orgOverride } },
+        select: { userId: true }
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { message: 'You are not a member of the requested organization', error: true },
+          { status: 403 }
+        );
+      }
+      organizationId = orgOverride;
+    } else {
+      organizationId = await getActiveOrganizationId(userId);
+    }
 
     // Validate file
     if (!file) {
@@ -354,12 +403,18 @@ export async function POST(request: NextRequest) {
     const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
     const documentTitle = customTitle || fileBaseName;
 
-    // Check for title conflict scoped to the target folder (or root when no folder)
+    // Check for title conflict scoped to this user's documents in the target folder
+    // (or root when no folder). Only active documents are considered — soft-deleted
+    // or abandoned records must not permanently block re-uploads of the same file.
+    // The check is intentionally user-scoped (not org-wide) so that two different
+    // org members can each have a document with the same name.
     const titleConflict = await prisma.document.findFirst({
       where: {
         organization_id: organizationId,
+        created_by: userId,
         title: { equals: documentTitle, mode: 'insensitive' },
-        folderId: folderId || null
+        folderId: folderId || null,
+        status: 'active',
       },
       select: { id: true }
     });
@@ -374,17 +429,19 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const fileExt = file.name.split('.').pop() || '';
     const fileName = `${organizationId}/${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-    
+
     // Get file buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
-    
-    // Upload to storage service
+
+    // Upload to storage service — do this BEFORE creating the DB record so that
+    // a timeout or dropped connection during blob upload or text extraction never
+    // leaves a zombie Document row that blocks future retries with a 409.
     const fileUrl = await blobStorageService.uploadFile(
       fileBuffer,
       fileName,
       file.type
     );
-    
+
     // Extract text content from the file buffer.
     // We mark contentExtracted=true as long as extraction was ATTEMPTED for a
     // supported file type — there is no background job running after this response
@@ -405,7 +462,7 @@ export async function POST(request: NextRequest) {
       'image/bmp',
       'image/webp',
     ]);
-    let contentExtracted = SUPPORTED_MIME_TYPES_FOR_EXTRACTION.has(file.type);
+    const extractionAttempted = SUPPORTED_MIME_TYPES_FOR_EXTRACTION.has(file.type);
     let extractedText = '';
 
     try {
@@ -415,7 +472,10 @@ export async function POST(request: NextRequest) {
       // Continue without extracted text — on-demand extraction will run at chat time
     }
 
-    // Create document record in database
+    // All async work is done — now create the DB record.
+    // Setting content_extracted correctly here means the vault never shows a
+    // misleading "processing" spinner for an upload that is already complete.
+    const extractionComplete = extractionAttempted && extractedText.trim().length > 0;
     const document = await prisma.document.create({
       data: {
         title: documentTitle,
@@ -438,10 +498,9 @@ export async function POST(request: NextRequest) {
           }),
           Valid: true
         },
-        content_extracted: {
-          Bool: false,
-          Valid: true
-        }
+        content_extracted: extractionAttempted
+          ? { Bool: extractionComplete, Valid: true }
+          : Prisma.JsonNull,
       },
       include: {
         createdByUser: {
@@ -452,9 +511,9 @@ export async function POST(request: NextRequest) {
         }
       }
     });
-    
+
     // If text was extracted, store it (only when non-empty)
-    if (extractedText && extractedText.trim().length > 0) {
+    if (extractionComplete) {
       try {
         await prisma.documentContent.create({
           data: {
@@ -463,7 +522,7 @@ export async function POST(request: NextRequest) {
           }
         });
       } catch (err) {
-        console.error('Background text extraction failed for document', document.id, err);
+        console.error('Failed to store extracted text for document', document.id, err);
         // Reset flag to null so the vault doesn't show the spinner forever
         try {
           await prisma.document.update({
@@ -486,7 +545,7 @@ export async function POST(request: NextRequest) {
       createdById: document.created_by,
       createdAt: document.created_at.toISOString(),
       updatedAt: document.updated_at.toISOString(),
-      contentExtracted: false,  // Extraction runs after response; vault polls for completion
+      contentExtracted: extractionComplete,
       visibility: 'private'
     };
     

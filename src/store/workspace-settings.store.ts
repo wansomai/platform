@@ -28,6 +28,7 @@ const DEFAULT_SETTINGS: ProjectSettings = {
   webSearch: false,
   canvasMode: false,  // Controls canvas-specific tools (draftNewDocument, editCanvasDocument)
   aiAssociates: true,
+  notifyOnResearchComplete: false,
   model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
   temperature: 0.3,
   jurisdiction: undefined

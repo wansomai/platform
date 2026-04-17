@@ -740,6 +740,36 @@ export function ChatInput({
     }
   };
 
+  // Handle "Notify when research is done" toggle.
+  // Must request browser notification permission from the user gesture (this click),
+  // not from the background stream handler.
+  const handleNotifyToggle = async (checked: boolean) => {
+    if (!currentConversation) return;
+
+    if (checked && typeof window !== "undefined" && "Notification" in window) {
+      if (Notification.permission === "denied") {
+        notify.error(
+          "Notifications are blocked. Enable them in your browser settings to get notified when research finishes."
+        );
+        return;
+      }
+      if (Notification.permission === "default") {
+        try {
+          const result = await Notification.requestPermission();
+          if (result !== "granted") {
+            notify.info("Notifications permission was not granted.");
+            return;
+          }
+        } catch {
+          notify.error("Could not request notification permission.");
+          return;
+        }
+      }
+    }
+
+    await handleSettingChange("notifyOnResearchComplete", checked);
+  };
+
   // Handle multiple jurisdictions change
   const handleJurisdictionsChange = async (jurisdictions: Jurisdiction[]) => {
     // Homepage mode — store locally; will be applied to project on creation
@@ -1229,6 +1259,32 @@ export function ChatInput({
                                   checked
                                 );
                               }
+                          }
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <Label
+                            htmlFor="notify-on-complete"
+                            className="font-medium text-sm"
+                          >
+                            Notify when research is done
+                          </Label>
+                          <p className="text-xs text-gray-500 leading-snug">
+                            Get a browser notification when Wansom finishes answering.
+                          </p>
+                        </div>
+                        <Switch
+                          id="notify-on-complete"
+                          checked={
+                            homepageMode
+                              ? false
+                              : settings.notifyOnResearchComplete || false
+                          }
+                          disabled={homepageMode || isLoadingSettings}
+                          onCheckedChange={
+                            homepageMode ? undefined : handleNotifyToggle
                           }
                         />
                       </div>

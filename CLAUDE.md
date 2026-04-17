@@ -90,7 +90,7 @@ Organization
 
 #### 6. Role-Based Access Control
 - **Organization roles**: `owner` > `admin` > `member`
-- **Project roles**: `owner` > `editor` > `member`
+- **Project roles**: `admin` > `member` > `viewer` (TypeScript: `ProjectMember.role` in `src/types/projects.ts`)
 - Permission checks via `src/lib/auth/permissions.ts` (org/project) and `src/lib/auth/workspace-permissions.ts` (shared workspace)
 - Admin-only routes (`/api/admin/*`) are gated by `src/lib/auth/admin.ts` and `src/lib/auth/admin-middleware.ts`, separate from the standard middleware
 - Enterprise-only features: member invitations, team management
@@ -233,6 +233,14 @@ The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/me
 - The `withAuth`/`withProjectAccess` middleware wrappers cannot be used for streaming routes — use manual `getUserIdFromRequest()` auth instead
 - User message is created in DB **only after** validation passes (Phase 1 checks access, subscription, conversation existence; Phase 2 creates the message and opens the stream)
 
+#### Client-side streaming message pattern
+`chat.store.ts` manages optimistic streaming via a `tempId` lifecycle:
+1. A message is added immediately with a generated `tempId` and `isStreaming: true`
+2. Each chunk updates it: `updateStreamingMessage(tempId, { content: accumulated })`
+3. On `complete`, the temp message is replaced: `finalizeStreamingMessage(tempId, finalMessage)` — sets `isStreaming: false` and clears `tempId`
+
+After finalization, `notifyResearchComplete()` fires a browser push notification **only when** `Notification.permission === 'granted'` AND `document.visibilityState !== 'visible'` AND the `notifyOnResearchComplete` workspace setting (or the `wansom.notifyPromptSeen.v1` localStorage flag) is truthy. Notifications are best-effort and never interrupt the chat flow.
+
 ### Gemini Conversation History Format
 Gemini requires a specific format for `history` — note the differences from standard AI conventions:
 - Role must be `'model'` (not `'assistant'`) for AI turns
@@ -310,6 +318,13 @@ The project workspace page (`(account)/projects/[id]/page.tsx`) renders one of t
 - `DocumentPreviewSplitView` - When a document is selected for preview (`selectedPreviewDocument` in `ui.store`)
 - `CanvasChatSplitView` - When canvas mode is active (`view=canvas` query param, or `canvasMode` setting). `legalDrafting` is a legacy alias for `canvasMode` in workspace settings; both map to the same behavior
 - `ChatInterface` - Default AI chat view
+
+After a successful Google OAuth callback, the page receives `?connection=success|error|cancelled` query params. It auto-enables the relevant setting (`googleCalendar` or `gmail`) via `updateSetting()`, dispatches `window.dispatchEvent(new CustomEvent('googleConnectionSuccess'))` so `ChatInput` can refresh its connection state, then removes the query params via `router.replace`.
+
+### ChatInput Modes
+`ChatInput` (`src/components/chat/ChatInput.tsx`) has two operating modes:
+- **Normal mode** (default): sends messages within an existing project/conversation
+- **Homepage mode** (`homepageMode={true}`): no `projectId` in params; on submit it creates a new workspace first (calls `/api/projects`) then navigates to it. An `onWorkspaceCreated` callback is also available. The `onDocumentsAdded` prop notifies the parent when files are attached.
 
 ### Environment Variables
 See `.env.example` for the full list. Key variables:

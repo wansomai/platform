@@ -1,10 +1,14 @@
 // app/api/associates/[id]/route.ts
+// Allow up to 120 s — GET and PUT both call processKBDocuments which makes
+// multiple Gemini API calls (summary + rules per document).
+export const maxDuration = 120;
+
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { withAuth, withErrorHandler } from "@/lib/api/middleware";
-import { getActiveOrganizationId } from "@/lib/api/org-helpers";
 import { processKBDocuments } from "@/services/kbSummaryService";
 import { loadKBDocumentsWithSummaries } from "@/services/kbSummaryService";
+import { syncAssociateKBDocumentPermissions } from "@/lib/auth/associateSharing";
 import { z } from "zod";
 
 const updateAssociateSchema = z.object({
@@ -23,24 +27,30 @@ const updateAssociateSchema = z.object({
 });
 
 async function checkAssociateAccess(associateId: string, userId: string) {
-  const currentOrgId = await getActiveOrganizationId(userId);
-
-  if (!currentOrgId) {
-    return { authorized: false, associate: null, organizationId: null };
-  }
-
+  // Associates are user-level — the creator (and any user the associate has
+  // been explicitly shared with) can always access it, regardless of which
+  // organization the user is currently switched into. The associate's own
+  // organizationId is the authoritative org for KB / permission operations.
   const associate = await prisma.aIAssociate.findFirst({
     where: {
       id: associateId,
-      organizationId: currentOrgId
+      OR: [
+        { createdById: userId },
+        { sharedWith: { some: { userId } } }
+      ]
     }
   });
 
   if (!associate) {
-    return { authorized: false, associate: null, organizationId: currentOrgId };
+    return { authorized: false, associate: null, organizationId: null, isOwner: false };
   }
 
-  return { authorized: true, associate, organizationId: currentOrgId };
+  return {
+    authorized: true,
+    associate,
+    organizationId: associate.organizationId,
+    isOwner: associate.createdById === userId,
+  };
 }
 
 // GET /api/associates/[id] - Get associate details
@@ -134,12 +144,19 @@ export const PUT = withErrorHandler(withAuth(async (
     const body = await request.json();
     const validatedData = updateAssociateSchema.parse(body);
 
-    const { authorized, associate, organizationId } = await checkAssociateAccess(id, userId);
+    const { authorized, associate, organizationId, isOwner } = await checkAssociateAccess(id, userId);
 
     if (!authorized || !associate || !organizationId) {
       return NextResponse.json(
         { error: 'Associate not found' },
         { status: 404 }
+      );
+    }
+
+    if (!isOwner) {
+      return NextResponse.json(
+        { error: 'Only the associate owner can modify this associate' },
+        { status: 403 }
       );
     }
 
@@ -209,6 +226,36 @@ export const PUT = withErrorHandler(withAuth(async (
       }
     });
 
+    // If the knowledge base changed, propagate document permissions to any user
+    // the associate is already shared with. New KB docs must be readable by them;
+    // docs removed from the KB must have their cascade-granted access revoked.
+    if (validatedData.knowledgeBase) {
+      const [shares, previousKBDocs] = await Promise.all([
+        prisma.aIAssociateShare.findMany({
+          where: { associateId: id },
+          select: { userId: true }
+        }),
+        Promise.resolve(associate.knowledgeBase || [])
+      ]);
+
+      const sharedUserIds = shares.map((s: any) => s.userId);
+
+      if (sharedUserIds.length > 0) {
+        const nextKB = new Set(validatedData.knowledgeBase);
+        const prevKB = new Set(previousKBDocs);
+        const addedDocs = [...nextKB].filter((d) => !prevKB.has(d));
+        const removedDocs = [...prevKB].filter((d) => !nextKB.has(d));
+
+        await syncAssociateKBDocumentPermissions({
+          ownerId: userId,
+          organizationId,
+          addedDocIds: addedDocs,
+          removedDocIds: removedDocs,
+          sharedUserIds,
+        });
+      }
+    }
+
     return NextResponse.json({
       status: 200,
       message: 'Associate updated successfully',
@@ -249,12 +296,19 @@ export const DELETE = withErrorHandler(withAuth(async (
   try {
     const { id } = await params;
     const forceDelete = request.nextUrl.searchParams.get('force') === 'true';
-    const { authorized } = await checkAssociateAccess(id, userId);
+    const { authorized, isOwner } = await checkAssociateAccess(id, userId);
 
     if (!authorized) {
       return NextResponse.json(
         { error: 'Associate not found' },
         { status: 404 }
+      );
+    }
+
+    if (!isOwner) {
+      return NextResponse.json(
+        { error: 'Only the associate owner can delete this associate' },
+        { status: 403 }
       );
     }
 
