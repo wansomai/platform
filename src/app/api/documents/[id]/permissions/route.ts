@@ -19,10 +19,14 @@ export async function GET(
 
     const organizationId = await getActiveOrganizationId(userId);
 
-    // Two parallel queries instead of three:
+    // Parallel queries:
     //  1. Document + its current permissions
-    //  2. Org with members + owner in one shot (avoids JOIN sort in SQL — sorted in JS)
-    const [document, org] = await Promise.all([
+    //  2. Org members + owner (sorted in JS — avoids JOIN sort in SQL)
+    //  3. AI Associates that include this document in their knowledge base.
+    //     We surface this so the UI can warn that sharing is primarily
+    //     controlled by the associate, and that changes may be overwritten
+    //     when the associate's share list is updated.
+    const [document, org, linkedAssociates] = await Promise.all([
       prisma.document.findFirst({
         where: { id: documentId, organization_id: organizationId },
         select: {
@@ -46,7 +50,14 @@ export async function GET(
             }
           }
         }
-      })
+      }),
+      prisma.aIAssociate.findMany({
+        where: {
+          organizationId,
+          knowledgeBase: { has: documentId },
+        },
+        select: { id: true, name: true, createdById: true },
+      }),
     ]);
 
     if (!document) {
@@ -103,7 +114,12 @@ export async function GET(
         isOwner,
         visibility: document.visibility ?? 'private',
         permittedUsers,
-        orgMembers
+        orgMembers,
+        linkedAssociates: linkedAssociates.map((a: any) => ({
+          id: a.id,
+          name: a.name,
+          isOwnedByCurrentUser: a.createdById === userId,
+        })),
       }
     });
   } catch (error) {

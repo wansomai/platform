@@ -161,15 +161,25 @@ export const DELETE = withErrorHandler(
       }),
     ]);
 
-    // Remove the user from the organization
-    await prisma.userOrganization.delete({
-      where: {
-        userId_organizationId: {
+    // Remove the user from the organization. Also revoke any associate shares
+    // that were granted to this user within the org — they would otherwise
+    // remain as orphaned rows that could re-grant access if the user rejoins.
+    await prisma.$transaction([
+      prisma.aIAssociateShare.deleteMany({
+        where: {
           userId: memberId,
-          organizationId: organizationId,
+          associate: { organizationId },
         },
-      },
-    });
+      }),
+      prisma.userOrganization.delete({
+        where: {
+          userId_organizationId: {
+            userId: memberId,
+            organizationId: organizationId,
+          },
+        },
+      }),
+    ]);
 
     // If this was the user's active organization, switch them back to their personal organization
     if (memberUser.activeOrganizationId === organizationId) {

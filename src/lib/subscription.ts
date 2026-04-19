@@ -31,6 +31,13 @@ const PRO_PLAN_LIMITS: SubscriptionLimits = {
   hasProAccess: true,
 };
 
+// Explorer plan — full Pro access for 14 days (same limits as Pro)
+const EXPLORER_PLAN_LIMITS: SubscriptionLimits = {
+  maxProjects: -1,
+  maxMessages: -1,
+  hasProAccess: true,
+};
+
 /**
  * Get user plan information and current usage
  */
@@ -61,10 +68,27 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
       organization?.trialExpiresAt != null &&
       organization.trialExpiresAt > now;
 
+    // Explorer plan: one-time 14-day access, identified by planName and a valid currentPeriodEnd
+    const isExplorerPlan =
+      subscription?.planName === 'explorer' &&
+      subscription?.status === 'active' &&
+      subscription?.currentPeriodEnd != null &&
+      subscription.currentPeriodEnd > now;
+
     const isProPlan = hasActiveSubscription || isEnterpriseAccount || hasActiveTrial;
 
     const planName = isEnterpriseAccount ? 'enterprise' : hasActiveTrial ? 'trial_pro' : (subscription?.planName || 'free');
     const status = isEnterpriseAccount ? 'active' : hasActiveTrial ? 'trial' : (subscription?.status || 'free');
+
+    // Explorer plan takes priority over free but not over pro/trial
+    if (isExplorerPlan && !isProPlan) {
+      return {
+        planName: 'explorer',
+        status: 'explorer',
+        limits: EXPLORER_PLAN_LIMITS,
+        currentUsage: { projectCount: 0, messageCount: 0 },
+      };
+    }
 
     // Pro/Enterprise plans are unlimited — skip the count queries entirely
     if (isProPlan) {
@@ -180,6 +204,6 @@ export async function canUseAssociates(organizationId: string): Promise<{ allowe
 
   return {
     allowed: false,
-    reason: 'AI Associates are a premium feature. Upgrade to Enterprise to use associates in chat.'
+    reason: 'AI Associates are a premium feature. Upgrade to Explorer or Pro to use associates in chat.'
   };
 }

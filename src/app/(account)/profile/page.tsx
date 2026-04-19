@@ -43,7 +43,7 @@ import { useProfile, useTeamManagement, useOrganization, useSubscription, usePro
 import { apiService } from '@/lib/api';
 
 const Page = () => {
-  const { data: session, update: updateSession } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
 
   // Zustand stores
@@ -125,13 +125,14 @@ const Page = () => {
     }
   };
 
-  // Fetch data on mount
+  // Fetch data once the session is confirmed — avoids 401s during session loading
   useEffect(() => {
+    if (status !== 'authenticated') return;
     fetchProfile();
     fetchTeamData();
     fetchOrganizations();
     fetchSubscriptionStatus();
-  }, []);
+  }, [status]);
 
   // Sync fullName and organizationName with profile
   useEffect(() => {
@@ -769,12 +770,6 @@ const Page = () => {
             <ProAccessModal
               isOpen={showProAccess}
               onClose={() => setShowProAccess(false)}
-              errorMessage="You have reached your message limit. Upgrade to send unlimited messages."
-              userData={{
-                name: session?.user?.name || '',
-                email: session?.user?.email || '',
-                accountType: 'personal' // Default to personal, user can change
-              }}
             />
 
       {/* Downgrade/Cancel Confirmation Dialog */}

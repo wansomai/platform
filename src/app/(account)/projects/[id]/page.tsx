@@ -2,7 +2,7 @@
 "use client"
 
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { CanvasChatSplitView } from "@/components/chat/CanvasChatSplitView"
 import { DocumentPreviewSplitView } from "@/components/chat/DocumentPreviewSplitView"
@@ -23,6 +23,7 @@ export default function ProjectPage() {
   const searchParams = useSearchParams()
   const projectId = params.id as string
   const [showMembersModal, setShowMembersModal] = useState(false)
+  const [showNotifyPrompt, setShowNotifyPrompt] = useState(false)
   const { notify } = useNotifications()
 
   // Track if we've already handled the connection notification
@@ -129,6 +130,54 @@ export default function ProjectPage() {
     return () => clearTimeout(timeoutId);
   }, [searchParams, router, notify, projectId, updateSetting, settings]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const key = 'wansom.notifyPromptSeen.v1';
+    const alreadySeen = window.localStorage.getItem(key) === '1';
+    const alreadyEnabled = settings.notifyOnResearchComplete === true;
+    if (alreadyEnabled && !alreadySeen) {
+      window.localStorage.setItem(key, '1');
+    }
+    setShowNotifyPrompt(!alreadySeen && !alreadyEnabled);
+  }, [settings.notifyOnResearchComplete]);
+
+  const handleEnableResearchNotifications = useCallback(async () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      notify.error('This browser does not support notifications.');
+      return;
+    }
+
+    if (Notification.permission === 'denied') {
+      notify.error('Notifications are blocked. Enable them in browser settings to be notified.');
+      return;
+    }
+
+    let granted = Notification.permission === 'granted';
+    if (!granted) {
+      try {
+        const result = await Notification.requestPermission();
+        granted = result === 'granted';
+      } catch {
+        granted = false;
+      }
+    }
+
+    if (!granted) {
+      notify.info('Notification permission was not granted.');
+      return;
+    }
+
+    const ok = await updateSetting(projectId, 'notifyOnResearchComplete', true);
+    if (!ok) {
+      notify.error('Failed to enable research notifications.');
+      return;
+    }
+
+    window.localStorage.setItem('wansom.notifyPromptSeen.v1', '1');
+    setShowNotifyPrompt(false);
+    notify.success('You will be notified when research completes.');
+  }, [notify, projectId, updateSetting]);
+
   // Show skeleton loading state while project or conversation is loading
   if (chatLoading || projectLoading || (!project && projectId)) {
     return (
@@ -168,8 +217,23 @@ export default function ProjectPage() {
              showCanvasView ? <CanvasChatSplitView /> :
              <ChatInterface />}
           </div>
-      
+
+          <div className="relative">
+            {showNotifyPrompt && (
+              <div className="pointer-events-none absolute inset-x-0 -top-14 z-20 flex justify-center px-4">
+                <div className="pointer-events-auto flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50/95 px-4 py-2.5 text-sm text-gray-700 shadow-md backdrop-blur-sm">
+                  <span>Want to be notified when Wansom responds?</span>
+                  <button
+                    onClick={handleEnableResearchNotifications}
+                    className="ml-2 inline-flex items-center rounded-md bg-black px-3 py-1 text-xs font-medium text-white hover:bg-gray-900 transition-colors"
+                  >
+                    Notify
+                  </button>
+                </div>
+              </div>
+            )}
             <ChatInput />
+          </div>
         </main>
 
       </div>

@@ -44,6 +44,7 @@ export default function AssociateDetailPage() {
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [setupMessages, setSetupMessages] = useState<string[]>([]);
   const [setupComplete, setSetupComplete] = useState(false);
+  const [associateOrgId, setAssociateOrgId] = useState<string | null>(null);
   const [existingKnowledgeDocs, setExistingKnowledgeDocs] = useState<Array<{
     id: string;
     title: string;
@@ -66,9 +67,16 @@ export default function AssociateDetailPage() {
 
   const { uploadDocument } = useDocumentsStore();
 
-  const getExistingRootDocs = async (): Promise<Array<{ id: string; title: string }>> => {
+  const getExistingRootDocs = async (
+    organizationId?: string | null
+  ): Promise<Array<{ id: string; title: string }>> => {
+    // When editing an associate that lives in a different organization than
+    // the user's currently-active one, scope root-doc lookups (and therefore
+    // the "reuse existing by title" path) to the associate's org so we don't
+    // mix documents across tenants.
+    const orgParam = organizationId ? `&organizationId=${encodeURIComponent(organizationId)}` : '';
     const res = await apiService.get<{ status: number; message: string; data: Array<{ id: string; title: string }> }>(
-      '/api/documents?titlesOnly=true&folder=root'
+      `/api/documents?titlesOnly=true&folder=root${orgParam}`
     );
     return res.data ?? [];
   };
@@ -99,6 +107,7 @@ export default function AssociateDetailPage() {
               name: string;
               instructions: string;
               description?: string;
+              organizationId?: string;
               practiceAreas: PracticeArea[];
               knowledgeBase: string[];
               knowledgeBaseDocuments?: Array<{
@@ -125,6 +134,7 @@ export default function AssociateDetailPage() {
           practiceAreas: associate.practiceAreas,
           knowledgeBase: associate.knowledgeBase || [],
         });
+        setAssociateOrgId(associate.organizationId ?? null);
         setExistingKnowledgeDocs(associate.knowledgeBaseDocuments || []);
         setIsInitialized(true);
       } catch {
@@ -162,7 +172,7 @@ export default function AssociateDetailPage() {
         setIsUploading(true);
         setUploadProgress({ current: 0, total: selectedFiles.length });
 
-        const existingDocs = await getExistingRootDocs();
+        const existingDocs = await getExistingRootDocs(associateOrgId);
         const existingByTitle = new Map(
           existingDocs.map((d) => [d.title.toLowerCase(), d])
         );
@@ -190,6 +200,13 @@ export default function AssociateDetailPage() {
 
           const fileFormData = new FormData();
           fileFormData.append('file', file);
+          // Route the upload into the associate's own organization when it
+          // differs from the user's active org — otherwise the subsequent
+          // associate PUT would reject the doc as "not found" since KB docs
+          // are validated against the associate's organizationId.
+          if (associateOrgId) {
+            fileFormData.append('organizationId', associateOrgId);
+          }
 
           const uploadedDocument = await uploadDocument(fileFormData);
           if (!uploadedDocument) {

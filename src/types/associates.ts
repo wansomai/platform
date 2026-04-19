@@ -60,6 +60,16 @@ export interface AIAssociate {
   updatedAt: string;
   steps?: AssociateStep[];
   tools?: AssociateTool[];
+  sharedWith?: Array<{ userId: string }>;
+  createdBy?: {
+    id?: string;
+    fullName?: string | null;
+    email?: string;
+  };
+  _count?: {
+    projects?: number;
+    sharedWith?: number;
+  };
 }
 
 export interface AssociateStep {

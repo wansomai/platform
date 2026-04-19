@@ -184,6 +184,11 @@ export type SharedWorkspaceAccess = $Result.DefaultSelection<Prisma.$SharedWorks
  */
 export type AIAssociate = $Result.DefaultSelection<Prisma.$AIAssociatePayload>
 /**
+ * Model AIAssociateShare
+ * 
+ */
+export type AIAssociateShare = $Result.DefaultSelection<Prisma.$AIAssociateSharePayload>
+/**
  * Model AssociateStep
  * 
  */
@@ -774,6 +779,16 @@ export class PrismaClient<
     * ```
     */
   get aIAssociate(): Prisma.AIAssociateDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.aIAssociateShare`: Exposes CRUD operations for the **AIAssociateShare** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AIAssociateShares
+    * const aIAssociateShares = await prisma.aIAssociateShare.findMany()
+    * ```
+    */
+  get aIAssociateShare(): Prisma.AIAssociateShareDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.associateStep`: Exposes CRUD operations for the **AssociateStep** model.
@@ -1382,6 +1397,7 @@ export namespace Prisma {
     SharedWorkspace: 'SharedWorkspace',
     SharedWorkspaceAccess: 'SharedWorkspaceAccess',
     AIAssociate: 'AIAssociate',
+    AIAssociateShare: 'AIAssociateShare',
     AssociateStep: 'AssociateStep',
     AssociateTool: 'AssociateTool',
     ProjectAssociate: 'ProjectAssociate',
@@ -1411,7 +1427,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks" | "adminLog" | "notification"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "aIAssociateShare" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks" | "adminLog" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3931,6 +3947,80 @@ export namespace Prisma {
           }
         }
       }
+      AIAssociateShare: {
+        payload: Prisma.$AIAssociateSharePayload<ExtArgs>
+        fields: Prisma.AIAssociateShareFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AIAssociateShareFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AIAssociateShareFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>
+          }
+          findFirst: {
+            args: Prisma.AIAssociateShareFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AIAssociateShareFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>
+          }
+          findMany: {
+            args: Prisma.AIAssociateShareFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>[]
+          }
+          create: {
+            args: Prisma.AIAssociateShareCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>
+          }
+          createMany: {
+            args: Prisma.AIAssociateShareCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AIAssociateShareCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>[]
+          }
+          delete: {
+            args: Prisma.AIAssociateShareDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>
+          }
+          update: {
+            args: Prisma.AIAssociateShareUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>
+          }
+          deleteMany: {
+            args: Prisma.AIAssociateShareDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AIAssociateShareUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AIAssociateShareUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>[]
+          }
+          upsert: {
+            args: Prisma.AIAssociateShareUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AIAssociateSharePayload>
+          }
+          aggregate: {
+            args: Prisma.AIAssociateShareAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAIAssociateShare>
+          }
+          groupBy: {
+            args: Prisma.AIAssociateShareGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AIAssociateShareGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AIAssociateShareCountArgs<ExtArgs>
+            result: $Utils.Optional<AIAssociateShareCountAggregateOutputType> | number
+          }
+        }
+      }
       AssociateStep: {
         payload: Prisma.$AssociateStepPayload<ExtArgs>
         fields: Prisma.AssociateStepFieldRefs
@@ -5109,6 +5199,7 @@ export namespace Prisma {
     sharedWorkspace?: SharedWorkspaceOmit
     sharedWorkspaceAccess?: SharedWorkspaceAccessOmit
     aIAssociate?: AIAssociateOmit
+    aIAssociateShare?: AIAssociateShareOmit
     associateStep?: AssociateStepOmit
     associateTool?: AssociateToolOmit
     projectAssociate?: ProjectAssociateOmit
@@ -5204,6 +5295,8 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     createdAIAssociates: number
+    associateShares: number
+    associateSharesGranted: number
     accounts: number
     actions: number
     conversationDocuments: number
@@ -5228,6 +5321,8 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdAIAssociates?: boolean | UserCountOutputTypeCountCreatedAIAssociatesArgs
+    associateShares?: boolean | UserCountOutputTypeCountAssociateSharesArgs
+    associateSharesGranted?: boolean | UserCountOutputTypeCountAssociateSharesGrantedArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     actions?: boolean | UserCountOutputTypeCountActionsArgs
     conversationDocuments?: boolean | UserCountOutputTypeCountConversationDocumentsArgs
@@ -5266,6 +5361,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCreatedAIAssociatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AIAssociateWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAssociateSharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIAssociateShareWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAssociateSharesGrantedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIAssociateShareWhereInput
   }
 
   /**
@@ -5998,6 +6107,7 @@ export namespace Prisma {
     tools: number
     conversations: number
     projects: number
+    sharedWith: number
   }
 
   export type AIAssociateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6005,6 +6115,7 @@ export namespace Prisma {
     tools?: boolean | AIAssociateCountOutputTypeCountToolsArgs
     conversations?: boolean | AIAssociateCountOutputTypeCountConversationsArgs
     projects?: boolean | AIAssociateCountOutputTypeCountProjectsArgs
+    sharedWith?: boolean | AIAssociateCountOutputTypeCountSharedWithArgs
   }
 
   // Custom InputTypes
@@ -6044,6 +6155,13 @@ export namespace Prisma {
    */
   export type AIAssociateCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectAssociateWhereInput
+  }
+
+  /**
+   * AIAssociateCountOutputType without action
+   */
+  export type AIAssociateCountOutputTypeCountSharedWithArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIAssociateShareWhereInput
   }
 
 
@@ -9555,6 +9673,8 @@ export namespace Prisma {
     emailVerificationExpires?: boolean
     authProvider?: boolean
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
+    associateShares?: boolean | User$associateSharesArgs<ExtArgs>
+    associateSharesGranted?: boolean | User$associateSharesGrantedArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
     conversationDocuments?: boolean | User$conversationDocumentsArgs<ExtArgs>
@@ -9641,6 +9761,8 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId" | "resetToken" | "resetTokenExpiry" | "emailVerified" | "emailVerificationToken" | "emailVerificationExpires" | "authProvider", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
+    associateShares?: boolean | User$associateSharesArgs<ExtArgs>
+    associateSharesGranted?: boolean | User$associateSharesGrantedArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     actions?: boolean | User$actionsArgs<ExtArgs>
     conversationDocuments?: boolean | User$conversationDocumentsArgs<ExtArgs>
@@ -9678,6 +9800,8 @@ export namespace Prisma {
     name: "User"
     objects: {
       createdAIAssociates: Prisma.$AIAssociatePayload<ExtArgs>[]
+      associateShares: Prisma.$AIAssociateSharePayload<ExtArgs>[]
+      associateSharesGranted: Prisma.$AIAssociateSharePayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       actions: Prisma.$ConversationActionPayload<ExtArgs>[]
       conversationDocuments: Prisma.$ConversationDocumentPayload<ExtArgs>[]
@@ -10112,6 +10236,8 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     createdAIAssociates<T extends User$createdAIAssociatesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdAIAssociatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    associateShares<T extends User$associateSharesArgs<ExtArgs> = {}>(args?: Subset<T, User$associateSharesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    associateSharesGranted<T extends User$associateSharesGrantedArgs<ExtArgs> = {}>(args?: Subset<T, User$associateSharesGrantedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     actions<T extends User$actionsArgs<ExtArgs> = {}>(args?: Subset<T, User$actionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationActionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversationDocuments<T extends User$conversationDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$conversationDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -10595,6 +10721,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AIAssociateScalarFieldEnum | AIAssociateScalarFieldEnum[]
+  }
+
+  /**
+   * User.associateShares
+   */
+  export type User$associateSharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    where?: AIAssociateShareWhereInput
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    cursor?: AIAssociateShareWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIAssociateShareScalarFieldEnum | AIAssociateShareScalarFieldEnum[]
+  }
+
+  /**
+   * User.associateSharesGranted
+   */
+  export type User$associateSharesGrantedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    where?: AIAssociateShareWhereInput
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    cursor?: AIAssociateShareWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIAssociateShareScalarFieldEnum | AIAssociateShareScalarFieldEnum[]
   }
 
   /**
@@ -45223,6 +45397,7 @@ export namespace Prisma {
     tools?: boolean | AIAssociate$toolsArgs<ExtArgs>
     conversations?: boolean | AIAssociate$conversationsArgs<ExtArgs>
     projects?: boolean | AIAssociate$projectsArgs<ExtArgs>
+    sharedWith?: boolean | AIAssociate$sharedWithArgs<ExtArgs>
     _count?: boolean | AIAssociateCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["aIAssociate"]>
 
@@ -45280,6 +45455,7 @@ export namespace Prisma {
     tools?: boolean | AIAssociate$toolsArgs<ExtArgs>
     conversations?: boolean | AIAssociate$conversationsArgs<ExtArgs>
     projects?: boolean | AIAssociate$projectsArgs<ExtArgs>
+    sharedWith?: boolean | AIAssociate$sharedWithArgs<ExtArgs>
     _count?: boolean | AIAssociateCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AIAssociateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -45300,6 +45476,7 @@ export namespace Prisma {
       tools: Prisma.$AssociateToolPayload<ExtArgs>[]
       conversations: Prisma.$ConversationPayload<ExtArgs>[]
       projects: Prisma.$ProjectAssociatePayload<ExtArgs>[]
+      sharedWith: Prisma.$AIAssociateSharePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -45713,6 +45890,7 @@ export namespace Prisma {
     tools<T extends AIAssociate$toolsArgs<ExtArgs> = {}>(args?: Subset<T, AIAssociate$toolsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssociateToolPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations<T extends AIAssociate$conversationsArgs<ExtArgs> = {}>(args?: Subset<T, AIAssociate$conversationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projects<T extends AIAssociate$projectsArgs<ExtArgs> = {}>(args?: Subset<T, AIAssociate$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectAssociatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sharedWith<T extends AIAssociate$sharedWithArgs<ExtArgs> = {}>(args?: Subset<T, AIAssociate$sharedWithArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -46245,6 +46423,30 @@ export namespace Prisma {
   }
 
   /**
+   * AIAssociate.sharedWith
+   */
+  export type AIAssociate$sharedWithArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    where?: AIAssociateShareWhereInput
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    cursor?: AIAssociateShareWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AIAssociateShareScalarFieldEnum | AIAssociateShareScalarFieldEnum[]
+  }
+
+  /**
    * AIAssociate without action
    */
   export type AIAssociateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -46260,6 +46462,1080 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AIAssociateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AIAssociateShare
+   */
+
+  export type AggregateAIAssociateShare = {
+    _count: AIAssociateShareCountAggregateOutputType | null
+    _min: AIAssociateShareMinAggregateOutputType | null
+    _max: AIAssociateShareMaxAggregateOutputType | null
+  }
+
+  export type AIAssociateShareMinAggregateOutputType = {
+    id: string | null
+    associateId: string | null
+    userId: string | null
+    grantedById: string | null
+    createdAt: Date | null
+  }
+
+  export type AIAssociateShareMaxAggregateOutputType = {
+    id: string | null
+    associateId: string | null
+    userId: string | null
+    grantedById: string | null
+    createdAt: Date | null
+  }
+
+  export type AIAssociateShareCountAggregateOutputType = {
+    id: number
+    associateId: number
+    userId: number
+    grantedById: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AIAssociateShareMinAggregateInputType = {
+    id?: true
+    associateId?: true
+    userId?: true
+    grantedById?: true
+    createdAt?: true
+  }
+
+  export type AIAssociateShareMaxAggregateInputType = {
+    id?: true
+    associateId?: true
+    userId?: true
+    grantedById?: true
+    createdAt?: true
+  }
+
+  export type AIAssociateShareCountAggregateInputType = {
+    id?: true
+    associateId?: true
+    userId?: true
+    grantedById?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AIAssociateShareAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIAssociateShare to aggregate.
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIAssociateShares to fetch.
+     */
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AIAssociateShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIAssociateShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIAssociateShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AIAssociateShares
+    **/
+    _count?: true | AIAssociateShareCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AIAssociateShareMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AIAssociateShareMaxAggregateInputType
+  }
+
+  export type GetAIAssociateShareAggregateType<T extends AIAssociateShareAggregateArgs> = {
+        [P in keyof T & keyof AggregateAIAssociateShare]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAIAssociateShare[P]>
+      : GetScalarType<T[P], AggregateAIAssociateShare[P]>
+  }
+
+
+
+
+  export type AIAssociateShareGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AIAssociateShareWhereInput
+    orderBy?: AIAssociateShareOrderByWithAggregationInput | AIAssociateShareOrderByWithAggregationInput[]
+    by: AIAssociateShareScalarFieldEnum[] | AIAssociateShareScalarFieldEnum
+    having?: AIAssociateShareScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AIAssociateShareCountAggregateInputType | true
+    _min?: AIAssociateShareMinAggregateInputType
+    _max?: AIAssociateShareMaxAggregateInputType
+  }
+
+  export type AIAssociateShareGroupByOutputType = {
+    id: string
+    associateId: string
+    userId: string
+    grantedById: string
+    createdAt: Date
+    _count: AIAssociateShareCountAggregateOutputType | null
+    _min: AIAssociateShareMinAggregateOutputType | null
+    _max: AIAssociateShareMaxAggregateOutputType | null
+  }
+
+  type GetAIAssociateShareGroupByPayload<T extends AIAssociateShareGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AIAssociateShareGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AIAssociateShareGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AIAssociateShareGroupByOutputType[P]>
+            : GetScalarType<T[P], AIAssociateShareGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AIAssociateShareSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    associateId?: boolean
+    userId?: boolean
+    grantedById?: boolean
+    createdAt?: boolean
+    associate?: boolean | AIAssociateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    grantedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aIAssociateShare"]>
+
+  export type AIAssociateShareSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    associateId?: boolean
+    userId?: boolean
+    grantedById?: boolean
+    createdAt?: boolean
+    associate?: boolean | AIAssociateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    grantedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aIAssociateShare"]>
+
+  export type AIAssociateShareSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    associateId?: boolean
+    userId?: boolean
+    grantedById?: boolean
+    createdAt?: boolean
+    associate?: boolean | AIAssociateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    grantedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["aIAssociateShare"]>
+
+  export type AIAssociateShareSelectScalar = {
+    id?: boolean
+    associateId?: boolean
+    userId?: boolean
+    grantedById?: boolean
+    createdAt?: boolean
+  }
+
+  export type AIAssociateShareOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "associateId" | "userId" | "grantedById" | "createdAt", ExtArgs["result"]["aIAssociateShare"]>
+  export type AIAssociateShareInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    associate?: boolean | AIAssociateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    grantedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AIAssociateShareIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    associate?: boolean | AIAssociateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    grantedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AIAssociateShareIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    associate?: boolean | AIAssociateDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    grantedBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AIAssociateSharePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AIAssociateShare"
+    objects: {
+      associate: Prisma.$AIAssociatePayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+      grantedBy: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      associateId: string
+      userId: string
+      grantedById: string
+      createdAt: Date
+    }, ExtArgs["result"]["aIAssociateShare"]>
+    composites: {}
+  }
+
+  type AIAssociateShareGetPayload<S extends boolean | null | undefined | AIAssociateShareDefaultArgs> = $Result.GetResult<Prisma.$AIAssociateSharePayload, S>
+
+  type AIAssociateShareCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AIAssociateShareFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AIAssociateShareCountAggregateInputType | true
+    }
+
+  export interface AIAssociateShareDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AIAssociateShare'], meta: { name: 'AIAssociateShare' } }
+    /**
+     * Find zero or one AIAssociateShare that matches the filter.
+     * @param {AIAssociateShareFindUniqueArgs} args - Arguments to find a AIAssociateShare
+     * @example
+     * // Get one AIAssociateShare
+     * const aIAssociateShare = await prisma.aIAssociateShare.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AIAssociateShareFindUniqueArgs>(args: SelectSubset<T, AIAssociateShareFindUniqueArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AIAssociateShare that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AIAssociateShareFindUniqueOrThrowArgs} args - Arguments to find a AIAssociateShare
+     * @example
+     * // Get one AIAssociateShare
+     * const aIAssociateShare = await prisma.aIAssociateShare.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AIAssociateShareFindUniqueOrThrowArgs>(args: SelectSubset<T, AIAssociateShareFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AIAssociateShare that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareFindFirstArgs} args - Arguments to find a AIAssociateShare
+     * @example
+     * // Get one AIAssociateShare
+     * const aIAssociateShare = await prisma.aIAssociateShare.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AIAssociateShareFindFirstArgs>(args?: SelectSubset<T, AIAssociateShareFindFirstArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AIAssociateShare that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareFindFirstOrThrowArgs} args - Arguments to find a AIAssociateShare
+     * @example
+     * // Get one AIAssociateShare
+     * const aIAssociateShare = await prisma.aIAssociateShare.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AIAssociateShareFindFirstOrThrowArgs>(args?: SelectSubset<T, AIAssociateShareFindFirstOrThrowArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AIAssociateShares that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AIAssociateShares
+     * const aIAssociateShares = await prisma.aIAssociateShare.findMany()
+     * 
+     * // Get first 10 AIAssociateShares
+     * const aIAssociateShares = await prisma.aIAssociateShare.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const aIAssociateShareWithIdOnly = await prisma.aIAssociateShare.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AIAssociateShareFindManyArgs>(args?: SelectSubset<T, AIAssociateShareFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AIAssociateShare.
+     * @param {AIAssociateShareCreateArgs} args - Arguments to create a AIAssociateShare.
+     * @example
+     * // Create one AIAssociateShare
+     * const AIAssociateShare = await prisma.aIAssociateShare.create({
+     *   data: {
+     *     // ... data to create a AIAssociateShare
+     *   }
+     * })
+     * 
+     */
+    create<T extends AIAssociateShareCreateArgs>(args: SelectSubset<T, AIAssociateShareCreateArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AIAssociateShares.
+     * @param {AIAssociateShareCreateManyArgs} args - Arguments to create many AIAssociateShares.
+     * @example
+     * // Create many AIAssociateShares
+     * const aIAssociateShare = await prisma.aIAssociateShare.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AIAssociateShareCreateManyArgs>(args?: SelectSubset<T, AIAssociateShareCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AIAssociateShares and returns the data saved in the database.
+     * @param {AIAssociateShareCreateManyAndReturnArgs} args - Arguments to create many AIAssociateShares.
+     * @example
+     * // Create many AIAssociateShares
+     * const aIAssociateShare = await prisma.aIAssociateShare.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AIAssociateShares and only return the `id`
+     * const aIAssociateShareWithIdOnly = await prisma.aIAssociateShare.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AIAssociateShareCreateManyAndReturnArgs>(args?: SelectSubset<T, AIAssociateShareCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AIAssociateShare.
+     * @param {AIAssociateShareDeleteArgs} args - Arguments to delete one AIAssociateShare.
+     * @example
+     * // Delete one AIAssociateShare
+     * const AIAssociateShare = await prisma.aIAssociateShare.delete({
+     *   where: {
+     *     // ... filter to delete one AIAssociateShare
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AIAssociateShareDeleteArgs>(args: SelectSubset<T, AIAssociateShareDeleteArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AIAssociateShare.
+     * @param {AIAssociateShareUpdateArgs} args - Arguments to update one AIAssociateShare.
+     * @example
+     * // Update one AIAssociateShare
+     * const aIAssociateShare = await prisma.aIAssociateShare.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AIAssociateShareUpdateArgs>(args: SelectSubset<T, AIAssociateShareUpdateArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AIAssociateShares.
+     * @param {AIAssociateShareDeleteManyArgs} args - Arguments to filter AIAssociateShares to delete.
+     * @example
+     * // Delete a few AIAssociateShares
+     * const { count } = await prisma.aIAssociateShare.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AIAssociateShareDeleteManyArgs>(args?: SelectSubset<T, AIAssociateShareDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIAssociateShares.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AIAssociateShares
+     * const aIAssociateShare = await prisma.aIAssociateShare.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AIAssociateShareUpdateManyArgs>(args: SelectSubset<T, AIAssociateShareUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AIAssociateShares and returns the data updated in the database.
+     * @param {AIAssociateShareUpdateManyAndReturnArgs} args - Arguments to update many AIAssociateShares.
+     * @example
+     * // Update many AIAssociateShares
+     * const aIAssociateShare = await prisma.aIAssociateShare.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AIAssociateShares and only return the `id`
+     * const aIAssociateShareWithIdOnly = await prisma.aIAssociateShare.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AIAssociateShareUpdateManyAndReturnArgs>(args: SelectSubset<T, AIAssociateShareUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AIAssociateShare.
+     * @param {AIAssociateShareUpsertArgs} args - Arguments to update or create a AIAssociateShare.
+     * @example
+     * // Update or create a AIAssociateShare
+     * const aIAssociateShare = await prisma.aIAssociateShare.upsert({
+     *   create: {
+     *     // ... data to create a AIAssociateShare
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AIAssociateShare we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AIAssociateShareUpsertArgs>(args: SelectSubset<T, AIAssociateShareUpsertArgs<ExtArgs>>): Prisma__AIAssociateShareClient<$Result.GetResult<Prisma.$AIAssociateSharePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AIAssociateShares.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareCountArgs} args - Arguments to filter AIAssociateShares to count.
+     * @example
+     * // Count the number of AIAssociateShares
+     * const count = await prisma.aIAssociateShare.count({
+     *   where: {
+     *     // ... the filter for the AIAssociateShares we want to count
+     *   }
+     * })
+    **/
+    count<T extends AIAssociateShareCountArgs>(
+      args?: Subset<T, AIAssociateShareCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AIAssociateShareCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AIAssociateShare.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AIAssociateShareAggregateArgs>(args: Subset<T, AIAssociateShareAggregateArgs>): Prisma.PrismaPromise<GetAIAssociateShareAggregateType<T>>
+
+    /**
+     * Group by AIAssociateShare.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AIAssociateShareGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AIAssociateShareGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AIAssociateShareGroupByArgs['orderBy'] }
+        : { orderBy?: AIAssociateShareGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AIAssociateShareGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAIAssociateShareGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AIAssociateShare model
+   */
+  readonly fields: AIAssociateShareFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AIAssociateShare.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AIAssociateShareClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    associate<T extends AIAssociateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AIAssociateDefaultArgs<ExtArgs>>): Prisma__AIAssociateClient<$Result.GetResult<Prisma.$AIAssociatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    grantedBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AIAssociateShare model
+   */
+  interface AIAssociateShareFieldRefs {
+    readonly id: FieldRef<"AIAssociateShare", 'String'>
+    readonly associateId: FieldRef<"AIAssociateShare", 'String'>
+    readonly userId: FieldRef<"AIAssociateShare", 'String'>
+    readonly grantedById: FieldRef<"AIAssociateShare", 'String'>
+    readonly createdAt: FieldRef<"AIAssociateShare", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AIAssociateShare findUnique
+   */
+  export type AIAssociateShareFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * Filter, which AIAssociateShare to fetch.
+     */
+    where: AIAssociateShareWhereUniqueInput
+  }
+
+  /**
+   * AIAssociateShare findUniqueOrThrow
+   */
+  export type AIAssociateShareFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * Filter, which AIAssociateShare to fetch.
+     */
+    where: AIAssociateShareWhereUniqueInput
+  }
+
+  /**
+   * AIAssociateShare findFirst
+   */
+  export type AIAssociateShareFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * Filter, which AIAssociateShare to fetch.
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIAssociateShares to fetch.
+     */
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIAssociateShares.
+     */
+    cursor?: AIAssociateShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIAssociateShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIAssociateShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIAssociateShares.
+     */
+    distinct?: AIAssociateShareScalarFieldEnum | AIAssociateShareScalarFieldEnum[]
+  }
+
+  /**
+   * AIAssociateShare findFirstOrThrow
+   */
+  export type AIAssociateShareFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * Filter, which AIAssociateShare to fetch.
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIAssociateShares to fetch.
+     */
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AIAssociateShares.
+     */
+    cursor?: AIAssociateShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIAssociateShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIAssociateShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AIAssociateShares.
+     */
+    distinct?: AIAssociateShareScalarFieldEnum | AIAssociateShareScalarFieldEnum[]
+  }
+
+  /**
+   * AIAssociateShare findMany
+   */
+  export type AIAssociateShareFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * Filter, which AIAssociateShares to fetch.
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AIAssociateShares to fetch.
+     */
+    orderBy?: AIAssociateShareOrderByWithRelationInput | AIAssociateShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AIAssociateShares.
+     */
+    cursor?: AIAssociateShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AIAssociateShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AIAssociateShares.
+     */
+    skip?: number
+    distinct?: AIAssociateShareScalarFieldEnum | AIAssociateShareScalarFieldEnum[]
+  }
+
+  /**
+   * AIAssociateShare create
+   */
+  export type AIAssociateShareCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AIAssociateShare.
+     */
+    data: XOR<AIAssociateShareCreateInput, AIAssociateShareUncheckedCreateInput>
+  }
+
+  /**
+   * AIAssociateShare createMany
+   */
+  export type AIAssociateShareCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AIAssociateShares.
+     */
+    data: AIAssociateShareCreateManyInput | AIAssociateShareCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AIAssociateShare createManyAndReturn
+   */
+  export type AIAssociateShareCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * The data used to create many AIAssociateShares.
+     */
+    data: AIAssociateShareCreateManyInput | AIAssociateShareCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AIAssociateShare update
+   */
+  export type AIAssociateShareUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AIAssociateShare.
+     */
+    data: XOR<AIAssociateShareUpdateInput, AIAssociateShareUncheckedUpdateInput>
+    /**
+     * Choose, which AIAssociateShare to update.
+     */
+    where: AIAssociateShareWhereUniqueInput
+  }
+
+  /**
+   * AIAssociateShare updateMany
+   */
+  export type AIAssociateShareUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AIAssociateShares.
+     */
+    data: XOR<AIAssociateShareUpdateManyMutationInput, AIAssociateShareUncheckedUpdateManyInput>
+    /**
+     * Filter which AIAssociateShares to update
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * Limit how many AIAssociateShares to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIAssociateShare updateManyAndReturn
+   */
+  export type AIAssociateShareUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * The data used to update AIAssociateShares.
+     */
+    data: XOR<AIAssociateShareUpdateManyMutationInput, AIAssociateShareUncheckedUpdateManyInput>
+    /**
+     * Filter which AIAssociateShares to update
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * Limit how many AIAssociateShares to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AIAssociateShare upsert
+   */
+  export type AIAssociateShareUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AIAssociateShare to update in case it exists.
+     */
+    where: AIAssociateShareWhereUniqueInput
+    /**
+     * In case the AIAssociateShare found by the `where` argument doesn't exist, create a new AIAssociateShare with this data.
+     */
+    create: XOR<AIAssociateShareCreateInput, AIAssociateShareUncheckedCreateInput>
+    /**
+     * In case the AIAssociateShare was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AIAssociateShareUpdateInput, AIAssociateShareUncheckedUpdateInput>
+  }
+
+  /**
+   * AIAssociateShare delete
+   */
+  export type AIAssociateShareDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
+    /**
+     * Filter which AIAssociateShare to delete.
+     */
+    where: AIAssociateShareWhereUniqueInput
+  }
+
+  /**
+   * AIAssociateShare deleteMany
+   */
+  export type AIAssociateShareDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AIAssociateShares to delete
+     */
+    where?: AIAssociateShareWhereInput
+    /**
+     * Limit how many AIAssociateShares to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AIAssociateShare without action
+   */
+  export type AIAssociateShareDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AIAssociateShare
+     */
+    select?: AIAssociateShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AIAssociateShare
+     */
+    omit?: AIAssociateShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AIAssociateShareInclude<ExtArgs> | null
   }
 
 
@@ -61938,6 +63214,17 @@ export namespace Prisma {
   export type AIAssociateScalarFieldEnum = (typeof AIAssociateScalarFieldEnum)[keyof typeof AIAssociateScalarFieldEnum]
 
 
+  export const AIAssociateShareScalarFieldEnum: {
+    id: 'id',
+    associateId: 'associateId',
+    userId: 'userId',
+    grantedById: 'grantedById',
+    createdAt: 'createdAt'
+  };
+
+  export type AIAssociateShareScalarFieldEnum = (typeof AIAssociateShareScalarFieldEnum)[keyof typeof AIAssociateShareScalarFieldEnum]
+
+
   export const AssociateStepScalarFieldEnum: {
     id: 'id',
     associateId: 'associateId',
@@ -62516,6 +63803,8 @@ export namespace Prisma {
     emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     authProvider?: StringFilter<"User"> | string
     createdAIAssociates?: AIAssociateListRelationFilter
+    associateShares?: AIAssociateShareListRelationFilter
+    associateSharesGranted?: AIAssociateShareListRelationFilter
     accounts?: AccountListRelationFilter
     actions?: ConversationActionListRelationFilter
     conversationDocuments?: ConversationDocumentListRelationFilter
@@ -62557,6 +63846,8 @@ export namespace Prisma {
     emailVerificationExpires?: SortOrderInput | SortOrder
     authProvider?: SortOrder
     createdAIAssociates?: AIAssociateOrderByRelationAggregateInput
+    associateShares?: AIAssociateShareOrderByRelationAggregateInput
+    associateSharesGranted?: AIAssociateShareOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     actions?: ConversationActionOrderByRelationAggregateInput
     conversationDocuments?: ConversationDocumentOrderByRelationAggregateInput
@@ -62601,6 +63892,8 @@ export namespace Prisma {
     emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     authProvider?: StringFilter<"User"> | string
     createdAIAssociates?: AIAssociateListRelationFilter
+    associateShares?: AIAssociateShareListRelationFilter
+    associateSharesGranted?: AIAssociateShareListRelationFilter
     accounts?: AccountListRelationFilter
     actions?: ConversationActionListRelationFilter
     conversationDocuments?: ConversationDocumentListRelationFilter
@@ -65019,6 +66312,7 @@ export namespace Prisma {
     tools?: AssociateToolListRelationFilter
     conversations?: ConversationListRelationFilter
     projects?: ProjectAssociateListRelationFilter
+    sharedWith?: AIAssociateShareListRelationFilter
   }
 
   export type AIAssociateOrderByWithRelationInput = {
@@ -65039,6 +66333,7 @@ export namespace Prisma {
     tools?: AssociateToolOrderByRelationAggregateInput
     conversations?: ConversationOrderByRelationAggregateInput
     projects?: ProjectAssociateOrderByRelationAggregateInput
+    sharedWith?: AIAssociateShareOrderByRelationAggregateInput
   }
 
   export type AIAssociateWhereUniqueInput = Prisma.AtLeast<{
@@ -65062,6 +66357,7 @@ export namespace Prisma {
     tools?: AssociateToolListRelationFilter
     conversations?: ConversationListRelationFilter
     projects?: ProjectAssociateListRelationFilter
+    sharedWith?: AIAssociateShareListRelationFilter
   }, "id">
 
   export type AIAssociateOrderByWithAggregationInput = {
@@ -65096,6 +66392,68 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"AIAssociate"> | boolean
     knowledgeBase?: StringNullableListFilter<"AIAssociate">
     practiceAreas?: EnumPracticeAreaNullableListFilter<"AIAssociate">
+  }
+
+  export type AIAssociateShareWhereInput = {
+    AND?: AIAssociateShareWhereInput | AIAssociateShareWhereInput[]
+    OR?: AIAssociateShareWhereInput[]
+    NOT?: AIAssociateShareWhereInput | AIAssociateShareWhereInput[]
+    id?: StringFilter<"AIAssociateShare"> | string
+    associateId?: StringFilter<"AIAssociateShare"> | string
+    userId?: StringFilter<"AIAssociateShare"> | string
+    grantedById?: StringFilter<"AIAssociateShare"> | string
+    createdAt?: DateTimeFilter<"AIAssociateShare"> | Date | string
+    associate?: XOR<AIAssociateScalarRelationFilter, AIAssociateWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    grantedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type AIAssociateShareOrderByWithRelationInput = {
+    id?: SortOrder
+    associateId?: SortOrder
+    userId?: SortOrder
+    grantedById?: SortOrder
+    createdAt?: SortOrder
+    associate?: AIAssociateOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+    grantedBy?: UserOrderByWithRelationInput
+  }
+
+  export type AIAssociateShareWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    associateId_userId?: AIAssociateShareAssociateIdUserIdCompoundUniqueInput
+    AND?: AIAssociateShareWhereInput | AIAssociateShareWhereInput[]
+    OR?: AIAssociateShareWhereInput[]
+    NOT?: AIAssociateShareWhereInput | AIAssociateShareWhereInput[]
+    associateId?: StringFilter<"AIAssociateShare"> | string
+    userId?: StringFilter<"AIAssociateShare"> | string
+    grantedById?: StringFilter<"AIAssociateShare"> | string
+    createdAt?: DateTimeFilter<"AIAssociateShare"> | Date | string
+    associate?: XOR<AIAssociateScalarRelationFilter, AIAssociateWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    grantedBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "associateId_userId">
+
+  export type AIAssociateShareOrderByWithAggregationInput = {
+    id?: SortOrder
+    associateId?: SortOrder
+    userId?: SortOrder
+    grantedById?: SortOrder
+    createdAt?: SortOrder
+    _count?: AIAssociateShareCountOrderByAggregateInput
+    _max?: AIAssociateShareMaxOrderByAggregateInput
+    _min?: AIAssociateShareMinOrderByAggregateInput
+  }
+
+  export type AIAssociateShareScalarWhereWithAggregatesInput = {
+    AND?: AIAssociateShareScalarWhereWithAggregatesInput | AIAssociateShareScalarWhereWithAggregatesInput[]
+    OR?: AIAssociateShareScalarWhereWithAggregatesInput[]
+    NOT?: AIAssociateShareScalarWhereWithAggregatesInput | AIAssociateShareScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AIAssociateShare"> | string
+    associateId?: StringWithAggregatesFilter<"AIAssociateShare"> | string
+    userId?: StringWithAggregatesFilter<"AIAssociateShare"> | string
+    grantedById?: StringWithAggregatesFilter<"AIAssociateShare"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AIAssociateShare"> | Date | string
   }
 
   export type AssociateStepWhereInput = {
@@ -66266,6 +67624,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -66307,6 +67667,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -66344,6 +67706,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -66385,6 +67749,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -68929,6 +70295,7 @@ export namespace Prisma {
     tools?: AssociateToolCreateNestedManyWithoutAssociateInput
     conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateInput = {
@@ -68947,6 +70314,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUpdateInput = {
@@ -68965,6 +70333,7 @@ export namespace Prisma {
     tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateInput = {
@@ -68983,6 +70352,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateCreateManyInput = {
@@ -69023,6 +70393,59 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
     practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+  }
+
+  export type AIAssociateShareCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    associate: AIAssociateCreateNestedOneWithoutSharedWithInput
+    user: UserCreateNestedOneWithoutAssociateSharesInput
+    grantedBy: UserCreateNestedOneWithoutAssociateSharesGrantedInput
+  }
+
+  export type AIAssociateShareUncheckedCreateInput = {
+    id?: string
+    associateId: string
+    userId: string
+    grantedById: string
+    createdAt?: Date | string
+  }
+
+  export type AIAssociateShareUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    associate?: AIAssociateUpdateOneRequiredWithoutSharedWithNestedInput
+    user?: UserUpdateOneRequiredWithoutAssociateSharesNestedInput
+    grantedBy?: UserUpdateOneRequiredWithoutAssociateSharesGrantedNestedInput
+  }
+
+  export type AIAssociateShareUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    associateId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    grantedById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareCreateManyInput = {
+    id?: string
+    associateId: string
+    userId: string
+    grantedById: string
+    createdAt?: Date | string
+  }
+
+  export type AIAssociateShareUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    associateId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    grantedById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssociateStepCreateInput = {
@@ -70309,6 +71732,12 @@ export namespace Prisma {
     none?: AIAssociateWhereInput
   }
 
+  export type AIAssociateShareListRelationFilter = {
+    every?: AIAssociateShareWhereInput
+    some?: AIAssociateShareWhereInput
+    none?: AIAssociateShareWhereInput
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -70440,6 +71869,10 @@ export namespace Prisma {
   }
 
   export type AIAssociateOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AIAssociateShareOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -72118,6 +73551,35 @@ export namespace Prisma {
     isNot?: AIAssociateWhereInput
   }
 
+  export type AIAssociateShareAssociateIdUserIdCompoundUniqueInput = {
+    associateId: string
+    userId: string
+  }
+
+  export type AIAssociateShareCountOrderByAggregateInput = {
+    id?: SortOrder
+    associateId?: SortOrder
+    userId?: SortOrder
+    grantedById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIAssociateShareMaxOrderByAggregateInput = {
+    id?: SortOrder
+    associateId?: SortOrder
+    userId?: SortOrder
+    grantedById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AIAssociateShareMinOrderByAggregateInput = {
+    id?: SortOrder
+    associateId?: SortOrder
+    userId?: SortOrder
+    grantedById?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type AssociateStepCountOrderByAggregateInput = {
     id?: SortOrder
     associateId?: SortOrder
@@ -72749,6 +74211,20 @@ export namespace Prisma {
     connect?: AIAssociateWhereUniqueInput | AIAssociateWhereUniqueInput[]
   }
 
+  export type AIAssociateShareCreateNestedManyWithoutUserInput = {
+    create?: XOR<AIAssociateShareCreateWithoutUserInput, AIAssociateShareUncheckedCreateWithoutUserInput> | AIAssociateShareCreateWithoutUserInput[] | AIAssociateShareUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutUserInput | AIAssociateShareCreateOrConnectWithoutUserInput[]
+    createMany?: AIAssociateShareCreateManyUserInputEnvelope
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+  }
+
+  export type AIAssociateShareCreateNestedManyWithoutGrantedByInput = {
+    create?: XOR<AIAssociateShareCreateWithoutGrantedByInput, AIAssociateShareUncheckedCreateWithoutGrantedByInput> | AIAssociateShareCreateWithoutGrantedByInput[] | AIAssociateShareUncheckedCreateWithoutGrantedByInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutGrantedByInput | AIAssociateShareCreateOrConnectWithoutGrantedByInput[]
+    createMany?: AIAssociateShareCreateManyGrantedByInputEnvelope
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+  }
+
   export type AccountCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -72906,6 +74382,20 @@ export namespace Prisma {
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
     createMany?: AIAssociateCreateManyCreatedByInputEnvelope
     connect?: AIAssociateWhereUniqueInput | AIAssociateWhereUniqueInput[]
+  }
+
+  export type AIAssociateShareUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AIAssociateShareCreateWithoutUserInput, AIAssociateShareUncheckedCreateWithoutUserInput> | AIAssociateShareCreateWithoutUserInput[] | AIAssociateShareUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutUserInput | AIAssociateShareCreateOrConnectWithoutUserInput[]
+    createMany?: AIAssociateShareCreateManyUserInputEnvelope
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+  }
+
+  export type AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput = {
+    create?: XOR<AIAssociateShareCreateWithoutGrantedByInput, AIAssociateShareUncheckedCreateWithoutGrantedByInput> | AIAssociateShareCreateWithoutGrantedByInput[] | AIAssociateShareUncheckedCreateWithoutGrantedByInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutGrantedByInput | AIAssociateShareCreateOrConnectWithoutGrantedByInput[]
+    createMany?: AIAssociateShareCreateManyGrantedByInputEnvelope
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
   }
 
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
@@ -73068,6 +74558,34 @@ export namespace Prisma {
     update?: AIAssociateUpdateWithWhereUniqueWithoutCreatedByInput | AIAssociateUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: AIAssociateUpdateManyWithWhereWithoutCreatedByInput | AIAssociateUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: AIAssociateScalarWhereInput | AIAssociateScalarWhereInput[]
+  }
+
+  export type AIAssociateShareUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AIAssociateShareCreateWithoutUserInput, AIAssociateShareUncheckedCreateWithoutUserInput> | AIAssociateShareCreateWithoutUserInput[] | AIAssociateShareUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutUserInput | AIAssociateShareCreateOrConnectWithoutUserInput[]
+    upsert?: AIAssociateShareUpsertWithWhereUniqueWithoutUserInput | AIAssociateShareUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AIAssociateShareCreateManyUserInputEnvelope
+    set?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    disconnect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    delete?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    update?: AIAssociateShareUpdateWithWhereUniqueWithoutUserInput | AIAssociateShareUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AIAssociateShareUpdateManyWithWhereWithoutUserInput | AIAssociateShareUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
+  }
+
+  export type AIAssociateShareUpdateManyWithoutGrantedByNestedInput = {
+    create?: XOR<AIAssociateShareCreateWithoutGrantedByInput, AIAssociateShareUncheckedCreateWithoutGrantedByInput> | AIAssociateShareCreateWithoutGrantedByInput[] | AIAssociateShareUncheckedCreateWithoutGrantedByInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutGrantedByInput | AIAssociateShareCreateOrConnectWithoutGrantedByInput[]
+    upsert?: AIAssociateShareUpsertWithWhereUniqueWithoutGrantedByInput | AIAssociateShareUpsertWithWhereUniqueWithoutGrantedByInput[]
+    createMany?: AIAssociateShareCreateManyGrantedByInputEnvelope
+    set?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    disconnect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    delete?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    update?: AIAssociateShareUpdateWithWhereUniqueWithoutGrantedByInput | AIAssociateShareUpdateWithWhereUniqueWithoutGrantedByInput[]
+    updateMany?: AIAssociateShareUpdateManyWithWhereWithoutGrantedByInput | AIAssociateShareUpdateManyWithWhereWithoutGrantedByInput[]
+    deleteMany?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
   }
 
   export type AccountUpdateManyWithoutUserNestedInput = {
@@ -73380,6 +74898,34 @@ export namespace Prisma {
     update?: AIAssociateUpdateWithWhereUniqueWithoutCreatedByInput | AIAssociateUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: AIAssociateUpdateManyWithWhereWithoutCreatedByInput | AIAssociateUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: AIAssociateScalarWhereInput | AIAssociateScalarWhereInput[]
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AIAssociateShareCreateWithoutUserInput, AIAssociateShareUncheckedCreateWithoutUserInput> | AIAssociateShareCreateWithoutUserInput[] | AIAssociateShareUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutUserInput | AIAssociateShareCreateOrConnectWithoutUserInput[]
+    upsert?: AIAssociateShareUpsertWithWhereUniqueWithoutUserInput | AIAssociateShareUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AIAssociateShareCreateManyUserInputEnvelope
+    set?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    disconnect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    delete?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    update?: AIAssociateShareUpdateWithWhereUniqueWithoutUserInput | AIAssociateShareUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AIAssociateShareUpdateManyWithWhereWithoutUserInput | AIAssociateShareUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput = {
+    create?: XOR<AIAssociateShareCreateWithoutGrantedByInput, AIAssociateShareUncheckedCreateWithoutGrantedByInput> | AIAssociateShareCreateWithoutGrantedByInput[] | AIAssociateShareUncheckedCreateWithoutGrantedByInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutGrantedByInput | AIAssociateShareCreateOrConnectWithoutGrantedByInput[]
+    upsert?: AIAssociateShareUpsertWithWhereUniqueWithoutGrantedByInput | AIAssociateShareUpsertWithWhereUniqueWithoutGrantedByInput[]
+    createMany?: AIAssociateShareCreateManyGrantedByInputEnvelope
+    set?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    disconnect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    delete?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    update?: AIAssociateShareUpdateWithWhereUniqueWithoutGrantedByInput | AIAssociateShareUpdateWithWhereUniqueWithoutGrantedByInput[]
+    updateMany?: AIAssociateShareUpdateManyWithWhereWithoutGrantedByInput | AIAssociateShareUpdateManyWithWhereWithoutGrantedByInput[]
+    deleteMany?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
   }
 
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
@@ -76330,6 +77876,13 @@ export namespace Prisma {
     connect?: ProjectAssociateWhereUniqueInput | ProjectAssociateWhereUniqueInput[]
   }
 
+  export type AIAssociateShareCreateNestedManyWithoutAssociateInput = {
+    create?: XOR<AIAssociateShareCreateWithoutAssociateInput, AIAssociateShareUncheckedCreateWithoutAssociateInput> | AIAssociateShareCreateWithoutAssociateInput[] | AIAssociateShareUncheckedCreateWithoutAssociateInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutAssociateInput | AIAssociateShareCreateOrConnectWithoutAssociateInput[]
+    createMany?: AIAssociateShareCreateManyAssociateInputEnvelope
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+  }
+
   export type AssociateStepUncheckedCreateNestedManyWithoutAssociateInput = {
     create?: XOR<AssociateStepCreateWithoutAssociateInput, AssociateStepUncheckedCreateWithoutAssociateInput> | AssociateStepCreateWithoutAssociateInput[] | AssociateStepUncheckedCreateWithoutAssociateInput[]
     connectOrCreate?: AssociateStepCreateOrConnectWithoutAssociateInput | AssociateStepCreateOrConnectWithoutAssociateInput[]
@@ -76356,6 +77909,13 @@ export namespace Prisma {
     connectOrCreate?: ProjectAssociateCreateOrConnectWithoutAssociateInput | ProjectAssociateCreateOrConnectWithoutAssociateInput[]
     createMany?: ProjectAssociateCreateManyAssociateInputEnvelope
     connect?: ProjectAssociateWhereUniqueInput | ProjectAssociateWhereUniqueInput[]
+  }
+
+  export type AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput = {
+    create?: XOR<AIAssociateShareCreateWithoutAssociateInput, AIAssociateShareUncheckedCreateWithoutAssociateInput> | AIAssociateShareCreateWithoutAssociateInput[] | AIAssociateShareUncheckedCreateWithoutAssociateInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutAssociateInput | AIAssociateShareCreateOrConnectWithoutAssociateInput[]
+    createMany?: AIAssociateShareCreateManyAssociateInputEnvelope
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
   }
 
   export type AIAssociateUpdateknowledgeBaseInput = {
@@ -76440,6 +78000,20 @@ export namespace Prisma {
     deleteMany?: ProjectAssociateScalarWhereInput | ProjectAssociateScalarWhereInput[]
   }
 
+  export type AIAssociateShareUpdateManyWithoutAssociateNestedInput = {
+    create?: XOR<AIAssociateShareCreateWithoutAssociateInput, AIAssociateShareUncheckedCreateWithoutAssociateInput> | AIAssociateShareCreateWithoutAssociateInput[] | AIAssociateShareUncheckedCreateWithoutAssociateInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutAssociateInput | AIAssociateShareCreateOrConnectWithoutAssociateInput[]
+    upsert?: AIAssociateShareUpsertWithWhereUniqueWithoutAssociateInput | AIAssociateShareUpsertWithWhereUniqueWithoutAssociateInput[]
+    createMany?: AIAssociateShareCreateManyAssociateInputEnvelope
+    set?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    disconnect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    delete?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    update?: AIAssociateShareUpdateWithWhereUniqueWithoutAssociateInput | AIAssociateShareUpdateWithWhereUniqueWithoutAssociateInput[]
+    updateMany?: AIAssociateShareUpdateManyWithWhereWithoutAssociateInput | AIAssociateShareUpdateManyWithWhereWithoutAssociateInput[]
+    deleteMany?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
+  }
+
   export type AssociateStepUncheckedUpdateManyWithoutAssociateNestedInput = {
     create?: XOR<AssociateStepCreateWithoutAssociateInput, AssociateStepUncheckedCreateWithoutAssociateInput> | AssociateStepCreateWithoutAssociateInput[] | AssociateStepUncheckedCreateWithoutAssociateInput[]
     connectOrCreate?: AssociateStepCreateOrConnectWithoutAssociateInput | AssociateStepCreateOrConnectWithoutAssociateInput[]
@@ -76494,6 +78068,62 @@ export namespace Prisma {
     update?: ProjectAssociateUpdateWithWhereUniqueWithoutAssociateInput | ProjectAssociateUpdateWithWhereUniqueWithoutAssociateInput[]
     updateMany?: ProjectAssociateUpdateManyWithWhereWithoutAssociateInput | ProjectAssociateUpdateManyWithWhereWithoutAssociateInput[]
     deleteMany?: ProjectAssociateScalarWhereInput | ProjectAssociateScalarWhereInput[]
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput = {
+    create?: XOR<AIAssociateShareCreateWithoutAssociateInput, AIAssociateShareUncheckedCreateWithoutAssociateInput> | AIAssociateShareCreateWithoutAssociateInput[] | AIAssociateShareUncheckedCreateWithoutAssociateInput[]
+    connectOrCreate?: AIAssociateShareCreateOrConnectWithoutAssociateInput | AIAssociateShareCreateOrConnectWithoutAssociateInput[]
+    upsert?: AIAssociateShareUpsertWithWhereUniqueWithoutAssociateInput | AIAssociateShareUpsertWithWhereUniqueWithoutAssociateInput[]
+    createMany?: AIAssociateShareCreateManyAssociateInputEnvelope
+    set?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    disconnect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    delete?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    connect?: AIAssociateShareWhereUniqueInput | AIAssociateShareWhereUniqueInput[]
+    update?: AIAssociateShareUpdateWithWhereUniqueWithoutAssociateInput | AIAssociateShareUpdateWithWhereUniqueWithoutAssociateInput[]
+    updateMany?: AIAssociateShareUpdateManyWithWhereWithoutAssociateInput | AIAssociateShareUpdateManyWithWhereWithoutAssociateInput[]
+    deleteMany?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
+  }
+
+  export type AIAssociateCreateNestedOneWithoutSharedWithInput = {
+    create?: XOR<AIAssociateCreateWithoutSharedWithInput, AIAssociateUncheckedCreateWithoutSharedWithInput>
+    connectOrCreate?: AIAssociateCreateOrConnectWithoutSharedWithInput
+    connect?: AIAssociateWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAssociateSharesInput = {
+    create?: XOR<UserCreateWithoutAssociateSharesInput, UserUncheckedCreateWithoutAssociateSharesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssociateSharesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAssociateSharesGrantedInput = {
+    create?: XOR<UserCreateWithoutAssociateSharesGrantedInput, UserUncheckedCreateWithoutAssociateSharesGrantedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssociateSharesGrantedInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type AIAssociateUpdateOneRequiredWithoutSharedWithNestedInput = {
+    create?: XOR<AIAssociateCreateWithoutSharedWithInput, AIAssociateUncheckedCreateWithoutSharedWithInput>
+    connectOrCreate?: AIAssociateCreateOrConnectWithoutSharedWithInput
+    upsert?: AIAssociateUpsertWithoutSharedWithInput
+    connect?: AIAssociateWhereUniqueInput
+    update?: XOR<XOR<AIAssociateUpdateToOneWithWhereWithoutSharedWithInput, AIAssociateUpdateWithoutSharedWithInput>, AIAssociateUncheckedUpdateWithoutSharedWithInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutAssociateSharesNestedInput = {
+    create?: XOR<UserCreateWithoutAssociateSharesInput, UserUncheckedCreateWithoutAssociateSharesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssociateSharesInput
+    upsert?: UserUpsertWithoutAssociateSharesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssociateSharesInput, UserUpdateWithoutAssociateSharesInput>, UserUncheckedUpdateWithoutAssociateSharesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutAssociateSharesGrantedNestedInput = {
+    create?: XOR<UserCreateWithoutAssociateSharesGrantedInput, UserUncheckedCreateWithoutAssociateSharesGrantedInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssociateSharesGrantedInput
+    upsert?: UserUpsertWithoutAssociateSharesGrantedInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssociateSharesGrantedInput, UserUpdateWithoutAssociateSharesGrantedInput>, UserUncheckedUpdateWithoutAssociateSharesGrantedInput>
   }
 
   export type AIAssociateCreateNestedOneWithoutStepsInput = {
@@ -77149,6 +78779,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
@@ -77189,6 +78821,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
@@ -77241,6 +78875,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
@@ -77281,6 +78917,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
@@ -77317,6 +78955,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -77357,6 +78997,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -77409,6 +79051,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -77449,6 +79093,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -77485,6 +79131,7 @@ export namespace Prisma {
     tools?: AssociateToolCreateNestedManyWithoutAssociateInput
     conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateWithoutCreatedByInput = {
@@ -77502,6 +79149,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateCreateOrConnectWithoutCreatedByInput = {
@@ -77511,6 +79159,54 @@ export namespace Prisma {
 
   export type AIAssociateCreateManyCreatedByInputEnvelope = {
     data: AIAssociateCreateManyCreatedByInput | AIAssociateCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AIAssociateShareCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    associate: AIAssociateCreateNestedOneWithoutSharedWithInput
+    grantedBy: UserCreateNestedOneWithoutAssociateSharesGrantedInput
+  }
+
+  export type AIAssociateShareUncheckedCreateWithoutUserInput = {
+    id?: string
+    associateId: string
+    grantedById: string
+    createdAt?: Date | string
+  }
+
+  export type AIAssociateShareCreateOrConnectWithoutUserInput = {
+    where: AIAssociateShareWhereUniqueInput
+    create: XOR<AIAssociateShareCreateWithoutUserInput, AIAssociateShareUncheckedCreateWithoutUserInput>
+  }
+
+  export type AIAssociateShareCreateManyUserInputEnvelope = {
+    data: AIAssociateShareCreateManyUserInput | AIAssociateShareCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AIAssociateShareCreateWithoutGrantedByInput = {
+    id?: string
+    createdAt?: Date | string
+    associate: AIAssociateCreateNestedOneWithoutSharedWithInput
+    user: UserCreateNestedOneWithoutAssociateSharesInput
+  }
+
+  export type AIAssociateShareUncheckedCreateWithoutGrantedByInput = {
+    id?: string
+    associateId: string
+    userId: string
+    createdAt?: Date | string
+  }
+
+  export type AIAssociateShareCreateOrConnectWithoutGrantedByInput = {
+    where: AIAssociateShareWhereUniqueInput
+    create: XOR<AIAssociateShareCreateWithoutGrantedByInput, AIAssociateShareUncheckedCreateWithoutGrantedByInput>
+  }
+
+  export type AIAssociateShareCreateManyGrantedByInputEnvelope = {
+    data: AIAssociateShareCreateManyGrantedByInput | AIAssociateShareCreateManyGrantedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -78407,6 +80103,49 @@ export namespace Prisma {
     practiceAreas?: EnumPracticeAreaNullableListFilter<"AIAssociate">
   }
 
+  export type AIAssociateShareUpsertWithWhereUniqueWithoutUserInput = {
+    where: AIAssociateShareWhereUniqueInput
+    update: XOR<AIAssociateShareUpdateWithoutUserInput, AIAssociateShareUncheckedUpdateWithoutUserInput>
+    create: XOR<AIAssociateShareCreateWithoutUserInput, AIAssociateShareUncheckedCreateWithoutUserInput>
+  }
+
+  export type AIAssociateShareUpdateWithWhereUniqueWithoutUserInput = {
+    where: AIAssociateShareWhereUniqueInput
+    data: XOR<AIAssociateShareUpdateWithoutUserInput, AIAssociateShareUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AIAssociateShareUpdateManyWithWhereWithoutUserInput = {
+    where: AIAssociateShareScalarWhereInput
+    data: XOR<AIAssociateShareUpdateManyMutationInput, AIAssociateShareUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AIAssociateShareScalarWhereInput = {
+    AND?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
+    OR?: AIAssociateShareScalarWhereInput[]
+    NOT?: AIAssociateShareScalarWhereInput | AIAssociateShareScalarWhereInput[]
+    id?: StringFilter<"AIAssociateShare"> | string
+    associateId?: StringFilter<"AIAssociateShare"> | string
+    userId?: StringFilter<"AIAssociateShare"> | string
+    grantedById?: StringFilter<"AIAssociateShare"> | string
+    createdAt?: DateTimeFilter<"AIAssociateShare"> | Date | string
+  }
+
+  export type AIAssociateShareUpsertWithWhereUniqueWithoutGrantedByInput = {
+    where: AIAssociateShareWhereUniqueInput
+    update: XOR<AIAssociateShareUpdateWithoutGrantedByInput, AIAssociateShareUncheckedUpdateWithoutGrantedByInput>
+    create: XOR<AIAssociateShareCreateWithoutGrantedByInput, AIAssociateShareUncheckedCreateWithoutGrantedByInput>
+  }
+
+  export type AIAssociateShareUpdateWithWhereUniqueWithoutGrantedByInput = {
+    where: AIAssociateShareWhereUniqueInput
+    data: XOR<AIAssociateShareUpdateWithoutGrantedByInput, AIAssociateShareUncheckedUpdateWithoutGrantedByInput>
+  }
+
+  export type AIAssociateShareUpdateManyWithWhereWithoutGrantedByInput = {
+    where: AIAssociateShareScalarWhereInput
+    data: XOR<AIAssociateShareUpdateManyMutationInput, AIAssociateShareUncheckedUpdateManyWithoutGrantedByInput>
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -79216,6 +80955,7 @@ export namespace Prisma {
     tools?: AssociateToolCreateNestedManyWithoutAssociateInput
     conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateWithoutOrganizationInput = {
@@ -79233,6 +80973,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateCreateOrConnectWithoutOrganizationInput = {
@@ -79394,6 +81135,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -79434,6 +81177,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -79525,6 +81270,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -79564,6 +81311,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -79611,6 +81360,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -79650,6 +81401,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -79981,6 +81734,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -80021,6 +81776,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -81214,6 +82971,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -81254,6 +83013,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -81393,6 +83154,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -81433,6 +83196,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -82231,6 +83996,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -82271,6 +84038,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -82374,6 +84143,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -82414,6 +84185,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -82472,6 +84245,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -82512,6 +84287,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -82880,6 +84657,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -82920,6 +84699,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -83334,6 +85115,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -83374,6 +85157,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -83612,6 +85397,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -83652,6 +85439,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -83875,6 +85664,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -83915,6 +85706,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -84004,6 +85797,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -84044,6 +85839,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -84137,6 +85934,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -84177,6 +85976,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -84292,6 +86093,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -84332,6 +86135,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -84368,6 +86173,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -84408,6 +86215,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -84562,6 +86371,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -84602,6 +86413,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -84752,6 +86565,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
@@ -84792,6 +86607,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
@@ -84936,6 +86753,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
@@ -84976,6 +86795,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
@@ -85356,6 +87177,7 @@ export namespace Prisma {
     steps?: AssociateStepCreateNestedManyWithoutAssociateInput
     tools?: AssociateToolCreateNestedManyWithoutAssociateInput
     projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateWithoutConversationsInput = {
@@ -85373,6 +87195,7 @@ export namespace Prisma {
     steps?: AssociateStepUncheckedCreateNestedManyWithoutAssociateInput
     tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
     projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateCreateOrConnectWithoutConversationsInput = {
@@ -85600,6 +87423,7 @@ export namespace Prisma {
     steps?: AssociateStepUpdateManyWithoutAssociateNestedInput
     tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
     projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateWithoutConversationsInput = {
@@ -85617,6 +87441,7 @@ export namespace Prisma {
     steps?: AssociateStepUncheckedUpdateManyWithoutAssociateNestedInput
     tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
     projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type ProjectUpsertWithoutConversationsInput = {
@@ -85809,6 +87634,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -85849,6 +87676,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -85968,6 +87797,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -86008,6 +87839,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -86428,6 +88261,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -86468,6 +88303,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -86646,6 +88483,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -86686,6 +88525,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -86971,6 +88812,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
     documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
@@ -87011,6 +88854,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
     documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
@@ -87104,6 +88949,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
     documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
@@ -87144,6 +88991,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
@@ -87217,6 +89066,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -87257,6 +89108,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -87378,6 +89231,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -87418,6 +89273,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -87717,6 +89574,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -87757,6 +89616,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -87937,6 +89798,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -87977,6 +89840,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -88117,6 +89982,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -88157,6 +90024,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -88252,6 +90121,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -88292,6 +90163,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -88327,6 +90200,8 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -88367,6 +90242,8 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -88577,6 +90454,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AIAssociateShareCreateWithoutAssociateInput = {
+    id?: string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutAssociateSharesInput
+    grantedBy: UserCreateNestedOneWithoutAssociateSharesGrantedInput
+  }
+
+  export type AIAssociateShareUncheckedCreateWithoutAssociateInput = {
+    id?: string
+    userId: string
+    grantedById: string
+    createdAt?: Date | string
+  }
+
+  export type AIAssociateShareCreateOrConnectWithoutAssociateInput = {
+    where: AIAssociateShareWhereUniqueInput
+    create: XOR<AIAssociateShareCreateWithoutAssociateInput, AIAssociateShareUncheckedCreateWithoutAssociateInput>
+  }
+
+  export type AIAssociateShareCreateManyAssociateInputEnvelope = {
+    data: AIAssociateShareCreateManyAssociateInput | AIAssociateShareCreateManyAssociateInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutCreatedAIAssociatesInput = {
     update: XOR<UserUpdateWithoutCreatedAIAssociatesInput, UserUncheckedUpdateWithoutCreatedAIAssociatesInput>
     create: XOR<UserCreateWithoutCreatedAIAssociatesInput, UserUncheckedCreateWithoutCreatedAIAssociatesInput>
@@ -88602,6 +90503,8 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -88642,6 +90545,8 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -88834,6 +90739,462 @@ export namespace Prisma {
     data: XOR<ProjectAssociateUpdateManyMutationInput, ProjectAssociateUncheckedUpdateManyWithoutAssociateInput>
   }
 
+  export type AIAssociateShareUpsertWithWhereUniqueWithoutAssociateInput = {
+    where: AIAssociateShareWhereUniqueInput
+    update: XOR<AIAssociateShareUpdateWithoutAssociateInput, AIAssociateShareUncheckedUpdateWithoutAssociateInput>
+    create: XOR<AIAssociateShareCreateWithoutAssociateInput, AIAssociateShareUncheckedCreateWithoutAssociateInput>
+  }
+
+  export type AIAssociateShareUpdateWithWhereUniqueWithoutAssociateInput = {
+    where: AIAssociateShareWhereUniqueInput
+    data: XOR<AIAssociateShareUpdateWithoutAssociateInput, AIAssociateShareUncheckedUpdateWithoutAssociateInput>
+  }
+
+  export type AIAssociateShareUpdateManyWithWhereWithoutAssociateInput = {
+    where: AIAssociateShareScalarWhereInput
+    data: XOR<AIAssociateShareUpdateManyMutationInput, AIAssociateShareUncheckedUpdateManyWithoutAssociateInput>
+  }
+
+  export type AIAssociateCreateWithoutSharedWithInput = {
+    id?: string
+    name: string
+    instructions: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    description?: string | null
+    isActive?: boolean
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    createdBy: UserCreateNestedOneWithoutCreatedAIAssociatesInput
+    organization: OrganizationCreateNestedOneWithoutAiAssociatesInput
+    steps?: AssociateStepCreateNestedManyWithoutAssociateInput
+    tools?: AssociateToolCreateNestedManyWithoutAssociateInput
+    conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
+    projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+  }
+
+  export type AIAssociateUncheckedCreateWithoutSharedWithInput = {
+    id?: string
+    name: string
+    instructions: string
+    organizationId: string
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    description?: string | null
+    isActive?: boolean
+    knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
+    practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+    steps?: AssociateStepUncheckedCreateNestedManyWithoutAssociateInput
+    tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
+    projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+  }
+
+  export type AIAssociateCreateOrConnectWithoutSharedWithInput = {
+    where: AIAssociateWhereUniqueInput
+    create: XOR<AIAssociateCreateWithoutSharedWithInput, AIAssociateUncheckedCreateWithoutSharedWithInput>
+  }
+
+  export type UserCreateWithoutAssociateSharesInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAssociateSharesInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAssociateSharesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAssociateSharesInput, UserUncheckedCreateWithoutAssociateSharesInput>
+  }
+
+  export type UserCreateWithoutAssociateSharesGrantedInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAssociateSharesGrantedInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAssociateSharesGrantedInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAssociateSharesGrantedInput, UserUncheckedCreateWithoutAssociateSharesGrantedInput>
+  }
+
+  export type AIAssociateUpsertWithoutSharedWithInput = {
+    update: XOR<AIAssociateUpdateWithoutSharedWithInput, AIAssociateUncheckedUpdateWithoutSharedWithInput>
+    create: XOR<AIAssociateCreateWithoutSharedWithInput, AIAssociateUncheckedCreateWithoutSharedWithInput>
+    where?: AIAssociateWhereInput
+  }
+
+  export type AIAssociateUpdateToOneWithWhereWithoutSharedWithInput = {
+    where?: AIAssociateWhereInput
+    data: XOR<AIAssociateUpdateWithoutSharedWithInput, AIAssociateUncheckedUpdateWithoutSharedWithInput>
+  }
+
+  export type AIAssociateUpdateWithoutSharedWithInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    instructions?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    createdBy?: UserUpdateOneRequiredWithoutCreatedAIAssociatesNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutAiAssociatesNestedInput
+    steps?: AssociateStepUpdateManyWithoutAssociateNestedInput
+    tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
+    conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
+    projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+  }
+
+  export type AIAssociateUncheckedUpdateWithoutSharedWithInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    instructions?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
+    practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+    steps?: AssociateStepUncheckedUpdateManyWithoutAssociateNestedInput
+    tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
+    projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+  }
+
+  export type UserUpsertWithoutAssociateSharesInput = {
+    update: XOR<UserUpdateWithoutAssociateSharesInput, UserUncheckedUpdateWithoutAssociateSharesInput>
+    create: XOR<UserCreateWithoutAssociateSharesInput, UserUncheckedCreateWithoutAssociateSharesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAssociateSharesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAssociateSharesInput, UserUncheckedUpdateWithoutAssociateSharesInput>
+  }
+
+  export type UserUpdateWithoutAssociateSharesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAssociateSharesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUpsertWithoutAssociateSharesGrantedInput = {
+    update: XOR<UserUpdateWithoutAssociateSharesGrantedInput, UserUncheckedUpdateWithoutAssociateSharesGrantedInput>
+    create: XOR<UserCreateWithoutAssociateSharesGrantedInput, UserUncheckedCreateWithoutAssociateSharesGrantedInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAssociateSharesGrantedInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAssociateSharesGrantedInput, UserUncheckedUpdateWithoutAssociateSharesGrantedInput>
+  }
+
+  export type UserUpdateWithoutAssociateSharesGrantedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAssociateSharesGrantedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type AIAssociateCreateWithoutStepsInput = {
     id?: string
     name: string
@@ -88849,6 +91210,7 @@ export namespace Prisma {
     tools?: AssociateToolCreateNestedManyWithoutAssociateInput
     conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateWithoutStepsInput = {
@@ -88866,6 +91228,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateCreateOrConnectWithoutStepsInput = {
@@ -88899,6 +91262,7 @@ export namespace Prisma {
     tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateWithoutStepsInput = {
@@ -88916,6 +91280,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateCreateWithoutToolsInput = {
@@ -88933,6 +91298,7 @@ export namespace Prisma {
     steps?: AssociateStepCreateNestedManyWithoutAssociateInput
     conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateWithoutToolsInput = {
@@ -88950,6 +91316,7 @@ export namespace Prisma {
     steps?: AssociateStepUncheckedCreateNestedManyWithoutAssociateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
     projects?: ProjectAssociateUncheckedCreateNestedManyWithoutAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateCreateOrConnectWithoutToolsInput = {
@@ -88983,6 +91350,7 @@ export namespace Prisma {
     steps?: AssociateStepUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateWithoutToolsInput = {
@@ -89000,6 +91368,7 @@ export namespace Prisma {
     steps?: AssociateStepUncheckedUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateCreateWithoutProjectsInput = {
@@ -89017,6 +91386,7 @@ export namespace Prisma {
     steps?: AssociateStepCreateNestedManyWithoutAssociateInput
     tools?: AssociateToolCreateNestedManyWithoutAssociateInput
     conversations?: ConversationCreateNestedManyWithoutAiAssociateInput
+    sharedWith?: AIAssociateShareCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateUncheckedCreateWithoutProjectsInput = {
@@ -89034,6 +91404,7 @@ export namespace Prisma {
     steps?: AssociateStepUncheckedCreateNestedManyWithoutAssociateInput
     tools?: AssociateToolUncheckedCreateNestedManyWithoutAssociateInput
     conversations?: ConversationUncheckedCreateNestedManyWithoutAiAssociateInput
+    sharedWith?: AIAssociateShareUncheckedCreateNestedManyWithoutAssociateInput
   }
 
   export type AIAssociateCreateOrConnectWithoutProjectsInput = {
@@ -89112,6 +91483,7 @@ export namespace Prisma {
     steps?: AssociateStepUpdateManyWithoutAssociateNestedInput
     tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateWithoutProjectsInput = {
@@ -89129,6 +91501,7 @@ export namespace Prisma {
     steps?: AssociateStepUncheckedUpdateManyWithoutAssociateNestedInput
     tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type ProjectUpsertWithoutAssociatesInput = {
@@ -89400,6 +91773,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -89440,6 +91815,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -89607,6 +91984,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -89647,6 +92026,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -89751,6 +92132,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -89791,6 +92174,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -89873,6 +92258,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -89913,6 +92300,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -90247,6 +92636,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     actions?: ConversationActionCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
@@ -90287,6 +92678,8 @@ export namespace Prisma {
     emailVerificationExpires?: Date | string | null
     authProvider?: string
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
     conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
@@ -90339,6 +92732,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -90379,6 +92774,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -90411,6 +92808,20 @@ export namespace Prisma {
     isActive?: boolean
     knowledgeBase?: AIAssociateCreateknowledgeBaseInput | string[]
     practiceAreas?: AIAssociateCreatepracticeAreasInput | $Enums.PracticeArea[]
+  }
+
+  export type AIAssociateShareCreateManyUserInput = {
+    id?: string
+    associateId: string
+    grantedById: string
+    createdAt?: Date | string
+  }
+
+  export type AIAssociateShareCreateManyGrantedByInput = {
+    id?: string
+    associateId: string
+    userId: string
+    createdAt?: Date | string
   }
 
   export type AccountCreateManyUserInput = {
@@ -90648,6 +93059,7 @@ export namespace Prisma {
     tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateWithoutCreatedByInput = {
@@ -90665,6 +93077,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateManyWithoutCreatedByInput = {
@@ -90678,6 +93091,48 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     knowledgeBase?: AIAssociateUpdateknowledgeBaseInput | string[]
     practiceAreas?: AIAssociateUpdatepracticeAreasInput | $Enums.PracticeArea[]
+  }
+
+  export type AIAssociateShareUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    associate?: AIAssociateUpdateOneRequiredWithoutSharedWithNestedInput
+    grantedBy?: UserUpdateOneRequiredWithoutAssociateSharesGrantedNestedInput
+  }
+
+  export type AIAssociateShareUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    associateId?: StringFieldUpdateOperationsInput | string
+    grantedById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    associateId?: StringFieldUpdateOperationsInput | string
+    grantedById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareUpdateWithoutGrantedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    associate?: AIAssociateUpdateOneRequiredWithoutSharedWithNestedInput
+    user?: UserUpdateOneRequiredWithoutAssociateSharesNestedInput
+  }
+
+  export type AIAssociateShareUncheckedUpdateWithoutGrantedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    associateId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyWithoutGrantedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    associateId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -91569,6 +94024,7 @@ export namespace Prisma {
     tools?: AssociateToolUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateWithoutOrganizationInput = {
@@ -91586,6 +94042,7 @@ export namespace Prisma {
     tools?: AssociateToolUncheckedUpdateManyWithoutAssociateNestedInput
     conversations?: ConversationUncheckedUpdateManyWithoutAiAssociateNestedInput
     projects?: ProjectAssociateUncheckedUpdateManyWithoutAssociateNestedInput
+    sharedWith?: AIAssociateShareUncheckedUpdateManyWithoutAssociateNestedInput
   }
 
   export type AIAssociateUncheckedUpdateManyWithoutOrganizationInput = {
@@ -91812,6 +94269,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -91851,6 +94310,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -91905,6 +94366,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
@@ -91944,6 +94407,8 @@ export namespace Prisma {
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
     conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
@@ -93316,6 +95781,13 @@ export namespace Prisma {
     addedAt?: Date | string
   }
 
+  export type AIAssociateShareCreateManyAssociateInput = {
+    id?: string
+    userId: string
+    grantedById: string
+    createdAt?: Date | string
+  }
+
   export type AssociateStepUpdateWithoutAssociateInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -93402,6 +95874,27 @@ export namespace Prisma {
   export type ProjectAssociateUncheckedUpdateManyWithoutAssociateInput = {
     projectId?: StringFieldUpdateOperationsInput | string
     addedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareUpdateWithoutAssociateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutAssociateSharesNestedInput
+    grantedBy?: UserUpdateOneRequiredWithoutAssociateSharesGrantedNestedInput
+  }
+
+  export type AIAssociateShareUncheckedUpdateWithoutAssociateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    grantedById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AIAssociateShareUncheckedUpdateManyWithoutAssociateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    grantedById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type DigestHistoryCreateManySubscriptionInput = {

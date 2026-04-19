@@ -44,6 +44,7 @@ import SupportModal from "@/components/support/SupportModal";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import NotificationModal from "@/components/notifications/NotificationModal";
 import { useSubscription } from "@/store/profile.store";
+import ProAccessModal from "@/components/modals/ProAccess";
 
 interface SidebarLinkProps {
   href: string;
@@ -107,6 +108,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { clearAssociates } = useAssociatesStore();
   const { subscriptionStatus, fetchSubscriptionStatus } = useSubscription();
   const hasPremiumAccess = !!subscriptionStatus?.hasProAccess;
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [upgradePlanState, setUpgradePlanState] = useState<'free' | 'explorer_expired'>('free');
+  const [upgradeLimitType, setUpgradeLimitType] = useState<'general' | 'trial_expired'>('general');
 
   // Close mobile menu when screen resizes to desktop
   useEffect(() => {
@@ -126,10 +130,34 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [fetchProjects]);
 
   useEffect(() => {
-    if (!subscriptionStatus) {
+    if (status === 'authenticated' && !subscriptionStatus) {
       fetchSubscriptionStatus();
     }
-  }, [subscriptionStatus, fetchSubscriptionStatus]);
+  }, [status, fetchSubscriptionStatus]);
+
+  // Show upgrade modal once per session when trial or explorer access has ended
+  useEffect(() => {
+    if (!subscriptionStatus || hasPremiumAccess) return;
+
+    const sessionKey = 'wansom.upgradePromptSeen.v1';
+    if (sessionStorage.getItem(sessionKey)) return;
+
+    const { trialJustExpired, explorerExpiredAt } = subscriptionStatus as any;
+
+    if (trialJustExpired) {
+      // Pro trial ended → Explorer is the featured next step
+      setUpgradePlanState('free');
+      setUpgradeLimitType('trial_expired');
+      setShowUpgradePrompt(true);
+      sessionStorage.setItem(sessionKey, '1');
+    } else if (explorerExpiredAt) {
+      // Explorer ended → Pro is the primary CTA
+      setUpgradePlanState('explorer_expired');
+      setUpgradeLimitType('general');
+      setShowUpgradePrompt(true);
+      sessionStorage.setItem(sessionKey, '1');
+    }
+  }, [subscriptionStatus, hasPremiumAccess]);
 
   // Recent projects - limit to 3
   const recentProjects = projects?.slice(0, 3) || [];
@@ -521,6 +549,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Main content area */}
         <main className="flex-1 overflow-auto">{children}</main>
       </div>
+
+      {/* Upgrade prompt — shown once per session after trial or explorer access ends */}
+      <ProAccessModal
+        isOpen={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        planState={upgradePlanState}
+        limitType={upgradeLimitType}
+      />
 
       {/* Session expiry modal — shown globally across all authenticated pages */}
       <SessionExpiryModal />

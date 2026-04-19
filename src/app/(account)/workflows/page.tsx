@@ -15,7 +15,10 @@ import {
   Pencil,
   MoreVertical,
   AlertTriangle,
+  UserPlus,
+  Users,
 } from "lucide-react";
+import { AssociatePermissionModal } from "@/components/associates/AssociatePermissionModal";
 import { AIAssociate, PracticeArea, PRACTICE_AREA_LABELS } from "@/types";
 import { useAssociates } from "@/hooks/useAssociates";
 import { useRouter } from "next/navigation";
@@ -58,6 +61,10 @@ export default function WorkflowsPage() {
   } | null>(null);
   const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [showProAccess, setShowProAccess] = useState(false);
+  const [associateToShare, setAssociateToShare] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -323,9 +330,22 @@ export default function WorkflowsPage() {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
-                        {associate.name}
-                      </h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {associate.name}
+                        </h3>
+                        {associate.createdById !== profile?.id ? (
+                          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">
+                            <Users className="h-3 w-3" />
+                            Shared with you
+                          </span>
+                        ) : (associate._count?.sharedWith ?? 0) > 0 ? (
+                          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full">
+                            <Users className="h-3 w-3" />
+                            Shared with {associate._count?.sharedWith}
+                          </span>
+                        ) : null}
+                      </div>
                       <p className="text-sm text-muted-foreground truncate">
                         {associate.description ||
                           associate.instructions?.substring(0, 60) + "..."}
@@ -377,29 +397,54 @@ export default function WorkflowsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(`/workflows/${associate.id}`);
-                            }}
-                          >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setAssociateToDelete({
-                                id: associate.id,
-                                name: associate.name,
-                              });
-                            }}
-                            className="text-red-600 focus:text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
+                          {associate.createdById === profile?.id && (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/workflows/${associate.id}`);
+                              }}
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                          )}
+                          {associate.createdById === profile?.id && (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAssociateToShare({
+                                  id: associate.id,
+                                  name: associate.name,
+                                });
+                              }}
+                            >
+                              <UserPlus className="h-4 w-4 mr-2" />
+                              Share
+                            </DropdownMenuItem>
+                          )}
+                          {associate.createdById === profile?.id && (
+                            <DropdownMenuSeparator />
+                          )}
+                          {associate.createdById === profile?.id ? (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAssociateToDelete({
+                                  id: associate.id,
+                                  name: associate.name,
+                                });
+                              }}
+                              className="text-red-600 focus:text-red-600"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem disabled>
+                              <Users className="h-4 w-4 mr-2" />
+                              Shared with you
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -506,15 +551,22 @@ export default function WorkflowsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Share Associate Modal */}
+      {associateToShare && (
+        <AssociatePermissionModal
+          open={!!associateToShare}
+          onClose={() => setAssociateToShare(null)}
+          associateId={associateToShare.id}
+          associateName={associateToShare.name}
+          onUpdated={() => fetchAssociates()}
+        />
+      )}
+
       {/* Pro Access Modal */}
       <ProAccessModal
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
-        userData={{
-          name: profile?.fullName ?? undefined,
-          email: profile?.email,
-          accountType: profile?.organization?.accountType
-        }}
+        limitType="associates"
       />
     </div>
   );

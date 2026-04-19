@@ -22,6 +22,10 @@ npx prisma studio     # Database GUI
 
 **Package manager**: npm (not yarn or pnpm)
 
+**Build memory**: The build script sets `NODE_OPTIONS='--max-old-space-size=4096'` to prevent OOM failures on large builds.
+
+**Turbopack external packages**: `next.config.ts` keeps Google AI SDKs, native modules (`sharp`, `canvas`, `tesseract.js`), and headless browser tools outside Turbopack bundling via `serverExternalPackages`. Add new native/AI deps there if you see "Invalid source map" or WASM errors.
+
 ## Architecture Overview
 
 ### Technology Stack
@@ -86,11 +90,18 @@ Organization
   - `"[SCANNED_PDF_REQUIRES_PROCESSING]"` — scanned PDF, sent to Gemini vision API at chat time
   - `"[SCANNED_IMAGE_REQUIRES_PROCESSING]"` — image file, sent to Gemini vision API at chat time
 - These sentinels are checked at message time; the raw file URL is fetched and passed as a Gemini inline data part
+- **Scanned PDF threshold** (`src/lib/documentParser.ts`): if text extraction yields <100 chars or <10 meaningful words, the document is treated as scanned and the sentinel is stored
 - Optional: Google Cloud Vision API for advanced OCR (requires `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT_ID`, and `GOOGLE_CLOUD_STORAGE_BUCKET`)
+
+#### `.doc` / DOCX Import (three-path extraction)
+`/api/projects/[id]/canvas/import-doc/route.ts` handles three cases in order:
+1. **True `.docx`**: mammoth extraction
+2. **`.doc` that is actually RTF** (Google Docs, LibreOffice export): custom RTF parser with CP1252 character mapping for bytes 0x80–0x9F (curly quotes, em-dash, etc.) and heading detection via `{\stylesheet}` block scanning
+3. **Genuine Word 97-2003 binary `.doc`**: CFB binary parser fallback
 
 #### 6. Role-Based Access Control
 - **Organization roles**: `owner` > `admin` > `member`
-- **Project roles**: `owner` > `editor` > `member`
+- **Project roles**: `admin` > `member` > `viewer` (TypeScript: `ProjectMember.role` in `src/types/projects.ts`)
 - Permission checks via `src/lib/auth/permissions.ts` (org/project) and `src/lib/auth/workspace-permissions.ts` (shared workspace)
 - Admin-only routes (`/api/admin/*`) are gated by `src/lib/auth/admin.ts` and `src/lib/auth/admin-middleware.ts`, separate from the standard middleware
 - Enterprise-only features: member invitations, team management
@@ -104,7 +115,13 @@ Organization
 
 #### 8. Legal Digest System
 - `src/services/legalDigestService.ts` generates periodic legal digest emails for subscribed users
-- Cron trigger at `/api/cron/legal-digest`; user subscriptions managed at `/api/digest/subscription`
+- Cron trigger at `/api/cron/legal-digest` (`maxDuration = 300`); user subscriptions managed at `/api/digest/subscription`
+- **Two-phase execution**: Phase 1 resolves fingerprints (no Gemini calls); Phase 2 generates and sends emails
+- **Idempotency**: digest fingerprinting prevents re-sending identical content; test email addresses bypass this gate
+- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`, `/api/cron/digest-ingest`, `/api/cron/digest-cleanup`
+
+#### 9. Database Transaction Pattern
+Use `prisma.$transaction()` for multi-table writes (e.g., org upgrades, bulk visibility fixes, associate session creation). Place email-sending calls **outside** transactions so a failed send does not roll back DB changes.
 
 ## Important Implementation Details
 
@@ -233,6 +250,14 @@ The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/me
 - The `withAuth`/`withProjectAccess` middleware wrappers cannot be used for streaming routes — use manual `getUserIdFromRequest()` auth instead
 - User message is created in DB **only after** validation passes (Phase 1 checks access, subscription, conversation existence; Phase 2 creates the message and opens the stream)
 
+#### Client-side streaming message pattern
+`chat.store.ts` manages optimistic streaming via a `tempId` lifecycle:
+1. A message is added immediately with a generated `tempId` and `isStreaming: true`
+2. Each chunk updates it: `updateStreamingMessage(tempId, { content: accumulated })`
+3. On `complete`, the temp message is replaced: `finalizeStreamingMessage(tempId, finalMessage)` — sets `isStreaming: false` and clears `tempId`
+
+After finalization, `notifyResearchComplete()` fires a browser push notification **only when** `Notification.permission === 'granted'` AND `document.visibilityState !== 'visible'` AND the `notifyOnResearchComplete` workspace setting (or the `wansom.notifyPromptSeen.v1` localStorage flag) is truthy. Notifications are best-effort and never interrupt the chat flow.
+
 ### Gemini Conversation History Format
 Gemini requires a specific format for `history` — note the differences from standard AI conventions:
 - Role must be `'model'` (not `'assistant'`) for AI turns
@@ -298,6 +323,8 @@ const result = await apiService.post('/api/projects', { title: 'New Matter' });
 ```
 Do **not** use raw `fetch` in client components—always use `apiService`.
 
+The access token is cached client-side for 5 minutes to avoid session lookups on every request. On 401 the cache is cleared and the token is re-fetched. Transient errors (408, 429, 5xx) are retried automatically with exponential backoff.
+
 ### Custom Hooks
 Reusable hooks in `src/hooks/`:
 - `useAuth` - User session and authentication state
@@ -310,6 +337,13 @@ The project workspace page (`(account)/projects/[id]/page.tsx`) renders one of t
 - `DocumentPreviewSplitView` - When a document is selected for preview (`selectedPreviewDocument` in `ui.store`)
 - `CanvasChatSplitView` - When canvas mode is active (`view=canvas` query param, or `canvasMode` setting). `legalDrafting` is a legacy alias for `canvasMode` in workspace settings; both map to the same behavior
 - `ChatInterface` - Default AI chat view
+
+After a successful Google OAuth callback, the page receives `?connection=success|error|cancelled` query params. It auto-enables the relevant setting (`googleCalendar` or `gmail`) via `updateSetting()`, dispatches `window.dispatchEvent(new CustomEvent('googleConnectionSuccess'))` so `ChatInput` can refresh its connection state, then removes the query params via `router.replace`.
+
+### ChatInput Modes
+`ChatInput` (`src/components/chat/ChatInput.tsx`) has two operating modes:
+- **Normal mode** (default): sends messages within an existing project/conversation
+- **Homepage mode** (`homepageMode={true}`): no `projectId` in params; on submit it creates a new workspace first (calls `/api/projects`) then navigates to it. An `onWorkspaceCreated` callback is also available. The `onDocumentsAdded` prop notifies the parent when files are attached.
 
 ### Environment Variables
 See `.env.example` for the full list. Key variables:
@@ -362,7 +396,7 @@ Optional (for RAG tuning):
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
 
-#### 9. Visibility & Permissions System
+#### 10. Visibility & Permissions System
 - `Project`, `Document`, and `Folder` each have a `visibility` field:
   - `Project.visibility`: `"restricted"` (default — only explicit members) | `"public"` (all org members)
   - `Document.visibility`: `"private"` (default — only creator) | `"restricted"` (explicit grants) | `"public"` (all org members)
@@ -419,6 +453,19 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/prorequests` - Pro plan upgrade requests
 - `/api/law360/*` - Law360 activation and email-check endpoints
 - `/api/submissions/*` - Form submissions and demo requests
+
+### Pricing & Currency
+- **Guest export pricing** (`src/lib/exportPricing.ts`): PPP-adjusted per country (NGN/KES/ZAR/GHS/USD); falls back to `DEFAULT_EXPORT_PRICING`
+- **Subscription pricing** (`src/lib/subscriptionPricing.ts`): localized per country; payment channels differ (mobile money for Kenya vs card-only elsewhere)
+
+### Role Hierarchy Constants
+`src/lib/constants/` provides type-safe role helpers:
+- `RoleHierarchy` map for numeric comparison: `OWNER=3`, `ADMIN=2`, `MEMBER=1`
+- `isValidOrganizationRole()` / `isValidWorkspaceRole()` type guards
+- `OrganizationRolePermissions` record maps each role to its allowed permissions
+
+### Admin Middleware
+`/api/admin/*` routes use separate middleware (`src/lib/auth/admin-middleware.ts`) that checks the `ADMIN_EMAILS` env var list and returns 403 for all others — independent of the standard `withAuth`/`withOrganizationAccess` chain.
 
 ### Deployment Note
 `src/vercel.json` lives inside `src/` (not the project root) — this is intentional for this project's Vercel configuration. It also contains permanent redirects from the legacy domain `wakili.chat` → `wansom.ai`.

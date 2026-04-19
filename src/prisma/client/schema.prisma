@@ -62,6 +62,8 @@ model User {
   emailVerificationExpires DateTime?
   authProvider             String                  @default("email")
   createdAIAssociates      AIAssociate[]
+  associateShares          AIAssociateShare[]      @relation("AIAssociateShareUser")
+  associateSharesGranted   AIAssociateShare[]      @relation("AIAssociateShareGrantedBy")
   accounts                 Account[]
   actions                  ConversationAction[]
   conversationDocuments    ConversationDocument[]
@@ -598,9 +600,25 @@ model AIAssociate {
   tools          AssociateTool[]
   conversations  Conversation[]
   projects       ProjectAssociate[]
+  sharedWith     AIAssociateShare[]
 
   @@index([organizationId])
   @@index([createdById])
+}
+
+model AIAssociateShare {
+  id          String      @id @default(cuid())
+  associateId String
+  userId      String
+  grantedById String
+  createdAt   DateTime    @default(now())
+  associate   AIAssociate @relation(fields: [associateId], references: [id], onDelete: Cascade)
+  user        User        @relation("AIAssociateShareUser", fields: [userId], references: [id], onDelete: Cascade)
+  grantedBy   User        @relation("AIAssociateShareGrantedBy", fields: [grantedById], references: [id])
+
+  @@unique([associateId, userId])
+  @@index([associateId], map: "idx_associate_share_associate")
+  @@index([userId], map: "idx_associate_share_user")
 }
 
 model AssociateStep {

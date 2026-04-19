@@ -50,6 +50,15 @@ export const POST = withErrorHandler(
     const body = await request.json();
     const { associateId } = assignAssociateSchema.parse(body);
 
+    // Only project admins may assign associates
+    const projectMember = await prisma.projectMember.findUnique({
+      where: { userId_projectId: { userId, projectId } },
+      select: { role: true },
+    });
+    if (!projectMember || projectMember.role !== 'admin') {
+      return createForbiddenResponse('Only project admins can assign associates');
+    }
+
     // Get user's active organization
     const currentOrgId = await getActiveOrganizationId(userId);
 
