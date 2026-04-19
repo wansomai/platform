@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import prisma from '@/lib/prisma';
-import { getSubscriptionPricing } from '@/lib/subscriptionPricing';
+import { getSubscriptionPricing, getExplorerPricing, DEFAULT_EXPLORER_PRICING } from '@/lib/subscriptionPricing';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
@@ -265,9 +265,86 @@ export async function POST(request: NextRequest) {
               `[Paystack Webhook] Amount manipulation detected for ref ${reference}: ` +
               `received ${amount}, expected ${expectedAmount} (${pricing.currency}, ${planType})`
             );
-            // Return 200 so Paystack doesn't retry, but do NOT activate the subscription.
             return NextResponse.json({ received: true, skipped: 'amount_mismatch' });
           }
+        }
+
+        // ── Explorer plan: one-time 14-day access ─────────────────────────────
+        const chargePlanType = (metadata.planType as string | undefined) ?? '';
+        if (chargePlanType === 'explorer' && organizationId) {
+          const countryCode = (metadata.countryCode as string | undefined) ?? '';
+          const localExplorerPricing = getExplorerPricing(countryCode);
+          // Use the pricing that matches the actual payment currency to handle USD fallback correctly.
+          const explorerPricing =
+            currency && localExplorerPricing.currency === currency
+              ? localExplorerPricing
+              : DEFAULT_EXPLORER_PRICING;
+          if (amount < explorerPricing.amount) {
+            console.error(
+              `[Paystack Webhook] Explorer amount manipulation for ref ${reference}: ` +
+              `received ${amount} ${currency}, expected ${explorerPricing.amount} ${explorerPricing.currency}`
+            );
+            return NextResponse.json({ received: true, skipped: 'amount_mismatch' });
+          }
+
+          const now = new Date();
+          const periodEnd = new Date(now);
+          periodEnd.setDate(periodEnd.getDate() + 14);
+
+          const explorerSub = await prisma.subscription.upsert({
+            where: { organizationId },
+            create: {
+              organizationId,
+              planName: 'explorer',
+              planPrice: String(amount / 100),
+              planType: 'explorer',
+              billingCycle: 'biweekly',
+              status: 'active',
+              currentPeriodStart: now,
+              currentPeriodEnd: periodEnd,
+            },
+            update: {
+              planName: 'explorer',
+              planPrice: String(amount / 100),
+              planType: 'explorer',
+              billingCycle: 'biweekly',
+              status: 'active',
+              currentPeriodStart: now,
+              currentPeriodEnd: periodEnd,
+              paystackSubscriptionId: null,
+            },
+          });
+
+          await prisma.payment.create({
+            data: {
+              subscriptionId: explorerSub.id,
+              paystackReference: reference,
+              amount,
+              currency: currency || 'USD',
+              status: 'success',
+              paymentMethod: channel || 'card',
+              paidAt: paidAt ? new Date(paidAt) : now,
+              metadata: { source: 'explorer-webhook' },
+            },
+          });
+
+          const orgForNotif = await prisma.organization.findUnique({
+            where: { id: organizationId },
+            select: { ownerId: true },
+          });
+          if (orgForNotif?.ownerId) {
+            await prisma.notification.create({
+              data: {
+                userId: orgForNotif.ownerId,
+                title: 'Explorer access activated',
+                message: `Your 14-day Explorer access is now active. It expires on ${periodEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`,
+                type: 'success',
+              },
+            });
+          }
+
+          console.log(`[Paystack Webhook] Explorer plan activated for org: ${organizationId}, expires: ${periodEnd}`);
+          break;
         }
 
         // Find the subscription to link the payment

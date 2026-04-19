@@ -853,17 +853,21 @@ async function loadPeerSpecialists(
  */
 async function findAssociateByName(projectId: string, name: string): Promise<any> {
   try {
-    // Resolve org so we can search all associates, not just project-assigned ones
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      select: { organizationId: true },
+    // Restrict lookup to associates actually assigned to this project so that
+    // private/unassigned associates in the same org cannot be discovered via
+    // AI tool calls (e.g. suggest_associate / delegate_to_associate).
+    const projectAssociates = await prisma.projectAssociate.findMany({
+      where: { projectId },
+      include: {
+        associate: {
+          include: { steps: { orderBy: { stepOrder: 'asc' } }, tools: true },
+        },
+      },
     });
-    if (!project?.organizationId) return null;
 
-    const all = await prisma.aIAssociate.findMany({
-      where: { organizationId: project.organizationId, isActive: true },
-      include: { steps: { orderBy: { stepOrder: 'asc' } }, tools: true },
-    });
+    const all = projectAssociates
+      .map((pa: any) => pa.associate)
+      .filter((a: any) => a && a.isActive);
 
     const nameLower = name.toLowerCase();
 

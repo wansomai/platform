@@ -1660,16 +1660,7 @@ export function ChatInput({
       <ProAccessModal
         isOpen={showProAcess}
         onClose={() => setShowProAccess(false)}
-        errorMessage={
-          projectRequiresUpgrade
-            ? "You have reached your workspace limit. Upgrade to create unlimited workspaces."
-            : "You have reached your message limit. Upgrade to send unlimited messages."
-        }
-        userData={{
-          name: session?.user?.name || "",
-          email: session?.user?.email || "",
-          accountType: "personal", // Default to personal, user can change
-        }}
+        limitType={projectRequiresUpgrade ? "projects" : "messages"}
       />
       {/* Document Selection Modal - only show in chat mode since it needs projectId */}
       {!homepageMode && (

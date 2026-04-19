@@ -95,6 +95,7 @@ export async function GET(req: NextRequest) {
   const dueForRenewal = await prisma.subscription.findMany({
     where: {
       status: 'active',
+      planName: { not: 'explorer' },
       paystackAuthCode: { not: null },
       currentPeriodEnd: { lte: now },
     },
@@ -207,6 +208,7 @@ export async function GET(req: NextRequest) {
   const attentionSubs = await prisma.subscription.findMany({
     where: {
       status: 'attention',
+      planName: { not: 'explorer' },
       paystackAuthCode: { not: null },
       currentPeriodEnd: { not: null },
     },

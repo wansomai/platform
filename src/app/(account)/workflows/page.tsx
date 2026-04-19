@@ -566,11 +566,7 @@ export default function WorkflowsPage() {
       <ProAccessModal
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
-        userData={{
-          name: profile?.fullName ?? undefined,
-          email: profile?.email,
-          accountType: profile?.organization?.accountType
-        }}
+        limitType="associates"
       />
     </div>
   );

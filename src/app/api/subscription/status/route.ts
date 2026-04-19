@@ -41,8 +41,15 @@ export const GET = withErrorHandler(
     });
     const isAdmin = isOwner || membership?.role === 'admin';
 
-    // Regular members cannot view billing
+    // Regular members cannot view billing details but still need correct Pro access flag
     if (!isAdmin) {
+      const sub = org.subscription;
+      const now = new Date();
+      const memberHasProAccess =
+        org.accountType === 'enterprise' ||
+        (sub != null && ['active', 'non_renewing'].includes(sub.status) && sub.planName !== 'explorer') ||
+        (sub?.planName === 'explorer' && sub.status === 'active' && sub.currentPeriodEnd != null && sub.currentPeriodEnd > now);
+
       return createApiResponse({
         subscription: null,
         organization: { id: org.id, name: org.name, accountType: org.accountType },
@@ -51,7 +58,7 @@ export const GET = withErrorHandler(
         isOwner: false,
         canUpgrade: false,
         canCancel: false,
-        hasProAccess: org.accountType === 'enterprise',
+        hasProAccess: memberHasProAccess,
         associateCount: 0,
         canViewBilling: false,
       });
@@ -69,6 +76,29 @@ export const GET = withErrorHandler(
       org.trialExpiresAt != null &&
       org.trialExpiresAt > now;
 
+    // Trial ended without converting to a paid plan — signal the UI to prompt upgrade
+    const trialJustExpired =
+      org.trialExpired === true &&
+      org.accountType !== 'enterprise' &&
+      !subscription?.status ||
+      (org.trialExpired === true &&
+        org.accountType !== 'enterprise' &&
+        !['active', 'non_renewing'].includes(subscription?.status ?? ''));
+
+    // Explorer plan: 14-day one-time access still within window
+    const isExplorerActive =
+      subscription?.planName === 'explorer' &&
+      subscription?.status === 'active' &&
+      subscription?.currentPeriodEnd != null &&
+      new Date(subscription.currentPeriodEnd) > now;
+
+    const explorerExpiredAt =
+      subscription?.planName === 'explorer' &&
+      subscription?.currentPeriodEnd != null &&
+      new Date(subscription.currentPeriodEnd) <= now
+        ? subscription.currentPeriodEnd.toISOString()
+        : null;
+
     const associateCount = await prisma.aIAssociate.count({
       where: { organizationId: activeOrgId },
     });
@@ -83,8 +113,14 @@ export const GET = withErrorHandler(
     if (subscription) {
       effectiveStatus = subscription.status as EffectiveStatus;
       hasActiveSubscription = ['active', 'non_renewing'].includes(effectiveStatus);
-      canUpgrade = !hasActiveSubscription;
-      canCancel = ['active', 'attention'].includes(effectiveStatus) && isOwner;
+      // Explorer is a one-time charge: always allow upgrading to Pro, never show cancel
+      if (isExplorerActive) {
+        canUpgrade = true;
+        canCancel = false;
+      } else {
+        canUpgrade = !hasActiveSubscription;
+        canCancel = ['active', 'attention'].includes(effectiveStatus) && isOwner;
+      }
     }
 
     return createApiResponse({
@@ -120,9 +156,12 @@ export const GET = withErrorHandler(
       isOwner,
       canUpgrade,
       canCancel,
-      hasProAccess: hasActiveSubscription || isEnterprise,
+      hasProAccess: hasActiveSubscription || isEnterprise || isExplorerActive,
       isManualTrial,
       trialExpiresAt: org.trialExpiresAt?.toISOString() ?? null,
+      trialJustExpired: !!trialJustExpired,
+      isExplorerActive,
+      explorerExpiredAt,
       associateCount,
       canViewBilling: !!subscription,
     });

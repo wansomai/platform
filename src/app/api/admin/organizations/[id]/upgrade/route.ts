@@ -95,7 +95,11 @@ export const POST = withErrorHandler(
 
     // Send trial-start email — outside transaction so a send failure does not rollback the upgrade
     if (org.owner) {
-      await sendTrialStartEmail(org.owner, org.name, trialExpiresAt);
+      try {
+        await sendTrialStartEmail(org.owner, org.name, trialExpiresAt);
+      } catch (emailErr) {
+        console.error(`[admin/upgrade] Failed to send trial-start email for org ${organizationId}:`, emailErr);
+      }
     }
 
     const response: ActionResponse = {

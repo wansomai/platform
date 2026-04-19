@@ -59,9 +59,18 @@ export const GET = withErrorHandler(withAuth(async (
       orderBy: { createdAt: 'desc' }
     });
 
+    // Non-owners should not see who else an associate is shared with.
+    const sanitized = associates.map((a: any) => {
+      if (a.createdById !== userId) {
+        const { sharedWith: _omit, ...rest } = a;
+        return { ...rest, sharedWith: undefined };
+      }
+      return a;
+    });
+
     return NextResponse.json({
       status: 200,
-      data: { associates }
+      data: { associates: sanitized }
     });
   } catch (error: any) {
     console.error('Error fetching associates:', error);

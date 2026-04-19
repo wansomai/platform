@@ -39,6 +39,29 @@ export function getSubscriptionPricing(countryCode: string): PlanPricing {
   return SUBSCRIPTION_PRICING[countryCode.toLowerCase()] ?? DEFAULT_SUBSCRIPTION_PRICING;
 }
 
+// ─── Explorer Plan (one-time, 14-day) ────────────────────────────────────────
+
+export interface ExplorerPricing {
+  currency: string;
+  amount: number; // smallest currency unit (kobo, cents, etc.)
+}
+
+export const EXPLORER_PRICING: Record<string, ExplorerPricing> = {
+  ke: { currency: 'KES', amount: 50000 }, // KES 500
+  ng: { currency: 'NGN', amount: 200000 }, // NGN 2,000
+  za: { currency: 'ZAR', amount: 9900 },   // ZAR 99
+  gh: { currency: 'GHS', amount: 7000 },   // GHS 70
+};
+
+export const DEFAULT_EXPLORER_PRICING: ExplorerPricing = {
+  currency: 'USD',
+  amount: 500, // $5.00
+};
+
+export function getExplorerPricing(countryCode: string): ExplorerPricing {
+  return EXPLORER_PRICING[countryCode.toLowerCase()] ?? DEFAULT_EXPLORER_PRICING;
+}
+
 /** Format an amount (smallest unit) into a human-readable string, e.g. "KES 1,500" */
 export function formatSubscriptionPrice(amount: number, currency: string): string {
   const major = amount / 100;

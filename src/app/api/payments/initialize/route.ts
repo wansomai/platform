@@ -4,7 +4,7 @@ import { createApiResponse, createErrorResponse, createBadRequestResponse } from
 import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 import prisma from '@/lib/prisma';
 import { AppError } from '@/types/error';
-import { SUBSCRIPTION_PRICING, DEFAULT_SUBSCRIPTION_PRICING } from '@/lib/subscriptionPricing';
+import { SUBSCRIPTION_PRICING, DEFAULT_SUBSCRIPTION_PRICING, DEFAULT_EXPLORER_PRICING, getExplorerPricing } from '@/lib/subscriptionPricing';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 // Fallback plan codes for countries not in the pricing map below
@@ -22,7 +22,9 @@ export const POST = withErrorHandler(
 
     // Parse planType and optional seatCount from body
     const body = await request.json().catch(() => ({}));
-    const planType: 'personal' | 'teams' = body.planType === 'teams' ? 'teams' : 'personal';
+    const rawPlanType: string = body.planType ?? 'personal';
+    const planType: 'personal' | 'teams' | 'explorer' =
+      rawPlanType === 'teams' ? 'teams' : rawPlanType === 'explorer' ? 'explorer' : 'personal';
     const seatCount: number = planType === 'teams' && typeof body.seatCount === 'number' && body.seatCount >= 1
       ? Math.floor(body.seatCount)
       : 1;
@@ -81,25 +83,7 @@ export const POST = withErrorHandler(
       });
     }
 
-    // Check for an existing active subscription
-    const existingSubscription = await prisma.subscription.findUnique({
-      where: { organizationId: user.organization.id },
-    });
-
-    if (existingSubscription && existingSubscription.status === 'active') {
-      if (existingSubscription.planType === planType) {
-        return createBadRequestResponse(
-          planType === 'teams'
-            ? 'Your organization is already on the Teams plan.'
-            : 'Your organization already has an active subscription.'
-        );
-      }
-      // Different planType — proceed to let them switch (verify will upsert)
-    }
-
     const reference = `WAN-${user.organization.id.slice(0, 8)}-${Date.now()}`;
-
-    // If the user is on an active manual trial, defer billing start to trial end
     const now = new Date();
     const trialExpiresAt = user.organization.trialExpiresAt;
     const isActiveTrial =
@@ -122,22 +106,15 @@ export const POST = withErrorHandler(
       ],
     };
 
-    // ── Helper: build the USD plan-code fallback body ─────────────────────────
-    const buildUsdFallbackBody = (): Record<string, any> | null => {
-      const planCode = planType === 'teams' ? PAYSTACK_TEAMS_PLAN_CODE : PAYSTACK_PLAN_CODE;
-      if (!planCode) return null;
-      return {
-        email: user.email,
-        plan: planCode,
-        amount: 100, // overridden by plan — 100 is the safe minimum Paystack requires
-        reference,
-        ...(startDate ? { start_date: startDate } : {}),
-        callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback`,
-        metadata: {
-          ...commonMetadata,
-          usedUsdFallback: true, // diagnostic flag
-        },
-      };
+    // ── Helper: detect a currency-not-supported error from Paystack ───────────
+    const isCurrencyError = (msg: string): boolean => {
+      const lower = msg.toLowerCase();
+      return (
+        lower.includes('currency') ||
+        lower.includes('not supported') ||
+        lower.includes('invalid currency') ||
+        lower.includes('unsupported')
+      );
     };
 
     // ── Helper: call Paystack /transaction/initialize ─────────────────────────
@@ -153,16 +130,103 @@ export const POST = withErrorHandler(
       return res.json();
     };
 
-    // ── Helper: detect a currency-not-supported error from Paystack ───────────
-    const isCurrencyError = (msg: string): boolean => {
-      const lower = msg.toLowerCase();
-      return (
-        lower.includes('currency') ||
-        lower.includes('not supported') ||
-        lower.includes('invalid currency') ||
-        lower.includes('unsupported')
-      );
+    // ── Helper: build the USD plan-code fallback body ─────────────────────────
+    const buildUsdFallbackBody = (): Record<string, any> | null => {
+      const planCode = planType === 'teams' ? PAYSTACK_TEAMS_PLAN_CODE : PAYSTACK_PLAN_CODE;
+      if (!planCode) return null;
+      return {
+        email: user.email,
+        plan: planCode,
+        amount: 100,
+        reference,
+        ...(startDate ? { start_date: startDate } : {}),
+        callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback`,
+        metadata: {
+          ...commonMetadata,
+          usedUsdFallback: true,
+        },
+      };
     };
+
+    // ── Explorer plan: one-time charge, 14-day access ────────────────────────
+    if (planType === 'explorer') {
+      const explorerPricing = getExplorerPricing(countryCode);
+
+      // Prevent re-purchasing if an active explorer period is still running
+      const existingExplorer = await prisma.subscription.findUnique({
+        where: { organizationId: user.organization.id },
+        select: { planName: true, status: true, currentPeriodEnd: true },
+      });
+      if (
+        existingExplorer?.planName === 'explorer' &&
+        existingExplorer.status === 'active' &&
+        existingExplorer.currentPeriodEnd &&
+        existingExplorer.currentPeriodEnd > new Date()
+      ) {
+        return createBadRequestResponse('Your Explorer access is still active.');
+      }
+
+      const buildExplorerBody = (pricing: typeof explorerPricing): Record<string, any> => ({
+        email: user.email,
+        amount: pricing.amount,
+        currency: pricing.currency,
+        channels: pricing.currency === 'KES' ? ['mobile_money', 'card'] : ['card'],
+        reference,
+        callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback`,
+        metadata: {
+          ...commonMetadata,
+          planType: 'explorer',
+          isDirectPayment: true,
+          countryCode,
+        },
+      });
+
+      // Try local currency first; fall back to USD if merchant hasn't enabled it
+      let explorerData = await initializeTransaction(buildExplorerBody(explorerPricing));
+
+      if (!explorerData.status && isCurrencyError(explorerData.message ?? '')) {
+        console.warn(
+          `[payments/initialize] Explorer: ${explorerPricing.currency} not enabled on merchant account ` +
+          `(country: ${countryCode}). Falling back to USD.`
+        );
+        explorerData = await initializeTransaction(buildExplorerBody(DEFAULT_EXPLORER_PRICING));
+      }
+
+      if (!explorerData.status) {
+        console.error('[payments/initialize] Explorer Paystack error:', explorerData);
+        return createErrorResponse(
+          new AppError(explorerData.message || 'Failed to initialize Explorer payment', 'PAYSTACK_ERROR', 500)
+        );
+      }
+
+      return createApiResponse(
+        {
+          authorizationUrl: explorerData.data.authorization_url,
+          accessCode: explorerData.data.access_code,
+          reference: explorerData.data.reference,
+        },
+        'Explorer payment initialized successfully'
+      );
+    }
+
+    // Check for an existing active subscription
+    const existingSubscription = await prisma.subscription.findUnique({
+      where: { organizationId: user.organization.id },
+    });
+
+    if (existingSubscription && existingSubscription.status === 'active') {
+      // Allow upgrading from an expired or active explorer plan to a paid plan
+      if (existingSubscription.planName === 'explorer') {
+        // Fall through — let the pro payment proceed and upsert over the explorer record
+      } else if (existingSubscription.planType === planType) {
+        return createBadRequestResponse(
+          planType === 'teams'
+            ? 'Your organization is already on the Teams plan.'
+            : 'Your organization already has an active subscription.'
+        );
+      }
+      // Different planType — proceed to let them switch (verify will upsert)
+    }
 
     let paystackData: any;
 

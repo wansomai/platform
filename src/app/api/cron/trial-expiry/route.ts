@@ -135,7 +135,7 @@ export async function GET(req: NextRequest) {
           data: {
             userId: org.owner!.id,
             title: `Your Pro trial expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`,
-            message: `Your Pro trial for ${org.name} ends on ${expiryDateStr}. Upgrade now to avoid losing access.`,
+            message: `Your Pro trial for ${org.name} ends on ${expiryDateStr}. Upgrade to Pro for full monthly access, or pick up the Explorer plan ($5 · 2 weeks) to keep going.`,
             type: 'warning',
           },
         });
@@ -201,20 +201,24 @@ export async function GET(req: NextRequest) {
               userId: org.owner.id,
               title: 'Your Pro trial has ended',
               message:
-                'Your 15-day Pro trial has expired. All your data is safe. Upgrade to a paid plan to restore full Pro access.',
+                'Your 15-day Pro trial has expired. All your data is safe. Try the Explorer plan ($5 · 2 weeks) to keep exploring, or subscribe to Pro for full monthly access.',
               type: 'warning',
             },
           });
         }
       });
 
-      // Expiry email — outside transaction so a send failure doesn't rollback the downgrade
-      if (org.owner) {
-        await sendTrialExpiryEmail(org.owner, org.name);
-      }
-
       results.expired++;
       console.log(`[trial-expiry] Expired trial for org ${org.id} (${org.name})`);
+
+      // Email outside transaction — a send failure must not affect the expired count
+      if (org.owner) {
+        try {
+          await sendTrialExpiryEmail(org.owner, org.name);
+        } catch (emailErr) {
+          console.error(`[trial-expiry] Failed to send expiry email for org ${org.id}:`, emailErr);
+        }
+      };
     } catch (err) {
       results.errors++;
       console.error(`[trial-expiry] Error expiring org ${org.id}:`, err);
@@ -234,10 +238,121 @@ export async function GET(req: NextRequest) {
     data: { trialExpired: true },
   });
 
-  console.log('[trial-expiry] Run complete:', results);
+  // ── Phase 5: Remind Explorer users expiring within 3 days ────────────────
+  const threeDaysFromNowExplorer = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const soonExpiringExplorer = await prisma.subscription.findMany({
+    where: {
+      planName: 'explorer',
+      status: 'active',
+      currentPeriodEnd: { gt: now, lte: threeDaysFromNowExplorer },
+    },
+    include: {
+      organization: {
+        include: {
+          adminLogs: {
+            where: {
+              event: 'explorer_expiry_reminder',
+              createdAt: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+            },
+            take: 1,
+          },
+        },
+      },
+    },
+  });
+
+  for (const sub of soonExpiringExplorer) {
+    if (sub.organization.adminLogs.length > 0) continue; // already reminded today
+
+    const daysLeft = Math.ceil(
+      (sub.currentPeriodEnd!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const expiryDateStr = sub.currentPeriodEnd!.toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+    });
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        if (sub.organization.ownerId) {
+          await tx.notification.create({
+            data: {
+              userId: sub.organization.ownerId,
+              title: `Your Explorer access expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`,
+              message: `Your 14-day Explorer access for ${sub.organization.name} ends on ${expiryDateStr}. Subscribe to Pro for full monthly access, or pick up another Explorer pass ($5 · 2 weeks) to keep going.`,
+              type: 'warning',
+            },
+          });
+        }
+
+        await tx.adminLog.create({
+          data: {
+            organizationId: sub.organizationId,
+            event: 'explorer_expiry_reminder',
+            details: { daysLeft, expiryDateStr, sentAt: now.toISOString() },
+          },
+        });
+      });
+
+      results.notified++;
+      console.log(`[trial-expiry] Explorer reminder sent for sub ${sub.id} (${daysLeft} days left)`);
+    } catch (err) {
+      results.errors++;
+      console.error(`[trial-expiry] Error sending Explorer reminder for sub ${sub.id}:`, err);
+    }
+  }
+
+  // ── Phase 6: Expire ended Explorer subscriptions ─────────────────────────
+  // Explorer is a one-time 14-day charge. No renewal cron handles it, so we
+  // mark the subscription 'cancelled' and notify the owner once the window closes.
+  const expiredExplorerSubs = await prisma.subscription.findMany({
+    where: {
+      planName: 'explorer',
+      status: 'active',
+      currentPeriodEnd: { lte: now },
+    },
+    include: {
+      organization: {
+        select: { id: true, name: true, ownerId: true },
+      },
+    },
+  });
+
+  let explorerExpired = 0;
+  for (const sub of expiredExplorerSubs) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.subscription.update({
+          where: { id: sub.id },
+          data: { status: 'cancelled' },
+        });
+
+        if (sub.organization.ownerId) {
+          await tx.notification.create({
+            data: {
+              userId: sub.organization.ownerId,
+              title: 'Your Explorer access has ended',
+              message:
+                'Your 14-day Explorer access has expired. All your work is safe. ' +
+                'Pick up another Explorer pass ($5 · 2 weeks) or subscribe to Pro for full monthly access.',
+              type: 'warning',
+            },
+          });
+        }
+      });
+
+      explorerExpired++;
+      console.log(`[trial-expiry] Explorer expired for sub ${sub.id} (org ${sub.organizationId})`);
+;
+    } catch (err) {
+      results.errors++;
+      console.error(`[trial-expiry] Error expiring explorer sub ${sub.id}:`, err);
+    }
+  }
+
+  console.log('[trial-expiry] Run complete:', { ...results, explorerExpired });
 
   return createApiResponse(
-    { ...results, ranAt: now.toISOString() },
-    `Trial expiry cron complete. Backfilled: ${results.backfilled}, Notified: ${results.notified}, Expired: ${results.expired}, Errors: ${results.errors}`
+    { ...results, explorerExpired, ranAt: now.toISOString() },
+    `Trial expiry cron complete. Backfilled: ${results.backfilled}, Notified: ${results.notified}, Expired: ${results.expired}, Explorer expired: ${explorerExpired}, Errors: ${results.errors}`
   );
 }
