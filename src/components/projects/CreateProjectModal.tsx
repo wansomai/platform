@@ -17,7 +17,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { RefreshCw } from "lucide-react"
 import { useProjectStore } from '@/store/project.store'
 import { useProfile, useOrganization } from '@/store/profile.store'
-import { useSession } from 'next-auth/react'
 import { useNotifications } from '@/hooks/useNotifications'
 import ProAccessModal from '@/components/modals/ProAccess'
 import { useRouter } from 'next/navigation'
@@ -41,7 +40,6 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const { createProject, requiresUpgrade } = useProjectStore()
   const { user: profile, fetchProfile } = useProfile()
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization()
-  const { data: session } = useSession()
   const router = useRouter();
 
   // Fetch fresh user profile when modal opens to ensure we have the latest activeOrganizationId
@@ -183,12 +181,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       <ProAccessModal
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
-        errorMessage="You have reached your project limit (1 project for free plan). Upgrade to create unlimited projects."
-        userData={{
-          name: session?.user?.name || '',
-          email: session?.user?.email || '',
-          accountType: 'personal' // Default to personal, user can change
-        }}
+        limitType="projects"
       />
     </Dialog>
   );
