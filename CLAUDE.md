@@ -382,6 +382,17 @@ Optional (for RAG tuning):
 - `AssociateStep` - Workflow steps for structured execution
 - `AssociateTool` - Available tools per associate
 - `ProjectAssociate` - Many-to-many assignment to projects
+- `AIAssociateShare` - User-level sharing of associates (join table: `associateId`, `userId`, `grantedById`)
+
+#### Associate Access Model
+Associates are **user-level**, not org-level. Access is granted to the creator and explicitly-shared org members regardless of active org. Sharing cascades document permissions:
+- When an associate is shared, every KB document owned by the creator is promoted from `private` → `restricted` and a `DocumentPermission` row is added for each shared user
+- When sharing is revoked, permissions are only removed if no other shared associate from the same owner still grants access to the same (doc, user) pair
+- Cascade logic lives in `src/lib/auth/associateSharing.ts` (`syncAssociateShareCascade`, `syncAssociateKBDocumentPermissions`)
+- Sharing API: `GET/PUT /api/associates/[id]/permissions`
+
+#### Premade Associates
+Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `POST /api/associates/start-premade-session` finds-or-creates the associate for the user's org and creates a new project, returning a `projectId` for immediate navigation.
 
 ### Sharing & Collaboration
 - `SharedWorkspace` - External sharing of conversations
