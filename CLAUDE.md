@@ -113,11 +113,12 @@ Organization
 - `src/services/legalDatabaseService.ts` provides jurisdiction-aware legal database lookups
 - RAG tuning env vars: `RAG_DEFAULT_TOP_K` (default `5`), `RAG_MIN_SIMILARITY_SCORE` (default `0.7`)
 
-#### 8. Legal Digest System
-- `src/services/legalDigestService.ts` generates periodic legal digest emails for subscribed users
+#### 8. Legal Digest System ("Briefly")
+- `src/services/legalDigestService.ts` generates periodic legal digest emails for subscribed users (product name: **Briefly**)
 - Cron trigger at `/api/cron/legal-digest` (`maxDuration = 300`); user subscriptions managed at `/api/digest/subscription`
 - **Two-phase execution**: Phase 1 resolves fingerprints (no Gemini calls); Phase 2 generates and sends emails
 - **Idempotency**: digest fingerprinting prevents re-sending identical content; test email addresses bypass this gate
+- **Jurisdiction tiers** (`src/lib/briefly-jurisdictions.ts`): Tier 1 (primary markets: KE, ZA, NG, GH, etc.) ingested every 4 hours; Tier 2 (expanded Africa) subscriber-driven; unsupported jurisdictions fall back to live Gemini grounding
 - Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`, `/api/cron/digest-ingest`, `/api/cron/digest-cleanup`
 
 #### 9. Database Transaction Pattern
@@ -406,6 +407,7 @@ Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `PO
 ### Billing
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
+- `Notification` - In-app user notifications (`type`, `read`, `title`, `message`); managed via `GET /api/notifications` and `PATCH /api/notifications/[id]/read`
 
 #### 10. Visibility & Permissions System
 - `Project`, `Document`, and `Folder` each have a `visibility` field:
@@ -418,8 +420,10 @@ Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `PO
 
 ### Subscription Limits (`src/lib/subscription.ts`)
 - **Free plan**: 2 projects, 8 messages/month
+- **Explorer plan**: 14-day full Pro access, identified by `subscription.planName === 'explorer'` with a valid `currentPeriodEnd`; takes priority over Free but not over Pro/Trial
 - **Pro/Enterprise plan**: Unlimited projects and messages
-- AI Associates are a premium feature (Pro/Enterprise only)
+- **Trial**: `Organization.trialExpiresAt` / `Organization.trialExpired` — active trial grants Pro access; cron job `/api/cron/trial-expiry` marks trials expired
+- AI Associates are a premium feature (Explorer/Pro/Enterprise only)
 - Enterprise accounts (`accountType: 'enterprise'`) automatically get Pro features
 
 ## Content Management
