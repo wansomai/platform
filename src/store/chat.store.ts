@@ -4,36 +4,50 @@ import { apiService } from '@/lib/api'
 import { Message, Conversation } from '@/types/conversations';
 import { useCanvasStore } from '@/store/canvas.store';
 import { useProjectStore } from '@/store/project.store';
-import { useProjectSettingsStore } from '@/store/workspace-settings.store';
 
 // Shows a browser notification when the user has opted in via workspace settings
 // ("Notify when research is done") and the chat tab is not currently visible.
 // Permission is requested up-front from a user gesture in ChatInput, so this
 // path only fires when permission is already 'granted'.
-function notifyResearchComplete(content: string, conversationId?: string) {
+//
+// Uses ServiceWorkerRegistration.showNotification() when a SW is active —
+// required on Android Chrome where new Notification() is not supported.
+// Falls back to direct new Notification() on desktop browsers with no SW.
+async function notifyResearchComplete(content: string, conversationId?: string) {
   try {
     if (typeof window === 'undefined') return;
     if (!('Notification' in window)) return;
     if (Notification.permission !== 'granted') return;
 
-    const enabledFromWorkspace = useProjectSettingsStore.getState().settings?.notifyOnResearchComplete;
-    const enabledFromDevice = window.localStorage.getItem('wansom.notifyPromptSeen.v1') === '1';
-    if (!enabledFromWorkspace && !enabledFromDevice) return;
+    // Global browser-level preference — applies across all projects and chats.
+    if (window.localStorage.getItem('wansom.notifyPromptSeen.v1') !== '1') return;
 
     // Don't interrupt users who are actively reading the response.
     if (typeof document !== 'undefined' && document.visibilityState === 'visible') return;
 
     const body = (content || 'Your response is ready.').replace(/\s+/g, ' ').trim().slice(0, 140);
-    const notification = new Notification('Wansom research complete', {
-      body,
-      icon: '/favicon-dark.png',
-      // Use a unique tag per completion so every finished answer can surface
-      // as a fresh notification (instead of being silently replaced).
-      tag: conversationId
-        ? `wansom-${conversationId}-${Date.now()}`
-        : `wansom-research-${Date.now()}`,
-    });
+    // Use a unique tag per completion so every finished answer surfaces as a fresh notification.
+    const tag = conversationId
+      ? `wansom-${conversationId}-${Date.now()}`
+      : `wansom-research-${Date.now()}`;
+    const options = { body, icon: '/favicon-dark.png', tag };
 
+    // Prefer SW showNotification when a SW is actively controlling the page
+    // (required on Android Chrome where new Notification() is not supported).
+    // navigator.serviceWorker.ready never rejects and waits forever when no SW
+    // is registered, so we guard with .controller before awaiting.
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        await reg.showNotification('Wansom research complete', options);
+        return;
+      } catch {
+        // SW unavailable — fall through to direct Notification.
+      }
+    }
+
+    // Desktop browsers (or any context without an active SW).
+    const notification = new Notification('Wansom research complete', options);
     notification.onclick = () => {
       window.focus();
       notification.close();

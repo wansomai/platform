@@ -39,19 +39,24 @@ export default function ProjectPage() {
   const { selectedPreviewDocument } = useUIStore();
   const { fetchConversation, currentConversation, isLoading: chatLoading } = useChatStore();
 
-  // Load project settings and conversations
+  // Load project settings once per projectId — separate from conversation loading
+  // to prevent a second fetchSettings call when fetchConversation resolves and
+  // sets currentConversation.projectId (which would race with an in-flight PUT).
   useEffect(() => {
     fetchSettings(projectId).catch(err => {
       console.error('[ProjectPage] Failed to fetch settings:', err);
     });
+  }, [projectId, fetchSettings]);
 
-    // Skip fetch if conversation is already loaded for this project (e.g., from homepage navigation)
+  // Load conversation separately; guard prevents re-fetching when already loaded
+  // (e.g. from homepage navigation where the conversation is set before navigating).
+  useEffect(() => {
     if (currentConversation?.projectId !== projectId) {
       fetchConversation(projectId).catch(err => {
         console.error('[ProjectPage] Failed to fetch conversations:', err);
       });
     }
-  }, [projectId, fetchSettings, fetchConversation, currentConversation?.projectId]);
+  }, [projectId, fetchConversation, currentConversation?.projectId]);
 
   // If project isn't in the store yet (e.g., just created and navigated directly),
   // fetch it individually rather than waiting for a full fetchProjects() call.
@@ -132,14 +137,10 @@ export default function ProjectPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const key = 'wansom.notifyPromptSeen.v1';
-    const alreadySeen = window.localStorage.getItem(key) === '1';
-    const alreadyEnabled = settings.notifyOnResearchComplete === true;
-    if (alreadyEnabled && !alreadySeen) {
-      window.localStorage.setItem(key, '1');
-    }
-    setShowNotifyPrompt(!alreadySeen && !alreadyEnabled);
-  }, [settings.notifyOnResearchComplete]);
+    const alreadySeen = window.localStorage.getItem('wansom.notifyPromptSeen.v1') === '1';
+    // Show the one-time prompt only if the user has never set up notifications on this browser.
+    setShowNotifyPrompt(!alreadySeen);
+  }, []);
 
   const handleEnableResearchNotifications = useCallback(async () => {
     if (typeof window === 'undefined' || !('Notification' in window)) {
@@ -167,16 +168,11 @@ export default function ProjectPage() {
       return;
     }
 
-    const ok = await updateSetting(projectId, 'notifyOnResearchComplete', true);
-    if (!ok) {
-      notify.error('Failed to enable research notifications.');
-      return;
-    }
-
     window.localStorage.setItem('wansom.notifyPromptSeen.v1', '1');
+    window.dispatchEvent(new CustomEvent('notifyEnabledChanged', { detail: { enabled: true } }));
     setShowNotifyPrompt(false);
     notify.success('You will be notified when research completes.');
-  }, [notify, projectId, updateSetting]);
+  }, [notify]);
 
   // Show skeleton loading state while project or conversation is loading
   if (chatLoading || projectLoading || (!project && projectId)) {

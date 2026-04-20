@@ -752,18 +752,24 @@ export async function suggestAssociate(
   projectId: string
 ): Promise<{ id: string; name: string; reason: string } | null> {
   try {
-    const projectAssociates = await prisma.projectAssociate.findMany({
-      where: { projectId },
-      include: {
-        associate: {
-          select: { id: true, name: true, practiceAreas: true },
-        },
-      },
+    // Resolve org from project, then search org-wide — matches loadPeerSpecialists
+    // and findAssociateByName so passive suggestions are consistent with the peer
+    // list shown in the associate's system prompt.
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { organizationId: true },
     });
+    if (!project?.organizationId) return null;
 
-    const others = projectAssociates
-      .map((pa: any) => pa.associate)
-      .filter((a: any) => a && a.id !== currentAssociateId);
+    const others = await prisma.aIAssociate.findMany({
+      where: {
+        organizationId: project.organizationId,
+        isActive: true,
+        id: { not: currentAssociateId || '__none__' },
+      },
+      select: { id: true, name: true, practiceAreas: true },
+      orderBy: { name: 'asc' },
+    });
 
     if (others.length === 0) return null;
 
@@ -797,11 +803,11 @@ Respond with raw JSON only (no markdown):
       config: { temperature: 0, maxOutputTokens: 120 },
     });
 
-    const raw = (
-      result?.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-    ).trim().replace(/```json|```/g, '').trim();
-
-    const json = JSON.parse(raw);
+    const rawText = (result?.candidates?.[0]?.content?.parts?.[0]?.text ?? '').trim();
+    // Extract the JSON object from the response — Gemini sometimes adds prose around it
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+    const json = JSON.parse(jsonMatch[0]);
     if (!json.suggest || typeof json.index !== 'number') return null;
 
     const target = others[json.index - 1];
@@ -815,16 +821,14 @@ Respond with raw JSON only (no markdown):
 
 /**
  * Loads all active AI Associates in the organization (excluding the current one).
- * Searches org-wide (not just project-assigned) so the associate always has a complete
- * picture of available specialists to suggest — even if they haven't been added to
- * this specific project yet.
+ * Org-wide so any specialist can be suggested, matching suggestAssociate and
+ * findAssociateByName which also search org-wide.
  */
 async function loadPeerSpecialists(
   projectId: string,
   currentAssociateId: string
 ): Promise<Array<{ id: string; name: string; practiceAreas: string[] }>> {
   try {
-    // Resolve the organization from the project
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       select: { organizationId: true },
@@ -853,21 +857,19 @@ async function loadPeerSpecialists(
  */
 async function findAssociateByName(projectId: string, name: string): Promise<any> {
   try {
-    // Restrict lookup to associates actually assigned to this project so that
-    // private/unassigned associates in the same org cannot be discovered via
-    // AI tool calls (e.g. suggest_associate / delegate_to_associate).
-    const projectAssociates = await prisma.projectAssociate.findMany({
-      where: { projectId },
-      include: {
-        associate: {
-          include: { steps: { orderBy: { stepOrder: 'asc' } }, tools: true },
-        },
-      },
+    // Search org-wide — must match loadPeerSpecialists (which builds the peer list
+    // shown to the associate) so that any name the model picks from that list is
+    // always resolvable here.
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { organizationId: true },
     });
+    if (!project?.organizationId) return null;
 
-    const all = projectAssociates
-      .map((pa: any) => pa.associate)
-      .filter((a: any) => a && a.isActive);
+    const all = await prisma.aIAssociate.findMany({
+      where: { organizationId: project.organizationId, isActive: true },
+      include: { steps: { orderBy: { stepOrder: 'asc' } }, tools: true },
+    });
 
     const nameLower = name.toLowerCase();
 

@@ -1,4 +1,12 @@
 {
+  "functions": {
+    "app/api/documents/route.ts": {
+      "memory": 1024
+    },
+    "app/api/projects/[id]/conversations/[conversationId]/messages/route.ts": {
+      "memory": 1024
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/trial-expiry",
@@ -18,7 +26,7 @@
     },
     {
       "path": "/api/cron/legal-digest",
-      "schedule": "0 17 * * *"
+      "schedule": "30 13 * * *"
     },
     {
       "path": "/api/cron/digest-cleanup",
@@ -44,7 +52,7 @@
       "has": [
         {
           "type": "host",
-          "value": "wansom.ai"
+          "value": "www.wansom.ai"
         }
       ]
     }

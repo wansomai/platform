@@ -8,6 +8,7 @@ interface ProjectSettingsState {
   settings: ProjectSettings;
   suggestedJurisdiction: Jurisdiction | null;
   isLoading: boolean;
+  settingsLoaded: boolean; // true after first successful fetchSettings — distinguishes "default false" from "DB false"
   error: string | null;
 
   // Methods
@@ -38,6 +39,7 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
   settings: DEFAULT_SETTINGS,
   suggestedJurisdiction: null,
   isLoading: false,
+  settingsLoaded: false,
   error: null,
   
   fetchSettings: async (projectId) => {
@@ -56,7 +58,8 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
       set({
         settings,
         suggestedJurisdiction,
-        isLoading: false
+        isLoading: false,
+        settingsLoaded: true,
       });
       
       return settings;
@@ -72,25 +75,23 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
   updateSettings: async (projectId, newSettings) => {
     const currentSettings = get().settings;
     const updatedSettings = { ...currentSettings, ...newSettings };
-    
+
+    // Optimistic update — reflects new value immediately; reverts on failure
+    set({ settings: updatedSettings, isLoading: true, error: null });
+
     try {
-      set({ isLoading: true, error: null });
-      
-      // Updated to use project-level endpoint
       await apiService.put(`/api/projects/${projectId}/settings`, {
         settings: updatedSettings
       });
-      
-      set({ 
-        settings: updatedSettings,
-        isLoading: false 
-      });
-      
+
+      set({ isLoading: false });
       return true;
     } catch (error: any) {
-      set({ 
-        error: error.message || 'Failed to update project settings', 
-        isLoading: false 
+      // Revert to previous settings on failure
+      set({
+        settings: currentSettings,
+        error: error.message || 'Failed to update project settings',
+        isLoading: false
       });
       return false;
     }
@@ -116,5 +117,5 @@ export const useProjectSettingsStore = create<ProjectSettingsState>((set, get) =
     });
   },
   
-  resetSettings: () => set({ settings: DEFAULT_SETTINGS, suggestedJurisdiction: null, error: null }),
+  resetSettings: () => set({ settings: DEFAULT_SETTINGS, suggestedJurisdiction: null, settingsLoaded: false, error: null }),
 }));

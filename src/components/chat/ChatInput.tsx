@@ -62,6 +62,10 @@ export function ChatInput({
 
   const [input, setInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Global browser-level notification preference — not per-project.
+  const [notifyEnabled, setNotifyEnabled] = useState(() =>
+    typeof window !== 'undefined' && window.localStorage.getItem('wansom.notifyPromptSeen.v1') === '1'
+  );
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
@@ -258,6 +262,15 @@ export function ChatInput({
     }
     return () => clearDocuments();
   }, [homepageMode, projectId, fetchProjectDocuments, clearDocuments]);
+
+  // Sync notifyEnabled when the overlay "Notify me" button enables notifications externally
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setNotifyEnabled((e as CustomEvent<{ enabled: boolean }>).detail.enabled);
+    };
+    window.addEventListener('notifyEnabledChanged', handler);
+    return () => window.removeEventListener('notifyEnabledChanged', handler);
+  }, []);
 
   // Listen for Google connection success event and refresh status
   useEffect(() => {
@@ -718,34 +731,26 @@ export function ChatInput({
   ) => {
     if (!currentConversation) return;
 
-    try {
-      // Update the setting directly
-      await updateSetting(projectId, settingKey, value);
-
-      // If toggling off canvasMode (or legacy legalDrafting), also clear the ?view=canvas URL param
-      if ((settingKey === 'canvasMode' || settingKey === 'legalDrafting') && !value) {
-        const url = new URL(window.location.href);
-        if (url.searchParams.get('view') === 'canvas') {
-          url.searchParams.delete('view');
-          router.replace(url.pathname + url.search);
-        }
+    // If toggling off canvasMode (or legacy legalDrafting), clear the ?view=canvas URL param
+    if ((settingKey === 'canvasMode' || settingKey === 'legalDrafting') && !value) {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('view') === 'canvas') {
+        url.searchParams.delete('view');
+        router.replace(url.pathname + url.search);
       }
+    }
 
-      addToast({ message: `${settingKey} setting updated`, type: "success" });
-    } catch (error) {
-      addToast({
-        message: `Failed to update ${settingKey} setting`,
-        type: "error",
-      });
+    const success = await updateSetting(projectId, settingKey, value);
+    if (!success) {
+      addToast({ message: `Failed to save setting. Please try again.`, type: "error" });
     }
   };
 
   // Handle "Notify when research is done" toggle.
-  // Must request browser notification permission from the user gesture (this click),
-  // not from the background stream handler.
+  // This is a global browser preference (localStorage), not a per-project setting.
+  // Permission must be requested from a user gesture — cannot be requested from
+  // the background stream handler.
   const handleNotifyToggle = async (checked: boolean) => {
-    if (!currentConversation) return;
-
     if (checked && typeof window !== "undefined" && "Notification" in window) {
       if (Notification.permission === "denied") {
         notify.error(
@@ -767,7 +772,14 @@ export function ChatInput({
       }
     }
 
-    await handleSettingChange("notifyOnResearchComplete", checked);
+    if (typeof window !== 'undefined') {
+      if (checked) {
+        window.localStorage.setItem('wansom.notifyPromptSeen.v1', '1');
+      } else {
+        window.localStorage.removeItem('wansom.notifyPromptSeen.v1');
+      }
+    }
+    setNotifyEnabled(checked);
   };
 
   // Handle multiple jurisdictions change
@@ -1277,12 +1289,8 @@ export function ChatInput({
                         </div>
                         <Switch
                           id="notify-on-complete"
-                          checked={
-                            homepageMode
-                              ? false
-                              : settings.notifyOnResearchComplete || false
-                          }
-                          disabled={homepageMode || isLoadingSettings}
+                          checked={homepageMode ? false : notifyEnabled}
+                          disabled={homepageMode}
                           onCheckedChange={
                             homepageMode ? undefined : handleNotifyToggle
                           }

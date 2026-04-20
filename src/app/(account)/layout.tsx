@@ -112,6 +112,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [upgradePlanState, setUpgradePlanState] = useState<'free' | 'explorer_expired'>('free');
   const [upgradeLimitType, setUpgradeLimitType] = useState<'general' | 'trial_expired'>('general');
 
+  // Register the service worker so ServiceWorkerRegistration.showNotification()
+  // is available for chat-completion notifications (required on Android Chrome).
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {
+        // SW registration is best-effort; notification falls back to new Notification().
+      });
+    }
+  }, []);
+
   // Close mobile menu when screen resizes to desktop
   useEffect(() => {
     const handleResize = () => {
