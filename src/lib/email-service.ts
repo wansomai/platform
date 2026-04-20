@@ -17,29 +17,36 @@ interface EmailOptions {
   }>;
 }
 
-/**
- * Creates a nodemailer transporter using environment variables
- */
-function createTransporter() {
+// Singleton pooled transporter — created once per process, reused for all sends.
+// pool:true keeps up to maxConnections SMTP connections open and queues messages
+// through them, so we never open more than 2 simultaneous connections to the SMTP
+// server regardless of how many sendEmail() calls fire concurrently.
+let _transporter: nodemailer.Transporter | null = null;
+
+function getTransporter() {
+  if (_transporter) return _transporter;
+
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASSWORD;
   const host = process.env.EMAIL_HOST || 'smtp.gmail.com';
   const port = parseInt(process.env.EMAIL_PORT || '587', 10);
   const secure = port === 465;
 
-  // Config audit — logged on every transporter creation so we can spot misconfiguration
-  console.log(`[email] SMTP config — host:${host} port:${port} secure:${secure} user:${user ?? '(NOT SET)'} pass:${pass ? '(set)' : '(NOT SET)'}`);
-
+  console.log(`[email] Creating pooled SMTP transporter — host:${host} port:${port} secure:${secure} user:${user ?? '(NOT SET)'} pass:${pass ? '(set)' : '(NOT SET)'}`);
   if (!user) console.error('[email] EMAIL_USER is not set — all sends will fail');
   if (!pass) console.error('[email] EMAIL_PASSWORD is not set — all sends will fail');
-  if (!process.env.EMAIL_FROM && !user) console.warn('[email] EMAIL_FROM is not set — "from" address will be empty');
 
-  return nodemailer.createTransport({
+  _transporter = nodemailer.createTransport({
+    pool: true,
+    maxConnections: 2,   // max 2 simultaneous SMTP connections — stays within Outlook limits
+    maxMessages: 100,    // recycle connection after 100 messages to avoid stale connections
     host,
     port,
     secure,
     auth: { user, pass },
   });
+
+  return _transporter;
 }
 
 /**
@@ -54,11 +61,9 @@ export async function sendEmail(options: EmailOptions) {
   console.log(`[email] Attempting send — to:"${to}" subject:"${subject}" cc:${cc?.join(',') ?? 'none'} bcc:${bcc?.join(',') ?? 'none'}`);
 
   try {
-    const transporter = createTransporter();
+    const transporter = getTransporter();
     const fromAddress = process.env.EMAIL_FROM || process.env.EMAIL_USER;
     const resolvedFrom = from || `"Wansom" <${fromAddress}>`;
-
-    console.log(`[email] Connecting to SMTP — from:"${resolvedFrom}"`);
 
     const info = await transporter.sendMail({
       from: resolvedFrom,

@@ -33,7 +33,9 @@ function logDigest(runId: string, stage: DigestLogStage, details: Record<string,
 // Phase 1: resolve unique fingerprints (cache read + instant aiSummary build — no Gemini).
 const FINGERPRINT_CONCURRENCY = 15;
 // Phase 2: send emails.
-const EMAIL_CONCURRENCY = 15;
+// The email-service singleton pool caps SMTP connections at 2 — fire up to 20
+// sends concurrently and let nodemailer queue them through the pool internally.
+const EMAIL_CONCURRENCY = 20;
 
 export async function GET(req: NextRequest) {
   const runId = `${new Date().toISOString()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -298,6 +300,7 @@ export async function GET(req: NextRequest) {
         failed++;
       }
     }
+
   }
 
   logDigest(runId, 'phase2_complete', {
