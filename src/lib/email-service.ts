@@ -21,7 +21,7 @@ interface EmailOptions {
 // pool:true keeps up to maxConnections SMTP connections open and queues messages
 // through them, so we never open more than 2 simultaneous connections to the SMTP
 // server regardless of how many sendEmail() calls fire concurrently.
-let _transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
+let _transporter: nodemailer.Transporter | null = null;
 
 function getTransporter() {
   if (_transporter) return _transporter;
