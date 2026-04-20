@@ -25,7 +25,7 @@
       "schedule": "30 */4 * * *"
     },
     {
-      "path": "/api/cron/legal-digest?email=danielkadurha@gmail.com,wansomco@gmail.com,law@wansom.ai,ruthchepkorir6@gmail.com,kadurhailungamulala@gmail.com",
+      "path": "/api/cron/legal-digest",
       "schedule": "0 17 * * *"
     },
     {
