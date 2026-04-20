@@ -63,9 +63,12 @@ export function ChatInput({
   const [input, setInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Global browser-level notification preference — not per-project.
-  const [notifyEnabled, setNotifyEnabled] = useState(() =>
-    typeof window !== 'undefined' && window.localStorage.getItem('wansom.notifyPromptSeen.v1') === '1'
-  );
+  // Initialized to false on server (no window); synced from localStorage after mount
+  // to avoid SSR/client hydration mismatch that suppresses interactivity.
+  const [notifyEnabled, setNotifyEnabled] = useState(false);
+  useEffect(() => {
+    setNotifyEnabled(window.localStorage.getItem('wansom.notifyPromptSeen.v1') === '1');
+  }, []);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
   const [showVaultModal, setShowVaultModal] = useState(false);
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
