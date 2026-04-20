@@ -26,7 +26,7 @@
     },
     {
       "path": "/api/cron/legal-digest",
-      "schedule": "0 17 * * *"
+      "schedule": "30 13 * * *"
     },
     {
       "path": "/api/cron/digest-cleanup",
@@ -38,13 +38,23 @@
       "source": "/(.*)",
       "destination": "https://wansom.ai/$1",
       "permanent": true,
-      "has": [{ "type": "host", "value": "wakili.chat" }]
+      "has": [
+        {
+          "type": "host",
+          "value": "wakili.chat"
+        }
+      ]
     },
     {
       "source": "/(.*)",
       "destination": "https://wansom.ai/$1",
       "permanent": true,
-      "has": [{ "type": "host", "value": "www.wansom.ai" }]
+      "has": [
+        {
+          "type": "host",
+          "value": "www.wansom.ai"
+        }
+      ]
     }
   ]
 }

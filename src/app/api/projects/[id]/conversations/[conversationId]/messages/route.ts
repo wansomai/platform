@@ -2307,8 +2307,8 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                 googleSearchEnabled: useGoogleSearch,
                 webSearchSources: webSearchSources.length > 0 ? webSearchSources : undefined,
                 references: savedReferences,
-                report: messageMetadata.report, // Include report metadata if present
-                document: messageMetadata.document, // Include inline document metadata if present
+                report: messageMetadata.report,
+                document: messageMetadata.document,
               }) + '\n'
             )
           );

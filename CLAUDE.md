@@ -77,6 +77,8 @@ Organization
   - `aiDocumentService.ts` - Document generation, review, and inline document creation
   - `googleCalendarService.ts` - Calendar event CRUD and availability checks
   - `gmailService.ts` - Email search, read, and draft operations
+  - `kbSummaryService.ts` - Generates and caches AI-produced summaries and `rulesForThinking` for Associate KB documents; loaded at chat time via `loadKBDocumentsWithSummaries()`
+- Associate executor (`src/lib/associateExecutor.ts`) runs a bounded agentic loop capped at `MAX_ITERATIONS = 5` — it invokes Gemini with the associate's tools until the model stops calling functions or the limit is reached
 
 #### 5. Document Processing Pipeline
 - Upload → Vercel Blob Storage
@@ -90,6 +92,7 @@ Organization
   - `"[SCANNED_PDF_REQUIRES_PROCESSING]"` — scanned PDF, sent to Gemini vision API at chat time
   - `"[SCANNED_IMAGE_REQUIRES_PROCESSING]"` — image file, sent to Gemini vision API at chat time
 - These sentinels are checked at message time; the raw file URL is fetched and passed as a Gemini inline data part
+- **On-demand fallback** (`src/lib/documentContentFallback.ts`): if `DocumentContent` was never populated (e.g. a Vault DOCX added to a conversation), the messages route calls this to extract text on the fly before building the Gemini context
 - **Scanned PDF threshold** (`src/lib/documentParser.ts`): if text extraction yields <100 chars or <10 meaningful words, the document is treated as scanned and the sentinel is stored
 - Optional: Google Cloud Vision API for advanced OCR (requires `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT_ID`, and `GOOGLE_CLOUD_STORAGE_BUCKET`)
 
@@ -366,6 +369,10 @@ Optional (for Google Cloud Vision OCR):
 - `GOOGLE_CLOUD_PROJECT_ID` - Google Cloud project ID
 - `GOOGLE_CLOUD_STORAGE_BUCKET` - GCS bucket for temporary PDF processing
 
+Optional (for Pan-African legal scraper):
+- `LII_SCRAPER_URL` - URL of the Python scraper service on Digital Ocean (e.g. `http://<DROPLET_IP>`)
+- `LII_SCRAPER_API_KEY` - API key matching `LII_API_KEY` set on the droplet
+
 Optional (for RAG tuning):
 - `RAG_DEFAULT_TOP_K` - Number of chunks to retrieve per query (default: `5`)
 - `RAG_MIN_SIMILARITY_SCORE` - Minimum cosine similarity threshold (default: `0.7`)
@@ -463,7 +470,7 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/cron/*` - Cron job endpoints (legal digest generation)
 - `/api/events/*` - Event registrations (law school launch, opt-ins)
 - `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`)
-- `/api/search` - Pan-African legal search (authenticated; calls `searchAfricanLegalSources` from `src/lib/legalScraper.ts`)
+- `/api/search` - Pan-African legal search (authenticated; calls `searchAfricanLegalSources` from `src/lib/legalScraper/index.ts` — a thin client that delegates scraping to a Python service on Digital Ocean)
 - `/api/projects/[id]/reports/[reportId]/download` - Download project reports in HTML or PDF format
 - `/api/prorequests` - Pro plan upgrade requests
 - `/api/law360/*` - Law360 activation and email-check endpoints
