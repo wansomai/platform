@@ -140,7 +140,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [fetchProjects]);
 
   useEffect(() => {
-    if (status === 'authenticated' && !subscriptionStatus) {
+    if (status === 'authenticated') {
       fetchSubscriptionStatus();
     }
   }, [status, fetchSubscriptionStatus]);

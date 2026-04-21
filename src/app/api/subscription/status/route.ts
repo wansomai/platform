@@ -100,7 +100,7 @@ export const GET = withErrorHandler(
         : null;
 
     const associateCount = await prisma.aIAssociate.count({
-      where: { organizationId: activeOrgId },
+      where: { organizationId: activeOrgId, createdById: userId },
     });
 
     // ── Effective status from DB ─────────────────────────────────────────────

@@ -61638,6 +61638,8 @@ export namespace Prisma {
     message: string | null
     type: string | null
     read: boolean | null
+    dismissed: boolean | null
+    dismissedAt: Date | null
     createdAt: Date | null
   }
 
@@ -61648,6 +61650,8 @@ export namespace Prisma {
     message: string | null
     type: string | null
     read: boolean | null
+    dismissed: boolean | null
+    dismissedAt: Date | null
     createdAt: Date | null
   }
 
@@ -61658,6 +61662,8 @@ export namespace Prisma {
     message: number
     type: number
     read: number
+    dismissed: number
+    dismissedAt: number
     createdAt: number
     _all: number
   }
@@ -61670,6 +61676,8 @@ export namespace Prisma {
     message?: true
     type?: true
     read?: true
+    dismissed?: true
+    dismissedAt?: true
     createdAt?: true
   }
 
@@ -61680,6 +61688,8 @@ export namespace Prisma {
     message?: true
     type?: true
     read?: true
+    dismissed?: true
+    dismissedAt?: true
     createdAt?: true
   }
 
@@ -61690,6 +61700,8 @@ export namespace Prisma {
     message?: true
     type?: true
     read?: true
+    dismissed?: true
+    dismissedAt?: true
     createdAt?: true
     _all?: true
   }
@@ -61773,6 +61785,8 @@ export namespace Prisma {
     message: string
     type: string
     read: boolean
+    dismissed: boolean
+    dismissedAt: Date | null
     createdAt: Date
     _count: NotificationCountAggregateOutputType | null
     _min: NotificationMinAggregateOutputType | null
@@ -61800,6 +61814,8 @@ export namespace Prisma {
     message?: boolean
     type?: boolean
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
@@ -61811,6 +61827,8 @@ export namespace Prisma {
     message?: boolean
     type?: boolean
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
@@ -61822,6 +61840,8 @@ export namespace Prisma {
     message?: boolean
     type?: boolean
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
@@ -61833,10 +61853,12 @@ export namespace Prisma {
     message?: boolean
     type?: boolean
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: boolean
     createdAt?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "message" | "type" | "read" | "createdAt", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "title" | "message" | "type" | "read" | "dismissed" | "dismissedAt" | "createdAt", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -61859,6 +61881,8 @@ export namespace Prisma {
       message: string
       type: string
       read: boolean
+      dismissed: boolean
+      dismissedAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["notification"]>
     composites: {}
@@ -62290,6 +62314,8 @@ export namespace Prisma {
     readonly message: FieldRef<"Notification", 'String'>
     readonly type: FieldRef<"Notification", 'String'>
     readonly read: FieldRef<"Notification", 'Boolean'>
+    readonly dismissed: FieldRef<"Notification", 'Boolean'>
+    readonly dismissedAt: FieldRef<"Notification", 'DateTime'>
     readonly createdAt: FieldRef<"Notification", 'DateTime'>
   }
     
@@ -63409,6 +63435,8 @@ export namespace Prisma {
     message: 'message',
     type: 'type',
     read: 'read',
+    dismissed: 'dismissed',
+    dismissedAt: 'dismissedAt',
     createdAt: 'createdAt'
   };
 
@@ -67360,6 +67388,8 @@ export namespace Prisma {
     message?: StringFilter<"Notification"> | string
     type?: StringFilter<"Notification"> | string
     read?: BoolFilter<"Notification"> | boolean
+    dismissed?: BoolFilter<"Notification"> | boolean
+    dismissedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
@@ -67371,6 +67401,8 @@ export namespace Prisma {
     message?: SortOrder
     type?: SortOrder
     read?: SortOrder
+    dismissed?: SortOrder
+    dismissedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
   }
@@ -67385,6 +67417,8 @@ export namespace Prisma {
     message?: StringFilter<"Notification"> | string
     type?: StringFilter<"Notification"> | string
     read?: BoolFilter<"Notification"> | boolean
+    dismissed?: BoolFilter<"Notification"> | boolean
+    dismissedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
@@ -67396,6 +67430,8 @@ export namespace Prisma {
     message?: SortOrder
     type?: SortOrder
     read?: SortOrder
+    dismissed?: SortOrder
+    dismissedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: NotificationCountOrderByAggregateInput
     _max?: NotificationMaxOrderByAggregateInput
@@ -67412,6 +67448,8 @@ export namespace Prisma {
     message?: StringWithAggregatesFilter<"Notification"> | string
     type?: StringWithAggregatesFilter<"Notification"> | string
     read?: BoolWithAggregatesFilter<"Notification"> | boolean
+    dismissed?: BoolWithAggregatesFilter<"Notification"> | boolean
+    dismissedAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
   }
 
@@ -71417,6 +71455,8 @@ export namespace Prisma {
     message: string
     type?: string
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: Date | string | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutNotificationsInput
   }
@@ -71428,6 +71468,8 @@ export namespace Prisma {
     message: string
     type?: string
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -71437,6 +71479,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
   }
@@ -71448,6 +71492,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -71458,6 +71504,8 @@ export namespace Prisma {
     message: string
     type?: string
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -71467,6 +71515,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -71477,6 +71527,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -74133,6 +74185,8 @@ export namespace Prisma {
     message?: SortOrder
     type?: SortOrder
     read?: SortOrder
+    dismissed?: SortOrder
+    dismissedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -74143,6 +74197,8 @@ export namespace Prisma {
     message?: SortOrder
     type?: SortOrder
     read?: SortOrder
+    dismissed?: SortOrder
+    dismissedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -74153,6 +74209,8 @@ export namespace Prisma {
     message?: SortOrder
     type?: SortOrder
     read?: SortOrder
+    dismissed?: SortOrder
+    dismissedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -80048,6 +80106,8 @@ export namespace Prisma {
     message: string
     type?: string
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -80057,6 +80117,8 @@ export namespace Prisma {
     message: string
     type?: string
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -80937,6 +80999,8 @@ export namespace Prisma {
     message?: StringFilter<"Notification"> | string
     type?: StringFilter<"Notification"> | string
     read?: BoolFilter<"Notification"> | boolean
+    dismissed?: BoolFilter<"Notification"> | boolean
+    dismissedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
@@ -93041,6 +93105,8 @@ export namespace Prisma {
     message: string
     type?: string
     read?: boolean
+    dismissed?: boolean
+    dismissedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -93832,6 +93898,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -93841,6 +93909,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -93850,6 +93920,8 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     type?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    dismissed?: BoolFieldUpdateOperationsInput | boolean
+    dismissedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

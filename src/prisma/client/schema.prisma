@@ -817,15 +817,18 @@ model AdminLog {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  message   String
-  type      String   @default("info")
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  type        String    @default("info")
+  read        Boolean   @default(false)
+  dismissed   Boolean   @default(false)
+  dismissedAt DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId, dismissed])
   @@index([userId, read])
   @@index([createdAt(sort: Desc)])
   @@map("notifications")

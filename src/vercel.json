@@ -31,6 +31,10 @@
     {
       "path": "/api/cron/digest-cleanup",
       "schedule": "0 3 * * 0"
+    },
+    {
+      "path": "/api/cron/notification-cleanup",
+      "schedule": "0 2 * * *"
     }
   ],
   "redirects": [
