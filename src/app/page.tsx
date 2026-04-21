@@ -88,7 +88,7 @@ export default function Home() {
         {/* <HeroSection /> */}
         <HeroSection />
     {/* Video Section */}
-      <section className="section-spacing">
+      {/* <section className="section-spacing">
         <div className="section-container">
           <div className="relative w-full mx-auto" style={{ paddingBottom: "56.25%" }}>
             <iframe
@@ -102,7 +102,7 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </section> */}
   
 
         <NewFeaturesSection />

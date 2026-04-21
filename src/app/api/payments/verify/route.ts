@@ -301,6 +301,44 @@ async function processPayment(transaction: any, organizationId: string, referenc
     }
   }
 
+  // In-app payment notification for the org owner
+  try {
+    const org = await prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { ownerId: true },
+    });
+
+    if (org?.ownerId) {
+      const major = transaction.amount / 100;
+      const currency = (transaction.currency || 'USD').toUpperCase();
+      let amountStr: string;
+      try {
+        amountStr = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency,
+          minimumFractionDigits: 2,
+        }).format(major);
+      } catch {
+        amountStr = `${currency} ${major.toFixed(2)}`;
+      }
+
+      const renewalDate = periodEnd.toLocaleDateString('en-US', {
+        month: 'long', day: 'numeric', year: 'numeric',
+      });
+
+      await prisma.notification.create({
+        data: {
+          userId: org.ownerId,
+          title: 'Payment successful',
+          message: `Your ${subscription.planName} plan is now active. ${amountStr} was charged. Next renewal: ${renewalDate}.`,
+          type: 'success',
+        },
+      });
+    }
+  } catch (notifErr) {
+    console.error('Failed to create payment notification:', notifErr);
+  }
+
   return createApiResponse(
     {
       status: 'success',

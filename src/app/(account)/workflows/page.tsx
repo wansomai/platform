@@ -273,7 +273,7 @@ export default function WorkflowsPage() {
           <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             My Associates
             <span className="text-sm font-normal text-muted-foreground">
-              ({associates.length})
+              ({associates.filter((a) => a.createdById === session?.user?.id).length})
             </span>
           </h2>
           <Button

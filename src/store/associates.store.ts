@@ -67,7 +67,14 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
         '/api/associates'
       );
 
-      const associates = response.data.associates ?? [];
+      const raw = response.data.associates ?? [];
+      // Deduplicate by id in case of API/Prisma OR-join quirks
+      const seen = new Set<string>();
+      const associates = raw.filter((a) => {
+        if (seen.has(a.id)) return false;
+        seen.add(a.id);
+        return true;
+      });
       set({
         associates,
         associatesMap: createAssociatesMap(associates),
@@ -95,8 +102,11 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
           const mutationResult = response.data;
           const newAssociate = mutationResult.associate;
 
-          // Add the new associate to the store
+          // Add the new associate to the store — skip if already present (race guard)
           set((state) => {
+            if (state.associates.some((a) => a.id === newAssociate.id)) {
+              return { associates: state.associates, associatesMap: state.associatesMap, isLoading: false };
+            }
             const newAssociates = [newAssociate, ...state.associates];
             return {
               associates: newAssociates,
@@ -218,7 +228,7 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
 
       // Force refresh associates
       refreshAssociates: async () => {
-        await get().fetchAssociates();
+        await get().fetchAssociates(true);
       },
 
       // Clear all associates (useful for logout)

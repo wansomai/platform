@@ -6,12 +6,15 @@ import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 
 /**
  * GET /api/notifications
- * Returns the current user's unread (and recent read) notifications.
+ * ?history=true  → read, non-dismissed notifications (history log)
+ * (default)      → unread, non-dismissed notifications (active inbox)
  */
 export const GET = withErrorHandler(
-  withAuth(async (_req: NextRequest, userId: string) => {
+  withAuth(async (req: NextRequest, userId: string) => {
+    const history = req.nextUrl.searchParams.get('history') === 'true';
+
     const notifications = await prisma.notification.findMany({
-      where: { userId },
+      where: { userId, dismissed: false, read: history },
       orderBy: { createdAt: 'desc' },
       take: 30,
     });
