@@ -344,11 +344,13 @@ const ALLAFRICA_COUNTRY_PREFIXES = new Set([
 // 96 hours (4 days) gives deeper coverage and tolerates a missed cron run.
 const INGEST_WINDOW_MS = 96 * 60 * 60 * 1000;
 
-// RSS fetch timeout per feed.  AllAfrica RDF feeds can be slow — 30s is safe.
-const RSS_TIMEOUT_MS = 30_000;
+// RSS fetch timeout per feed. 12s matches the scraper timeout — ingest budget
+// is 300s total and retrying slow feeds wastes it.
+const RSS_TIMEOUT_MS = 12_000;
 
-// Number of times to retry a timed-out RSS feed before giving up.
-const RSS_RETRY_ATTEMPTS = 1;
+// No retries in the ingest context — a feed that hangs for 12s won't improve,
+// and the 300s budget can't absorb 63s (30s + wait + 30s) per timed-out feed.
+const RSS_RETRY_ATTEMPTS = 0;
 
 // ─── RSS polling ──────────────────────────────────────────────────────────────
 
@@ -527,14 +529,16 @@ async function pollScraper(
   const currentCalYear = new Date().getFullYear();
 
   try {
+    // 12 s timeout per scraper call — ingest budget is 300 s total;
+    // waiting 55 s per jurisdiction would exhaust it across 14+ jurisdictions.
     const [casesRes, gazRes] = await Promise.allSettled([
       searchAfricanLegalSources(
         `${jName} court judgment ruling`,
-        { jurisdictionHint: jName, maxResults: 10 },
+        { jurisdictionHint: jName, maxResults: 10, timeoutMs: 12_000 },
       ),
       searchAfricanLegalSources(
         `${jName} gazette notice legislation`,
-        { jurisdictionHint: jName, maxResults: 8 },
+        { jurisdictionHint: jName, maxResults: 8, timeoutMs: 12_000 },
       ),
     ]);
 
@@ -814,17 +818,23 @@ async function classifyAndSummarise(
       `{"isLegal":false,"topics":[],"summary":""}]\n` +
       `Return only valid JSON, no markdown.`;
 
-    // Retry up to 3 times with exponential backoff on Gemini 503 (overloaded).
-    // A failed batch previously silently dropped all items — retrying prevents that.
-    const maxAttempts = 3;
+    // 2 attempts max (1 retry). Worst-case cost: 30s + 2s delay + 30s = 62s per
+    // batch. 3 attempts would cost 105s and blow the 300s cron budget across
+    // multiple jurisdiction batches.
+    const GEMINI_CLASSIFY_TIMEOUT_MS = 30_000;
+    const maxAttempts = 2;
     let batchSucceeded = false;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const response = await genAI.models.generateContent({
+        const geminiPromise = genAI.models.generateContent({
           model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
           contents: prompt,
           config:   { temperature: 0 },
         });
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Gemini classify timeout')), GEMINI_CLASSIFY_TIMEOUT_MS),
+        );
+        const response = await Promise.race([geminiPromise, timeoutPromise]);
 
         let text = (response.text || '').trim();
         if (text.startsWith('```')) text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
@@ -844,13 +854,17 @@ async function classifyAndSummarise(
         batchSucceeded = true;
         break;
       } catch (err: unknown) {
+        const msg    = (err as Error)?.message ?? String(err);
         const status = (err as { status?: number })?.status;
-        if (status === 503 && attempt < maxAttempts) {
-          const delay = 5000 * attempt; // 5s, 10s
-          console.warn(`[Ingest] Gemini 503 on classify attempt ${attempt} — retrying in ${delay}ms`);
-          await new Promise((r) => setTimeout(r, delay));
+        const isTransient =
+          status === 503 || status === 429 ||
+          /timeout|econnreset|econnrefused|enotfound|network/i.test(msg);
+
+        if (isTransient && attempt < maxAttempts) {
+          console.warn(`[Ingest] Gemini classify transient error (attempt ${attempt}): ${msg} — retrying in 2s`);
+          await new Promise((r) => setTimeout(r, 2_000));
         } else {
-          console.error(`[Ingest] classify batch failed after ${attempt} attempt(s):`, (err as Error)?.message ?? err);
+          console.error(`[Ingest] classify batch failed after ${attempt} attempt(s):`, msg);
           break;
         }
       }
@@ -928,9 +942,14 @@ async function persistItems(
 /**
  * Ingest content for one or more jurisdictions.
  * @param jurisdictions  Array of jurisdiction codes, e.g. ['KE', 'ZA']
+ * @param concurrency    Max parallel jurisdictions. Tier 1 uses 4 (some have 2
+ *                       AllAfrica feeds → 8 concurrent AllAfrica requests max).
+ *                       Tier 2 uses 8 (single AllAfrica feed each → same 8-request
+ *                       ceiling, but cuts batch count from 8 to 4 for 30 jurisdictions).
  */
 export async function ingestJurisdictions(
   jurisdictions: string[],
+  concurrency   = 4,
 ): Promise<IngestResult[]> {
   const JURISDICTION_NAMES: Record<string, string> = {
     // Original Tier 1
@@ -951,10 +970,7 @@ export async function ingestJurisdictions(
 
   const since = new Date(Date.now() - INGEST_WINDOW_MS);
 
-  // Run at most 4 jurisdictions concurrently to prevent AllAfrica rate-limiting.
-  // Each jurisdiction may have 1–2 AllAfrica feeds; 4 parallel = max 8 concurrent
-  // AllAfrica requests before the per-feed sequential logic kicks in.
-  const CONCURRENCY = 4;
+  const CONCURRENCY = concurrency;
   const results: IngestResult[] = [];
   for (let i = 0; i < jurisdictions.length; i += CONCURRENCY) {
     const batch = jurisdictions.slice(i, i + CONCURRENCY);

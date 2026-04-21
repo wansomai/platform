@@ -120,11 +120,17 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Tier 1 jurisdictions can have up to 2 AllAfrica feeds each → cap at 4 concurrent
+  // (= max 8 simultaneous AllAfrica requests).  Tier 2 jurisdictions have a single
+  // AllAfrica feed each, so concurrency 8 keeps the same 8-request ceiling while
+  // cutting batch count from 8 → 4 for 30 jurisdictions (fits in 300 s budget).
+  const concurrency = rawTier === '2' ? 8 : 4;
+
   const tierLabel = rawTier ? `tier ${rawTier}` : 'all tiers';
   console.log(`[digest-ingest] Ingesting ${jurisdictions.length} jurisdiction(s) (${tierLabel}): ${jurisdictions.join(', ')}`);
   const t0 = Date.now();
 
-  const results = await ingestJurisdictions(jurisdictions);
+  const results = await ingestJurisdictions(jurisdictions, concurrency);
 
   const totalStored  = results.reduce((n, r) => n + r.stored,  0);
   const totalSkipped = results.reduce((n, r) => n + r.skipped, 0);

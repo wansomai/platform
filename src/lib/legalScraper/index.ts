@@ -23,6 +23,7 @@ export interface LegalSearchOptions {
   jurisdictionHint: string;
   maxResults?:      number;
   snippetsOnly?:    boolean;
+  timeoutMs?:       number;
 }
 
 export interface LegalSearchResponse {
@@ -59,7 +60,7 @@ export async function searchAfricanLegalSources(
     );
   }
 
-  const { jurisdictionHint, maxResults = 8 } = options;
+  const { jurisdictionHint, maxResults = 8, timeoutMs = 55_000 } = options;
 
   const response = await fetch(`${SCRAPER_URL}/search`, {
     method: 'POST',
@@ -72,8 +73,7 @@ export async function searchAfricanLegalSources(
       jurisdiction: jurisdictionHint.trim(),
       maxResults:   Math.min(maxResults, 20),
     }),
-    // Stay within Vercel's 60 s function timeout
-    signal: AbortSignal.timeout(55_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
   if (!response.ok) {
