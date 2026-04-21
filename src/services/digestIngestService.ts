@@ -760,8 +760,14 @@ async function enrichExcerpts(items: RawItem[]): Promise<void> {
 
 // ─── Topic classification ─────────────────────────────────────────────────────
 //
-// Cheap Gemini call: given a batch of titles + excerpts, returns topic tags.
-// We batch up to 20 items per call to minimise API round-trips.
+// Split into two lean Gemini calls to keep each well within budget:
+//   Phase 1 (classifyItems)  — isLegal flag + topic tags only, no prose output.
+//                              Batch 15, timeout 20s. Compact JSON response
+//                              means even a preview model replies in ~5s.
+//   Phase 2 (summariseItems) — 1–2 sentence summary, called only on the legal
+//                              subset from Phase 1. Batch 8, timeout 30s.
+//                              Smaller item count + prose output kept separate
+//                              keeps each call fast and independent.
 
 const KNOWN_TOPICS = [
   'Criminal Law', 'Civil Litigation', 'Commercial Law', 'Contract Law',
@@ -770,114 +776,177 @@ const KNOWN_TOPICS = [
   'Immigration', 'Family Law', 'Environmental Law', 'Regulatory Compliance',
 ];
 
-/**
- * Classify topics AND generate a 1–2 sentence summary for items whose excerpt
- * is shorter than MIN_EXCERPT_LEN characters (typically AllAfrica RDF items
- * that carry no description, or feeds that only emit a title).
- *
- * Both operations are combined into a single Gemini call per batch to minimise
- * API round-trips.
- */
 const MIN_EXCERPT_LEN = 60;
 
-async function classifyAndSummarise(
-  items: RawItem[],
-): Promise<{ topics: string[][]; summaries: string[]; isLegal: boolean[] }> {
-  if (items.length === 0) return { topics: [], summaries: [], isLegal: [] };
-
-  const batchSize = 20;
-  const allTopics:    string[][] = new Array(items.length).fill([]);
-  // Default to empty string — aiSummary is always written to a dedicated DB field,
-  // never used as a fallback for excerpt.
-  const allSummaries: string[]   = new Array(items.length).fill('');
-  // Default to false — items whose batch fails are treated as non-legal and dropped.
-  const allIsLegal:   boolean[]  = new Array(items.length).fill(false);
-
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-
-    // Always provide the excerpt so Gemini can write an informed summary,
-    // even for long excerpts — every item gets an AI-written aiSummary.
-    const input = batch.map((item, idx) =>
-      `${idx + 1}. Title: ${item.title}\n` +
-      `Excerpt: ${item.excerpt.slice(0, 200) || '(none)'}`,
-    ).join('\n\n');
-
-    const prompt =
-      `You are a legal news classifier and summariser.\n\n` +
-      `For each item below:\n` +
-      `1. Decide if the item is relevant to the legal profession (court decisions, legislation, ` +
-      `regulations, legal sector news, law firm updates, compliance, governance). ` +
-      `Set "isLegal": true only if a practising attorney would find it professionally relevant. ` +
-      `Sports, entertainment, general politics without legal dimensions, and celebrity news are NOT legal.\n` +
-      `2. If isLegal is true, classify into one or more of: ${KNOWN_TOPICS.join(', ')}. If none fit precisely, use "General".\n` +
-      `3. Write a 1–2 sentence factual summary in plain English suitable for a practising attorney.\n\n` +
-      `${input}\n\n` +
-      `Reply ONLY with a JSON array. Each element: {"isLegal": bool, "topics": [...], "summary": "..."}.\n` +
-      `Example: [{"isLegal":true,"topics":["Criminal Law"],"summary":"The High Court dismissed the appeal on procedural grounds."},` +
-      `{"isLegal":false,"topics":[],"summary":""}]\n` +
-      `Return only valid JSON, no markdown.`;
-
-    // 2 attempts max (1 retry). Worst-case cost: 30s + 2s delay + 30s = 62s per
-    // batch. 3 attempts would cost 105s and blow the 300s cron budget across
-    // multiple jurisdiction batches.
-    const GEMINI_CLASSIFY_TIMEOUT_MS = 30_000;
-    const maxAttempts = 2;
-    let batchSucceeded = false;
+function makeRetryLoop(label: string, maxAttempts = 2) {
+  return async function runWithRetry<T>(
+    fn: () => Promise<T>,
+    onFail: () => void,
+  ): Promise<boolean> {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const geminiPromise = genAI.models.generateContent({
-          model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
-          contents: prompt,
-          config:   { temperature: 0 },
-        });
-        const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Gemini classify timeout')), GEMINI_CLASSIFY_TIMEOUT_MS),
-        );
-        const response = await Promise.race([geminiPromise, timeoutPromise]);
-
-        let text = (response.text || '').trim();
-        if (text.startsWith('```')) text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-        const parsed: Array<{ isLegal: boolean; topics: string[]; summary: string }> = JSON.parse(text);
-
-        for (let j = 0; j < batch.length; j++) {
-          const entry = parsed[j];
-          if (!entry) continue;
-          allIsLegal[i + j]  = entry.isLegal === true;
-          allTopics[i + j]   = allIsLegal[i + j] && Array.isArray(entry.topics) && entry.topics.length > 0
-            ? entry.topics
-            : ['General'];
-          if (entry.isLegal && entry.summary && entry.summary.trim().length > 10) {
-            allSummaries[i + j] = entry.summary.trim();
-          }
-        }
-        batchSucceeded = true;
-        break;
+        await fn();
+        return true;
       } catch (err: unknown) {
-        const msg    = (err as Error)?.message ?? String(err);
-        const status = (err as { status?: number })?.status;
+        const msg      = (err as Error)?.message ?? String(err);
+        const status   = (err as { status?: number })?.status;
         const isTransient =
           status === 503 || status === 429 ||
           /timeout|econnreset|econnrefused|enotfound|network/i.test(msg);
 
         if (isTransient && attempt < maxAttempts) {
-          console.warn(`[Ingest] Gemini classify transient error (attempt ${attempt}): ${msg} — retrying in 2s`);
+          console.warn(`[Ingest] ${label} transient error (attempt ${attempt}): ${msg} — retrying in 2s`);
           await new Promise((r) => setTimeout(r, 2_000));
         } else {
-          console.error(`[Ingest] classify batch failed after ${attempt} attempt(s):`, msg);
+          console.error(`[Ingest] ${label} failed after ${attempt} attempt(s):`, msg);
           break;
         }
       }
     }
-    if (!batchSucceeded) {
-      // All retries exhausted — mark batch as General/non-legal so they are dropped.
-      for (let j = 0; j < batch.length; j++) {
-        allTopics[i + j] = ['General'];
-      }
-    }
+    onFail();
+    return false;
+  };
+}
+
+function geminiCall(prompt: string, timeoutMs: number) {
+  const geminiPromise = genAI.models.generateContent({
+    model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+    contents: prompt,
+    config:   { temperature: 0 },
+  });
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Gemini classify timeout')), timeoutMs),
+  );
+  return Promise.race([geminiPromise, timeoutPromise]);
+}
+
+function stripMarkdown(text: string): string {
+  return text.startsWith('```')
+    ? text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '')
+    : text;
+}
+
+/**
+ * Phase 1: Classify all items — isLegal + topics only, no summaries.
+ * Compact output keeps response small so the preview model replies quickly.
+ */
+async function classifyItems(
+  items: RawItem[],
+): Promise<{ topics: string[][]; isLegal: boolean[] }> {
+  if (items.length === 0) return { topics: [], isLegal: [] };
+
+  const batchSize  = 15;
+  const TIMEOUT_MS = 20_000;
+  const allTopics:  string[][] = new Array(items.length).fill([]);
+  const allIsLegal: boolean[]  = new Array(items.length).fill(false);
+  const retry = makeRetryLoop('Gemini classify');
+
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+
+    const input = batch.map((item, idx) =>
+      `${idx + 1}. ${item.title}\n${item.excerpt.slice(0, 100) || '(none)'}`,
+    ).join('\n\n');
+
+    const prompt =
+      `You are a legal news classifier.\n\n` +
+      `For each numbered item decide:\n` +
+      `1. isLegal: true only if a practising attorney would find it professionally relevant ` +
+      `(court decisions, legislation, regulations, legal sector news, compliance, governance). ` +
+      `Sports, entertainment, general politics without legal dimensions, and celebrity news are NOT legal.\n` +
+      `2. topics: if isLegal, one or more of: ${KNOWN_TOPICS.join(', ')}. Use "General" if none fit.\n\n` +
+      `${input}\n\n` +
+      `Reply ONLY with a compact JSON array — no markdown, no prose.\n` +
+      `Each element: {"isLegal":bool,"topics":[...]}\n` +
+      `Example: [{"isLegal":true,"topics":["Criminal Law"]},{"isLegal":false,"topics":[]}]`;
+
+    await retry(
+      async () => {
+        const response = await geminiCall(prompt, TIMEOUT_MS);
+        const parsed: Array<{ isLegal: boolean; topics: string[] }> =
+          JSON.parse(stripMarkdown((response.text || '').trim()));
+
+        for (let j = 0; j < batch.length; j++) {
+          const entry = parsed[j];
+          if (!entry) continue;
+          allIsLegal[i + j] = entry.isLegal === true;
+          allTopics[i + j]  = allIsLegal[i + j] && Array.isArray(entry.topics) && entry.topics.length > 0
+            ? entry.topics
+            : ['General'];
+        }
+      },
+      () => {
+        for (let j = 0; j < batch.length; j++) allTopics[i + j] = ['General'];
+      },
+    );
   }
 
-  return { topics: allTopics, summaries: allSummaries, isLegal: allIsLegal };
+  return { topics: allTopics, isLegal: allIsLegal };
+}
+
+/**
+ * Phase 2: Generate AI summaries for legal items only.
+ * Called with the filtered subset so item count is much smaller than Phase 1.
+ */
+async function summariseItems(items: RawItem[]): Promise<string[]> {
+  if (items.length === 0) return [];
+
+  const batchSize  = 8;
+  const TIMEOUT_MS = 30_000;
+  const allSummaries: string[] = new Array(items.length).fill('');
+  const retry = makeRetryLoop('Gemini summarise');
+
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+
+    const input = batch.map((item, idx) =>
+      `${idx + 1}. Title: ${item.title}\nExcerpt: ${item.excerpt.slice(0, 200) || '(none)'}`,
+    ).join('\n\n');
+
+    const prompt =
+      `You are a legal news summariser for practising attorneys.\n\n` +
+      `For each numbered item write a 1–2 sentence factual summary in plain English.\n\n` +
+      `${input}\n\n` +
+      `Reply ONLY with a JSON array of strings — one per item, same order, no markdown.\n` +
+      `Example: ["The High Court dismissed the appeal on procedural grounds.", "Parliament enacted new tax rules effective January 2025."]`;
+
+    await retry(
+      async () => {
+        const response = await geminiCall(prompt, TIMEOUT_MS);
+        const parsed: string[] =
+          JSON.parse(stripMarkdown((response.text || '').trim()));
+
+        for (let j = 0; j < batch.length; j++) {
+          const s = parsed[j];
+          if (s && s.trim().length > 10) allSummaries[i + j] = s.trim();
+        }
+      },
+      () => { /* summaries stay empty — non-fatal */ },
+    );
+  }
+
+  return allSummaries;
+}
+
+/**
+ * Orchestrator: classify all items (Phase 1), then summarise only the legal
+ * subset (Phase 2). Keeping the two calls lean and independent prevents the
+ * combined prose+classification prompt from timing out on preview models.
+ */
+async function classifyAndSummarise(
+  items: RawItem[],
+): Promise<{ topics: string[][]; summaries: string[]; isLegal: boolean[] }> {
+  if (items.length === 0) return { topics: [], summaries: [], isLegal: [] };
+
+  const { topics, isLegal } = await classifyItems(items);
+
+  const legalIndices = items.map((_, i) => i).filter((i) => isLegal[i]);
+  const legalSums    = await summariseItems(legalIndices.map((i) => items[i]));
+
+  const summaries: string[] = new Array(items.length).fill('');
+  legalIndices.forEach((origIdx, k) => { summaries[origIdx] = legalSums[k] ?? ''; });
+
+  return { topics, summaries, isLegal };
 }
 
 // ─── Persist to DB ────────────────────────────────────────────────────────────

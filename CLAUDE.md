@@ -78,6 +78,7 @@ Organization
   - `googleCalendarService.ts` - Calendar event CRUD and availability checks
   - `gmailService.ts` - Email search, read, and draft operations
   - `kbSummaryService.ts` - Generates and caches AI-produced summaries and `rulesForThinking` for Associate KB documents; loaded at chat time via `loadKBDocumentsWithSummaries()`
+  - `digestIngestService.ts` - Pre-ingests legal content from RSS feeds, LII scraper, and Tavily fallback into `DigestItem` table; runs via `/api/cron/digest-ingest`
 - Associate executor (`src/lib/associateExecutor.ts`) runs a bounded agentic loop capped at `MAX_ITERATIONS = 5` — it invokes Gemini with the associate's tools until the model stops calling functions or the limit is reached
 
 #### 5. Document Processing Pipeline
@@ -119,10 +120,14 @@ Organization
 #### 8. Legal Digest System ("Briefly")
 - `src/services/legalDigestService.ts` generates periodic legal digest emails for subscribed users (product name: **Briefly**)
 - Cron trigger at `/api/cron/legal-digest` (`maxDuration = 300`); user subscriptions managed at `/api/digest/subscription`
-- **Two-phase execution**: Phase 1 resolves fingerprints (no Gemini calls); Phase 2 generates and sends emails
+- **Three-stage pipeline**:
+  1. **Ingest** (`/api/cron/digest-ingest`, every 2–4 hrs): RSS feeds → LII scraper → Tavily fallback fills `DigestItem` table (priority order per jurisdiction)
+  2. **Synthesis** (`/api/cron/legal-digest`): reads from `DigestItem` instead of doing live searches; two-phase — Phase 1 resolves fingerprints (no Gemini calls), Phase 2 generates and sends emails
+  3. **Cleanup** (`/api/cron/digest-cleanup`): purges stale `DigestItem` rows
 - **Idempotency**: digest fingerprinting prevents re-sending identical content; test email addresses bypass this gate
 - **Jurisdiction tiers** (`src/lib/briefly-jurisdictions.ts`): Tier 1 (primary markets: KE, ZA, NG, GH, etc.) ingested every 4 hours; Tier 2 (expanded Africa) subscriber-driven; unsupported jurisdictions fall back to live Gemini grounding
-- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`, `/api/cron/digest-ingest`, `/api/cron/digest-cleanup`
+- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`
+- **Dev testing**: `/api/dev/digest-preview` — preview digest output without sending emails (not for production)
 
 #### 9. Database Transaction Pattern
 Use `prisma.$transaction()` for multi-table writes (e.g., org upgrades, bulk visibility fixes, associate session creation). Place email-sending calls **outside** transactions so a failed send does not roll back DB changes.
@@ -382,8 +387,21 @@ Optional (for RAG tuning):
 ### Core Entities
 - `User` → `Organization` (primary org) + `UserOrganization` (multi-org membership)
 - `Project` → `ProjectMember`, `Conversation`, `Document`, `KnowledgeBase`, `CanvasDocument`
-- `Conversation` → `Message`, `ConversationDocument`, `ConversationAction`
+- `Conversation` → `Message`, `ConversationDocument`, `ConversationAction`, `ConversationMeta` (title/summary metadata)
 - `Document` → `DocumentContent`, `Embedding` (vector search), `Folder` (hierarchy)
+
+### Supporting Entities
+- `Event` / `EventRegistration` - Law school launch events and opt-in tracking
+- `Content` / `ContentSection` - CMS content for SEO pages (managed via `content.store.ts`)
+- `OnboardingAnalytics` - Onboarding funnel step tracking
+- `Publications` - Law firm publication listings
+- `AdminLog` - Audit log for admin actions
+
+### Legal Digest (Briefly)
+- `DigestSubscription` - User subscriptions to Briefly digest emails
+- `DigestItem` - Pre-ingested legal content from RSS/scraper/Tavily (source of truth for synthesis)
+- `DigestCache` - Cached digest output to avoid re-generation
+- `DigestHistory` - Record of sent digests per user for idempotency
 
 ### AI System
 - `AIAssociate` - Custom AI personas with practice areas (`PracticeArea` enum)
@@ -466,8 +484,12 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/subscription/*` - Subscription management
 - `/api/profile/*` - User profile operations
 - `/api/admin/*` - Admin-only: organization management + legal knowledge CRUD (`/api/admin/legal-knowledge/*`)
+- `/api/notifications` - `GET` last 30 notifications; `PATCH /api/notifications/[id]/read` - mark read
+- `/api/support` - Authenticated POST; sends support ticket email to `law@wansom.ai`
+- `/api/user` - User account operations
 - `/api/digest/*` - Legal digest subscriptions
 - `/api/cron/*` - Cron job endpoints (legal digest generation)
+- `/api/dev/*` - Dev-only endpoints (e.g. `/api/dev/digest-preview` for testing digest without sending)
 - `/api/events/*` - Event registrations (law school launch, opt-ins)
 - `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`)
 - `/api/search` - Pan-African legal search (authenticated; calls `searchAfricanLegalSources` from `src/lib/legalScraper/index.ts` — a thin client that delegates scraping to a Python service on Digital Ocean)

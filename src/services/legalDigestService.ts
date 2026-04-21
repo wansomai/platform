@@ -1154,13 +1154,15 @@ Return ONLY valid JSON — no markdown fences, no extra text:
   ]
 }`;
 
-  const response = await genAI.models.generateContent({
-    model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
-    contents: synthesisPrompt,
-    config: {
-      temperature: 0.2,
-    },
-  });
+  const response = await withTimeout(
+    genAI.models.generateContent({
+      model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      contents: synthesisPrompt,
+      config: { temperature: 0.2 },
+    }),
+    120_000,
+    'Gemini digest synthesis',
+  );
 
   const text = response.text?.trim() || '';
   let cleanText = text;
@@ -1375,8 +1377,19 @@ export async function generateLegalDigestFromDB(
         `[Briefly] Still thin after 3 days (${after3Days.length} item(s)) — running fresh 7-day ingest for ${supportedJurs.join(',')}`,
       );
       const { ingestJurisdictions } = await import('@/services/digestIngestService');
-      await ingestJurisdictions(supportedJurs);
-      console.log(`[Briefly] Fresh ingest complete — re-querying 7-day window for ${supportedJurs.join(',')}`);
+      // Cap the fresh ingest at 120s — a subscriber with many jurisdictions could
+      // otherwise exhaust the full 300s digest cron budget before any emails are sent.
+      // If it times out we still re-query the DB: whatever was ingested before the
+      // cutoff is better than nothing, and the regular ingest cron will fill the rest.
+      const ingestCompleted = await withTimeout(
+        ingestJurisdictions(supportedJurs),
+        120_000,
+        `backdate ingest [${supportedJurs.join(',')}]`,
+      ).then(() => true).catch((err) => {
+        console.warn(`[Briefly] Backdate ingest hit time limit: ${err.message} — proceeding with available DB items`);
+        return false;
+      });
+      console.log(`[Briefly] Fresh ingest ${ingestCompleted ? 'complete' : 'partial'} — re-querying 7-day window for ${supportedJurs.join(',')}`);
       ({ inWindow, backdated } = await buildItemsFromExtendedQuery(7));
     }
 
