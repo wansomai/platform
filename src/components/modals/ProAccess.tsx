@@ -57,6 +57,14 @@ const PRO_FEATURES = [
   "Best value for regular use",
 ];
 
+const TEAM_FEATURES = [
+  "Everything in Pro",
+  "Invite and collaborate with your team",
+  "Role-based organization access",
+  "Per-seat billing with scalable growth",
+  "Best for law firms and legal teams",
+];
+
 const FREE_FEATURES = [
   "2 workspaces",
   "8 AI messages / month",
@@ -94,8 +102,12 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 }) => {
   const [isProcessingExplorer, setIsProcessingExplorer] = useState(false);
   const [isProcessingPro, setIsProcessingPro] = useState(false);
+  const [isProcessingTeam, setIsProcessingTeam] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [config, setConfig] = useState<PopupConfig | null>(null);
+  const [planFlow, setPlanFlow] = useState<"personal" | "teams">("personal");
+  const [firmName, setFirmName] = useState("");
+  const [seatCount, setSeatCount] = useState(1);
 
   const explorerExpired = planState === "explorer_expired";
 
@@ -113,16 +125,28 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
       .catch(() => {});
   }, [isOpen, config]);
 
-  const initializePayment = async (planType: "explorer" | "personal") => {
-    const setLoading =
-      planType === "explorer" ? setIsProcessingExplorer : setIsProcessingPro;
+  const initializePayment = async (planType: "explorer" | "personal" | "teams") => {
+    const setLoading = planType === "explorer"
+      ? setIsProcessingExplorer
+      : planType === "teams"
+        ? setIsProcessingTeam
+        : setIsProcessingPro;
     setLoading(true);
     setPaymentError(null);
 
     try {
       const response = await apiService.post<{
         data: { authorizationUrl: string };
-      }>("/api/payments/initialize", { planType });
+      }>(
+        "/api/payments/initialize",
+        planType === "teams"
+          ? {
+              planType,
+              firmName: firmName.trim(),
+              seatCount: Math.max(1, Math.floor(seatCount || 1)),
+            }
+          : { planType }
+      );
 
       if (response.data?.authorizationUrl) {
         window.location.href = response.data.authorizationUrl;
@@ -141,6 +165,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
   };
 
   const isAnyLoading = isProcessingExplorer || isProcessingPro;
+  const isAnyTeamLoading = isProcessingTeam;
 
   const explorerLabel = config?.explorerPricing
     ? formatSubscriptionPrice(
@@ -152,6 +177,12 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
   const proLabel = config?.pricing
     ? formatSubscriptionPrice(config.pricing.personal, config.pricing.currency)
     : "$12";
+  const teamUnitLabel = config?.pricing
+    ? formatSubscriptionPrice(config.pricing.teams, config.pricing.currency)
+    : "$15";
+  const teamTotalLabel = config?.pricing
+    ? formatSubscriptionPrice(config.pricing.teams * Math.max(1, seatCount), config.pricing.currency)
+    : `$${15 * Math.max(1, seatCount)}`;
 
   const headerCopy = explorerExpired
     ? {
@@ -180,13 +211,42 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
         </DialogHeader>
 
+        {/* Step 1: choose plan flow */}
+        <div className="px-5 pt-3">
+          <div className="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1">
+            <button
+              type="button"
+              onClick={() => setPlanFlow("personal")}
+              className={`rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                planFlow === "personal"
+                  ? "bg-white text-[#0a4b5e] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Personal
+            </button>
+            <button
+              type="button"
+              onClick={() => setPlanFlow("teams")}
+              className={`rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                planFlow === "teams"
+                  ? "bg-white text-[#0a4b5e] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Team
+            </button>
+          </div>
+        </div>
+
         {paymentError && (
           <div className="mx-5 mt-3 text-xs text-red-600 bg-red-50 rounded-md px-3 py-2 border border-red-200">
             {paymentError}
           </div>
         )}
 
-        {/* Plan cards */}
+        {/* Personal flow: Free + Explorer + Pro */}
+        {planFlow === "personal" && (
         <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* ── Free (current — greyed out) ── */}
           {!explorerExpired && (
@@ -303,6 +363,73 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
             </Button>
           </div>
         </div>
+        )}
+
+        {/* Team flow: Team-only card */}
+        {planFlow === "teams" && (
+          <div className="px-5 py-4">
+            <div className="rounded-xl border-2 border-[#0a4b5e] bg-white p-4 shadow-[0_1px_0_rgba(10,75,94,0.06)]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-[#0a4b5e] uppercase tracking-wide">
+                  Team
+                </span>
+                <Badge className="text-[10px] h-5 bg-[#0a4b5e] text-white px-2">
+                  Team Plan
+                </Badge>
+              </div>
+              <div className="mb-1">
+                <span className="text-2xl font-bold text-gray-900">{teamUnitLabel}</span>
+                <span className="text-xs text-gray-500 ml-1">/ seat / month</span>
+              </div>
+              <p className="text-xs text-[#0a4b5e] mb-3">Choose seats and continue to checkout</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Firm name</label>
+                  <input
+                    type="text"
+                    value={firmName}
+                    onChange={(e) => setFirmName(e.target.value)}
+                    placeholder="Enter firm name"
+                    className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Seats</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={seatCount}
+                    onChange={(e) => setSeatCount(Math.max(1, Number(e.target.value) || 1))}
+                    className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
+                  />
+                </div>
+              </div>
+
+              <ul className="space-y-1.5 mb-4">
+                {TEAM_FEATURES.map((f) => (
+                  <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
+                    <Check className="h-3 w-3 shrink-0 mt-0.5 text-[#0a4b5e]" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                onClick={() => initializePayment("teams")}
+                disabled={isAnyTeamLoading || !firmName.trim()}
+                className="w-full text-xs bg-[#0a4b5e] hover:bg-[#083b4a] text-white"
+                size="sm"
+              >
+                {isProcessingTeam ? (
+                  <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
+                ) : (
+                  `Continue · ${teamTotalLabel}/mo`
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="px-5 pb-4 flex items-center justify-center">
