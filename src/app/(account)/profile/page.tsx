@@ -68,7 +68,6 @@ const Page = () => {
     currentOrgId,
     orgsLoading,
     isSwitching,
-    isDowngrading,
     fetchOrganizations,
     switchOrganization: switchOrg,
     downgradeAccount: performDowngrade,
@@ -491,15 +490,7 @@ const Page = () => {
                                 ? new Date(subscriptionStatus.subscription.currentPeriodEnd).toLocaleDateString()
                                 : 'soon'}
                             </Button>
-                          ) : (
-                            <Button
-                              onClick={() => setShowDowngradeDialog(true)}
-                              disabled={isDowngrading}
-                              variant="destructive"
-                            >
-                              {isDowngrading ? "Switching..." : "Switch to Free Plan"}
-                            </Button>
-                          )}
+                          ) : null}
                         </>
                       )}
                     </>

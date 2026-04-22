@@ -410,7 +410,7 @@ export function generateReceiptHTML(data: ReceiptData): string {
       <div class="footer-left">
         <strong>Wansom AI</strong><br />
         Legal Intelligence Platform<br />
-        support@wansom.ai
+        law@wansom.ai
       </div>
       <div class="footer-right">
         This is your official receipt.<br />
