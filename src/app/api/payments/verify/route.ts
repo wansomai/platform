@@ -149,7 +149,12 @@ async function processPayment(transaction: any, organizationId: string, referenc
 
   // Read planType, seatCount, and payment mode from metadata
   const metadata = transaction.metadata || {};
-  const planType: 'personal' | 'teams' = metadata.planType === 'teams' ? 'teams' : 'personal';
+  const planType: 'personal' | 'teams' | 'explorer' =
+    metadata.planType === 'teams'
+      ? 'teams'
+      : metadata.planType === 'explorer'
+        ? 'explorer'
+        : 'personal';
   const isDirectPayment: boolean = metadata.isDirectPayment === true;
   const metadataSeatCount: number = typeof metadata.seatCount === 'number' && metadata.seatCount >= 1
     ? metadata.seatCount
@@ -158,9 +163,11 @@ async function processPayment(transaction: any, organizationId: string, referenc
   // For direct payments there is no Paystack plan object — use sensible defaults.
   // For plan-based payments, read plan details from the transaction as before.
   const plan = transaction.plan_object || transaction.plan || {};
-  const planInterval = plan.interval || 'monthly';
+  const planInterval = planType === 'explorer'
+    ? 'biweekly'
+    : (plan.interval || 'monthly');
   const planName = isDirectPayment
-    ? (planType === 'teams' ? 'Teams' : 'Professional')
+    ? (planType === 'teams' ? 'Teams' : planType === 'explorer' ? 'explorer' : 'Professional')
     : (plan.name || 'Professional');
 
   // Extract Paystack subscription code if available
@@ -195,7 +202,13 @@ async function processPayment(transaction: any, organizationId: string, referenc
 
   // Calculate subscription period
   const now = new Date();
-  const periodEnd = calculatePeriodEnd(planInterval);
+  const periodEnd = planType === 'explorer'
+    ? (() => {
+        const d = new Date(now);
+        d.setDate(d.getDate() + 14);
+        return d;
+      })()
+    : calculatePeriodEnd(planInterval);
 
   // Create or update subscription and payment in a transaction
   const subscription = await prisma.$transaction(async (tx) => {
