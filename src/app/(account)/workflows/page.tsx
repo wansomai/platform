@@ -76,15 +76,18 @@ export default function WorkflowsPage() {
 
   const {
     associates,
-    isLoading,
+    isFetching,
     error,
-    fetchAssociates,
     deleteAssociate,
+    refreshAssociates,
     isProcessing,
   } = useAssociates();
 
+  // Always force-refresh on mount so the list reflects the latest server state
+  // (handles deleted/created associates from other sessions or navigations)
   useEffect(() => {
-    fetchAssociates();
+    refreshAssociates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDeleteConfirm = async () => {
@@ -286,9 +289,9 @@ export default function WorkflowsPage() {
           </Button>
         </div>
 
-        {isLoading ? (
+        {isFetching && associates.length === 0 ? (
           <div className="flex items-center justify-center py-12">
-          <LogoAnimation/>
+            <LogoAnimation />
           </div>
         ) : associates.length === 0 ? (
           <Card className="border-2 border-dashed">
@@ -558,7 +561,7 @@ export default function WorkflowsPage() {
           onClose={() => setAssociateToShare(null)}
           associateId={associateToShare.id}
           associateName={associateToShare.name}
-          onUpdated={() => fetchAssociates()}
+          onUpdated={() => refreshAssociates()}
         />
       )}
 

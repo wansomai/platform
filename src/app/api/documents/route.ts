@@ -39,15 +39,23 @@ export async function GET(request: NextRequest) {
 
     let organizationId: string;
     if (orgOverride) {
-      const membership = await prisma.userOrganization.findUnique({
-        where: { userId_organizationId: { userId, organizationId: orgOverride } },
-        select: { userId: true }
+      // Primary org membership is on User.organizationId; secondary orgs are in UserOrganization.
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { organizationId: true }
       });
-      if (!membership) {
-        return NextResponse.json(
-          { message: 'You are not a member of the requested organization', error: true },
-          { status: 403 }
-        );
+      const isPrimaryOrg = user?.organizationId === orgOverride;
+      if (!isPrimaryOrg) {
+        const membership = await prisma.userOrganization.findUnique({
+          where: { userId_organizationId: { userId, organizationId: orgOverride } },
+          select: { userId: true }
+        });
+        if (!membership) {
+          return NextResponse.json(
+            { message: 'You are not a member of the requested organization', error: true },
+            { status: 403 }
+          );
+        }
       }
       organizationId = orgOverride;
     } else {
@@ -342,15 +350,24 @@ export async function POST(request: NextRequest) {
 
     let organizationId: string;
     if (orgOverride) {
-      const membership = await prisma.userOrganization.findUnique({
-        where: { userId_organizationId: { userId, organizationId: orgOverride } },
-        select: { userId: true }
+      // Primary org membership is stored on User.organizationId, not in UserOrganization.
+      // Secondary org memberships are in UserOrganization. Check both.
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { organizationId: true }
       });
-      if (!membership) {
-        return NextResponse.json(
-          { message: 'You are not a member of the requested organization', error: true },
-          { status: 403 }
-        );
+      const isPrimaryOrg = user?.organizationId === orgOverride;
+      if (!isPrimaryOrg) {
+        const membership = await prisma.userOrganization.findUnique({
+          where: { userId_organizationId: { userId, organizationId: orgOverride } },
+          select: { userId: true }
+        });
+        if (!membership) {
+          return NextResponse.json(
+            { message: 'You are not a member of the requested organization', error: true },
+            { status: 403 }
+          );
+        }
       }
       organizationId = orgOverride;
     } else {
@@ -421,7 +438,13 @@ export async function POST(request: NextRequest) {
     if (titleConflict) {
       const location = folderId ? 'this folder' : 'the root folder';
       return NextResponse.json(
-        { message: `A document named "${documentTitle}" already exists in ${location}. Please rename it before uploading.`, error: true },
+        {
+          message: `A document named "${documentTitle}" already exists in ${location}.`,
+          error: true,
+          // Include the existing document's ID so callers (e.g. KB upload in associate pages)
+          // can reuse it directly instead of failing on the conflict.
+          existingDocumentId: titleConflict.id,
+        },
         { status: 409 }
       );
     }

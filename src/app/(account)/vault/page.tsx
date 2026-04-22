@@ -145,12 +145,12 @@ export default function VaultPage() {
   // Modal states
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
   const [deleteImpact, setDeleteImpact] = useState<{
     associateCount: number;
     associates: Array<{ id: string; name: string }>;
   } | null>(null);
-  const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [documentToMove, setDocumentToMove] = useState<string | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [previewDocument, setPreviewDocument] = useState<{ title: string; fileUrl: string; fileType: string } | null>(null);
@@ -190,6 +190,8 @@ export default function VaultPage() {
 
   // Ref that always holds the latest fetch params — used by the reprocessing effect to avoid stale closures
   const currentParamsRef = useRef<any>({});
+  // Guards the soft-delete dialog close event when escalating to hard-delete on 409.
+  const isEscalatingDeleteRef = useRef(false);
   // Incrementing counter that forces a fetch even when activeFolder hasn't changed (same-folder re-click)
   const [fetchTrigger, setFetchTrigger] = useState(0);
 
@@ -269,26 +271,58 @@ export default function VaultPage() {
     }
   }, [error, addToast]);
   
+  const resetDeleteState = () => {
+    isEscalatingDeleteRef.current = false;
+    setShowDeleteDialog(false);
+    setShowHardDeleteDialog(false);
+    setDocumentToDelete(null);
+    setDeleteImpact(null);
+  };
+
   // Handle document deletion
   const handleDeleteDocument = async () => {
     if (!documentToDelete) return;
-    
+
     try {
+      // Mark escalation guard before awaiting the API call so any dialog close event
+      // during the request cannot prematurely clear delete state.
+      isEscalatingDeleteRef.current = true;
       const result = await deleteDocument(documentToDelete.id);
       if (result.success) {
-        setShowDeleteDialog(false);
-        setDocumentToDelete(null);
-        setDeleteImpact(null);
-        setShowHardDeleteDialog(false);
+        resetDeleteState();
         return;
       }
-      if (result.requiresForce && result.details) {
-        setDeleteImpact(result.details);
+      if (result.requiresForce) {
+        setDeleteImpact(
+          result.details ?? {
+            associateCount: 0,
+            associates: [],
+          }
+        );
+        addToast({
+          type: 'info',
+          message: 'This document is attached to one or more associates. Review and confirm hard delete.',
+        });
         setShowHardDeleteDialog(true);
         setShowDeleteDialog(false);
+        return;
       }
-    } catch (error) {
-      // Delete error occurred
+      isEscalatingDeleteRef.current = false;
+      addToast({ message: result.error || 'Failed to delete document', type: 'error' });
+    } catch (error: any) {
+      const statusCode = error?.response?.status ?? error?.status;
+      if (statusCode === 409) {
+        setDeleteImpact({ associateCount: 0, associates: [] });
+        addToast({
+          type: 'info',
+          message: 'This document is attached to one or more associates. Review and confirm hard delete.',
+        });
+        setShowHardDeleteDialog(true);
+        setShowDeleteDialog(false);
+        return;
+      }
+      isEscalatingDeleteRef.current = false;
+      // non-409 errors are surfaced via toast inside deleteDocument hook
     }
   };
 
@@ -296,9 +330,7 @@ export default function VaultPage() {
     if (!documentToDelete) return;
     const result = await deleteDocument(documentToDelete.id, { force: true });
     if (result.success) {
-      setShowHardDeleteDialog(false);
-      setDeleteImpact(null);
-      setDocumentToDelete(null);
+      resetDeleteState();
     }
   };
 
@@ -1060,7 +1092,20 @@ export default function VaultPage() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={() => setShowBulkDeleteDialog(true)}
+                    onClick={() => {
+                      if (selectedDocuments.length === 1) {
+                        const selectedDoc = documents.find((d: any) => d.id === selectedDocuments[0]);
+                        if (selectedDoc) {
+                          setDocumentToDelete({
+                            id: selectedDoc.id,
+                            name: selectedDoc.title,
+                          });
+                          setShowDeleteDialog(true);
+                          return;
+                        }
+                      }
+                      setShowBulkDeleteDialog(true);
+                    }}
                     title="Delete"
                   >
                     {isBulkDeleting ? (
@@ -1159,12 +1204,15 @@ export default function VaultPage() {
       
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog
-        open={!!documentToDelete && !showHardDeleteDialog}
+        open={showDeleteDialog}
         onOpenChange={(open) => {
+          setShowDeleteDialog(open);
+          if (!open && (isEscalatingDeleteRef.current || showHardDeleteDialog)) {
+            isEscalatingDeleteRef.current = false;
+            return;
+          }
           if (!open) {
-            setDocumentToDelete(null);
-            setDeleteImpact(null);
-            setShowHardDeleteDialog(false);
+            resetDeleteState();
           }
         }}
         onConfirm={handleDeleteDocument}
@@ -1175,13 +1223,7 @@ export default function VaultPage() {
 
       <Dialog
         open={showHardDeleteDialog}
-        onOpenChange={(open) => {
-          setShowHardDeleteDialog(open);
-          if (!open) {
-            setDeleteImpact(null);
-            setDocumentToDelete(null);
-          }
-        }}
+        onOpenChange={(open) => { if (!open) resetDeleteState(); }}
       >
         <DialogContent>
           <DialogHeader>
@@ -1220,7 +1262,7 @@ export default function VaultPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setShowHardDeleteDialog(false);
+                resetDeleteState();
                 router.push('/workflows');
               }}
             >
@@ -1229,10 +1271,7 @@ export default function VaultPage() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
-                onClick={() => {
-                  setShowHardDeleteDialog(false);
-                  setDeleteImpact(null);
-                }}
+                onClick={() => resetDeleteState()}
               >
                 Cancel
               </Button>

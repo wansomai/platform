@@ -15,10 +15,19 @@ import {
   KnowledgeBaseStatusPayload,
   AIAssociate,
 } from '@/types/associates';
-import { Plus, FileText, X, CircleChevronLeft, Loader2, MessageSquare, RotateCcw } from 'lucide-react';
+import { Plus, FileText, X, CircleChevronLeft, Loader2, MessageSquare, AlertCircle } from 'lucide-react';
 import { useAssociates } from '@/hooks/useAssociates';
 import { Card, CardContent } from '@/components/ui/card';
-import { useDocumentsStore } from '@/store/documents.store';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useProjectStore } from '@/store/project.store';
 import { useChatStore } from '@/store/chat.store';
 import { useProfile } from '@/store/profile.store';
@@ -29,9 +38,12 @@ import { AssociateSetupProgressModal } from '@/components/associates/AssociateSe
 import { useNotifications } from '@/hooks/useNotifications';
 
 type SelectedKnowledgeFile = {
+  key: string;
   file: File;
   source: 'upload' | 'vault';
-  existingDocumentId?: string;
+  documentId?: string;
+  isUploading: boolean;
+  uploadError?: string;
   existingTitle?: string;
 };
 
@@ -54,23 +66,22 @@ export default function CreateAssociatePage() {
   const [formData, setFormData] = useState<CreateAssociateInput>(emptyForm());
   const [selectedFiles, setSelectedFiles] = useState<SelectedKnowledgeFile[]>([]);
   const [error, setError] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null);
   const [kbStatus, setKbStatus] = useState<KnowledgeBaseStatusPayload | null>(null);
   const [showSetupModal, setShowSetupModal] = useState(false);
   const [setupMessages, setSetupMessages] = useState<string[]>([]);
   const [setupComplete, setSetupComplete] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
 
-  // Tracks the associate after first successful creation
   const [savedAssociate, setSavedAssociate] = useState<AIAssociate | null>(null);
   const [savedFormData, setSavedFormData] = useState<CreateAssociateInput>(emptyForm());
   const [savedFiles, setSavedFiles] = useState<SelectedKnowledgeFile[]>([]);
 
+  const isSubmittingRef = useRef(false);
   const { createAssociate, updateAssociate, isProcessing } = useAssociates();
-  const { uploadDocument } = useDocumentsStore();
 
-  // Detect unsaved changes relative to the last saved snapshot
+  const isAnyFileUploading = selectedFiles.some((f) => f.isUploading);
+
   const hasChanges = useMemo(() => {
     if (!savedAssociate) return false;
     const sortedCurrent = [...formData.practiceAreas].sort().join(',');
@@ -84,74 +95,81 @@ export default function CreateAssociatePage() {
     );
   }, [formData, selectedFiles, savedAssociate, savedFormData, savedFiles]);
 
-  const getExistingRootDocs = async (): Promise<Array<{ id: string; title: string }>> => {
-    const res = await apiService.get<{ status: number; message: string; data: Array<{ id: string; title: string }> }>(
-      '/api/documents?titlesOnly=true&folder=root'
-    );
-    return res.data ?? [];
-  };
-
   const pushSetupMessage = (message: string) => {
     setSetupMessages((prev) => (prev[prev.length - 1] === message ? prev : [...prev, message]));
   };
 
   const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  // Upload queued files and return document IDs
-  const uploadFiles = async (): Promise<string[]> => {
-    if (selectedFiles.length === 0) return [];
+  // Upload a single file immediately after selection. The server returns existingDocumentId
+  // on a 409 conflict so we handle deduplication there rather than with a pre-flight GET.
+  const uploadSingleFile = async (key: string, file: File) => {
+    const fd = new FormData();
+    fd.append('file', file);
 
-    pushSetupMessage(`Preparing upload queue for [${selectedFiles.length}] knowledge base document(s)...`);
-    setIsUploading(true);
-    setUploadProgress({ current: 0, total: selectedFiles.length });
-
-    const existingDocs = await getExistingRootDocs();
-    const existingByTitle = new Map(existingDocs.map((d) => [d.title.toLowerCase(), d]));
-    const uploadedIds: string[] = [];
-
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const fileItem = selectedFiles[i];
-      const file = fileItem.file;
-      pushSetupMessage(`Uploading [${i + 1}] ${file.name}...`);
-      setUploadProgress({ current: i + 1, total: selectedFiles.length });
-
-      const fileBaseName = file.name.replace(/\.[^/.]+$/, '');
-      const existingDoc = existingByTitle.get(fileBaseName.toLowerCase());
-      if (existingDoc) {
-        uploadedIds.push(existingDoc.id);
-        pushSetupMessage(`[${i + 1}] ${existingDoc.title} picked from vault.`);
+    try {
+      const response = await apiService.upload<{ status: number; message: string; data: { id: string } }>(
+        '/api/documents', fd
+      );
+      const docId = response.data?.data?.id;
+      setSelectedFiles((prev) =>
+        prev.map((f) => f.key === key ? { ...f, documentId: docId, isUploading: false } : f)
+      );
+    } catch (err: any) {
+      const existingId: string | undefined = err?.response?.data?.existingDocumentId;
+      if (existingId) {
+        // 409: a document with this title already exists in the vault — reuse it
         setSelectedFiles((prev) =>
-          prev.map((item, idx) =>
-            idx === i
-              ? { ...item, source: 'vault', existingDocumentId: existingDoc.id, existingTitle: existingDoc.title }
-              : item
+          prev.map((f) =>
+            f.key === key
+              ? { ...f, source: 'vault', documentId: existingId, isUploading: false }
+              : f
           )
         );
-        continue;
+      } else {
+        const msg = err?.response?.data?.message || err?.message || `Failed to upload ${file.name}`;
+        setSelectedFiles((prev) =>
+          prev.map((f) => f.key === key ? { ...f, isUploading: false, uploadError: msg } : f)
+        );
       }
-
-      const fileFormData = new FormData();
-      fileFormData.append('file', file);
-      const uploadedDocument = await uploadDocument(fileFormData);
-      if (!uploadedDocument) throw new Error(`Failed to upload ${file.name}`);
-      uploadedIds.push(uploadedDocument.id);
-      pushSetupMessage(`[${i + 1}] ${file.name} uploaded successfully.`);
     }
+  };
 
-    setIsUploading(false);
-    setUploadProgress(null);
-    return uploadedIds;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // FileList is a live object — extract File references into a stable array
+    // BEFORE clearing the input, otherwise the list is empty by the time we read it.
+    const fileArray = Array.from(files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+
+    const newItems: SelectedKnowledgeFile[] = fileArray.map((file) => ({
+      key: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      file,
+      source: 'upload' as const,
+      isUploading: true,
+    }));
+
+    setSelectedFiles((prev) => [...prev, ...newItems]);
+    await Promise.all(newItems.map((item) => uploadSingleFile(item.key, item.file)));
   };
 
   const handleCreate = async () => {
     setShowSetupModal(true);
     setSetupComplete(false);
-    setSetupMessages(['Initializing knowledge base setup...']);
+    setSetupMessages(['Creating associate...']);
 
-    const uploadedIds = await uploadFiles();
-    const associateData = { ...formData, knowledgeBase: Array.from(new Set(uploadedIds)) };
+    const docIds = selectedFiles
+      .filter((f) => f.documentId && !f.uploadError)
+      .map((f) => f.documentId!);
 
-    pushSetupMessage(`Rules being retrieved from [${associateData.knowledgeBase.length}] knowledge base document(s)...`);
+    const associateData = { ...formData, knowledgeBase: Array.from(new Set(docIds)) };
+
+    if (docIds.length > 0) {
+      pushSetupMessage(`Linking [${docIds.length}] knowledge base document(s)...`);
+    }
+
     const result = await createAssociate(associateData);
     if (!result?.associate) throw new Error('Failed to create associate');
 
@@ -159,16 +177,15 @@ export default function CreateAssociatePage() {
     (result.knowledgeBaseStatus?.documents ?? []).forEach((doc, i) => {
       pushSetupMessage(
         doc.rulesGenerated
-          ? `[${i + 1}] ${doc.title}: document rules ready to be used.`
-          : `[${i + 1}] ${doc.title}: rules are still processing in background.`
+          ? `[${i + 1}] ${doc.title}: rules ready.`
+          : `[${i + 1}] ${doc.title}: rules processing in background.`
       );
     });
 
-    pushSetupMessage(`Your associate ${result.associate.name} is ready to be used fully with updated rules.`);
+    pushSetupMessage(`${result.associate.name} is ready!`);
     setSetupComplete(true);
     await wait(1200);
 
-    // Snapshot the saved state so future edits are detected
     setSavedAssociate(result.associate);
     setSavedFormData({ ...formData });
     setSavedFiles([...selectedFiles]);
@@ -181,8 +198,11 @@ export default function CreateAssociatePage() {
     setSetupComplete(false);
     setSetupMessages(['Updating associate...']);
 
-    const uploadedIds = await uploadFiles();
-    const updateData = { ...formData, knowledgeBase: Array.from(new Set(uploadedIds)) };
+    const docIds = selectedFiles
+      .filter((f) => f.documentId && !f.uploadError)
+      .map((f) => f.documentId!);
+
+    const updateData = { ...formData, knowledgeBase: Array.from(new Set(docIds)) };
 
     pushSetupMessage('Applying changes...');
     const result = await updateAssociate(savedAssociate.id, updateData);
@@ -245,14 +265,19 @@ export default function CreateAssociatePage() {
       return;
     }
 
-    if (isUploading || isProcessing) return;
+    if ((formData.instructions ?? '').trim().length < 10) {
+      setError('Instructions must be at least 10 characters');
+      return;
+    }
 
-    // If already created and no changes — use in chat
+    if (isAnyFileUploading || isProcessing || isSubmittingRef.current) return;
+
     if (savedAssociate && !hasChanges) {
       await handleUseInChat();
       return;
     }
 
+    isSubmittingRef.current = true;
     try {
       if (savedAssociate && hasChanges) {
         await handleUpdate();
@@ -261,9 +286,8 @@ export default function CreateAssociatePage() {
       }
     } catch (err: any) {
       setError(err.message || 'Operation failed');
-      setIsUploading(false);
-      setUploadProgress(null);
     } finally {
+      isSubmittingRef.current = false;
       setShowSetupModal(false);
       setSetupMessages([]);
       setSetupComplete(false);
@@ -271,14 +295,18 @@ export default function CreateAssociatePage() {
   };
 
   const handleCancel = () => {
-    if (savedAssociate) {
-      // Discard changes — revert to last saved snapshot
-      setFormData({ ...savedFormData });
-      setSelectedFiles([...savedFiles]);
-      setError('');
+    if (savedAssociate && hasChanges) {
+      setShowDiscardDialog(true);
     } else {
       router.push('/workflows');
     }
+  };
+
+  const confirmDiscard = () => {
+    setFormData({ ...savedFormData });
+    setSelectedFiles([...savedFiles]);
+    setError('');
+    setShowDiscardDialog(false);
   };
 
   const normalizeTitle = (value: string) => value.replace(/\.[^/.]+$/, '').trim().toLowerCase();
@@ -305,38 +333,25 @@ export default function CreateAssociatePage() {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      setSelectedFiles((prev) => [...prev, ...Array.from(files).map((file) => ({ file, source: 'upload' as const }))]);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
+  const removeFile = (key: string) => setSelectedFiles((prev) => prev.filter((f) => f.key !== key));
 
-  const removeFile = (index: number) => setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  const submitDisabled = isAnyFileUploading || isProcessing;
 
-  // Derive button label / icon
-  const isBusy = isUploading || isProcessing;
-  const primaryLabel = isBusy
-    ? isUploading && uploadProgress
-      ? `Uploading ${uploadProgress.current}/${uploadProgress.total}...`
-      : savedAssociate
-      ? 'Updating...'
-      : 'Creating...'
+  const primaryLabel = isProcessing
+    ? savedAssociate ? 'Updating...' : 'Creating...'
+    : isAnyFileUploading
+    ? 'Uploading files...'
     : savedAssociate && !hasChanges
     ? 'Use in Chat'
     : savedAssociate && hasChanges
     ? 'Update Associate'
     : 'Create Associate';
 
-  const primaryIcon = isBusy ? (
+  const primaryIcon = isProcessing || isAnyFileUploading ? (
     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
   ) : savedAssociate && !hasChanges ? (
     <MessageSquare className="h-4 w-4 mr-2" />
   ) : null;
-
-  const cancelLabel = savedAssociate && hasChanges ? 'Discard Changes' : 'Cancel';
-  const cancelIcon = savedAssociate && hasChanges ? <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
@@ -347,27 +362,53 @@ export default function CreateAssociatePage() {
         isComplete={setupComplete}
       />
 
+      <AlertDialog open={!!error} onOpenChange={(open) => { if (!open) setError(''); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Something went wrong</AlertDialogTitle>
+            <AlertDialogDescription>{error}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setError('')}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showDiscardDialog} onOpenChange={setShowDiscardDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Discarding will revert the associate back to its last saved state. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep editing</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDiscard}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Discard changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="container mx-auto px-6 py- max-w-6xl p-6 space-y-6">
         <div className="flex items-start gap-6">
           <CircleChevronLeft
             className={`h-10 w-10 mt-5 ${
-              isBusy
+              isProcessing
                 ? 'text-gray-400 cursor-not-allowed'
                 : 'text-secondary hover:text-[#2a4d54] cursor-pointer'
             }`}
-            onClick={isBusy ? undefined : () => router.push('/workflows')}
+            onClick={isProcessing ? undefined : () => router.push('/workflows')}
           />
 
           <div className="grow">
             <Card>
               <CardContent className="pt-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  {error && (
-                    <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
-                      {error}
-                    </div>
-                  )}
-
                   {/* Name */}
                   <div>
                     <Label htmlFor="name" className="text-base">Associate Name *</Label>
@@ -378,7 +419,7 @@ export default function CreateAssociatePage() {
                       onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                       required
                       className="mt-2"
-                      disabled={isBusy}
+                      disabled={isProcessing}
                     />
                   </div>
 
@@ -391,7 +432,7 @@ export default function CreateAssociatePage() {
                       value={formData.description}
                       onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
                       className="mt-2"
-                      disabled={isBusy}
+                      disabled={isProcessing}
                     />
                   </div>
 
@@ -405,7 +446,7 @@ export default function CreateAssociatePage() {
                             id={area}
                             checked={formData.practiceAreas.includes(area as PracticeArea)}
                             onCheckedChange={() => togglePracticeArea(area as PracticeArea)}
-                            disabled={isBusy}
+                            disabled={isProcessing}
                           />
                           <label htmlFor={area} className="text-sm cursor-pointer">{label}</label>
                         </div>
@@ -429,7 +470,7 @@ export default function CreateAssociatePage() {
                       rows={8}
                       required
                       className="mt-2 h-32"
-                      disabled={isBusy}
+                      disabled={isProcessing}
                     />
                   </div>
 
@@ -437,7 +478,7 @@ export default function CreateAssociatePage() {
                   <div>
                     <Label className="flex items-center gap-2 text-base">Knowledge Base</Label>
                     <p className="text-xs text-muted-foreground mt-1 mb-3">
-                      Upload documents that this associate should reference (optional)
+                      Upload documents that this associate should reference (optional). Files upload immediately.
                     </p>
 
                     <input
@@ -451,17 +492,13 @@ export default function CreateAssociatePage() {
 
                     <div
                       className={`flex items-center justify-between p-4 border-2 border-dashed rounded-lg transition-colors ${
-                        isBusy ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-accent/50'
+                        isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-accent/50'
                       }`}
-                      onClick={isBusy ? undefined : () => fileInputRef.current?.click()}
+                      onClick={isProcessing ? undefined : () => fileInputRef.current?.click()}
                     >
-                      <span className="text-muted-foreground">
-                        {isUploading && uploadProgress
-                          ? `Uploading file ${uploadProgress.current} of ${uploadProgress.total}...`
-                          : 'Add files for your associate to reference'}
-                      </span>
-                      <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={isBusy}>
-                        {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
+                      <span className="text-muted-foreground">Add files for your associate to reference</span>
+                      <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" disabled={isProcessing}>
+                        <Plus className="h-5 w-5" />
                       </Button>
                     </div>
 
@@ -471,12 +508,18 @@ export default function CreateAssociatePage() {
                           {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {selectedFiles.map((fileItem, index) => (
-                            <div key={index} className="px-3 py-2 bg-[#E9F5F3] rounded-lg max-w-[420px]">
+                          {selectedFiles.map((fileItem) => (
+                            <div key={fileItem.key} className="px-3 py-2 bg-[#E9F5F3] rounded-lg max-w-[420px]">
                               <div className="flex items-start justify-between gap-2">
                                 <div className="flex items-center gap-2">
-                                  <div className="bg-[#74C6B8] rounded-md p-1.5">
-                                    <FileText className="h-4 w-4 text-white" />
+                                  <div className={`rounded-md p-1.5 ${fileItem.uploadError ? 'bg-red-400' : 'bg-[#74C6B8]'}`}>
+                                    {fileItem.isUploading ? (
+                                      <Loader2 className="h-4 w-4 text-white animate-spin" />
+                                    ) : fileItem.uploadError ? (
+                                      <AlertCircle className="h-4 w-4 text-white" />
+                                    ) : (
+                                      <FileText className="h-4 w-4 text-white" />
+                                    )}
                                   </div>
                                   <div className="flex flex-col">
                                     <span className="text-sm font-medium text-gray-900 max-w-[200px] truncate">
@@ -484,16 +527,22 @@ export default function CreateAssociatePage() {
                                         ? fileItem.existingTitle || fileItem.file.name.replace(/\.[^/.]+$/, '')
                                         : fileItem.file.name}
                                     </span>
-                                    <span className="text-[11px] text-muted-foreground">
-                                      {fileItem.source === 'vault' ? 'Picked from Vault' : 'Will be uploaded'}
+                                    <span className={`text-[11px] ${fileItem.uploadError ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                      {fileItem.isUploading
+                                        ? 'Uploading...'
+                                        : fileItem.uploadError
+                                        ? fileItem.uploadError
+                                        : fileItem.source === 'vault'
+                                        ? 'From vault'
+                                        : 'Uploaded'}
                                     </span>
                                   </div>
                                 </div>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); if (!isBusy) removeFile(index); }}
+                                  onClick={(e) => { e.stopPropagation(); if (!isProcessing) removeFile(fileItem.key); }}
                                   className="hover:bg-blue-100 rounded-full p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                   type="button"
-                                  disabled={isBusy}
+                                  disabled={isProcessing}
                                 >
                                   <X className="h-3.5 w-3.5 text-gray-600" />
                                 </button>
@@ -514,15 +563,14 @@ export default function CreateAssociatePage() {
                       type="button"
                       variant="outline"
                       onClick={handleCancel}
-                      disabled={isBusy}
+                      disabled={isProcessing}
                       className="min-w-[140px]"
                     >
-                      {cancelIcon}
-                      {cancelLabel}
+                      Cancel
                     </Button>
                     <Button
                       type="submit"
-                      disabled={isBusy}
+                      disabled={submitDisabled}
                       className="min-w-[180px]"
                     >
                       {primaryIcon}

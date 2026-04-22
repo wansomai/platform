@@ -39,7 +39,7 @@ async function generateSummary(title: string, content: string): Promise<string |
       : content;
 
     const result = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-04-17',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{
         role: 'user',
         parts: [{ text: `You are a legal document analyst. Produce a comprehensive summary of the following document.
@@ -87,7 +87,7 @@ async function generateGroundedRules(
       : content;
 
     const result = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-04-17',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{
         role: 'user',
         parts: [{ text: `Convert this legal KB into grounded operating rules for the agent.
@@ -178,7 +178,7 @@ async function generateSummaryFromBinary(
 ): Promise<string | null> {
   try {
     const result = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-04-17',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{
         role: 'user',
         parts: [

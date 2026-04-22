@@ -236,12 +236,27 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
         } catch (error: any) {
           set({ error: error.message || 'Failed to delete document' });
           const responseData = error?.response?.data;
-          if (responseData?.code === 'DOCUMENT_IN_USE') {
+          const statusCode = error?.response?.status;
+          const details = responseData?.details ?? responseData?.data?.details;
+          const responseCode = responseData?.code ?? responseData?.data?.code;
+          const responseError = responseData?.error ?? responseData?.data?.error;
+          const hasAssociateImpactDetails =
+            typeof details?.associateCount === 'number' &&
+            Array.isArray(details?.associates);
+
+          // Integration guard:
+          // Treat any 409 response with associate impact details as force-delete-required,
+          // even if the backend omits/changes the explicit code value.
+          if (
+            responseCode === 'DOCUMENT_IN_USE' ||
+            (statusCode === 409 && hasAssociateImpactDetails) ||
+            statusCode === 409
+          ) {
             return {
               success: false,
               requiresForce: true,
-              details: responseData.details,
-              error: responseData.error ?? error.message ?? 'Failed to delete document',
+              details: details ?? { associateCount: 0, associates: [] },
+              error: responseError ?? error.message ?? 'Failed to delete document',
             };
           }
           return { success: false, error: error.message || 'Failed to delete document' };
