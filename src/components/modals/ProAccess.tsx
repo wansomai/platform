@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Loader2, Check, ArrowLeft } from "lucide-react";
+import { Crown, Loader2, Check, ArrowLeft, ChevronLeft } from "lucide-react";
 import { apiService } from "@/lib/api";
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import {
@@ -87,7 +87,7 @@ const LIMIT_COPY: Record<string, { title: string; sub: string }> = {
   },
   general: {
     title: "You've reached your free plan limit",
-    sub: "Upgrade to keep going.",
+    sub: "Upgrade to keep using Wansom AI.",
   },
   trial_expired: {
     title: "Your 15-day Pro trial has ended",
@@ -238,7 +238,16 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
         {/* Header */}
         <DialogHeader className="px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-2">
+                <button
+                type="button"
+                className="border-none"
+                onClick={() => setFlowStep(1)}
+               
+              >
+                <ChevronLeft className="h-6 w-6 text-primary" />
+             
+              </button>
               <div className="bg-[#0a4b5e]/10 p-2 rounded-full shrink-0 mt-0.5">
                 <Crown className="h-5 w-5 text-[#0a4b5e]" />
               </div>
@@ -272,7 +281,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-semibold text-gray-900">Pro (Personal)</span>
-                    <span className="text-xs text-gray-500">Solo</span>
+                    <span className="text-xs text-gray-500">For Individuals</span>
                   </div>
                 </button>
                 <button
@@ -285,8 +294,8 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-semibold text-gray-900">Team</span>
-                    <span className="text-xs text-gray-500">For firms</span>
+                    <span className="text-sm font-semibold text-gray-900">Team Plan</span>
+                    <span className="text-xs text-gray-500">For firms/Organizations</span>
                   </div>
                 </button>
               </div>
@@ -311,7 +320,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </Button>
 
               <p className="text-xs text-gray-500 mt-2 text-center pb-1">
-                Secure checkout and instant activation. Complete your upgrade in minutes.
+                Secure checkout. Your Data is safe with us.
               </p>
             </div>
 
@@ -338,19 +347,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
 
         {flowStep === 2 && (
           <div className="px-5 py-4 md:min-h-[620px]">
-            <div className="flex items-center mb-3">
-              <button
-                type="button"
-                onClick={() => setFlowStep(1)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#0a4b5e]/25 bg-white px-3.5 py-1.5 text-sm font-medium text-[#0a4b5e] shadow-sm transition-all hover:border-[#0a4b5e]/40 hover:bg-[#0a4b5e]/5"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </button>
-            </div>
+      
 
             {planFlow === "personal" && (
-              <div className="grid grid-cols-2 gap-2 rounded-lg bg-[#0a4b5e]/10 p-1 w-full sm:w-[260px] mb-4">
+              <div className="grid grid-cols-2 gap-2 rounded-lg bg-[#0a4b5e]/10 p-1 w-full  mb-4">
                 <button
                   type="button"
                   onClick={() => setPaymentMode("recurrent")}
@@ -360,7 +360,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  Recurrent
+                  Monthly Subscription
                 </button>
                 <button
                   type="button"
@@ -371,7 +371,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  One-time
+                  One-time Payment
                 </button>
               </div>
             )}
@@ -380,12 +380,9 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <div className="rounded-xl border border-[#e89e00]/50 bg-[#e89e00]/10 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-gray-900">Explorer (2 weeks)</span>
-                  <Badge className="text-[10px] h-5 bg-[#e89e00] text-white px-2">
-                    One-time
-                  </Badge>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{explorerLabel}</p>
-                <p className="text-xs text-[#7a5500] mt-1 mb-3">No subscription. Great for short-term use.</p>
+                <p className="text-xs text-[#7a5500] mt-1 mb-3">No Monthly subscription required</p>
                 <ul className="space-y-1.5 mb-4">
                   {EXPLORER_FEATURES.map((f) => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
@@ -397,13 +394,13 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 <Button
                   onClick={() => initializePayment("explorer")}
                   disabled={isAnyLoading}
-                  className="w-full text-xs bg-[#0a4b5e] hover:bg-[#005c4d] text-white"
+                  className="w-full text-sm bg-[#0a4b5e] hover:bg-[#005c4d] text-white"
                   size="sm"
                 >
                   {isProcessingExplorer ? (
                     <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
                   ) : (
-                    `Continue · ${explorerLabel}`
+                    `Continue For · ${explorerLabel}`
                   )}
                 </Button>
               </div>
@@ -413,9 +410,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <div className={`rounded-xl border p-4 ${explorerExpired ? "border-[#0a4b5e]/40 bg-[#0a4b5e]/5" : "border-gray-200 bg-white"}`}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-gray-900">Pro (Monthly)</span>
-                  <Badge variant="secondary" className="text-[10px] h-5 bg-[#0a4b5e]/10 text-[#0a4b5e]">
-                    Wansom Pro
-                  </Badge>
+                 
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{proLabel}<span className="text-xs text-gray-500 ml-1">/month</span></p>
                 <p className="text-xs text-gray-500 mt-1 mb-3">Cancel anytime.</p>
@@ -430,14 +425,14 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 <Button
                   onClick={() => initializePayment("personal")}
                   disabled={isAnyLoading}
-                  className={`w-full text-xs ${explorerExpired ? "bg-[#0a4b5e] hover:bg-[#005c4d] text-white" : "border-[#0a4b5e] text-[#0a4b5e] hover:bg-[#0a4b5e]/5"}`}
+                  className={`w-full text-sm ${explorerExpired ? "bg-[#0a4b5e] hover:bg-[#005c4d] text-white" : "border-[#0a4b5e] bg-primary text-white hover:bg-[#0a4b5e]/5"}`}
                   variant={explorerExpired ? "default" : "outline"}
                   size="sm"
                 >
                   {isProcessingPro ? (
                     <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
                   ) : (
-                    `Subscribe · ${proLabel}/mo`
+                    `Subscribe For · ${proLabel}/mo`
                   )}
                 </Button>
               </div>
@@ -447,17 +442,14 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               <div className="rounded-xl border-2 border-[#0a4b5e] bg-white p-4 shadow-[0_1px_0_rgba(10,75,94,0.06)]">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-semibold text-[#0a4b5e] uppercase tracking-wide">
-                    Team
-                  </span>
-                  <Badge className="text-[10px] h-5 bg-[#0a4b5e] text-white px-2">
                     Team Plan
-                  </Badge>
+                  </span>
+                
                 </div>
-                <div className="mb-1">
+                <div className="mb-4">
                   <span className="text-2xl font-bold text-gray-900">{teamUnitLabel}</span>
                   <span className="text-xs text-gray-500 ml-1">/ member / month</span>
                 </div>
-                <p className="text-xs text-[#0a4b5e] mb-3">Choose team members and continue to checkout</p>
 
                 <div className="grid grid-cols-1 gap-3 mb-4">
                   <div>
@@ -466,7 +458,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                       type="text"
                       value={firmName}
                       onChange={(e) => setFirmName(e.target.value)}
-                      placeholder="eg. Wansom"
+                      placeholder="eg. Wansom & CO LLP"
                       className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
                     />
                   </div>
