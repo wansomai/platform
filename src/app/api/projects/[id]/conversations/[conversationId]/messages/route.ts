@@ -1,5 +1,5 @@
 // app/api/projects/[id]/conversations/[conversationId]/messages/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { checkProjectAccess, getUserIdFromRequest } from "@/lib/auth/authorization";
@@ -109,16 +109,6 @@ async function generateAndApplyTitle(
   conversationId: string,
   projectId: string,
 ) {
-  const toFallbackTitle = (text: string) => {
-    const cleaned = text
-      .replace(/\s+/g, ' ')
-      .replace(/[^\w\s-]/g, '')
-      .trim();
-    const words = cleaned.split(' ').filter(Boolean).slice(0, 6);
-    const base = words.join(' ').trim();
-    return (base || 'New Workspace').slice(0, 80);
-  };
-
   let generatedTitle = '';
   try {
     const titleResult = await genAI.models.generateContent({
@@ -151,6 +141,35 @@ async function generateAndApplyTitle(
     }),
   ]);
   console.log(`[auto-title] Set title for project ${projectId}: "${finalTitle}"`);
+}
+
+function toFallbackTitle(text: string) {
+  const cleaned = text
+    .replace(/\s+/g, ' ')
+    .replace(/[^\w\s-]/g, '')
+    .trim();
+  const words = cleaned.split(' ').filter(Boolean).slice(0, 6);
+  const base = words.join(' ').trim();
+  return (base || 'New Workspace').slice(0, 80);
+}
+
+async function applyFallbackTitle(
+  userMessage: string,
+  conversationId: string,
+  projectId: string,
+) {
+  const fallbackTitle = toFallbackTitle(userMessage);
+  await Promise.all([
+    prisma.conversation.update({
+      where: { id: conversationId },
+      data: { title: fallbackTitle },
+    }),
+    prisma.project.update({
+      where: { id: projectId },
+      data: { title: fallbackTitle },
+    }),
+  ]);
+  return fallbackTitle;
 }
 
 // Default settings if none exist
@@ -745,9 +764,27 @@ export async function POST(
 
             // Auto-generate workspace title from first message (non-blocking)
             if (messageHistory.length === 0) {
-              generateAndApplyTitle(content, conversationId, projectId).catch(
-                (err) => console.error('[auto-title] Failed:', err)
-              );
+              try {
+                const immediateTitle = await applyFallbackTitle(content, conversationId, projectId);
+                controller.enqueue(
+                  encoder.encode(
+                    JSON.stringify({
+                      type: 'title_update',
+                      conversationId,
+                      projectId,
+                      title: immediateTitle,
+                    }) + '\n'
+                  )
+                );
+              } catch (err) {
+                console.error('[auto-title] Failed to apply fallback title:', err);
+              }
+
+              after(() => {
+                generateAndApplyTitle(content, conversationId, projectId).catch(
+                  (err) => console.error('[auto-title] Failed:', err)
+                );
+              });
             }
 
             return;
@@ -2326,9 +2363,27 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
 
           // Auto-generate workspace title from first message (non-blocking)
           if (messageHistory.length === 0) {
-            generateAndApplyTitle(content, conversationId, projectId).catch(
-              (err) => console.error('[auto-title] Failed:', err)
-            );
+            try {
+              const immediateTitle = await applyFallbackTitle(content, conversationId, projectId);
+              controller.enqueue(
+                encoder.encode(
+                  JSON.stringify({
+                    type: 'title_update',
+                    conversationId,
+                    projectId,
+                    title: immediateTitle,
+                  }) + '\n'
+                )
+              );
+            } catch (err) {
+              console.error('[auto-title] Failed to apply fallback title:', err);
+            }
+
+            after(() => {
+              generateAndApplyTitle(content, conversationId, projectId).catch(
+                (err) => console.error('[auto-title] Failed:', err)
+              );
+            });
           }
         } catch (error) {
           console.error('Error in stream processing:', error);

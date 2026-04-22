@@ -42,7 +42,6 @@ import { Jurisdiction } from "@/types";
 import { getJurisdictionById } from "@/lib/jurisdictions";
 import { useAssociates } from "@/hooks/useAssociates";
 import { useProjectAssociates } from "@/hooks/useProjectAssociates";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -138,7 +137,8 @@ export function ChatInput({
     associates,
     isLoading: isLoadingAssociates,
     error: associatesError,
-    fetchAssociates
+    fetchAssociates,
+    refreshAssociates,
   } = useAssociates({
     onError: handleAssociatesError
   });
@@ -312,12 +312,22 @@ export function ChatInput({
     };
   }, [homepageMode]);
 
-  // Fetch all associates when component mounts
+  // Force-refresh associates on mount so the chat picker stays in sync with
+  // the Workflows page (avoids stale cached lists after org switch/new creates).
   useEffect(() => {
-    fetchAssociates().catch(err => {
+    refreshAssociates().catch(err => {
       console.error('Failed to fetch associates:', err);
     });
-  }, []); // Only run once when mounting
+  }, [refreshAssociates]);
+
+  // Also refresh when opening the picker to ensure newly created/shared
+  // associates are immediately available for attachment.
+  useEffect(() => {
+    if (!showAssociatesDropdown) return;
+    refreshAssociates().catch(err => {
+      console.error('Failed to refresh associates:', err);
+    });
+  }, [showAssociatesDropdown, refreshAssociates]);
 
   // Handle Google account connection
   const handleConnectGoogle = (
@@ -1411,8 +1421,8 @@ export function ChatInput({
                           </p>
                         </div>
                       ) : (
-                        <ScrollArea className="max-h-[300px]">
-                          <div className="space-y-1 pr-3">
+                        <div className="max-h-[300px] overflow-y-auto pr-2">
+                          <div className="space-y-1 pr-1">
                             {associates.map(associate => {
                               const isSelected = homepageMode
                                 ? selectedAssociateId === associate.id
@@ -1450,7 +1460,7 @@ export function ChatInput({
                               );
                             })}
                           </div>
-                        </ScrollArea>
+                        </div>
                       )}
                     </div>
                   </DropdownMenuContent>
