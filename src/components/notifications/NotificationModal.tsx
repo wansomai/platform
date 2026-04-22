@@ -53,6 +53,7 @@ export default function NotificationModal({
   const [history, setHistory] = useState<Notification[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [expandedNotifications, setExpandedNotifications] = useState<Set<string>>(new Set());
 
   const fetchActive = useCallback(async () => {
     setLoading(true);
@@ -111,11 +112,9 @@ export default function NotificationModal({
       if (fromHistory) {
         setHistory((prev) => prev.filter((n) => n.id !== id));
       } else {
-        setNotifications((prev) => {
-          const next = prev.filter((n) => n.id !== id);
-          onUnreadCountChange?.(next.length);
-          return next;
-        });
+        const next = notifications.filter((n) => n.id !== id);
+        setNotifications(next);
+        onUnreadCountChange?.(next.length);
       }
     } catch {
       // silent
@@ -128,6 +127,18 @@ export default function NotificationModal({
 
   const handleSwitchToActive = () => {
     setShowHistory(false);
+  };
+
+  const toggleExpanded = (id: string) => {
+    setExpandedNotifications((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
 
   const displayed = showHistory ? history : notifications;
@@ -210,10 +221,15 @@ export default function NotificationModal({
             </div>
           ) : (
             displayed.map((n) => (
+              (() => {
+                const isExpanded = expandedNotifications.has(n.id);
+                const canExpand = n.message.length > 100;
+                return (
               <div
                 key={n.id}
                 className={cn(
-                  'h-[80px] border-l-4 rounded-r-lg px-4 py-2 overflow-hidden',
+                  'border-l-4 rounded-r-lg px-4 py-2 overflow-hidden',
+                  isExpanded ? 'min-h-[80px]' : 'h-[80px]',
                   TYPE_STYLES[n.type],
                   showHistory ? 'opacity-60' : ''
                 )}
@@ -223,9 +239,18 @@ export default function NotificationModal({
                     <p className={cn('text-sm font-semibold truncate', TITLE_STYLES[n.type])}>
                       {n.title}
                     </p>
-                    <p className="mt-0.5 text-sm text-gray-600 truncate">
+                    <p className={cn('mt-0.5 text-sm text-gray-600', isExpanded ? 'whitespace-pre-wrap break-words' : 'truncate')}>
                       {n.message}
                     </p>
+                    {canExpand && (
+                      <button
+                        onClick={() => toggleExpanded(n.id)}
+                        className="mt-1 text-xs font-medium text-[#0a4b5e] hover:underline"
+                        type="button"
+                      >
+                        {isExpanded ? 'View less' : 'View more'}
+                      </button>
+                    )}
                     <p className="mt-1 text-xs text-gray-400">
                       {new Date(n.createdAt).toLocaleDateString('en-US', {
                         month: 'short',
@@ -245,6 +270,8 @@ export default function NotificationModal({
                   </button>
                 </div>
               </div>
+                );
+              })()
             ))
           )}
         </div>
