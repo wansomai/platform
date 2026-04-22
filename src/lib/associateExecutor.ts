@@ -584,7 +584,7 @@ export async function executeAssociateCall(
     // ── 6. Agentic loop ───────────────────────────────────────────────────────
     for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-04-17',
+        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
         contents: history,
         config: {
           systemInstruction: systemPrompt,
@@ -798,7 +798,7 @@ Respond with raw JSON only (no markdown):
 - If a switch is clearly better: {"suggest":true,"index":<1-based number>,"reason":"<one sentence>"}`;
 
     const result = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash-preview-04-17',
+      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: { temperature: 0, maxOutputTokens: 120 },
     });

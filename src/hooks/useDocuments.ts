@@ -151,6 +151,22 @@ const uploadDocument = async (file: File, section?: string, folderId?: string) =
       
       return result;
     } catch (error: any) {
+      const responseData = error?.response?.data;
+      const statusCode = error?.response?.status ?? error?.status;
+      const details = responseData?.details ?? responseData?.data?.details;
+      const responseCode = responseData?.code ?? responseData?.data?.code;
+
+      // Last-resort integration guard so callers can always escalate to hard-delete
+      // on a 409 conflict, even if the store/parser path was bypassed.
+      if (statusCode === 409 || responseCode === 'DOCUMENT_IN_USE') {
+        return {
+          success: false,
+          requiresForce: true,
+          details: details ?? { associateCount: 0, associates: [] },
+          error: responseData?.error ?? responseData?.message ?? error.message ?? 'Failed to delete document',
+        };
+      }
+
       const errorMessage = error.response?.data?.message || error.message || 'Failed to delete document';
       handleError(errorMessage);
       throw error;

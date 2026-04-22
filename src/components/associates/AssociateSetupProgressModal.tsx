@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import LogoAnimation from '@/components/commons/LogoAnimation';
 
 interface AssociateSetupProgressModalProps {
@@ -20,7 +20,6 @@ export function AssociateSetupProgressModal({
   messages,
   isComplete = false,
 }: AssociateSetupProgressModalProps) {
-  const hasDialogTitle = true;
   const latestMessage = useMemo(
     () => messages[messages.length - 1] ?? 'Initializing associate setup...',
     [messages]
@@ -50,19 +49,6 @@ export function AssociateSetupProgressModal({
     return () => window.clearInterval(timer);
   }, [latestMessage, open]);
 
-  useEffect(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7696/ingest/24738c3c-68fc-4ae6-ac56-64af16841ff6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'886eee'},body:JSON.stringify({sessionId:'886eee',runId:'pre-fix-1',hypothesisId:'H1',location:'src/components/associates/AssociateSetupProgressModal.tsx:37',message:'AssociateSetupProgressModal lifecycle state',data:{open,isComplete,messageCount:messages.length,hasDialogTitle},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-  }, [open, isComplete, messages.length, hasDialogTitle]);
-
-  useEffect(() => {
-    if (!open) return;
-    // #region agent log
-    fetch('http://127.0.0.1:7696/ingest/24738c3c-68fc-4ae6-ac56-64af16841ff6',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'886eee'},body:JSON.stringify({sessionId:'886eee',runId:'pre-fix-1',hypothesisId:'H2',location:'src/components/associates/AssociateSetupProgressModal.tsx:45',message:'Open modal snapshot',data:{associateName:associateName ?? null,latestMessage,previousMessagesCount:previousMessages.length},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-  }, [open, associateName, latestMessage, previousMessages.length]);
-
   return (
     <Dialog open={open}>
       <DialogContent
@@ -78,11 +64,11 @@ export function AssociateSetupProgressModal({
               ? `${associateName ?? 'Associate'} is ready`
               : `Preparing ${associateName ?? 'your associate'}`}
           </h3>
-          <p className="text-sm text-muted-foreground mt-1">
+          <DialogDescription className="text-sm text-muted-foreground mt-1">
             {isComplete
               ? 'Knowledge base and rules are fully synchronized.'
               : 'Please keep this window open while we process the knowledge base.'}
-          </p>
+          </DialogDescription>
         </div>
 
         <div className="rounded-lg border bg-[#F7FBFA] p-3 space-y-2">

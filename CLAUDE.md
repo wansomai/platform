@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Wansom AI is a legal tech  AI powered platform built with Next.js 16 that provides AI-powered legal workspace features including document management, AI-assisted legal drafting, contract review, and team collaboration tools for law firms.
+Wansom AI is a legal tech AI-powered platform built with Next.js 16 that provides AI-powered legal workspace features including document management, AI-assisted legal drafting, contract review, and team collaboration tools for law firms.
 
 ## Development Commands
 
@@ -47,6 +47,7 @@ npx prisma studio     # Database GUI
 - Account types: `personal` (default), `enterprise`
 - Users switch between organizations using `activeOrganizationId`
 - **Project access**: Users access projects via direct `ProjectMember` membership OR by belonging to the project's organization
+- **Critical membership check**: A user's primary org is stored on `User.organizationId` (NOT in `UserOrganization`). Secondary org memberships live in `UserOrganization`. When checking if a user belongs to a given org, always check both: `user.organizationId === orgId` first, then fall back to `UserOrganization` lookup. Missing this causes false-403s for primary org members.
 
 #### 2. Authentication Flow
 - JWT-based authentication via NextAuth.js
@@ -97,6 +98,11 @@ Organization
 - **Scanned PDF threshold** (`src/lib/documentParser.ts`): if text extraction yields <100 chars or <10 meaningful words, the document is treated as scanned and the sentinel is stored
 - Optional: Google Cloud Vision API for advanced OCR (requires `GOOGLE_APPLICATION_CREDENTIALS`, `GOOGLE_CLOUD_PROJECT_ID`, and `GOOGLE_CLOUD_STORAGE_BUCKET`)
 
+#### Document Export
+- Canvas documents are exported to `.docx` using `html-docx-js` (HTML → Word conversion)
+- Guest document exports trigger a Paystack payment then deliver the DOCX via email
+- Project reports can be downloaded as HTML or PDF via `/api/projects/[id]/reports/[reportId]/download`
+
 #### `.doc` / DOCX Import (three-path extraction)
 `/api/projects/[id]/canvas/import-doc/route.ts` handles three cases in order:
 1. **True `.docx`**: mammoth extraction
@@ -126,7 +132,7 @@ Organization
   3. **Cleanup** (`/api/cron/digest-cleanup`): purges stale `DigestItem` rows
 - **Idempotency**: digest fingerprinting prevents re-sending identical content; test email addresses bypass this gate
 - **Jurisdiction tiers** (`src/lib/briefly-jurisdictions.ts`): Tier 1 (primary markets: KE, ZA, NG, GH, etc.) ingested every 4 hours; Tier 2 (expanded Africa) subscriber-driven; unsupported jurisdictions fall back to live Gemini grounding
-- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`
+- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`, `/api/cron/notification-cleanup` (daily 2am — purges `dismissed=true` records older than 30 days)
 - **Dev testing**: `/api/dev/digest-preview` — preview digest output without sending emails (not for production)
 
 #### 9. Database Transaction Pattern
@@ -296,9 +302,9 @@ import prisma from '@/lib/prisma';
 ```
 
 ### Route Groups
-- `(account)` - Authenticated user pages: dashboard, projects, vault; **`/workflows/*` is the UI for managing AI Associates** (create, edit, delete `AIAssociate` entities — the name "workflows" is legacy); project workspace UI is at `(account)/projects/[id]`
-- `(auth)` - Login, register, password reset
-- `(landingpages)` - Public marketing pages
+- `(account)` - Authenticated user pages: dashboard, projects, vault; **`/workflows/*` is the UI for managing AI Associates** (create, edit, delete `AIAssociate` entities — the name "workflows" is legacy); project workspace UI is at `(account)/projects/[id]`. The `/workflows/[id]` detail page has unsaved-changes detection (compares live form state against the snapshot loaded from the server) and a discard dialog before navigation. It also has a "Use in Chat" button that creates a new project pre-linked to the associate and navigates directly into it.
+- `(auth)` - Login, register, password reset, `/accept-invitation` (org invite acceptance), `/verify-email`
+- `(landingpages)` - Public marketing pages; includes `/law360` (Briefly by Wansom product pages), `/pricing`, `/blogs`, `/events`, `/solutions`
 - `(admin)` - Admin-only pages
 - `/legal-documents/[slug]` - Public legal document pages (outside route groups): renders `GuestCanvasChatSplitView` for unauthenticated document drafting, sourced from Sanity CMS
 
@@ -310,6 +316,23 @@ Unauthenticated users can draft legal documents on the `/legal-documents/[slug]`
 4. **Export is gated behind Paystack payment** — jurisdiction-specific pricing is hardcoded in `GuestCanvasChatSplitView` (NGN 2,500 / KES 350 / ZAR 45 / GHS 75 / USD 5 default); on payment success a DOCX export/email is triggered (note: `/api/public/export` route is not currently implemented as a file — check `GuestCanvasChatSplitView` for the current export mechanism)
 - These `/api/public/*` routes are unauthenticated — do NOT add `getUserIdFromRequest()` or auth middleware
 - Guest components do not use `apiService` (no Bearer token) — they use raw `fetch`
+
+### Document `content_extracted` Field
+`Document.content_extracted` is a nullable JSON field with special semantics (not a plain boolean):
+- `null` — old/unknown document; treat as extraction complete (no Vault spinner)
+- `{ Bool: true, Valid: true }` — extraction complete
+- `{ Bool: false, Valid: true }` + age < 2 min — background job in-progress (show processing spinner)
+- `{ Bool: false, Valid: true }` + age ≥ 2 min — job timed out/failed; treat as complete
+
+When creating a document, set `content_extracted: { Bool: true, Valid: true }` only if text extraction actually succeeded; use `Prisma.JsonNull` if extraction wasn't attempted.
+
+### `/api/documents` Access Model
+- **Root view** (no `folderId`): shows documents the user uploaded (`created_by = userId`) OR documents explicitly shared via a `DocumentPermission` row (e.g. KB documents cascade-shared via an AI associate).
+- **Folder view** (`?folderId=<id>`): checks folder access first (owner, org-wide, or explicit `FolderPermission`). If accessible, all documents in the folder are returned without per-document filtering.
+- `?titlesOnly=true` — fast path that skips joins/pagination and returns `{ id, title }` only (used for duplicate detection before upload).
+- `?organizationId=<id>` — org override for cross-org KB document operations; membership is verified server-side before proceeding.
+
+On **document upload (POST)**, a `409` response with `existingDocumentId` in the body means a document with that title already exists for this user. KB upload code in associate pages catches this and reuses the existing document ID rather than erroring.
 
 ### Document Field Mapping
 The `Document` model uses `@map` to customize database column names. In TypeScript, use the Prisma field name (left side), NOT the database column name:
@@ -368,6 +391,10 @@ See `.env.example` for the full list. Key variables:
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` - Sanity CMS
 - `EMAIL_USER` / `EMAIL_PASSWORD` - Email sending (nodemailer via `src/lib/email-service.ts`)
 - `EMAIL_HOST` / `EMAIL_PORT` - SMTP server (default: `smtp.gmail.com:587`)
+- `PAYSTACK_TEAMS_PLAN_CODE` - Paystack plan code for enterprise/teams tier (separate from `PAYSTACK_PLAN_CODE`)
+- `LAW360KENYA_PLAN_CODE` - Paystack plan code for Briefly KES pricing variant
+- `NEXT_PUBLIC_CLARITY_PROJECT_ID` - Microsoft Clarity analytics project ID
+- `ADMIN_EMAILS` - Comma-separated list of admin email addresses (checked by admin middleware)
 
 Optional (for Google Cloud Vision OCR):
 - `GOOGLE_APPLICATION_CREDENTIALS` - Path to service account JSON key
@@ -417,6 +444,11 @@ Associates are **user-level**, not org-level. Access is granted to the creator a
 - Cascade logic lives in `src/lib/auth/associateSharing.ts` (`syncAssociateShareCascade`, `syncAssociateKBDocumentPermissions`)
 - Sharing API: `GET/PUT /api/associates/[id]/permissions`
 
+#### Associate Deletion Flow
+`DELETE /api/associates/[id]` returns `{ code: 'ASSOCIATE_IN_USE', details: { projectCount, conversationCount, projects } }` (HTTP 409) when the associate is bound to active projects. The caller must re-issue with `?force=true` to hard-delete and strip the association from those projects. The `/workflows` page surfaces a two-step confirmation dialog for this.
+
+The `associates.store.ts` maintains an `associatesMap: Map<string, AIAssociate>` alongside the `associates` array for O(1) `getAssociateById()` lookups. `isFetching` tracks list-fetch state only; `isLoading` tracks mutation (create/update/toggle) state — never conflate the two.
+
 #### Premade Associates
 Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `POST /api/associates/start-premade-session` finds-or-creates the associate for the user's org and creates a new project, returning a `projectId` for immediate navigation.
 
@@ -432,7 +464,7 @@ Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `PO
 ### Billing
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
-- `Notification` - In-app user notifications (`type`, `read`, `title`, `message`); managed via `GET /api/notifications` and `PATCH /api/notifications/[id]/read`
+- `Notification` - In-app user notifications (`type`, `read`, `dismissed`, `dismissedAt`, `title`, `message`); see Notification API below
 
 #### 10. Visibility & Permissions System
 - `Project`, `Document`, and `Folder` each have a `visibility` field:
@@ -470,6 +502,7 @@ State management uses Zustand stores in `src/store/`:
 - `workspace-instructions.store.ts` - Project knowledge base instructions
 - `workspace-settings.store.ts` - Project workspace settings
 - `content.store.ts` - Content management (SEO pages)
+- `legal-knowledge.store.ts` - Admin legal knowledge document management
 
 ## API Route Structure
 API routes follow Next.js App Router conventions in `src/app/api/`:
@@ -484,7 +517,7 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/subscription/*` - Subscription management
 - `/api/profile/*` - User profile operations
 - `/api/admin/*` - Admin-only: organization management + legal knowledge CRUD (`/api/admin/legal-knowledge/*`)
-- `/api/notifications` - `GET` last 30 notifications; `PATCH /api/notifications/[id]/read` - mark read
+- `/api/notifications` - `GET` active (unread, non-dismissed) notifications; `?history=true` returns read, non-dismissed ones; `PATCH /api/notifications/[id]/read` - mark read; `PATCH /api/notifications/[id]/dismiss` - marks dismissed+read (stays in DB for 30 days, then deleted by `/api/cron/notification-cleanup`)
 - `/api/support` - Authenticated POST; sends support ticket email to `law@wansom.ai`
 - `/api/user` - User account operations
 - `/api/digest/*` - Legal digest subscriptions
@@ -512,4 +545,4 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 `/api/admin/*` routes use separate middleware (`src/lib/auth/admin-middleware.ts`) that checks the `ADMIN_EMAILS` env var list and returns 403 for all others — independent of the standard `withAuth`/`withOrganizationAccess` chain.
 
 ### Deployment Note
-`src/vercel.json` lives inside `src/` (not the project root) — this is intentional for this project's Vercel configuration. It also contains permanent redirects from the legacy domain `wakili.chat` → `wansom.ai`.
+Both `vercel.json` (project root) and `src/vercel.json` exist and must be kept in sync. They carry the same crons/redirects but differ in function path format: the root file uses `src/app/api/...` (full paths from repo root), while `src/vercel.json` uses `app/api/...` (relative to `src/`). Both contain permanent redirects from the legacy domain `wakili.chat` → `wansom.ai`. The root file is the primary one; update both when adding new crons or function overrides.

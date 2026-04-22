@@ -99,6 +99,21 @@ export const POST = withErrorHandler(withAuth(async (
       );
     }
 
+    // Enforce per-user name uniqueness (case-insensitive)
+    const nameConflict = await prisma.aIAssociate.findFirst({
+      where: {
+        name: { equals: validatedData.name, mode: 'insensitive' },
+        createdById: userId,
+      },
+      select: { id: true },
+    });
+    if (nameConflict) {
+      return NextResponse.json(
+        { error: 'You already have an associate with this name. Please choose a different name.' },
+        { status: 409 }
+      );
+    }
+
     // Validate document IDs exist and belong to organization
     const kbIds = validatedData.knowledgeBase ?? [];
     if (kbIds.length > 0) {

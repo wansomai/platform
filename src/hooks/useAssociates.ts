@@ -15,6 +15,7 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
   const {
     associates,
     isLoading,
+    isFetching,
     error,
     fetchAssociates: storeFetchAssociates,
     createAssociate: storeCreateAssociate,
@@ -22,7 +23,7 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
     deleteAssociate: storeDeleteAssociate,
     toggleAssociateStatus: storeToggleAssociateStatus,
     getAssociateById,
-    refreshAssociates
+    refreshAssociates,
   } = useAssociatesStore();
 
   const { addToast } = useUIStore();
@@ -61,12 +62,12 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
         return result;
       } else {
         handleError('Failed to create associate');
-        return null;
+        throw new Error('Failed to create associate');
       }
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to create associate';
       handleError(errorMessage);
-      return null;
+      throw err;
     } finally {
       setIsProcessing(false);
     }
@@ -83,12 +84,12 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
         return result;
       } else {
         handleError('Failed to update associate');
-        return null;
+        throw new Error('Failed to update associate');
       }
     } catch (err: any) {
       const errorMessage = err.message || 'Failed to update associate';
       handleError(errorMessage);
-      return null;
+      throw err;
     } finally {
       setIsProcessing(false);
     }
@@ -175,6 +176,7 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
     // Store state
     associates,
     isLoading,
+    isFetching,
     error,
 
     // Core CRUD operations

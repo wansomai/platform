@@ -160,6 +160,24 @@ export const PUT = withErrorHandler(withAuth(async (
       );
     }
 
+    // Enforce per-user name uniqueness when name is being changed
+    if (validatedData.name) {
+      const nameConflict = await prisma.aIAssociate.findFirst({
+        where: {
+          name: { equals: validatedData.name, mode: 'insensitive' },
+          createdById: userId,
+          NOT: { id },
+        },
+        select: { id: true },
+      });
+      if (nameConflict) {
+        return NextResponse.json(
+          { error: 'You already have an associate with this name. Please choose a different name.' },
+          { status: 409 }
+        );
+      }
+    }
+
     // Validate documents if knowledgeBase is being updated
     const kbIds = validatedData.knowledgeBase ?? [];
     let kbResult = null;

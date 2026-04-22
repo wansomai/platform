@@ -810,7 +810,7 @@ function makeRetryLoop(label: string, maxAttempts = 2) {
 
 function geminiCall(prompt: string, timeoutMs: number) {
   const geminiPromise = genAI.models.generateContent({
-    model:    process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+    model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
     contents: prompt,
     config:   { temperature: 0 },
   });
