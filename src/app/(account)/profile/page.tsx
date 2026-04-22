@@ -440,27 +440,29 @@ const Page = () => {
 
                 <Separator className="my-4" />
 
-                <div className="flex flex-col items-end gap-1.5">
-                  <div className="flex justify-end space-x-4">
+                <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+                  <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-4 w-full sm:w-auto">
                   {isEditing ? (
                     <>
                       <Button
                         variant="outline"
                         onClick={() => setIsEditing(false)}
                         disabled={isSaving}
+                        className="w-full sm:w-auto"
                       >
                         Cancel
                       </Button>
                       <Button
                         onClick={handleSave}
                         disabled={isSaving}
+                        className="w-full sm:w-auto"
                       >
                         {isSaving ? "Saving..." : "Save Changes"}
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Button onClick={() => setIsEditing(true)}>
+                      <Button onClick={() => setIsEditing(true)} className="w-full sm:w-auto">
                         Edit Profile
                       </Button>
                       {profile?.role === 'owner' && (
@@ -468,7 +470,7 @@ const Page = () => {
                           {isManualTrial ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
-                              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
+                              className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
                             >
                               <Crown className="h-4 w-4 mr-2" />
                               Upgrade to Pro
@@ -476,6 +478,7 @@ const Page = () => {
                           ) : !hasProAccess ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
+                              className="w-full sm:w-auto"
                             >
                               <Crown className="h-4 w-4 mr-2" />
                               Upgrade Plan
@@ -484,6 +487,7 @@ const Page = () => {
                             <Button
                               disabled
                               variant="outline"
+                              className="w-full sm:w-auto"
                             >
                               <Crown className="h-4 w-4 mr-2" />
                               Plan ends {subscriptionStatus?.subscription?.currentPeriodEnd

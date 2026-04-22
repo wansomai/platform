@@ -51,19 +51,25 @@ const EXPLORER_FEATURES = [
 ];
 
 const PRO_FEATURES = [
-  "Everything in Explorer",
-  "Ongoing monthly access",
-  "Up to 5 GB vault storage",
-  "Priority email & phone support",
-  "Best value for regular use",
+  "Unlimited client/matter workspaces",
+  "Unlimited AI Responses",
+  "5 GB Document Vault Storage",
+  "Up to 10 AI Associates",
+  "Google Calendar & Email integrations",
+  "Priority email support",
+  "Team collaboration",
+  "Custom workflows & deployments",
 ];
 
 const TEAM_FEATURES = [
-  "Everything in Pro",
-  "Invite and collaborate with your team",
-  "Role-based organization access",
-  "Per-seat billing with scalable growth",
-  "Best for law firms and legal teams",
+  "Everything in Personal",
+  "Unlimited AI Associates",
+  "50 GB Document Vault Storage",
+  "Role-based access control",
+  "Team collaboration tools",
+  "Custom workflows & integrations",
+  "Custom deployments",
+  "Team training & priority support",
 ];
 
 const LIMIT_COPY: Record<string, { title: string; sub: string }> = {
@@ -222,6 +228,10 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
         "Improved oversight for partners and admins",
       ];
 
+  const rightPanelTagline = planFlow === "personal"
+    ? "Best for solo practitioners who want to do more"
+    : "Collaborate on client matters with your whole firm or organization.";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl h-[95vh] md:h-[92vh] max-h-[95vh] md:max-h-[760px] overflow-y-auto md:overflow-hidden p-0 gap-0">
@@ -301,7 +311,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
               </Button>
 
               <p className="text-xs text-gray-500 mt-2 text-center pb-1">
-                You will receive a reminder before your subscription ends.
+                Secure checkout and instant activation. Complete your upgrade in minutes.
               </p>
             </div>
 
@@ -312,8 +322,8 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                     className="!animate-none h-[180px] w-[180px] [&>svg]:h-full [&>svg]:w-full"
                   />
                 </div>
-                <p className="mt-2 text-gray-700 text-lg font-semibold leading-snug max-w-[280px]">
-                  Premium legal productivity, designed for professionals and teams.
+                <p className="mt-2 text-gray-700 text-lg font-semibold leading-snug max-w-[320px]">
+                  {rightPanelTagline}
                 </p>
               </div>
             </div>
@@ -361,7 +371,7 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  Unique
+                  One-time
                 </button>
               </div>
             )}
@@ -449,19 +459,19 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
                 </div>
                 <p className="text-xs text-[#0a4b5e] mb-3">Choose team members and continue to checkout</p>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-1 gap-3 mb-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Firm name</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Firm name / Organization</label>
                     <input
                       type="text"
                       value={firmName}
                       onChange={(e) => setFirmName(e.target.value)}
-                      placeholder="Enter firm name"
+                      placeholder="eg. Wansom"
                       className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Team members</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Number of members</label>
                     <input
                       type="number"
                       min={1}
