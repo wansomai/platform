@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Zap, Loader2, Check, X } from "lucide-react";
+import { Crown, Loader2, Check, ArrowLeft } from "lucide-react";
 import { apiService } from "@/lib/api";
+import LogoAnimation from "@/components/commons/LogoAnimation";
 import {
   formatSubscriptionPrice,
   type PlanPricing,
@@ -65,12 +66,6 @@ const TEAM_FEATURES = [
   "Best for law firms and legal teams",
 ];
 
-const FREE_FEATURES = [
-  "2 workspaces",
-  "8 AI messages / month",
-  "Basic document drafting",
-];
-
 const LIMIT_COPY: Record<string, { title: string; sub: string }> = {
   messages: {
     title: "You've used all your free messages",
@@ -106,6 +101,8 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [config, setConfig] = useState<PopupConfig | null>(null);
   const [planFlow, setPlanFlow] = useState<"personal" | "teams">("personal");
+  const [flowStep, setFlowStep] = useState<1 | 2>(1);
+  const [paymentMode, setPaymentMode] = useState<"recurrent" | "unique">("recurrent");
   const [firmName, setFirmName] = useState("");
   const [seatCount, setSeatCount] = useState(1);
 
@@ -124,6 +121,22 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
       })
       .catch(() => {});
   }, [isOpen, config]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFlowStep(1);
+      setPaymentMode("recurrent");
+      setPlanFlow("personal");
+      setFirmName("");
+      setSeatCount(1);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (planFlow === "teams") {
+      setPaymentMode("recurrent");
+    }
+  }, [planFlow]);
 
   const initializePayment = async (planType: "explorer" | "personal" | "teams") => {
     const setLoading = planType === "explorer"
@@ -191,15 +204,33 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
       }
     : LIMIT_COPY[limitType];
 
+  const rightPanelBullets = planFlow === "personal"
+    ? [
+        "Unlimited legal drafting and review",
+        "Priority AI responses for active matters",
+        "Full access to premium legal tools",
+        "Smarter contract analysis in less time",
+        "Advanced templates for legal workflows",
+        "Faster turnaround for client deliverables",
+      ]
+    : [
+        "Shared workspaces for your firm",
+        "Role-based collaboration by seat",
+        "Scale billing as your team grows",
+        "Centralized matter management for teams",
+        "Shared knowledge across your legal staff",
+        "Improved oversight for partners and admins",
+      ];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto p-0 gap-0">
+      <DialogContent className="max-w-2xl h-[95vh] md:h-[92vh] max-h-[95vh] md:max-h-[760px] overflow-y-auto md:overflow-hidden p-0 gap-0">
         {/* Header */}
         <DialogHeader className="px-5 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="bg-amber-100 p-2 rounded-full shrink-0 mt-0.5">
-                <Crown className="h-5 w-5 text-amber-600" />
+              <div className="bg-[#0a4b5e]/10 p-2 rounded-full shrink-0 mt-0.5">
+                <Crown className="h-5 w-5 text-[#0a4b5e]" />
               </div>
               <div>
                 <DialogTitle className="text-base font-semibold text-gray-900 leading-snug">
@@ -211,33 +242,83 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
         </DialogHeader>
 
-        {/* Step 1: choose plan flow */}
-        <div className="px-5 pt-3">
-          <div className="grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1">
-            <button
-              type="button"
-              onClick={() => setPlanFlow("personal")}
-              className={`rounded-md px-3 py-2 text-xs font-medium transition-colors ${
-                planFlow === "personal"
-                  ? "bg-white text-[#0a4b5e] shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Personal
-            </button>
-            <button
-              type="button"
-              onClick={() => setPlanFlow("teams")}
-              className={`rounded-md px-3 py-2 text-xs font-medium transition-colors ${
-                planFlow === "teams"
-                  ? "bg-white text-[#0a4b5e] shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Team
-            </button>
+        {flowStep === 1 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 md:min-h-[620px]">
+            <div className="px-5 pt-4 pb-5 border-b md:border-b-0 md:border-r border-gray-100 h-full flex flex-col">
+              <h3 className="text-xl font-semibold text-gray-900">Try Wansom Pro</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Choose your account type to continue.
+              </p>
+
+              <div className="mt-4 space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setPlanFlow("personal")}
+                  className={`w-full rounded-lg border px-3 py-3 text-left transition-colors ${
+                    planFlow === "personal"
+                      ? "border-[#0a4b5e] bg-[#0a4b5e]/5"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold text-gray-900">Pro (Personal)</span>
+                    <span className="text-xs text-gray-500">Solo</span>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPlanFlow("teams")}
+                  className={`w-full rounded-lg border px-3 py-3 text-left transition-colors ${
+                    planFlow === "teams"
+                      ? "border-[#0a4b5e] bg-[#0a4b5e]/5"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold text-gray-900">Team</span>
+                    <span className="text-xs text-gray-500">For firms</span>
+                  </div>
+                </button>
+              </div>
+
+              <p className="text-sm font-semibold text-gray-900 mt-5 mb-2">
+                Everything you get:
+              </p>
+              <ul className="space-y-2">
+                {rightPanelBullets.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
+                    <Check className="h-4 w-4 shrink-0 mt-0.5 text-[#0a4b5e]" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                className="w-full mt-5 bg-[#0a4b5e] hover:bg-[#005c4d] text-white"
+                onClick={() => setFlowStep(2)}
+              >
+                Continue
+              </Button>
+
+              <p className="text-xs text-gray-500 mt-2 text-center pb-1">
+                You will receive a reminder before your subscription ends.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 border-t md:border-t-0 border-gray-100 h-full flex">
+              <div className="w-full h-full flex flex-col items-center justify-center text-center md:-translate-y-6">
+                <div className="rounded-2xl bg-white p-4">
+                  <LogoAnimation
+                    className="!animate-none h-[180px] w-[180px] [&>svg]:h-full [&>svg]:w-full"
+                  />
+                </div>
+                <p className="mt-2 text-gray-700 text-lg font-semibold leading-snug max-w-[280px]">
+                  Premium legal productivity, designed for professionals and teams.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {paymentError && (
           <div className="mx-5 mt-3 text-xs text-red-600 bg-red-50 rounded-md px-3 py-2 border border-red-200">
@@ -245,201 +326,179 @@ const ProAccessModal: React.FC<ProAccessModalProps> = ({
           </div>
         )}
 
-        {/* Personal flow: Free + Explorer + Pro */}
-        {planFlow === "personal" && (
-        <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* ── Free (current — greyed out) ── */}
-          {!explorerExpired && (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 opacity-70">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Free
-                </span>
-                <Badge variant="secondary" className="text-[10px] h-5 bg-gray-200 text-gray-600">
-                  Current
-                </Badge>
-              </div>
-              <p className="text-2xl font-bold text-gray-400 mb-3">$0</p>
-              <ul className="space-y-1.5 mb-4">
-                {FREE_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-1.5 text-xs text-gray-400">
-                    <X className="h-3 w-3 shrink-0 mt-0.5 text-gray-300" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs opacity-50"
-                disabled
+        {flowStep === 2 && (
+          <div className="px-5 py-4 md:min-h-[620px]">
+            <div className="flex items-center mb-3">
+              <button
+                type="button"
+                onClick={() => setFlowStep(1)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#0a4b5e]/25 bg-white px-3.5 py-1.5 text-sm font-medium text-[#0a4b5e] shadow-sm transition-all hover:border-[#0a4b5e]/40 hover:bg-[#0a4b5e]/5"
               >
-                Your current plan
-              </Button>
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </button>
             </div>
-          )}
 
-          {/* ── Explorer (featured) ── */}
-          <div
-            className={`rounded-xl border-2 border-amber-400 bg-amber-50 p-4 relative ${
-              explorerExpired ? "opacity-90" : ""
-            }`}
-          >
-            <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] h-5 bg-amber-500 text-white px-2 whitespace-nowrap">
-              {explorerExpired ? "Renew Access" : "Try First"}
-            </Badge>
-            <div className="flex items-center justify-between mb-1 mt-1">
-              <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">
-                Explorer
-              </span>
-            </div>
-            <div className="mb-1">
-              <span className="text-2xl font-bold text-gray-900">{explorerLabel}</span>
-              <span className="text-xs text-gray-500 ml-1">/ 2 weeks</span>
-            </div>
-            <p className="text-[11px] text-amber-700 mb-3">One-time · no subscription</p>
-            <ul className="space-y-1.5 mb-4">
-              {EXPLORER_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
-                  <Check className="h-3 w-3 shrink-0 mt-0.5 text-amber-500" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Button
-              onClick={() => initializePayment("explorer")}
-              disabled={isAnyLoading}
-              className="w-full text-xs bg-amber-500 hover:bg-amber-600 text-white"
-              size="sm"
-            >
-              {isProcessingExplorer ? (
-                <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
-              ) : (
-                `Continue for ${explorerLabel}`
-              )}
-            </Button>
-          </div>
-
-          {/* ── Pro (monthly) ── */}
-          <div className={`rounded-xl border border-gray-200 bg-white p-4 relative ${explorerExpired ? "border-2 border-amber-400 bg-amber-50" : ""}`}>
-            {explorerExpired && (
-              <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] h-5 bg-amber-500 text-white px-2 whitespace-nowrap">
-                Recommended
-              </Badge>
+            {planFlow === "personal" && (
+              <div className="grid grid-cols-2 gap-2 rounded-lg bg-[#0a4b5e]/10 p-1 w-full sm:w-[260px] mb-4">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMode("recurrent")}
+                  className={`rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                    paymentMode === "recurrent"
+                      ? "bg-white text-[#0a4b5e] shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Recurrent
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMode("unique")}
+                  className={`rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                    paymentMode === "unique"
+                      ? "bg-white text-[#0a4b5e] shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Unique
+                </button>
+              </div>
             )}
-            <div className="flex items-center justify-between mb-1 mt-1">
-              <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                Pro
-              </span>
-              <Badge variant="secondary" className="text-[10px] h-5 bg-green-100 text-green-700">
-                Best Value
-              </Badge>
-            </div>
-            <div className="mb-1">
-              <span className="text-2xl font-bold text-gray-900">{proLabel}</span>
-              <span className="text-xs text-gray-500 ml-1">/ month</span>
-            </div>
-            <p className="text-[11px] text-gray-400 mb-3">Cancel anytime</p>
-            <ul className="space-y-1.5 mb-4">
-              {PRO_FEATURES.map((f) => (
-                <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
-                  <Check className="h-3 w-3 shrink-0 mt-0.5 text-green-500" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Button
-              onClick={() => initializePayment("personal")}
-              disabled={isAnyLoading}
-              variant={explorerExpired ? "default" : "outline"}
-              className={`w-full text-xs ${explorerExpired ? "bg-amber-500 hover:bg-amber-600 text-white" : ""}`}
-              size="sm"
-            >
-              {isProcessingPro ? (
-                <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
-              ) : (
-                `Subscribe · ${proLabel}/mo`
-              )}
-            </Button>
+
+            {planFlow === "personal" && paymentMode === "unique" && (
+              <div className="rounded-xl border border-[#e89e00]/50 bg-[#e89e00]/10 p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-900">Explorer (2 weeks)</span>
+                  <Badge className="text-[10px] h-5 bg-[#e89e00] text-white px-2">
+                    One-time
+                  </Badge>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{explorerLabel}</p>
+                <p className="text-xs text-[#7a5500] mt-1 mb-3">No subscription. Great for short-term use.</p>
+                <ul className="space-y-1.5 mb-4">
+                  {EXPLORER_FEATURES.map((f) => (
+                    <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
+                      <Check className="h-3 w-3 shrink-0 mt-0.5 text-[#0a4b5e]" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  onClick={() => initializePayment("explorer")}
+                  disabled={isAnyLoading}
+                  className="w-full text-xs bg-[#0a4b5e] hover:bg-[#005c4d] text-white"
+                  size="sm"
+                >
+                  {isProcessingExplorer ? (
+                    <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
+                  ) : (
+                    `Continue · ${explorerLabel}`
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {planFlow === "personal" && paymentMode === "recurrent" && (
+              <div className={`rounded-xl border p-4 ${explorerExpired ? "border-[#0a4b5e]/40 bg-[#0a4b5e]/5" : "border-gray-200 bg-white"}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-900">Pro (Monthly)</span>
+                  <Badge variant="secondary" className="text-[10px] h-5 bg-[#0a4b5e]/10 text-[#0a4b5e]">
+                    Wansom Pro
+                  </Badge>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{proLabel}<span className="text-xs text-gray-500 ml-1">/month</span></p>
+                <p className="text-xs text-gray-500 mt-1 mb-3">Cancel anytime.</p>
+                <ul className="space-y-1.5 mb-4">
+                  {PRO_FEATURES.map((f) => (
+                    <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
+                      <Check className="h-3 w-3 shrink-0 mt-0.5 text-[#0a4b5e]" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  onClick={() => initializePayment("personal")}
+                  disabled={isAnyLoading}
+                  className={`w-full text-xs ${explorerExpired ? "bg-[#0a4b5e] hover:bg-[#005c4d] text-white" : "border-[#0a4b5e] text-[#0a4b5e] hover:bg-[#0a4b5e]/5"}`}
+                  variant={explorerExpired ? "default" : "outline"}
+                  size="sm"
+                >
+                  {isProcessingPro ? (
+                    <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
+                  ) : (
+                    `Subscribe · ${proLabel}/mo`
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {planFlow === "teams" && (
+              <div className="rounded-xl border-2 border-[#0a4b5e] bg-white p-4 shadow-[0_1px_0_rgba(10,75,94,0.06)]">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold text-[#0a4b5e] uppercase tracking-wide">
+                    Team
+                  </span>
+                  <Badge className="text-[10px] h-5 bg-[#0a4b5e] text-white px-2">
+                    Team Plan
+                  </Badge>
+                </div>
+                <div className="mb-1">
+                  <span className="text-2xl font-bold text-gray-900">{teamUnitLabel}</span>
+                  <span className="text-xs text-gray-500 ml-1">/ member / month</span>
+                </div>
+                <p className="text-xs text-[#0a4b5e] mb-3">Choose team members and continue to checkout</p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Firm name</label>
+                    <input
+                      type="text"
+                      value={firmName}
+                      onChange={(e) => setFirmName(e.target.value)}
+                      placeholder="Enter firm name"
+                      className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">Team members</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={seatCount}
+                      onChange={(e) => setSeatCount(Math.max(1, Number(e.target.value) || 1))}
+                      className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
+                    />
+                  </div>
+                </div>
+
+                <ul className="space-y-1.5 mb-4">
+                  {TEAM_FEATURES.map((f) => (
+                    <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
+                      <Check className="h-3 w-3 shrink-0 mt-0.5 text-[#0a4b5e]" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  onClick={() => initializePayment("teams")}
+                  disabled={isAnyTeamLoading || !firmName.trim()}
+                  className="w-full text-xs bg-[#0a4b5e] hover:bg-[#005c4d] text-white"
+                  size="sm"
+                >
+                  {isProcessingTeam ? (
+                    <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
+                  ) : (
+                    `Continue · ${teamTotalLabel}/mo`
+                  )}
+                </Button>
+              </div>
+            )}
+
           </div>
-        </div>
         )}
 
-        {/* Team flow: Team-only card */}
-        {planFlow === "teams" && (
-          <div className="px-5 py-4">
-            <div className="rounded-xl border-2 border-[#0a4b5e] bg-white p-4 shadow-[0_1px_0_rgba(10,75,94,0.06)]">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-semibold text-[#0a4b5e] uppercase tracking-wide">
-                  Team
-                </span>
-                <Badge className="text-[10px] h-5 bg-[#0a4b5e] text-white px-2">
-                  Team Plan
-                </Badge>
-              </div>
-              <div className="mb-1">
-                <span className="text-2xl font-bold text-gray-900">{teamUnitLabel}</span>
-                <span className="text-xs text-gray-500 ml-1">/ seat / month</span>
-              </div>
-              <p className="text-xs text-[#0a4b5e] mb-3">Choose seats and continue to checkout</p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Firm name</label>
-                  <input
-                    type="text"
-                    value={firmName}
-                    onChange={(e) => setFirmName(e.target.value)}
-                    placeholder="Enter firm name"
-                    className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">Seats</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={seatCount}
-                    onChange={(e) => setSeatCount(Math.max(1, Number(e.target.value) || 1))}
-                    className="w-full h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:border-[#0a4b5e] focus:ring-2 focus:ring-[#0a4b5e]/20"
-                  />
-                </div>
-              </div>
-
-              <ul className="space-y-1.5 mb-4">
-                {TEAM_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-1.5 text-xs text-gray-700">
-                    <Check className="h-3 w-3 shrink-0 mt-0.5 text-[#0a4b5e]" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                onClick={() => initializePayment("teams")}
-                disabled={isAnyTeamLoading || !firmName.trim()}
-                className="w-full text-xs bg-[#0a4b5e] hover:bg-[#083b4a] text-white"
-                size="sm"
-              >
-                {isProcessingTeam ? (
-                  <><Loader2 className="mr-1.5 h-3 w-3 animate-spin" />Processing…</>
-                ) : (
-                  `Continue · ${teamTotalLabel}/mo`
-                )}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="px-5 pb-4 flex items-center justify-center">
-          <button
-            onClick={onClose}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            Maybe later →
-          </button>
-        </div>
       </DialogContent>
     </Dialog>
   );

@@ -165,7 +165,7 @@ export default function ReceiptModal({ open, onClose, data }: ReceiptModalProps)
         {/* Footer */}
         <div className="px-6 pb-5 flex items-center justify-between">
           <p className="text-xs text-gray-400 leading-relaxed">
-            Questions? <span className="text-gray-500 font-medium">support@wansom.ai</span>
+            Questions? <span className="text-gray-500 font-medium">law@wansom.ai</span>
           </p>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={onClose}>
