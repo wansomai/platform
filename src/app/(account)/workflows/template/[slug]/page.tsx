@@ -2,20 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PracticeArea, PRACTICE_AREA_LABELS } from '@/types/associates';
-import { CircleChevronLeft, Zap, Mail, Clock, CheckCircle, Globe } from 'lucide-react';
+import { PracticeArea, PRACTICE_AREA_LABELS, AIAssociate } from '@/types/associates';
+import { CircleChevronLeft, Zap, MessageSquare, Loader2, Mail, Clock, CheckCircle, Globe } from 'lucide-react';
 import MultiCountrySelector from '@/components/commons/multi-country-selector';
 import { useAssociates } from '@/hooks/useAssociates';
+import { useAssociatesStore } from '@/store/associates.store';
 import { Card, CardContent } from '@/components/ui/card';
 import { premadeAssociates } from '@/lib/constants/premadeAssociates';
 import LogoAnimation from '@/components/commons/LogoAnimation';
 import { toast } from 'sonner';
 import { apiService } from '@/lib/api';
+import { useProfile } from '@/store/profile.store';
+import { useProjectStore } from '@/store/project.store';
+import { useChatStore } from '@/store/chat.store';
+import { useNotifications } from '@/hooks/useNotifications';
+import AssociateGateModal from '@/components/modals/AssociateGateModal';
+import ProAccessModal from '@/components/modals/ProAccess';
 
 
 interface DigestSubscription {
@@ -359,32 +367,121 @@ export default function TemplateDetailPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
+  const { data: session } = useSession();
+  const { user: profile } = useProfile();
+  const { notify } = useNotifications();
+  const { createProject } = useProjectStore();
+  const { createConversation } = useChatStore();
 
   const template = premadeAssociates.find((t) => t.id === slug);
 
-  const { createAssociate, isProcessing } = useAssociates({
-    onSuccess: () => {
-      router.push('/workflows');
-    },
-  });
+  const { associates, isProcessing, createAssociate, refreshAssociates } = useAssociates();
 
+  const [savedAssociate, setSavedAssociate] = useState<AIAssociate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isStartingChat, setIsStartingChat] = useState(false);
+  const [showAssociateGate, setShowAssociateGate] = useState(false);
+  const [showProAccess, setShowProAccess] = useState(false);
 
-  const handleUseTemplate = async () => {
+  // Always fetch fresh on mount so we know if this associate already exists,
+  // even when navigating directly to the template URL.
+  useEffect(() => {
+    refreshAssociates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Pre-populate savedAssociate if this template's associate already exists.
+  useEffect(() => {
+    if (!template || savedAssociate) return;
+    const existing = associates.find(
+      (a) => a.name.trim().toLowerCase() === template.name.trim().toLowerCase()
+    );
+    if (existing) setSavedAssociate(existing);
+  }, [associates, template, savedAssociate]);
+
+  const handleCreateAssociate = async () => {
     if (!template || isCreating || isProcessing) return;
-
+    setIsCreating(true);
     try {
-      setIsCreating(true);
-      await createAssociate({
+      const result = await createAssociate({
         name: template.name,
-        description: template.description,
         instructions: template.instructions,
+        description: template.description,
         practiceAreas: template.practiceAreas,
+        knowledgeBase: [],
       });
+      if (!result?.associate) throw new Error('Failed to create associate');
+      setSavedAssociate(result.associate);
     } catch (err: any) {
-      console.error('Error creating associate from template:', err);
+      const code = err?.response?.status ?? err?.status;
+      if (code === 403) {
+        setShowAssociateGate(true);
+      } else if (code === 409) {
+        // Associate with this name already exists. Fetch the list directly to bypass the
+        // store's isFetching concurrency guard (which blocks refreshAssociates when a
+        // mount-time fetch is still in flight and would return an empty/stale list).
+        try {
+          const resp = await apiService.get<{ data: { associates: AIAssociate[] } }>('/api/associates');
+          const list = resp?.data?.associates ?? [];
+          const existing = list.find(
+            (a: AIAssociate) => a.name.trim().toLowerCase() === template!.name.trim().toLowerCase()
+          );
+          if (existing) {
+            setSavedAssociate(existing);
+            useAssociatesStore.getState().setAssociates(list);
+          }
+        } catch {
+          // Silent — user can still navigate to /workflows to find the associate
+        }
+      } else {
+        toast.error(err?.message ?? 'Failed to create associate');
+      }
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleUseInChat = async () => {
+    if (!savedAssociate || isStartingChat) return;
+
+    const organizationId =
+      profile?.activeOrganizationId ||
+      profile?.organizationId ||
+      session?.user?.organization?.id;
+
+    if (!organizationId) {
+      notify.error('Please log in to use this feature');
+      return;
+    }
+
+    setIsStartingChat(true);
+    const now = new Date();
+    const projectTitle = `${savedAssociate.name} - ${now.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+
+    try {
+      const newProject = await createProject({
+        title: projectTitle,
+        description: `Workspace with AI Associate: ${savedAssociate.name}`,
+        organizationId,
+      });
+      if (!newProject) throw new Error('Failed to create workspace');
+
+      const conversation = await createConversation(
+        newProject.id,
+        `Chat with ${savedAssociate.name}`,
+        savedAssociate.id
+      );
+      if (!conversation) throw new Error('Failed to create conversation');
+
+      router.push(`/projects/${newProject.id}`);
+    } catch (err: any) {
+      const code = err?.response?.status ?? err?.status;
+      if (code === 403) {
+        setShowAssociateGate(true);
+      } else {
+        notify.error(err?.message || 'Failed to start chat');
+      }
+      setIsStartingChat(false);
     }
   };
 
@@ -405,9 +502,11 @@ export default function TemplateDetailPage() {
   }
 
   const Icon = template.icon;
-  const isBusy = isCreating || isProcessing;
+  const isBusy = isCreating || isProcessing || isStartingChat;
+  const isReady = !!savedAssociate;
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
       <div className="container mx-auto px-6 py- max-w-6xl p-6 space-y-6">
         <div className="flex items-start gap-6">
@@ -431,6 +530,11 @@ export default function TemplateDetailPage() {
                         Premade Template
                       </span>
                     </div>
+                    {isReady && (
+                      <span className="text-xs font-medium px-2.5 py-1 bg-green-100 text-green-700 rounded-full">
+                        Added to your Associates
+                      </span>
+                    )}
                   </div>
 
                   {/* Name */}
@@ -487,7 +591,7 @@ export default function TemplateDetailPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex justify-end gap-3 pt-6 border-t">
+                  <div className="flex justify-between items-center pt-6 border-t">
                     <Button
                       type="button"
                       variant="outline"
@@ -495,20 +599,30 @@ export default function TemplateDetailPage() {
                     >
                       Back
                     </Button>
-                    <Button
-                      onClick={handleUseTemplate}
-                      disabled={isBusy}
-                      className="min-w-[180px]"
-                    >
-                      {isBusy ? (
-                        <LogoAnimation />
-                      ) : (
-                        <>
-                          <Zap className="h-4 w-4 mr-2" />
-                          Use Template
-                        </>
+                    <div className="flex gap-3">
+                      {isReady && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => router.push('/workflows')}
+                        >
+                          View in Associates
+                        </Button>
                       )}
-                    </Button>
+                      <Button
+                        onClick={isReady ? handleUseInChat : handleCreateAssociate}
+                        disabled={isBusy}
+                        className="min-w-[180px]"
+                      >
+                        {isBusy ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{isStartingChat ? 'Starting chat…' : 'Creating…'}</>
+                        ) : isReady ? (
+                          <><MessageSquare className="h-4 w-4 mr-2" />Use in Chat</>
+                        ) : (
+                          <><Zap className="h-4 w-4 mr-2" />Use Template</>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -517,5 +631,17 @@ export default function TemplateDetailPage() {
         </div>
       </div>
     </div>
+
+    <AssociateGateModal
+      open={showAssociateGate}
+      onClose={() => setShowAssociateGate(false)}
+      onUpgrade={() => { setShowAssociateGate(false); setShowProAccess(true); }}
+    />
+    <ProAccessModal
+      isOpen={showProAccess}
+      onClose={() => setShowProAccess(false)}
+      limitType="associates"
+    />
+    </>
   );
 }

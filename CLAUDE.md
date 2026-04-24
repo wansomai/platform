@@ -71,7 +71,7 @@ Organization
 #### 4. AI Function Calling System
 - Tool definitions in `src/lib/geminiTools.ts` (standard chat tools) and `src/lib/associateTools.ts` (AI Associate-specific tools)
 - Core document tools (always available): `generateDocumentInline`, `reviewDocument`, `searchProjectDocuments`
-- Canvas tools (when canvas mode enabled): `draftNewDocument`, `editCanvasDocument`
+- Canvas tools (when canvas mode enabled): `draftNewDocument`, `editCanvasDocument`, `batchEditCanvasDocument`
 - Integration tools: Google Calendar (`createCalendarEvent`, `searchCalendarEvents`, etc.), Gmail (`searchEmails`, `readEmail`, `draftEmail`)
 - Execution handled by `src/lib/functionExecutor.ts` (core tools) and `src/lib/associateExecutor.ts` (associate-specific workflows)
 - Services layer in `src/services/`:
@@ -81,6 +81,8 @@ Organization
   - `kbSummaryService.ts` - Generates and caches AI-produced summaries and `rulesForThinking` for Associate KB documents; loaded at chat time via `loadKBDocumentsWithSummaries()`
   - `digestIngestService.ts` - Pre-ingests legal content from RSS feeds, LII scraper, and Tavily fallback into `DigestItem` table; runs via `/api/cron/digest-ingest`
 - Associate executor (`src/lib/associateExecutor.ts`) runs a bounded agentic loop capped at `MAX_ITERATIONS = 5` — it invokes Gemini with the associate's tools until the model stops calling functions or the limit is reached
+- Available tools registry: `src/lib/constants/associateToolDefaults.ts` contains `ASSOCIATE_AVAILABLE_TOOLS` (name → label map for all assignable tools) and `DEFAULT_TOOLS_BY_PRACTICE_AREA` (pre-selected tools per `PracticeArea` — no Gemini call required)
+- Google OAuth client factory: `getGoogleOAuthClient(userId)` in `src/lib/googleOAuth.ts` retrieves stored NextAuth tokens from the `Account` table and returns an authenticated `googleapis` OAuth2 client; returns `null` if the user has no linked Google account
 
 #### 5. Document Processing Pipeline
 - Upload → Vercel Blob Storage
@@ -137,6 +139,33 @@ Organization
 
 #### 9. Database Transaction Pattern
 Use `prisma.$transaction()` for multi-table writes (e.g., org upgrades, bulk visibility fixes, associate session creation). Place email-sending calls **outside** transactions so a failed send does not roll back DB changes.
+
+#### 10. Vercel `maxDuration` by Route Type
+Routes set `maxDuration` based on expected runtime — never rely on the default:
+- **120s**: streaming messages route, associate create/update (`processKBDocuments` makes multiple Gemini calls per KB document and can take 30-60s), document upload (`/api/documents`)
+- **300s**: cron jobs (`legal-digest`, `digest-ingest`, `dev/digest-preview`)
+- **60s**: all other routes (search, canvas, document reprocess, project documents, etc.)
+
+#### 11. `requiresUpgrade` Pattern for 403 Upgrade Gates
+When an API route hits a plan limit, it returns HTTP 403 with `{ error: '...', requiresUpgrade: true }` in the body:
+```typescript
+return NextResponse.json({ error: reason, requiresUpgrade: true }, { status: 403 });
+```
+The `apiService` interceptor (`src/lib/api.ts`) detects this flag and:
+- Attaches `error.requiresUpgrade = true` to the thrown error object
+- Suppresses the automatic toast (lets the component handle it instead)
+
+Components check for this signal to open the upgrade gate rather than show a generic error:
+```typescript
+} catch (err: any) {
+  if (err?.status === 403 && err?.requiresUpgrade) {
+    setShowAssociateGate(true); // or setShowProAccess(true)
+  } else {
+    notify.error(err?.message ?? 'Something went wrong');
+  }
+}
+```
+This pattern appears in `ChatInput`, `CreateProjectModal`, vault page, and all workflow pages. The `requiresUpgrade` flag is also surfaced on Zustand stores (`chat.store.ts`, `project.store.ts`) for components that read plan-limit state reactively.
 
 ## Important Implementation Details
 
@@ -222,6 +251,10 @@ export const GET = withErrorHandler(
 );
 ```
 
+### Two Validation Files — Don't Confuse Them
+- `src/lib/api/validation.ts` — API request body validation (`validateRequest()`, pre-built schemas for common endpoints)
+- `src/lib/validations.ts` — Zod schemas for law firm profile/onboarding flow (`practiceInfoSchema`, `practiceAreasSchema`, `locationSchema`, etc.). Used by React Hook Form in onboarding UI, not in API routes.
+
 ### Request Validation
 Use `validateRequest()` from `src/lib/api/validation.ts` to validate request bodies against Zod schemas. Pre-built schemas cover common cases:
 ```typescript
@@ -261,7 +294,7 @@ The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/me
 { type: 'error', error: string }
 ```
 
-- Streaming routes must export `export const maxDuration = 60;` (Vercel function timeout)
+- Streaming routes must export `export const maxDuration = 120;` (Vercel function timeout — the messages route uses 120s, not 60s, because tool calls and KB loading can take >60s)
 - The `withAuth`/`withProjectAccess` middleware wrappers cannot be used for streaming routes — use manual `getUserIdFromRequest()` auth instead
 - User message is created in DB **only after** validation passes (Phase 1 checks access, subscription, conversation existence; Phase 2 creates the message and opens the stream)
 
@@ -271,7 +304,7 @@ The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/me
 2. Each chunk updates it: `updateStreamingMessage(tempId, { content: accumulated })`
 3. On `complete`, the temp message is replaced: `finalizeStreamingMessage(tempId, finalMessage)` — sets `isStreaming: false` and clears `tempId`
 
-After finalization, `notifyResearchComplete()` fires a browser push notification **only when** `Notification.permission === 'granted'` AND `document.visibilityState !== 'visible'` AND the `notifyOnResearchComplete` workspace setting (or the `wansom.notifyPromptSeen.v1` localStorage flag) is truthy. Notifications are best-effort and never interrupt the chat flow.
+After finalization, `notifyResearchComplete()` fires a browser push notification **only when** `Notification.permission === 'granted'` AND `document.visibilityState !== 'visible'` AND the `wansom.notifyPromptSeen.v1` localStorage flag is `'1'`. Notifications are best-effort and never interrupt the chat flow. The function uses `ServiceWorkerRegistration.showNotification()` when an active SW is controlling the page (required on Android Chrome where `new Notification()` is blocked) and falls back to `new Notification()` on desktop. It guards against `navigator.serviceWorker.ready` hanging forever by checking `navigator.serviceWorker.controller` before awaiting.
 
 ### Gemini Conversation History Format
 Gemini requires a specific format for `history` — note the differences from standard AI conventions:
@@ -307,6 +340,42 @@ import prisma from '@/lib/prisma';
 - `(landingpages)` - Public marketing pages; includes `/law360` (Briefly by Wansom product pages), `/pricing`, `/blogs`, `/events`, `/solutions`
 - `(admin)` - Admin-only pages
 - `/legal-documents/[slug]` - Public legal document pages (outside route groups): renders `GuestCanvasChatSplitView` for unauthenticated document drafting, sourced from Sanity CMS
+
+### Template Route Dual Behavior
+`/workflows/template/[slug]` renders two completely different UIs depending on the template type:
+- **Regular templates** (no `isDigest` flag): renders an associate creation form that calls `createAssociate()` and then runs the KB document upload pipeline (`AssociateSetupProgressModal`)
+- **Digest templates** (`template.isDigest === true`): renders `DigestSubscriptionForm` for configuring Briefly email subscriptions (frequency, topics, jurisdictions) — no associate is created; calls `/api/digest/subscription` directly
+
+The branch is: `if ('isDigest' in template && template.isDigest) return <DigestSubscriptionForm template={template} />;`
+
+### Upgrade Gate Modal Pattern
+Two-modal upgrade flow used across dashboard, `/workflows`, `/workflows/new`, `/workflows/[id]`, and `/workflows/template/[slug]`:
+1. **`AssociateGateModal`** (`src/components/modals/AssociateGateModal.tsx`) — soft gate: shows Free vs Explorer feature comparison with a trial CTA. Triggered on 403 responses from associate APIs or when free-tier limits are hit.
+2. **`ProAccessModal`** (`src/components/modals/ProAccess.tsx`) — hard paywall: renders the Paystack payment form for Explorer/Pro upgrade.
+
+Standard wiring pattern:
+```tsx
+const [showAssociateGate, setShowAssociateGate] = useState(false);
+const [showProAccess, setShowProAccess] = useState(false);
+
+// On 403 from API:
+setShowAssociateGate(true);
+
+<AssociateGateModal
+  open={showAssociateGate}
+  onClose={() => setShowAssociateGate(false)}
+  onUpgrade={() => setShowProAccess(true)}
+/>
+<ProAccessModal open={showProAccess} onClose={() => setShowProAccess(false)} />
+```
+
+Components that need to trigger this flow from inside a dialog (e.g. `PrepareCaseModal` in `src/components/dashboard/`) use an `onUpgradeRequired` callback prop to bubble the 403 up to the page level where both modals are rendered.
+
+### Email Verification Modal
+`EmailVerificationModal` (`src/components/auth/EmailVerificationModal.tsx`) auto-mounts in the authenticated layout. Behavior:
+- Checks once per browser session via `sessionStorage` key `wansom_email_verify_shown` — never shows twice in the same session
+- Skips for Google OAuth users (`authProvider === 'google'`) and already-verified accounts
+- Auto-sends the verification email on first open; handles 429 (`RESEND_TOO_SOON`) by parsing the remaining cooldown seconds from the error message and starting a countdown timer
 
 ### Guest / Public Drafting Flow
 Unauthenticated users can draft legal documents on the `/legal-documents/[slug]` page without an account. The flow:
@@ -389,7 +458,7 @@ See `.env.example` for the full list. Key variables:
 - `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` / `PAYSTACK_PLAN_CODE` - Payments
 - `GOOGLE_API_KEY` / `GOOGLE_CUSTOM_SEARCH_ENGINE_ID` - Legal citation verification (`verifyLegalCitation` tool). Without these the tool fails gracefully and the AI tells the user to verify manually.
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` / `NEXT_PUBLIC_SANITY_DATASET` - Sanity CMS
-- `EMAIL_USER` / `EMAIL_PASSWORD` - Email sending (nodemailer via `src/lib/email-service.ts`)
+- `EMAIL_USER` / `EMAIL_PASSWORD` - Email sending (nodemailer via `src/lib/email-service.ts`). The transporter uses a pooled singleton with `maxConnections: 2` and `maxMessages: 100` to stay within Outlook/Gmail SMTP limits — do not create additional transporters
 - `EMAIL_HOST` / `EMAIL_PORT` - SMTP server (default: `smtp.gmail.com:587`)
 - `PAYSTACK_TEAMS_PLAN_CODE` - Paystack plan code for enterprise/teams tier (separate from `PAYSTACK_PLAN_CODE`)
 - `LAW360KENYA_PLAN_CODE` - Paystack plan code for Briefly KES pricing variant
@@ -414,10 +483,12 @@ Optional (for RAG tuning):
 ### Core Entities
 - `User` → `Organization` (primary org) + `UserOrganization` (multi-org membership)
 - `Project` → `ProjectMember`, `Conversation`, `Document`, `KnowledgeBase`, `CanvasDocument`
-- `Conversation` → `Message`, `ConversationDocument`, `ConversationAction`, `ConversationMeta` (title/summary metadata)
+- `Conversation` → `Message`, `ConversationDocument`, `ConversationAction` (AI-triggered action records with `actionType`, `status`, `resultUrl`), `ConversationMeta` (title/summary metadata)
+- `Message` → `MessageReference` (citation links — stores quoted `text`, `page`, and the source `documentId` for each passage the AI referenced)
 - `Document` → `DocumentContent`, `Embedding` (vector search), `Folder` (hierarchy)
 
 ### Supporting Entities
+- `Invitation` - Org member invitations scoped to both `organizationId` and `projectId`; contains `token`, `role`, and `expiresAt`. Acceptance flow is at `/accept-invitation`
 - `Event` / `EventRegistration` - Law school launch events and opt-in tracking
 - `Content` / `ContentSection` - CMS content for SEO pages (managed via `content.store.ts`)
 - `OnboardingAnalytics` - Onboarding funnel step tracking
@@ -459,14 +530,15 @@ Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `PO
 
 ### Legal Knowledge & RAG
 - `legal_knowledge` - Admin-uploaded legal documents (statutes, precedents, etc.) with classification metadata
-- `Embedding` - Vector embeddings (chunks) of documents and legal knowledge for similarity search
+- `legal_knowledge_chunks` - Chunked text of legal knowledge docs with native pgvector `embedding` column (type `vector`, stored as `Unsupported("vector")` in Prisma). Separate from the `Embedding` table — used exclusively for legal knowledge RAG, not user documents
+- `Embedding` - Vector embeddings (chunks) of user documents for similarity search
 
 ### Billing
 - `Subscription` - Paystack integration
 - `Payment` - Payment history
 - `Notification` - In-app user notifications (`type`, `read`, `dismissed`, `dismissedAt`, `title`, `message`); see Notification API below
 
-#### 10. Visibility & Permissions System
+### Visibility & Permissions System
 - `Project`, `Document`, and `Folder` each have a `visibility` field:
   - `Project.visibility`: `"restricted"` (default — only explicit members) | `"public"` (all org members)
   - `Document.visibility`: `"private"` (default — only creator) | `"restricted"` (explicit grants) | `"public"` (all org members)

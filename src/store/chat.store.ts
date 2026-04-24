@@ -273,15 +273,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       return newConversation;
     } catch (error: any) {
-      // If this is a subscription limit error, throw it for the component to handle
-      if (error.status === 403 && error.requiresUpgrade) {
-        set({ isLoading: false });
+      set({ isLoading: false });
+      const status = error?.response?.status ?? error?.status;
+      if (status === 403) {
+        // Subscription gate — let the caller surface the upgrade modal
         throw error;
       }
-      set({
-        error: error.message || 'Failed to create conversation',
-        isLoading: false
-      });
+      set({ error: error.message || 'Failed to create conversation' });
       return null;
     }
   },

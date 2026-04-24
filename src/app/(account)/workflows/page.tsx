@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import LogoAnimation from "@/components/commons/LogoAnimation";
 import ProAccessModal from "@/components/modals/ProAccess";
+import AssociateGateModal from "@/components/modals/AssociateGateModal";
 import { useOrganization } from "@/store/profile.store";
 import { premadeAssociates } from "@/lib/constants/premadeAssociates";
 import {
@@ -61,6 +62,7 @@ export default function WorkflowsPage() {
   } | null>(null);
   const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [showProAccess, setShowProAccess] = useState(false);
+  const [showAssociateGate, setShowAssociateGate] = useState(false);
   const [associateToShare, setAssociateToShare] = useState<{
     id: string;
     name: string;
@@ -163,35 +165,23 @@ export default function WorkflowsPage() {
       }
 
       // Create conversation with the associate linked
-      try {
-        const conversation = await createConversation(
-          newProject.id,
-          `Chat with ${associate.name}`,
-          associate.id
-        );
+      const conversation = await createConversation(
+        newProject.id,
+        `Chat with ${associate.name}`,
+        associate.id
+      );
 
-        if (!conversation) {
-          notify.error("Failed to create conversation");
-          return;
-        }
-
-        // Success notification
-        notify.success(`Workspace created with ${associate.name}!`);
-
-        // Navigate to the new workspace
-        router.push(`/projects/${newProject.id}`);
-      } catch (convError: any) {
-        // Check if this is a subscription limit error
-        if (convError.status === 403 && convError.requiresUpgrade) {
-          setShowProAccess(true);
-          return;
-        }
-        throw convError; // Re-throw other errors
+      if (!conversation) {
+        notify.error("Failed to create conversation");
+        return;
       }
+
+      notify.success(`Workspace created with ${associate.name}!`);
+      router.push(`/projects/${newProject.id}`);
     } catch (error: any) {
-      // Check if this is a subscription limit error
-      if (error.status === 403 && error.requiresUpgrade) {
-        setShowProAccess(true);
+      const code = error?.response?.status ?? error?.status;
+      if (code === 403) {
+        setShowAssociateGate(true);
         return;
       }
       console.error("Error creating workspace with associate:", error);
@@ -565,7 +555,11 @@ export default function WorkflowsPage() {
         />
       )}
 
-      {/* Pro Access Modal */}
+      <AssociateGateModal
+        open={showAssociateGate}
+        onClose={() => setShowAssociateGate(false)}
+        onUpgrade={() => setShowProAccess(true)}
+      />
       <ProAccessModal
         isOpen={showProAccess}
         onClose={() => setShowProAccess(false)}
