@@ -31,7 +31,13 @@ export default function EmailVerificationModal() {
 
   useEffect(() => {
     if (sessionStorage.getItem(SESSION_KEY)) return;
+
+    // `active` prevents stale callbacks from a React Strict Mode double-invocation
+    // (or any unmount before the async chain completes) from updating state.
+    let active = true;
+
     apiService.get('/api/auth/me').then((res: any) => {
+      if (!active) return;
       const user = res?.data?.data?.user ?? res?.data?.user;
       if (!user || user.authProvider === 'google' || user.emailVerified) return;
       setEmail(user.email ?? '');
@@ -39,15 +45,19 @@ export default function EmailVerificationModal() {
       sessionStorage.setItem(SESSION_KEY, '1');
       // Auto-send on first open
       apiService.post('/api/auth/send-verification', {}).then(() => {
+        if (!active) return;
         setStatus('sent');
-        setCooldown(40);
+        setCooldown(120);
       }).catch((err) => {
+        if (!active) return;
         // 429: a valid email was already sent recently — honour whatever cooldown remains
         const secs = parseCooldownFromError(err);
         setStatus('sent');
-        setCooldown(secs ?? 40);
+        setCooldown(secs ?? 120);
       });
     }).catch(() => {});
+
+    return () => { active = false; };
   }, []);
 
   useEffect(() => {
@@ -63,7 +73,7 @@ export default function EmailVerificationModal() {
     try {
       await apiService.post('/api/auth/send-verification', {});
       setStatus('sent');
-      setCooldown(40);
+      setCooldown(120);
     } catch (err) {
       const secs = parseCooldownFromError(err);
       if (secs !== null) {

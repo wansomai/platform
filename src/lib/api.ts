@@ -30,7 +30,7 @@ function clearTokenCache() {
 const RETRY_CONFIG = {
   maxRetries: 3,
   retryDelay: 1000, // 1 second
-  retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+  retryableStatusCodes: [408, 500, 502, 503, 504],
   retryableErrorCodes: ['ECONNABORTED', 'ERR_NETWORK', 'ETIMEDOUT']
 };
 
