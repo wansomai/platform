@@ -12,7 +12,7 @@ export const maxDuration = 120;
 
 // Validation schema for creating associates
 const createAssociateSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  name: z.string().trim().min(1, "Name is required").max(100, "Name too long"),
   instructions: z.string().min(10, "Instructions must be at least 10 characters"),
   description: z.string().max(2000, "Description too long").optional(),
   practiceAreas: z.array(z.string()).min(1, "At least one practice area is required"),

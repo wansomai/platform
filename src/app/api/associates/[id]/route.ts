@@ -12,7 +12,7 @@ import { syncAssociateKBDocumentPermissions } from "@/lib/auth/associateSharing"
 import { z } from "zod";
 
 const updateAssociateSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
+  name: z.string().trim().min(1).max(100).optional(),
   instructions: z.string().min(10).optional(),
   description: z.string().max(2000).optional(),
   practiceAreas: z.array(z.string()).min(1).optional(),
