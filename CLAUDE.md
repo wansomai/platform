@@ -24,7 +24,7 @@ npx prisma studio     # Database GUI
 
 **Build memory**: The build script sets `NODE_OPTIONS='--max-old-space-size=4096'` to prevent OOM failures on large builds.
 
-**Turbopack external packages**: `next.config.ts` keeps Google AI SDKs, native modules (`sharp`, `canvas`, `tesseract.js`), and headless browser tools outside Turbopack bundling via `serverExternalPackages`. Add new native/AI deps there if you see "Invalid source map" or WASM errors.
+**Turbopack external packages**: `next.config.ts` keeps Google AI SDKs (`@google/genai`, `@google/generative-ai`, `googleapis`), native modules (`better-sqlite3`), and headless browser tools (`puppeteer-extra`, `puppeteer-core`, `@sparticuz/chromium-min`) outside Turbopack bundling via `serverExternalPackages`. Add new native/AI deps there if you see "Invalid source map" or WASM errors. The Puppeteer set is used for PDF generation and web scraping.
 
 ## Architecture Overview
 
@@ -334,12 +334,32 @@ import { Something } from '@/components/ui/something';
 import prisma from '@/lib/prisma';
 ```
 
+### `cn()` Utility
+Use `cn()` from `src/lib/utils` for all Tailwind class composition — it merges `clsx` + `tailwind-merge` so conflicting utilities resolve correctly:
+```typescript
+import { cn } from '@/lib/utils';
+
+className={cn('base-classes', condition && 'conditional-class', props.className)}
+```
+`src/lib/utils` also re-exports helpers from `src/lib/utils/file`, `src/lib/utils/date`, `src/lib/utils/text`, and `src/lib/utils/token-utils`.
+
 ### Route Groups
 - `(account)` - Authenticated user pages: dashboard, projects, vault; **`/workflows/*` is the UI for managing AI Associates** (create, edit, delete `AIAssociate` entities — the name "workflows" is legacy); project workspace UI is at `(account)/projects/[id]`. The `/workflows/[id]` detail page has unsaved-changes detection (compares live form state against the snapshot loaded from the server) and a discard dialog before navigation. It also has a "Use in Chat" button that creates a new project pre-linked to the associate and navigates directly into it.
-- `(auth)` - Login, register, password reset, `/accept-invitation` (org invite acceptance), `/verify-email`
-- `(landingpages)` - Public marketing pages; includes `/law360` (Briefly by Wansom product pages), `/pricing`, `/blogs`, `/events`, `/solutions`
-- `(admin)` - Admin-only pages
-- `/legal-documents/[slug]` - Public legal document pages (outside route groups): renders `GuestCanvasChatSplitView` for unauthenticated document drafting, sourced from Sanity CMS
+- `(auth)` - Login (`/login`), register, forgot/reset password, `/magic-login` (magic link auth), `/school-program`
+- `(landingpages)` - Public marketing pages: `/pricing`, `/briefly-by-wansom`, `/ai-assistant`, `/ai-contract-review`, `/ai-due-diligence`, `/ai-legal-drafting`, `/ai-search`, `/document-vault`, `/careers`, `/contact`, `/webinar`, `/demo`, `/feedback-form`, `/invitations` (org invite acceptance — unauthenticated entry point)
+- `(admin)` - Admin-only pages: `/admin` dashboard, `/admin/legal-knowledge`, `/admin/email-broadcast`
+
+**Top-level routes (outside all route groups):**
+- `/accept-invitation` - Authenticated org invite acceptance (when user is already logged in)
+- `/verify-email` - Email verification landing
+- `/blogs` and `/blogs/[slug]` - Blog listing and detail pages
+- `/law360` - Law360 product (Briefly) with payment callback at `/law360/payment/callback`
+- `/events/opt-in` - Event opt-in
+- `/solutions/*` - Solution pages (`in-house-counsel`, `litigation-lawyers`, `ma-lawyers`)
+- `/programs/law-schools` - Law school program page
+- `/payment/callback` - Paystack payment callback
+- `/upgrade-success` / `/upgrade-error` - Post-payment result pages
+- `/legal-documents` - Public legal document listing page; `/legal-documents/[slug]` renders `GuestCanvasChatSplitView` for unauthenticated document drafting, sourced from Sanity CMS
 
 ### Template Route Dual Behavior
 `/workflows/template/[slug]` renders two completely different UIs depending on the template type:
@@ -588,7 +608,7 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/payments/*` - Payment processing
 - `/api/subscription/*` - Subscription management
 - `/api/profile/*` - User profile operations
-- `/api/admin/*` - Admin-only: organization management + legal knowledge CRUD (`/api/admin/legal-knowledge/*`)
+- `/api/admin/*` - Admin-only: organization management, legal knowledge CRUD (`/api/admin/legal-knowledge/*`), and email broadcast (`/api/admin/email-broadcast`)
 - `/api/notifications` - `GET` active (unread, non-dismissed) notifications; `?history=true` returns read, non-dismissed ones; `PATCH /api/notifications/[id]/read` - mark read; `PATCH /api/notifications/[id]/dismiss` - marks dismissed+read (stays in DB for 30 days, then deleted by `/api/cron/notification-cleanup`)
 - `/api/support` - Authenticated POST; sends support ticket email to `law@wansom.ai`
 - `/api/user` - User account operations

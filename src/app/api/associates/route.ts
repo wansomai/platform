@@ -12,7 +12,7 @@ export const maxDuration = 120;
 
 // Validation schema for creating associates
 const createAssociateSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  name: z.string().trim().min(1, "Name is required").max(100, "Name too long"),
   instructions: z.string().min(10, "Instructions must be at least 10 characters"),
   description: z.string().max(2000, "Description too long").optional(),
   practiceAreas: z.array(z.string()).min(1, "At least one practice area is required"),
@@ -99,11 +99,12 @@ export const POST = withErrorHandler(withAuth(async (
       );
     }
 
-    // Enforce per-user name uniqueness (case-insensitive)
+    // Enforce name uniqueness per user within the active organization (case-insensitive)
     const nameConflict = await prisma.aIAssociate.findFirst({
       where: {
         name: { equals: validatedData.name, mode: 'insensitive' },
         createdById: userId,
+        organizationId: currentOrgId,
       },
       select: { id: true },
     });
