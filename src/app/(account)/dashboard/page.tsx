@@ -27,6 +27,10 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { apiService } from "@/lib/api";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { useProfile } from "@/store/profile.store";
+import { useAssociatesStore } from "@/store/associates.store";
+import PrepareCaseModal from "@/components/dashboard/PrepareCaseModal";
+import ProAccessModal from "@/components/modals/ProAccess";
+import AssociateGateModal from "@/components/modals/AssociateGateModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -110,8 +114,10 @@ export default function DashboardPage() {
   const router = useRouter();
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isCreatingQuickChat, setIsCreatingQuickChat] = useState(false);
-  const [isPreparingCase, setIsPreparingCase] = useState(false);
   const [showDraftDropdown, setShowDraftDropdown] = useState(false);
+  const [showPrepareCaseModal, setShowPrepareCaseModal] = useState(false);
+  const [showAssociateGate, setShowAssociateGate] = useState(false);
+  const [showProAccess, setShowProAccess] = useState(false);
   const {
     fetchProjects,
     projects,
@@ -124,6 +130,7 @@ export default function DashboardPage() {
   } = useDocumentsStore();
   const { fetchProfile } = useProfile();
   const { notify } = useNotifications();
+  const { associates, fetchAssociates } = useAssociatesStore();
 
   // Common drafting prompts - same as DraftPlus component
   const draftingPrompts = [
@@ -145,6 +152,7 @@ export default function DashboardPage() {
           fetchProjects(),
           fetchDocuments({ limit: 5 }),
           fetchProfile(true), // Fetch fresh profile to ensure latest activeOrganizationId
+          fetchAssociates(),
         ]);
       } catch (error) {
         const errorMessage =
@@ -180,8 +188,17 @@ export default function DashboardPage() {
   }, []);
 
   const handlePrepareForCase = useCallback(async () => {
-    if (isPreparingCase) return;
-    setIsPreparingCase(true);
+    const hasAssociate = associates.some(
+      (a) => a.name === 'Litigation Research Assistant' && a.isActive
+    );
+
+    if (!hasAssociate) {
+      // First time — show the modal so the user understands what will be created
+      setShowPrepareCaseModal(true);
+      return;
+    }
+
+    // Associate already exists — start a new session immediately
     try {
       const response = await apiService.post<{ data: { projectId: string } }>(
         '/api/associates/start-premade-session',
@@ -189,14 +206,14 @@ export default function DashboardPage() {
       );
       router.push(`/projects/${response.data.projectId}`);
     } catch (error: any) {
-      if (error.status === 403 && error.requiresUpgrade) {
-        notify.error('AI Associates require a Pro plan. Upgrade to use this feature.');
+      const code = error?.response?.status ?? error?.status;
+      if (code === 403) {
+        setShowAssociateGate(true);
       } else {
         notify.error('Failed to start case preparation. Please try again.');
       }
-      setIsPreparingCase(false);
     }
-  }, [isPreparingCase, router, notify]);
+  }, [associates, router, notify]);
 
 
   return (
@@ -270,8 +287,7 @@ export default function DashboardPage() {
               description="Start a session with the Litigation Research Assistant"
               onClick={handlePrepareForCase}
               color="text-amber-600"
-              loading={isPreparingCase}
-              disabled={isCreatingQuickChat || isPreparingCase}
+              disabled={isCreatingQuickChat}
             />
                <QuickActionCard
               icon={MessageSquare}
@@ -297,6 +313,24 @@ export default function DashboardPage() {
       <CreateProjectModal
         open={showProjectModal}
         onClose={handleCloseProjectModal}
+      />
+
+      <PrepareCaseModal
+        open={showPrepareCaseModal}
+        onClose={() => setShowPrepareCaseModal(false)}
+        onUpgradeRequired={() => setShowAssociateGate(true)}
+      />
+
+      <AssociateGateModal
+        open={showAssociateGate}
+        onClose={() => setShowAssociateGate(false)}
+        onUpgrade={() => setShowProAccess(true)}
+      />
+
+      <ProAccessModal
+        isOpen={showProAccess}
+        onClose={() => setShowProAccess(false)}
+        limitType="associates"
       />
     </div>
   );

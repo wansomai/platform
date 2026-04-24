@@ -55,9 +55,12 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
     ]);
 
     // Determine plan from subscription + org type before counting usage
-    const hasActiveSubscription = subscription &&
-      ['active', 'non_renewing'].includes(subscription.status) &&
-      ['professional', 'enterprise', 'pro'].includes(subscription.planName.toLowerCase());
+    const normalizedPlanName = subscription?.planName?.trim().toLowerCase() ?? null;
+    const normalizedStatus = subscription?.status?.trim().toLowerCase() ?? null;
+    const hasActiveSubscription =
+      !!subscription &&
+      ['active', 'non_renewing'].includes(normalizedStatus ?? '') &&
+      normalizedPlanName !== 'explorer';
 
     const isEnterpriseAccount = organization?.accountType === 'enterprise';
 
@@ -70,8 +73,8 @@ export async function getUserPlanInfo(organizationId: string): Promise<UserPlanI
 
     // Explorer plan: one-time 14-day access, identified by planName and a valid currentPeriodEnd
     const isExplorerPlan =
-      subscription?.planName === 'explorer' &&
-      subscription?.status === 'active' &&
+      normalizedPlanName === 'explorer' &&
+      normalizedStatus === 'active' &&
       subscription?.currentPeriodEnd != null &&
       subscription.currentPeriodEnd > now;
 

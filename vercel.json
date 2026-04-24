@@ -48,17 +48,6 @@
           "value": "wakili.chat"
         }
       ]
-    },
-    {
-      "source": "/(.*)",
-      "destination": "https://wansom.ai/$1",
-      "permanent": true,
-      "has": [
-        {
-          "type": "host",
-          "value": "www.wansom.ai"
-        }
-      ]
     }
   ]
 }

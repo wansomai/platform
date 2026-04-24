@@ -65,8 +65,12 @@ export function useAssociates(options: UseAssociatesOptions = {}) {
         throw new Error('Failed to create associate');
       }
     } catch (err: any) {
-      const errorMessage = err.message || 'Failed to create associate';
-      handleError(errorMessage);
+      // 403 + requiresUpgrade: caller shows the gate modal — skip the toast to avoid double UI.
+      // 409: caller handles duplicate-name recovery — skip the toast too.
+      const code = err?.status ?? err?.response?.status;
+      if (code !== 403 && code !== 409) {
+        handleError(err.message || 'Failed to create associate');
+      }
       throw err;
     } finally {
       setIsProcessing(false);

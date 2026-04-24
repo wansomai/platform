@@ -124,7 +124,7 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
     } catch (error: any) {
       const msg = error?.response?.data?.error || error.message || 'Failed to create associate';
       set({ error: msg, isLoading: false });
-      throw new Error(msg);
+      throw error;
     }
   },
 
@@ -153,7 +153,7 @@ export const useAssociatesStore = create<AssociatesState>((set, get) => ({
     } catch (error: any) {
       const msg = error?.response?.data?.error || error.message || 'Failed to update associate';
       set({ error: msg, isLoading: false });
-      throw new Error(msg);
+      throw error;
     }
   },
 

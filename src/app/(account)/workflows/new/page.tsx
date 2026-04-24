@@ -36,6 +36,8 @@ import { DraggableRulesList } from '@/components/associates/DraggableRulesList';
 import { parseRulesForDisplay } from '@/lib/rulesFormatting';
 import { AssociateSetupProgressModal } from '@/components/associates/AssociateSetupProgressModal';
 import { useNotifications } from '@/hooks/useNotifications';
+import ProAccessModal from '@/components/modals/ProAccess';
+import AssociateGateModal from '@/components/modals/AssociateGateModal';
 
 type SelectedKnowledgeFile = {
   key: string;
@@ -72,6 +74,8 @@ export default function CreateAssociatePage() {
   const [setupComplete, setSetupComplete] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [showAssociateGate, setShowAssociateGate] = useState(false);
+  const [showProAccess, setShowProAccess] = useState(false);
 
   const [savedAssociate, setSavedAssociate] = useState<AIAssociate | null>(null);
   const [savedFormData, setSavedFormData] = useState<CreateAssociateInput>(emptyForm());
@@ -235,25 +239,44 @@ export default function CreateAssociatePage() {
     const now = new Date();
     const projectTitle = `${savedAssociate.name} - ${now.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
 
-    const newProject = await createProject({
-      title: projectTitle,
-      description: `Workspace with AI Associate: ${savedAssociate.name}`,
-      organizationId,
-    });
+    let newProject;
+    try {
+      newProject = await createProject({
+        title: projectTitle,
+        description: `Workspace with AI Associate: ${savedAssociate.name}`,
+        organizationId,
+      });
+    } catch (err: any) {
+      const code = err?.response?.status ?? err?.status;
+      if (code === 403) {
+        setShowAssociateGate(true);
+      } else {
+        notify.error(err?.message || 'Failed to create workspace');
+      }
+      return;
+    }
 
     if (!newProject) {
       notify.error('Failed to create workspace');
       return;
     }
 
-    const conversation = await createConversation(newProject.id, `Chat with ${savedAssociate.name}`, savedAssociate.id);
-    if (!conversation) {
-      notify.error('Failed to create conversation');
-      return;
+    try {
+      const conversation = await createConversation(newProject.id, `Chat with ${savedAssociate.name}`, savedAssociate.id);
+      if (!conversation) {
+        notify.error('Failed to create conversation');
+        return;
+      }
+      notify.success(`Workspace created with ${savedAssociate.name}!`);
+      router.push(`/projects/${newProject.id}`);
+    } catch (err: any) {
+      const code = err?.response?.status ?? err?.status;
+      if (code === 403) {
+        setShowAssociateGate(true);
+      } else {
+        notify.error(err?.message || 'Failed to create conversation');
+      }
     }
-
-    notify.success(`Workspace created with ${savedAssociate.name}!`);
-    router.push(`/projects/${newProject.id}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -355,6 +378,17 @@ export default function CreateAssociatePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
+      <AssociateGateModal
+        open={showAssociateGate}
+        onClose={() => setShowAssociateGate(false)}
+        onUpgrade={() => setShowProAccess(true)}
+      />
+      <ProAccessModal
+        isOpen={showProAccess}
+        onClose={() => setShowProAccess(false)}
+        limitType="associates"
+      />
+
       <AssociateSetupProgressModal
         open={showSetupModal}
         associateName={formData.name || 'Associate'}
