@@ -99,11 +99,12 @@ export const POST = withErrorHandler(withAuth(async (
       );
     }
 
-    // Enforce per-user name uniqueness (case-insensitive)
+    // Enforce name uniqueness per user within the active organization (case-insensitive)
     const nameConflict = await prisma.aIAssociate.findFirst({
       where: {
         name: { equals: validatedData.name, mode: 'insensitive' },
         createdById: userId,
+        organizationId: currentOrgId,
       },
       select: { id: true },
     });
