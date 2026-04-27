@@ -387,7 +387,9 @@ exports.Prisma.MessageScalarFieldEnum = {
   role: 'role',
   createdAt: 'createdAt',
   userId: 'userId',
-  metadata: 'metadata'
+  metadata: 'metadata',
+  parentId: 'parentId',
+  branchIndex: 'branchIndex'
 };
 
 exports.Prisma.MessageReferenceScalarFieldEnum = {

@@ -440,12 +440,17 @@ model Message {
   createdAt      DateTime           @default(now())
   userId         String?
   metadata       Json?
+  parentId       String?
+  branchIndex    Int                @default(0)
   conversation   Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User?              @relation(fields: [userId], references: [id])
+  parent         Message?           @relation("MessageEdits", fields: [parentId], references: [id])
+  edits          Message[]          @relation("MessageEdits")
   references     MessageReference[]
 
   @@index([conversationId, createdAt], map: "idx_message_conversation_created")
   @@index([conversationId, role], map: "idx_message_conversation_role")
+  @@index([parentId], map: "idx_message_parent")
 }
 
 model MessageReference {

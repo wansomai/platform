@@ -29,7 +29,15 @@ export const GET = withErrorHandler(
       include: {
         messages: {
           orderBy: { createdAt: 'asc' },
-          include: {
+          select: {
+            id: true,
+            content: true,
+            role: true,
+            createdAt: true,
+            userId: true,
+            metadata: true,
+            parentId: true,
+            branchIndex: true,
             references: {
               include: {
                 document: {
@@ -89,6 +97,8 @@ export const GET = withErrorHandler(
           role: message.role,
           timestamp: message.createdAt.toISOString(),
           userId: message.userId,
+          parentId: message.parentId ?? null,
+          branchIndex: message.branchIndex ?? 0,
           ...(metadata?.document && { document: metadata.document }),
           ...(metadata?.report && { report: metadata.report }),
           ...(metadata?.webSearchSources && { webSearchSources: metadata.webSearchSources }),

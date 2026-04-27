@@ -6001,10 +6001,12 @@ export namespace Prisma {
    */
 
   export type MessageCountOutputType = {
+    edits: number
     references: number
   }
 
   export type MessageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    edits?: boolean | MessageCountOutputTypeCountEditsArgs
     references?: boolean | MessageCountOutputTypeCountReferencesArgs
   }
 
@@ -6017,6 +6019,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the MessageCountOutputType
      */
     select?: MessageCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * MessageCountOutputType without action
+   */
+  export type MessageCountOutputTypeCountEditsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageWhereInput
   }
 
   /**
@@ -32822,8 +32831,18 @@ export namespace Prisma {
 
   export type AggregateMessage = {
     _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
+  }
+
+  export type MessageAvgAggregateOutputType = {
+    branchIndex: number | null
+  }
+
+  export type MessageSumAggregateOutputType = {
+    branchIndex: number | null
   }
 
   export type MessageMinAggregateOutputType = {
@@ -32833,6 +32852,8 @@ export namespace Prisma {
     role: string | null
     createdAt: Date | null
     userId: string | null
+    parentId: string | null
+    branchIndex: number | null
   }
 
   export type MessageMaxAggregateOutputType = {
@@ -32842,6 +32863,8 @@ export namespace Prisma {
     role: string | null
     createdAt: Date | null
     userId: string | null
+    parentId: string | null
+    branchIndex: number | null
   }
 
   export type MessageCountAggregateOutputType = {
@@ -32852,9 +32875,19 @@ export namespace Prisma {
     createdAt: number
     userId: number
     metadata: number
+    parentId: number
+    branchIndex: number
     _all: number
   }
 
+
+  export type MessageAvgAggregateInputType = {
+    branchIndex?: true
+  }
+
+  export type MessageSumAggregateInputType = {
+    branchIndex?: true
+  }
 
   export type MessageMinAggregateInputType = {
     id?: true
@@ -32863,6 +32896,8 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     userId?: true
+    parentId?: true
+    branchIndex?: true
   }
 
   export type MessageMaxAggregateInputType = {
@@ -32872,6 +32907,8 @@ export namespace Prisma {
     role?: true
     createdAt?: true
     userId?: true
+    parentId?: true
+    branchIndex?: true
   }
 
   export type MessageCountAggregateInputType = {
@@ -32882,6 +32919,8 @@ export namespace Prisma {
     createdAt?: true
     userId?: true
     metadata?: true
+    parentId?: true
+    branchIndex?: true
     _all?: true
   }
 
@@ -32923,6 +32962,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: MessageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: MessageMinAggregateInputType
@@ -32953,6 +33004,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: MessageCountAggregateInputType | true
+    _avg?: MessageAvgAggregateInputType
+    _sum?: MessageSumAggregateInputType
     _min?: MessageMinAggregateInputType
     _max?: MessageMaxAggregateInputType
   }
@@ -32965,7 +33018,11 @@ export namespace Prisma {
     createdAt: Date
     userId: string | null
     metadata: JsonValue | null
+    parentId: string | null
+    branchIndex: number
     _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
     _min: MessageMinAggregateOutputType | null
     _max: MessageMaxAggregateOutputType | null
   }
@@ -32992,8 +33049,12 @@ export namespace Prisma {
     createdAt?: boolean
     userId?: boolean
     metadata?: boolean
+    parentId?: boolean
+    branchIndex?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | Message$userArgs<ExtArgs>
+    parent?: boolean | Message$parentArgs<ExtArgs>
+    edits?: boolean | Message$editsArgs<ExtArgs>
     references?: boolean | Message$referencesArgs<ExtArgs>
     _count?: boolean | MessageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -33006,8 +33067,11 @@ export namespace Prisma {
     createdAt?: boolean
     userId?: boolean
     metadata?: boolean
+    parentId?: boolean
+    branchIndex?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | Message$userArgs<ExtArgs>
+    parent?: boolean | Message$parentArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
   export type MessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -33018,8 +33082,11 @@ export namespace Prisma {
     createdAt?: boolean
     userId?: boolean
     metadata?: boolean
+    parentId?: boolean
+    branchIndex?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | Message$userArgs<ExtArgs>
+    parent?: boolean | Message$parentArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
 
   export type MessageSelectScalar = {
@@ -33030,22 +33097,28 @@ export namespace Prisma {
     createdAt?: boolean
     userId?: boolean
     metadata?: boolean
+    parentId?: boolean
+    branchIndex?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "content" | "role" | "createdAt" | "userId" | "metadata", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversationId" | "content" | "role" | "createdAt" | "userId" | "metadata" | "parentId" | "branchIndex", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | Message$userArgs<ExtArgs>
+    parent?: boolean | Message$parentArgs<ExtArgs>
+    edits?: boolean | Message$editsArgs<ExtArgs>
     references?: boolean | Message$referencesArgs<ExtArgs>
     _count?: boolean | MessageCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | Message$userArgs<ExtArgs>
+    parent?: boolean | Message$parentArgs<ExtArgs>
   }
   export type MessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | Message$userArgs<ExtArgs>
+    parent?: boolean | Message$parentArgs<ExtArgs>
   }
 
   export type $MessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -33053,6 +33126,8 @@ export namespace Prisma {
     objects: {
       conversation: Prisma.$ConversationPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs> | null
+      parent: Prisma.$MessagePayload<ExtArgs> | null
+      edits: Prisma.$MessagePayload<ExtArgs>[]
       references: Prisma.$MessageReferencePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -33063,6 +33138,8 @@ export namespace Prisma {
       createdAt: Date
       userId: string | null
       metadata: Prisma.JsonValue | null
+      parentId: string | null
+      branchIndex: number
     }, ExtArgs["result"]["message"]>
     composites: {}
   }
@@ -33459,6 +33536,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     conversation<T extends ConversationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConversationDefaultArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     user<T extends Message$userArgs<ExtArgs> = {}>(args?: Subset<T, Message$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parent<T extends Message$parentArgs<ExtArgs> = {}>(args?: Subset<T, Message$parentArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    edits<T extends Message$editsArgs<ExtArgs> = {}>(args?: Subset<T, Message$editsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     references<T extends Message$referencesArgs<ExtArgs> = {}>(args?: Subset<T, Message$referencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReferencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -33496,6 +33575,8 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Message", 'DateTime'>
     readonly userId: FieldRef<"Message", 'String'>
     readonly metadata: FieldRef<"Message", 'Json'>
+    readonly parentId: FieldRef<"Message", 'String'>
+    readonly branchIndex: FieldRef<"Message", 'Int'>
   }
     
 
@@ -33908,6 +33989,49 @@ export namespace Prisma {
      */
     include?: UserInclude<ExtArgs> | null
     where?: UserWhereInput
+  }
+
+  /**
+   * Message.parent
+   */
+  export type Message$parentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+  }
+
+  /**
+   * Message.edits
+   */
+  export type Message$editsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    cursor?: MessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
   }
 
   /**
@@ -63078,7 +63202,9 @@ export namespace Prisma {
     role: 'role',
     createdAt: 'createdAt',
     userId: 'userId',
-    metadata: 'metadata'
+    metadata: 'metadata',
+    parentId: 'parentId',
+    branchIndex: 'branchIndex'
   };
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
@@ -65524,8 +65650,12 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Message"> | Date | string
     userId?: StringNullableFilter<"Message"> | string | null
     metadata?: JsonNullableFilter<"Message">
+    parentId?: StringNullableFilter<"Message"> | string | null
+    branchIndex?: IntFilter<"Message"> | number
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    parent?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
+    edits?: MessageListRelationFilter
     references?: MessageReferenceListRelationFilter
   }
 
@@ -65537,8 +65667,12 @@ export namespace Prisma {
     createdAt?: SortOrder
     userId?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
+    parentId?: SortOrderInput | SortOrder
+    branchIndex?: SortOrder
     conversation?: ConversationOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
+    parent?: MessageOrderByWithRelationInput
+    edits?: MessageOrderByRelationAggregateInput
     references?: MessageReferenceOrderByRelationAggregateInput
   }
 
@@ -65553,8 +65687,12 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Message"> | Date | string
     userId?: StringNullableFilter<"Message"> | string | null
     metadata?: JsonNullableFilter<"Message">
+    parentId?: StringNullableFilter<"Message"> | string | null
+    branchIndex?: IntFilter<"Message"> | number
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    parent?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
+    edits?: MessageListRelationFilter
     references?: MessageReferenceListRelationFilter
   }, "id">
 
@@ -65566,9 +65704,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     userId?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
+    parentId?: SortOrderInput | SortOrder
+    branchIndex?: SortOrder
     _count?: MessageCountOrderByAggregateInput
+    _avg?: MessageAvgOrderByAggregateInput
     _max?: MessageMaxOrderByAggregateInput
     _min?: MessageMinOrderByAggregateInput
+    _sum?: MessageSumOrderByAggregateInput
   }
 
   export type MessageScalarWhereWithAggregatesInput = {
@@ -65582,6 +65724,8 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
     userId?: StringNullableWithAggregatesFilter<"Message"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"Message">
+    parentId?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    branchIndex?: IntWithAggregatesFilter<"Message"> | number
   }
 
   export type MessageReferenceWhereInput = {
@@ -69495,8 +69639,11 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
     conversation: ConversationCreateNestedOneWithoutMessagesInput
     user?: UserCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutEditsInput
+    edits?: MessageCreateNestedManyWithoutParentInput
     references?: MessageReferenceCreateNestedManyWithoutMessageInput
   }
 
@@ -69508,6 +69655,9 @@ export namespace Prisma {
     createdAt?: Date | string
     userId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
+    edits?: MessageUncheckedCreateNestedManyWithoutParentInput
     references?: MessageReferenceUncheckedCreateNestedManyWithoutMessageInput
   }
 
@@ -69517,8 +69667,11 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
     user?: UserUpdateOneWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutEditsNestedInput
+    edits?: MessageUpdateManyWithoutParentNestedInput
     references?: MessageReferenceUpdateManyWithoutMessageNestedInput
   }
 
@@ -69530,6 +69683,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    edits?: MessageUncheckedUpdateManyWithoutParentNestedInput
     references?: MessageReferenceUncheckedUpdateManyWithoutMessageNestedInput
   }
 
@@ -69541,6 +69697,8 @@ export namespace Prisma {
     createdAt?: Date | string
     userId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
   }
 
   export type MessageUpdateManyMutationInput = {
@@ -69549,6 +69707,7 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
   }
 
   export type MessageUncheckedUpdateManyInput = {
@@ -69559,6 +69718,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
   }
 
   export type MessageReferenceCreateInput = {
@@ -73150,6 +73311,11 @@ export namespace Prisma {
     selectedTemplateId?: SortOrder
   }
 
+  export type MessageNullableScalarRelationFilter = {
+    is?: MessageWhereInput | null
+    isNot?: MessageWhereInput | null
+  }
+
   export type MessageCountOrderByAggregateInput = {
     id?: SortOrder
     conversationId?: SortOrder
@@ -73158,6 +73324,12 @@ export namespace Prisma {
     createdAt?: SortOrder
     userId?: SortOrder
     metadata?: SortOrder
+    parentId?: SortOrder
+    branchIndex?: SortOrder
+  }
+
+  export type MessageAvgOrderByAggregateInput = {
+    branchIndex?: SortOrder
   }
 
   export type MessageMaxOrderByAggregateInput = {
@@ -73167,6 +73339,8 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     userId?: SortOrder
+    parentId?: SortOrder
+    branchIndex?: SortOrder
   }
 
   export type MessageMinOrderByAggregateInput = {
@@ -73176,6 +73350,12 @@ export namespace Prisma {
     role?: SortOrder
     createdAt?: SortOrder
     userId?: SortOrder
+    parentId?: SortOrder
+    branchIndex?: SortOrder
+  }
+
+  export type MessageSumOrderByAggregateInput = {
+    branchIndex?: SortOrder
   }
 
   export type MessageScalarRelationFilter = {
@@ -77428,11 +77608,31 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type MessageCreateNestedOneWithoutEditsInput = {
+    create?: XOR<MessageCreateWithoutEditsInput, MessageUncheckedCreateWithoutEditsInput>
+    connectOrCreate?: MessageCreateOrConnectWithoutEditsInput
+    connect?: MessageWhereUniqueInput
+  }
+
+  export type MessageCreateNestedManyWithoutParentInput = {
+    create?: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput> | MessageCreateWithoutParentInput[] | MessageUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutParentInput | MessageCreateOrConnectWithoutParentInput[]
+    createMany?: MessageCreateManyParentInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
   export type MessageReferenceCreateNestedManyWithoutMessageInput = {
     create?: XOR<MessageReferenceCreateWithoutMessageInput, MessageReferenceUncheckedCreateWithoutMessageInput> | MessageReferenceCreateWithoutMessageInput[] | MessageReferenceUncheckedCreateWithoutMessageInput[]
     connectOrCreate?: MessageReferenceCreateOrConnectWithoutMessageInput | MessageReferenceCreateOrConnectWithoutMessageInput[]
     createMany?: MessageReferenceCreateManyMessageInputEnvelope
     connect?: MessageReferenceWhereUniqueInput | MessageReferenceWhereUniqueInput[]
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutParentInput = {
+    create?: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput> | MessageCreateWithoutParentInput[] | MessageUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutParentInput | MessageCreateOrConnectWithoutParentInput[]
+    createMany?: MessageCreateManyParentInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
   export type MessageReferenceUncheckedCreateNestedManyWithoutMessageInput = {
@@ -77460,6 +77660,30 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMessagesInput, UserUpdateWithoutMessagesInput>, UserUncheckedUpdateWithoutMessagesInput>
   }
 
+  export type MessageUpdateOneWithoutEditsNestedInput = {
+    create?: XOR<MessageCreateWithoutEditsInput, MessageUncheckedCreateWithoutEditsInput>
+    connectOrCreate?: MessageCreateOrConnectWithoutEditsInput
+    upsert?: MessageUpsertWithoutEditsInput
+    disconnect?: MessageWhereInput | boolean
+    delete?: MessageWhereInput | boolean
+    connect?: MessageWhereUniqueInput
+    update?: XOR<XOR<MessageUpdateToOneWithWhereWithoutEditsInput, MessageUpdateWithoutEditsInput>, MessageUncheckedUpdateWithoutEditsInput>
+  }
+
+  export type MessageUpdateManyWithoutParentNestedInput = {
+    create?: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput> | MessageCreateWithoutParentInput[] | MessageUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutParentInput | MessageCreateOrConnectWithoutParentInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutParentInput | MessageUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: MessageCreateManyParentInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutParentInput | MessageUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutParentInput | MessageUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
   export type MessageReferenceUpdateManyWithoutMessageNestedInput = {
     create?: XOR<MessageReferenceCreateWithoutMessageInput, MessageReferenceUncheckedCreateWithoutMessageInput> | MessageReferenceCreateWithoutMessageInput[] | MessageReferenceUncheckedCreateWithoutMessageInput[]
     connectOrCreate?: MessageReferenceCreateOrConnectWithoutMessageInput | MessageReferenceCreateOrConnectWithoutMessageInput[]
@@ -77472,6 +77696,20 @@ export namespace Prisma {
     update?: MessageReferenceUpdateWithWhereUniqueWithoutMessageInput | MessageReferenceUpdateWithWhereUniqueWithoutMessageInput[]
     updateMany?: MessageReferenceUpdateManyWithWhereWithoutMessageInput | MessageReferenceUpdateManyWithWhereWithoutMessageInput[]
     deleteMany?: MessageReferenceScalarWhereInput | MessageReferenceScalarWhereInput[]
+  }
+
+  export type MessageUncheckedUpdateManyWithoutParentNestedInput = {
+    create?: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput> | MessageCreateWithoutParentInput[] | MessageUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutParentInput | MessageCreateOrConnectWithoutParentInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutParentInput | MessageUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: MessageCreateManyParentInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutParentInput | MessageUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutParentInput | MessageUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
   export type MessageReferenceUncheckedUpdateManyWithoutMessageNestedInput = {
@@ -79526,7 +79764,10 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
     conversation: ConversationCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutEditsInput
+    edits?: MessageCreateNestedManyWithoutParentInput
     references?: MessageReferenceCreateNestedManyWithoutMessageInput
   }
 
@@ -79537,6 +79778,9 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
+    edits?: MessageUncheckedCreateNestedManyWithoutParentInput
     references?: MessageReferenceUncheckedCreateNestedManyWithoutMessageInput
   }
 
@@ -80456,6 +80700,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Message"> | Date | string
     userId?: StringNullableFilter<"Message"> | string | null
     metadata?: JsonNullableFilter<"Message">
+    parentId?: StringNullableFilter<"Message"> | string | null
+    branchIndex?: IntFilter<"Message"> | number
   }
 
   export type OrganizationUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -87395,7 +87641,10 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
     user?: UserCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutEditsInput
+    edits?: MessageCreateNestedManyWithoutParentInput
     references?: MessageReferenceCreateNestedManyWithoutMessageInput
   }
 
@@ -87406,6 +87655,9 @@ export namespace Prisma {
     createdAt?: Date | string
     userId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
+    edits?: MessageUncheckedCreateNestedManyWithoutParentInput
     references?: MessageReferenceUncheckedCreateNestedManyWithoutMessageInput
   }
 
@@ -87768,6 +88020,73 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutMessagesInput, UserUncheckedCreateWithoutMessagesInput>
   }
 
+  export type MessageCreateWithoutEditsInput = {
+    id?: string
+    content: string
+    role?: string
+    createdAt?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
+    conversation: ConversationCreateNestedOneWithoutMessagesInput
+    user?: UserCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutEditsInput
+    references?: MessageReferenceCreateNestedManyWithoutMessageInput
+  }
+
+  export type MessageUncheckedCreateWithoutEditsInput = {
+    id?: string
+    conversationId: string
+    content: string
+    role?: string
+    createdAt?: Date | string
+    userId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
+    references?: MessageReferenceUncheckedCreateNestedManyWithoutMessageInput
+  }
+
+  export type MessageCreateOrConnectWithoutEditsInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutEditsInput, MessageUncheckedCreateWithoutEditsInput>
+  }
+
+  export type MessageCreateWithoutParentInput = {
+    id?: string
+    content: string
+    role?: string
+    createdAt?: Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
+    conversation: ConversationCreateNestedOneWithoutMessagesInput
+    user?: UserCreateNestedOneWithoutMessagesInput
+    edits?: MessageCreateNestedManyWithoutParentInput
+    references?: MessageReferenceCreateNestedManyWithoutMessageInput
+  }
+
+  export type MessageUncheckedCreateWithoutParentInput = {
+    id?: string
+    conversationId: string
+    content: string
+    role?: string
+    createdAt?: Date | string
+    userId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
+    edits?: MessageUncheckedCreateNestedManyWithoutParentInput
+    references?: MessageReferenceUncheckedCreateNestedManyWithoutMessageInput
+  }
+
+  export type MessageCreateOrConnectWithoutParentInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput>
+  }
+
+  export type MessageCreateManyParentInputEnvelope = {
+    data: MessageCreateManyParentInput | MessageCreateManyParentInput[]
+    skipDuplicates?: boolean
+  }
+
   export type MessageReferenceCreateWithoutMessageInput = {
     id?: string
     text: string
@@ -87926,6 +88245,59 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type MessageUpsertWithoutEditsInput = {
+    update: XOR<MessageUpdateWithoutEditsInput, MessageUncheckedUpdateWithoutEditsInput>
+    create: XOR<MessageCreateWithoutEditsInput, MessageUncheckedCreateWithoutEditsInput>
+    where?: MessageWhereInput
+  }
+
+  export type MessageUpdateToOneWithWhereWithoutEditsInput = {
+    where?: MessageWhereInput
+    data: XOR<MessageUpdateWithoutEditsInput, MessageUncheckedUpdateWithoutEditsInput>
+  }
+
+  export type MessageUpdateWithoutEditsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
+    user?: UserUpdateOneWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutEditsNestedInput
+    references?: MessageReferenceUpdateManyWithoutMessageNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutEditsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    references?: MessageReferenceUncheckedUpdateManyWithoutMessageNestedInput
+  }
+
+  export type MessageUpsertWithWhereUniqueWithoutParentInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutParentInput, MessageUncheckedUpdateWithoutParentInput>
+    create: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutParentInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutParentInput, MessageUncheckedUpdateWithoutParentInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutParentInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutParentInput>
+  }
+
   export type MessageReferenceUpsertWithWhereUniqueWithoutMessageInput = {
     where: MessageReferenceWhereUniqueInput
     update: XOR<MessageReferenceUpdateWithoutMessageInput, MessageReferenceUncheckedUpdateWithoutMessageInput>
@@ -88005,8 +88377,11 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
     conversation: ConversationCreateNestedOneWithoutMessagesInput
     user?: UserCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutEditsInput
+    edits?: MessageCreateNestedManyWithoutParentInput
   }
 
   export type MessageUncheckedCreateWithoutReferencesInput = {
@@ -88017,6 +88392,9 @@ export namespace Prisma {
     createdAt?: Date | string
     userId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
+    edits?: MessageUncheckedCreateNestedManyWithoutParentInput
   }
 
   export type MessageCreateOrConnectWithoutReferencesInput = {
@@ -88104,8 +88482,11 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
     user?: UserUpdateOneWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutEditsNestedInput
+    edits?: MessageUpdateManyWithoutParentNestedInput
   }
 
   export type MessageUncheckedUpdateWithoutReferencesInput = {
@@ -88116,6 +88497,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    edits?: MessageUncheckedUpdateManyWithoutParentNestedInput
   }
 
   export type ProjectCreateWithoutEventsInput = {
@@ -92976,6 +93360,8 @@ export namespace Prisma {
     role?: string
     createdAt?: Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
   }
 
   export type OrganizationCreateManyOwnerInput = {
@@ -93470,7 +93856,10 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutEditsNestedInput
+    edits?: MessageUpdateManyWithoutParentNestedInput
     references?: MessageReferenceUpdateManyWithoutMessageNestedInput
   }
 
@@ -93481,6 +93870,9 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    edits?: MessageUncheckedUpdateManyWithoutParentNestedInput
     references?: MessageReferenceUncheckedUpdateManyWithoutMessageNestedInput
   }
 
@@ -93491,6 +93883,8 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrganizationUpdateWithoutOwnerInput = {
@@ -95541,6 +95935,8 @@ export namespace Prisma {
     createdAt?: Date | string
     userId?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: string | null
+    branchIndex?: number
   }
 
   export type SharedWorkspaceCreateManyConversationInput = {
@@ -95620,7 +96016,10 @@ export namespace Prisma {
     role?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
     user?: UserUpdateOneWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutEditsNestedInput
+    edits?: MessageUpdateManyWithoutParentNestedInput
     references?: MessageReferenceUpdateManyWithoutMessageNestedInput
   }
 
@@ -95631,6 +96030,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    edits?: MessageUncheckedUpdateManyWithoutParentNestedInput
     references?: MessageReferenceUncheckedUpdateManyWithoutMessageNestedInput
   }
 
@@ -95641,6 +96043,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    branchIndex?: IntFieldUpdateOperationsInput | number
   }
 
   export type SharedWorkspaceUpdateWithoutConversationInput = {
@@ -95689,12 +96093,60 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MessageCreateManyParentInput = {
+    id?: string
+    conversationId: string
+    content: string
+    role?: string
+    createdAt?: Date | string
+    userId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: number
+  }
+
   export type MessageReferenceCreateManyMessageInput = {
     id?: string
     documentId: string
     text: string
     page?: number | null
     createdAt?: Date | string
+  }
+
+  export type MessageUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
+    user?: UserUpdateOneWithoutMessagesNestedInput
+    edits?: MessageUpdateManyWithoutParentNestedInput
+    references?: MessageReferenceUpdateManyWithoutMessageNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
+    edits?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    references?: MessageReferenceUncheckedUpdateManyWithoutMessageNestedInput
+  }
+
+  export type MessageUncheckedUpdateManyWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    branchIndex?: IntFieldUpdateOperationsInput | number
   }
 
   export type MessageReferenceUpdateWithoutMessageInput = {

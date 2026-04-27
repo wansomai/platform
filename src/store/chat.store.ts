@@ -83,7 +83,7 @@ interface ChatState {
   fetchConversations: (projectId: string) => Promise<Conversation[]>;
   fetchConversation: (projectId: string) => Promise<Conversation | null>;
   createConversation: (projectId: string, title?: string, aiAssociateId?: string) => Promise<Conversation | null>;
-  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any, currentCanvasHtml?: string, attachedDocuments?: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }>) => Promise<void>;
+  sendMessage: (projectId: string, conversationId: string, content: string, userId: string | undefined, metadata: any, previewDocument?: any, currentCanvasHtml?: string, attachedDocuments?: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }>, editOf?: string) => Promise<void>;
   removeAssociateFromConversation: (projectId: string, conversationId: string) => Promise<boolean>;
   assignAssociateToConversation: (projectId: string, conversationId: string, associateId: string) => Promise<boolean>;
 
@@ -198,6 +198,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     };
   }),
+
   // API interactions
   fetchConversations: async (projectId) => {
     try {
@@ -346,8 +347,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
-  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument, currentCanvasHtml, attachedDocuments: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> | undefined = undefined) => {
+  sendMessage: async (projectId, conversationId, content, userId, metadata, previewDocument, currentCanvasHtml, attachedDocuments: Array<{ id: string, title: string, fileType: string, fileSize?: number, fileUrl?: string }> | undefined = undefined, editOf?: string) => {
     const isFirstMessage = !get().currentConversation?.messages?.length;
+
+    // For edits: remove the edited message and everything after it from local
+    // state immediately so the UI is clean before the optimistic message is added.
+    if (editOf) {
+      set(state => {
+        if (!state.currentConversation) return state;
+        const msgs = state.currentConversation.messages;
+        const idx = msgs.findIndex(m => m.id === editOf || m.tempId === editOf);
+        return {
+          currentConversation: {
+            ...state.currentConversation,
+            messages: idx >= 0 ? msgs.slice(0, idx) : msgs,
+          }
+        };
+      });
+    }
 
     const tempId = `temp-${Date.now()}`;
     const userMessage: Message = {
@@ -386,7 +403,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           previewDocument,
           currentCanvasHtml,
           activeCanvasId: activeCanvasId || undefined,
-          attachedDocuments
+          attachedDocuments,
+          ...(editOf && { editOf }),
         },
         (data) => {
           switch (data.type) {
@@ -410,8 +428,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 timestamp: new Date().toISOString(),
                 references: data.references,
                 webSearchSources: data.webSearchSources,
-                report: data.report, // Include report metadata if present
-                document: data.document, // Include inline document metadata if present
+                report: data.report,
+                document: data.document,
                 metadata: data.report || data.document
                   ? {
                     ...(data.report && { report: data.report }),
@@ -421,6 +439,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 suggestedAssociate: data.suggestedAssociate,
                 isStreaming: false
               });
+              // Replace the temp user message ID with the real DB ID so future
+              // edits reference the correct persisted message.
+              if (data.userMessageId) {
+                set(state => {
+                  if (!state.currentConversation) return state;
+                  return {
+                    currentConversation: {
+                      ...state.currentConversation,
+                      messages: state.currentConversation.messages.map(m =>
+                        m.id === tempId ? { ...m, id: data.userMessageId } : m
+                      )
+                    }
+                  };
+                });
+              }
               notifyResearchComplete(data.content, conversationId);
               break;
 
