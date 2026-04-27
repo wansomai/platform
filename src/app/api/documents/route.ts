@@ -336,6 +336,149 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // JSON path: file was already uploaded directly to Vercel Blob by the client.
+    // Only the metadata + blob URL are sent here — no file bytes in this request.
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      const {
+        blobUrl,
+        filename,
+        fileType,
+        fileSize,
+        description: jsonDescription = '',
+        folderId: jsonFolderId = null,
+        customTitle: jsonCustomTitle = null,
+      } = body;
+      const jsonOrgOverride = body.organizationId?.trim() || null;
+
+      if (!blobUrl || !filename) {
+        return NextResponse.json({ message: 'blobUrl and filename are required', error: true }, { status: 400 });
+      }
+      if (!ALLOWED_FILE_TYPES.includes(fileType)) {
+        return NextResponse.json({ message: 'File type not supported', error: true }, { status: 400 });
+      }
+      if (fileSize > FILE_UPLOAD_CONFIG.MAX_SIZE) {
+        return NextResponse.json(
+          { message: `File exceeds the ${FILE_UPLOAD_CONFIG.MAX_SIZE / 1024 / 1024}MB limit`, error: true },
+          { status: 400 }
+        );
+      }
+
+      // Org resolution
+      let jsonOrgId: string;
+      if (jsonOrgOverride) {
+        const u = await prisma.user.findUnique({ where: { id: userId }, select: { organizationId: true } });
+        const isPrimary = u?.organizationId === jsonOrgOverride;
+        if (!isPrimary) {
+          const membership = await prisma.userOrganization.findUnique({
+            where: { userId_organizationId: { userId, organizationId: jsonOrgOverride } },
+            select: { userId: true },
+          });
+          if (!membership) {
+            return NextResponse.json({ message: 'You are not a member of the requested organization', error: true }, { status: 403 });
+          }
+        }
+        jsonOrgId = jsonOrgOverride;
+      } else {
+        jsonOrgId = await getActiveOrganizationId(userId);
+      }
+
+      // Folder permission check
+      if (jsonFolderId) {
+        const folder = await prisma.folder.findUnique({
+          where: { id: jsonFolderId, organizationId: jsonOrgId },
+          include: { permissions: { select: { userId: true } } },
+        });
+        if (!folder) return NextResponse.json({ message: 'Folder not found', error: true }, { status: 404 });
+        const canUpload = folder.createdBy === userId || folder.permissions.some((p: any) => p.userId === userId);
+        if (!canUpload) return NextResponse.json({ message: 'You do not have permission to upload to this folder', error: true }, { status: 403 });
+      }
+
+      // Title and duplicate check
+      const jsonBaseName = filename.replace(/\.[^/.]+$/, '');
+      const jsonTitle = jsonCustomTitle || jsonBaseName;
+      const jsonConflict = await prisma.document.findFirst({
+        where: { organization_id: jsonOrgId, created_by: userId, title: { equals: jsonTitle, mode: 'insensitive' }, folderId: jsonFolderId || null, status: 'active' },
+        select: { id: true },
+      });
+      if (jsonConflict) {
+        const location = jsonFolderId ? 'this folder' : 'the root folder';
+        return NextResponse.json(
+          { message: `A document named "${jsonTitle}" already exists in ${location}.`, error: true, existingDocumentId: jsonConflict.id },
+          { status: 409 }
+        );
+      }
+
+      const jsonFileExt = (filename.split('.').pop() || '').toLowerCase();
+      const SUPPORTED_MIME_TYPES_FOR_EXTRACTION = new Set([
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel',
+        'text/csv', 'text/plain',
+        'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp',
+      ]);
+      const jsonExtractionAttempted = SUPPORTED_MIME_TYPES_FOR_EXTRACTION.has(fileType);
+
+      const jsonDoc = await prisma.document.create({
+        data: {
+          title: jsonTitle,
+          description: { String: jsonDescription, Valid: jsonDescription.length > 0 },
+          file_url: blobUrl,
+          file_type: jsonFileExt,
+          file_size: fileSize || 0,
+          status: 'active',
+          visibility: 'private',
+          created_by: userId,
+          organization_id: jsonOrgId,
+          folderId: jsonFolderId || null,
+          metadata: { RawMessage: JSON.stringify({ originalName: filename, mimeType: fileType }), Valid: true },
+          content_extracted: jsonExtractionAttempted ? { Bool: false, Valid: true } : Prisma.JsonNull,
+        },
+        include: { createdByUser: { select: { id: true, fullName: true } } },
+      });
+
+      if (jsonExtractionAttempted) {
+        after(async () => {
+          try {
+            const fileBuffer = await blobStorageService.downloadFile(blobUrl);
+            const extractedText = await extractTextFromFile(fileBuffer, fileType);
+            const ok = extractedText.trim().length > 0;
+            if (ok) {
+              await prisma.documentContent.create({ data: { documentId: jsonDoc.id, content: extractedText } });
+              await prisma.document.update({ where: { id: jsonDoc.id }, data: { content_extracted: { Bool: true, Valid: true } } });
+            } else {
+              await prisma.document.update({ where: { id: jsonDoc.id }, data: { content_extracted: Prisma.JsonNull } });
+            }
+          } catch (err) {
+            console.error('Background extraction failed for document', jsonDoc.id, err);
+            try { await prisma.document.update({ where: { id: jsonDoc.id }, data: { content_extracted: Prisma.JsonNull } }); } catch {}
+          }
+        });
+      }
+
+      return NextResponse.json({
+        status: 201,
+        message: 'Document uploaded successfully',
+        data: {
+          id: jsonDoc.id,
+          title: jsonDoc.title,
+          description: jsonDescription,
+          fileUrl: jsonDoc.file_url,
+          fileType: jsonDoc.file_type,
+          fileSize: jsonDoc.file_size,
+          createdBy: jsonDoc.createdByUser?.fullName || user?.fullName || 'Unknown',
+          createdById: jsonDoc.created_by,
+          createdAt: jsonDoc.created_at.toISOString(),
+          updatedAt: jsonDoc.updated_at.toISOString(),
+          contentExtracted: false,
+          visibility: 'private',
+        },
+      }, { status: 201 });
+    }
+
     // For multipart/form-data, need to use FormData
     const formData = await request.formData();
     const file = formData.get('file') as File;
