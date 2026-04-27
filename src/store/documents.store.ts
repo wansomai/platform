@@ -5,6 +5,7 @@ import { apiService } from '@/lib/api';
 import { Document, DocumentFilters } from '@/types/documents';
 import { ApiResponse, DocumentsState } from '@/types';
 import { API_CONSTANTS } from '@/lib/utils/constants';
+import { uploadDocumentClientSide } from '@/lib/uploadDocument';
 
 // Extend ApiResponse to include pagination for documents
 interface DocumentApiResponse<T> extends ApiResponse<T> {
@@ -168,21 +169,23 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
       
       uploadDocument: async (fileData: FormData, onProgress: ((progress: number) => void) | null = null) => {
         try {
-          // Check file size before uploading
           const file = fileData.get('file') as File;
-          
+
           if (file && file.size > API_CONSTANTS.MAX_FILE_SIZE) {
             const error = `File size exceeds ${Math.round(API_CONSTANTS.MAX_FILE_SIZE / (1024 * 1024))}MB limit. Please select a smaller file.`;
             set({ error, isLoading: false });
             throw new Error(error);
           }
-          
+
           set({ isLoading: true, error: null });
-          
-          // Use the upload method with progress tracking
-          const response = await apiService.upload<{status: number, message: string, data: Document}>('/api/documents', fileData, onProgress);
-          
-          const newDocument = response.data.data; // Extract the document from the data wrapper
+
+          const newDocument = await uploadDocumentClientSide(file, {
+            description: (fileData.get('description') as string) || '',
+            folderId: (fileData.get('folderId') as string) || null,
+            customTitle: (fileData.get('title') as string) || null,
+            organizationId: (fileData.get('organizationId') as string) || null,
+            onProgress,
+          });
           
           // Add the new document to the store immediately (filter first to avoid duplicate keys)
           set((state) => {

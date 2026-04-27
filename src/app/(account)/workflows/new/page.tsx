@@ -108,14 +108,10 @@ export default function CreateAssociatePage() {
   // Upload a single file immediately after selection. The server returns existingDocumentId
   // on a 409 conflict so we handle deduplication there rather than with a pre-flight GET.
   const uploadSingleFile = async (key: string, file: File) => {
-    const fd = new FormData();
-    fd.append('file', file);
-
     try {
-      const response = await apiService.upload<{ status: number; message: string; data: { id: string } }>(
-        '/api/documents', fd
-      );
-      const docId = response.data?.data?.id;
+      const { uploadDocumentClientSide } = await import('@/lib/uploadDocument');
+      const doc = await uploadDocumentClientSide(file, {});
+      const docId = doc.id;
       setSelectedFiles((prev) =>
         prev.map((f) => f.key === key ? { ...f, documentId: docId, isUploading: false } : f)
       );
