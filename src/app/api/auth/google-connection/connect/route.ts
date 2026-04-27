@@ -56,7 +56,10 @@ export async function GET(request: NextRequest) {
       scopes.push('https://www.googleapis.com/auth/calendar');
     }
 
-    // Gmail scopes not approved for standalone API access — Gmail integration gated behind Pro
+    if (type === 'gmail' || type === 'both') {
+      scopes.push('https://www.googleapis.com/auth/gmail.readonly');
+      scopes.push('https://www.googleapis.com/auth/gmail.compose');
+    }
 
     // Generate authorization URL
     const authUrl = oauth2Client.generateAuthUrl({
