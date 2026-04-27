@@ -456,21 +456,14 @@ export async function POST(request: NextRequest) {
     // Get file buffer
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // Upload to storage service — do this BEFORE creating the DB record so that
-    // a timeout or dropped connection during blob upload or text extraction never
-    // leaves a zombie Document row that blocks future retries with a 409.
+    // Upload to blob BEFORE creating the DB record so a dropped connection
+    // during upload never leaves a zombie Document row that blocks retries (409).
     const fileUrl = await blobStorageService.uploadFile(
       fileBuffer,
       fileName,
       file.type
     );
 
-    // Extract text content from the file buffer.
-    // We mark contentExtracted=true as long as extraction was ATTEMPTED for a
-    // supported file type — there is no background job running after this response
-    // returns, so leaving it false would cause the Vault to poll forever. If mammoth
-    // fails on a DOCX, on-demand extraction (tryExtractDocumentContentOnDemand) retries
-    // at chat time. For scanned PDFs/images the sentinel strings are stored as-is.
     const SUPPORTED_MIME_TYPES_FOR_EXTRACTION = new Set([
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -486,19 +479,11 @@ export async function POST(request: NextRequest) {
       'image/webp',
     ]);
     const extractionAttempted = SUPPORTED_MIME_TYPES_FOR_EXTRACTION.has(file.type);
-    let extractedText = '';
 
-    try {
-      extractedText = await extractTextFromFile(fileBuffer, file.type);
-    } catch (extractError) {
-      console.error('Error extracting text from file:', extractError);
-      // Continue without extracted text — on-demand extraction will run at chat time
-    }
-
-    // All async work is done — now create the DB record.
-    // Setting content_extracted correctly here means the vault never shows a
-    // misleading "processing" spinner for an upload that is already complete.
-    const extractionComplete = extractionAttempted && extractedText.trim().length > 0;
+    // Create the DB record immediately after the blob upload succeeds.
+    // content_extracted is set to { Bool: false, Valid: true } for extractable
+    // types so the Vault shows a "processing" spinner while text extraction runs
+    // in the background via after(). Non-extractable types get JsonNull (no spinner).
     const document = await prisma.document.create({
       data: {
         title: documentTitle,
@@ -522,7 +507,7 @@ export async function POST(request: NextRequest) {
           Valid: true
         },
         content_extracted: extractionAttempted
-          ? { Bool: extractionComplete, Valid: true }
+          ? { Bool: false, Valid: true }
           : Prisma.JsonNull,
       },
       include: {
@@ -535,27 +520,43 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // If text was extracted, store it (only when non-empty)
-    if (extractionComplete) {
-      try {
-        await prisma.documentContent.create({
-          data: {
-            documentId: document.id,
-            content: extractedText
-          }
-        });
-      } catch (err) {
-        console.error('Failed to store extracted text for document', document.id, err);
-        // Reset flag to null so the vault doesn't show the spinner forever
+    // Run text extraction after the response is sent so large files (dense PDFs,
+    // big DOCX) do not push the request past Vercel's function timeout.
+    // The Vault spinner resolves when content_extracted flips to true (or null on failure).
+    if (extractionAttempted) {
+      after(async () => {
         try {
-          await prisma.document.update({
-            where: { id: document.id },
-            data: { content_extracted: Prisma.JsonNull },
-          });
-        } catch (_) { /* best-effort */ }
-      }
+          const extractedText = await extractTextFromFile(fileBuffer, file.type);
+          const extractionComplete = extractedText.trim().length > 0;
+
+          if (extractionComplete) {
+            await prisma.documentContent.create({
+              data: { documentId: document.id, content: extractedText }
+            });
+            await prisma.document.update({
+              where: { id: document.id },
+              data: { content_extracted: { Bool: true, Valid: true } },
+            });
+          } else {
+            // Nothing extracted — clear the spinner
+            await prisma.document.update({
+              where: { id: document.id },
+              data: { content_extracted: Prisma.JsonNull },
+            });
+          }
+        } catch (extractError) {
+          console.error('Background text extraction failed for document', document.id, extractError);
+          // Clear the spinner so the Vault doesn't poll indefinitely
+          try {
+            await prisma.document.update({
+              where: { id: document.id },
+              data: { content_extracted: Prisma.JsonNull },
+            });
+          } catch (_) { /* best-effort */ }
+        }
+      });
     }
-    
+
     // Format response to match the expected Document interface
     const documentInfo = {
       id: document.id,
@@ -568,10 +569,10 @@ export async function POST(request: NextRequest) {
       createdById: document.created_by,
       createdAt: document.created_at.toISOString(),
       updatedAt: document.updated_at.toISOString(),
-      contentExtracted: extractionComplete,
+      contentExtracted: false,
       visibility: 'private'
     };
-    
+
     return NextResponse.json({
       status: 201,
       message: 'Document uploaded successfully',
