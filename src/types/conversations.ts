@@ -27,6 +27,8 @@ export interface Message {
   role: 'user' | 'assistant' | 'system';
   timestamp: string;
   userId?: string;
+  parentId?: string | null;
+  branchIndex?: number;
   // Optional data
   references?: MessageReference[];
   webSearchSources?: Array<{ title: string, uri: string }>;

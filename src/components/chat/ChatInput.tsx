@@ -1222,18 +1222,36 @@ export function ChatInput({
                         <Label className="font-medium text-sm flex items-center gap-1">
                           <img src={'/icons/gmail.svg'} className="w-6 h-6" /> Gmail
                         </Label>
-                        <Button
-                          onClick={() => setShowProAccess(true)}
-                          variant="ghost"
-                          size="sm"
-                          disabled={homepageMode}
-                          className="flex items-center gap-1 h-7 px-2"
-                        >
-                          {isConnecting ? "Connecting..." : "Connect"}
-                          <ArrowUpRightFromSquare className="h-3 w-3" />
-                        </Button>
+                        {googleConnectionStatus?.hasGmailAccess ? (
+                          <Switch
+                            id="gmail"
+                            checked={
+                              homepageMode
+                                ? false
+                                : settings.gmail || false
+                            }
+                            disabled={homepageMode || isLoadingSettings}
+                            onCheckedChange={
+                              homepageMode
+                                ? undefined
+                                : (checked) => {
+                                  handleSettingChange("gmail", checked);
+                                }
+                            }
+                          />
+                        ) : (
+                          <Button
+                            onClick={() => handleConnectGoogle("gmail")}
+                            variant="ghost"
+                            size="sm"
+                            disabled={homepageMode || isConnecting}
+                            className="flex items-center gap-1 h-7 px-2"
+                          >
+                            {isConnecting ? "Connecting..." : "Connect"}
+                            <ArrowUpRightFromSquare className="h-3 w-3" />
+                          </Button>
+                        )}
                       </div>
-
                     </div>
                     <div className="h-[1px] bg-gray-300 w-full"></div>
                     <div className="space-y-4">

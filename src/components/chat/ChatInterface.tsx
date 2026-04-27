@@ -13,7 +13,8 @@ import {
   X,
   FileText,
   ChevronDown,
-  Users
+  Users,
+  Pencil,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -36,6 +37,7 @@ import { ReportDownloadCard } from "./ReportDownloadCard"
 import { DocumentArtifact } from "./DocumentArtifact"
 import { Message, Jurisdiction } from "@/types"
 import { getJurisdictionById } from "@/lib/jurisdictions"
+
 
 const STATUS_TEXT: Record<string, string> = {
   started: "Securing your workspace...",
@@ -92,17 +94,20 @@ const PendingMessageState = () => (
 export function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [dismissedSuggestion, setDismissedSuggestion] = useState(false)
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
 
   // Get state from stores
   const { addToast } = useUIStore()
   const {
     currentConversation,
     error,
-    isLoading
+    isLoading,
+    sendMessage,
   } = useChatStore()
   const { currentProject } = useProjectStore()
   const { settings, suggestedJurisdiction, setJurisdiction } = useProjectSettingsStore()
   const { data: session } = useSession()
+  // session is also used as sessionData below
 
   const activeJurisdictions = (settings?.jurisdictions ?? [])
     .map(j => getJurisdictionById(j.id))
@@ -138,7 +143,24 @@ export function ChatInterface() {
       .catch(() => addToast({ message: 'Failed to copy to clipboard', type: 'error' }))
   }, [addToast])
 
-  const hasMessages = !!(currentConversation?.messages && currentConversation.messages.length > 0)
+  const messages = currentConversation?.messages ?? []
+  const hasMessages = messages.length > 0
+
+  const handleSendEdit = useCallback(async (originalMessageId: string, newContent: string) => {
+    if (!currentConversation || !newContent.trim()) return
+    setEditingMessageId(null)
+    await sendMessage(
+      currentConversation.projectId,
+      currentConversation.id,
+      newContent,
+      session?.user?.id as string | undefined,
+      {},
+      undefined,
+      undefined,
+      undefined,
+      originalMessageId
+    )
+  }, [currentConversation, sendMessage, session?.user?.id])
 
   return (
     <div className="flex flex-col h-full">
@@ -173,15 +195,19 @@ export function ChatInterface() {
             }
           `}</style>
           <div className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
-            {currentConversation.messages.map((message, index) => (
+            {currentConversation && messages.map((message, index) => (
               <ChatMessageItem
                 key={message.id || message.tempId || `temp-${message.timestamp}-${index}`}
                 message={message}
                 user={session?.user}
                 projectId={currentConversation.projectId}
                 associateName={currentConversation.aiAssociate?.name}
-                redirectedQuestion={getRedirectedQuestion(currentConversation.messages, index)}
+                redirectedQuestion={getRedirectedQuestion(messages, index)}
                 onCopy={() => copyMessageToClipboard(message.content)}
+                isEditing={editingMessageId === message.id}
+                onEditStart={() => setEditingMessageId(message.id)}
+                onEditCancel={() => setEditingMessageId(null)}
+                onEditSend={handleSendEdit}
               />
             ))}
             <div ref={messagesEndRef} />
@@ -286,21 +312,45 @@ const ChatMessageItem = React.memo(({
   projectId,
   associateName,
   redirectedQuestion,
-  onCopy
+  onCopy,
+  isEditing,
+  onEditStart,
+  onEditCancel,
+  onEditSend,
 }: {
   message: Message,
   user: any,
   projectId: string,
   associateName?: string,
   redirectedQuestion?: string,
-  onCopy: () => void
+  onCopy: () => void,
+  isEditing?: boolean,
+  onEditStart?: () => void,
+  onEditCancel?: () => void,
+  onEditSend?: (messageId: string, newContent: string) => void,
 }) => {
   const isUser = message.role === 'user';
   const pendingSuggestion = useCanvasStore(state => state.pendingSuggestion);
   const { setSelectedPreviewDocument } = useUIStore();
   const { documents: projectDocs } = useProjectDocumentsStore();
   const [copied, setCopied] = useState(false);
+  const [editDraft, setEditDraft] = useState(message.content);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Auto-resize textarea on edit open
+  useEffect(() => {
+    if (isEditing && editTextareaRef.current) {
+      setEditDraft(message.content);
+      const el = editTextareaRef.current;
+      // Setting height to '0' before reading scrollHeight forces an accurate
+      // layout reflow — 'auto' can return a stale cached value in some browsers.
+      el.style.height = '0';
+      el.style.height = el.scrollHeight + 'px';
+      el.focus();
+      el.selectionStart = el.selectionEnd = el.value.length;
+    }
+  }, [isEditing, message.content]);
 
   const handleCopy = useCallback(() => {
     onCopy();
@@ -323,7 +373,18 @@ const ChatMessageItem = React.memo(({
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`flex gap-2 sm:gap-3 max-w-[90%]  ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+      <div className={`flex items-start gap-2 sm:gap-3 ${isEditing && isUser ? "w-full" : "max-w-[90%]"} ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+
+        {/* Pencil edit button — always visible next to user messages */}
+        {isUser && !isStreaming && !message.isLoading && !isEditing && (
+          <button
+            className="self-center p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0"
+            onClick={onEditStart}
+            title="Edit message"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+        )}
 
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 text-xs sm:text-sm">
@@ -404,73 +465,112 @@ const ChatMessageItem = React.memo(({
             </div>
           )}
 
-          <div
-            className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-gray-900" : "bg-transparent"
-              }`}
-          >
-            {message.isLoading || isStreaming ? (
-              <div className="flex items-center">
-                {message.content ? (
-                  <div className="space-y-2">
-                    <MessageDisplay
-                      content={formattedContent}
+          {isEditing && isUser ? (
+            /* Inline textarea editor — replaces the bubble when editing */
+            <div className="w-full rounded-lg bg-gray-100 px-3 py-2 sm:py-3 text-gray-900">
+              <textarea
+                ref={editTextareaRef}
+                value={editDraft}
+                onChange={(e) => {
+                  setEditDraft(e.target.value);
+                  e.target.style.height = '0';
+                  e.target.style.height = e.target.scrollHeight + 'px';
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (editDraft.trim()) onEditSend?.(message.id, editDraft);
+                  }
+                  if (e.key === 'Escape') onEditCancel?.();
+                }}
+                className="w-full bg-transparent resize-none outline-none text-sm sm:text-base leading-relaxed overflow-hidden min-h-[2.5rem]"
+              />
+              <div className="flex flex-wrap justify-end gap-2 mt-2 pt-2 border-t border-gray-200">
+                <button
+                  onClick={onEditCancel}
+                  className="flex-shrink-0 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => onEditSend?.(message.id, editDraft)}
+                  disabled={!editDraft.trim() || editDraft.trim() === message.content.trim()}
+                  className="flex-shrink-0 px-4 py-2 sm:px-3 sm:py-1.5 text-sm sm:text-xs text-white bg-[#74C6B8] hover:bg-[#5ab5a7] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              className={`rounded-lg px-3 py-2 sm:py-3 overflow-hidden ${isUser ? "bg-gray-100 text-gray-900" : "bg-transparent"
+                }`}
+            >
+              {message.isLoading || isStreaming ? (
+                <div className="flex items-center">
+                  {message.content ? (
+                    <div className="space-y-2">
+                      <MessageDisplay
+                        content={formattedContent}
 
-                    />
-                    {isStreaming && (
-                      <div className="flex items-center gap-1">
-                        <LogoAnimation size="sm" className="text-gray-500" />
-                        <span className="text-xs text-gray-500 animate-pulse">
-                          {message.statusMessage || message.processingStatus || "Thinking..."}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center">
-                    {message.processingStatus && isCanvasProcessingStatus(message.processingStatus) ? (
-                      <CanvasProcessingStatus
-                        status={message.processingStatus}
-                        message={message.canvasMessage}
                       />
-                    ) : (
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center">
+                      {isStreaming && (
+                        <div className="flex items-center gap-1">
                           <LogoAnimation size="sm" className="text-gray-500" />
-                          <span className="animate-pulse ml-2">
-                            {getStatusText(message.processingStatus, message.statusMessage)}
+                          <span className="text-xs text-gray-500 animate-pulse">
+                            {message.statusMessage || message.processingStatus || "Thinking..."}
                           </span>
                         </div>
-                        {message.searchPreview && message.searchPreview.length > 0 && (
-                          <div className="mt-1 flex flex-col gap-1 border-l-2 border-blue-200 pl-3">
-                            {message.searchPreview.map((result, i) => (
-                              <div key={i} className="text-xs text-gray-600 leading-snug">
-                                <a
-                                  href={result.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="font-medium text-blue-700 hover:underline line-clamp-1"
-                                >
-                                  {result.title}
-                                </a>
-                                {result.date && (
-                                  <span className="ml-1 text-gray-400">{result.date}</span>
-                                )}
-                              </div>
-                            ))}
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center">
+                      {message.processingStatus && isCanvasProcessingStatus(message.processingStatus) ? (
+                        <CanvasProcessingStatus
+                          status={message.processingStatus}
+                          message={message.canvasMessage}
+                        />
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center">
+                            <LogoAnimation size="sm" className="text-gray-500" />
+                            <span className="animate-pulse ml-2">
+                              {getStatusText(message.processingStatus, message.statusMessage)}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <MessageDisplay
-                content={formattedContent}
+                          {message.searchPreview && message.searchPreview.length > 0 && (
+                            <div className="mt-1 flex flex-col gap-1 border-l-2 border-blue-200 pl-3">
+                              {message.searchPreview.map((result, i) => (
+                                <div key={i} className="text-xs text-gray-600 leading-snug">
+                                  <a
+                                    href={result.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium text-blue-700 hover:underline line-clamp-1"
+                                  >
+                                    {result.title}
+                                  </a>
+                                  {result.date && (
+                                    <span className="ml-1 text-gray-400">{result.date}</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <MessageDisplay
+                  content={formattedContent}
 
-              />
-            )}
-          </div>
+                />
+              )}
+            </div>
+          )}
+
           {!isUser && !message.isLoading && !isStreaming && (
             <div className="flex gap-1 mt-2">
               <Button

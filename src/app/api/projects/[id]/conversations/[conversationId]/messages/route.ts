@@ -224,6 +224,7 @@ const createMessageSchema = z.object({
   metadata: z.any().optional(),
   streamingId: z.string().optional(),
   attachedDocuments: z.any().optional(),
+  editOf: z.string().optional(), // ID of the original user message being edited (creates a branch)
 });
 
 // Encoder for streaming response
@@ -246,7 +247,7 @@ export async function POST(
 
     const { id: projectId, conversationId } = (await params);
     const body = await request.json();
-    const { content, previewDocument, currentCanvasHtml, activeCanvasId, attachedDocuments, metadata } = createMessageSchema.parse(body);
+    const { content, previewDocument, currentCanvasHtml, activeCanvasId, attachedDocuments, metadata, editOf } = createMessageSchema.parse(body);
 
     // Phase 1: Validate access and fetch context — do NOT create user message yet
     // Start associate tools fetch immediately (runs in parallel with all other Phase 1 queries)
@@ -283,17 +284,27 @@ export async function POST(
       }
     });
 
-    // Always get message history and metadata for proper context
-    const messageHistoryPromise = prisma.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: "desc" },
-      take: 10, // Increased from 6 — token savings from trimmed prompts offset this
-      select: {
-        role: true,
-        content: true,
-        metadata: true,
-      }
-    });
+    // Always get message history and metadata for proper context.
+    // When editing, fetch only messages before the original so the AI sees the
+    // correct context prefix (messages from that point onwards will be deleted).
+    const messageHistoryPromise = editOf
+      ? prisma.message.findUnique({ where: { id: editOf }, select: { createdAt: true } }).then(
+          async (originalMsg) => {
+            if (!originalMsg) return [];
+            return prisma.message.findMany({
+              where: { conversationId, createdAt: { lt: originalMsg.createdAt } },
+              orderBy: { createdAt: "desc" },
+              take: 10,
+              select: { role: true, content: true, metadata: true },
+            });
+          }
+        )
+      : prisma.message.findMany({
+          where: { conversationId },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+          select: { role: true, content: true, metadata: true },
+        });
 
     // Merged project query — includes organizationId for subscription check
     const projectPromise = prisma.project.findUnique({
@@ -400,6 +411,20 @@ export async function POST(
     let userMessageMetadata = metadata || {};
     if (attachedDocuments && attachedDocuments.length > 0) {
       userMessageMetadata.attachedDocuments = attachedDocuments;
+    }
+
+    // When editing: delete the original message and everything after it so only
+    // the new version survives. This keeps the DB clean and avoids branching.
+    if (editOf) {
+      const originalMsg = await prisma.message.findUnique({
+        where: { id: editOf },
+        select: { createdAt: true }
+      });
+      if (originalMsg) {
+        await prisma.message.deleteMany({
+          where: { conversationId, createdAt: { gte: originalMsg.createdAt } }
+        });
+      }
     }
 
     const userMessage = await prisma.message.create({
@@ -747,6 +772,7 @@ export async function POST(
                   content: formattedAssociateContent,
                   ...(finalSuggestion && { suggestedAssociate: finalSuggestion }),
                   ...(associateDocumentMetadata?.document && { document: associateDocumentMetadata.document }),
+                  userMessageId: userMessage.id,
                 }) + '\n'
               )
             );
@@ -2346,6 +2372,7 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
                 references: savedReferences,
                 report: messageMetadata.report,
                 document: messageMetadata.document,
+                userMessageId: userMessage.id,
               }) + '\n'
             )
           );

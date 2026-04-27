@@ -6,7 +6,8 @@ import { withAuth, withErrorHandler } from '@/lib/api/middleware';
 // Required scopes for Calendar and Gmail
 const REQUIRED_SCOPES = {
   calendar: 'https://www.googleapis.com/auth/calendar',
-  gmail: 'https://www.googleapis.com/auth/gmail.addons.current.message.readonly',
+  gmailRead: 'https://www.googleapis.com/auth/gmail.readonly',
+  gmailCompose: 'https://www.googleapis.com/auth/gmail.compose',
 };
 
 /**
@@ -48,8 +49,7 @@ export const GET = withErrorHandler(withAuth(async (
     // Check scopes
     const scopes = account.scope?.split(' ') || [];
     const hasCalendarAccess = scopes.includes(REQUIRED_SCOPES.calendar);
-    const hasGmailAccess = scopes.includes(REQUIRED_SCOPES.gmail) 
-                          
+    const hasGmailAccess = scopes.includes(REQUIRED_SCOPES.gmailRead) && scopes.includes(REQUIRED_SCOPES.gmailCompose);
 
     // Get user email from Google account
     const user = await prisma.user.findUnique({
@@ -59,7 +59,7 @@ export const GET = withErrorHandler(withAuth(async (
 
     return NextResponse.json({
     status: 200,
-    message: 'Folders retrieved successfully',
+    message: 'Google connection status retrieved successfully',
     data: {
       connected: true,
       email: user?.email || null,

@@ -297,6 +297,7 @@ The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/me
 - Streaming routes must export `export const maxDuration = 120;` (Vercel function timeout — the messages route uses 120s, not 60s, because tool calls and KB loading can take >60s)
 - The `withAuth`/`withProjectAccess` middleware wrappers cannot be used for streaming routes — use manual `getUserIdFromRequest()` auth instead
 - User message is created in DB **only after** validation passes (Phase 1 checks access, subscription, conversation existence; Phase 2 creates the message and opens the stream)
+- Post-stream fire-and-forget work (e.g. auto-title generation) uses Next.js `after()` from `next/server` so the task runs after the response is fully sent without blocking the stream
 
 #### Client-side streaming message pattern
 `chat.store.ts` manages optimistic streaming via a `tempId` lifecycle:
@@ -608,10 +609,10 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/payments/*` - Payment processing
 - `/api/subscription/*` - Subscription management
 - `/api/profile/*` - User profile operations
-- `/api/admin/*` - Admin-only: organization management, legal knowledge CRUD (`/api/admin/legal-knowledge/*`), and email broadcast (`/api/admin/email-broadcast`)
+- `/api/admin/*` - Admin-only: organization management, legal knowledge CRUD (`/api/admin/legal-knowledge/*`), email broadcast (`/api/admin/email-broadcast`), and user CSV export (`/api/admin/users/export?type=professional|personal` — downloads all users filtered by whether their email domain is a free consumer domain)
 - `/api/notifications` - `GET` active (unread, non-dismissed) notifications; `?history=true` returns read, non-dismissed ones; `PATCH /api/notifications/[id]/read` - mark read; `PATCH /api/notifications/[id]/dismiss` - marks dismissed+read (stays in DB for 30 days, then deleted by `/api/cron/notification-cleanup`)
 - `/api/support` - Authenticated POST; sends support ticket email to `law@wansom.ai`
-- `/api/user` - User account operations
+- `/api/user` - Empty placeholder directory; user account/profile operations are at `/api/profile`
 - `/api/digest/*` - Legal digest subscriptions
 - `/api/cron/*` - Cron job endpoints (legal digest generation)
 - `/api/dev/*` - Dev-only endpoints (e.g. `/api/dev/digest-preview` for testing digest without sending)
