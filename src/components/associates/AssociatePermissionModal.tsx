@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -162,7 +161,7 @@ export function AssociatePermissionModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-sm p-0 gap-0 overflow-hidden">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-sm p-0 gap-0 flex flex-col max-h-[calc(100dvh-2rem)] overflow-hidden">
         <DialogHeader className="px-5 pt-5 pb-4 border-b">
           <DialogTitle className="text-sm font-semibold text-muted-foreground truncate">
             Share AI Associate
@@ -204,7 +203,7 @@ export function AssociatePermissionModal({
           </div>
         </div>
 
-        <div className="max-h-[min(18rem,50vh)] overflow-y-auto divide-y">
+        <div className="flex-1 min-h-[6rem] overflow-y-auto divide-y">
           {loading ? (
             <SkeletonRows />
           ) : (
@@ -260,7 +259,7 @@ export function AssociatePermissionModal({
           )}
         </div>
 
-        <DialogFooter className="px-4 py-3 border-t bg-muted/30">
+        <div className="flex shrink-0 items-center justify-end gap-2 px-4 py-3 border-t bg-muted/30 flex-wrap">
           {!loading && !isOwner && (
             <p className="text-xs text-muted-foreground mr-auto">
               Only the associate owner can manage sharing.
@@ -275,7 +274,7 @@ export function AssociatePermissionModal({
               Done
             </Button>
           )}
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
