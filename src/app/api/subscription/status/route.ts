@@ -76,6 +76,13 @@ export const GET = withErrorHandler(
       org.trialExpiresAt != null &&
       org.trialExpiresAt > now;
 
+    // Detect active manually-granted access (bank-transfer customers)
+    const isActiveGrant =
+      !org.grantedExpired &&
+      org.grantedAt != null &&
+      org.grantedExpiresAt != null &&
+      org.grantedExpiresAt > now;
+
     // Trial ended without converting to a paid plan — signal the UI to prompt upgrade
     const trialJustExpired =
       org.trialExpired === true &&
@@ -160,6 +167,9 @@ export const GET = withErrorHandler(
       isManualTrial,
       trialExpiresAt: org.trialExpiresAt?.toISOString() ?? null,
       trialJustExpired: !!trialJustExpired,
+      isActiveGrant,
+      grantExpiresAt: org.grantedExpiresAt?.toISOString() ?? null,
+      grantedDuration: org.grantedDuration ?? null,
       isExplorerActive,
       explorerExpiredAt,
       associateCount,

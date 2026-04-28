@@ -11339,6 +11339,10 @@ export namespace Prisma {
     trialUpgradedAt: Date | null
     trialExpiresAt: Date | null
     trialExpired: boolean | null
+    grantedAt: Date | null
+    grantedExpiresAt: Date | null
+    grantedExpired: boolean | null
+    grantedDuration: string | null
   }
 
   export type OrganizationMaxAggregateOutputType = {
@@ -11362,6 +11366,10 @@ export namespace Prisma {
     trialUpgradedAt: Date | null
     trialExpiresAt: Date | null
     trialExpired: boolean | null
+    grantedAt: Date | null
+    grantedExpiresAt: Date | null
+    grantedExpired: boolean | null
+    grantedDuration: string | null
   }
 
   export type OrganizationCountAggregateOutputType = {
@@ -11388,6 +11396,10 @@ export namespace Prisma {
     trialUpgradedAt: number
     trialExpiresAt: number
     trialExpired: number
+    grantedAt: number
+    grantedExpiresAt: number
+    grantedExpired: number
+    grantedDuration: number
     _all: number
   }
 
@@ -11421,6 +11433,10 @@ export namespace Prisma {
     trialUpgradedAt?: true
     trialExpiresAt?: true
     trialExpired?: true
+    grantedAt?: true
+    grantedExpiresAt?: true
+    grantedExpired?: true
+    grantedDuration?: true
   }
 
   export type OrganizationMaxAggregateInputType = {
@@ -11444,6 +11460,10 @@ export namespace Prisma {
     trialUpgradedAt?: true
     trialExpiresAt?: true
     trialExpired?: true
+    grantedAt?: true
+    grantedExpiresAt?: true
+    grantedExpired?: true
+    grantedDuration?: true
   }
 
   export type OrganizationCountAggregateInputType = {
@@ -11470,6 +11490,10 @@ export namespace Prisma {
     trialUpgradedAt?: true
     trialExpiresAt?: true
     trialExpired?: true
+    grantedAt?: true
+    grantedExpiresAt?: true
+    grantedExpired?: true
+    grantedDuration?: true
     _all?: true
   }
 
@@ -11583,6 +11607,10 @@ export namespace Prisma {
     trialUpgradedAt: Date | null
     trialExpiresAt: Date | null
     trialExpired: boolean
+    grantedAt: Date | null
+    grantedExpiresAt: Date | null
+    grantedExpired: boolean
+    grantedDuration: string | null
     _count: OrganizationCountAggregateOutputType | null
     _avg: OrganizationAvgAggregateOutputType | null
     _sum: OrganizationSumAggregateOutputType | null
@@ -11628,6 +11656,10 @@ export namespace Prisma {
     trialUpgradedAt?: boolean
     trialExpiresAt?: boolean
     trialExpired?: boolean
+    grantedAt?: boolean
+    grantedExpiresAt?: boolean
+    grantedExpired?: boolean
+    grantedDuration?: boolean
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
     Folder?: boolean | Organization$FolderArgs<ExtArgs>
@@ -11669,6 +11701,10 @@ export namespace Prisma {
     trialUpgradedAt?: boolean
     trialExpiresAt?: boolean
     trialExpired?: boolean
+    grantedAt?: boolean
+    grantedExpiresAt?: boolean
+    grantedExpired?: boolean
+    grantedDuration?: boolean
     owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -11696,6 +11732,10 @@ export namespace Prisma {
     trialUpgradedAt?: boolean
     trialExpiresAt?: boolean
     trialExpired?: boolean
+    grantedAt?: boolean
+    grantedExpiresAt?: boolean
+    grantedExpired?: boolean
+    grantedDuration?: boolean
     owner?: boolean | Organization$ownerArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -11723,9 +11763,13 @@ export namespace Prisma {
     trialUpgradedAt?: boolean
     trialExpiresAt?: boolean
     trialExpired?: boolean
+    grantedAt?: boolean
+    grantedExpiresAt?: boolean
+    grantedExpired?: boolean
+    grantedDuration?: boolean
   }
 
-  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "ownerId" | "upgradeRequestToken" | "upgradeRequestedAt" | "trialUpgradedAt" | "trialExpiresAt" | "trialExpired", ExtArgs["result"]["organization"]>
+  export type OrganizationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "contactEmail" | "contactPhone" | "currentWebsite" | "firmSize" | "firmStory" | "linkedinUrl" | "onboardingCompleted" | "practiceAreas" | "primaryLocation" | "profileStatus" | "serviceAreas" | "yearsInPractice" | "accountType" | "ownerId" | "upgradeRequestToken" | "upgradeRequestedAt" | "trialUpgradedAt" | "trialExpiresAt" | "trialExpired" | "grantedAt" | "grantedExpiresAt" | "grantedExpired" | "grantedDuration", ExtArgs["result"]["organization"]>
   export type OrganizationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     aiAssociates?: boolean | Organization$aiAssociatesArgs<ExtArgs>
     documents?: boolean | Organization$documentsArgs<ExtArgs>
@@ -11792,6 +11836,10 @@ export namespace Prisma {
       trialUpgradedAt: Date | null
       trialExpiresAt: Date | null
       trialExpired: boolean
+      grantedAt: Date | null
+      grantedExpiresAt: Date | null
+      grantedExpired: boolean
+      grantedDuration: string | null
     }, ExtArgs["result"]["organization"]>
     composites: {}
   }
@@ -12252,6 +12300,10 @@ export namespace Prisma {
     readonly trialUpgradedAt: FieldRef<"Organization", 'DateTime'>
     readonly trialExpiresAt: FieldRef<"Organization", 'DateTime'>
     readonly trialExpired: FieldRef<"Organization", 'Boolean'>
+    readonly grantedAt: FieldRef<"Organization", 'DateTime'>
+    readonly grantedExpiresAt: FieldRef<"Organization", 'DateTime'>
+    readonly grantedExpired: FieldRef<"Organization", 'Boolean'>
+    readonly grantedDuration: FieldRef<"Organization", 'String'>
   }
     
 
@@ -62950,7 +63002,11 @@ export namespace Prisma {
     upgradeRequestedAt: 'upgradeRequestedAt',
     trialUpgradedAt: 'trialUpgradedAt',
     trialExpiresAt: 'trialExpiresAt',
-    trialExpired: 'trialExpired'
+    trialExpired: 'trialExpired',
+    grantedAt: 'grantedAt',
+    grantedExpiresAt: 'grantedExpiresAt',
+    grantedExpired: 'grantedExpired',
+    grantedDuration: 'grantedDuration'
   };
 
   export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -64141,6 +64197,10 @@ export namespace Prisma {
     trialUpgradedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     trialExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     trialExpired?: BoolFilter<"Organization"> | boolean
+    grantedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    grantedExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    grantedExpired?: BoolFilter<"Organization"> | boolean
+    grantedDuration?: StringNullableFilter<"Organization"> | string | null
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
@@ -64181,6 +64241,10 @@ export namespace Prisma {
     trialUpgradedAt?: SortOrderInput | SortOrder
     trialExpiresAt?: SortOrderInput | SortOrder
     trialExpired?: SortOrder
+    grantedAt?: SortOrderInput | SortOrder
+    grantedExpiresAt?: SortOrderInput | SortOrder
+    grantedExpired?: SortOrder
+    grantedDuration?: SortOrderInput | SortOrder
     aiAssociates?: AIAssociateOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
     Folder?: FolderOrderByRelationAggregateInput
@@ -64224,6 +64288,10 @@ export namespace Prisma {
     trialUpgradedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     trialExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     trialExpired?: BoolFilter<"Organization"> | boolean
+    grantedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    grantedExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    grantedExpired?: BoolFilter<"Organization"> | boolean
+    grantedDuration?: StringNullableFilter<"Organization"> | string | null
     aiAssociates?: AIAssociateListRelationFilter
     documents?: DocumentListRelationFilter
     Folder?: FolderListRelationFilter
@@ -64264,6 +64332,10 @@ export namespace Prisma {
     trialUpgradedAt?: SortOrderInput | SortOrder
     trialExpiresAt?: SortOrderInput | SortOrder
     trialExpired?: SortOrder
+    grantedAt?: SortOrderInput | SortOrder
+    grantedExpiresAt?: SortOrderInput | SortOrder
+    grantedExpired?: SortOrder
+    grantedDuration?: SortOrderInput | SortOrder
     _count?: OrganizationCountOrderByAggregateInput
     _avg?: OrganizationAvgOrderByAggregateInput
     _max?: OrganizationMaxOrderByAggregateInput
@@ -64298,6 +64370,10 @@ export namespace Prisma {
     trialUpgradedAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
     trialExpiresAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
     trialExpired?: BoolWithAggregatesFilter<"Organization"> | boolean
+    grantedAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    grantedExpiresAt?: DateTimeNullableWithAggregatesFilter<"Organization"> | Date | string | null
+    grantedExpired?: BoolWithAggregatesFilter<"Organization"> | boolean
+    grantedDuration?: StringNullableWithAggregatesFilter<"Organization"> | string | null
   }
 
   export type ContentWhereInput = {
@@ -68030,6 +68106,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -68070,6 +68150,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -68108,6 +68192,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -68148,6 +68236,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -68187,6 +68279,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
   }
 
   export type OrganizationUpdateManyMutationInput = {
@@ -68212,6 +68308,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OrganizationUncheckedUpdateManyInput = {
@@ -68238,6 +68338,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContentCreateInput = {
@@ -72385,6 +72489,10 @@ export namespace Prisma {
     trialUpgradedAt?: SortOrder
     trialExpiresAt?: SortOrder
     trialExpired?: SortOrder
+    grantedAt?: SortOrder
+    grantedExpiresAt?: SortOrder
+    grantedExpired?: SortOrder
+    grantedDuration?: SortOrder
   }
 
   export type OrganizationAvgOrderByAggregateInput = {
@@ -72412,6 +72520,10 @@ export namespace Prisma {
     trialUpgradedAt?: SortOrder
     trialExpiresAt?: SortOrder
     trialExpired?: SortOrder
+    grantedAt?: SortOrder
+    grantedExpiresAt?: SortOrder
+    grantedExpired?: SortOrder
+    grantedDuration?: SortOrder
   }
 
   export type OrganizationMinOrderByAggregateInput = {
@@ -72435,6 +72547,10 @@ export namespace Prisma {
     trialUpgradedAt?: SortOrder
     trialExpiresAt?: SortOrder
     trialExpired?: SortOrder
+    grantedAt?: SortOrder
+    grantedExpiresAt?: SortOrder
+    grantedExpired?: SortOrder
+    grantedDuration?: SortOrder
   }
 
   export type OrganizationSumOrderByAggregateInput = {
@@ -79817,6 +79933,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -79855,6 +79975,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -80071,6 +80195,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -80110,6 +80238,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -80152,6 +80284,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -80191,6 +80327,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -80747,6 +80887,10 @@ export namespace Prisma {
     trialUpgradedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     trialExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
     trialExpired?: BoolFilter<"Organization"> | boolean
+    grantedAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    grantedExpiresAt?: DateTimeNullableFilter<"Organization"> | Date | string | null
+    grantedExpired?: BoolFilter<"Organization"> | boolean
+    grantedDuration?: StringNullableFilter<"Organization"> | string | null
   }
 
   export type ProjectDocumentUpsertWithWhereUniqueWithoutUserInput = {
@@ -80954,6 +81098,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -80993,6 +81141,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -81041,6 +81193,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -81080,6 +81236,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -82392,6 +82552,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -82431,6 +82595,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -82510,6 +82678,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -82549,6 +82721,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -82752,6 +82928,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -82791,6 +82971,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -82876,6 +83060,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -82915,6 +83103,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -83040,6 +83232,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -83079,6 +83275,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -83132,6 +83332,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -83171,6 +83375,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -83208,6 +83416,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -83247,6 +83459,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -83385,6 +83601,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -83424,6 +83644,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -83771,6 +83995,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -83810,6 +84038,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -84120,6 +84352,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -84159,6 +84395,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -84679,6 +84919,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -84718,6 +84962,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -85103,6 +85351,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -85142,6 +85394,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -85518,6 +85774,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -85557,6 +85817,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -85806,6 +86070,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -85845,6 +86113,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -88802,6 +89074,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -88841,6 +89117,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -89030,6 +89310,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -89069,6 +89353,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -90742,6 +91030,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationCreateNestedManyWithoutOrganizationInput
@@ -90781,6 +91073,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
@@ -91051,6 +91347,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
@@ -91090,6 +91390,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
     invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -92148,6 +92452,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -92187,6 +92495,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -92353,6 +92665,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -92392,6 +92708,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -92924,6 +93244,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateCreateNestedManyWithoutOrganizationInput
     documents?: DocumentCreateNestedManyWithoutOrganizationInput
     Folder?: FolderCreateNestedManyWithoutOrganizationInput
@@ -92963,6 +93287,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
     aiAssociates?: AIAssociateUncheckedCreateNestedManyWithoutOrganizationInput
     documents?: DocumentUncheckedCreateNestedManyWithoutOrganizationInput
     Folder?: FolderUncheckedCreateNestedManyWithoutOrganizationInput
@@ -93016,6 +93344,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -93055,6 +93387,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -93387,6 +93723,10 @@ export namespace Prisma {
     trialUpgradedAt?: Date | string | null
     trialExpiresAt?: Date | string | null
     trialExpired?: boolean
+    grantedAt?: Date | string | null
+    grantedExpiresAt?: Date | string | null
+    grantedExpired?: boolean
+    grantedDuration?: string | null
   }
 
   export type ProjectDocumentCreateManyUserInput = {
@@ -93910,6 +94250,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUpdateManyWithoutOrganizationNestedInput
@@ -93948,6 +94292,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
     aiAssociates?: AIAssociateUncheckedUpdateManyWithoutOrganizationNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOrganizationNestedInput
     Folder?: FolderUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -93986,6 +94334,10 @@ export namespace Prisma {
     trialUpgradedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     trialExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grantedExpired?: BoolFieldUpdateOperationsInput | boolean
+    grantedDuration?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectDocumentUpdateWithoutUserInput = {

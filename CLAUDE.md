@@ -83,14 +83,19 @@ Organization
 - Associate executor (`src/lib/associateExecutor.ts`) runs a bounded agentic loop capped at `MAX_ITERATIONS = 5` — it invokes Gemini with the associate's tools until the model stops calling functions or the limit is reached
 - Available tools registry: `src/lib/constants/associateToolDefaults.ts` contains `ASSOCIATE_AVAILABLE_TOOLS` (name → label map for all assignable tools) and `DEFAULT_TOOLS_BY_PRACTICE_AREA` (pre-selected tools per `PracticeArea` — no Gemini call required)
 - Google OAuth client factory: `getGoogleOAuthClient(userId)` in `src/lib/googleOAuth.ts` retrieves stored NextAuth tokens from the `Account` table and returns an authenticated `googleapis` OAuth2 client; returns `null` if the user has no linked Google account
+- Google connection initiation: `POST /api/auth/google-connection/connect` accepts a `type` query param (`gmail`, `calendar`, or `both`) to request the appropriate OAuth scopes. `GET /api/auth/google-connection/status` checks for both `gmail.readonly` and `gmail.compose` scopes to report Gmail connectivity.
 
 #### 5. Document Processing Pipeline
-- Upload → Vercel Blob Storage
-- Text extraction on upload:
-  - PDFs: `pdf-parse` library
-  - DOCX: `mammoth` library
-  - Excel: `xlsx` library
-  - CSV: `csv-parse` library
+
+**Two-path upload flow** (preferred path is the client-side direct upload):
+1. **Client-side direct upload** (new, preferred): browser calls `POST /api/documents/upload-token` to get a one-time Vercel Blob token, then uploads the file directly to Blob (bypassing the serverless function body size limit), then calls `POST /api/documents` with a JSON body containing `{ blobUrl, filename, fileType, fileSize, ... }` to register the DB record. Use `uploadDocumentClientSide()` from `src/lib/uploadDocument.ts` to perform both steps.
+2. **Multipart form-data upload** (legacy): `POST /api/documents` with `multipart/form-data`; the serverless function reads the file bytes, uploads to Blob, and creates the DB record synchronously. Still works but not preferred for large files.
+
+After either path, text extraction runs via Next.js `after()` (fire-and-forget):
+- PDFs: `pdf-parse` library
+- DOCX: `mammoth` library
+- Excel: `xlsx` library
+- CSV: `csv-parse` library
 - Extracted text stored in `DocumentContent` table (separate from `Document` to avoid loading large text unnecessarily)
 - Scanned PDFs/images that could not be text-extracted are stored with sentinel strings in `DocumentContent.content`:
   - `"[SCANNED_PDF_REQUIRES_PROCESSING]"` — scanned PDF, sent to Gemini vision API at chat time
@@ -297,6 +302,7 @@ The messages route (`src/app/api/projects/[id]/conversations/[conversationId]/me
 - Streaming routes must export `export const maxDuration = 120;` (Vercel function timeout — the messages route uses 120s, not 60s, because tool calls and KB loading can take >60s)
 - The `withAuth`/`withProjectAccess` middleware wrappers cannot be used for streaming routes — use manual `getUserIdFromRequest()` auth instead
 - User message is created in DB **only after** validation passes (Phase 1 checks access, subscription, conversation existence; Phase 2 creates the message and opens the stream)
+- **Message editing**: pass `editOf: <messageId>` in the POST body to edit an existing user message. The route deletes the original message and all subsequent messages in the conversation, then re-runs the AI on the edited content. This is a full delete-and-rewrite — not branching (the `Message.parentId` / `branchIndex` schema fields exist but are not used by the current implementation).
 - Post-stream fire-and-forget work (e.g. auto-title generation) uses Next.js `after()` from `next/server` so the task runs after the response is fully sent without blocking the stream
 
 #### Client-side streaming message pattern
@@ -602,7 +608,7 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/auth/*` - Authentication (NextAuth, login, register, password reset, Google connection)
 - `/api/projects/[id]/*` - Project-scoped operations (conversations, documents, members, associates, canvas, settings, instructions)
 - `/api/organization/*` - Organization management (members, invitations, switching)
-- `/api/documents/*` - Vault/organization-level document operations
+- `/api/documents/*` - Vault/organization-level document operations; `/api/documents/upload-token` issues one-time Vercel Blob client upload tokens (used by the two-step client-side upload flow)
 - `/api/folders/*` - Folder hierarchy for documents
 - `/api/associates/*` - AI associate CRUD
 - `/api/workspace/[id]/*` - Shared workspace settings, member management, and visibility controls

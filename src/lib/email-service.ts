@@ -1800,3 +1800,160 @@ export function sendTrialStartEmail(
     html,
   });
 }
+
+/**
+ * Sent when an admin manually grants time-limited Pro access (bank-transfer customers).
+ */
+export function sendGrantAccessEmail(
+  user: { email: string; fullName?: string | null },
+  orgName: string,
+  grantedDuration: string,
+  grantedExpiresAt: Date
+) {
+  const name = user.fullName || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const expiryDateStr = grantedExpiresAt.toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+  });
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #0a4b5e; padding: 20px; text-align: center; }
+        .header img { max-width: 200px; height: auto; }
+        .content { padding: 20px; }
+        .footer { background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666666; }
+        h1 { color: #0a4b5e; margin-top: 0; }
+        .button { display: inline-block; background-color: #0a4b5e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; margin-top: 10px; font-weight: 600; }
+        .info-box { background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 15px; margin: 20px 0; }
+        .expiry-box { background-color: #fff8e1; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; }
+        .feature { margin-bottom: 10px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
+        </div>
+        <div class="content">
+          <h1>Pro Access Activated, ${name}!</h1>
+
+          <p>You have been granted <strong>${grantedDuration}</strong> of Pro access for <strong>${orgName}</strong>. Enjoy your experience.</p>
+
+          <p>In case of anything, reach out to our support team via the support icon inside the platform.</p>
+
+          <div class="expiry-box">
+            <strong>⏳ Your access expires on ${expiryDateStr}.</strong>
+          </div>
+
+          <p><strong>Here's what you can do with Pro access:</strong></p>
+
+          <div class="feature">✅ &nbsp;Unlimited client/matter workspaces</div>
+          <div class="feature">✅ &nbsp;Unlimited AI responses</div>
+          <div class="feature">✅ &nbsp;Draft &amp; review unlimited contracts</div>
+          <div class="feature">✅ &nbsp;Multi-jurisdiction legal research</div>
+          <div class="feature">✅ &nbsp;AI Associates &amp; custom workflows</div>
+          <div class="feature">✅ &nbsp;Google Calendar &amp; Email integrations</div>
+
+          <p style="margin-top: 24px;">
+            <a href="${appUrl}/dashboard" class="button">Go to My Workspace</a>
+          </p>
+
+          <p>Best regards,<br>The Wansom Team</p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
+          <div>
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because your organization was granted Pro access on Wansom AI.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: user.email,
+    subject: `You have been granted ${grantedDuration} of Pro access on Wansom AI`,
+    html,
+  });
+}
+
+/**
+ * Sent when a manually-granted access window expires.
+ */
+export function sendGrantExpiryEmail(
+  user: { email: string; fullName?: string | null },
+  orgName: string,
+  grantedDuration: string
+) {
+  const name = user.fullName || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #0a4b5e; padding: 20px; text-align: center; }
+        .header img { max-width: 200px; height: auto; }
+        .content { padding: 20px; }
+        .footer { background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #666666; }
+        h1 { color: #0a4b5e; margin-top: 0; }
+        .button { display: inline-block; background-color: #0a4b5e; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; margin-top: 10px; font-weight: 600; }
+        .info-box { background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 15px; margin: 20px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom Logo">
+        </div>
+        <div class="content">
+          <h1>Your Pro access has ended, ${name}</h1>
+
+          <p>Your <strong>${grantedDuration}</strong> Pro access for <strong>${orgName}</strong> has expired. Your account has been returned to the free plan.</p>
+
+          <p>All your documents, projects, and conversation history are safe and untouched.</p>
+
+          <div class="info-box">
+            To continue enjoying unlimited AI responses, AI Associates, and all Pro features, upgrade to a paid plan or contact support via the support icon inside the platform.
+          </div>
+
+          <p style="margin-top: 24px;">
+            <a href="${appUrl}/profile" class="button">Upgrade to Pro</a>
+          </p>
+
+          <p>Best regards,<br>The Wansom Team</p>
+        </div>
+        <div class="footer">
+          <p>© 2025 Wansom AI Ltd. All rights reserved.</p>
+          <div>
+            <a href="https://x.com/wansom_ai">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai">LinkedIn</a>
+          </div>
+          <p>You're receiving this email because your Pro access on Wansom AI has ended.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: user.email,
+    subject: 'Your Wansom AI Pro access has ended',
+    html,
+  });
+}

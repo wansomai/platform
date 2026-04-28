@@ -54,6 +54,10 @@ export const GET = withErrorHandler(
           contactPhone: true,
           createdAt: true,
           updatedAt: true,
+          grantedAt: true,
+          grantedExpiresAt: true,
+          grantedExpired: true,
+          grantedDuration: true,
           owner: {
             select: {
               id: true,
@@ -116,6 +120,10 @@ export const GET = withErrorHandler(
         projectCount: org._count.projects,
         createdAt: org.createdAt.toISOString(),
         updatedAt: org.updatedAt.toISOString(),
+        grantedAt: org.grantedAt?.toISOString() ?? null,
+        grantedExpiresAt: org.grantedExpiresAt?.toISOString() ?? null,
+        grantedExpired: org.grantedExpired,
+        grantedDuration: org.grantedDuration ?? null,
       };
     });
 
