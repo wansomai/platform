@@ -9463,6 +9463,10 @@ export namespace Prisma {
     emailVerificationToken: string | null
     emailVerificationExpires: Date | null
     authProvider: string | null
+    onboardingEmail1hSentAt: Date | null
+    onboardingEmail10hSentAt: Date | null
+    onboardingEmail24hSentAt: Date | null
+    onboardingEmail3dSentAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -9481,6 +9485,10 @@ export namespace Prisma {
     emailVerificationToken: string | null
     emailVerificationExpires: Date | null
     authProvider: string | null
+    onboardingEmail1hSentAt: Date | null
+    onboardingEmail10hSentAt: Date | null
+    onboardingEmail24hSentAt: Date | null
+    onboardingEmail3dSentAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -9499,6 +9507,10 @@ export namespace Prisma {
     emailVerificationToken: number
     emailVerificationExpires: number
     authProvider: number
+    onboardingEmail1hSentAt: number
+    onboardingEmail10hSentAt: number
+    onboardingEmail24hSentAt: number
+    onboardingEmail3dSentAt: number
     _all: number
   }
 
@@ -9519,6 +9531,10 @@ export namespace Prisma {
     emailVerificationToken?: true
     emailVerificationExpires?: true
     authProvider?: true
+    onboardingEmail1hSentAt?: true
+    onboardingEmail10hSentAt?: true
+    onboardingEmail24hSentAt?: true
+    onboardingEmail3dSentAt?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -9537,6 +9553,10 @@ export namespace Prisma {
     emailVerificationToken?: true
     emailVerificationExpires?: true
     authProvider?: true
+    onboardingEmail1hSentAt?: true
+    onboardingEmail10hSentAt?: true
+    onboardingEmail24hSentAt?: true
+    onboardingEmail3dSentAt?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -9555,6 +9575,10 @@ export namespace Prisma {
     emailVerificationToken?: true
     emailVerificationExpires?: true
     authProvider?: true
+    onboardingEmail1hSentAt?: true
+    onboardingEmail10hSentAt?: true
+    onboardingEmail24hSentAt?: true
+    onboardingEmail3dSentAt?: true
     _all?: true
   }
 
@@ -9646,6 +9670,10 @@ export namespace Prisma {
     emailVerificationToken: string | null
     emailVerificationExpires: Date | null
     authProvider: string
+    onboardingEmail1hSentAt: Date | null
+    onboardingEmail10hSentAt: Date | null
+    onboardingEmail24hSentAt: Date | null
+    onboardingEmail3dSentAt: Date | null
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -9681,6 +9709,10 @@ export namespace Prisma {
     emailVerificationToken?: boolean
     emailVerificationExpires?: boolean
     authProvider?: boolean
+    onboardingEmail1hSentAt?: boolean
+    onboardingEmail10hSentAt?: boolean
+    onboardingEmail24hSentAt?: boolean
+    onboardingEmail3dSentAt?: boolean
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
     associateShares?: boolean | User$associateSharesArgs<ExtArgs>
     associateSharesGranted?: boolean | User$associateSharesGrantedArgs<ExtArgs>
@@ -9725,6 +9757,10 @@ export namespace Prisma {
     emailVerificationToken?: boolean
     emailVerificationExpires?: boolean
     authProvider?: boolean
+    onboardingEmail1hSentAt?: boolean
+    onboardingEmail10hSentAt?: boolean
+    onboardingEmail24hSentAt?: boolean
+    onboardingEmail3dSentAt?: boolean
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -9745,6 +9781,10 @@ export namespace Prisma {
     emailVerificationToken?: boolean
     emailVerificationExpires?: boolean
     authProvider?: boolean
+    onboardingEmail1hSentAt?: boolean
+    onboardingEmail10hSentAt?: boolean
+    onboardingEmail24hSentAt?: boolean
+    onboardingEmail3dSentAt?: boolean
     activeOrganization?: boolean | User$activeOrganizationArgs<ExtArgs>
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -9765,9 +9805,13 @@ export namespace Prisma {
     emailVerificationToken?: boolean
     emailVerificationExpires?: boolean
     authProvider?: boolean
+    onboardingEmail1hSentAt?: boolean
+    onboardingEmail10hSentAt?: boolean
+    onboardingEmail24hSentAt?: boolean
+    onboardingEmail3dSentAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId" | "resetToken" | "resetTokenExpiry" | "emailVerified" | "emailVerificationToken" | "emailVerificationExpires" | "authProvider", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "fullName" | "password" | "role" | "organizationId" | "createdAt" | "updatedAt" | "activeOrganizationId" | "resetToken" | "resetTokenExpiry" | "emailVerified" | "emailVerificationToken" | "emailVerificationExpires" | "authProvider" | "onboardingEmail1hSentAt" | "onboardingEmail10hSentAt" | "onboardingEmail24hSentAt" | "onboardingEmail3dSentAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     createdAIAssociates?: boolean | User$createdAIAssociatesArgs<ExtArgs>
     associateShares?: boolean | User$associateSharesArgs<ExtArgs>
@@ -9850,6 +9894,10 @@ export namespace Prisma {
       emailVerificationToken: string | null
       emailVerificationExpires: Date | null
       authProvider: string
+      onboardingEmail1hSentAt: Date | null
+      onboardingEmail10hSentAt: Date | null
+      onboardingEmail24hSentAt: Date | null
+      onboardingEmail3dSentAt: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -10313,6 +10361,10 @@ export namespace Prisma {
     readonly emailVerificationToken: FieldRef<"User", 'String'>
     readonly emailVerificationExpires: FieldRef<"User", 'DateTime'>
     readonly authProvider: FieldRef<"User", 'String'>
+    readonly onboardingEmail1hSentAt: FieldRef<"User", 'DateTime'>
+    readonly onboardingEmail10hSentAt: FieldRef<"User", 'DateTime'>
+    readonly onboardingEmail24hSentAt: FieldRef<"User", 'DateTime'>
+    readonly onboardingEmail3dSentAt: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -62973,7 +63025,11 @@ export namespace Prisma {
     emailVerified: 'emailVerified',
     emailVerificationToken: 'emailVerificationToken',
     emailVerificationExpires: 'emailVerificationExpires',
-    authProvider: 'authProvider'
+    authProvider: 'authProvider',
+    onboardingEmail1hSentAt: 'onboardingEmail1hSentAt',
+    onboardingEmail10hSentAt: 'onboardingEmail10hSentAt',
+    onboardingEmail24hSentAt: 'onboardingEmail24hSentAt',
+    onboardingEmail3dSentAt: 'onboardingEmail3dSentAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -64012,6 +64068,10 @@ export namespace Prisma {
     emailVerificationToken?: StringNullableFilter<"User"> | string | null
     emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     authProvider?: StringFilter<"User"> | string
+    onboardingEmail1hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail10hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail24hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail3dSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAIAssociates?: AIAssociateListRelationFilter
     associateShares?: AIAssociateShareListRelationFilter
     associateSharesGranted?: AIAssociateShareListRelationFilter
@@ -64055,6 +64115,10 @@ export namespace Prisma {
     emailVerificationToken?: SortOrderInput | SortOrder
     emailVerificationExpires?: SortOrderInput | SortOrder
     authProvider?: SortOrder
+    onboardingEmail1hSentAt?: SortOrderInput | SortOrder
+    onboardingEmail10hSentAt?: SortOrderInput | SortOrder
+    onboardingEmail24hSentAt?: SortOrderInput | SortOrder
+    onboardingEmail3dSentAt?: SortOrderInput | SortOrder
     createdAIAssociates?: AIAssociateOrderByRelationAggregateInput
     associateShares?: AIAssociateShareOrderByRelationAggregateInput
     associateSharesGranted?: AIAssociateShareOrderByRelationAggregateInput
@@ -64101,6 +64165,10 @@ export namespace Prisma {
     emailVerificationToken?: StringNullableFilter<"User"> | string | null
     emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     authProvider?: StringFilter<"User"> | string
+    onboardingEmail1hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail10hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail24hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail3dSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAIAssociates?: AIAssociateListRelationFilter
     associateShares?: AIAssociateShareListRelationFilter
     associateSharesGranted?: AIAssociateShareListRelationFilter
@@ -64144,6 +64212,10 @@ export namespace Prisma {
     emailVerificationToken?: SortOrderInput | SortOrder
     emailVerificationExpires?: SortOrderInput | SortOrder
     authProvider?: SortOrder
+    onboardingEmail1hSentAt?: SortOrderInput | SortOrder
+    onboardingEmail10hSentAt?: SortOrderInput | SortOrder
+    onboardingEmail24hSentAt?: SortOrderInput | SortOrder
+    onboardingEmail3dSentAt?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -64168,6 +64240,10 @@ export namespace Prisma {
     emailVerificationToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     emailVerificationExpires?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     authProvider?: StringWithAggregatesFilter<"User"> | string
+    onboardingEmail1hSentAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    onboardingEmail10hSentAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    onboardingEmail24hSentAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    onboardingEmail3dSentAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type OrganizationWhereInput = {
@@ -67881,6 +67957,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -67924,6 +68004,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -67963,6 +68047,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -68006,6 +68094,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -68047,6 +68139,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -68063,6 +68159,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -68081,6 +68181,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OrganizationCreateInput = {
@@ -72289,6 +72393,10 @@ export namespace Prisma {
     emailVerificationToken?: SortOrder
     emailVerificationExpires?: SortOrder
     authProvider?: SortOrder
+    onboardingEmail1hSentAt?: SortOrder
+    onboardingEmail10hSentAt?: SortOrder
+    onboardingEmail24hSentAt?: SortOrder
+    onboardingEmail3dSentAt?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -72307,6 +72415,10 @@ export namespace Prisma {
     emailVerificationToken?: SortOrder
     emailVerificationExpires?: SortOrder
     authProvider?: SortOrder
+    onboardingEmail1hSentAt?: SortOrder
+    onboardingEmail10hSentAt?: SortOrder
+    onboardingEmail24hSentAt?: SortOrder
+    onboardingEmail3dSentAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -72325,6 +72437,10 @@ export namespace Prisma {
     emailVerificationToken?: SortOrder
     emailVerificationExpires?: SortOrder
     authProvider?: SortOrder
+    onboardingEmail1hSentAt?: SortOrder
+    onboardingEmail10hSentAt?: SortOrder
+    onboardingEmail24hSentAt?: SortOrder
+    onboardingEmail3dSentAt?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -79190,6 +79306,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -79232,6 +79352,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -79286,6 +79410,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -79328,6 +79456,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -79366,6 +79498,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -79408,6 +79544,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -79462,6 +79602,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -79504,6 +79648,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -81604,6 +81752,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -81646,6 +81798,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -81739,6 +81895,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -81780,6 +81940,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -81829,6 +81993,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -81870,6 +82038,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -82203,6 +82375,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -82245,6 +82421,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -82334,6 +82514,10 @@ export namespace Prisma {
     emailVerificationToken?: StringNullableFilter<"User"> | string | null
     emailVerificationExpires?: DateTimeNullableFilter<"User"> | Date | string | null
     authProvider?: StringFilter<"User"> | string
+    onboardingEmail1hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail10hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail24hSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    onboardingEmail3dSentAt?: DateTimeNullableFilter<"User"> | Date | string | null
   }
 
   export type UserUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -83496,6 +83680,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -83538,6 +83726,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -83687,6 +83879,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -83729,6 +83925,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -84545,6 +84745,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -84587,6 +84791,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -84692,6 +84900,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -84734,6 +84946,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -84794,6 +85010,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -84836,6 +85056,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -85214,6 +85438,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -85256,6 +85484,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -85680,6 +85912,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -85722,6 +85958,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -85970,6 +86210,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -86012,6 +86256,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -86245,6 +86493,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -86287,6 +86539,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -86378,6 +86634,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -86420,6 +86680,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -86515,6 +86779,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -86557,6 +86825,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -86674,6 +86946,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -86716,6 +86992,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -86754,6 +87034,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -86796,6 +87080,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -86952,6 +87240,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -86994,6 +87286,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -87146,6 +87442,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -87188,6 +87488,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -87334,6 +87638,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -87376,6 +87684,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -88221,6 +88533,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -88263,6 +88579,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -88451,6 +88771,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -88493,6 +88817,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -88980,6 +89308,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -89022,6 +89354,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -89210,6 +89546,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -89252,6 +89592,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -89547,6 +89891,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -89589,6 +89937,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -89684,6 +90036,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -89726,6 +90082,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -89801,6 +90161,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -89843,6 +90207,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -89966,6 +90334,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -90008,6 +90380,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -90309,6 +90685,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -90351,6 +90731,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -90533,6 +90917,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -90575,6 +90963,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -90717,6 +91109,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -90759,6 +91155,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -90856,6 +91256,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -90898,6 +91302,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -90936,6 +91344,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -90978,6 +91390,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -91247,6 +91663,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -91289,6 +91709,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -91562,6 +91986,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -91604,6 +92032,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -91647,6 +92079,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -91689,6 +92125,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -91790,6 +92230,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -91832,6 +92276,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -91881,6 +92329,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -91923,6 +92375,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -92532,6 +92988,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -92574,6 +93034,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -92751,6 +93215,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -92793,6 +93261,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -92899,6 +93371,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -92941,6 +93417,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -93025,6 +93505,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -93067,6 +93551,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -93419,6 +93907,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
@@ -93461,6 +93953,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
     createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
     associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
     associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
@@ -93515,6 +94011,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -93557,6 +94057,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -94751,6 +95255,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
   }
 
   export type UserCreateManyOrganizationInput = {
@@ -94768,6 +95276,10 @@ export namespace Prisma {
     emailVerificationToken?: string | null
     emailVerificationExpires?: Date | string | null
     authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
   }
 
   export type UserOrganizationCreateManyOrganizationInput = {
@@ -95086,6 +95598,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -95127,6 +95643,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -95167,6 +95687,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUpdateWithoutOrganizationInput = {
@@ -95183,6 +95707,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
@@ -95224,6 +95752,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
     associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
     associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
@@ -95264,6 +95796,10 @@ export namespace Prisma {
     emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserOrganizationUpdateWithoutOrganizationInput = {

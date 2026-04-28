@@ -55,7 +55,11 @@ export async function syncAssociateShareCascade({
 
   await prisma.$transaction(async (tx: any) => {
     if (addedUserIds.length > 0) {
-      // Promote private docs to `restricted` so their permission rows take effect
+      // Promote private docs to `restricted` so their permission rows take effect.
+      // Skip docs already at 'organization' visibility — they're accessible to all
+      // org members already; adding per-user rows is both redundant and misleading
+      // (a later revocation would delete rows that have no real effect, but it
+      // creates the appearance of revoked access for a still-org-visible document).
       await tx.document.updateMany({
         where: {
           id: { in: docIds },
@@ -64,7 +68,13 @@ export async function syncAssociateShareCascade({
         data: { visibility: 'restricted' },
       });
 
-      const rows = docIds.flatMap((documentId: string) =>
+      // Only create permission rows for docs that are NOT org-visible.
+      // Org-visible docs are already accessible to everyone — no row needed.
+      const nonOrgDocs = ownedDocs
+        .filter((d: any) => d.visibility !== 'organization')
+        .map((d: any) => d.id);
+
+      const rows = nonOrgDocs.flatMap((documentId: string) =>
         addedUserIds.map((userId) => ({ documentId, userId }))
       );
 

@@ -344,11 +344,8 @@ export function UploadDocumentModal({
             uploadedKeys.add(key);
           }
         } catch (err: any) {
-          // Vault limit hit — from either the upload-token gate or the registration gate
-          const isVaultLimit =
-            err?.requiresUpgrade ||
-            err?.response?.data?.requiresUpgrade ||
-            err?.message?.includes('VAULT_LIMIT_REACHED');
+          // Vault limit hit — POST /api/documents returned 403 requiresUpgrade
+          const isVaultLimit = err?.requiresUpgrade || err?.response?.data?.requiresUpgrade;
           if (isVaultLimit) {
             onOpenChange(false);
             onUpgradeRequired?.();
@@ -398,6 +395,11 @@ export function UploadDocumentModal({
         onOpenChange(false);
       }
     } catch (error: any) {
+      if (error?.requiresUpgrade || error?.response?.data?.requiresUpgrade) {
+        onOpenChange(false);
+        onUpgradeRequired?.();
+        return;
+      }
       const errorMsg = error.response?.data?.message || error.message || 'Upload failed';
       setUploadError(errorMsg);
       notify.error(errorMsg);

@@ -61,6 +61,10 @@ model User {
   emailVerificationToken    String?
   emailVerificationExpires  DateTime?
   authProvider              String    @default("email")
+  onboardingEmail1hSentAt   DateTime?
+  onboardingEmail10hSentAt  DateTime?
+  onboardingEmail24hSentAt  DateTime?
+  onboardingEmail3dSentAt   DateTime?
   createdAIAssociates     AIAssociate[]
   associateShares         AIAssociateShare[]      @relation("AIAssociateShareUser")
   associateSharesGranted  AIAssociateShare[]      @relation("AIAssociateShareGrantedBy")

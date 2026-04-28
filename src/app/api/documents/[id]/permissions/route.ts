@@ -43,11 +43,16 @@ export async function GET(
         select: {
           ownerId: true,
           owner: { select: { id: true, fullName: true, email: true } },
+          // Secondary memberships (UserOrganization — invited to this org from elsewhere)
           members: {
             select: {
               role: true,
               user: { select: { id: true, fullName: true, email: true } }
             }
+          },
+          // Primary-org members (User.organizationId — auto-created on signup)
+          users: {
+            select: { id: true, fullName: true, email: true }
           }
         }
       }),
@@ -73,9 +78,22 @@ export async function GET(
       return NextResponse.json({ error: 'Document not found' }, { status: 404 });
     }
 
-    // Build deduplicated org members list (sort in JS — no JOIN sort in DB)
+    // Build deduplicated org members list.
+    // Must include BOTH primary-org users (User.organizationId) AND secondary
+    // members (UserOrganization), since primary-org users are NOT in UserOrganization.
     const memberMap = new Map<string, { id: string; name: string; email: string; role: string }>();
 
+    // Primary-org users (auto-created org on signup — not in UserOrganization)
+    for (const u of (org?.users ?? [])) {
+      memberMap.set(u.id, {
+        id: u.id,
+        name: u.fullName || u.email,
+        email: u.email,
+        role: u.id === org?.ownerId ? 'owner' : 'member'
+      });
+    }
+
+    // Secondary memberships (invited into this org from another org)
     for (const m of (org?.members ?? [])) {
       memberMap.set(m.user.id, {
         id: m.user.id,
@@ -85,7 +103,7 @@ export async function GET(
       });
     }
 
-    // Ensure org owner is in the list even if not in UserOrganization
+    // Belt-and-suspenders: ensure the org owner appears even if missing from both lists
     if (org?.owner && !memberMap.has(org.owner.id)) {
       memberMap.set(org.owner.id, {
         id: org.owner.id,
@@ -167,12 +185,18 @@ export async function PUT(
       );
     }
 
-    // Validate all provided userIds are org members
+    // Validate all provided userIds are org members.
+    // Must check BOTH UserOrganization (secondary) AND User.organizationId (primary),
+    // since primary-org members are not present in UserOrganization.
     if (visibility === 'restricted' && (userIds as string[]).length > 0) {
-      const [members, org] = await Promise.all([
+      const [secondaryMembers, primaryMembers, org] = await Promise.all([
         prisma.userOrganization.findMany({
           where: { organizationId, userId: { in: userIds as string[] } },
           select: { userId: true }
+        }),
+        prisma.user.findMany({
+          where: { organizationId, id: { in: userIds as string[] } },
+          select: { id: true }
         }),
         prisma.organization.findUnique({
           where: { id: organizationId },
@@ -180,7 +204,10 @@ export async function PUT(
         })
       ]);
 
-      const validIds = new Set(members.map((m: any) => m.userId));
+      const validIds = new Set([
+        ...secondaryMembers.map((m: any) => m.userId),
+        ...primaryMembers.map((m: any) => m.id),
+      ]);
       if (org?.ownerId) validIds.add(org.ownerId);
       validIds.add(document.created_by);
 

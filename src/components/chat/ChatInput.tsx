@@ -33,6 +33,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useSession } from "next-auth/react";
 import ProAccessModal from "../modals/ProAccess";
 import { UploadDocumentModal } from "../modals/UploadModal";
+import VaultLimitModal from "../modals/VaultLimitModal";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
 import { useProjectDocumentsStore } from "@/store/workspace-documents.store";
 import { useDocumentsStore } from "@/store/documents.store";
@@ -83,6 +84,7 @@ export function ChatInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
+  const [showVaultGate, setShowVaultGate] = useState(false);
   const pendingMessageProcessedRef = useRef(false);
 
   // Google connection state
@@ -444,8 +446,12 @@ export function ChatInput({
                     }
                   }
                 } catch (uploadError: any) {
-                  console.error("Error uploading files:", uploadError);
-                  notify.error("Workspace created but some files failed to upload");
+                  if (uploadError?.requiresUpgrade || uploadError?.response?.data?.requiresUpgrade) {
+                    setShowVaultGate(true);
+                  } else {
+                    console.error("Error uploading files:", uploadError);
+                    notify.error("Workspace created but some files failed to upload");
+                  }
                 }
               }
 
@@ -630,8 +636,12 @@ export function ChatInput({
               notify.success(`${uploadedDocIds.length} file${uploadedDocIds.length !== 1 ? 's' : ''} uploaded`);
             }
           } catch (uploadError: any) {
-            console.error("Error uploading files:", uploadError);
-            notify.error("Failed to upload files");
+            if (uploadError?.requiresUpgrade || uploadError?.response?.data?.requiresUpgrade) {
+              setShowVaultGate(true);
+            } else {
+              console.error("Error uploading files:", uploadError);
+              notify.error("Failed to upload files");
+            }
             setIsSubmitting(false);
             return;
           }
@@ -1701,6 +1711,11 @@ export function ChatInput({
         onClose={() => setShowProAccess(false)}
         limitType={projectRequiresUpgrade ? "projects" : "messages"}
       />
+      <VaultLimitModal
+        open={showVaultGate}
+        onClose={() => setShowVaultGate(false)}
+        onUpgrade={() => { setShowVaultGate(false); setShowProAccess(true); }}
+      />
       {/* Document Selection Modal - only show in chat mode since it needs projectId */}
       {!homepageMode && (
         <UploadDocumentModal
@@ -1709,6 +1724,7 @@ export function ChatInput({
           onOpenChange={setShowDocumentModal}
           projectId={projectId}
           onDocumentsAdded={handleDocumentsAdded}
+          onUpgradeRequired={() => setShowVaultGate(true)}
         />
       )}
 

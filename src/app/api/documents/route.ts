@@ -109,10 +109,9 @@ export async function GET(request: NextRequest) {
 
     // --- Access enforcement ---
     //
-    // Root view: show documents the user uploaded OR documents explicitly
-    // shared with the user (via DocumentPermission). Sharing happens either
-    // directly on the document or indirectly via an AI associate whose KB
-    // includes the document.
+    // Root view: show documents the user uploaded, org-visibility documents
+    // (visibility = 'organization'), or documents explicitly shared via
+    // DocumentPermission (directly or via an AI associate KB cascade).
     //
     // Folder view: if the user can access the folder (owns it, has been
     // granted explicit permission, or the folder is org-wide), they can
@@ -151,11 +150,13 @@ export async function GET(request: NextRequest) {
       // Folder accessible — no per-document filter needed; show everything in the folder
       ownershipFilter = null;
     } else {
-      // Root / all-documents view — documents the user uploaded, plus documents
-      // shared with them (e.g. KB documents cascade-shared via an associate).
+      // Root / all-documents view — documents the user uploaded, PLUS:
+      //   • visibility = 'organization' → shared with all org members (no permission rows exist)
+      //   • visibility = 'restricted'   → shared with specific users via DocumentPermission rows
       ownershipFilter = {
         OR: [
           { created_by: userId },
+          { visibility: 'organization' },
           { permissions: { some: { userId } } }
         ]
       };

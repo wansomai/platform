@@ -4,8 +4,6 @@ import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
-import { getActiveOrganizationId } from '@/lib/api/org-helpers';
-import { canUploadDocument } from '@/lib/subscription';
 
 export const maxDuration = 60;
 
@@ -14,6 +12,12 @@ export const maxDuration = 60;
  * The browser calls this, then uploads the file directly to Vercel Blob,
  * bypassing the serverless function body size limit entirely.
  * DB record creation is handled separately via POST /api/documents (JSON body).
+ *
+ * NOTE: The vault document limit is NOT checked here — the Vercel Blob SDK swallows
+ * non-200 responses from this endpoint and throws a generic error that the client
+ * cannot distinguish from other failures. The limit is enforced at POST /api/documents
+ * (the registration step) which goes through apiService and correctly surfaces
+ * requiresUpgrade: true to the UI gate.
  */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -25,19 +29,6 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as HandleUploadBody;
-    const bodyAny = body as any;
-
-    // Only run the limit check on the token-generation phase (not the upload-completed callback).
-    if (bodyAny.type === 'blob.generate-client-token') {
-      const orgId = await getActiveOrganizationId(userId);
-      const limitCheck = await canUploadDocument(orgId, userId);
-      if (!limitCheck.allowed) {
-        return NextResponse.json(
-          { error: `VAULT_LIMIT_REACHED: ${limitCheck.reason}`, requiresUpgrade: true },
-          { status: 403 }
-        );
-      }
-    }
 
     const jsonResponse = await handleUpload({
       body,

@@ -163,7 +163,11 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   emailVerificationToken: 'emailVerificationToken',
   emailVerificationExpires: 'emailVerificationExpires',
-  authProvider: 'authProvider'
+  authProvider: 'authProvider',
+  onboardingEmail1hSentAt: 'onboardingEmail1hSentAt',
+  onboardingEmail10hSentAt: 'onboardingEmail10hSentAt',
+  onboardingEmail24hSentAt: 'onboardingEmail24hSentAt',
+  onboardingEmail3dSentAt: 'onboardingEmail3dSentAt'
 };
 
 exports.Prisma.OrganizationScalarFieldEnum = {

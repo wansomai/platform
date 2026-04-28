@@ -139,7 +139,8 @@ After either path, text extraction runs via Next.js `after()` (fire-and-forget):
   3. **Cleanup** (`/api/cron/digest-cleanup`): purges stale `DigestItem` rows
 - **Idempotency**: digest fingerprinting prevents re-sending identical content; test email addresses bypass this gate
 - **Jurisdiction tiers** (`src/lib/briefly-jurisdictions.ts`): Tier 1 (primary markets: KE, ZA, NG, GH, etc.) ingested every 4 hours; Tier 2 (expanded Africa) subscriber-driven; unsupported jurisdictions fall back to live Gemini grounding
-- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`, `/api/cron/notification-cleanup` (daily 2am — purges `dismissed=true` records older than 30 days)
+- Other cron endpoints: `/api/cron/trial-expiry`, `/api/cron/subscription-renewal`, `/api/cron/notification-cleanup` (daily 2am — purges `dismissed=true` records older than 30 days), `/api/cron/onboarding-emails` (every 30 min — 4-phase drip sequence: 1h / 10h / 24h / 3d after signup; tracks progress via `User.onboardingEmail{1h,10h,24h,3d}SentAt`; skips users who already have paid access and stamps all remaining fields so they're never retried)
+- **Cron security**: All cron routes check `Authorization: Bearer <CRON_SECRET>` in production. Missing `CRON_SECRET` blocks the endpoint in production; absent header vs a configured secret → 401.
 - **Dev testing**: `/api/dev/digest-preview` — preview digest output without sending emails (not for production)
 
 #### 9. Database Transaction Pattern
@@ -491,6 +492,7 @@ See `.env.example` for the full list. Key variables:
 - `LAW360KENYA_PLAN_CODE` - Paystack plan code for Briefly KES pricing variant
 - `NEXT_PUBLIC_CLARITY_PROJECT_ID` - Microsoft Clarity analytics project ID
 - `ADMIN_EMAILS` - Comma-separated list of admin email addresses (checked by admin middleware)
+- `CRON_SECRET` - Bearer token checked by all `/api/cron/*` routes in production; set to the same value as the Vercel cron secret
 
 Optional (for Google Cloud Vision OCR):
 - `GOOGLE_APPLICATION_CREDENTIALS` - Path to service account JSON key
@@ -575,12 +577,16 @@ Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `PO
 - The org owner always has implicit access regardless of visibility/permission settings
 
 ### Subscription Limits (`src/lib/subscription.ts`)
-- **Free plan**: 2 projects, 8 messages/month
+- **Free plan**: 2 projects, 8 messages/month, **3 vault documents** (`FREE_PLAN_VAULT_LIMIT = 3`). Check via `canUploadDocument(orgId, userId)` before accepting a document upload. The vault limit UI gate is `VaultLimitModal` (`src/components/modals/VaultLimitModal.tsx`).
 - **Explorer plan**: 14-day full Pro access, identified by `subscription.planName === 'explorer'` with a valid `currentPeriodEnd`; takes priority over Free but not over Pro/Trial
-- **Pro/Enterprise plan**: Unlimited projects and messages
+- **Pro/Enterprise plan**: Unlimited projects, messages, and vault documents
 - **Trial**: `Organization.trialExpiresAt` / `Organization.trialExpired` — active trial grants Pro access; cron job `/api/cron/trial-expiry` marks trials expired
+- **Manual grant**: `Organization.grantedAt` / `grantedExpiresAt` / `grantedExpired` / `grantedDuration` — time-limited Pro access issued by admins without a Paystack subscription (e.g. for demos or support). Treated identically to a paid subscription by `getUserPlanInfo()` and `hasActivePaidAccess()`.
 - AI Associates are a premium feature (Explorer/Pro/Enterprise only)
 - Enterprise accounts (`accountType: 'enterprise'`) automatically get Pro features
+
+#### Upload token vault limit placement
+The vault document limit is enforced at `POST /api/documents` (the DB registration step), **not** at `POST /api/documents/upload-token`. Reason: the Vercel Blob SDK swallows non-200 responses from the token endpoint and throws a generic error the client can't distinguish from network failures — only the registration step goes through `apiService` which correctly surfaces `requiresUpgrade: true` to the UI gate.
 
 ## Content Management
 - Primary: **Sanity CMS** for blogs, lawyer profiles, legal documents
