@@ -42,16 +42,18 @@ interface UploadDocumentModalProps {
   mode: 'upload' | 'select' | 'upload-and-attach';
   projectId?: string;
   onDocumentsAdded?: (documents: Document[]) => void;
+  onUpgradeRequired?: () => void;
   title?: string;
   description?: string;
 }
 
-export function UploadDocumentModal({ 
-  open, 
-  onOpenChange, 
+export function UploadDocumentModal({
+  open,
+  onOpenChange,
   mode = 'upload',
   projectId,
   onDocumentsAdded,
+  onUpgradeRequired,
   title,
   description
 }: UploadDocumentModalProps) {
@@ -342,6 +344,16 @@ export function UploadDocumentModal({
             uploadedKeys.add(key);
           }
         } catch (err: any) {
+          // Vault limit hit — from either the upload-token gate or the registration gate
+          const isVaultLimit =
+            err?.requiresUpgrade ||
+            err?.response?.data?.requiresUpgrade ||
+            err?.message?.includes('VAULT_LIMIT_REACHED');
+          if (isVaultLimit) {
+            onOpenChange(false);
+            onUpgradeRequired?.();
+            return;
+          }
           if (err.response?.status === 409) {
             // Server detected a name conflict — mark file for rename and keep in queue
             serverConflictKeys.add(key);

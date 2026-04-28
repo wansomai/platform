@@ -9,6 +9,7 @@ import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 import { Prisma } from '@/prisma/client';
+import { canUploadDocument } from '@/lib/subscription';
 
 // Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
 export const maxDuration = 120;
@@ -384,6 +385,15 @@ export async function POST(request: NextRequest) {
         jsonOrgId = await getActiveOrganizationId(userId);
       }
 
+      // Vault upload limit check for free-plan accounts
+      const vaultCheck = await canUploadDocument(jsonOrgId, userId);
+      if (!vaultCheck.allowed) {
+        return NextResponse.json(
+          { message: vaultCheck.reason, error: true, requiresUpgrade: true },
+          { status: 403 }
+        );
+      }
+
       // Folder permission check
       if (jsonFolderId) {
         const folder = await prisma.folder.findUnique({
@@ -532,6 +542,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Vault upload limit check for free-plan accounts
+    const vaultCheckMultipart = await canUploadDocument(organizationId, userId);
+    if (!vaultCheckMultipart.allowed) {
+      return NextResponse.json(
+        { message: vaultCheckMultipart.reason, error: true, requiresUpgrade: true },
+        { status: 403 }
+      );
+    }
+
     // If folderId is provided, verify it exists and that the user can upload to it.
     // For restricted folders: only the creator or explicitly-permitted users may upload.
     if (folderId) {

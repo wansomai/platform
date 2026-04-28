@@ -4,6 +4,8 @@ import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
+import { getActiveOrganizationId } from '@/lib/api/org-helpers';
+import { canUploadDocument } from '@/lib/subscription';
 
 export const maxDuration = 60;
 
@@ -19,8 +21,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const userId = session.user.id;
+
   try {
     const body = (await request.json()) as HandleUploadBody;
+    const bodyAny = body as any;
+
+    // Only run the limit check on the token-generation phase (not the upload-completed callback).
+    if (bodyAny.type === 'blob.generate-client-token') {
+      const orgId = await getActiveOrganizationId(userId);
+      const limitCheck = await canUploadDocument(orgId, userId);
+      if (!limitCheck.allowed) {
+        return NextResponse.json(
+          { error: `VAULT_LIMIT_REACHED: ${limitCheck.reason}`, requiresUpgrade: true },
+          { status: 403 }
+        );
+      }
+    }
 
     const jsonResponse = await handleUpload({
       body,
@@ -29,7 +46,7 @@ export async function POST(request: NextRequest) {
         return {
           allowedContentTypes: ALLOWED_FILE_TYPES,
           maximumSizeInBytes: FILE_UPLOAD_CONFIG.MAX_SIZE,
-          tokenPayload: session.user.id,
+          tokenPayload: userId,
         };
       },
       onUploadCompleted: async () => {
