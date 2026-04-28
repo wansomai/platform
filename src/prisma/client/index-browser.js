@@ -189,7 +189,11 @@ exports.Prisma.OrganizationScalarFieldEnum = {
   upgradeRequestedAt: 'upgradeRequestedAt',
   trialUpgradedAt: 'trialUpgradedAt',
   trialExpiresAt: 'trialExpiresAt',
-  trialExpired: 'trialExpired'
+  trialExpired: 'trialExpired',
+  grantedAt: 'grantedAt',
+  grantedExpiresAt: 'grantedExpiresAt',
+  grantedExpired: 'grantedExpired',
+  grantedDuration: 'grantedDuration'
 };
 
 exports.Prisma.ContentScalarFieldEnum = {

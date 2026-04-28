@@ -24,6 +24,10 @@ export interface AdminOrganization {
   projectCount: number;
   createdAt: string;
   updatedAt: string;
+  grantedAt: string | null;
+  grantedExpiresAt: string | null;
+  grantedExpired: boolean;
+  grantedDuration: string | null;
 }
 
 export interface AdminOrganizationDetails extends AdminOrganization {

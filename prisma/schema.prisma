@@ -114,6 +114,10 @@ model Organization {
   trialUpgradedAt     DateTime?
   trialExpiresAt      DateTime?
   trialExpired        Boolean               @default(false)
+  grantedAt           DateTime?
+  grantedExpiresAt    DateTime?
+  grantedExpired      Boolean               @default(false)
+  grantedDuration     String?
   aiAssociates        AIAssociate[]
   documents           Document[]
   Folder              Folder[]

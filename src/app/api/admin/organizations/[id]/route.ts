@@ -115,6 +115,10 @@ export const GET = withErrorHandler(
       firmSize: organization.firmSize,
       currentWebsite: organization.currentWebsite,
       linkedinUrl: organization.linkedinUrl,
+      grantedAt: organization.grantedAt?.toISOString() ?? null,
+      grantedExpiresAt: organization.grantedExpiresAt?.toISOString() ?? null,
+      grantedExpired: organization.grantedExpired,
+      grantedDuration: organization.grantedDuration ?? null,
     };
 
     const response: OrganizationDetailsResponse = {

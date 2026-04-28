@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { createApiResponse, createErrorResponse } from '@/lib/api/response';
 import { AppError } from '@/types/error';
-import { sendTrialExpiryEmail } from '@/lib/email-service';
+import { sendTrialExpiryEmail, sendGrantExpiryEmail } from '@/lib/email-service';
 
 export const maxDuration = 120;
 
@@ -349,10 +349,142 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  console.log('[trial-expiry] Run complete:', { ...results, explorerExpired });
+  // ── Phase 7: 3-day reminder for manually-granted access ──────────────────
+  const threeDaysFromNowGrant = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+  const soonExpiringGrants = await prisma.organization.findMany({
+    where: {
+      grantedExpired: false,
+      grantedExpiresAt: { gt: now, lte: threeDaysFromNowGrant },
+      grantedAt: { not: null },
+    },
+    include: {
+      owner: { select: { id: true, email: true, fullName: true } },
+      adminLogs: {
+        where: {
+          event: 'grant_expiry_reminder',
+          createdAt: { gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+        },
+        take: 1,
+      },
+    },
+  });
+
+  let grantReminders = 0;
+  for (const org of soonExpiringGrants) {
+    if (org.adminLogs.length > 0) continue;
+    if (!org.owner) continue;
+
+    const daysLeft = Math.ceil(
+      (org.grantedExpiresAt!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const expiryDateStr = org.grantedExpiresAt!.toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric',
+    });
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.notification.create({
+          data: {
+            userId: org.owner!.id,
+            title: `Your Pro access expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}`,
+            message: `Your ${org.grantedDuration ?? 'granted'} Pro access for ${org.name} ends on ${expiryDateStr}. Contact support via the support icon if you'd like to renew.`,
+            type: 'warning',
+          },
+        });
+        await tx.adminLog.create({
+          data: {
+            organizationId: org.id,
+            event: 'grant_expiry_reminder',
+            details: { daysLeft, expiryDateStr, sentAt: now.toISOString() },
+          },
+        });
+      });
+      grantReminders++;
+      console.log(`[trial-expiry] Grant reminder sent for org ${org.id} (${daysLeft} days left)`);
+    } catch (err) {
+      results.errors++;
+      console.error(`[trial-expiry] Error sending grant reminder for org ${org.id}:`, err);
+    }
+  }
+
+  // ── Phase 8: Expire manually-granted access windows ──────────────────────
+  const expiredGrantOrgs = await prisma.organization.findMany({
+    where: {
+      grantedExpired: false,
+      grantedExpiresAt: { lte: now },
+      grantedAt: { not: null },
+      // Skip orgs with an active paid subscription
+      NOT: { subscription: { is: { status: { in: ['active', 'non_renewing'] } } } },
+    },
+    include: {
+      owner: { select: { id: true, email: true, fullName: true } },
+    },
+  });
+
+  let grantExpired = 0;
+  for (const org of expiredGrantOrgs) {
+    // If a trial is still active, keep enterprise — just mark the grant expired.
+    const hasActiveTrial =
+      !org.trialExpired &&
+      org.trialExpiresAt != null &&
+      org.trialExpiresAt > now;
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        await tx.organization.update({
+          where: { id: org.id },
+          data: {
+            grantedExpired: true,
+            // Only downgrade if there is no other source of enterprise access
+            ...(!hasActiveTrial && { accountType: 'personal' }),
+          },
+        });
+        await tx.adminLog.create({
+          data: {
+            organizationId: org.id,
+            event: 'manual_grant_expired',
+            details: {
+              expiredAt: now.toISOString(),
+              grantedAt: org.grantedAt?.toISOString(),
+              grantedExpiresAt: org.grantedExpiresAt?.toISOString(),
+              grantedDuration: org.grantedDuration,
+              downgradedTo: hasActiveTrial ? 'kept_enterprise_trial_active' : 'personal',
+            },
+          },
+        });
+        if (org.owner && !hasActiveTrial) {
+          await tx.notification.create({
+            data: {
+              userId: org.owner.id,
+              title: 'Your Pro access has ended',
+              message: `Your ${org.grantedDuration ?? 'granted'} Pro access for ${org.name} has expired. All your data is safe. Contact support via the support icon to renew.`,
+              type: 'warning',
+            },
+          });
+        }
+      });
+
+      grantExpired++;
+      console.log(`[trial-expiry] Grant expired for org ${org.id} (${org.name})`);
+
+      // Email outside transaction
+      if (org.owner && !hasActiveTrial) {
+        try {
+          await sendGrantExpiryEmail(org.owner, org.name, org.grantedDuration ?? 'granted');
+        } catch (emailErr) {
+          console.error(`[trial-expiry] Failed to send grant expiry email for org ${org.id}:`, emailErr);
+        }
+      }
+    } catch (err) {
+      results.errors++;
+      console.error(`[trial-expiry] Error expiring grant for org ${org.id}:`, err);
+    }
+  }
+
+  console.log('[trial-expiry] Run complete:', { ...results, explorerExpired, grantReminders, grantExpired });
 
   return createApiResponse(
-    { ...results, explorerExpired, ranAt: now.toISOString() },
-    `Trial expiry cron complete. Backfilled: ${results.backfilled}, Notified: ${results.notified}, Expired: ${results.expired}, Explorer expired: ${explorerExpired}, Errors: ${results.errors}`
+    { ...results, explorerExpired, grantReminders, grantExpired, ranAt: now.toISOString() },
+    `Trial expiry cron complete. Backfilled: ${results.backfilled}, Notified: ${results.notified}, Expired: ${results.expired}, Explorer expired: ${explorerExpired}, Grant reminders: ${grantReminders}, Grant expired: ${grantExpired}, Errors: ${results.errors}`
   );
 }
