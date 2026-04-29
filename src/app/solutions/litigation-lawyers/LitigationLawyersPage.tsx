@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import {
-  FileText,
   ChevronDown,
   ArrowUpRight,
   Search,
@@ -13,6 +12,7 @@ import {
   TrendingUp,
   Target,
   Brain,
+  Eye,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -553,12 +553,12 @@ const LitigationLawyersPage = () => {
             <div className="text-primary lg:basis-1/2 text-center lg:text-left space-y-5">
               <p className="text-body mb-2">AI For Litigation Lawyers</p>
               <h1 className="text-heading-1 font-serif max-w-4xl">
-                Enjoy Winning More Cases with AI Inspired Teammates
+                Win More Cases with with Smarter Litigation Intelligence
               </h1>
               <p className="text-lg lg:text-xl text-gray-600 mb-8">
-                Prepare winning cases with AI that analyzes your arguments,
+            Wansom AI that analyzes your arguments,
                 predicts outcomes, and simulates opposing counsel strategies to
-                strengthen your position.
+                strengthen your case position.
               </p>
               <button
                 className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10 mx-auto lg:mx-0"
@@ -654,7 +654,7 @@ const FeaturesSection = () => {
       icon: Search,
       title: "Evidence Analysis",
       description:
-        "AI automatically reviews all case materials, identifies key evidence, and suggests additional documentation needed.",
+        "AI automatically reviews all case materials, identifies key evidence, and suggests which arguments and motion types succeed with specific judges based on historical data.",
       href: "login",
     },
     {
@@ -668,7 +668,14 @@ const FeaturesSection = () => {
       icon: Scale,
       title: "Outcome Prediction",
       description:
-        "Get data-driven predictions on case outcomes, settlement ranges, and optimal strategic timing.",
+        "Get data-driven predictions on case outcomes, settlement ranges, and optimal strategic timing based on your specific judge, opposing counsel, case type, and circumstances",
+      href: "login",
+    },
+     {
+      icon: Eye,
+      title: "Court Witness Analysis",
+      description:
+        "Identify and analyze expert witnesses, their past testimony, and how they may be perceived by specific judges to strengthen your case.",
       href: "login",
     },
   ];
@@ -684,7 +691,7 @@ const FeaturesSection = () => {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((feature, index) => (
             <div
               key={index}
