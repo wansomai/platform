@@ -200,15 +200,33 @@ async function processPayment(transaction: any, organizationId: string, referenc
     }
   }
 
-  // Calculate subscription period
+  // Fetch org grant state — remaining days get folded into the subscription period
+  const orgForGrant = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: { grantedExpired: true, grantedExpiresAt: true },
+  });
+
   const now = new Date();
+  const hasActiveGrant =
+    orgForGrant?.grantedExpired === false &&
+    orgForGrant.grantedExpiresAt != null &&
+    orgForGrant.grantedExpiresAt > now;
+  const grantBonusDays = hasActiveGrant
+    ? Math.ceil((orgForGrant!.grantedExpiresAt!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  // Calculate subscription period, adding any remaining grant days as a bonus
   const periodEnd = planType === 'explorer'
     ? (() => {
         const d = new Date(now);
-        d.setDate(d.getDate() + 14);
+        d.setDate(d.getDate() + 14 + grantBonusDays);
         return d;
       })()
-    : calculatePeriodEnd(planInterval);
+    : (() => {
+        const d = calculatePeriodEnd(planInterval);
+        if (grantBonusDays > 0) d.setDate(d.getDate() + grantBonusDays);
+        return d;
+      })();
 
   // Create or update subscription and payment in a transaction
   const subscription = await prisma.$transaction(async (tx) => {
@@ -281,6 +299,14 @@ async function processPayment(transaction: any, organizationId: string, referenc
       });
     }
 
+    // Consume the manual grant — remaining days are already baked into periodEnd above
+    if (hasActiveGrant) {
+      await tx.organization.update({
+        where: { id: organizationId },
+        data: { grantedExpired: true },
+      });
+    }
+
     return sub;
   });
 
@@ -338,12 +364,15 @@ async function processPayment(transaction: any, organizationId: string, referenc
       const renewalDate = periodEnd.toLocaleDateString('en-US', {
         month: 'long', day: 'numeric', year: 'numeric',
       });
+      const bonusNote = grantBonusDays > 0
+        ? ` Your ${grantBonusDays} remaining grant day${grantBonusDays === 1 ? '' : 's'} have been added to your subscription.`
+        : '';
 
       await prisma.notification.create({
         data: {
           userId: org.ownerId,
           title: 'Payment successful',
-          message: `Your ${subscription.planName} plan is now active. ${amountStr} was charged. Next renewal: ${renewalDate}.`,
+          message: `Your ${subscription.planName} plan is now active. ${amountStr} was charged. Access runs until ${renewalDate}.${bonusNote}`,
           type: 'success',
         },
       });

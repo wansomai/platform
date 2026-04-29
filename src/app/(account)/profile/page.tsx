@@ -276,6 +276,11 @@ const Page = () => {
   const trialExpiresAt = subscriptionStatus?.trialExpiresAt
     ? new Date(subscriptionStatus.trialExpiresAt)
     : null;
+  const isActiveGrant = subscriptionStatus?.isActiveGrant || false;
+  const grantExpiresAt = subscriptionStatus?.grantExpiresAt
+    ? new Date(subscriptionStatus.grantExpiresAt)
+    : null;
+  const grantedDuration = subscriptionStatus?.grantedDuration ?? null;
 
   const filteredMembers = getFilteredMembers();
 
@@ -349,11 +354,11 @@ const Page = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <div className="flex items-center gap-3">
-                        <p className="text-lg">{profile.email}</p>
+                      <div className="flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                        <p className="text-lg break-all">{profile.email}</p>
                         {profile.authProvider !== 'google' && (
                           profile.emailVerified ? (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 shrink-0">
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               Verified
                             </span>
@@ -361,7 +366,7 @@ const Page = () => {
                             <button
                               onClick={handleSendVerification}
                               disabled={verifySending || verifyCooldown > 0}
-                              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-800 border border-amber-300 hover:border-amber-400 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-800 border border-amber-300 hover:border-amber-400 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
                             >
                               {verifySending ? (
                                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -467,7 +472,7 @@ const Page = () => {
                       </Button>
                       {profile?.role === 'owner' && (
                         <>
-                          {isManualTrial ? (
+                          {isManualTrial || isActiveGrant ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
                               className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
@@ -500,9 +505,9 @@ const Page = () => {
                     </>
                   )}
                   </div>
-                  {/* Trial expiry note — sits flush below the button row */}
+                  {/* Trial / grant expiry note — sits flush below the button row */}
                   {isManualTrial && !isEditing && profile?.role === 'owner' && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 text-center sm:text-right">
                       You&apos;re on a 15-day trial &mdash; expires{' '}
                       <span className="font-medium text-amber-600">
                         {trialExpiresAt?.toLocaleDateString('en-US', {
@@ -511,6 +516,21 @@ const Page = () => {
                           year: 'numeric',
                         })}
                       </span>
+                    </p>
+                  )}
+                  {isActiveGrant && !isEditing && profile?.role === 'owner' && (
+                    <p className="text-xs text-gray-500 text-center sm:text-right leading-relaxed">
+                      You have <span className="font-medium">{grantedDuration ?? 'granted'}</span> Pro access &mdash; expires{' '}
+                      <span className="font-medium text-amber-600">
+                        {grantExpiresAt?.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <br className="hidden sm:inline" />
+                      <span className="sm:hidden"> · </span>
+                      Upgrading adds your remaining days.
                     </p>
                   )}
                 </div>

@@ -288,8 +288,22 @@ export async function POST(request: NextRequest) {
           }
 
           const now = new Date();
+
+          // Check for active manual grant — remaining days extend the explorer window
+          const orgForGrant = await prisma.organization.findUnique({
+            where: { id: organizationId },
+            select: { grantedExpired: true, grantedExpiresAt: true, ownerId: true },
+          });
+          const hasActiveGrant =
+            orgForGrant?.grantedExpired === false &&
+            orgForGrant.grantedExpiresAt != null &&
+            orgForGrant.grantedExpiresAt > now;
+          const grantBonusDays = hasActiveGrant
+            ? Math.ceil((orgForGrant!.grantedExpiresAt!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+            : 0;
+
           const periodEnd = new Date(now);
-          periodEnd.setDate(periodEnd.getDate() + 14);
+          periodEnd.setDate(periodEnd.getDate() + 14 + grantBonusDays);
 
           const explorerSub = await prisma.subscription.upsert({
             where: { organizationId },
@@ -328,22 +342,30 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          const orgForNotif = await prisma.organization.findUnique({
-            where: { id: organizationId },
-            select: { ownerId: true },
-          });
-          if (orgForNotif?.ownerId) {
+          // Consume the grant now that the days are baked into periodEnd
+          if (hasActiveGrant) {
+            await prisma.organization.update({
+              where: { id: organizationId },
+              data: { grantedExpired: true },
+            });
+          }
+
+          const ownerId = orgForGrant?.ownerId;
+          if (ownerId) {
+            const bonusNote = grantBonusDays > 0
+              ? ` Your ${grantBonusDays} remaining grant day${grantBonusDays === 1 ? '' : 's'} have been added.`
+              : '';
             await prisma.notification.create({
               data: {
-                userId: orgForNotif.ownerId,
+                userId: ownerId,
                 title: 'Explorer access activated',
-                message: `Your 14-day Explorer access is now active. It expires on ${periodEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`,
+                message: `Your Explorer access is now active. It expires on ${periodEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.${bonusNote}`,
                 type: 'success',
               },
             });
           }
 
-          console.log(`[Paystack Webhook] Explorer plan activated for org: ${organizationId}, expires: ${periodEnd}`);
+          console.log(`[Paystack Webhook] Explorer plan activated for org: ${organizationId}, expires: ${periodEnd}, bonus days: ${grantBonusDays}`);
           break;
         }
 

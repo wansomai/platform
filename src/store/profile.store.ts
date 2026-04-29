@@ -95,6 +95,9 @@ interface SubscriptionStatus {
   hasProAccess: boolean;
   isManualTrial: boolean;
   trialExpiresAt: string | null;
+  isActiveGrant: boolean;
+  grantExpiresAt: string | null;
+  grantedDuration: string | null;
   associateCount: number;
   canViewBilling: boolean;
 }
