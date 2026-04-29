@@ -6,7 +6,7 @@ import { getJurisdictionById } from '@/lib/jurisdictions';
 
 export const maxDuration = 60;
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.WANSOM_API_KEY || '' });
 
 export const DOCUMENT_TYPES: Record<string, { title: string; prompt: string }> = {
   'nda': {
@@ -96,7 +96,7 @@ Requirements:
   try {
     const encoder = new TextEncoder();
     const result = await genAI.models.generateContentStream({
-      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemPrompt,

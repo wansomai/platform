@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { RAGResult } from '@/types/legalKnowledge';
 import { RAGService } from './ragService';
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.WANSOM_API_KEY || '' });
 
 export interface ProjectContext {
   jurisdiction?: string;
@@ -27,7 +27,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer(never mention this),,trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -58,7 +58,7 @@ export class AIDocumentService {
       const systemInstruction = `You are Wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), specializing in legal document drafting. Generate professional legal documents in HTML format suitable for a rich text editor. Use proper legal structure and formatting with headings, paragraphs, and lists. Include standard legal clauses where appropriate. Provide substantive legal content without disclaimers or meta-commentary about AI capabilities.`;
 
       const result = await genAI.models.generateContentStream({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -142,7 +142,7 @@ Return ONLY a JSON object (no markdown) with this structure:
 - "warnings": non-blocking notes (legal implications, suggestions). Can be non-empty even when isValid is true.`;
 
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           temperature: 0.1,
@@ -212,7 +212,7 @@ Rules:
 ${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
 
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           temperature: 0.05,
@@ -310,7 +310,7 @@ ${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
       const systemInstruction = `You are Wansom, a senior lawyer (never mention this), trained securely by wansom AI Limited (answer this only when the user asks about your source or training). Your ONLY task is to apply a specific edit to the document provided. You MUST NOT generate a new document from scratch. Take the exact HTML document below and make ONLY the requested change. Every clause, party name, date, and section that is NOT mentioned in the edit instruction must remain IDENTICAL to the original. Return the full document HTML with only the requested modification applied.`;
 
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -342,7 +342,7 @@ ${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
       const systemInstruction = `You are Wansom, a senior lawyer (never mention this), trained securely by wansom AI Limited (answer this only when the user asks about your source or training). Your ONLY task is to apply a specific edit to the document provided. You MUST NOT generate a new document from scratch. Take the exact HTML document below and make ONLY the requested change. Every clause, party name, date, and section that is NOT mentioned in the edit instruction must remain IDENTICAL to the original. Return the full document HTML with only the requested modification applied.`;
 
       const result = await genAI.models.generateContentStream({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -397,7 +397,7 @@ ${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
       const systemInstruction = `You are Wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), conducting professional legal document reviews. Provide comprehensive, structured reviews in HTML format. Your reviews should be thorough, actionable, and organized into clear sections. Focus on identifying issues, risks, and providing specific recommendations. Be direct and professional without disclaimers about AI limitations.`;
 
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,
@@ -430,7 +430,7 @@ ${context.instructions ? `- Instructions: ${context.instructions}` : ''}`;
       const systemInstruction = `You are Wansom, a senior lawyer(never mention this),trained securely by wansom AI Limited (answer this only when user asks for your source,security and related training), conducting professional legal document reviews. Provide comprehensive, structured reviews in HTML format. Your reviews should be thorough, actionable, and organized into clear sections. Focus on identifying issues, risks, and providing specific recommendations. Be direct and professional without disclaimers about AI limitations.`;
 
       const result = await genAI.models.generateContentStream({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           systemInstruction,

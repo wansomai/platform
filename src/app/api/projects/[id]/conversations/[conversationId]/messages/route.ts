@@ -81,7 +81,7 @@ Respond with ONLY one word: edit, draft_new, or research`;
 
   try {
     const classificationResult = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: { temperature: 0, maxOutputTokens: 10 }
     });
@@ -98,7 +98,7 @@ Respond with ONLY one word: edit, draft_new, or research`;
 
 
 // Initialize Gemini with the new API
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.WANSOM_API_KEY || '' });
 
 /**
  * Fire-and-forget title generation. Runs after the stream is closed so
@@ -112,7 +112,7 @@ async function generateAndApplyTitle(
   let generatedTitle = '';
   try {
     const titleResult = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text:
         `Generate a very short title (3-6 words, no quotes) for a legal workspace conversation that starts with this message:\n\n"${userMessage.slice(0, 500)}"\n\nRespond with ONLY the title, nothing else.`
       }] }],
@@ -206,7 +206,7 @@ const DEFAULT_SETTINGS: {
   citeSources: true,
   suggestActions: true,
   webSearch: false,
-  model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+  model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
   temperature: 0.3,
   canvasMode: false,  // Canvas editing disabled by default (but core document tools are always available)
   googleCalendar: false,
@@ -1160,11 +1160,11 @@ When a user requests a document, delegate to legalDocumentAgent with detailed in
 
           // Initialize Gemini model with settings and optional Google Search grounding
           // Validate and fix model name - ensure it's a Gemini model
-          let modelName = settings.model || process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+          let modelName = settings.model || process.env.WANSOM_MODEL || 'gemini-3-flash-preview';
 
           // Check if someone accidentally set a non-Gemini model (e.g., gpt-4)
           if (!modelName.toLowerCase().startsWith('gemini')) {
-            modelName = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
+            modelName = process.env.WANSOM_MODEL || 'gemini-3-flash-preview';
           }
 
           // Configure tools based on mode

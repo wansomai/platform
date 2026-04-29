@@ -32,6 +32,7 @@ import { useOrganization, useProfile } from "@/store/profile.store";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useSession } from "next-auth/react";
 import ProAccessModal from "../modals/ProAccess";
+import EnterpriseDowngradeModal from "../modals/EnterpriseDowngradeModal";
 import { UploadDocumentModal } from "../modals/UploadModal";
 import VaultLimitModal from "../modals/VaultLimitModal";
 import { useProjectSettingsStore } from "@/store/workspace-settings.store";
@@ -84,6 +85,7 @@ export function ChatInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showProAcess, setShowProAccess] = useState(false);
+  const [showEnterpriseDowngrade, setShowEnterpriseDowngrade] = useState(false);
   const [showVaultGate, setShowVaultGate] = useState(false);
   const pendingMessageProcessedRef = useRef(false);
 
@@ -109,6 +111,20 @@ export function ChatInput({
   } = useChatStore();
   const { isUpgrading, requestUpgrade, setUpgrading } = useOrganization();
   const { user: profile, fetchProfile } = useProfile();
+
+  // Determine if the current user owns the active organization.
+  // Team members on a downgraded org cannot manage billing — they get a different gate.
+  const activeOrg = profile?.activeOrganization ?? profile?.organization;
+  const isOrgOwner = !activeOrg?.ownerId || profile?.id === activeOrg.ownerId;
+
+  const openUpgradeGate = useCallback(() => {
+    if (isOrgOwner) {
+      setShowProAccess(true);
+    } else {
+      setShowEnterpriseDowngrade(true);
+    }
+  }, [isOrgOwner]);
+
   const currentEditorHtml = useCanvasStore(state => state.currentEditorHtml);
   const setCurrentEditorHtml = useCanvasStore(state => state.setCurrentEditorHtml);
 
@@ -169,12 +185,12 @@ export function ChatInput({
     }
   }, [homepageMode, fetchProfile]);
 
-  // Show Pro Access modal when upgrade is required
+  // Show the appropriate upgrade gate when the store signals a plan limit was hit
   useEffect(() => {
     if (projectRequiresUpgrade || chatRequiresUpgrade) {
-      setShowProAccess(true);
+      openUpgradeGate();
     }
-  }, [projectRequiresUpgrade, chatRequiresUpgrade]);
+  }, [projectRequiresUpgrade, chatRequiresUpgrade, openUpgradeGate]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -553,7 +569,7 @@ export function ChatInput({
           } catch (error: any) {
             // Check if this is a subscription limit error
             if (error.status === 403 && error.requiresUpgrade) {
-              setShowProAccess(true);
+              openUpgradeGate();
               return; // Don't show generic error or clear input
             }
             throw error; // Re-throw other errors
@@ -679,7 +695,7 @@ export function ChatInput({
         } catch (error: any) {
           // Check if this is a subscription limit error
           if (error.status === 403 && error.requiresUpgrade) {
-            setShowProAccess(true);
+            openUpgradeGate();
             return; // Don't clear input if it's a subscription error
           }
           throw error; // Re-throw other errors
@@ -887,7 +903,7 @@ export function ChatInput({
         } catch (error: any) {
           // If this is a subscription limit error, show upgrade modal
           if (error.status === 403 && error.requiresUpgrade) {
-            setShowProAccess(true);
+            openUpgradeGate();
             return;
           }
           // Ignore other errors (like already assigned), continue to assign to conversation
@@ -906,7 +922,7 @@ export function ChatInput({
         } catch (error: any) {
           // If this is a subscription limit error, show upgrade modal
           if (error.status === 403 && error.requiresUpgrade) {
-            setShowProAccess(true);
+            openUpgradeGate();
             return;
           }
           throw error; // Re-throw other errors
@@ -915,7 +931,7 @@ export function ChatInput({
     } catch (error: any) {
       // Check if this is a subscription limit error
       if (error.status === 403 && error.requiresUpgrade) {
-        setShowProAccess(true);
+        openUpgradeGate();
         return;
       }
       notify.error("Failed to update AI Associate");
@@ -1711,10 +1727,15 @@ export function ChatInput({
         onClose={() => setShowProAccess(false)}
         limitType={projectRequiresUpgrade ? "projects" : "messages"}
       />
+      <EnterpriseDowngradeModal
+        open={showEnterpriseDowngrade}
+        onClose={() => setShowEnterpriseDowngrade(false)}
+        organizationName={activeOrg?.name}
+      />
       <VaultLimitModal
         open={showVaultGate}
         onClose={() => setShowVaultGate(false)}
-        onUpgrade={() => { setShowVaultGate(false); setShowProAccess(true); }}
+        onUpgrade={() => { setShowVaultGate(false); openUpgradeGate(); }}
       />
       {/* Document Selection Modal - only show in chat mode since it needs projectId */}
       {!homepageMode && (

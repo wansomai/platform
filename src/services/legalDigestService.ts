@@ -627,7 +627,7 @@ async function searchViaGeminiGrounding(
   const today = getTodayLabel();
 
   const response = await genAI.models.generateContent({
-    model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+    model:    process.env.BRIEFLY_MODEL || 'gemini-3-flash-preview',
     // Keep contents short — verbose prompts cause Gemini to generate poor Google queries.
     contents: `Today is ${today}. ${prompt}`,
     config: {

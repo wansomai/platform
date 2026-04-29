@@ -15,7 +15,7 @@ import { PracticeArea } from '@/prisma/client';
 import { GoogleGenAI } from '@google/genai';
 
 const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || ''
+  apiKey: process.env.WANSOM_API_KEY || ''
 });
 
 // Default configuration
@@ -298,7 +298,7 @@ Respond in JSON format:
 }`;
 
       const result = await genAI.models.generateContent({
-        model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+        model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         config: {
           temperature: 0.1,
