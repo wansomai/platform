@@ -25,7 +25,7 @@ import { searchAfricanLegalSources } from '@/lib/legalScraper';
 import { searchJurisdictionDatabase } from '@/services/legalDatabaseService';
 import prisma from '@/lib/prisma';
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.BRIEFLY_API_KEY || '' });
 
 // ─── Unified jurisdiction config ──────────────────────────────────────────────
 
@@ -1156,7 +1156,7 @@ Return ONLY valid JSON — no markdown fences, no extra text:
 
   const response = await withTimeout(
     genAI.models.generateContent({
-      model:    process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      model:    process.env.BRIEFLY_MODEL || '',
       contents: synthesisPrompt,
       config: { temperature: 0.2 },
     }),
