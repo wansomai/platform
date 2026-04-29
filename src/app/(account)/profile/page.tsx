@@ -276,6 +276,11 @@ const Page = () => {
   const trialExpiresAt = subscriptionStatus?.trialExpiresAt
     ? new Date(subscriptionStatus.trialExpiresAt)
     : null;
+  const isActiveGrant = subscriptionStatus?.isActiveGrant || false;
+  const grantExpiresAt = subscriptionStatus?.grantExpiresAt
+    ? new Date(subscriptionStatus.grantExpiresAt)
+    : null;
+  const grantedDuration = subscriptionStatus?.grantedDuration ?? null;
 
   const filteredMembers = getFilteredMembers();
 
@@ -349,11 +354,11 @@ const Page = () => {
 
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <div className="flex items-center gap-3">
-                        <p className="text-lg">{profile.email}</p>
+                      <div className="flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                        <p className="text-lg break-all">{profile.email}</p>
                         {profile.authProvider !== 'google' && (
                           profile.emailVerified ? (
-                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 shrink-0">
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               Verified
                             </span>
@@ -361,7 +366,7 @@ const Page = () => {
                             <button
                               onClick={handleSendVerification}
                               disabled={verifySending || verifyCooldown > 0}
-                              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-800 border border-amber-300 hover:border-amber-400 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                              className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-800 border border-amber-300 hover:border-amber-400 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed shrink-0"
                             >
                               {verifySending ? (
                                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -467,7 +472,7 @@ const Page = () => {
                       </Button>
                       {profile?.role === 'owner' && (
                         <>
-                          {isManualTrial ? (
+                          {isManualTrial || isActiveGrant ? (
                             <Button
                               onClick={() => setShowProAccess(true)}
                               className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
@@ -500,9 +505,9 @@ const Page = () => {
                     </>
                   )}
                   </div>
-                  {/* Trial expiry note — sits flush below the button row */}
+                  {/* Trial / grant expiry note — sits flush below the button row */}
                   {isManualTrial && !isEditing && profile?.role === 'owner' && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 text-center sm:text-right">
                       You&apos;re on a 15-day trial &mdash; expires{' '}
                       <span className="font-medium text-amber-600">
                         {trialExpiresAt?.toLocaleDateString('en-US', {
@@ -511,6 +516,21 @@ const Page = () => {
                           year: 'numeric',
                         })}
                       </span>
+                    </p>
+                  )}
+                  {isActiveGrant && !isEditing && profile?.role === 'owner' && (
+                    <p className="text-xs text-gray-500 text-center sm:text-right leading-relaxed">
+                      You have <span className="font-medium">{grantedDuration ?? 'granted'}</span> Pro access &mdash; expires{' '}
+                      <span className="font-medium text-amber-600">
+                        {grantExpiresAt?.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <br className="hidden sm:inline" />
+                      <span className="sm:hidden"> · </span>
+                      Upgrading adds your remaining days.
                     </p>
                   )}
                 </div>
@@ -557,7 +577,7 @@ const Page = () => {
                 </div>
 
                 {/* Search and Invite */}
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                   <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
@@ -572,9 +592,9 @@ const Page = () => {
                       placeholder="Enter email address"
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      className="w-64"
+                      className="w-full sm:w-64"
                     />
-                    <Button onClick={handleInviteMember} disabled={isInviting}>
+                    <Button onClick={handleInviteMember} disabled={isInviting} className="shrink-0">
                       {isInviting ? "Inviting..." : "Invite"}
                     </Button>
                   </div>
@@ -583,11 +603,11 @@ const Page = () => {
                 {/* Content based on active tab */}
                 {activeTab === 'members' ? (
                   /* Members Table */
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-500 border-b pb-2">
-                      <div className="col-span-4">User</div>
+                  <div className="space-y-0">
+                    <div className="hidden sm:grid sm:grid-cols-12 gap-4 text-sm font-medium text-gray-500 border-b pb-2">
+                      <div className="col-span-5">User</div>
                       <div className="col-span-3">Joined</div>
-                      <div className="col-span-3">Role</div>
+                      <div className="col-span-2">Role</div>
                       <div className="col-span-2">Actions</div>
                     </div>
 
@@ -597,29 +617,30 @@ const Page = () => {
                       <div className="text-center py-8 text-gray-500">No members found</div>
                     ) : (
                       filteredMembers.map((member) => (
-                        <div key={member.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
-                          <div className="col-span-4 flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
+                        <div key={member.id} className="flex items-center gap-3 sm:grid sm:grid-cols-12 sm:gap-4 py-3 border-b last:border-b-0">
+                          <div className="flex-1 min-w-0 flex items-center gap-3 sm:col-span-5">
+                            <Avatar className="h-8 w-8 shrink-0">
                               <AvatarImage src={member.avatar} alt={member.name} />
                               <AvatarFallback>{getUserInitials(member.name)}</AvatarFallback>
                             </Avatar>
-                            <div>
-                              <div className="font-medium flex items-center gap-2">
-                                {member.name}
+                            <div className="min-w-0">
+                              <div className="font-medium flex items-center gap-2 flex-wrap">
+                                <span className="truncate">{member.name}</span>
                                 {member.email === session?.user?.email && (
-                                  <Badge variant="outline" className="text-xs">You</Badge>
+                                  <Badge variant="outline" className="text-xs shrink-0">You</Badge>
                                 )}
                               </div>
-                              <div className="text-sm text-gray-500">{member.email}</div>
+                              <div className="text-sm text-gray-500 truncate">{member.email}</div>
+                              <div className="text-xs text-gray-400 sm:hidden capitalize">{member.role}</div>
                             </div>
                           </div>
-                          <div className="col-span-3 text-sm text-gray-600">
+                          <div className="hidden sm:block sm:col-span-3 text-sm text-gray-600">
                             {new Date(member.joinedAt).toLocaleDateString()}
                           </div>
-                          <div className="col-span-3">
+                          <div className="hidden sm:block sm:col-span-2 text-sm capitalize">
                             {member.role}
                           </div>
-                          <div className="col-span-2">
+                          <div className="shrink-0 sm:col-span-2">
                             {member.email !== session?.user?.email && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -663,11 +684,11 @@ const Page = () => {
                   </div>
                 ) : (
                   /* Invitations Table */
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-500 border-b pb-2">
-                      <div className="col-span-4">Email</div>
+                  <div className="space-y-0">
+                    <div className="hidden sm:grid sm:grid-cols-12 gap-4 text-sm font-medium text-gray-500 border-b pb-2">
+                      <div className="col-span-5">Email</div>
                       <div className="col-span-3">Sent</div>
-                      <div className="col-span-3">Role</div>
+                      <div className="col-span-2">Role</div>
                       <div className="col-span-2">Actions</div>
                     </div>
 
@@ -683,27 +704,27 @@ const Page = () => {
                       invitations.map((invitation) => {
                         const isExpired = invitation?.expiresAt && new Date(invitation.expiresAt) < new Date();
                         return (
-                        <div key={invitation?.id} className="grid grid-cols-12 gap-4 items-center py-3 border-b last:border-b-0">
-                          <div className="col-span-4 flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <div key={invitation?.id} className="flex items-center gap-3 sm:grid sm:grid-cols-12 sm:gap-4 py-3 border-b last:border-b-0">
+                          <div className="flex-1 min-w-0 flex items-center gap-3 sm:col-span-5">
+                            <div className="h-8 w-8 shrink-0 rounded-full bg-gray-100 flex items-center justify-center">
                               <Mail className="h-4 w-4 text-gray-400" />
                             </div>
-                            <div>
-                              <div className="font-medium">{invitation?.email}</div>
+                            <div className="min-w-0">
+                              <div className="font-medium truncate">{invitation?.email}</div>
                               <div className={`text-sm ${isExpired ? 'text-red-500' : 'text-gray-500'}`}>
-                                {isExpired ? 'Invitation expired' : 'Invitation pending'}
+                                {isExpired ? 'Expired' : 'Pending'}
                               </div>
                             </div>
                           </div>
-                          <div className="col-span-3 text-sm text-gray-600">
+                          <div className="hidden sm:block sm:col-span-3 text-sm text-gray-600">
                             {new Date(invitation?.createdAt).toLocaleDateString()}
                           </div>
-                          <div className="col-span-3">
+                          <div className="hidden sm:block sm:col-span-2">
                             <Badge variant={isExpired ? "destructive" : "outline"} className="capitalize">
                               {invitation?.role}
                             </Badge>
                           </div>
-                          <div className="col-span-2 flex gap-2">
+                          <div className="shrink-0 sm:col-span-2 flex gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -712,10 +733,7 @@ const Page = () => {
                               className="text-primary hover:text-amber-100"
                             >
                               {resendingInvitation === invitation.id ? (
-                                <>
-                                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                                  Resending...
-                                </>
+                                <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
                                 'Resend'
                               )}

@@ -9,6 +9,7 @@ import { extractTextFromFile } from '@/lib/documentParser';
 import { validateFile } from '@/lib/utils';
 import { ALLOWED_FILE_TYPES, FILE_UPLOAD_CONFIG } from '@/lib/utils/constants';
 import { Prisma } from '@/prisma/client';
+import { canUploadDocument } from '@/lib/subscription';
 
 // Allow up to 120 s for large file uploads + text extraction on Vercel Pro.
 export const maxDuration = 120;
@@ -108,10 +109,9 @@ export async function GET(request: NextRequest) {
 
     // --- Access enforcement ---
     //
-    // Root view: show documents the user uploaded OR documents explicitly
-    // shared with the user (via DocumentPermission). Sharing happens either
-    // directly on the document or indirectly via an AI associate whose KB
-    // includes the document.
+    // Root view: show documents the user uploaded, org-visibility documents
+    // (visibility = 'organization'), or documents explicitly shared via
+    // DocumentPermission (directly or via an AI associate KB cascade).
     //
     // Folder view: if the user can access the folder (owns it, has been
     // granted explicit permission, or the folder is org-wide), they can
@@ -150,11 +150,13 @@ export async function GET(request: NextRequest) {
       // Folder accessible — no per-document filter needed; show everything in the folder
       ownershipFilter = null;
     } else {
-      // Root / all-documents view — documents the user uploaded, plus documents
-      // shared with them (e.g. KB documents cascade-shared via an associate).
+      // Root / all-documents view — documents the user uploaded, PLUS:
+      //   • visibility = 'organization' → shared with all org members (no permission rows exist)
+      //   • visibility = 'restricted'   → shared with specific users via DocumentPermission rows
       ownershipFilter = {
         OR: [
           { created_by: userId },
+          { visibility: 'organization' },
           { permissions: { some: { userId } } }
         ]
       };
@@ -384,6 +386,15 @@ export async function POST(request: NextRequest) {
         jsonOrgId = await getActiveOrganizationId(userId);
       }
 
+      // Vault upload limit check for free-plan accounts
+      const vaultCheck = await canUploadDocument(jsonOrgId, userId);
+      if (!vaultCheck.allowed) {
+        return NextResponse.json(
+          { message: vaultCheck.reason, error: true, requiresUpgrade: true },
+          { status: 403 }
+        );
+      }
+
       // Folder permission check
       if (jsonFolderId) {
         const folder = await prisma.folder.findUnique({
@@ -532,6 +543,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Vault upload limit check for free-plan accounts
+    const vaultCheckMultipart = await canUploadDocument(organizationId, userId);
+    if (!vaultCheckMultipart.allowed) {
+      return NextResponse.json(
+        { message: vaultCheckMultipart.reason, error: true, requiresUpgrade: true },
+        { status: 403 }
+      );
+    }
+
     // If folderId is provided, verify it exists and that the user can upload to it.
     // For restricted folders: only the creator or explicitly-permitted users may upload.
     if (folderId) {

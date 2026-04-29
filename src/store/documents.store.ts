@@ -204,11 +204,13 @@ export const useDocumentsStore = create<ExtendedDocumentsState>()(
           
           return newDocument;
         } catch (error: any) {
+          // requiresUpgrade errors are handled by the caller (gate modal) — don't pollute store error state
+          if (error?.requiresUpgrade || error?.response?.data?.requiresUpgrade) {
+            set({ isLoading: false });
+            throw error;
+          }
           const errorMessage = error.response?.data?.message || error.message || 'Failed to upload document';
-          set({ 
-            error: errorMessage, 
-            isLoading: false 
-          });
+          set({ error: errorMessage, isLoading: false });
           throw error;
         }
       },

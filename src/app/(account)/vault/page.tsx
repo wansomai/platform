@@ -73,6 +73,8 @@ import { DocumentPermissionModal } from "@/components/documents/DocumentPermissi
 import { ComponentLoading, EmptyDocuments } from "@/components/commons/LoadingState"
 import { UploadDocumentModal } from "@/components/modals/UploadModal"
 import { DeleteConfirmationDialog } from "@/components/modals/ConfirmationDialog"
+import VaultLimitModal from "@/components/modals/VaultLimitModal"
+import ProAccessModal from "@/components/modals/ProAccess"
 
 // Document Type Icons component
 const DocumentTypeIcon = ({ fileType }: { fileType: string }) => {
@@ -144,6 +146,8 @@ export default function VaultPage() {
   
   // Modal states
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showVaultGate, setShowVaultGate] = useState(false);
+  const [showProAccess, setShowProAccess] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<{id: string; name: string} | null>(null);
@@ -1198,8 +1202,21 @@ export default function VaultPage() {
         onOpenChange={setShowUploadModal}
         mode="upload"
         onDocumentsAdded={handleDocumentUploaded}
+        onUpgradeRequired={() => setShowVaultGate(true)}
         title="Upload Files"
         description=""
+      />
+
+      {/* Vault limit gate */}
+      <VaultLimitModal
+        open={showVaultGate}
+        onClose={() => setShowVaultGate(false)}
+        onUpgrade={() => { setShowVaultGate(false); setShowProAccess(true); }}
+      />
+      <ProAccessModal
+        isOpen={showProAccess}
+        onClose={() => setShowProAccess(false)}
+        limitType="general"
       />
       
       {/* Delete Confirmation Dialog */}

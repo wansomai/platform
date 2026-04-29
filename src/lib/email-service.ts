@@ -1567,60 +1567,60 @@ export function sendVerificationEmail(user: { email: string; fullName?: string |
   console.log(`[email:verification] Queuing verification email — to:"${user.email}" url:"${verificationUrl}"`);
   const name = user.fullName?.split(' ')[0] || 'there';
   const subject = 'Verify your email — Wansom AI';
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-</head>
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
-    <tr><td align="center">
-      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
-        <!-- Header -->
-        <tr>
-          <td bgcolor="#0a4b5e" style="background:linear-gradient(135deg,#0a4b5e,#005c4d);padding:28px 40px;text-align:center;">
-            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Wansom <span style="color:#7ee8c8;">AI</span></p>
-            <p style="margin:4px 0 0;font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:1.5px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Legal Intelligence Platform</p>
-          </td>
-        </tr>
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
 
-        <!-- Body -->
-        <tr>
-          <td style="padding:36px 40px 28px;">
-            <p style="margin:0 0 6px;font-size:22px;font-weight:700;color:#18181b;">Hi ${name} 👋</p>
-            <p style="margin:0 0 24px;font-size:15px;color:#52525b;line-height:1.7;">You're almost ready! Please confirm your email address so we know it's really you. This keeps your workspace secure and unlocks all features.</p>
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 20px; margin: 12px 0 4px 0;">Verify Your Email Address</h1>
+        </div>
 
-            <!-- CTA Button -->
-            <table cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 28px;">
-              <tr>
-                <td align="center" bgcolor="#0a4b5e" style="background:linear-gradient(135deg,#0a4b5e,#005c4d);border-radius:8px;">
-                  <a href="${verificationUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:0.2px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">Verify my email &#8594;</a>
-                </td>
-              </tr>
-            </table>
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hi ${name},</p>
 
-            <p style="margin:0 0 6px;font-size:13px;color:#71717a;">Button not working? Copy and paste this link into your browser:</p>
-            <p style="margin:0 0 24px;font-size:12px;color:#0a4b5e;word-break:break-all;">${verificationUrl}</p>
+          <p style="font-size: 14px; color: #4a4a4a;">
+            You're almost ready! Please confirm your email address so we know it's really you.
+            This keeps your workspace secure and unlocks all features.
+          </p>
 
-            <hr style="border:none;border-top:1px solid #f0f0f0;margin:0 0 20px;"/>
-            <p style="margin:0;font-size:13px;color:#a1a1aa;line-height:1.6;">This link expires in <strong style="color:#71717a;">24 hours</strong>. If you didn't create a Wansom AI account, you can safely ignore this email.</p>
-          </td>
-        </tr>
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${verificationUrl}" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 13px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px;">Verify My Email</a>
+          </div>
 
-        <!-- Footer -->
-        <tr>
-          <td style="padding:18px 40px;background:#fafafa;border-top:1px solid #f0f0f0;text-align:center;">
-            <p style="margin:0;font-size:12px;color:#a1a1aa;">Wansom AI &nbsp;&middot;&nbsp; Legal Intelligence Platform &nbsp;&middot;&nbsp; <a href="mailto:support@wansom.ai" style="color:#a1a1aa;text-decoration:none;">support@wansom.ai</a></p>
-          </td>
-        </tr>
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 13px; color: #4a4a4a;">
+              Button not working? Copy and paste this link into your browser:<br>
+              <a href="${verificationUrl}" style="color: #0a4b5e; word-break: break-all; font-size: 12px;">${verificationUrl}</a>
+            </p>
+          </div>
 
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+          <p style="font-size: 13px; color: #71717a; margin: 0;">
+            This link expires in <strong>24 hours</strong>. If you didn't create a Wansom AI account, you can safely ignore this email.
+          </p>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this email because you signed up for Wansom AI.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
   return sendEmail({ to: user.email, subject, html });
 }
 
@@ -1956,4 +1956,300 @@ export function sendGrantExpiryEmail(
     subject: 'Your Wansom AI Pro access has ended',
     html,
   });
+}
+
+/**
+ * Onboarding email 1 — sent 1 hour after signup.
+ * Goal: get the user to create their first matter and ask the AI their first question.
+ */
+export function sendOnboarding1hEmail(user: { email: string; fullName?: string | null }) {
+  const name = user.fullName?.split(' ')[0] || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const subject = 'Your Wansom workspace is ready — try it now';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 20px; margin: 12px 0 4px 0;">Your Workspace Is Ready</h1>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hi ${name},</p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Welcome to Wansom AI. Your workspace is set up and ready — all that's missing is your first question.
+          </p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Open a new matter, type in a legal question, and let Wansom handle it. Whether it's drafting a clause,
+            researching a point of law, or summarizing a document — it takes seconds.
+          </p>
+
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 20px 0;">
+            <p style="margin: 0; font-size: 13px; color: #4a4a4a;">
+              <strong>Quick tip:</strong> Type your question exactly like you'd ask a colleague — no special commands needed.
+            </p>
+          </div>
+
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${appUrl}/dashboard" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 13px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px;">Open My Workspace</a>
+          </div>
+
+          <p style="font-size: 14px; color: #4a4a4a;">
+            If you run into anything, reply to this email — we're here to help.
+          </p>
+
+          <p style="font-size: 14px; color: #4a4a4a;">
+            The Wansom Team
+          </p>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this because you signed up for Wansom AI.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({ to: user.email, subject, html });
+}
+
+/**
+ * Onboarding email 2 — sent 10 hours after signup.
+ * Goal: introduce the Document Vault — upload a document and ask AI questions about it.
+ */
+export function sendOnboarding10hEmail(user: { email: string; fullName?: string | null }) {
+  const name = user.fullName?.split(' ')[0] || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const subject = 'One habit that saves lawyers hours every week';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 20px; margin: 12px 0 4px 0;">Your Document Vault</h1>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hi ${name},</p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Here's the habit that the most productive lawyers on Wansom have in common: they upload their documents to the Vault.
+          </p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Once a contract, agreement, or brief is in your Vault, you can ask Wansom anything about it:
+          </p>
+
+          <ul style="padding-left: 20px; color: #4a4a4a; font-size: 14px; line-height: 2;">
+            <li>"What's the termination clause in this agreement?"</li>
+            <li>"Summarize the obligations of each party."</li>
+            <li>"Flag any unusual indemnity provisions."</li>
+          </ul>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Your documents stay private and secure — they never leave your workspace.
+          </p>
+
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${appUrl}/vault" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 13px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px;">Open My Vault</a>
+          </div>
+
+          <p style="font-size: 14px; color: #4a4a4a;">
+            The Wansom Team
+          </p>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this because you signed up for Wansom AI.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({ to: user.email, subject, html });
+}
+
+/**
+ * Onboarding email 3 — sent 24 hours after signup.
+ * Goal: introduce AI Associates — plant the seed for the Pro upgrade.
+ */
+export function sendOnboarding24hEmail(user: { email: string; fullName?: string | null }) {
+  const name = user.fullName?.split(' ')[0] || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const subject = 'Your AI teammate is waiting — meet AI Associates';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 20px; margin: 12px 0 4px 0;">Work Smarter with AI Associates</h1>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hi ${name},</p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            The most productive lawyers on Wansom don't just use the AI — they <strong>train it</strong>.
+          </p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            AI Associates are custom AI teammates you build for your specific practice. You choose the practice area,
+            upload your reference documents, and the Associate learns your jurisdiction, your style, and your workflow.
+          </p>
+
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 20px 0;">
+            <p style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: #0a4b5e;">What an Associate can do for you:</p>
+            <ul style="margin: 0; padding-left: 18px; color: #4a4a4a; font-size: 13px; line-height: 2;">
+              <li>Draft contracts in your firm's preferred format</li>
+              <li>Research cases and statutes in your jurisdiction</li>
+              <li>Review documents against your checklist of risks</li>
+              <li>Respond to client questions in your voice</li>
+            </ul>
+          </div>
+
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${appUrl}/workflows/new" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 13px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px;">Create My First Associate</a>
+          </div>
+
+          <p style="font-size: 13px; color: #71717a;">
+            AI Associates are available on the Explorer and Pro plans. Start a free 14-day Explorer trial directly from the page above — no card required.
+          </p>
+
+          <p style="font-size: 14px; color: #4a4a4a; margin-top: 20px;">
+            The Wansom Team
+          </p>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this because you signed up for Wansom AI.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({ to: user.email, subject, html });
+}
+
+/**
+ * Onboarding email 4 — sent 3 days after signup.
+ * Goal: introduce Briefly by Wansom — free for everyone, one-click activation.
+ */
+export function sendOnboarding3dEmail(user: { email: string; fullName?: string | null }) {
+  const name = user.fullName?.split(' ')[0] || 'there';
+  const appUrl = process.env.NEXTAUTH_URL || 'https://wansom.ai';
+  const subject = 'Your daily legal brief — activate Briefly by Wansom';
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; background-color: #f5f5f5;">
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+        <div style="background-color: #0a4b5e; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <img src="https://wansom.ai/images/logo-dark.png" alt="Wansom" style="max-width: 160px; height: auto;">
+          <h1 style="color: white; font-size: 20px; margin: 12px 0 4px 0;">Briefly by Wansom</h1>
+          <p style="color: rgba(255,255,255,0.75); font-size: 13px; margin: 0;">Your personalized legal news digest</p>
+        </div>
+
+        <div style="background-color: white; padding: 28px; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 15px;">Hi ${name},</p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Staying on top of legal developments used to mean scanning news sites, LII databases, and court websites every morning. <strong>Briefly does that for you.</strong>
+          </p>
+
+          <p style="font-size: 14px; color: #4a4a4a; line-height: 1.7;">
+            Every day — or every week, your choice — you get a personalized digest of the cases, statutes, and legal news
+            that matter to your practice area and jurisdiction. Curated and summarized by AI, delivered to your inbox
+            before your first meeting.
+          </p>
+
+          <div style="background-color: #f0f9ff; border-left: 4px solid #0a4b5e; padding: 14px 16px; border-radius: 0 6px 6px 0; margin: 20px 0;">
+            <p style="margin: 0 0 6px; font-size: 13px; font-weight: 600; color: #0a4b5e;">What you choose when you activate:</p>
+            <ul style="margin: 0; padding-left: 18px; color: #4a4a4a; font-size: 13px; line-height: 2;">
+              <li>Your jurisdiction (Kenya, Nigeria, South Africa, Ghana, and more)</li>
+              <li>Your practice areas (Corporate, Litigation, Real Estate, and more)</li>
+              <li>Your frequency — daily or weekly</li>
+            </ul>
+          </div>
+
+          <div style="background-color: #e6f7ee; border-left: 4px solid #00a86b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 20px 0;">
+            <p style="margin: 0; font-size: 13px; font-weight: 600; color: #00a86b;">Briefly is free for all Wansom users. Takes 2 minutes to set up.</p>
+          </div>
+
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${appUrl}/workflows/template/briefly-by-wansom" style="display: inline-block; background-color: #0a4b5e; color: white; padding: 13px 32px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px;">Activate Briefly Now</a>
+          </div>
+
+          <p style="font-size: 14px; color: #4a4a4a;">
+            The Wansom Team
+          </p>
+        </div>
+
+        <div style="text-align: center; padding: 16px; font-size: 12px; color: #666666;">
+          <p>&copy; ${new Date().getFullYear()} Wansom AI Ltd. All rights reserved.</p>
+          <p>
+            <a href="https://x.com/wansom_ai" style="color: #666; text-decoration: none;">Twitter</a> |
+            <a href="https://www.linkedin.com/company/wansom-ai" style="color: #666; text-decoration: none;">LinkedIn</a>
+          </p>
+          <p>You're receiving this because you signed up for Wansom AI.</p>
+        </div>
+
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({ to: user.email, subject, html });
 }

@@ -65,11 +65,16 @@ export async function GET(
       select: {
         ownerId: true,
         owner: { select: { id: true, fullName: true, email: true } },
+        // Secondary memberships (UserOrganization — invited from elsewhere)
         members: {
           select: {
             role: true,
             user: { select: { id: true, fullName: true, email: true } },
           },
+        },
+        // Primary-org members (User.organizationId — auto-created on signup)
+        users: {
+          select: { id: true, fullName: true, email: true },
         },
       },
     });
@@ -78,6 +83,16 @@ export async function GET(
       string,
       { id: string; name: string; email: string; role: string }
     >();
+    // Primary-org users first (not in UserOrganization)
+    for (const u of org?.users ?? []) {
+      memberMap.set(u.id, {
+        id: u.id,
+        name: u.fullName || u.email,
+        email: u.email,
+        role: u.id === org?.ownerId ? 'owner' : 'member',
+      });
+    }
+    // Secondary memberships (invited into this org)
     for (const m of org?.members ?? []) {
       memberMap.set(m.user.id, {
         id: m.user.id,
@@ -173,18 +188,27 @@ export async function PUT(
     );
 
     // Validate that every target user is a member of the active organization.
+    // Must check BOTH UserOrganization (secondary) AND User.organizationId (primary),
+    // since primary-org members are not present in UserOrganization.
     if (cleanUserIds.length > 0) {
-      const [members, org] = await Promise.all([
+      const [secondaryMembers, primaryMembers, org] = await Promise.all([
         prisma.userOrganization.findMany({
           where: { organizationId, userId: { in: cleanUserIds } },
           select: { userId: true },
+        }),
+        prisma.user.findMany({
+          where: { organizationId, id: { in: cleanUserIds } },
+          select: { id: true },
         }),
         prisma.organization.findUnique({
           where: { id: organizationId },
           select: { ownerId: true },
         }),
       ]);
-      const valid = new Set(members.map((m: any) => m.userId));
+      const valid = new Set([
+        ...secondaryMembers.map((m: any) => m.userId),
+        ...primaryMembers.map((m: any) => m.id),
+      ]);
       if (org?.ownerId) valid.add(org.ownerId);
       const invalid = cleanUserIds.filter((uid) => !valid.has(uid));
       if (invalid.length > 0) {

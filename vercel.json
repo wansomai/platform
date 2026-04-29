@@ -35,6 +35,10 @@
     {
       "path": "/api/cron/notification-cleanup",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/onboarding-emails",
+      "schedule": "*/30 * * * *"
     }
   ],
   "redirects": [

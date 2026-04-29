@@ -195,6 +195,42 @@ export async function getRemainingUsage(organizationId: string): Promise<{
   };
 }
 
+export const FREE_PLAN_VAULT_LIMIT = 3;
+
+/**
+ * Check if a free-plan user can upload another document to the vault.
+ * Pro/Enterprise/Explorer/Trial accounts have no limit.
+ */
+export async function canUploadDocument(
+  organizationId: string,
+  userId: string
+): Promise<{ allowed: boolean; reason?: string; current: number; limit: number }> {
+  const planInfo = await getUserPlanInfo(organizationId);
+
+  if (planInfo.limits.hasProAccess) {
+    return { allowed: true, current: 0, limit: -1 };
+  }
+
+  const docCount = await prisma.document.count({
+    where: {
+      organization_id: organizationId,
+      created_by: userId,
+      status: 'active',
+    },
+  });
+
+  if (docCount >= FREE_PLAN_VAULT_LIMIT) {
+    return {
+      allowed: false,
+      reason: `Free accounts can upload up to ${FREE_PLAN_VAULT_LIMIT} documents. Upgrade to Pro for unlimited uploads.`,
+      current: docCount,
+      limit: FREE_PLAN_VAULT_LIMIT,
+    };
+  }
+
+  return { allowed: true, current: docCount, limit: FREE_PLAN_VAULT_LIMIT };
+}
+
 /**
  * Check if user can use AI Associates (premium feature)
  */

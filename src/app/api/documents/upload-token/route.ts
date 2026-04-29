@@ -12,12 +12,20 @@ export const maxDuration = 60;
  * The browser calls this, then uploads the file directly to Vercel Blob,
  * bypassing the serverless function body size limit entirely.
  * DB record creation is handled separately via POST /api/documents (JSON body).
+ *
+ * NOTE: The vault document limit is NOT checked here — the Vercel Blob SDK swallows
+ * non-200 responses from this endpoint and throws a generic error that the client
+ * cannot distinguish from other failures. The limit is enforced at POST /api/documents
+ * (the registration step) which goes through apiService and correctly surfaces
+ * requiresUpgrade: true to the UI gate.
  */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const userId = session.user.id;
 
   try {
     const body = (await request.json()) as HandleUploadBody;
@@ -29,7 +37,7 @@ export async function POST(request: NextRequest) {
         return {
           allowedContentTypes: ALLOWED_FILE_TYPES,
           maximumSizeInBytes: FILE_UPLOAD_CONFIG.MAX_SIZE,
-          tokenPayload: session.user.id,
+          tokenPayload: userId,
         };
       },
       onUploadCompleted: async () => {

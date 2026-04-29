@@ -42,16 +42,18 @@ interface UploadDocumentModalProps {
   mode: 'upload' | 'select' | 'upload-and-attach';
   projectId?: string;
   onDocumentsAdded?: (documents: Document[]) => void;
+  onUpgradeRequired?: () => void;
   title?: string;
   description?: string;
 }
 
-export function UploadDocumentModal({ 
-  open, 
-  onOpenChange, 
+export function UploadDocumentModal({
+  open,
+  onOpenChange,
   mode = 'upload',
   projectId,
   onDocumentsAdded,
+  onUpgradeRequired,
   title,
   description
 }: UploadDocumentModalProps) {
@@ -342,6 +344,13 @@ export function UploadDocumentModal({
             uploadedKeys.add(key);
           }
         } catch (err: any) {
+          // Vault limit hit — POST /api/documents returned 403 requiresUpgrade
+          const isVaultLimit = err?.requiresUpgrade || err?.response?.data?.requiresUpgrade;
+          if (isVaultLimit) {
+            onOpenChange(false);
+            onUpgradeRequired?.();
+            return;
+          }
           if (err.response?.status === 409) {
             // Server detected a name conflict — mark file for rename and keep in queue
             serverConflictKeys.add(key);
@@ -386,6 +395,11 @@ export function UploadDocumentModal({
         onOpenChange(false);
       }
     } catch (error: any) {
+      if (error?.requiresUpgrade || error?.response?.data?.requiresUpgrade) {
+        onOpenChange(false);
+        onUpgradeRequired?.();
+        return;
+      }
       const errorMsg = error.response?.data?.message || error.message || 'Upload failed';
       setUploadError(errorMsg);
       notify.error(errorMsg);
