@@ -34,8 +34,9 @@ const Law360Components = () => {
         <HeroSection onActivate={handleActivate} />
         <FeaturesSection onActivate={handleActivate} />
         <UseCasesSection onActivate={handleActivate} />
+         <StatSection />
         <CTASection onActivate={handleActivate} />
-        <StatSection />
+       
       </main>
       <Footer/>
       <ActivationModal open={modalOpen} onOpenChange={setModalOpen} />
@@ -57,11 +58,11 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
         <div className=" space-y-8">
           <div className="space-y-6 max-w-4xl">
             <h1 className=" text-heading-1 mb-4 text-black text-shadow-2xs font-bold font-serif">
-            Legal intelligence in your inbox, <br/>all year round  powered by <br/> Wansom AI.
+            Legal intelligence you can trust, <br/>powered by Wansom AI.
             </h1>
 
             <p className="text-lg md:text-xl max-w-3xl  mb-8  text-gray-600Book">
-            Our AI sources,organizes and sends you with timely updates on the latest caselaw summaries,legal news, insights, and trends to keep you ahead in the ever-evolving legal landscape.
+            Wansom AI sources,organizes and sends you with timely legal updates on the latest caselaw summaries,legal news, insights, and trends to keep you ahead in the ever-evolving legal landscape.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
             <button
@@ -262,47 +263,69 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
 };
 
 const StatSection = () => {
-    return (
-        <section className="bg-gray-50 py-16">
-        <div className="section-container mb-10">
-            <h2 className="text-heading-2 mb-12 text-center text-gray-900">
-            Trusted by Legal Professionals Worldwide
-            </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                 {/* Stat 1 */}
-            <div className="text-center">
-              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
-                3000+
-              </h3>
-              <p className="text-md text-gray-600">
-                Daily Insights Delivered
-              </p>
-            </div>
+  const stats = [
+    {
+      label: "Daily Insights",
+      description: "Wansom AI curates and delivers thousands of legal updates daily, keeping you ahead in the ever-evolving legal landscape with timely, reliable intelligence.",
+      value: "3,000+",
+    },
+    {
+      label: "Partner Firms",
+      description: "Trusted by leading law firms and legal organizations across Africa and beyond to power their legal intelligence workflows.",
+      value: "50+",
+    },
+    {
+      label: "Practice Areas",
+      description: "From litigation to corporate law, our AI covers a comprehensive range of practice areas and jurisdictions across the continent.",
+      value: "97%",
+    },
+    {
+      label: "Jurisdictions",
+      description: "Receive jurisdiction-specific legal updates tailored to your market, with coverage spanning East, West, and Southern Africa.",
+      value: "20+",
+    },
+  ];
 
-            {/* Stat 2 */}
-            <div className="text-center">
-              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
-                50+
-              </h3>
-              <p className="text-md text-gray-600">
-                PARTNER FIRMS AND LEGAL ORGANIZATIONS
-              </p>
-            </div>
+  return (
+    <section className="bg-white py-16">
+      <div className="section-container">
+        <div className="mb-10">
 
-            {/* Stat 3 */}
-            <div className="text-center">
-              <h3 className="text-6xl lg:text-7xl font-serif text-gray-900 mb-4">
-                97%
-              </h3>
-              <p className="text-md text-gray-600">
-  Practice areas covered across multiple jurisdictions
-              </p>
-            </div>
-          </div>
+          <h2 className="text-4xl md:text-5xl font-serif text-gray-900 leading-tight">
+           Legal intelligence <br /> backed by expert insights
+          </h2>
         </div>
+
+        <div className="border-t border-gray-200">
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-12 gap-6 md:gap-10 py-8 md:py-10 border-b border-gray-200 items-center"
+            >
+              <div className="col-span-12 md:col-span-3">
+                <span className="text-sm md:text-base font-semibold text-gray-800">
+                  {stat.label}
+                </span>
+              </div>
+              <div className="col-span-12 md:col-span-5">
+                <p className="text-sm md:text-base text-gray-500 leading-relaxed">
+                  {stat.description}
+                </p>
+              </div>
+              <div className="col-span-12 md:col-span-4 md:text-right">
+                <span className="text-5xl md:text-6xl lg:text-7xl font-light text-secondary">
+                  {stat.value}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-12">
         <BrandLogos />
-      </section>
-    );  
+      </div>
+    </section>
+  );
 }
 
 function CTASection({ onActivate }: { onActivate: () => void }) {
