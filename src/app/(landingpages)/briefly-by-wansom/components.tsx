@@ -57,11 +57,11 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
         <div className=" space-y-8">
           <div className="space-y-6 max-w-4xl">
             <h1 className=" text-heading-1 mb-4 text-black text-shadow-2xs font-bold font-serif">
-            Legal intelligence in your inbox, <br/>all year round  powered by <br/> Wansom AI.
+            Legal intelligence you can trust, <br/>powered by Wansom AI.
             </h1>
 
             <p className="text-lg md:text-xl max-w-3xl  mb-8  text-gray-600Book">
-            Our AI sources,organizes and sends you with timely updates on the latest caselaw summaries,legal news, insights, and trends to keep you ahead in the ever-evolving legal landscape.
+            Wansom AI sources,organizes and sends you with timely legal updates on the latest caselaw summaries,legal news, insights, and trends to keep you ahead in the ever-evolving legal landscape.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
             <button
