@@ -576,7 +576,7 @@ const ChatMessageItem = React.memo(({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`h-8 gap-1.5 ${copied ? 'min-w-[72px] text-green-600' : 'w-8 px-0'}`}
+                className={`h-8 gap-1.5 ${copied ? 'min-w-[72px] text-green-600' : 'w-8 px-0 text-gray-400 hover:text-gray-600'}`}
                 onClick={handleCopy}
               >
                 {copied ? (

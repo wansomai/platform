@@ -33,6 +33,8 @@ import {
   MoreVertical,
   UserPlus,
   Trash2,
+  Pin,
+  PinOff,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useProjectStore } from "@/store/project.store";
@@ -40,6 +42,7 @@ import CreateProjectModal from "@/components/projects/CreateProjectModal";
 import { WorkspacePermissionModal } from "@/components/projects/WorkspacePermissionModal";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useProfile } from "@/store/profile.store";
+import { apiService } from "@/lib/api";
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -58,16 +61,41 @@ export default function ProjectsPage() {
   const [selectedProjectForMembers, setSelectedProjectForMembers] = useState<{ id: string; title: string } | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<{ id: string; title: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  // pinnedProjectIds: ordered array preserving FIFO pin order
+  const [pinnedProjectIds, setPinnedProjectIds] = useState<string[]>([]);
 
   // Track if we've already handled the connection notification
   const connectionHandledRef = useRef(false);
 
-  // Fetch projects and profile when component mounts
+  // Fetch projects, profile, and pin state on mount
   useEffect(() => {
     fetchProjects();
-    // Fetch fresh profile to ensure we have latest activeOrganizationId
     fetchProfile(true);
+    apiService.get<{ data: Array<{ itemId: string }> }>('/api/pins?itemType=project')
+      .then(({ data }) => {
+        if (Array.isArray(data)) {
+          setPinnedProjectIds(data.map((p) => p.itemId));
+        }
+      })
+      .catch(() => {});
   }, [fetchProjects, fetchProfile]);
+
+  const handleToggleProjectPin = async (projectId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const isPinned = pinnedProjectIds.includes(projectId);
+    // Optimistic update
+    setPinnedProjectIds(prev =>
+      isPinned ? prev.filter(id => id !== projectId) : [...prev, projectId]
+    );
+    try {
+      await apiService.post('/api/pins', { itemType: 'project', itemId: projectId });
+    } catch {
+      // Revert on failure
+      setPinnedProjectIds(prev =>
+        isPinned ? [...prev, projectId] : prev.filter(id => id !== projectId)
+      );
+    }
+  };
 
   // Handle Google connection notifications
   useEffect(() => {
@@ -119,19 +147,23 @@ export default function ProjectsPage() {
       })
     : [];
   
-  // Sort projects
+  // Sort projects — pinned first (FIFO order), then favorites, then selected criteria
   const sortedProjects = [...filteredProjects].sort((a, b) => {
-    let result = 0;
-    
-    // Check if either project is in favorites
+    const aPin = pinnedProjectIds.indexOf(a.id);
+    const bPin = pinnedProjectIds.indexOf(b.id);
+    const aPinned = aPin !== -1;
+    const bPinned = bPin !== -1;
+
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+    if (aPinned && bPinned) return aPin - bPin; // preserve FIFO
+
     const aIsFavorite = favoriteProjects.includes(a.id);
     const bIsFavorite = favoriteProjects.includes(b.id);
-    
-    // Favorites always come first
     if (aIsFavorite && !bIsFavorite) return -1;
     if (!aIsFavorite && bIsFavorite) return 1;
-    
-    // Then sort by the selected criteria
+
+    let result = 0;
     switch (sortBy) {
       case "name":
         result = a.title.localeCompare(b.title);
@@ -151,8 +183,6 @@ export default function ProjectsPage() {
       default:
         result = 0;
     }
-    
-    // Apply sort order
     return sortOrder === "asc" ? -result : result;
   });
 
@@ -258,9 +288,12 @@ export default function ProjectsPage() {
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <CardTitle
-                    className="flex-1 truncate mr-2"
+                    className="flex-1 truncate mr-2 flex items-center gap-1.5"
                     onClick={() => router.push(`/projects/${project.id}`)}
                   >
+                    {pinnedProjectIds.includes(project.id) && (
+                      <Pin className="h-3 w-3 text-amber-500 shrink-0" />
+                    )}
                     {project.title}
                   </CardTitle>
                   <DropdownMenu>
@@ -270,6 +303,14 @@ export default function ProjectsPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={(e) => handleToggleProjectPin(project.id, e)}
+                      >
+                        {pinnedProjectIds.includes(project.id)
+                          ? <><PinOff className="h-4 w-4 mr-2" />Unpin</>
+                          : <><Pin className="h-4 w-4 mr-2" />Pin to top</>}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={(e) => {
                           e.stopPropagation();

@@ -382,6 +382,7 @@ exports.Prisma.ConversationScalarFieldEnum = {
   title: 'title',
   projectId: 'projectId',
   isPinned: 'isPinned',
+  pinnedMessageId: 'pinnedMessageId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   aiAssociateId: 'aiAssociateId',
@@ -681,6 +682,14 @@ exports.Prisma.NotificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PinnedItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  itemType: 'itemType',
+  itemId: 'itemId',
+  pinnedAt: 'pinnedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -797,7 +806,8 @@ exports.Prisma.ModelName = {
   legal_knowledge: 'legal_knowledge',
   legal_knowledge_chunks: 'legal_knowledge_chunks',
   AdminLog: 'AdminLog',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  PinnedItem: 'PinnedItem'
 };
 
 /**

@@ -6,7 +6,7 @@ import type { LegalKnowledgeType, Jurisdiction } from '@/types/legalKnowledge';
 import { PracticeArea } from '@/prisma/client';
 
 const genAI = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || ''
+  apiKey: process.env.WANSOM_API_KEY || ''
 });
 
 interface ClassificationResult {
@@ -101,7 +101,7 @@ Respond ONLY with valid JSON, no other text:`;
 
   try {
     const result = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         temperature: 0.1,

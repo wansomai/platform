@@ -282,6 +282,13 @@ const Page = () => {
     : null;
   const grantedDuration = subscriptionStatus?.grantedDuration ?? null;
 
+  // Latest expiry across both active windows (trial and/or grant)
+  const effectiveExpiry: Date | null = (() => {
+    if (trialExpiresAt && grantExpiresAt)
+      return trialExpiresAt > grantExpiresAt ? trialExpiresAt : grantExpiresAt;
+    return trialExpiresAt ?? grantExpiresAt;
+  })();
+
   const filteredMembers = getFilteredMembers();
 
   const getUserInitials = (name: string) => {
@@ -505,32 +512,17 @@ const Page = () => {
                     </>
                   )}
                   </div>
-                  {/* Trial / grant expiry note — sits flush below the button row */}
-                  {isManualTrial && !isEditing && profile?.role === 'owner' && (
+                  {/* Pro access expiry note — shown to owner whenever trial or grant is active */}
+                  {(isManualTrial || isActiveGrant) && !isEditing && profile?.role === 'owner' && effectiveExpiry && (
                     <p className="text-xs text-gray-500 text-center sm:text-right">
-                      You&apos;re on a 15-day trial &mdash; expires{' '}
+                      Pro access &middot; expires{' '}
                       <span className="font-medium text-amber-600">
-                        {trialExpiresAt?.toLocaleDateString('en-US', {
-                          month: 'long',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </span>
-                    </p>
-                  )}
-                  {isActiveGrant && !isEditing && profile?.role === 'owner' && (
-                    <p className="text-xs text-gray-500 text-center sm:text-right leading-relaxed">
-                      You have <span className="font-medium">{grantedDuration ?? 'granted'}</span> Pro access &mdash; expires{' '}
-                      <span className="font-medium text-amber-600">
-                        {grantExpiresAt?.toLocaleDateString('en-US', {
+                        {effectiveExpiry.toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
                         })}
                       </span>
-                      <br className="hidden sm:inline" />
-                      <span className="sm:hidden"> · </span>
-                      Upgrading adds your remaining days.
                     </p>
                   )}
                 </div>

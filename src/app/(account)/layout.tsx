@@ -212,7 +212,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   // Sidebar content
   const sidebarContent = (isMobile = false) => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
       {/* User profile */}
       <div
         className={cn(
@@ -417,7 +417,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         )}
       >
         {/* Sidebar header */}
-        <div className="flex h-16 items-center justify-between border-b px-4">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b px-4">
           {!collapsed && (
             <Link href="/dashboard" className="flex items-center">
               <img
@@ -457,9 +457,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-[280px]">
+                <SheetContent side="left" className="p-0 w-[280px] flex flex-col">
                   <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-                  <div className="flex h-16 items-center justify-between border-b px-4">
+                  <div className="flex h-16 shrink-0 items-center justify-between border-b px-4">
                     <Link href="/dashboard" className="flex items-center">
                       <img
                         src="/logo-lg.png"

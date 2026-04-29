@@ -17,6 +17,8 @@ import {
   AlertTriangle,
   UserPlus,
   Users,
+  Pin,
+  PinOff,
 } from "lucide-react";
 import { AssociatePermissionModal } from "@/components/associates/AssociatePermissionModal";
 import { AIAssociate, PracticeArea, PRACTICE_AREA_LABELS } from "@/types";
@@ -41,6 +43,7 @@ import ProAccessModal from "@/components/modals/ProAccess";
 import AssociateGateModal from "@/components/modals/AssociateGateModal";
 import { useOrganization } from "@/store/profile.store";
 import { premadeAssociates } from "@/lib/constants/premadeAssociates";
+import { apiService } from "@/lib/api";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,6 +66,7 @@ export default function WorkflowsPage() {
   const [showHardDeleteDialog, setShowHardDeleteDialog] = useState(false);
   const [showProAccess, setShowProAccess] = useState(false);
   const [showAssociateGate, setShowAssociateGate] = useState(false);
+  const [pinnedAssociateIds, setPinnedAssociateIds] = useState<string[]>([]);
   const [associateToShare, setAssociateToShare] = useState<{
     id: string;
     name: string;
@@ -85,12 +89,33 @@ export default function WorkflowsPage() {
     isProcessing,
   } = useAssociates();
 
-  // Always force-refresh on mount so the list reflects the latest server state
-  // (handles deleted/created associates from other sessions or navigations)
+  // Always force-refresh on mount; also load pin state
   useEffect(() => {
     refreshAssociates();
+    apiService.get<{ data: Array<{ itemId: string }> }>('/api/pins?itemType=associate')
+      .then(({ data }) => {
+        if (Array.isArray(data)) {
+          setPinnedAssociateIds(data.map((p) => p.itemId));
+        }
+      })
+      .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleToggleAssociatePin = async (associateId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const isPinned = pinnedAssociateIds.includes(associateId);
+    setPinnedAssociateIds(prev =>
+      isPinned ? prev.filter(id => id !== associateId) : [...prev, associateId]
+    );
+    try {
+      await apiService.post('/api/pins', { itemType: 'associate', itemId: associateId });
+    } catch {
+      setPinnedAssociateIds(prev =>
+        isPinned ? [...prev, associateId] : prev.filter(id => id !== associateId)
+      );
+    }
+  };
 
   const handleDeleteConfirm = async () => {
     if (!associateToDelete) return;
@@ -305,7 +330,14 @@ export default function WorkflowsPage() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {associates.map((associate) => (
+            {[...associates].sort((a, b) => {
+              const ai = pinnedAssociateIds.indexOf(a.id);
+              const bi = pinnedAssociateIds.indexOf(b.id);
+              if (ai !== -1 && bi === -1) return -1;
+              if (ai === -1 && bi !== -1) return 1;
+              if (ai !== -1 && bi !== -1) return ai - bi;
+              return 0;
+            }).map((associate) => (
               <Card
                 key={associate.id}
                 className="hover:shadow-md transition-shadow"
@@ -324,7 +356,10 @@ export default function WorkflowsPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-semibold text-gray-900 truncate">
+                        <h3 className="font-semibold text-gray-900 truncate flex items-center gap-1.5">
+                          {pinnedAssociateIds.includes(associate.id) && (
+                            <Pin className="h-3 w-3 text-amber-500 shrink-0" />
+                          )}
                           {associate.name}
                         </h3>
                         {associate.createdById !== profile?.id ? (
@@ -390,6 +425,14 @@ export default function WorkflowsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => handleToggleAssociatePin(associate.id, e)}
+                          >
+                            {pinnedAssociateIds.includes(associate.id)
+                              ? <><PinOff className="h-4 w-4 mr-2" />Unpin</>
+                              : <><Pin className="h-4 w-4 mr-2" />Pin to top</>}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           {associate.createdById === profile?.id && (
                             <DropdownMenuItem
                               onClick={(e) => {

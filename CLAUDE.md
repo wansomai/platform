@@ -22,6 +22,10 @@ npx prisma studio     # Database GUI
 
 **Package manager**: npm (not yarn or pnpm)
 
+**One-off admin scripts** (in `scripts/`): run with `npx tsx scripts/export-users-csv.ts` or `node scripts/fix-workspace-visibility.mjs`. These are not part of the normal dev workflow.
+
+**Prisma CLI and env files**: `prisma.config.ts` (Prisma v7 config) automatically loads `.env` then `.env.local` before any `npx prisma ...` command, so `DATABASE_URL` from `.env.local` is picked up without extra steps.
+
 **Build memory**: The build script sets `NODE_OPTIONS='--max-old-space-size=4096'` to prevent OOM failures on large builds.
 
 **Turbopack external packages**: `next.config.ts` keeps Google AI SDKs (`@google/genai`, `@google/generative-ai`, `googleapis`), native modules (`better-sqlite3`), and headless browser tools (`puppeteer-extra`, `puppeteer-core`, `@sparticuz/chromium-min`) outside Turbopack bundling via `serverExternalPackages`. Add new native/AI deps there if you see "Invalid source map" or WASM errors. The Puppeteer set is used for PDF generation and web scraping.
@@ -52,9 +56,10 @@ npx prisma studio     # Database GUI
 #### 2. Authentication Flow
 - JWT-based authentication via NextAuth.js
 - Dual token system:
-  - **Session token**: NextAuth JWT (30-day expiry)
-  - **Access token**: Custom JWT (7-day expiry, auto-refreshed)
+  - **Session token**: NextAuth JWT (1-hour expiry, encoded/decoded by `src/config/jwt.ts` using `jose`)
+  - **Access token**: Custom JWT (7-day expiry, auto-refreshed), attached as `Bearer` header by `apiService`
 - User ID extracted from Bearer token in API routes via `getUserIdFromRequest()` in `src/lib/auth/authorization.ts`
+- NextAuth providers and session callbacks are configured in `src/lib/auth/auth-options.ts`; the custom JWT encode/decode in `src/config/jwt.ts` is wired in via the `jwt` option there
 
 #### 3. Project-Based Workspace Model
 ```
@@ -349,7 +354,7 @@ import { cn } from '@/lib/utils';
 
 className={cn('base-classes', condition && 'conditional-class', props.className)}
 ```
-`src/lib/utils` also re-exports helpers from `src/lib/utils/file`, `src/lib/utils/date`, `src/lib/utils/text`, and `src/lib/utils/token-utils`.
+`src/lib/utils` also re-exports helpers from `src/lib/utils/file`, `src/lib/utils/date`, and `src/lib/utils/text`. Import `src/lib/utils/token-utils` directly — it is **not** re-exported via the barrel.
 
 ### Route Groups
 - `(account)` - Authenticated user pages: dashboard, projects, vault; **`/workflows/*` is the UI for managing AI Associates** (create, edit, delete `AIAssociate` entities — the name "workflows" is legacy); project workspace UI is at `(account)/projects/[id]`. The `/workflows/[id]` detail page has unsaved-changes detection (compares live form state against the snapshot loaded from the server) and a discard dialog before navigation. It also has a "Use in Chat" button that creates a new project pre-linked to the associate and navigates directly into it.
@@ -479,8 +484,10 @@ See `.env.example` for the full list. Key variables:
 - `DATABASE_URL` - PostgreSQL connection
 - `NEXTAUTH_SECRET` / `NEXTAUTH_URL` - NextAuth configuration
 - `JWT_SECRET` / `JWT_REFRESH_SECRET` - Custom token handling
-- `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) - Gemini API (only one required)
-- `GEMINI_MODEL` - Gemini model to use (default: `gemini-3-flash-preview`)
+- `WANSOM_API_KEY` - Gemini API key for the main platform (chat, associates, documents, RAG, KB summaries, classification). `GOOGLE_API_KEY` takes precedence over `WANSOM_API_KEY` in `embeddingService.ts` if both are set.
+- `WANSOM_MODEL` - Gemini model for the main platform (default: `gemini-3-flash-preview`)
+- `BRIEFLY_API_KEY` - Separate Gemini API key used exclusively by the Briefly digest pipeline (`legalDigestService.ts`, `digestIngestService.ts`)
+- `BRIEFLY_MODEL` - Gemini model for Briefly (default in `legalDigestService.ts`: `gemini-3-flash-preview`; default in `digestIngestService.ts`: `gemini-3.1-flash-live-preview`)
 - `GOOGLE_AUTH_CLIENT_ID` / `GOOGLE_AUTH_CLIENT_SECRET` - Google OAuth
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage
 - `PAYSTACK_SECRET_KEY` / `PAYSTACK_PUBLIC_KEY` / `PAYSTACK_PLAN_CODE` - Payments

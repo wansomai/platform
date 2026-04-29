@@ -6,7 +6,7 @@ import { getJurisdictionById } from '@/lib/jurisdictions';
 
 export const maxDuration = 60;
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const genAI = new GoogleGenAI({ apiKey: process.env.WANSOM_API_KEY || '' });
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
@@ -55,7 +55,7 @@ Always apply ${jurisdictionName} law. Keep responses concise and practical.`;
 
   try {
     const result = await genAI.models.generateContentStream({
-      model: process.env.GEMINI_MODEL || 'gemini-3-flash-preview',
+      model: process.env.WANSOM_MODEL || 'gemini-3-flash-preview',
       contents: [
         { role: 'user', parts: [{ text: docContext }] },
         { role: 'model', parts: [{ text: 'I have reviewed the document and I am ready to help.' }] },

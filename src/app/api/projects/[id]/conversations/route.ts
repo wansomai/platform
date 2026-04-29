@@ -111,6 +111,7 @@ export const GET = withErrorHandler(
           })) || [],
         };
       }),
+      pinnedMessageId: conversation.pinnedMessageId ?? null,
       last_message:
         conversation.messages[conversation.messages.length - 1]?.content || '',
       messages_count: conversation._count.messages,
@@ -179,6 +180,7 @@ export const POST = withErrorHandler(
       createdAt: conversation.createdAt.toISOString(),
       updatedAt: conversation.updatedAt.toISOString(),
       isPinned: conversation.isPinned,
+      pinnedMessageId: null,
       aiAssociateId: conversation.aiAssociateId,
       aiAssociate: conversation.aiAssociate
         ? {
