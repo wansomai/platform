@@ -5,7 +5,7 @@ import Image from "next/image";
 import BrandLogos from "@/components/home/Partnerlogos";
 import HerroPattern from "@/components/layout/HeroPattern";
 import Navbar from "@/components/layout/Navbar";
-import { SquareArrowOutUpRight, ArrowUpRight } from "lucide-react";
+import { SquareArrowOutUpRight, ArrowUpRight, Radar, ShieldCheck, Scale } from "lucide-react";
 import RotatingGlobe from "@/components/law360/RotatingGlobe";
 import Footer from "@/components/layout/Footer";
 import ActivationModal from "@/components/law360/ActivationModal";
@@ -46,6 +46,12 @@ const Law360Components = () => {
 export default Law360Components;
 
 function HeroSection({ onActivate }: { onActivate: () => void }) {
+  const signals = [
+    { icon: Scale, label: "Court decisions" },
+    { icon: ShieldCheck, label: "Regulatory risk" },
+    { icon: Radar, label: "Market signals" },
+  ];
+
   return (
     <section className=" pt-20 md:pt-28  px-5 bg-white  relative overflow-hidden  ">
       {/* SVG Background */}
@@ -58,19 +64,19 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
         <div className=" space-y-8">
           <div className="space-y-6 max-w-4xl">
             <h1 className=" text-heading-1 mb-4 text-black text-shadow-2xs font-bold font-serif">
-            Legal intelligence you can trust, <br/>powered by Wansom AI.
+             Legal intelligence <br/>for  businesses and legal teams.
             </h1>
 
             <p className="text-lg md:text-xl max-w-3xl  mb-8  text-gray-600Book">
-            Wansom AI sources,organizes and sends you with timely legal updates on the latest caselaw summaries,legal news, insights, and trends to keep you ahead in the ever-evolving legal landscape.
+            Briefly monitors courts, regulators, gazettes, legal news, and firm updates across your selected jurisdictions, then turns the signal into concise, cited intelligence your team can act on.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
             <button
               className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 md:mb-10 w-fit min-w-[130px]"
               onClick={onActivate}
-              aria-label="Try Briefly by Wansom for free - Start your free trial"
+              aria-label="Configure your Briefly legal intelligence monitor"
             >
-              TRY BRIEFLY{" "}
+              ACTIVATE BRIEFLY{" "}
               <SquareArrowOutUpRight
                 className="w-5 h-5 text-white"
                 aria-hidden="true"
@@ -82,15 +88,15 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
               aria-label="Schedule a demo with Briefly by Wansom"
             >
               SCHEDULE A DEMO{" "}
-              <SquareArrowOutUpRight
-                className="w-5 h-5 text-white"
-                aria-hidden="true"
-              />
+            
             </button></div>
+
+            <div className="hidden lg:grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl pt-4 border-t border-gray-200">
+          
+            </div>
           </div>
         </div>
       </div>
-      {/* <BrandLogos /> */}
     </section>
   );
 }
@@ -98,23 +104,23 @@ function HeroSection({ onActivate }: { onActivate: () => void }) {
 const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
   const features = [
     {
-      title: "Laws & Monitoring",
+      title: "Legal Monitoring",
       description:
-        "Stay informed with real-time updates on legal news, caselaw summaries, and emerging trends tailored to your practice areas.",
+        "Track courts, regulators, gazettes, legal news, and market-moving legal developments across the jurisdictions that matter to your team.",
       href: "/login",
       image: "/images/law-monitoring.jpg",
     },
     {
-      title: "Legal Intelligence",
+      title: "Risk Signals",
       description:
-        "Make better decisions with AI-powered insights and expert analysis of legal developments, helping you stay ahead in the ever-evolving legal landscape.",
+        "Spot developments that may affect contracts, employment, tax, litigation, data protection, finance, operations, or sector exposure.",
       href: "/login",
       image: "/images/legal-insights.jpg",
     },
     {
-      title: "Compliance Tracking",
+      title: "Executive Briefs",
       description:
-        "Never be caught off guard by regulatory changes. Our AI monitors and tracks compliance requirements for you",
+        "Receive concise summaries with source links, business context, and the practical next question your legal or compliance team should ask.",
       href: "/login",
       image: "/images/legal-intelligence.jpg",
     },
@@ -124,7 +130,7 @@ const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
     <section className="section-container ">
       <div className=" section-spacing">
         <h2 className="text-heading-2 mb-12 text-center text-gray-900">
-          Never Miss a Beat in the Legal World
+          Turn Legal Noise Into Business Intelligence
         </h2>
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -158,9 +164,9 @@ const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
                 type="button"
                 onClick={(e) => { e.stopPropagation(); onActivate(); }}
                 className="inline-flex gap-2 items-center justify-center group-hover:text-amber-500 transition-all duration-300"
-                aria-label={`Get started with ${feature.title}`}
+                aria-label={`Configure monitor for ${feature.title}`}
               >
-                Get Started
+                ACTIVATE BRIEFLY
                 <ArrowUpRight className="w-5 h-5" />
               </button>
             </div>
@@ -179,25 +185,25 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
       title: "Law Firms",
       image: "/images/law-firm-boardroom.jpg",
       alt: "Law firm attorneys reviewing legal updates",
-      description: "Equip your attorneys with the latest caselaw and regulatory updates. Enhance client advisory services and maintain a competitive edge with daily insights.",
+      description: "Give practice groups a shared view of new decisions, regulatory movement, and source-backed developments they can use in client alerts, advisory work, and matter strategy.",
     },
     {
       title: "Businesses & In-House Counsel",
       image: "/images/in-house-counsel.jpg",
       alt: "In-house counsel monitoring legal developments",
-      description: "Monitor critical legal developments affecting your industry. Proactively manage risks and streamline compliance operations with tailored intelligence.",
+      description: "Monitor changes that could affect operations, contracts, employment, compliance, data, finance, or market entry before they become boardroom surprises.",
     },
     {
       title: "Legal Consultants",
       image: "/images/legal-insights.jpg",
       alt: "Legal consultant reviewing global legal intelligence",
-      description: "Receive timely intelligence to support your strategic guidance. Stay informed globally to handle complex, cross-jurisdictional matters effortlessly.",
+      description: "Stay ready for cross-jurisdictional advisory work with concise legal intelligence organized by market, topic, and practical business relevance.",
     },
     {
       title: "Law Students & Academics",
       image: "/images/students-studying.jpg",
       alt: "Law students studying legal summaries",
-      description: "Keep up-to-date with emerging trends and landmark judgments. Utilize concise summaries for faster research and better academic performance.",
+      description: "Track landmark judgments, emerging policy issues, and comparative legal developments with summaries that make research faster to start.",
     },
   ];
 
@@ -207,7 +213,7 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
         <div className="text-center max-w-3xl mx-auto mb-4">
           <h2 className="text-heading-2 mb-4 text-gray-900">Who Benefits from Briefly?</h2>
           <p className="text-lg text-gray-600">
-            Whether you are navigating complex litigation or staying compliant, Briefly provides tailored insights to power your work.
+            Whether you are advising clients, managing compliance, or watching legal exposure across markets, Briefly gives your team a focused intelligence layer.
           </p>
         </div>
 
@@ -240,9 +246,9 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
               <button
                 className="text-sm font-medium uppercase flex gap-1 items-center text-white bg-black hover:bg-amber-500 rounded-md py-3 px-6 my-5"
                 onClick={onActivate}
-                aria-label={`Get started with Briefly for ${useCases[activeTab].title}`}
+                aria-label={`Activate Briefly for ${useCases[activeTab].title}`}
               >
-                Get Started
+                Activate Briefly
                 <ArrowUpRight className="w-5 h-5 text-white" />
               </button>
             </div>
@@ -265,23 +271,23 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
 const StatSection = () => {
   const stats = [
     {
-      label: "Daily Insights",
-      description: "Wansom AI curates and delivers thousands of legal updates daily, keeping you ahead in the ever-evolving legal landscape with timely, reliable intelligence.",
-      value: "3,000+",
+      label: "Sources monitored",
+      description: "Briefly watches courts, regulators, gazettes, legal news, and law-firm updates so your team starts from signal instead of search.",
+      value: "4+",
     },
     {
-      label: "Partner Firms",
-      description: "Trusted by leading law firms and legal organizations across Africa and beyond to power their legal intelligence workflows.",
-      value: "50+",
+      label: "Business workflows",
+      description: "Built for legal, compliance, leadership, and advisory teams that need practical context instead of another stream of headlines.",
+      value: "3",
     },
     {
-      label: "Practice Areas",
-      description: "From litigation to corporate law, our AI covers a comprehensive range of practice areas and jurisdictions across the continent.",
-      value: "97%",
+      label: "Watch areas",
+      description: "Configure your monitor around the risks and practice areas that matter to your organization, from litigation to employment and finance.",
+      value: "Custom",
     },
     {
       label: "Jurisdictions",
-      description: "Receive jurisdiction-specific legal updates tailored to your market, with coverage spanning East, West, and Southern Africa.",
+      description: "Receive jurisdiction-specific legal intelligence tailored to your markets, with coverage spanning East, West, and Southern Africa.",
       value: "20+",
     },
   ];
@@ -292,7 +298,7 @@ const StatSection = () => {
         <div className="mb-10">
 
           <h2 className="text-4xl md:text-5xl font-serif text-gray-900 leading-tight">
-           Legal intelligence <br /> backed by expert insights
+           A monitoring layer <br /> for legal and business risk
           </h2>
         </div>
 
@@ -334,29 +340,29 @@ function CTASection({ onActivate }: { onActivate: () => void }) {
       <div className="section-container flex flex-col-reverse lg:flex-row items-center">
         <div className=" lg:basis-1/2 mb-8 lg:mb-0 lg:pr-10">
           <h3 className="text-md font-light text-gray-600 mb-2">
-            Your Legal AI companion
+            Your legal intelligence layer
           </h3>
           <h2 className="text-heading-2 text-gray-900 mb-2">
-           Ready to Start Receiving legal intelligence in your inbox?.
+           Ready to turn legal change into a business advantage?
           </h2>
           <ul className="my-5">
             <li className="text-gray-600 mb-2 text-lg flex items-center gap-2">
               <SquareArrowOutUpRight className="w-5 h-5 text-gray-400" />
-              Stay informed with real-time legal updates
+              Monitor legal and regulatory movement across your markets
             </li>
             <li className="text-gray-600 mb-2 text-lg flex items-center gap-2">
               <SquareArrowOutUpRight className="w-5 h-5 text-gray-400" />
-                Make informed decisions with AI-powered insights
+              Give teams concise briefs with source links and business context
             </li>
             <li className="text-gray-600 mb-2 text-lg flex items-center gap-2">
               <SquareArrowOutUpRight className="w-5 h-5 text-gray-400" />
-              Never miss critical legal developments again
+              Configure watch areas for legal, compliance, and leadership priorities
             </li>
           </ul>
           <button
             className="text-sm font-medium uppercase flex gap-1 items-center  text-white bg-black hover:bg-[#2a4d54] rounded-md py-3 px-6 mb-10"
             onClick={onActivate}
-            aria-label="Activate Briefly by Wansom - Start your subscription"
+            aria-label="Activate Briefly by Wansom legal intelligence monitor"
           >
             Activate Briefly
             <SquareArrowOutUpRight

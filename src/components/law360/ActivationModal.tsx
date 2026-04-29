@@ -18,15 +18,16 @@ import { toast } from 'sonner';
 import {
   Globe,
   Clock,
-  Mail,
   Loader2,
   CheckCircle2,
-  Sparkles,
   Eye,
   EyeOff,
   Copy,
   ExternalLink,
   KeyRound,
+  Radar,
+  ShieldCheck,
+  FileSearch,
 } from 'lucide-react';
 
 interface ActivationModalProps {
@@ -315,10 +316,10 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
               </div>
               <div>
                 <h2 className="text-lg font-bold text-gray-900">
-                  {isNewUser ? 'Your Wansom AI Access' : 'Sign in to Wansom AI'}
+                  {isNewUser ? 'Your Intelligence Dashboard Access' : 'Sign in to Wansom AI'}
                 </h2>
                 <p className="text-xs text-gray-500">
-                  {isNewUser ? 'Use these credentials to sign in' : 'Enter your Wansom password to continue'}
+                  {isNewUser ? 'Use these credentials to open your dashboard' : 'Enter your Wansom password to continue'}
                 </p>
               </div>
             </div>
@@ -450,7 +451,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             >
               {(isUpdatingPassword || isSigningIn)
                 ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{isSigningIn ? 'Signing in…' : 'Updating password…'}</>
-                : <><ExternalLink className="h-4 w-4 mr-2" />Open Wansom AI</>
+                : <><ExternalLink className="h-4 w-4 mr-2" />Open Intelligence Dashboard</>
               }
             </Button>
             <button
@@ -479,30 +480,38 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-gray-900">You're subscribed!</h2>
+              <h2 className="text-xl font-bold text-gray-900">Your intelligence monitor is active.</h2>
               <p className="text-sm text-gray-500 leading-relaxed">
                 {isNewUser
-                  ? <>Your Wansom account has been created and your first <strong>Briefly</strong> digest is on its way. Check <strong>{confirmedEmail}</strong> for your login details.</>
-                  : <>Your <strong>Briefly by Wansom</strong> subscription is active. A confirmation has been sent to <strong>{confirmedEmail}</strong>.</>
+                  ? <>Your Wansom account has been created and your first <strong>Briefly</strong> intelligence brief is being prepared. Check <strong>{confirmedEmail}</strong> for your access details.</>
+                  : <>Your <strong>Briefly by Wansom</strong> monitor is now tracking the coverage you selected. A confirmation has been sent to <strong>{confirmedEmail}</strong>.</>
                 }
               </p>
             </div>
 
             <div className="w-full bg-gray-50 rounded-lg p-4 text-left space-y-2 text-sm">
               <p className="font-medium text-gray-700 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#0a4b5e]" />
-                Your digest settings
+                <Radar className="h-4 w-4 text-[#0a4b5e]" />
+                Your monitor profile
               </p>
               <p className="text-gray-500">
-                <span className="font-medium text-gray-700">Frequency:</span>{' '}
-                {frequency === 'daily' ? 'Every morning' : 'Every Monday'}
+                <span className="font-medium text-gray-700">Cadence:</span>{' '}
+                {frequency === 'daily' ? 'Morning intelligence brief' : 'Monday strategic brief'}
               </p>
               <p className="text-gray-500">
-                <span className="font-medium text-gray-700">Jurisdictions:</span>{' '}
+                <span className="font-medium text-gray-700">Coverage:</span>{' '}
                 {jurisdictions.join(', ')}
               </p>
               <p className="text-gray-500">
-                <span className="font-medium text-gray-700">First digest:</span>{' '}
+                <span className="font-medium text-gray-700">Watch areas:</span>{' '}
+                {topics.length === allTopics.length ? 'All practice areas' : `${topics.length} selected`}
+              </p>
+              <p className="text-gray-500">
+                <span className="font-medium text-gray-700">Source types:</span>{' '}
+                Courts, regulators, gazettes, legal news
+              </p>
+              <p className="text-gray-500">
+                <span className="font-medium text-gray-700">First brief:</span>{' '}
                 {frequency === 'daily' ? 'Tomorrow at 09:30 EAT' : 'Next Monday at 09:30 EAT'}
               </p>
             </div>
@@ -513,7 +522,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
                 className="w-full bg-[#0a4b5e] hover:bg-[#0a4b5e]/90"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                Try Wansom AI
+                Open Intelligence Dashboard
               </Button>
               <Button
                 variant="ghost"
@@ -535,7 +544,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">Set Up Your Legal Digest</DialogTitle>
+          <DialogTitle className="text-xl">Configure Your Legal Intelligence Monitor</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
@@ -544,10 +553,10 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
           <div>
             <Label className={`text-sm font-medium flex items-center gap-2 ${errors.jurisdictions ? 'text-red-600' : ''}`}>
               <Globe className="h-4 w-4" />
-              Jurisdictions
+              Coverage jurisdictions
             </Label>
             <p className="text-xs text-muted-foreground mt-1 mb-2">
-              Select countries whose legal updates you want to receive
+              Choose the markets Briefly should monitor for legal and regulatory movement.
             </p>
             <div className={errors.jurisdictions ? 'rounded-lg ring-2 ring-red-400' : ''}>
               <MultiCountrySelector
@@ -559,7 +568,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
                   setJurisdictions(v);
                   if (v.length > 0) setErrors((e) => ({ ...e, jurisdictions: false }));
                 }}
-                placeholder="Select jurisdictions..."
+                placeholder="Select markets..."
               />
             </div>
             {errors.jurisdictions && (
@@ -571,7 +580,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
           <div>
             <Label className="text-sm font-medium flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              Delivery frequency
+             How often should we send you updates?
             </Label>
             <div className="flex gap-3 mt-2">
               {(['daily', 'weekly'] as const).map((f) => (
@@ -585,7 +594,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
                 >
                   <p className="font-medium text-sm capitalize">{f}</p>
                   <p className="text-xs text-muted-foreground">
-                    {f === 'daily' ? 'Every morning' : 'Every Monday'}
+                    {f === 'daily' ? 'Morning intelligence brief' : 'Monday strategic brief'}
                   </p>
                 </button>
               ))}
@@ -595,17 +604,17 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
           {/* Practice Areas */}
           <div>
             <Label className={`text-sm font-medium flex items-center gap-2 ${errors.topics ? 'text-red-600' : ''}`}>
-              <Mail className="h-4 w-4" />
-              Practice Areas
+              <Radar className="h-4 w-4" />
+              Watch areas
             </Label>
             <p className="text-xs text-muted-foreground mt-1 mb-2">
-              Select the topics you want covered
+              Select the risk and practice areas your monitor should track.
             </p>
             <div className="flex items-center space-x-2 mb-2">
               <Checkbox id="modal-topic-all" checked={allSelected} onCheckedChange={toggleAllTopics} />
               <label htmlFor="modal-topic-all" className="text-xs font-medium cursor-pointer">All topics</label>
             </div>
-            <div className={`grid grid-cols-2 gap-2 p-3 border rounded-lg max-h-24 overflow-y-auto ${errors.topics ? 'border-red-400 ring-2 ring-red-400' : ''}`}>
+            <div className={`grid grid-cols-2 gap-2 p-3 border rounded-lg max-h-28 overflow-y-auto ${errors.topics ? 'border-red-400 ring-2 ring-red-400' : ''}`}>
               {Object.entries(PRACTICE_AREA_LABELS).map(([area, label]) => (
                 <div key={area} className="flex items-center space-x-2">
                   <Checkbox
@@ -621,13 +630,34 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
               <p className="text-xs text-red-500 mt-1">Please select at least one practice area.</p>
             )}
           </div>
+{/* 
+          <div className="rounded-lg border border-[#0a4b5e]/15 bg-[#0a4b5e]/5 p-4">
+            <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-[#0a4b5e]" />
+              What your monitor will produce
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 text-xs text-gray-600">
+              <div className="space-y-1">
+                <p className="font-medium text-gray-800">Signal</p>
+                <p>Relevant legal developments from your selected markets.</p>
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-800">Context</p>
+                <p>Plain-language summaries, source links, and why it matters.</p>
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-800">Action</p>
+                <p>Briefs your legal, compliance, or leadership team can use.</p>
+              </div>
+            </div>
+          </div> */}
 
           <div className="h-px bg-gray-100" />
 
           {/* Email */}
           <div>
             <Label htmlFor="activation-email" className={`text-sm font-medium ${errors.email ? 'text-red-600' : ''}`}>
-              Email Address
+              Work email
             </Label>
             <div className="flex gap-2 mt-1.5">
               <Input
@@ -662,7 +692,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
               <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg mt-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
                 <p className="text-sm text-green-700">
-                  Your Wansom account is verified. Click below to start your digest.
+                  Your Wansom account is verified. Activate your intelligence monitor below.
                 </p>
               </div>
             )}
@@ -670,7 +700,7 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
               <div className="flex items-start gap-2 p-2.5 bg-green-50 border border-green-100 rounded-lg mt-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
                 <p className="text-sm text-green-700">
-                  We'll create your Wansom account and email your login details to <strong>{email}</strong>.
+                  We'll create your Wansom account and send access details to <strong>{email}</strong>.
                 </p>
               </div>
             )}
@@ -714,9 +744,9 @@ export default function ActivationModal({ open, onOpenChange }: ActivationModalP
             }
           >
             {isSubmitting ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Setting up your digest…</>
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Building your monitor...</>
             ) : (
-              <><Sparkles className="h-4 w-4 mr-2" />Activate Briefly</>
+              <><FileSearch className="h-4 w-4 mr-2" />Activate Monitor</>
             )}
           </Button>
 
