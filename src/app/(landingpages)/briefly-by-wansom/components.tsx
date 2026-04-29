@@ -130,7 +130,7 @@ const FeaturesSection = ({ onActivate }: { onActivate: () => void }) => {
     <section className="section-container ">
       <div className=" section-spacing">
         <h2 className="text-heading-2 mb-12 text-center text-gray-900">
-          Turn Legal Noise Into Business Intelligence
+          A monitoring layer for legal and business risk
         </h2>
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -271,19 +271,19 @@ const UseCasesSection = ({ onActivate }: { onActivate: () => void }) => {
 const StatSection = () => {
   const stats = [
     {
-      label: "Sources monitored",
-      description: "Briefly watches courts, regulators, gazettes, legal news, and law-firm updates so your team starts from signal instead of search.",
-      value: "4+",
+    label: "Daily Insights",
+      description: "Wansom AI curates and delivers thousands of legal updates daily, keeping you ahead in the ever-evolving legal landscape with timely, reliable intelligence.",
+      value: "3,000+",
     },
     {
-      label: "Business workflows",
-      description: "Built for legal, compliance, leadership, and advisory teams that need practical context instead of another stream of headlines.",
-      value: "3",
+       label: "Partner Firms",
+      description: "Trusted by leading law firms and legal organizations across Africa and beyond to power their legal intelligence workflows.",
+      value: "50+",
     },
     {
       label: "Watch areas",
-      description: "Configure your monitor around the risks and practice areas that matter to your organization, from litigation to employment and finance.",
-      value: "Custom",
+      description: "From litigation to corporate law, our AI covers a comprehensive range of practice areas and jurisdictions across the continent.",
+      value: "97%",
     },
     {
       label: "Jurisdictions",
