@@ -88,7 +88,7 @@ export default function Home() {
         {/* <HeroSection /> */}
         <HeroSection />
     {/* Video Section */}
-      {/* <section className="section-spacing">
+    {/* <section className="section-spacing">
         <div className="section-container">
           <div className="relative w-full mx-auto" style={{ paddingBottom: "56.25%" }}>
             <iframe
@@ -106,23 +106,9 @@ export default function Home() {
   
 
         <NewFeaturesSection />
-            {/* Video Section */}
-      {/* <section className="section-spacing">
-        <div className="section-container">
-          <div className="relative w-full mx-auto" style={{ paddingBottom: "56.25%" }}>
-            <iframe
-              className="absolute inset-0 w-full h-full rounded-xl shadow-lg"
-              src="https://www.youtube.com/embed/4_qsM0F2ccA"
-              title="Lawyers in the age of AI"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-          </div>
-        </div>
-      </section> */}
-e        <LegalResearchSection />
+            
+  
+        <LegalResearchSection />
         <LegalDraftingSection />
          <DocumentReview />
 <AutomateProcesses />
