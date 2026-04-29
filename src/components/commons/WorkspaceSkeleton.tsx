@@ -8,7 +8,7 @@ interface WorkspaceSkeletonProps {
 
 export function WorkspaceSkeleton({ showSidebar = true, projectTitle }: WorkspaceSkeletonProps) {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-full bg-gray-50">
       <div className="flex-1 flex flex-col min-w-0">
         {/* Main Content Area */}
         <main className="flex-1 overflow-hidden p-4 sm:p-6">
@@ -91,9 +91,7 @@ export function WorkspaceSkeleton({ showSidebar = true, projectTitle }: Workspac
 
         {/* Chat Input Skeleton */}
         <div className="border-t bg-white p-4">
-          <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 w-[90vw] max-w-3xl">
-            <Skeleton className="h-24 w-full rounded-xl" />
-          </div>
+          <Skeleton className="h-24 w-full rounded-xl" />
         </div>
       </div>
 

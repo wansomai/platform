@@ -201,6 +201,7 @@ export function ChatInterface() {
                 message={message}
                 user={session?.user}
                 projectId={currentConversation.projectId}
+                conversationId={currentConversation.id}
                 associateName={currentConversation.aiAssociate?.name}
                 redirectedQuestion={getRedirectedQuestion(messages, index)}
                 onCopy={() => copyMessageToClipboard(message.content)}
@@ -310,9 +311,12 @@ const ChatMessageItem = React.memo(({
   message,
   user,
   projectId,
+  conversationId,
   associateName,
   redirectedQuestion,
   onCopy,
+  onPin,
+  isPinned,
   isEditing,
   onEditStart,
   onEditCancel,
@@ -321,6 +325,7 @@ const ChatMessageItem = React.memo(({
   message: Message,
   user: any,
   projectId: string,
+  conversationId?: string,
   associateName?: string,
   redirectedQuestion?: string,
   onCopy: () => void,
@@ -576,7 +581,7 @@ const ChatMessageItem = React.memo(({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`h-8 gap-1.5 ${copied ? 'min-w-[72px] text-green-600' : 'w-8 px-0'}`}
+                className={`h-8 gap-1.5 ${copied ? 'min-w-[72px] text-green-600' : 'w-8 px-0 text-gray-400 hover:text-gray-600'}`}
                 onClick={handleCopy}
               >
                 {copied ? (

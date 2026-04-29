@@ -258,6 +258,11 @@ export type AdminLog = $Result.DefaultSelection<Prisma.$AdminLogPayload>
  * 
  */
 export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
+/**
+ * Model PinnedItem
+ * 
+ */
+export type PinnedItem = $Result.DefaultSelection<Prisma.$PinnedItemPayload>
 
 /**
  * Enums
@@ -929,6 +934,16 @@ export class PrismaClient<
     * ```
     */
   get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pinnedItem`: Exposes CRUD operations for the **PinnedItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PinnedItems
+    * const pinnedItems = await prisma.pinnedItem.findMany()
+    * ```
+    */
+  get pinnedItem(): Prisma.PinnedItemDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1411,7 +1426,8 @@ export namespace Prisma {
     legal_knowledge: 'legal_knowledge',
     legal_knowledge_chunks: 'legal_knowledge_chunks',
     AdminLog: 'AdminLog',
-    Notification: 'Notification'
+    Notification: 'Notification',
+    PinnedItem: 'PinnedItem'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1427,7 +1443,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "aIAssociateShare" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks" | "adminLog" | "notification"
+      modelProps: "account" | "session" | "verificationToken" | "user" | "organization" | "content" | "contentSection" | "subscription" | "payment" | "onboardingAnalytics" | "userOrganization" | "project" | "projectMember" | "document" | "folder" | "folderPermission" | "documentPermission" | "projectDocument" | "conversationDocument" | "documentContent" | "embedding" | "conversation" | "message" | "messageReference" | "event" | "knowledgeBase" | "invitation" | "conversationMeta" | "conversationAction" | "sharedMessage" | "sharedMessageReference" | "sharedWorkspace" | "sharedWorkspaceAccess" | "aIAssociate" | "aIAssociateShare" | "associateStep" | "associateTool" | "projectAssociate" | "canvasDocument" | "eventRegistration" | "publications" | "digestSubscription" | "digestHistory" | "digestCache" | "digestItem" | "legal_knowledge" | "legal_knowledge_chunks" | "adminLog" | "notification" | "pinnedItem"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5057,6 +5073,80 @@ export namespace Prisma {
           }
         }
       }
+      PinnedItem: {
+        payload: Prisma.$PinnedItemPayload<ExtArgs>
+        fields: Prisma.PinnedItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PinnedItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PinnedItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>
+          }
+          findFirst: {
+            args: Prisma.PinnedItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PinnedItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>
+          }
+          findMany: {
+            args: Prisma.PinnedItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>[]
+          }
+          create: {
+            args: Prisma.PinnedItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>
+          }
+          createMany: {
+            args: Prisma.PinnedItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PinnedItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>[]
+          }
+          delete: {
+            args: Prisma.PinnedItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>
+          }
+          update: {
+            args: Prisma.PinnedItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.PinnedItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PinnedItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PinnedItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.PinnedItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PinnedItemPayload>
+          }
+          aggregate: {
+            args: Prisma.PinnedItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePinnedItem>
+          }
+          groupBy: {
+            args: Prisma.PinnedItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PinnedItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PinnedItemCountArgs<ExtArgs>
+            result: $Utils.Optional<PinnedItemCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5214,6 +5304,7 @@ export namespace Prisma {
     legal_knowledge_chunks?: legal_knowledge_chunksOmit
     adminLog?: AdminLogOmit
     notification?: NotificationOmit
+    pinnedItem?: PinnedItemOmit
   }
 
   /* Types for Logging */
@@ -5317,6 +5408,7 @@ export namespace Prisma {
     legal_knowledge: number
     documentPermissions: number
     notifications: number
+    pinnedItems: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5343,6 +5435,7 @@ export namespace Prisma {
     legal_knowledge?: boolean | UserCountOutputTypeCountLegal_knowledgeArgs
     documentPermissions?: boolean | UserCountOutputTypeCountDocumentPermissionsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+    pinnedItems?: boolean | UserCountOutputTypeCountPinnedItemsArgs
   }
 
   // Custom InputTypes
@@ -5515,6 +5608,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: NotificationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPinnedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PinnedItemWhereInput
   }
 
 
@@ -9738,6 +9838,7 @@ export namespace Prisma {
     legal_knowledge?: boolean | User$legal_knowledgeArgs<ExtArgs>
     documentPermissions?: boolean | User$documentPermissionsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    pinnedItems?: boolean | User$pinnedItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -9838,6 +9939,7 @@ export namespace Prisma {
     legal_knowledge?: boolean | User$legal_knowledgeArgs<ExtArgs>
     documentPermissions?: boolean | User$documentPermissionsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
+    pinnedItems?: boolean | User$pinnedItemsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9877,6 +9979,7 @@ export namespace Prisma {
       legal_knowledge: Prisma.$legal_knowledgePayload<ExtArgs>[]
       documentPermissions: Prisma.$DocumentPermissionPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      pinnedItems: Prisma.$PinnedItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10317,6 +10420,7 @@ export namespace Prisma {
     legal_knowledge<T extends User$legal_knowledgeArgs<ExtArgs> = {}>(args?: Subset<T, User$legal_knowledgeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$legal_knowledgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documentPermissions<T extends User$documentPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$documentPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pinnedItems<T extends User$pinnedItemsArgs<ExtArgs> = {}>(args?: Subset<T, User$pinnedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11329,6 +11433,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
+  }
+
+  /**
+   * User.pinnedItems
+   */
+  export type User$pinnedItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    where?: PinnedItemWhereInput
+    orderBy?: PinnedItemOrderByWithRelationInput | PinnedItemOrderByWithRelationInput[]
+    cursor?: PinnedItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PinnedItemScalarFieldEnum | PinnedItemScalarFieldEnum[]
   }
 
   /**
@@ -31683,6 +31811,7 @@ export namespace Prisma {
     title: string | null
     projectId: string | null
     isPinned: boolean | null
+    pinnedMessageId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     aiAssociateId: string | null
@@ -31694,6 +31823,7 @@ export namespace Prisma {
     title: string | null
     projectId: string | null
     isPinned: boolean | null
+    pinnedMessageId: string | null
     createdAt: Date | null
     updatedAt: Date | null
     aiAssociateId: string | null
@@ -31705,6 +31835,7 @@ export namespace Prisma {
     title: number
     projectId: number
     isPinned: number
+    pinnedMessageId: number
     createdAt: number
     updatedAt: number
     aiAssociateId: number
@@ -31718,6 +31849,7 @@ export namespace Prisma {
     title?: true
     projectId?: true
     isPinned?: true
+    pinnedMessageId?: true
     createdAt?: true
     updatedAt?: true
     aiAssociateId?: true
@@ -31729,6 +31861,7 @@ export namespace Prisma {
     title?: true
     projectId?: true
     isPinned?: true
+    pinnedMessageId?: true
     createdAt?: true
     updatedAt?: true
     aiAssociateId?: true
@@ -31740,6 +31873,7 @@ export namespace Prisma {
     title?: true
     projectId?: true
     isPinned?: true
+    pinnedMessageId?: true
     createdAt?: true
     updatedAt?: true
     aiAssociateId?: true
@@ -31824,6 +31958,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned: boolean
+    pinnedMessageId: string | null
     createdAt: Date
     updatedAt: Date
     aiAssociateId: string | null
@@ -31852,6 +31987,7 @@ export namespace Prisma {
     title?: boolean
     projectId?: boolean
     isPinned?: boolean
+    pinnedMessageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     aiAssociateId?: boolean
@@ -31871,6 +32007,7 @@ export namespace Prisma {
     title?: boolean
     projectId?: boolean
     isPinned?: boolean
+    pinnedMessageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     aiAssociateId?: boolean
@@ -31884,6 +32021,7 @@ export namespace Prisma {
     title?: boolean
     projectId?: boolean
     isPinned?: boolean
+    pinnedMessageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     aiAssociateId?: boolean
@@ -31897,13 +32035,14 @@ export namespace Prisma {
     title?: boolean
     projectId?: boolean
     isPinned?: boolean
+    pinnedMessageId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     aiAssociateId?: boolean
     selectedTemplateId?: boolean
   }
 
-  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "projectId" | "isPinned" | "createdAt" | "updatedAt" | "aiAssociateId" | "selectedTemplateId", ExtArgs["result"]["conversation"]>
+  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "projectId" | "isPinned" | "pinnedMessageId" | "createdAt" | "updatedAt" | "aiAssociateId" | "selectedTemplateId", ExtArgs["result"]["conversation"]>
   export type ConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     aiAssociate?: boolean | Conversation$aiAssociateArgs<ExtArgs>
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -31939,6 +32078,7 @@ export namespace Prisma {
       title: string
       projectId: string
       isPinned: boolean
+      pinnedMessageId: string | null
       createdAt: Date
       updatedAt: Date
       aiAssociateId: string | null
@@ -32377,6 +32517,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Conversation", 'String'>
     readonly projectId: FieldRef<"Conversation", 'String'>
     readonly isPinned: FieldRef<"Conversation", 'Boolean'>
+    readonly pinnedMessageId: FieldRef<"Conversation", 'String'>
     readonly createdAt: FieldRef<"Conversation", 'DateTime'>
     readonly updatedAt: FieldRef<"Conversation", 'DateTime'>
     readonly aiAssociateId: FieldRef<"Conversation", 'String'>
@@ -62960,6 +63101,1064 @@ export namespace Prisma {
 
 
   /**
+   * Model PinnedItem
+   */
+
+  export type AggregatePinnedItem = {
+    _count: PinnedItemCountAggregateOutputType | null
+    _min: PinnedItemMinAggregateOutputType | null
+    _max: PinnedItemMaxAggregateOutputType | null
+  }
+
+  export type PinnedItemMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    itemType: string | null
+    itemId: string | null
+    pinnedAt: Date | null
+  }
+
+  export type PinnedItemMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    itemType: string | null
+    itemId: string | null
+    pinnedAt: Date | null
+  }
+
+  export type PinnedItemCountAggregateOutputType = {
+    id: number
+    userId: number
+    itemType: number
+    itemId: number
+    pinnedAt: number
+    _all: number
+  }
+
+
+  export type PinnedItemMinAggregateInputType = {
+    id?: true
+    userId?: true
+    itemType?: true
+    itemId?: true
+    pinnedAt?: true
+  }
+
+  export type PinnedItemMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    itemType?: true
+    itemId?: true
+    pinnedAt?: true
+  }
+
+  export type PinnedItemCountAggregateInputType = {
+    id?: true
+    userId?: true
+    itemType?: true
+    itemId?: true
+    pinnedAt?: true
+    _all?: true
+  }
+
+  export type PinnedItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PinnedItem to aggregate.
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PinnedItems to fetch.
+     */
+    orderBy?: PinnedItemOrderByWithRelationInput | PinnedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PinnedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PinnedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PinnedItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PinnedItems
+    **/
+    _count?: true | PinnedItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PinnedItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PinnedItemMaxAggregateInputType
+  }
+
+  export type GetPinnedItemAggregateType<T extends PinnedItemAggregateArgs> = {
+        [P in keyof T & keyof AggregatePinnedItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePinnedItem[P]>
+      : GetScalarType<T[P], AggregatePinnedItem[P]>
+  }
+
+
+
+
+  export type PinnedItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PinnedItemWhereInput
+    orderBy?: PinnedItemOrderByWithAggregationInput | PinnedItemOrderByWithAggregationInput[]
+    by: PinnedItemScalarFieldEnum[] | PinnedItemScalarFieldEnum
+    having?: PinnedItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PinnedItemCountAggregateInputType | true
+    _min?: PinnedItemMinAggregateInputType
+    _max?: PinnedItemMaxAggregateInputType
+  }
+
+  export type PinnedItemGroupByOutputType = {
+    id: string
+    userId: string
+    itemType: string
+    itemId: string
+    pinnedAt: Date
+    _count: PinnedItemCountAggregateOutputType | null
+    _min: PinnedItemMinAggregateOutputType | null
+    _max: PinnedItemMaxAggregateOutputType | null
+  }
+
+  type GetPinnedItemGroupByPayload<T extends PinnedItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PinnedItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PinnedItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PinnedItemGroupByOutputType[P]>
+            : GetScalarType<T[P], PinnedItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PinnedItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    itemType?: boolean
+    itemId?: boolean
+    pinnedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pinnedItem"]>
+
+  export type PinnedItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    itemType?: boolean
+    itemId?: boolean
+    pinnedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pinnedItem"]>
+
+  export type PinnedItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    itemType?: boolean
+    itemId?: boolean
+    pinnedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pinnedItem"]>
+
+  export type PinnedItemSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    itemType?: boolean
+    itemId?: boolean
+    pinnedAt?: boolean
+  }
+
+  export type PinnedItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "itemType" | "itemId" | "pinnedAt", ExtArgs["result"]["pinnedItem"]>
+  export type PinnedItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PinnedItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PinnedItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PinnedItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PinnedItem"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      itemType: string
+      itemId: string
+      pinnedAt: Date
+    }, ExtArgs["result"]["pinnedItem"]>
+    composites: {}
+  }
+
+  type PinnedItemGetPayload<S extends boolean | null | undefined | PinnedItemDefaultArgs> = $Result.GetResult<Prisma.$PinnedItemPayload, S>
+
+  type PinnedItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PinnedItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PinnedItemCountAggregateInputType | true
+    }
+
+  export interface PinnedItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PinnedItem'], meta: { name: 'PinnedItem' } }
+    /**
+     * Find zero or one PinnedItem that matches the filter.
+     * @param {PinnedItemFindUniqueArgs} args - Arguments to find a PinnedItem
+     * @example
+     * // Get one PinnedItem
+     * const pinnedItem = await prisma.pinnedItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PinnedItemFindUniqueArgs>(args: SelectSubset<T, PinnedItemFindUniqueArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PinnedItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PinnedItemFindUniqueOrThrowArgs} args - Arguments to find a PinnedItem
+     * @example
+     * // Get one PinnedItem
+     * const pinnedItem = await prisma.pinnedItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PinnedItemFindUniqueOrThrowArgs>(args: SelectSubset<T, PinnedItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PinnedItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemFindFirstArgs} args - Arguments to find a PinnedItem
+     * @example
+     * // Get one PinnedItem
+     * const pinnedItem = await prisma.pinnedItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PinnedItemFindFirstArgs>(args?: SelectSubset<T, PinnedItemFindFirstArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PinnedItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemFindFirstOrThrowArgs} args - Arguments to find a PinnedItem
+     * @example
+     * // Get one PinnedItem
+     * const pinnedItem = await prisma.pinnedItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PinnedItemFindFirstOrThrowArgs>(args?: SelectSubset<T, PinnedItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PinnedItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PinnedItems
+     * const pinnedItems = await prisma.pinnedItem.findMany()
+     * 
+     * // Get first 10 PinnedItems
+     * const pinnedItems = await prisma.pinnedItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pinnedItemWithIdOnly = await prisma.pinnedItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PinnedItemFindManyArgs>(args?: SelectSubset<T, PinnedItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PinnedItem.
+     * @param {PinnedItemCreateArgs} args - Arguments to create a PinnedItem.
+     * @example
+     * // Create one PinnedItem
+     * const PinnedItem = await prisma.pinnedItem.create({
+     *   data: {
+     *     // ... data to create a PinnedItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends PinnedItemCreateArgs>(args: SelectSubset<T, PinnedItemCreateArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PinnedItems.
+     * @param {PinnedItemCreateManyArgs} args - Arguments to create many PinnedItems.
+     * @example
+     * // Create many PinnedItems
+     * const pinnedItem = await prisma.pinnedItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PinnedItemCreateManyArgs>(args?: SelectSubset<T, PinnedItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PinnedItems and returns the data saved in the database.
+     * @param {PinnedItemCreateManyAndReturnArgs} args - Arguments to create many PinnedItems.
+     * @example
+     * // Create many PinnedItems
+     * const pinnedItem = await prisma.pinnedItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PinnedItems and only return the `id`
+     * const pinnedItemWithIdOnly = await prisma.pinnedItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PinnedItemCreateManyAndReturnArgs>(args?: SelectSubset<T, PinnedItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PinnedItem.
+     * @param {PinnedItemDeleteArgs} args - Arguments to delete one PinnedItem.
+     * @example
+     * // Delete one PinnedItem
+     * const PinnedItem = await prisma.pinnedItem.delete({
+     *   where: {
+     *     // ... filter to delete one PinnedItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PinnedItemDeleteArgs>(args: SelectSubset<T, PinnedItemDeleteArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PinnedItem.
+     * @param {PinnedItemUpdateArgs} args - Arguments to update one PinnedItem.
+     * @example
+     * // Update one PinnedItem
+     * const pinnedItem = await prisma.pinnedItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PinnedItemUpdateArgs>(args: SelectSubset<T, PinnedItemUpdateArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PinnedItems.
+     * @param {PinnedItemDeleteManyArgs} args - Arguments to filter PinnedItems to delete.
+     * @example
+     * // Delete a few PinnedItems
+     * const { count } = await prisma.pinnedItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PinnedItemDeleteManyArgs>(args?: SelectSubset<T, PinnedItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PinnedItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PinnedItems
+     * const pinnedItem = await prisma.pinnedItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PinnedItemUpdateManyArgs>(args: SelectSubset<T, PinnedItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PinnedItems and returns the data updated in the database.
+     * @param {PinnedItemUpdateManyAndReturnArgs} args - Arguments to update many PinnedItems.
+     * @example
+     * // Update many PinnedItems
+     * const pinnedItem = await prisma.pinnedItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PinnedItems and only return the `id`
+     * const pinnedItemWithIdOnly = await prisma.pinnedItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PinnedItemUpdateManyAndReturnArgs>(args: SelectSubset<T, PinnedItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PinnedItem.
+     * @param {PinnedItemUpsertArgs} args - Arguments to update or create a PinnedItem.
+     * @example
+     * // Update or create a PinnedItem
+     * const pinnedItem = await prisma.pinnedItem.upsert({
+     *   create: {
+     *     // ... data to create a PinnedItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PinnedItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PinnedItemUpsertArgs>(args: SelectSubset<T, PinnedItemUpsertArgs<ExtArgs>>): Prisma__PinnedItemClient<$Result.GetResult<Prisma.$PinnedItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PinnedItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemCountArgs} args - Arguments to filter PinnedItems to count.
+     * @example
+     * // Count the number of PinnedItems
+     * const count = await prisma.pinnedItem.count({
+     *   where: {
+     *     // ... the filter for the PinnedItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends PinnedItemCountArgs>(
+      args?: Subset<T, PinnedItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PinnedItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PinnedItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PinnedItemAggregateArgs>(args: Subset<T, PinnedItemAggregateArgs>): Prisma.PrismaPromise<GetPinnedItemAggregateType<T>>
+
+    /**
+     * Group by PinnedItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PinnedItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PinnedItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PinnedItemGroupByArgs['orderBy'] }
+        : { orderBy?: PinnedItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PinnedItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPinnedItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PinnedItem model
+   */
+  readonly fields: PinnedItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PinnedItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PinnedItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PinnedItem model
+   */
+  interface PinnedItemFieldRefs {
+    readonly id: FieldRef<"PinnedItem", 'String'>
+    readonly userId: FieldRef<"PinnedItem", 'String'>
+    readonly itemType: FieldRef<"PinnedItem", 'String'>
+    readonly itemId: FieldRef<"PinnedItem", 'String'>
+    readonly pinnedAt: FieldRef<"PinnedItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PinnedItem findUnique
+   */
+  export type PinnedItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PinnedItem to fetch.
+     */
+    where: PinnedItemWhereUniqueInput
+  }
+
+  /**
+   * PinnedItem findUniqueOrThrow
+   */
+  export type PinnedItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PinnedItem to fetch.
+     */
+    where: PinnedItemWhereUniqueInput
+  }
+
+  /**
+   * PinnedItem findFirst
+   */
+  export type PinnedItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PinnedItem to fetch.
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PinnedItems to fetch.
+     */
+    orderBy?: PinnedItemOrderByWithRelationInput | PinnedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PinnedItems.
+     */
+    cursor?: PinnedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PinnedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PinnedItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PinnedItems.
+     */
+    distinct?: PinnedItemScalarFieldEnum | PinnedItemScalarFieldEnum[]
+  }
+
+  /**
+   * PinnedItem findFirstOrThrow
+   */
+  export type PinnedItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PinnedItem to fetch.
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PinnedItems to fetch.
+     */
+    orderBy?: PinnedItemOrderByWithRelationInput | PinnedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PinnedItems.
+     */
+    cursor?: PinnedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PinnedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PinnedItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PinnedItems.
+     */
+    distinct?: PinnedItemScalarFieldEnum | PinnedItemScalarFieldEnum[]
+  }
+
+  /**
+   * PinnedItem findMany
+   */
+  export type PinnedItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * Filter, which PinnedItems to fetch.
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PinnedItems to fetch.
+     */
+    orderBy?: PinnedItemOrderByWithRelationInput | PinnedItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PinnedItems.
+     */
+    cursor?: PinnedItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PinnedItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PinnedItems.
+     */
+    skip?: number
+    distinct?: PinnedItemScalarFieldEnum | PinnedItemScalarFieldEnum[]
+  }
+
+  /**
+   * PinnedItem create
+   */
+  export type PinnedItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PinnedItem.
+     */
+    data: XOR<PinnedItemCreateInput, PinnedItemUncheckedCreateInput>
+  }
+
+  /**
+   * PinnedItem createMany
+   */
+  export type PinnedItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PinnedItems.
+     */
+    data: PinnedItemCreateManyInput | PinnedItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PinnedItem createManyAndReturn
+   */
+  export type PinnedItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many PinnedItems.
+     */
+    data: PinnedItemCreateManyInput | PinnedItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PinnedItem update
+   */
+  export type PinnedItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PinnedItem.
+     */
+    data: XOR<PinnedItemUpdateInput, PinnedItemUncheckedUpdateInput>
+    /**
+     * Choose, which PinnedItem to update.
+     */
+    where: PinnedItemWhereUniqueInput
+  }
+
+  /**
+   * PinnedItem updateMany
+   */
+  export type PinnedItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PinnedItems.
+     */
+    data: XOR<PinnedItemUpdateManyMutationInput, PinnedItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PinnedItems to update
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * Limit how many PinnedItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PinnedItem updateManyAndReturn
+   */
+  export type PinnedItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * The data used to update PinnedItems.
+     */
+    data: XOR<PinnedItemUpdateManyMutationInput, PinnedItemUncheckedUpdateManyInput>
+    /**
+     * Filter which PinnedItems to update
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * Limit how many PinnedItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PinnedItem upsert
+   */
+  export type PinnedItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PinnedItem to update in case it exists.
+     */
+    where: PinnedItemWhereUniqueInput
+    /**
+     * In case the PinnedItem found by the `where` argument doesn't exist, create a new PinnedItem with this data.
+     */
+    create: XOR<PinnedItemCreateInput, PinnedItemUncheckedCreateInput>
+    /**
+     * In case the PinnedItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PinnedItemUpdateInput, PinnedItemUncheckedUpdateInput>
+  }
+
+  /**
+   * PinnedItem delete
+   */
+  export type PinnedItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+    /**
+     * Filter which PinnedItem to delete.
+     */
+    where: PinnedItemWhereUniqueInput
+  }
+
+  /**
+   * PinnedItem deleteMany
+   */
+  export type PinnedItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PinnedItems to delete
+     */
+    where?: PinnedItemWhereInput
+    /**
+     * Limit how many PinnedItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PinnedItem without action
+   */
+  export type PinnedItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PinnedItem
+     */
+    select?: PinnedItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PinnedItem
+     */
+    omit?: PinnedItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PinnedItemInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -63298,6 +64497,7 @@ export namespace Prisma {
     title: 'title',
     projectId: 'projectId',
     isPinned: 'isPinned',
+    pinnedMessageId: 'pinnedMessageId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     aiAssociateId: 'aiAssociateId',
@@ -63679,6 +64879,17 @@ export namespace Prisma {
   };
 
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+  export const PinnedItemScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    itemType: 'itemType',
+    itemId: 'itemId',
+    pinnedAt: 'pinnedAt'
+  };
+
+  export type PinnedItemScalarFieldEnum = (typeof PinnedItemScalarFieldEnum)[keyof typeof PinnedItemScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -64097,6 +65308,7 @@ export namespace Prisma {
     legal_knowledge?: Legal_knowledgeListRelationFilter
     documentPermissions?: DocumentPermissionListRelationFilter
     notifications?: NotificationListRelationFilter
+    pinnedItems?: PinnedItemListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -64144,6 +65356,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeOrderByRelationAggregateInput
     documentPermissions?: DocumentPermissionOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
+    pinnedItems?: PinnedItemOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -64194,6 +65407,7 @@ export namespace Prisma {
     legal_knowledge?: Legal_knowledgeListRelationFilter
     documentPermissions?: DocumentPermissionListRelationFilter
     notifications?: NotificationListRelationFilter
+    pinnedItems?: PinnedItemListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -65711,6 +66925,7 @@ export namespace Prisma {
     title?: StringFilter<"Conversation"> | string
     projectId?: StringFilter<"Conversation"> | string
     isPinned?: BoolFilter<"Conversation"> | boolean
+    pinnedMessageId?: StringNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     updatedAt?: DateTimeFilter<"Conversation"> | Date | string
     aiAssociateId?: StringNullableFilter<"Conversation"> | string | null
@@ -65729,6 +66944,7 @@ export namespace Prisma {
     title?: SortOrder
     projectId?: SortOrder
     isPinned?: SortOrder
+    pinnedMessageId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     aiAssociateId?: SortOrderInput | SortOrder
@@ -65750,6 +66966,7 @@ export namespace Prisma {
     title?: StringFilter<"Conversation"> | string
     projectId?: StringFilter<"Conversation"> | string
     isPinned?: BoolFilter<"Conversation"> | boolean
+    pinnedMessageId?: StringNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     updatedAt?: DateTimeFilter<"Conversation"> | Date | string
     aiAssociateId?: StringNullableFilter<"Conversation"> | string | null
@@ -65768,6 +66985,7 @@ export namespace Prisma {
     title?: SortOrder
     projectId?: SortOrder
     isPinned?: SortOrder
+    pinnedMessageId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     aiAssociateId?: SortOrderInput | SortOrder
@@ -65785,6 +67003,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Conversation"> | string
     projectId?: StringWithAggregatesFilter<"Conversation"> | string
     isPinned?: BoolWithAggregatesFilter<"Conversation"> | boolean
+    pinnedMessageId?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
     aiAssociateId?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
@@ -67749,6 +68968,62 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
   }
 
+  export type PinnedItemWhereInput = {
+    AND?: PinnedItemWhereInput | PinnedItemWhereInput[]
+    OR?: PinnedItemWhereInput[]
+    NOT?: PinnedItemWhereInput | PinnedItemWhereInput[]
+    id?: StringFilter<"PinnedItem"> | string
+    userId?: StringFilter<"PinnedItem"> | string
+    itemType?: StringFilter<"PinnedItem"> | string
+    itemId?: StringFilter<"PinnedItem"> | string
+    pinnedAt?: DateTimeFilter<"PinnedItem"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PinnedItemOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    itemType?: SortOrder
+    itemId?: SortOrder
+    pinnedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PinnedItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_itemType_itemId?: PinnedItemUserIdItemTypeItemIdCompoundUniqueInput
+    AND?: PinnedItemWhereInput | PinnedItemWhereInput[]
+    OR?: PinnedItemWhereInput[]
+    NOT?: PinnedItemWhereInput | PinnedItemWhereInput[]
+    userId?: StringFilter<"PinnedItem"> | string
+    itemType?: StringFilter<"PinnedItem"> | string
+    itemId?: StringFilter<"PinnedItem"> | string
+    pinnedAt?: DateTimeFilter<"PinnedItem"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_itemType_itemId">
+
+  export type PinnedItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    itemType?: SortOrder
+    itemId?: SortOrder
+    pinnedAt?: SortOrder
+    _count?: PinnedItemCountOrderByAggregateInput
+    _max?: PinnedItemMaxOrderByAggregateInput
+    _min?: PinnedItemMinOrderByAggregateInput
+  }
+
+  export type PinnedItemScalarWhereWithAggregatesInput = {
+    AND?: PinnedItemScalarWhereWithAggregatesInput | PinnedItemScalarWhereWithAggregatesInput[]
+    OR?: PinnedItemScalarWhereWithAggregatesInput[]
+    NOT?: PinnedItemScalarWhereWithAggregatesInput | PinnedItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PinnedItem"> | string
+    userId?: StringWithAggregatesFilter<"PinnedItem"> | string
+    itemType?: StringWithAggregatesFilter<"PinnedItem"> | string
+    itemId?: StringWithAggregatesFilter<"PinnedItem"> | string
+    pinnedAt?: DateTimeWithAggregatesFilter<"PinnedItem"> | Date | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -67986,6 +69261,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -68031,6 +69307,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -68076,6 +69353,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -68121,6 +69399,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -69750,6 +71029,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -69767,6 +71047,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -69782,6 +71063,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69799,6 +71081,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69815,6 +71098,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -69825,6 +71109,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69835,6 +71120,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71901,6 +73187,61 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PinnedItemCreateInput = {
+    id?: string
+    itemType: string
+    itemId: string
+    pinnedAt?: Date | string
+    user: UserCreateNestedOneWithoutPinnedItemsInput
+  }
+
+  export type PinnedItemUncheckedCreateInput = {
+    id?: string
+    userId: string
+    itemType: string
+    itemId: string
+    pinnedAt?: Date | string
+  }
+
+  export type PinnedItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPinnedItemsNestedInput
+  }
+
+  export type PinnedItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PinnedItemCreateManyInput = {
+    id?: string
+    userId: string
+    itemType: string
+    itemId: string
+    pinnedAt?: Date | string
+  }
+
+  export type PinnedItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PinnedItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -72289,6 +73630,12 @@ export namespace Prisma {
     none?: NotificationWhereInput
   }
 
+  export type PinnedItemListRelationFilter = {
+    every?: PinnedItemWhereInput
+    some?: PinnedItemWhereInput
+    none?: PinnedItemWhereInput
+  }
+
   export type AIAssociateOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -72374,6 +73721,10 @@ export namespace Prisma {
   }
 
   export type NotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PinnedItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -73515,6 +74866,7 @@ export namespace Prisma {
     title?: SortOrder
     projectId?: SortOrder
     isPinned?: SortOrder
+    pinnedMessageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     aiAssociateId?: SortOrder
@@ -73526,6 +74878,7 @@ export namespace Prisma {
     title?: SortOrder
     projectId?: SortOrder
     isPinned?: SortOrder
+    pinnedMessageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     aiAssociateId?: SortOrder
@@ -73537,6 +74890,7 @@ export namespace Prisma {
     title?: SortOrder
     projectId?: SortOrder
     isPinned?: SortOrder
+    pinnedMessageId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     aiAssociateId?: SortOrder
@@ -74626,6 +75980,36 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type PinnedItemUserIdItemTypeItemIdCompoundUniqueInput = {
+    userId: string
+    itemType: string
+    itemId: string
+  }
+
+  export type PinnedItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    itemType?: SortOrder
+    itemId?: SortOrder
+    pinnedAt?: SortOrder
+  }
+
+  export type PinnedItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    itemType?: SortOrder
+    itemId?: SortOrder
+    pinnedAt?: SortOrder
+  }
+
+  export type PinnedItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    itemType?: SortOrder
+    itemId?: SortOrder
+    pinnedAt?: SortOrder
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -74847,6 +76231,13 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
+  export type PinnedItemCreateNestedManyWithoutUserInput = {
+    create?: XOR<PinnedItemCreateWithoutUserInput, PinnedItemUncheckedCreateWithoutUserInput> | PinnedItemCreateWithoutUserInput[] | PinnedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PinnedItemCreateOrConnectWithoutUserInput | PinnedItemCreateOrConnectWithoutUserInput[]
+    createMany?: PinnedItemCreateManyUserInputEnvelope
+    connect?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+  }
+
   export type AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -75006,6 +76397,13 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
     createMany?: NotificationCreateManyUserInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type PinnedItemUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PinnedItemCreateWithoutUserInput, PinnedItemUncheckedCreateWithoutUserInput> | PinnedItemCreateWithoutUserInput[] | PinnedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PinnedItemCreateOrConnectWithoutUserInput | PinnedItemCreateOrConnectWithoutUserInput[]
+    createMany?: PinnedItemCreateManyUserInputEnvelope
+    connect?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -75356,6 +76754,20 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type PinnedItemUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PinnedItemCreateWithoutUserInput, PinnedItemUncheckedCreateWithoutUserInput> | PinnedItemCreateWithoutUserInput[] | PinnedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PinnedItemCreateOrConnectWithoutUserInput | PinnedItemCreateOrConnectWithoutUserInput[]
+    upsert?: PinnedItemUpsertWithWhereUniqueWithoutUserInput | PinnedItemUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PinnedItemCreateManyUserInputEnvelope
+    set?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    disconnect?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    delete?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    connect?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    update?: PinnedItemUpdateWithWhereUniqueWithoutUserInput | PinnedItemUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PinnedItemUpdateManyWithWhereWithoutUserInput | PinnedItemUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PinnedItemScalarWhereInput | PinnedItemScalarWhereInput[]
+  }
+
   export type AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<AIAssociateCreateWithoutCreatedByInput, AIAssociateUncheckedCreateWithoutCreatedByInput> | AIAssociateCreateWithoutCreatedByInput[] | AIAssociateUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: AIAssociateCreateOrConnectWithoutCreatedByInput | AIAssociateCreateOrConnectWithoutCreatedByInput[]
@@ -75676,6 +77088,20 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutUserInput | NotificationUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutUserInput | NotificationUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type PinnedItemUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PinnedItemCreateWithoutUserInput, PinnedItemUncheckedCreateWithoutUserInput> | PinnedItemCreateWithoutUserInput[] | PinnedItemUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PinnedItemCreateOrConnectWithoutUserInput | PinnedItemCreateOrConnectWithoutUserInput[]
+    upsert?: PinnedItemUpsertWithWhereUniqueWithoutUserInput | PinnedItemUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PinnedItemCreateManyUserInputEnvelope
+    set?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    disconnect?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    delete?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    connect?: PinnedItemWhereUniqueInput | PinnedItemWhereUniqueInput[]
+    update?: PinnedItemUpdateWithWhereUniqueWithoutUserInput | PinnedItemUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PinnedItemUpdateManyWithWhereWithoutUserInput | PinnedItemUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PinnedItemScalarWhereInput | PinnedItemScalarWhereInput[]
   }
 
   export type OrganizationCreatepracticeAreasInput = {
@@ -78995,6 +80421,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
+  export type UserCreateNestedOneWithoutPinnedItemsInput = {
+    create?: XOR<UserCreateWithoutPinnedItemsInput, UserUncheckedCreateWithoutPinnedItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPinnedItemsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPinnedItemsNestedInput = {
+    create?: XOR<UserCreateWithoutPinnedItemsInput, UserUncheckedCreateWithoutPinnedItemsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPinnedItemsInput
+    upsert?: UserUpsertWithoutPinnedItemsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPinnedItemsInput, UserUpdateWithoutPinnedItemsInput>, UserUncheckedUpdateWithoutPinnedItemsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -79334,6 +80774,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -79378,6 +80819,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -79438,6 +80880,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -79482,6 +80925,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -79526,6 +80970,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -79570,6 +81015,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -79630,6 +81076,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -79674,6 +81121,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AIAssociateCreateWithoutCreatedByInput = {
@@ -80664,6 +82112,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PinnedItemCreateWithoutUserInput = {
+    id?: string
+    itemType: string
+    itemId: string
+    pinnedAt?: Date | string
+  }
+
+  export type PinnedItemUncheckedCreateWithoutUserInput = {
+    id?: string
+    itemType: string
+    itemId: string
+    pinnedAt?: Date | string
+  }
+
+  export type PinnedItemCreateOrConnectWithoutUserInput = {
+    where: PinnedItemWhereUniqueInput
+    create: XOR<PinnedItemCreateWithoutUserInput, PinnedItemUncheckedCreateWithoutUserInput>
+  }
+
+  export type PinnedItemCreateManyUserInputEnvelope = {
+    data: PinnedItemCreateManyUserInput | PinnedItemCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AIAssociateUpsertWithWhereUniqueWithoutCreatedByInput = {
     where: AIAssociateWhereUniqueInput
     update: XOR<AIAssociateUpdateWithoutCreatedByInput, AIAssociateUncheckedUpdateWithoutCreatedByInput>
@@ -81558,6 +83030,33 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
+  export type PinnedItemUpsertWithWhereUniqueWithoutUserInput = {
+    where: PinnedItemWhereUniqueInput
+    update: XOR<PinnedItemUpdateWithoutUserInput, PinnedItemUncheckedUpdateWithoutUserInput>
+    create: XOR<PinnedItemCreateWithoutUserInput, PinnedItemUncheckedCreateWithoutUserInput>
+  }
+
+  export type PinnedItemUpdateWithWhereUniqueWithoutUserInput = {
+    where: PinnedItemWhereUniqueInput
+    data: XOR<PinnedItemUpdateWithoutUserInput, PinnedItemUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PinnedItemUpdateManyWithWhereWithoutUserInput = {
+    where: PinnedItemScalarWhereInput
+    data: XOR<PinnedItemUpdateManyMutationInput, PinnedItemUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PinnedItemScalarWhereInput = {
+    AND?: PinnedItemScalarWhereInput | PinnedItemScalarWhereInput[]
+    OR?: PinnedItemScalarWhereInput[]
+    NOT?: PinnedItemScalarWhereInput | PinnedItemScalarWhereInput[]
+    id?: StringFilter<"PinnedItem"> | string
+    userId?: StringFilter<"PinnedItem"> | string
+    itemType?: StringFilter<"PinnedItem"> | string
+    itemId?: StringFilter<"PinnedItem"> | string
+    pinnedAt?: DateTimeFilter<"PinnedItem"> | Date | string
+  }
+
   export type AIAssociateCreateWithoutOrganizationInput = {
     id?: string
     name: string
@@ -81780,6 +83279,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwnedOrganizationsInput = {
@@ -81824,6 +83324,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwnedOrganizationsInput = {
@@ -81923,6 +83424,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActiveOrganizationInput = {
@@ -81967,6 +83469,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActiveOrganizationInput = {
@@ -82021,6 +83524,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -82065,6 +83569,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -82403,6 +83908,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwnedOrganizationsInput = {
@@ -82447,6 +83953,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -83708,6 +85215,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOrganizationMembershipsInput = {
@@ -83752,6 +85260,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOrganizationMembershipsInput = {
@@ -83907,6 +85416,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationMembershipsInput = {
@@ -83951,6 +85461,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CanvasDocumentCreateWithoutProjectInput = {
@@ -83987,6 +85498,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -84002,6 +85514,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -84423,6 +85936,7 @@ export namespace Prisma {
     title?: StringFilter<"Conversation"> | string
     projectId?: StringFilter<"Conversation"> | string
     isPinned?: BoolFilter<"Conversation"> | boolean
+    pinnedMessageId?: StringNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     updatedAt?: DateTimeFilter<"Conversation"> | Date | string
     aiAssociateId?: StringNullableFilter<"Conversation"> | string | null
@@ -84773,6 +86287,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectMembersInput = {
@@ -84817,6 +86332,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectMembersInput = {
@@ -84928,6 +86444,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectMembersInput = {
@@ -84972,6 +86489,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationDocumentCreateWithoutDocumentInput = {
@@ -85038,6 +86556,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentsInput = {
@@ -85082,6 +86601,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentsInput = {
@@ -85466,6 +86986,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentsInput = {
@@ -85510,6 +87031,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FolderUpsertWithoutDocumentsInput = {
@@ -85940,6 +87462,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderInput = {
@@ -85984,6 +87507,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderInput = {
@@ -86238,6 +87762,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderInput = {
@@ -86282,6 +87807,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutFolderInput = {
@@ -86521,6 +88047,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFolderPermissionsInput = {
@@ -86565,6 +88092,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFolderPermissionsInput = {
@@ -86662,6 +88190,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFolderPermissionsInput = {
@@ -86706,6 +88235,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentCreateWithoutPermissionsInput = {
@@ -86807,6 +88337,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDocumentPermissionsInput = {
@@ -86851,6 +88382,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDocumentPermissionsInput = {
@@ -86974,6 +88506,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDocumentPermissionsInput = {
@@ -87018,6 +88551,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutProjectDocumentsInput = {
@@ -87062,6 +88596,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectDocumentsInput = {
@@ -87106,6 +88641,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectDocumentsInput = {
@@ -87268,6 +88804,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectDocumentsInput = {
@@ -87312,6 +88849,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithoutProjectReferencesInput = {
@@ -87470,6 +89008,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversationDocumentsInput = {
@@ -87514,6 +89053,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversationDocumentsInput = {
@@ -87525,6 +89065,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -87541,6 +89082,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -87666,6 +89208,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversationDocumentsInput = {
@@ -87710,6 +89253,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutDocumentReferencesInput = {
@@ -87727,6 +89271,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -87743,6 +89288,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -88488,6 +90034,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -88504,6 +90051,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -88561,6 +90109,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -88605,6 +90154,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -88720,6 +90270,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -88736,6 +90287,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -88799,6 +90351,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -88843,6 +90396,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageUpsertWithoutEditsInput = {
@@ -89336,6 +90890,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -89380,6 +90935,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -89574,6 +91130,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -89618,6 +91175,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutInvitationsInput = {
@@ -89770,6 +91328,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -89786,6 +91345,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -89816,6 +91376,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89832,6 +91393,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89846,6 +91408,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -89862,6 +91425,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -89919,6 +91483,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActionsInput = {
@@ -89963,6 +91528,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActionsInput = {
@@ -89985,6 +91551,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -90001,6 +91568,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -90064,6 +91632,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActionsInput = {
@@ -90108,6 +91677,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedWorkspaceCreateWithoutSharedMessageInput = {
@@ -90189,6 +91759,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedMessageInput = {
@@ -90233,6 +91804,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedMessageInput = {
@@ -90362,6 +91934,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedMessageInput = {
@@ -90406,6 +91979,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SharedMessageReferenceUpsertWithWhereUniqueWithoutSharedMessageInput = {
@@ -90640,6 +92214,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -90656,6 +92231,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -90713,6 +92289,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceInput = {
@@ -90757,6 +92334,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceInput = {
@@ -90866,6 +92444,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -90882,6 +92461,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -90945,6 +92525,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceInput = {
@@ -90989,6 +92570,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithoutSharedWorkspaceInput = {
@@ -91137,6 +92719,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSharedWorkspaceAccessInput = {
@@ -91181,6 +92764,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSharedWorkspaceAccessInput = {
@@ -91284,6 +92868,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSharedWorkspaceAccessInput = {
@@ -91328,6 +92913,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedAIAssociatesInput = {
@@ -91372,6 +92958,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedAIAssociatesInput = {
@@ -91416,6 +93003,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedAIAssociatesInput = {
@@ -91558,6 +93146,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -91574,6 +93163,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -91691,6 +93281,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedAIAssociatesInput = {
@@ -91735,6 +93326,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutAiAssociatesInput = {
@@ -92014,6 +93606,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssociateSharesInput = {
@@ -92058,6 +93651,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssociateSharesInput = {
@@ -92107,6 +93701,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssociateSharesGrantedInput = {
@@ -92151,6 +93746,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssociateSharesGrantedInput = {
@@ -92258,6 +93854,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssociateSharesInput = {
@@ -92302,6 +93899,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutAssociateSharesGrantedInput = {
@@ -92357,6 +93955,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssociateSharesGrantedInput = {
@@ -92401,6 +94000,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AIAssociateCreateWithoutStepsInput = {
@@ -93016,6 +94616,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDigestSubscriptionsInput = {
@@ -93060,6 +94661,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDigestSubscriptionsInput = {
@@ -93243,6 +94845,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDigestSubscriptionsInput = {
@@ -93287,6 +94890,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DigestSubscriptionCreateWithoutHistoryInput = {
@@ -93399,6 +95003,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLegal_knowledgeInput = {
@@ -93443,6 +95048,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLegal_knowledgeInput = {
@@ -93533,6 +95139,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLegal_knowledgeInput = {
@@ -93577,6 +95184,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type legal_knowledge_chunksUpsertWithWhereUniqueWithoutLegal_knowledgeInput = {
@@ -93935,6 +95543,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -93979,6 +95588,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
     legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
     documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    pinnedItems?: PinnedItemUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -94039,6 +95649,7 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -94083,6 +95694,203 @@ export namespace Prisma {
     digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutPinnedItemsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
+    createdAIAssociates?: AIAssociateCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareCreateNestedManyWithoutGrantedByInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    actions?: ConversationActionCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentCreateNestedManyWithoutUserInput
+    documents?: DocumentCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationCreateNestedManyWithoutInvitedByInput
+    messages?: MessageCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessCreateNestedManyWithoutUserInput
+    activeOrganization?: OrganizationCreateNestedOneWithoutActiveUsersInput
+    organization: OrganizationCreateNestedOneWithoutUsersInput
+    organizationMemberships?: UserOrganizationCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPinnedItemsInput = {
+    id?: string
+    email: string
+    fullName?: string | null
+    password: string
+    role?: string
+    organizationId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activeOrganizationId?: string | null
+    resetToken?: string | null
+    resetTokenExpiry?: Date | string | null
+    emailVerified?: boolean
+    emailVerificationToken?: string | null
+    emailVerificationExpires?: Date | string | null
+    authProvider?: string
+    onboardingEmail1hSentAt?: Date | string | null
+    onboardingEmail10hSentAt?: Date | string | null
+    onboardingEmail24hSentAt?: Date | string | null
+    onboardingEmail3dSentAt?: Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedCreateNestedManyWithoutCreatedByInput
+    associateShares?: AIAssociateShareUncheckedCreateNestedManyWithoutUserInput
+    associateSharesGranted?: AIAssociateShareUncheckedCreateNestedManyWithoutGrantedByInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    actions?: ConversationActionUncheckedCreateNestedManyWithoutUserInput
+    conversationDocuments?: ConversationDocumentUncheckedCreateNestedManyWithoutUserInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutCreatedByUserInput
+    Folder?: FolderUncheckedCreateNestedManyWithoutUserInput
+    folderPermissions?: FolderPermissionUncheckedCreateNestedManyWithoutUserInput
+    sentInvitations?: InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+    messages?: MessageUncheckedCreateNestedManyWithoutUserInput
+    ownedOrganizations?: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+    projectDocuments?: ProjectDocumentUncheckedCreateNestedManyWithoutUserInput
+    projectMembers?: ProjectMemberUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    SharedMessage?: SharedMessageUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspace?: SharedWorkspaceUncheckedCreateNestedManyWithoutUserInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedCreateNestedManyWithoutUserInput
+    organizationMemberships?: UserOrganizationUncheckedCreateNestedManyWithoutUserInput
+    digestSubscriptions?: DigestSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    legal_knowledge?: legal_knowledgeUncheckedCreateNestedManyWithoutUserInput
+    documentPermissions?: DocumentPermissionUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPinnedItemsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPinnedItemsInput, UserUncheckedCreateWithoutPinnedItemsInput>
+  }
+
+  export type UserUpsertWithoutPinnedItemsInput = {
+    update: XOR<UserUpdateWithoutPinnedItemsInput, UserUncheckedUpdateWithoutPinnedItemsInput>
+    create: XOR<UserCreateWithoutPinnedItemsInput, UserUncheckedCreateWithoutPinnedItemsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPinnedItemsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPinnedItemsInput, UserUncheckedUpdateWithoutPinnedItemsInput>
+  }
+
+  export type UserUpdateWithoutPinnedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUpdateManyWithoutGrantedByNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUpdateManyWithoutUserNestedInput
+    documents?: DocumentUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUpdateManyWithoutUserNestedInput
+    activeOrganization?: OrganizationUpdateOneWithoutActiveUsersNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsersNestedInput
+    organizationMemberships?: UserOrganizationUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPinnedItemsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    fullName?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activeOrganizationId?: NullableStringFieldUpdateOperationsInput | string | null
+    resetToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetTokenExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerificationToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    authProvider?: StringFieldUpdateOperationsInput | string
+    onboardingEmail1hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail10hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail24hSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    onboardingEmail3dSentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAIAssociates?: AIAssociateUncheckedUpdateManyWithoutCreatedByNestedInput
+    associateShares?: AIAssociateShareUncheckedUpdateManyWithoutUserNestedInput
+    associateSharesGranted?: AIAssociateShareUncheckedUpdateManyWithoutGrantedByNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    actions?: ConversationActionUncheckedUpdateManyWithoutUserNestedInput
+    conversationDocuments?: ConversationDocumentUncheckedUpdateManyWithoutUserNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutCreatedByUserNestedInput
+    Folder?: FolderUncheckedUpdateManyWithoutUserNestedInput
+    folderPermissions?: FolderPermissionUncheckedUpdateManyWithoutUserNestedInput
+    sentInvitations?: InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutUserNestedInput
+    ownedOrganizations?: OrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+    projectDocuments?: ProjectDocumentUncheckedUpdateManyWithoutUserNestedInput
+    projectMembers?: ProjectMemberUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    SharedMessage?: SharedMessageUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspace?: SharedWorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    SharedWorkspaceAccess?: SharedWorkspaceAccessUncheckedUpdateManyWithoutUserNestedInput
+    organizationMemberships?: UserOrganizationUncheckedUpdateManyWithoutUserNestedInput
+    digestSubscriptions?: DigestSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
+    documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AIAssociateCreateManyCreatedByInput = {
@@ -94338,6 +96146,13 @@ export namespace Prisma {
     dismissed?: boolean
     dismissedAt?: Date | string | null
     createdAt?: Date | string
+  }
+
+  export type PinnedItemCreateManyUserInput = {
+    id?: string
+    itemType: string
+    itemId: string
+    pinnedAt?: Date | string
   }
 
   export type AIAssociateUpdateWithoutCreatedByInput = {
@@ -95175,6 +96990,27 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PinnedItemUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PinnedItemUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PinnedItemUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    itemType?: StringFieldUpdateOperationsInput | string
+    itemId?: StringFieldUpdateOperationsInput | string
+    pinnedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AIAssociateCreateManyOrganizationInput = {
     id?: string
     name: string
@@ -95626,6 +97462,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActiveOrganizationInput = {
@@ -95670,6 +97507,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutActiveOrganizationInput = {
@@ -95735,6 +97573,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -95779,6 +97618,7 @@ export namespace Prisma {
     legal_knowledge?: legal_knowledgeUncheckedUpdateManyWithoutUserNestedInput
     documentPermissions?: DocumentPermissionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    pinnedItems?: PinnedItemUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutOrganizationInput = {
@@ -96071,6 +97911,7 @@ export namespace Prisma {
     id?: string
     title: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     aiAssociateId?: string | null
@@ -96185,6 +98026,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -96200,6 +98042,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -96215,6 +98058,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     aiAssociateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -97183,6 +99027,7 @@ export namespace Prisma {
     title: string
     projectId: string
     isPinned?: boolean
+    pinnedMessageId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     selectedTemplateId?: string | null
@@ -97237,6 +99082,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -97253,6 +99099,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -97268,6 +99115,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
     isPinned?: BoolFieldUpdateOperationsInput | boolean
+    pinnedMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     selectedTemplateId?: NullableStringFieldUpdateOperationsInput | string | null

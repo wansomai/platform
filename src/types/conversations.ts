@@ -4,6 +4,7 @@ export interface Conversation {
   title: string;
   projectId: string;
   isPinned: boolean;
+  pinnedMessageId?: string | null;
   createdAt: string;
   updatedAt: string;
   aiAssociateId?: string | null;

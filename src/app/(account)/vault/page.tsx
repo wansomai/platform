@@ -54,6 +54,8 @@ import {
   EyeOff,
   UserPlus,
   AlertTriangle,
+  Pin,
+  PinOff,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useDocumentsStore } from "@/store/documents.store"
@@ -116,6 +118,21 @@ export default function VaultPage() {
     () => Array.from(new Map(rawDocuments.map((d: any) => [d.id, d])).values()),
     [rawDocuments]
   );
+
+  const [pinnedDocumentIds, setPinnedDocumentIds] = useState<string[]>([]);
+
+  // Pinned documents float to the top in FIFO pin order; rest retain server sort
+  const sortedDocuments = useMemo(() => {
+    if (pinnedDocumentIds.length === 0) return documents;
+    const pinned: any[] = [];
+    const unpinned: any[] = [];
+    for (const doc of documents as any[]) {
+      if (pinnedDocumentIds.includes(doc.id)) pinned.push(doc);
+      else unpinned.push(doc);
+    }
+    pinned.sort((a, b) => pinnedDocumentIds.indexOf(a.id) - pinnedDocumentIds.indexOf(b.id));
+    return [...pinned, ...unpinned];
+  }, [documents, pinnedDocumentIds]);
   
   const {
     folders,
@@ -143,7 +160,7 @@ export default function VaultPage() {
   const [sortBy, setSortBy] = useState<'recent' | 'oldest' | 'name' | 'size'>('recent');
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 20;
-  
+
   // Modal states
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showVaultGate, setShowVaultGate] = useState(false);
@@ -209,7 +226,29 @@ export default function VaultPage() {
   useEffect(() => {
     fetchFolders(true);
     fetchProfile(); // ensure user.id is available for creator checks
+    apiService.get<{ data: Array<{ itemId: string }> }>('/api/pins?itemType=document')
+      .then(({ data }) => {
+        if (Array.isArray(data)) {
+          setPinnedDocumentIds(data.map((p) => p.itemId));
+        }
+      })
+      .catch(() => {});
   }, [fetchFolders, fetchProfile]);
+
+  const handleToggleDocumentPin = async (documentId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const isPinned = pinnedDocumentIds.includes(documentId);
+    setPinnedDocumentIds(prev =>
+      isPinned ? prev.filter(id => id !== documentId) : [...prev, documentId]
+    );
+    try {
+      await apiService.post('/api/pins', { itemType: 'document', itemId: documentId });
+    } catch {
+      setPinnedDocumentIds(prev =>
+        isPinned ? [...prev, documentId] : prev.filter(id => id !== documentId)
+      );
+    }
+  };
   
   // Keep a ref of the current params so the reprocessing effect always reads the latest values
   useEffect(() => {
@@ -711,7 +750,7 @@ export default function VaultPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {documents.map((document) => (
+            {sortedDocuments.map((document) => (
               <TableRow 
                 key={document.id}
                 className={`cursor-pointer ${selectedDocuments.includes(document.id) ? "bg-primary/10" : ""}`}
@@ -741,7 +780,12 @@ export default function VaultPage() {
                           </Button>
                         </div>
                       ) : (
-                        <span className="font-medium truncate max-w-[200px]">{document.title}</span>
+                        <span className="font-medium truncate max-w-[200px] flex items-center gap-1">
+                          {pinnedDocumentIds.includes(document.id) && (
+                            <Pin className="h-3 w-3 text-amber-500 shrink-0" />
+                          )}
+                          {document.title}
+                        </span>
                       )}
                       {document.contentExtracted === false && (
                         <span className="inline-flex items-center gap-1.5 text-xs text-amber-600">
@@ -781,7 +825,15 @@ export default function VaultPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                          <DropdownMenuItem
+                      <DropdownMenuItem
+                        onClick={(e) => handleToggleDocumentPin(document.id, e)}
+                      >
+                        {pinnedDocumentIds.includes(document.id)
+                          ? <><PinOff className="h-4 w-4 mr-2" />Unpin</>
+                          : <><Pin className="h-4 w-4 mr-2" />Pin to top</>}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
                         disabled={isCreatingWorkspace}
                         onClick={(e) => {
                           e.stopPropagation();

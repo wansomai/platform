@@ -90,6 +90,7 @@ model User {
   legal_knowledge          legal_knowledge[]
   documentPermissions      DocumentPermission[]
   notifications            Notification[]
+  pinnedItems              PinnedItem[]
 
   @@index([activeOrganizationId], map: "idx_user_active_org")
 }
@@ -424,6 +425,7 @@ model Conversation {
   title              String
   projectId          String
   isPinned           Boolean                @default(false)
+  pinnedMessageId    String?
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
   aiAssociateId      String?
@@ -883,4 +885,19 @@ enum LegalKnowledgeType {
   REGULATION
   LEGAL_OPINION
   PRACTICE_GUIDE
+}
+
+// User-specific pins for projects, documents, and associates.
+// Multiple items can be pinned per type; ordered by pinnedAt ascending (FIFO).
+// Message pins are stored as pinnedMessageId on Conversation (one per conversation).
+model PinnedItem {
+  id       String   @id @default(cuid())
+  userId   String
+  itemType String // 'project' | 'document' | 'associate'
+  itemId   String
+  pinnedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemType, itemId])
+  @@index([userId, itemType, pinnedAt])
 }
