@@ -18,7 +18,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.wansom.ai'),
-  title: "Wansom | AI workspace for lawyers",
+  title: "Wansom |Legal AI workspace for lawyers",
   description: "Wansom AI is a leading Legal AI workspace for lawyers to automate contract review,legal drafting, streamline regulatory compliance, and optimize decision-making.",
   openGraph: {
     title: 'Wansom AI',
