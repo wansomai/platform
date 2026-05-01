@@ -334,6 +334,10 @@ Legal jurisdiction is stored in workspace settings (`KnowledgeBase.settings` JSO
 
 Jurisdiction registry and instructions are in `src/lib/jurisdictions.ts`. Each jurisdiction has `id`, `legalSystem`, `citationStyle`, `courtSystem`, and `languages`. The full jurisdiction object is looked up via `getJurisdictionById()` when an `id` is present, providing richer instructions via `getJurisdictionInstructions()`.
 
+**Two separate jurisdiction systems** — don't conflate them:
+- **Workspace/chat jurisdictions** (`KnowledgeBase.settings`): string IDs like `"KE"`, `"ZA"`, `"NG"` from `src/lib/jurisdictions.ts`. Used for AI instructions and Briefly digest routing.
+- **Legal knowledge Prisma enum** (`legal_knowledge.jurisdiction`): `KENYA | INTERNATIONAL | GENERAL`. Used only for admin-uploaded legal knowledge documents and RAG classification. Unrelated to the workspace string IDs.
+
 ### No Next.js Edge Middleware
 This project does NOT use Next.js Edge middleware (`middleware.ts`). All authentication and authorization is handled via API route middleware (`withAuth`, `withProjectAccess`, etc.) in `src/lib/api/middleware.ts`.
 
@@ -464,6 +468,7 @@ Reusable hooks in `src/hooks/`:
 - `useAuth` - User session and authentication state
 - `useNotifications` - Toast notifications (`notify.success()`, `notify.error()`, `notify.info()`)
 - `useFileUpload` - File upload with progress tracking
+- `useAsyncOperation` - Generic wrapper for async operations with `isLoading` / `error` state; use instead of manual try/catch+useState boilerplate
 - `useDocuments` / `useProjects` / `useAssociates` / `useProjectAssociates` - Data fetching wrappers
 
 ### Project Workspace View Modes
@@ -574,6 +579,9 @@ Template associates are defined in `src/lib/constants/premadeAssociates.ts`. `PO
 - `Payment` - Payment history
 - `Notification` - In-app user notifications (`type`, `read`, `dismissed`, `dismissedAt`, `title`, `message`); see Notification API below
 
+### Pinned Items
+- `PinnedItem` - User-specific pins for projects, documents, and associates (`itemType`: `'project' | 'document' | 'associate'`). Multiple items can be pinned per type, ordered by `pinnedAt` ascending (FIFO). Message pins are stored separately as `Conversation.pinnedMessageId` (one per conversation, not in `PinnedItem`).
+
 ### Visibility & Permissions System
 - `Project`, `Document`, and `Folder` each have a `visibility` field:
   - `Project.visibility`: `"restricted"` (default — only explicit members) | `"public"` (all org members)
@@ -621,22 +629,23 @@ API routes follow Next.js App Router conventions in `src/app/api/`:
 - `/api/auth/*` - Authentication (NextAuth, login, register, password reset, Google connection)
 - `/api/projects/[id]/*` - Project-scoped operations (conversations, documents, members, associates, canvas, settings, instructions)
 - `/api/organization/*` - Organization management (members, invitations, switching)
-- `/api/documents/*` - Vault/organization-level document operations; `/api/documents/upload-token` issues one-time Vercel Blob client upload tokens (used by the two-step client-side upload flow)
+- `/api/documents/*` - Vault/organization-level document operations; `/api/documents/upload-token` issues one-time Vercel Blob client upload tokens (used by the two-step client-side upload flow); `/api/documents/[id]/download` serves a signed download URL; `/api/documents/[id]/permissions` manages per-document user grants; `/api/documents/[id]/reprocess` re-runs text extraction on an existing document
 - `/api/folders/*` - Folder hierarchy for documents
-- `/api/associates/*` - AI associate CRUD
+- `/api/associates/*` - AI associate CRUD; `/api/associates/[id]/permissions` manages sharing (see Associate Access Model)
 - `/api/workspace/[id]/*` - Shared workspace settings, member management, and visibility controls
-- `/api/payments/*` - Payment processing
-- `/api/subscription/*` - Subscription management
+- `/api/payments/*` - Payment processing; `/api/payments/initialize` creates a Paystack transaction; `/api/payments/popup-config` returns client-side Paystack inline config
+- `/api/subscription/*` - Subscription management (`/api/subscription/cancel`, `/api/subscription/retry` for failed renewals)
+- `/api/organization/switch` - Switch active organization (POST with `organizationId`)
 - `/api/profile/*` - User profile operations
 - `/api/admin/*` - Admin-only: organization management, legal knowledge CRUD (`/api/admin/legal-knowledge/*`), email broadcast (`/api/admin/email-broadcast`), and user CSV export (`/api/admin/users/export?type=professional|personal` — downloads all users filtered by whether their email domain is a free consumer domain)
 - `/api/notifications` - `GET` active (unread, non-dismissed) notifications; `?history=true` returns read, non-dismissed ones; `PATCH /api/notifications/[id]/read` - mark read; `PATCH /api/notifications/[id]/dismiss` - marks dismissed+read (stays in DB for 30 days, then deleted by `/api/cron/notification-cleanup`)
 - `/api/support` - Authenticated POST; sends support ticket email to `law@wansom.ai`
 - `/api/user` - Empty placeholder directory; user account/profile operations are at `/api/profile`
 - `/api/digest/*` - Legal digest subscriptions
-- `/api/cron/*` - Cron job endpoints (legal digest generation)
+- `/api/cron/*` - Cron job endpoints: `legal-digest`, `digest-ingest`, `digest-cleanup`, `trial-expiry`, `subscription-renewal`, `notification-cleanup`, `onboarding-emails`
 - `/api/dev/*` - Dev-only endpoints (e.g. `/api/dev/digest-preview` for testing digest without sending)
 - `/api/events/*` - Event registrations (law school launch, opt-ins)
-- `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`)
+- `/api/public/*` - Unauthenticated guest document generation (`generate`, `chat`); `/api/public/fetch-template` retrieves associate template data; `/api/public/export-payment-config` returns Paystack config for guest export payments
 - `/api/search` - Pan-African legal search (authenticated; calls `searchAfricanLegalSources` from `src/lib/legalScraper/index.ts` — a thin client that delegates scraping to a Python service on Digital Ocean)
 - `/api/projects/[id]/reports/[reportId]/download` - Download project reports in HTML or PDF format
 - `/api/prorequests` - Pro plan upgrade requests

@@ -1,9 +1,11 @@
 
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Navbar from "@/components/layout/Navbar";
 import PricingSection from "@/components/home/pricing";
 import Footer from "@/components/layout/Footer";
 import { DraftPlus } from '../ai-legal-drafting/DocDraftingPage';
+import { getSubscriptionPricing, getExplorerPricing } from '@/lib/subscriptionPricing';
 
 export const metadata: Metadata = {
   title: 'Pricing - Wansom AI | Legal AI Assistant Plans',
@@ -33,15 +35,20 @@ export const metadata: Metadata = {
   },
 };
 
-const PricingPage = () => {
-    return (
-        <div>
-            <Navbar/>
-     <DraftPlus title=''/>
-            <PricingSection/>
-            <Footer/>
-        </div>
-    );
+const PricingPage = async () => {
+  const headersList = await headers();
+  const countryCode = headersList.get('x-vercel-ip-country') ?? 'us';
+  const pricing = getSubscriptionPricing(countryCode);
+  const explorerPricing = getExplorerPricing(countryCode);
+
+  return (
+    <div>
+      <Navbar />
+      <DraftPlus title='' />
+      <PricingSection pricing={pricing} explorerPricing={explorerPricing} />
+      <Footer />
+    </div>
+  );
 };
 
 export default PricingPage;

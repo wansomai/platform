@@ -57,8 +57,6 @@ const PRO_FEATURES = [
   "Up to 10 AI Associates",
   "Google Calendar & Email integrations",
   "Priority email support",
-  "Team collaboration",
-  "Custom workflows & deployments",
 ];
 
 const TEAM_FEATURES = [
