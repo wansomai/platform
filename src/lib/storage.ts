@@ -1,65 +1,49 @@
-// src/lib/blob-storage.ts
-import { put, del, list, head } from '@vercel/blob';
+import { Storage } from '@google-cloud/storage';
+
+const BUCKET_NAME = process.env.GOOGLE_CLOUD_STORAGE_BUCKET!;
+
+// Singleton GCS client — reused across requests in the same process
+let _storage: Storage | null = null;
+function getStorage(): Storage {
+  if (!_storage) _storage = new Storage();
+  return _storage;
+}
+
+function gcsUrl(pathname: string): string {
+  return `https://storage.googleapis.com/${BUCKET_NAME}/${pathname}`;
+}
+
+function pathnameFromGcsUrl(url: string): string | null {
+  const prefix = `https://storage.googleapis.com/${BUCKET_NAME}/`;
+  return url.startsWith(prefix) ? url.slice(prefix.length) : null;
+}
 
 export class BlobStorageService {
-  /**
-   * Upload a file to Vercel Blob storage
-   * @param fileBuffer The file buffer
-   * @param fileName The name to use for the file (including path)
-   * @param contentType The MIME type of the file
-   * @returns URL of the uploaded file
-   */
   async uploadFile(
     fileBuffer: Buffer,
     fileName: string,
     contentType: string
   ): Promise<string> {
-    try {
-      const blob = await put(fileName, fileBuffer, {
-        contentType,
-        access: 'public', // or 'private' if you need access control
-      });
-      
-      return blob.url;
-    } catch (error) {
-      throw error;
-    }
+    const file = getStorage().bucket(BUCKET_NAME).file(fileName);
+    await file.save(fileBuffer, { metadata: { contentType }, resumable: false });
+    await file.makePublic();
+    return gcsUrl(fileName);
   }
 
-  /**
-   * Delete a file from storage
-   * @param url The URL of the file to delete
-   */
   async deleteFile(url: string): Promise<void> {
-    try {
-      await del(url);
-    } catch (error) {
-      throw error;
-    }
+    const pathname = pathnameFromGcsUrl(url);
+    if (!pathname) return; // unrecognised URL — skip silently
+    await getStorage().bucket(BUCKET_NAME).file(pathname).delete({ ignoreNotFound: true });
   }
 
-  /**
-   * Get a file URL
-   * @param url The URL of the file
-   * @returns URL to access the file
-   */
   async getFileUrl(url: string): Promise<string> {
-    // For public files, return the URL directly
     return url;
   }
 
-  /**
-   * Download a file from storage with automatic retries and a per-attempt timeout.
-   * Retries on transient network errors (timeouts, 5xx, connection resets).
-   * Does NOT retry on 404 (file genuinely missing).
-   *
-   * @param url The URL of the file to download
-   * @returns Buffer containing the file data
-   */
   async downloadFile(url: string): Promise<Buffer> {
     const MAX_ATTEMPTS = 3;
-    const ATTEMPT_TIMEOUT_MS = 20_000; // 20 s per attempt
-    const BACKOFF_MS = [0, 500, 1_000]; // wait before attempt 1, 2, 3
+    const ATTEMPT_TIMEOUT_MS = 20_000;
+    const BACKOFF_MS = [0, 500, 1_000];
 
     let lastError: unknown;
 
@@ -77,20 +61,16 @@ export class BlobStorageService {
 
         if (!response.ok) {
           const err = new Error(`Failed to download file: ${response.status} ${response.statusText}`);
-          // 404 means the file doesn't exist — no point retrying
           if (response.status === 404) throw err;
           throw err;
         }
 
-        const arrayBuffer = await response.arrayBuffer();
-        return Buffer.from(arrayBuffer);
+        return Buffer.from(await response.arrayBuffer());
       } catch (error) {
         clearTimeout(timer);
         lastError = error;
 
-        // Do not retry on 404
         if (error instanceof Error && error.message.includes('404')) break;
-        // Do not retry on the last attempt
         if (attempt === MAX_ATTEMPTS - 1) break;
       }
     }
@@ -99,5 +79,4 @@ export class BlobStorageService {
   }
 }
 
-// Create and export a singleton instance
 export const blobStorageService = new BlobStorageService();

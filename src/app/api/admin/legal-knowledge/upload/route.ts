@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { put } from '@vercel/blob';
+import { blobStorageService } from '@/lib/storage';
 import { withAdminAuth } from '@/lib/auth/admin-middleware';
 import { withErrorHandler } from '@/lib/api/middleware';
 import { createCreatedResponse, createErrorResponse } from '@/lib/api/response';
@@ -75,14 +75,10 @@ export const POST = withErrorHandler(
       );
     }
 
-    // Upload file to Vercel Blob
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     const fileName = `legal-knowledge/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
 
-    const blob = await put(fileName, fileBuffer, {
-      access: 'public',
-      contentType: file.type
-    });
+    const fileUrl = await blobStorageService.uploadFile(fileBuffer, fileName, file.type);
 
     // Extract text first (needed for classification)
     let extractedText: string;
@@ -144,7 +140,7 @@ export const POST = withErrorHandler(
           practiceAreas: classification.practiceAreas,
           tags: classification.tags
         },
-        blob.url,
+        fileUrl,
         userId
       );
 
